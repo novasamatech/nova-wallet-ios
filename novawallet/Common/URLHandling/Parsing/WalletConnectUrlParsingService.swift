@@ -19,7 +19,7 @@ final class WalletConnectUrlParsingService {
 extension WalletConnectUrlParsingService {
     struct WCActivityValidator: WCActivityValidatorMarker {
         func validate(_ url: URL) -> Bool {
-            url.scheme == "novawallet" && url.host == "wc"
+            url.scheme == ApplicationConfig.shared.deepLinkScheme && url.host == "wc"
         }
     }
 

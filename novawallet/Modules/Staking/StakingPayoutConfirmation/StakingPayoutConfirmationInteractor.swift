@@ -15,7 +15,7 @@ final class StakingPayoutConfirmationInteractor {
     let feeProxy: MultiExtrinsicFeeProxyProtocol
     let chainRegistry: ChainRegistryProtocol
     let signer: SigningWrapperProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol?
     let payouts: [PayoutInfo]
 
@@ -36,7 +36,7 @@ final class StakingPayoutConfirmationInteractor {
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         chainRegistry: ChainRegistryProtocol,
         signer: SigningWrapperProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         payouts: [PayoutInfo],
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
@@ -50,7 +50,7 @@ final class StakingPayoutConfirmationInteractor {
         self.extrinsicService = extrinsicService
         self.chainRegistry = chainRegistry
         self.signer = signer
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.payouts = payouts
         self.logger = logger
         self.currencyManager = currencyManager
@@ -66,7 +66,8 @@ final class StakingPayoutConfirmationInteractor {
         var splitter: ExtrinsicSplitting = ExtrinsicSplitter(
             chain: chainAsset.chain,
             maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
-            chainRegistry: chainRegistry
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         splitter = try payouts.reduce(splitter) { accum, payout in
@@ -114,7 +115,7 @@ final class StakingPayoutConfirmationInteractor {
 extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteractorInputProtocol {
     func setup() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: OperationManager(operationQueue: operationQueue),
             completion: { [weak self] codingFactory in
                 self?.codingFactory = codingFactory
                 self?.continueSetup()
@@ -137,8 +138,13 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
                 runningIn: .main
             ) { [weak self] submission in
                 do {
-                    let txHashes = try submission.results.map { try $0.result.get() }
-                    self?.presenter?.didCompletePayout(txHashes: txHashes)
+                    let senders = try submission.results.map { try $0.result.get().sender }
+
+                    guard let sender = senders.first else {
+                        return
+                    }
+
+                    self?.presenter?.didCompletePayout(by: sender)
                 } catch {
                     self?.presenter?.didFailPayout(error: error)
                 }

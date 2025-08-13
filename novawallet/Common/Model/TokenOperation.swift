@@ -14,40 +14,16 @@ extension TokenOperation {
         chainAsset: ChainAsset
     ) -> ReceiveAvailableCheckResult {
         switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            return .common(.available)
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig:
+            .common(.available)
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .common(.ledgerNotSupported)
+                .common(.ledgerNotSupported)
             } else {
-                return .common(.available)
-            }
-
-        case .watchOnly:
-            return .common(.noSigning)
-        }
-    }
-
-    static func checkBuyOperationAvailable(
-        purchaseActions: [PurchaseAction],
-        walletType: MetaAccountModelType,
-        chainAsset: ChainAsset
-    ) -> BuyAvailableCheckResult {
-        guard !purchaseActions.isEmpty else {
-            return .noBuyOptions
-        }
-
-        switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            return .common(.available)
-        case .ledger, .genericLedger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .common(.ledgerNotSupported)
-            } else {
-                return .common(.available)
+                .common(.available)
             }
         case .watchOnly:
-            return .common(.noSigning)
+            .common(.noSigning)
         }
     }
 }
@@ -60,21 +36,7 @@ enum ReceiveAvailableCheckResult {
     var available: Bool {
         switch self {
         case let .common(operationCheckCommonResult):
-            return operationCheckCommonResult == .available
-        }
-    }
-}
-
-enum BuyAvailableCheckResult {
-    case common(OperationCheckCommonResult)
-    case noBuyOptions
-
-    var available: Bool {
-        switch self {
-        case let .common(operationCheckCommonResult):
-            return operationCheckCommonResult == .available
-        case .noBuyOptions:
-            return false
+            operationCheckCommonResult.isAvailable
         }
     }
 }
@@ -82,5 +44,16 @@ enum BuyAvailableCheckResult {
 enum OperationCheckCommonResult {
     case ledgerNotSupported
     case noSigning
+    case noCardSupport(MetaAccountModel)
+    case noSellSupport(MetaAccountModel, ChainAsset)
+    case noRampActions
     case available
+
+    var isAvailable: Bool {
+        if case .available = self {
+            true
+        } else {
+            false
+        }
+    }
 }

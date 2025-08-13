@@ -16,4 +16,5 @@ struct RemoteAssetModel: Equatable, Codable, Hashable {
     let type: String?
     let typeExtras: JSON?
     let buyProviders: JSON?
+    let sellProviders: JSON?
 }

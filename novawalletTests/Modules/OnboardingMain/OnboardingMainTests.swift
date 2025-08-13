@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Cuckoo
+import Foundation_iOS
 
 class OnboardingMainTests: XCTestCase {
 
@@ -102,18 +103,18 @@ class OnboardingMainTests: XCTestCase {
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
 
-        let keystoreImportService = KeystoreImportService(logger: Logger.shared)
+        let secretImportService = SecretImportService(logger: Logger.shared)
 
         let presenter = setupPresenterForWireframe(wireframe,
                                                    view: view,
                                                    legal: dummyLegalData,
-                                                   keystoreImportService: keystoreImportService)
+                                                   secretImportService: secretImportService)
 
         // when
 
         presenter.setup()
 
-        XCTAssertTrue(keystoreImportService.handle(url: KeystoreDefinition.validURL))
+        XCTAssertTrue(secretImportService.handle(url: KeystoreDefinition.validURL))
 
         // then
 
@@ -130,9 +131,17 @@ class OnboardingMainTests: XCTestCase {
     private func setupPresenterForWireframe(_ wireframe: MockOnboardingMainWireframeProtocol,
                                             view: MockOnboardingMainViewProtocol,
                                             legal: LegalData,
-                                            keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared))
+                                            secretImportService: SecretImportServiceProtocol = SecretImportService(logger: Logger.shared),
+                                            migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
+                                                localDeepLinkScheme: "novawallet",
+                                                queryFactory: WalletMigrationQueryFactory()
+                                            )
+    )
         -> OnboardingMainPresenter {
-        let interactor = OnboardingMainInteractor(keystoreImportService: keystoreImportService)
+        let interactor = OnboardingMainInteractor(
+            secretImportService: secretImportService,
+            walletMigrationService: migrationService
+        )
 
         let presenter = OnboardingMainPresenter(
             interactor: interactor,
@@ -154,6 +163,7 @@ class OnboardingMainTests: XCTestCase {
             when(stub).showSignup(from: any()).thenDoNothing()
             when(stub).showWeb(url: any(), from: any(), style: any()).thenDoNothing()
             when(stub).showAccountSecretImport(from: any(), source: any()).thenDoNothing()
+            when(stub).showWalletMigration(from: any(), message: any()).thenDoNothing()
         }
 
         return presenter

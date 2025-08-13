@@ -32,7 +32,7 @@ protocol GovernanceUnlockConfirmInteractorOutputProtocol: GovernanceUnlockIntera
 
 protocol GovernanceUnlockConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    GovernanceErrorPresentable, ExtrinsicSigningErrorHandling, ExtrinsicSubmissionPresenting, MultiExtrinsicRetryable {
-    func complete(on view: GovernanceUnlockConfirmViewProtocol?, locale: Locale)
+    GovernanceErrorPresentable, ExtrinsicSigningErrorHandling, ModalAlertPresenting,
+    ExtrinsicSubmissionPresenting, MultiExtrinsicRetryable {
     func skip(on view: GovernanceUnlockConfirmViewProtocol?)
 }

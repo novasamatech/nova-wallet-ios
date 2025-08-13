@@ -123,7 +123,7 @@ final class MortalEraOperationFactory {
     private func createBlockHashCountOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<BlockNumber> {
-        let blockHashCountOperation = PrimitiveConstantOperation<BlockNumber>(path: .blockHashCount)
+        let blockHashCountOperation = PrimitiveConstantOperation<BlockNumber>(path: SystemPallet.blockHashCount)
         blockHashCountOperation.configurationBlock = {
             do {
                 blockHashCountOperation.codingFactory = try codingFactoryOperation

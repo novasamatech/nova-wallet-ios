@@ -13,8 +13,10 @@ final class ParitySignerTxQrPresenter {
     let type: ParitySignerType
 
     private var transactionCode: TransactionDisplayCode?
-    private var wallet: ChainWalletDisplayAddress?
-    private var timer = CountdownTimerMediator()
+    private var model: ParitySignerTxQrSetupModel?
+    private var qrFormat: ParitySignerQRFormat?
+    private var qrSize: CGSize?
+    private var timer: CountdownTimerMediator?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var qrImageViewModelFactory = QRImageViewModelFactory()
@@ -45,7 +47,7 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func provideWalletViewModel() {
-        guard let wallet = wallet else {
+        guard let wallet = model?.chainWallet else {
             return
         }
 
@@ -58,17 +60,41 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func provideCodeViewModel() {
-        guard
-            let transactionCode = transactionCode,
-            let viewModel = qrImageViewModelFactory.createViewModel(from: transactionCode.images) else {
+        if
+            let transactionCode,
+            let viewModel = qrImageViewModelFactory.createViewModel(from: transactionCode.images) {
+            view?.didReceiveCode(viewModel: viewModel)
+        } else {
+            view?.didReceiveCode(viewModel: nil)
+        }
+    }
+
+    private func provideQrFormatViewModel() {
+        guard let preferredFormats = model?.preferredFormats, let qrFormat else {
+            view?.didReceiveQrFormat(viewModel: .none)
             return
         }
 
-        view?.didReceiveCode(viewModel: viewModel)
+        let canSwitchFormats = preferredFormats.contains(.extrinsicWithProof) &&
+            preferredFormats.contains(.extrinsicWithoutProof)
+
+        if canSwitchFormats {
+            switch qrFormat {
+            case .extrinsicWithProof:
+                view?.didReceiveQrFormat(viewModel: .new)
+            case .extrinsicWithoutProof:
+                view?.didReceiveQrFormat(viewModel: .legacy)
+            case .rawBytes:
+                view?.didReceiveQrFormat(viewModel: .none)
+            }
+        } else {
+            view?.didReceiveQrFormat(viewModel: .none)
+        }
     }
 
     private func updateExpirationViewModel() {
-        guard transactionCode != nil else {
+        guard let timer else {
+            view?.didReceiveExpiration(viewModel: nil)
             return
         }
 
@@ -80,62 +106,69 @@ final class ParitySignerTxQrPresenter {
         }
     }
 
-    private func applyNewExpirationInterval(after oldExpirationInterval: TimeInterval?) {
-        let remainedTimeInterval = timer.remainedInterval
-
+    private func applyNewExpirationInterval() {
         clearTimer()
 
-        guard let transactionCode = transactionCode else {
+        guard let expirationTime = model?.txExpirationTime else {
             return
         }
 
-        if
-            let oldExpirationInterval = oldExpirationInterval, oldExpirationInterval >= remainedTimeInterval {
-            let elapsedTime = oldExpirationInterval - remainedTimeInterval
-            let newTimerInterval = max(transactionCode.expirationTime - elapsedTime, 0.0)
-
-            setupTimer(for: newTimerInterval)
-        } else {
-            setupTimer(for: transactionCode.expirationTime)
-        }
+        setupTimer(for: expirationTime)
     }
 
     private func clearTimer() {
-        timer.removeObserver(self)
-        timer.stop()
+        timer?.removeObserver(self)
+        timer?.stop()
+        timer = nil
     }
 
     private func setupTimer(for timeInterval: TimeInterval) {
+        let timer = CountdownTimerMediator()
+        self.timer = timer
+
         timer.addObserver(self)
         timer.start(with: timeInterval)
     }
 
     private func presentQrExpiredAlert() {
-        guard let view = view else {
+        guard let expirationTime = model?.txExpirationTime, let view else {
             return
         }
-
-        let expirationTimeInterval = transactionCode?.expirationTime.minutesFromSeconds
 
         wireframe.presentTransactionExpired(
             on: view,
             typeName: type.getName(for: selectedLocale),
-            validInMinutes: expirationTimeInterval,
+            validInMinutes: expirationTime.minutesFromSeconds,
             locale: selectedLocale
         ) { [weak self] in
             self?.wireframe.close(view: self?.view)
             self?.completion(.failure(HardwareSigningError.signingCancelled))
         }
     }
+
+    private func refreshQrCode() {
+        guard let qrFormat, let qrSize else {
+            return
+        }
+
+        transactionCode = nil
+        provideCodeViewModel()
+
+        interactor.generateQr(with: qrFormat, qrSize: qrSize)
+    }
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
     func setup(qrSize: CGSize) {
-        interactor.setup(qrSize: qrSize)
+        self.qrSize = qrSize
+
+        provideQrFormatViewModel()
+
+        interactor.setup()
     }
 
     func activateAddressDetails() {
-        guard let wallet = wallet, let view = view else {
+        guard let wallet = model?.chainWallet, let view else {
             return
         }
 
@@ -159,17 +192,29 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         )
     }
 
+    func toggleExtrinsicFormat() {
+        switch qrFormat {
+        case .extrinsicWithProof:
+            qrFormat = .extrinsicWithoutProof
+            refreshQrCode()
+        case .extrinsicWithoutProof:
+            qrFormat = .extrinsicWithProof
+            refreshQrCode()
+        case nil, .rawBytes:
+            break
+        }
+    }
+
     func proceed() {
         guard
             transactionCode != nil,
-            let accountId = try? wallet?.walletDisplayAddress.address.toAccountId() else {
+            let accountId = try? model?.chainWallet.walletDisplayAddress.address.toAccountId() else {
             return
         }
 
         wireframe.proceed(
             from: view,
             accountId: accountId,
-            type: type,
             timer: timer,
             completion: completion
         )
@@ -183,18 +228,21 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
-    func didReceive(chainWallet: ChainWalletDisplayAddress) {
-        wallet = chainWallet
+    func didCompleteSetup(model: ParitySignerTxQrSetupModel) {
+        self.model = model
+        qrFormat = model.preferredFormats.first
 
         provideWalletViewModel()
+        provideQrFormatViewModel()
+        applyNewExpirationInterval()
+
+        refreshQrCode()
     }
 
     func didReceive(transactionCode: TransactionDisplayCode) {
-        let currentExpirationInterval = self.transactionCode?.expirationTime
         self.transactionCode = transactionCode
 
         provideCodeViewModel()
-        applyNewExpirationInterval(after: currentExpirationInterval)
     }
 
     func didReceive(error: Error) {
@@ -214,7 +262,7 @@ extension ParitySignerTxQrPresenter: CountdownTimerDelegate {
     func didStop(with _: TimeInterval) {
         updateExpirationViewModel()
 
-        if timer.remainedInterval < TimeInterval.leastNonzeroMagnitude, transactionCode?.expirationTime != nil {
+        if let timer, timer.remainedInterval < TimeInterval.leastNonzeroMagnitude {
             presentQrExpiredAlert()
         }
     }

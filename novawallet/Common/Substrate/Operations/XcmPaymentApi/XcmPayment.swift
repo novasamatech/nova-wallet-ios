@@ -4,5 +4,5 @@ import SubstrateSdk
 enum XcmPayment {
     static let apiName = "XcmPaymentApi"
 
-    typealias WeightResult = Substrate.Result<BlockchainWeight.WeightV2, JSON>
+    typealias WeightResult = Substrate.Result<Substrate.WeightV2, JSON>
 }

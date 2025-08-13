@@ -7,7 +7,9 @@ final class GetTokenOptionsInteractor {
     let assetModelObservable: AssetListModelObservable
     let destinationChainAsset: ChainAsset
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
-    let purchaseProvider: PurchaseProviderProtocol
+    let featureChecker: FeatureSupportCheckerProtocol
+    let rampProvider: RampProviderProtocol
+    let rampType: RampActionType = .onRamp
     let logger: LoggerProtocol
 
     private var xcmTransfers: XcmTransfers?
@@ -17,14 +19,16 @@ final class GetTokenOptionsInteractor {
         destinationChainAsset: ChainAsset,
         assetModelObservable: AssetListModelObservable,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
-        purchaseProvider: PurchaseProviderProtocol,
+        featureChecker: FeatureSupportCheckerProtocol,
+        rampProvider: RampProviderProtocol,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.destinationChainAsset = destinationChainAsset
         self.assetModelObservable = assetModelObservable
         self.xcmTransfersSyncService = xcmTransfersSyncService
-        self.purchaseProvider = purchaseProvider
+        self.featureChecker = featureChecker
+        self.rampProvider = rampProvider
         self.logger = logger
     }
 
@@ -41,30 +45,37 @@ final class GetTokenOptionsInteractor {
         }
 
         let availableXcmOrigins = determineAvailableXcmOrigins()
-        let purchaseActions = purchaseProvider.buildPurchaseActions(
+        let onRampActions = rampProvider.buildRampActions(
             for: destinationChainAsset,
             accountId: selectedAccount.chainAccount.accountId
-        )
+        ).filter { $0.type == rampType }
 
         let receiveAvailable = TokenOperation.checkReceiveOperationAvailable(
             walletType: selectedWallet.type,
             chainAsset: destinationChainAsset
         ).available
 
-        let buyAvailable = TokenOperation.checkBuyOperationAvailable(
-            purchaseActions: purchaseActions,
-            walletType: selectedWallet.type,
+        featureChecker.checkRampSupport(
+            wallet: selectedWallet,
+            rampActions: onRampActions,
+            rampType: rampType,
             chainAsset: destinationChainAsset
-        ).available
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
 
-        let model = GetTokenOptionsModel(
-            availableXcmOrigins: availableXcmOrigins,
-            xcmTransfers: xcmTransfers,
-            receiveAccount: receiveAvailable ? selectedAccount : nil,
-            buyOptions: buyAvailable ? purchaseActions : []
-        )
+            let buyAvailable = result.isAvailable
 
-        presenter?.didReceive(model: model)
+            let model = GetTokenOptionsModel(
+                availableXcmOrigins: availableXcmOrigins,
+                xcmTransfers: xcmTransfers,
+                receiveAccount: receiveAvailable ? selectedAccount : nil,
+                buyOptions: buyAvailable ? onRampActions : []
+            )
+
+            presenter?.didReceive(model: model)
+        }
     }
 
     private func determineAvailableXcmOrigins() -> [ChainAsset] {

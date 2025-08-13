@@ -111,7 +111,7 @@ final class CloudBackupSecretsImporter {
         isEthereumBased: Bool
     ) throws {
         switch wallet.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
             return try saveRegularDerivationPath(
                 derivationPath,
                 wallet: wallet,
@@ -194,7 +194,9 @@ final class CloudBackupSecretsImporter {
                 try saveSeed(seedHex, wallet: wallet, accountId: nil, isEthereumBased: true)
             }
 
-            try savePrivateKey(ethereum.keypair, wallet: wallet, accountId: nil, isEthereumBased: true)
+            if let keypair = ethereum.keypair {
+                try savePrivateKey(keypair, wallet: wallet, accountId: nil, isEthereumBased: true)
+            }
         }
     }
 

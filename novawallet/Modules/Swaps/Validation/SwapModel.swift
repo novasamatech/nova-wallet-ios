@@ -53,6 +53,7 @@ struct SwapModel {
 
     struct CannotReceiveDueNoProviders {
         let minBalance: Decimal
+        let utilityAsset: ChainAsset
     }
 
     enum CannotReceiveReason {
@@ -89,9 +90,15 @@ struct SwapModel {
     let quote: AssetExchangeQuote?
     let slippage: BigRational
     let accountInfo: AccountInfo?
+    let destAccountInfo: AccountInfo?
+    let destUtilityAssetExistence: AssetBalanceExistence?
 
     var utilityChainAsset: ChainAsset? {
         feeChainAsset.chain.utilityChainAsset()
+    }
+
+    var destUtilityChainAsset: ChainAsset? {
+        receiveChainAsset.chain.utilityChainAsset()
     }
 
     var spendingAmountInPlank: BigUInt? {
@@ -279,6 +286,10 @@ struct SwapModel {
         return totalInNativeAsset.subtractOrZero(feeInNativeAsset) < minBalance
     }
 
+    var hasAccountProviderOnDestChain: Bool {
+        destAccountInfo?.hasProviders ?? false
+    }
+
     var payTokenProviderWillBeKilled: Bool {
         let minBalance = payAssetExistense?.minBalance ?? 0
 
@@ -299,7 +310,15 @@ struct SwapModel {
     }
 
     func checkReceiveBalanceSelfSufOrHasProvider() -> CannotReceiveReason? {
-        guard payChainAsset.chain.chainId == receiveChainAsset.chain.chainId, let utilityChainAsset else {
+        if payChainAsset.chain.chainId == receiveChainAsset.chain.chainId {
+            checkReceiveBalanceSelfSufOrHasProviderOnChain()
+        } else {
+            checkReceiveBalanceSelfSufOrHasProviderOnCrosschain()
+        }
+    }
+
+    func checkReceiveBalanceSelfSufOrHasProviderOnChain() -> CannotReceiveReason? {
+        guard let utilityChainAsset else {
             return nil
         }
 
@@ -309,11 +328,35 @@ struct SwapModel {
             let utilityMinBalance = utilityAssetExistense?.minBalance ?? 0
             let precision = utilityChainAsset.asset.precision
             return .noProvider(
-                .init(minBalance: utilityMinBalance.decimal(precision: precision))
+                .init(
+                    minBalance: utilityMinBalance.decimal(precision: precision),
+                    utilityAsset: utilityChainAsset
+                )
             )
         } else {
             return nil
         }
+    }
+
+    func checkReceiveBalanceSelfSufOrHasProviderOnCrosschain() -> CannotReceiveReason? {
+        guard let destUtilityChainAsset else {
+            return nil
+        }
+
+        let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
+
+        guard !isSelfSufficient, !hasAccountProviderOnDestChain else {
+            return nil
+        }
+
+        let utilityMinBalance = destUtilityAssetExistence?.minBalance ?? 0
+        let precision = destUtilityChainAsset.asset.precision
+        return .noProvider(
+            .init(
+                minBalance: utilityMinBalance.decimal(precision: precision),
+                utilityAsset: destUtilityChainAsset
+            )
+        )
     }
 
     func checkCanReceive() -> CannotReceiveReason? {

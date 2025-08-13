@@ -66,7 +66,7 @@ struct SwapConfirmViewFactory {
 
         presenter.view = view
         dataValidatingFactory.view = view
-        interactor.basePresenter = presenter
+        interactor.presenter = presenter
 
         return view
     }

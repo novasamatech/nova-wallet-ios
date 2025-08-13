@@ -12,11 +12,11 @@ final class MercuryoCardResourceProvider {
     ) -> [URLQueryItem] {
         let widgetIdItem = URLQueryItem(
             name: "widget_id",
-            value: MercuryoCardApi.widgetId
+            value: MercuryoApi.widgetId
         )
         let typeItem = URLQueryItem(
             name: "type",
-            value: MercuryoCardApi.type
+            value: MercuryoApi.type
         )
         let currencyItem = URLQueryItem(
             name: "currencies",
@@ -24,15 +24,15 @@ final class MercuryoCardResourceProvider {
         )
         let themeItem = URLQueryItem(
             name: "theme",
-            value: MercuryoCardApi.theme
+            value: MercuryoApi.theme
         )
         let showSpendCardDetails = URLQueryItem(
             name: "show_spend_card_details",
-            value: MercuryoCardApi.showSpendCardDetails
+            value: MercuryoApi.showSpendCardDetails
         )
         let hideRefundAddressItem = URLQueryItem(
             name: "hide_refund_address",
-            value: MercuryoCardApi.hideRefundAddress
+            value: MercuryoApi.hideRefundAddress
         )
         let refundAddressItem = URLQueryItem(
             name: "refund_address",
@@ -61,7 +61,7 @@ extension MercuryoCardResourceProvider: PayCardResourceProviding {
         )
 
         var urlComponents = URLComponents(
-            url: MercuryoCardApi.widgetUrl,
+            url: MercuryoApi.widgetUrl,
             resolvingAgainstBaseURL: false
         )
 

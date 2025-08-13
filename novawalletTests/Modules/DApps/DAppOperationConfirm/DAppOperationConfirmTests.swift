@@ -58,7 +58,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chainId = try Data(hexString: extrinsicRequest.genesisHash).toHex()
@@ -99,7 +100,7 @@ class DAppOperationConfirmTests: XCTestCase {
             when(stub).callMethod(any(), params: any(), options: any(), completion: any())
                 .then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
 
-                    let fee = RuntimeDispatchInfo(fee: "1", weight: 32)
+                    let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
 
                     DispatchQueue.global().async {
                         completion?(.success(fee))
@@ -150,6 +151,7 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory, 
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
@@ -165,7 +167,7 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
+            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFactory,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
@@ -242,7 +244,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chain = ChainModelGenerator.generateChain(
@@ -287,7 +290,7 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
+            viewModelFactory: DAppOperationBytesConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFacade,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared

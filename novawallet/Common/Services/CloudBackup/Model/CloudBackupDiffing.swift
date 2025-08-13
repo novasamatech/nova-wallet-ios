@@ -14,6 +14,10 @@ enum CloudBackupChange: Equatable, Hashable {
         remote: MetaAccountModel,
         changes: Set<CloudBackupChainAccountChange>
     )
+    case updatedMainAccounts(
+        local: MetaAccountModel,
+        remote: MetaAccountModel
+    )
     case updatedMetadata(local: MetaAccountModel, remote: MetaAccountModel)
 }
 
@@ -55,6 +59,28 @@ final class CloudBackupDiffCalculator {
             }
 
             accum.insert(.delete(local: keyValue.value))
+        }
+    }
+
+    private func findAllMainAccountsUpdated(
+        for localStore: LocalStore,
+        remoteStore: RemoteStore
+    ) throws -> Set<CloudBackupChange> {
+        try localStore.reduce(into: Set<CloudBackupChange>()) { accum, keyValue in
+            guard
+                let remoteInfo = remoteStore[keyValue.key],
+                let remoteWallet = try converter.convertFromPublicInfo(models: [remoteInfo]).first else {
+                return
+            }
+
+            let isSubstrateChanged = keyValue.value.substrateAccountId != remoteWallet.substrateAccountId
+            let isEthereumChanged = keyValue.value.ethereumAddress != remoteWallet.ethereumAddress
+
+            guard isSubstrateChanged || isEthereumChanged else {
+                return
+            }
+
+            accum.insert(.updatedMainAccounts(local: keyValue.value, remote: remoteWallet))
         }
     }
 
@@ -147,9 +173,14 @@ extension CloudBackupDiffCalculator: CloudBackupDiffCalculating {
 
         let newChanges = try findAllNew(for: localStore, remoteStore: remoteStore)
         let deleteChanges = findAllDeleted(for: localStore, remoteStore: remoteStore)
+        let mainAccountsUpdateChanges = try findAllMainAccountsUpdated(for: localStore, remoteStore: remoteStore)
         let chainAccountsUpdateChanges = try findAllChainAccountChanged(for: localStore, remoteStore: remoteStore)
         let metadataUpdateChanges = try findAllMetadataUpdated(for: localStore, remoteStore: remoteStore)
 
-        return newChanges.union(deleteChanges).union(chainAccountsUpdateChanges).union(metadataUpdateChanges)
+        return newChanges
+            .union(deleteChanges)
+            .union(mainAccountsUpdateChanges)
+            .union(chainAccountsUpdateChanges)
+            .union(metadataUpdateChanges)
     }
 }

@@ -9,7 +9,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let swapState: SwapTokensFlowStateProtocol
-    let purchaseProvider: PurchaseProviderProtocol
+    let rampProvider: RampProviderProtocol
     let assetMapper: CustomAssetMapper
     let operationQueue: OperationQueue
 
@@ -29,7 +29,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     init(
         selectedMetaAccount: MetaAccountModel,
         chainAsset: ChainAsset,
-        purchaseProvider: PurchaseProviderProtocol,
+        rampProvider: RampProviderProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
@@ -42,7 +42,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
-        self.purchaseProvider = purchaseProvider
+        self.rampProvider = rampProvider
         self.swapState = swapState
         self.operationQueue = operationQueue
         assetMapper = CustomAssetMapper(
@@ -55,8 +55,12 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     deinit {
         swapsCall.cancel()
     }
+}
 
-    private func subscribePrice() {
+// MARK: Private
+
+private extension AssetDetailsInteractor {
+    func subscribePrice() {
         if let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
@@ -64,7 +68,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func fetchSwapsAndProvideOperations(for chainAsset: ChainAsset) {
+    func fetchSwapsAndProvideOperations(for chainAsset: ChainAsset) {
         swapsCall.cancel()
 
         guard let assetExchangeService else {
@@ -102,7 +106,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func setupSwapService() {
+    func setupSwapService() {
         assetExchangeService = swapState.setupAssetExchangeService()
 
         assetExchangeService?.subscribeUpdates(
@@ -117,7 +121,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func setAvailableOperations(hasSwaps: Bool) {
+    func setAvailableOperations(hasSwaps: Bool) {
         guard let accountId = accountId else {
             return
         }
@@ -127,13 +131,16 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
             operations.insert(.send)
         }
 
-        let actions: [PurchaseAction] = purchaseProvider.buildPurchaseActions(
+        let rampActions: [RampAction] = rampProvider.buildRampActions(
             for: chainAsset,
             accountId: accountId
         )
 
-        if !actions.isEmpty {
+        if rampActions.contains(where: { $0.type == .onRamp }) {
             operations.insert(.buy)
+        }
+        if rampActions.contains(where: { $0.type == .offRamp }) {
+            operations.insert(.sell)
         }
 
         operations.insert(.receive)
@@ -142,10 +149,12 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
             operations.insert(.swap)
         }
 
-        presenter?.didReceive(purchaseActions: actions)
+        presenter?.didReceive(rampActions: rampActions)
         presenter?.didReceive(availableOperations: operations)
     }
 }
+
+// MARK: AssetDetailsInteractorInputProtocol
 
 extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
     func setup() {
@@ -187,6 +196,8 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         setupSwapService()
     }
 }
+
+// MARK: WalletLocalStorageSubscriber
 
 extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
@@ -253,6 +264,8 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
     }
 }
 
+// MARK: PriceLocalStorageSubscriber
+
 extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
@@ -264,6 +277,8 @@ extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscri
     }
 }
 
+// MARK: SelectedCurrencyDepending
+
 extension AssetDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil, let priceId = chainAsset.asset.priceId {
@@ -271,6 +286,8 @@ extension AssetDetailsInteractor: SelectedCurrencyDepending {
         }
     }
 }
+
+// MARK: ExternalAssetBalanceSubscriber
 
 extension AssetDetailsInteractor: ExternalAssetBalanceSubscriber, ExternalAssetBalanceSubscriptionHandler {
     func handleExternalAssetBalances(

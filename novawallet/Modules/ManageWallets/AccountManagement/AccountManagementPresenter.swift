@@ -12,13 +12,14 @@ final class AccountManagementPresenter {
     var wireframe: AccountManagementWireframeProtocol!
     var interactor: AccountManagementInteractorInputProtocol!
 
-    let viewModelFactory: ChainAccountViewModelFactoryProtocol
+    let viewModelFactory: AccountManagementViewModelFactoryProtocol
+    let chainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
     let walletId: String
     let logger: LoggerProtocol?
 
     private var wallet: MetaAccountModel?
-    private var proxyWallet: MetaAccountModel?
+    private var delegateWallet: MetaAccountModel?
 
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
@@ -26,50 +27,60 @@ final class AccountManagementPresenter {
     private var cloudBackupSyncState: CloudBackupSyncState?
 
     init(
-        viewModelFactory: ChainAccountViewModelFactoryProtocol,
+        viewModelFactory: AccountManagementViewModelFactoryProtocol,
+        chainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol,
         walletId: String,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.viewModelFactory = viewModelFactory
+        self.chainAccountViewModelFactory = chainAccountViewModelFactory
         self.walletId = walletId
         self.applicationConfig = applicationConfig
         self.logger = logger
     }
+}
 
+// MARK: - Private
+
+private extension AccountManagementPresenter {
     // MARK: - Updating functions
 
-    private func updateWalletType() {
-        guard let wallet = wallet else {
-            return
-        }
+    func provideWalletViewModel() {
+        guard let wallet else { return }
 
-        let walletType = WalletsListSectionViewModel.SectionType(walletType: wallet.type)
-        view?.set(walletType: walletType)
-    }
-
-    private func updateProxyWallet() {
-        guard let wallet = wallet,
-              let proxyWallet = proxyWallet else {
-            return
-        }
-        let proxyViewModel = viewModelFactory.createProxyViewModel(
-            proxiedWallet: wallet,
-            proxyWallet: proxyWallet,
+        let params = AccountManagementViewModelParams(
+            wallet: wallet,
+            delegateWallet: delegateWallet,
+            chains: chains,
+            signatoryInfoAction: { [weak self] address in
+                self?.showSignatoryInfo(address: address)
+            },
+            legacyLedgerAction: { [weak self] in
+                self?.showLegacyLedgerFindMore()
+            },
             locale: selectedLocale
         )
-        view?.setProxy(viewModel: proxyViewModel)
+
+        let viewModel = viewModelFactory.createViewModel(params: params)
+
+        view?.didReceive(walletViewModel: viewModel)
     }
 
-    private func updateChainViewModels() {
-        guard let wallet = wallet else { return }
+    func provideChainViewModels() {
+        guard let wallet else { return }
 
-        viewModel = viewModelFactory.createViewModel(from: wallet, chains: chains, for: selectedLocale)
+        viewModel = chainAccountViewModelFactory.createViewModel(
+            from: wallet,
+            chains: chains,
+            for: selectedLocale
+        )
+
         view?.reload()
     }
 
-    private func updateNameViewModel() {
-        guard let wallet = wallet else { return }
+    func provideNameViewModel() {
+        guard let wallet else { return }
 
         let processor = ByteLengthProcessor.username
         let processedUsername = processor.process(text: wallet.name)
@@ -83,26 +94,10 @@ final class AccountManagementPresenter {
         let nameViewModel = InputViewModel(inputHandler: inputHandling)
         nameViewModel.inputHandler.addObserver(self)
 
-        view?.set(nameViewModel: nameViewModel)
+        view?.didReceive(nameViewModel: nameViewModel)
     }
 
-    private func checkLedgerWarning() {
-        guard case .ledger = wallet?.type else {
-            return
-        }
-
-        if chains.contains(where: { $0.value.supportsGenericLedgerApp }) {
-            let viewModel = LedgerMigrationBannerView.ViewModel.createLedgerMigrationDownload(
-                for: selectedLocale
-            ) { [weak self] in
-                self?.showLegacyLedgerFindMore()
-            }
-
-            view?.setLedger(migrationViewModel: viewModel)
-        }
-    }
-
-    private func showLegacyLedgerFindMore() {
+    func showLegacyLedgerFindMore() {
         guard let view else {
             return
         }
@@ -114,10 +109,33 @@ final class AccountManagementPresenter {
         )
     }
 
+    func showSignatoryInfo(address: String) {
+        guard
+            let view,
+            let multisigAccount = wallet?.multisigAccount
+        else { return }
+
+        let chain: ChainModel? = switch multisigAccount {
+        case let .singleChain(chainAccount):
+            chains[chainAccount.chainId]
+        case .universal:
+            chains[KnowChainId.polkadot]
+        }
+
+        guard let chain else { return }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
+
     // MARK: Common bottom sheet
 
-    private func displayAddAddress(for chain: ChainModel, walletType: MetaAccountModelType) {
-        guard let view = view else {
+    func displayAddAddress(for chain: ChainModel, walletType: MetaAccountModelType) {
+        guard let view else {
             return
         }
 
@@ -127,8 +145,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: nil,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -137,15 +154,15 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet display for watch only type
 
-    private func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
+    func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
         displayAddAddress(for: chain, walletType: .watchOnly)
     }
 
-    private func displayWatchOnlyExistingAddressActions(
+    func displayWatchOnlyExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else {
+        guard let view, let address = viewModel.address else {
             return
         }
 
@@ -163,8 +180,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: viewModel.address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -173,8 +189,8 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet display for secrets type
 
-    private func displaySecretsChangeActions(with title: LocalizableResource<String>, chain: ChainModel) {
-        guard let view = view else {
+    func displaySecretsChangeActions(with title: LocalizableResource<String>, chain: ChainModel) {
+        guard let view else {
             return
         }
 
@@ -210,7 +226,7 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func displaySecretsReplaceActions(for chain: ChainModel) {
+    func displaySecretsReplaceActions(for chain: ChainModel) {
         let title = LocalizableResource { locale in
             R.string.localizable.accountActionsChangeSheetTitle(
                 chain.name,
@@ -221,7 +237,7 @@ final class AccountManagementPresenter {
         displaySecretsChangeActions(with: title, chain: chain)
     }
 
-    private func displaySecretsNoAddressActions(for chain: ChainModel) {
+    func displaySecretsNoAddressActions(for chain: ChainModel) {
         let title = LocalizableResource { locale in
             R.string.localizable.accountNotFoundActionsTitle(
                 chain.name,
@@ -232,11 +248,11 @@ final class AccountManagementPresenter {
         displaySecretsChangeActions(with: title, chain: chain)
     }
 
-    private func displaySecretsExistingAddressActions(
+    func displaySecretsExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else { return }
+        guard let view, let address = viewModel.address else { return }
 
         var actions: [ChainAddressDetailsAction] = []
 
@@ -270,15 +286,14 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func displayProxyAddressActions(
+    func displayDelegateAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
@@ -288,11 +303,11 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func displayExistingHardwareAddressActions(
+    func displayExistingHardwareAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else {
+        guard let view, let address = viewModel.address else {
             return
         }
 
@@ -307,15 +322,14 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func presentCloudRemindIfNeededBefore(closure: @escaping () -> Void) {
+    func presentCloudRemindIfNeededBefore(closure: @escaping () -> Void) {
         if let cloudBackupSyncState, cloudBackupSyncState.canAutoSync {
             wireframe.showCloudBackupRemind(from: view) {
                 closure()
@@ -327,7 +341,7 @@ final class AccountManagementPresenter {
 
     // MARK: - Actions
 
-    private func activateCopyAddress(
+    func activateCopyAddress(
         _ address: String,
         chain: ChainModel
     ) {
@@ -339,7 +353,7 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func activateChangeAccount(for chainModel: ChainModel, walletType: MetaAccountModelType) {
+    func activateChangeAccount(for chainModel: ChainModel, walletType: MetaAccountModelType) {
         switch walletType {
         case .secrets:
             displaySecretsReplaceActions(for: chainModel)
@@ -353,16 +367,14 @@ final class AccountManagementPresenter {
                     )
                 }
             }
-        case .paritySigner, .polkadotVault, .ledger, .genericLedger:
-            // change account not supported for Parity Signer and Ledger Wallets
+        case .paritySigner, .polkadotVault, .ledger, .genericLedger, .multisig:
+            // change account not supported for Parity Signer, Ledger and Multisig wallets
             break
         }
     }
 
-    private func activateCreateAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
+    func activateCreateAccount(for chainModel: ChainModel) {
+        guard let view, let wallet else { return }
 
         if let cloudBackupSyncState, cloudBackupSyncState.canAutoSync {
             wireframe.showCloudBackupRemind(from: view) { [weak self] in
@@ -378,10 +390,8 @@ final class AccountManagementPresenter {
         }
     }
 
-    private func activateImportAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
+    func activateImportAccount(for chainModel: ChainModel) {
+        guard let view, let wallet else { return }
 
         presentCloudRemindIfNeededBefore { [weak self] in
             self?.wireframe.showImportAccount(
@@ -395,7 +405,7 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet items creation
 
-    private func createExplorerActions(for chain: ChainModel, address: AccountAddress) -> [ChainAddressDetailsAction] {
+    func createExplorerActions(for chain: ChainModel, address: AccountAddress) -> [ChainAddressDetailsAction] {
         chain.explorers?.compactMap { explorer in
             guard
                 let urlTemplate = explorer.account,
@@ -423,7 +433,7 @@ final class AccountManagementPresenter {
         } ?? []
     }
 
-    private func createCopyAction(
+    func createCopyAction(
         for address: String,
         chain: ChainModel
     ) -> ChainAddressDetailsAction {
@@ -440,7 +450,7 @@ final class AccountManagementPresenter {
         }
     }
 
-    private func createAccountChangeAction(
+    func createAccountChangeAction(
         for chain: ChainModel,
         walletType: MetaAccountModelType
     ) -> ChainAddressDetailsAction {
@@ -457,14 +467,14 @@ final class AccountManagementPresenter {
         }
     }
 
-    private func createAccountAddAction(
+    func createAccountAddAction(
         for chain: ChainModel,
         walletType: MetaAccountModelType
     ) -> ChainAddressDetailsAction {
         let handlingClosure: () -> Void
 
         switch walletType {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied, .multisig:
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
@@ -522,6 +532,10 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         viewModel[section].section.title
     }
 
+    func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>? {
+        viewModel[section].section.action
+    }
+
     func activateDetails(at indexPath: IndexPath) {
         selectItem(at: indexPath)
     }
@@ -547,8 +561,8 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             } else {
                 displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
-        case .proxied:
-            displayProxyAddressActions(for: chainModel, viewModel: chainViewModel)
+        case .proxied, .multisig:
+            displayDelegateAddressActions(for: chainModel, viewModel: chainViewModel)
         case .paritySigner, .polkadotVault:
             if chainViewModel.address != nil {
                 displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
@@ -564,6 +578,36 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         }
     }
 
+    func activateActionInSection(_: Int) {
+        guard let wallet else {
+            return
+        }
+
+        // generic ledger currently the only case for the sections with action
+
+        switch wallet.type {
+        case .genericLedger:
+            presentCloudRemindIfNeededBefore { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                wireframe.showAddGenericLedgerEvmAccounts(
+                    from: view,
+                    wallet: wallet
+                )
+            }
+        case .secrets,
+             .watchOnly,
+             .paritySigner,
+             .ledger,
+             .polkadotVault,
+             .proxied,
+             .multisig:
+            break
+        }
+    }
+
     func finalizeName() {
         interactor.flushPendingName()
     }
@@ -575,34 +619,32 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>) {
         switch result {
         case let .success(wallet):
-            guard let wallet = wallet else {
+            guard let wallet else {
                 logger?.error("Did find no wallets with Id: \(walletId)")
                 return
             }
 
             self.wallet = wallet
-
-            updateWalletType()
-            updateChainViewModels()
-            updateNameViewModel()
-            checkLedgerWarning()
-
+            provideNameViewModel()
+            provideChainViewModels()
+            provideWalletViewModel()
         case let .failure(error):
             logger?.error("Did receive wallet fetch error: \(error)")
         }
     }
 
-    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>) {
+    func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>) {
         switch result {
-        case let .success(proxyWallet):
-            guard let proxyWallet = proxyWallet else {
-                logger?.error("Didn't find proxy wallet for proxied wallet with id: \(walletId)")
+        case let .success(delegateWallet):
+            guard let delegateWallet else {
+                logger?.error("Didn't find delegate wallet for delegated wallet with id: \(walletId)")
                 return
             }
-            self.proxyWallet = proxyWallet
-            updateProxyWallet()
+
+            self.delegateWallet = delegateWallet
+            provideWalletViewModel()
         case let .failure(error):
-            logger?.error("Did receive proxy wallet fetch error: \(error)")
+            logger?.error("Did receive delegate wallet fetch error: \(error)")
         }
     }
 
@@ -610,9 +652,8 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
         switch result {
         case let .success(chains):
             self.chains = chains
-            updateChainViewModels()
-            checkLedgerWarning()
-
+            provideChainViewModels()
+            provideWalletViewModel()
         case let .failure(error):
             logger?.error("Did receive chains fetch error: \(error)")
         }
@@ -698,7 +739,8 @@ extension AccountManagementPresenter: InputHandlingObserver {
 extension AccountManagementPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            updateChainViewModels()
+            provideWalletViewModel()
+            provideChainViewModels()
         }
     }
 }

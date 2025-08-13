@@ -22,8 +22,9 @@ struct AssetModel: Equatable, Codable, Hashable {
     let priceId: PriceId?
     let stakings: [StakingType]?
     let type: String?
-    let typeExtras: JSON?
+    let typeExtras: AssetTypeExtras?
     let buyProviders: JSON?
+    let sellProviders: JSON?
 
     // local properties
     let enabled: Bool
@@ -40,8 +41,9 @@ struct AssetModel: Equatable, Codable, Hashable {
         priceId: PriceId?,
         stakings: [StakingType]?,
         type: String?,
-        typeExtras: JSON?,
+        typeExtras: AssetTypeExtras?,
         buyProviders: JSON?,
+        sellProviders: JSON?,
         enabled: Bool,
         source: Source
     ) {
@@ -55,6 +57,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.type = type
         self.typeExtras = typeExtras
         self.buyProviders = buyProviders
+        self.sellProviders = sellProviders
         self.enabled = enabled
         self.source = source
     }
@@ -83,6 +86,7 @@ extension AssetModel {
             type: type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,
+            sellProviders: sellProviders,
             enabled: enabled,
             source: source
         )

@@ -205,8 +205,9 @@ final class AccountCreationHelper {
             chainId: app.chainId,
             accountId: accountId,
             publicKey: accountId,
-            cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType.rawValue,
-            proxy: nil
+            cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType.rawValue,
+            proxy: nil,
+            multisig: nil
         )
         
         let metaAccount = MetaAccountModel(
@@ -218,7 +219,8 @@ final class AccountCreationHelper {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [chainAccount],
-            type: .ledger
+            type: .ledger,
+            multisig: nil
         )
         
         let derivPathTag = KeystoreTagV2.substrateDerivationTagForMetaId(
@@ -231,27 +233,47 @@ final class AccountCreationHelper {
         try selectMetaAccount(metaAccount, settings: settings)
     }
     
-    static func createSubstrateGenericLedgerWallet(
+    static func createGenericLedgerWallet(
         keychain: KeystoreProtocol,
         settings: SelectedWalletSettings,
+        includesEvm: Bool,
         username: String = "username",
         accountIndex: UInt32 = 0
     ) throws {
         let accountId = AccountId.random(of: 32)!
         
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
-            coin: GenericLedgerSubstrateApplication.coin,
+            coin: GenericLedgerPolkadotApplication.coin,
             accountIndex: accountIndex
         ).build()
         
         let factory = GenericLedgerWalletOperationFactory()
         
-        let operation = factory.createSaveOperation(
-            for: .init(
-                accountId: accountId,
-                publicKey: accountId,
-                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
+        let substrate = PolkadotLedgerWalletModel.Substrate(
+            accountId: accountId,
+            publicKey: accountId,
+            cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
+            derivationPath: derivationPath
+        )
+        
+        let evm: PolkadotLedgerWalletModel.EVM?
+        
+        if includesEvm {
+            let evmPublicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
+            let evmAddress = try evmPublicKey.ethereumAddressFromPublicKey()
+            evm = PolkadotLedgerWalletModel.EVM(
+                address: evmAddress,
+                publicKey: evmPublicKey,
                 derivationPath: derivationPath
+            )
+        } else {
+            evm = nil
+        }
+        
+        let operation = factory.createSaveOperation(
+            for: PolkadotLedgerWalletModel(
+                substrate: substrate,
+                evm: evm
             ),
             name: username,
             keystore: keychain,
@@ -263,6 +285,69 @@ final class AccountCreationHelper {
         operationQueue.addOperations([operation], waitUntilFinished: true)
         
         _ = try operation.extractNoCancellableResultData()
+    }
+    
+    static func addGenericLedgerEvmAccountsInWallet(
+        wallet: MetaAccountModel,
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        accountIndex: UInt32 = 0
+    ) throws {
+        let factory = GenericLedgerWalletOperationFactory()
+        
+        let publicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
+        
+        let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
+            coin: GenericLedgerPolkadotApplication.coin,
+            accountIndex: accountIndex
+        ).build()
+        
+        let ledgerAccount = try LedgerEvmAccount(ledgerData: publicKey)
+        
+        let response = LedgerEvmAccountResponse(account: ledgerAccount, derivationPath: derivationPath)
+        
+        let wrapper = factory.createUpdateEvmWrapper(
+            for: response,
+            wallet: wallet,
+            keystore: keychain,
+            repository: repository
+        )
+        
+        let operationQueue = OperationQueue()
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        _ = try wrapper.targetOperation.extractNoCancellableResultData()
+        
+        if wallet.metaId == settings.value?.metaId {
+            settings.setup()
+        }
+    }
+    
+    static func createWatchOnlyMetaAccount(
+        from substrateAddress: AccountAddress,
+        ethereumAddress: AccountAddress?,
+        settings: SelectedWalletSettings,
+        username: String = "username"
+    ) throws {
+        let request = WatchOnlyWallet(
+            name: username,
+            substrateAddress: substrateAddress,
+            evmAddress: ethereumAddress
+        )
+        
+        let factory = WatchOnlyWalletOperationFactory()
+        
+        let operation = factory.newWatchOnlyWalletOperation(for: request)
+        
+        let operationQueue = OperationQueue()
+        
+        operationQueue.addOperation(operation)
+        
+        let wallet = try operation.extractNoCancellableResultData()
+        
+        try selectMetaAccount(wallet, settings: settings)
     }
     
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {

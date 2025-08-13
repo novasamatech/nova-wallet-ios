@@ -40,7 +40,7 @@ struct PayCardViewFactory {
             payCardResourceProvider: resourceProvider,
             settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            pendingTimeout: MercuryoCardApi.pendingTimeout,
+            pendingTimeout: MercuryoApi.pendingTimeout,
             logger: logger
         )
     }

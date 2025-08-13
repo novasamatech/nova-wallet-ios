@@ -11,7 +11,7 @@ protocol AssetListCollectionManagerProtocol {
     func setupCollectionView()
     func updateGroupsViewModel(with model: AssetListViewModel)
     func updateHeaderViewModel(with model: AssetListHeaderViewModel?)
-    func updateNftViewModel(with model: AssetListNftsViewModel?)
+    func updateOrganizerViewModel(with model: AssetListOrganizerViewModel?)
     func updateBanners(available: Bool)
     func updateSelectedLocale(with locale: Locale)
 
@@ -35,7 +35,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionLocks()
     func actionSend()
     func actionReceive()
-    func actionBuy()
+    func actionBuySell()
     func actionSwap()
     func actionChangeAssetListStyle()
     func actionCardOpen()
@@ -43,7 +43,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
-    func selectNfts()
+    func selectOrganizerItem(at index: Int)
 }
 
 protocol AssetListCollectionViewLayoutDelegate: AnyObject {
@@ -66,7 +66,7 @@ protocol AssetListCollectionViewLayoutDelegate: AnyObject {
 protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
-    func didReceiveNft(viewModel: AssetListNftsViewModel?)
+    func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?)
     func didReceiveBanners(available: Bool)
     func didCompleteRefreshing()
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle)
@@ -77,8 +77,8 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
 protocol AssetListPresenterProtocol: AnyObject {
     func setup()
     func selectWallet()
+    func selectOrganizerItem(at index: Int)
     func selectAsset(for chainAssetId: ChainAssetId)
-    func selectNfts()
     func refresh()
     func presentSearch()
     func presentAssetsManage()
@@ -86,7 +86,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentCard()
     func send()
     func receive()
-    func buy()
+    func buySell()
     func swap()
     func presentWalletConnect()
     func toggleAssetListStyle()
@@ -104,12 +104,7 @@ protocol AssetListInteractorInputProtocol {
 }
 
 protocol AssetListInteractorOutputProtocol {
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    )
+    func didReceive(wallet: MetaAccountModel)
 
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
@@ -123,14 +118,26 @@ protocol AssetListInteractorOutputProtocol {
 
 // MARK: Wireframe
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
-    CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
+protocol AssetListWireframeProtocol: AnyObject,
+    WalletSwitchPresentable,
+    AlertPresentable,
+    ErrorPresentable,
+    CommonRetryable,
+    WalletConnectScanPresentable,
+    WalletConnectErrorPresentable,
+    RampActionsPresentable,
+    RampPresentable,
+    MessageSheetPresentable,
+    FeatureSupportChecking
+{
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)
 
     func showNfts(from view: AssetListViewProtocol?)
+
+    func showMultisigOperations(from view: AssetListViewProtocol?)
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput)
 
@@ -144,13 +151,25 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
         buyTokensClosure: @escaping BuyTokensClosure
     )
 
-    func showBuyTokens(from view: AssetListViewProtocol?)
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
+    )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 
     func showStaking(from view: AssetListViewProtocol?)
 
-    func showCard(from view: AssetListViewProtocol?)
+    func showCard(
+        from view: AssetListViewProtocol?,
+        wallet: MetaAccountModel
+    )
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

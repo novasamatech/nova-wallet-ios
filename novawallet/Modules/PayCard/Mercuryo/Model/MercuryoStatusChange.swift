@@ -18,6 +18,7 @@ enum MercuryoStatus: String, Decodable {
     case pending
     case succeeded
     case completed
+    case paid
     case failed
 }
 

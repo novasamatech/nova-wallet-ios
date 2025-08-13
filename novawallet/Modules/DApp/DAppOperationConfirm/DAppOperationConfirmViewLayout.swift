@@ -100,4 +100,19 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
         addArrangedSubview(transactionDetailsTableView, spacingAfter: 8)
         transactionDetailsTableView.addArrangedSubview(transactionDetailsCell)
     }
+
+    func setupNetworkCell(with viewModel: StackCellViewModel?) {
+        if let viewModel {
+            senderTableView.insertArranged(
+                view: networkCell,
+                after: accountCell
+            )
+            networkCell.bind(
+                viewModel: viewModel,
+                cornerRadius: nil
+            )
+        } else {
+            networkCell.removeFromSuperview()
+        }
+    }
 }

@@ -3,14 +3,17 @@ import Foundation
 final class DAppBrowserMetadataState: DAppBrowserBaseState {
     let previousState: DAppBrowserStateProtocol
     let metadata: PolkadotExtensionMetadata
+    let requestId: String
 
     init(
         stateMachine: DAppBrowserStateMachineProtocol?,
         previousState: DAppBrowserStateProtocol,
-        metadata: PolkadotExtensionMetadata
+        metadata: PolkadotExtensionMetadata,
+        requestId: String
     ) {
         self.previousState = previousState
         self.metadata = metadata
+        self.requestId = requestId
 
         super.init(stateMachine: stateMachine)
     }
@@ -21,7 +24,7 @@ final class DAppBrowserMetadataState: DAppBrowserBaseState {
     ) throws {
         if coderFactory.specVersion != metadata.specVersion {
             provideError(
-                for: .metadataProvide,
+                for: requestId,
                 errorMessage: PolkadotExtensionError.unsupported.rawValue,
                 nextState: previousState
             )
@@ -35,7 +38,7 @@ final class DAppBrowserMetadataState: DAppBrowserBaseState {
 
             dataSource.set(metadata: metadata, for: genesisHash)
 
-            try provideResponse(for: .metadataProvide, result: true, nextState: previousState)
+            try provideResponse(for: requestId, result: true, nextState: previousState)
         }
     }
 
@@ -48,7 +51,7 @@ extension DAppBrowserMetadataState: DAppBrowserStateProtocol {
     func setup(with dataSource: DAppBrowserStateDataSource) {
         guard let genesisHashData = try? Data(hexString: metadata.genesisHash) else {
             provideError(
-                for: .metadataProvide,
+                for: requestId,
                 errorMessage: "Invalid genesis hash",
                 nextState: previousState
             )
@@ -62,7 +65,7 @@ extension DAppBrowserMetadataState: DAppBrowserStateProtocol {
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             provideError(
-                for: .metadataProvide,
+                for: requestId,
                 errorMessage: PolkadotExtensionError.unsupported.rawValue,
                 nextState: previousState
             )

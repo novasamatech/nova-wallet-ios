@@ -1,10 +1,10 @@
 import Foundation
 
 final class VoteWireframe {
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
-    init(proxySyncService: ProxySyncServiceProtocol) {
-        self.proxySyncService = proxySyncService
+    init(delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol) {
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 }
 

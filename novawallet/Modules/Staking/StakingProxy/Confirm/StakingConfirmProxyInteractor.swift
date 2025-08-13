@@ -64,8 +64,8 @@ extension StakingConfirmProxyInteractor: StakingConfirmProxyInteractorInputProto
             runningIn: .main,
             completion: { [weak self] result in
                 switch result {
-                case .success:
-                    self?.presenter?.didSubmit()
+                case let .success(model):
+                    self?.presenter?.didSubmit(model: model)
                 case let .failure(error):
                     self?.presenter?.didReceive(error: .submit(error))
                 }

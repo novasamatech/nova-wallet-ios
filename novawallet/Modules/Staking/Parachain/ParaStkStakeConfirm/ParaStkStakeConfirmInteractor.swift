@@ -183,6 +183,47 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
             self.extrinsicSubscriptionId = nil
         }
     }
+
+    private func doConfirmExtrinsic(
+        with callWrapper: DelegationCallWrapper,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) {
+        let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
+            try callWrapper.accept(builder: builder, codingFactory: codingFactory)
+        }
+
+        let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
+            self?.extrinsicSubscriptionId = subscriptionId
+
+            return self != nil
+        }
+
+        sharedOperation?.markSent()
+
+        let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
+            switch result {
+            case let .success(updateModel):
+                if case .inBlock = updateModel.statusUpdate.extrinsicStatus {
+                    self?.cancelExtrinsicSubscriptionIfNeeded()
+                    self?.presenter?.didCompleteExtrinsicSubmission(
+                        for: .success(updateModel.extrinsicSubmittedModel)
+                    )
+                }
+            case let .failure(error):
+                self?.sharedOperation?.markComposing()
+                self?.cancelExtrinsicSubscriptionIfNeeded()
+                self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
+            }
+        }
+
+        extrinsicService.submitAndWatch(
+            builderClosure,
+            signer: signer,
+            runningIn: .main,
+            subscriptionIdClosure: subscriptionIdClosure,
+            notificationClosure: notificationClosure
+        )
+    }
 }
 
 extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProtocol {
@@ -204,47 +245,32 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
     func estimateFee(with callWrapper: DelegationCallWrapper) {
         let identifier = callWrapper.extrinsicId()
 
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: identifier
-        ) { builder in
-            try callWrapper.accept(builder: builder)
-        }
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] codingFactory in
+                guard let self else {
+                    return
+                }
+
+                feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+                    try callWrapper.accept(builder: builder, codingFactory: codingFactory)
+                }
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didReceiveError(error)
+            }
+        )
     }
 
     func confirm(with callWrapper: DelegationCallWrapper) {
-        let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            try callWrapper.accept(builder: builder)
-        }
-
-        let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
-            self?.extrinsicSubscriptionId = subscriptionId
-
-            return self != nil
-        }
-
-        sharedOperation?.markSent()
-
-        let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
-            switch result {
-            case let .success(statusUpdate):
-                if case let .inBlock(extrinsicHash) = statusUpdate.extrinsicStatus {
-                    self?.cancelExtrinsicSubscriptionIfNeeded()
-                    self?.presenter?.didCompleteExtrinsicSubmission(for: .success(extrinsicHash))
-                }
-            case let .failure(error):
-                self?.sharedOperation?.markComposing()
-                self?.cancelExtrinsicSubscriptionIfNeeded()
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] codingFactory in
+                self?.doConfirmExtrinsic(with: callWrapper, codingFactory: codingFactory)
+            },
+            errorClosure: { [weak self] error in
                 self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
             }
-        }
-
-        extrinsicService.submitAndWatch(
-            builderClosure,
-            signer: signer,
-            runningIn: .main,
-            subscriptionIdClosure: subscriptionIdClosure,
-            notificationClosure: notificationClosure
         )
     }
 }

@@ -47,7 +47,7 @@ final class MetaAccountOperationFactory {
         case .substrateEcdsa:
             return EcdsaKeypairFactory()
         case .ethereumEcdsa:
-            return BIP32KeypairFactory()
+            return BIP32Secp256KeypairFactory()
         }
     }
 
@@ -184,7 +184,8 @@ final class MetaAccountOperationFactory {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: type
+            type: type,
+            multisig: nil
         )
     }
 }

@@ -27,7 +27,7 @@ class AdvancedWalletTests: XCTestCase {
         let presenter = AdvancedWalletPresenter(
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
-            secretSource: .mnemonic,
+            secretSource: .mnemonic(.appDefault),
             settings: settings,
             delegate: delegate
         )

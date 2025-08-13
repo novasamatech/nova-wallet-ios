@@ -152,7 +152,7 @@ extension SharedStatusPresenter {
     }
 
     func hide() {
-        guard let sharedView = sharedView else {
+        guard sharedView != nil else {
             return
         }
 

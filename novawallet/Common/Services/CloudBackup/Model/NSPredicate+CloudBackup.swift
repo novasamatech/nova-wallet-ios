@@ -2,7 +2,10 @@ import Foundation
 
 extension NSPredicate {
     static var cloudSyncableWallets: NSPredicate {
-        let excludedTypes = [MetaAccountModelType.proxied]
+        let excludedTypes = [
+            MetaAccountModelType.proxied,
+            MetaAccountModelType.multisig
+        ]
 
         let excludedTypeValues = excludedTypes.map { NSNumber(value: $0.rawValue) }
 

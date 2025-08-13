@@ -30,6 +30,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainAsset: ChainAsset,
         whoChainAssetPeer: TransferSetupPeer,
         restrictedChainAssetPeers: [ChainAsset]?,
+        xcmTransfers: XcmTransfers?,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -40,6 +41,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.whoChainAssetPeer = whoChainAssetPeer
         peerChainAsset = restrictedChainAssetPeers?.first
         self.restrictedChainAssetPeers = restrictedChainAssetPeers
+        self.xcmTransfers = xcmTransfers
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository

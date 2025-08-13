@@ -110,6 +110,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             extrinsicService: extrinsicService,
             extrinsicFactory: extrinsicFactory,
             signer: signer,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

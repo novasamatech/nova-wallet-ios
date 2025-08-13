@@ -3,7 +3,7 @@ import BigInt
 import Foundation_iOS
 import Operation_iOS
 
-final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {
+final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerProtocol {
     weak var view: AssetDetailsViewProtocol?
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
 
@@ -19,7 +19,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
     private var locks: [AssetLock] = []
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
-    private var purchaseActions: [PurchaseAction] = []
+    private var rampActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
     init(
@@ -39,12 +39,16 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         self.logger = logger
         localizationManager = localizableManager
     }
+}
 
-    private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
+// MARK: Private
+
+private extension AssetDetailsPresenter {
+    func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
         externalBalances.reduce(0) { $0 + $1.amount }
     }
 
-    private func updateView() {
+    func updateView() {
         guard let view, let balance else {
             return
         }
@@ -70,16 +74,30 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         view.didReceive(availableOperations: availableOperations)
     }
 
-    private func showPurchase() {
-        startPuchaseFlow(
-            from: view,
-            purchaseActions: purchaseActions,
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
+    func validateAndProccedRamp(with type: RampActionType) {
+        wireframe.checkingSupport(
+            of: .ramp(
+                type: type,
+                chainAsset: chainAsset,
+                all: rampActions
+            ),
+            for: selectedAccount,
+            sheetPresentingView: view
+        ) { [weak self] in
+            guard let self else { return }
+
+            startRampFlow(
+                from: view,
+                actions: rampActions,
+                rampType: type,
+                wireframe: wireframe,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+        }
     }
 
-    private func showReceiveTokens() {
+    func showReceiveTokens() {
         guard let view = view,
               let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
                   for: chainAsset.chain.accountRequest()
@@ -94,6 +112,8 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         )
     }
 }
+
+// MARK: AssetDetailsPresenterProtocol
 
 extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func setup() {
@@ -110,7 +130,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 
     func handleReceive() {
         switch selectedAccount.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig:
             showReceiveTokens()
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
@@ -124,22 +144,24 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
     }
 
-    func handleBuy() {
-        guard !purchaseActions.isEmpty else {
-            return
+    func handleBuySell() {
+        let availableOptions: RampActionAvailabilityOptions = if availableOperations.buySellAvailable() {
+            .init([.onRamp, .offRamp])
+        } else if availableOperations.buyAvailable() {
+            .init([.onRamp])
+        } else if availableOperations.sellAvailable() {
+            .init([.offRamp])
+        } else {
+            .init([])
         }
 
-        switch selectedAccount.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            showPurchase()
-        case .ledger, .genericLedger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
-            } else {
-                showPurchase()
-            }
-        case .watchOnly:
-            wireframe.showNoSigning(from: view)
+        wireframe.presentRampActionsSheet(
+            from: view,
+            availableOptions: availableOptions,
+            delegate: self,
+            locale: selectedLocale
+        ) { [weak self] selectedAction in
+            self?.validateAndProccedRamp(with: selectedAction)
         }
     }
 
@@ -166,8 +188,14 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
-            amountFormatter: viewModelFactory.amountFormatter(assetDisplayInfo: chainAsset.assetDisplayInfo),
-            priceFormatter: viewModelFactory.priceFormatter(priceId: priceData?.currencyId),
+            amountFormatter: viewModelFactory.amountFormatter(
+                assetDisplayInfo: chainAsset.assetDisplayInfo,
+                shouldDisplayFullInteger: false
+            ),
+            priceFormatter: viewModelFactory.priceFormatter(
+                priceId: priceData?.currencyId,
+                shouldDisplayFullInteger: false
+            ),
             precision: Int16(precision)
         )
         wireframe.showLocks(from: view, model: model)
@@ -178,7 +206,14 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 }
 
+// MARK: AssetDetailsInteractorOutputProtocol
+
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
+    func didReceive(rampActions: [RampAction]) {
+        self.rampActions = rampActions
+        updateView()
+    }
+
     func didReceive(balance: AssetBalance?) {
         self.balance = balance
         updateView()
@@ -199,11 +234,6 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(purchaseActions: [PurchaseAction]) {
-        self.purchaseActions = purchaseActions
-        updateView()
-    }
-
     func didReceive(availableOperations: AssetDetailsOperation) {
         self.availableOperations = availableOperations
         updateView()
@@ -219,6 +249,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     }
 }
 
+// MARK: Localizable
+
 extension AssetDetailsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
@@ -227,22 +259,38 @@ extension AssetDetailsPresenter: Localizable {
     }
 }
 
+// MARK: ModalPickerViewControllerDelegate
+
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startPuchaseFlow(
-            from: view,
-            purchaseAction: purchaseActions[index],
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let modalPickerContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        modalPickerContext.process(selectedIndex: index)
     }
 }
 
-extension AssetDetailsPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
-        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+// MARK: RampDelegate
+
+extension AssetDetailsPresenter: RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset _: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
+
+// MARK: AssetPriceChartModuleOutputProtocol
 
 extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
     func didReceiveChartState(_ state: AssetPriceChartState) {

@@ -22,11 +22,23 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func activateStatusAction() {
         wireframe.presentCloudBackupSettings(from: view)
     }
+
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
+        closure(wireframe, view)
+    }
+
+    func presentDelayedOperationCreated() {
+        wireframe.presentDelayedOperationCreated(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     func didRequestImportAccount(source: SecretSource) {
         wireframe.presentAccountImport(on: view, source: source)
+    }
+
+    func didRequestWalletMigration(with message: WalletMigrationMessage.Start) {
+        wireframe.presentWalletMigration(on: view, message: message)
     }
 
     func didRequestScreenOpen(_ screen: UrlHandlingScreen) {

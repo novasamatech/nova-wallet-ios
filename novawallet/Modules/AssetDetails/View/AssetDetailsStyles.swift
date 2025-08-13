@@ -44,6 +44,7 @@ extension StackTitleValueIconView.Style {
         icon: R.image.iconSmallArrowDown()?
             .tinted(with: R.color.colorIconChip()!)?
             .withAlignmentRectInsets(.init(inset: -4)),
-        iconBorderStyle: .chips
+        iconBorderStyle: .chips,
+        adjustsFontSizeToFitWidth: true
     )
 }

@@ -32,7 +32,7 @@ extension ExtrinsicProcessor {
         do {
             let context = codingFactory.createRuntimeJsonContext()
 
-            let maybeExtrinsicSender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeExtrinsicSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
                 to: MultiAddress.self,
                 with: context.toRawContext()
             ).accountId

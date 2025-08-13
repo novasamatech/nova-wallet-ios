@@ -6,7 +6,7 @@ final class AssetListCollectionViewDataSource: NSObject {
 
     var groupsViewModel: AssetListViewModel
     var headerViewModel: AssetListHeaderViewModel?
-    var nftViewModel: AssetListNftsViewModel?
+    var organizerViewModel: AssetListOrganizerViewModel?
     var bannersAvailable: Bool?
 
     var selectedLocale: Locale
@@ -87,9 +87,9 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionReceive),
             for: .touchUpInside
         )
-        totalBalanceView.buyButton.addTarget(
+        totalBalanceView.buySellButton.addTarget(
             self,
-            action: #selector(actionBuy),
+            action: #selector(actionBuySell),
             for: .touchUpInside
         )
         totalBalanceView.swapButton.addTarget(
@@ -241,14 +241,49 @@ private extension AssetListCollectionViewDataSource {
         )
 
         cell.bind(text: text, actionTitle: actionTitle)
-        cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
+        cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
 
         return cell
     }
 
-    func provideYourNftsCell(
+    func provideOrganizerCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let itemIndex = indexPath.item
+
+        guard let organizerViewModel, organizerViewModel.items.count > itemIndex else {
+            return UICollectionViewCell()
+        }
+
+        let addsSeparator = organizerViewModel.items.count > 1 &&
+            itemIndex < organizerViewModel.items.endIndex - 1
+
+        let organizerItemModel = organizerViewModel.items[itemIndex]
+
+        return switch organizerItemModel {
+        case let .nfts(nftsModel):
+            provideYourNftsCell(
+                collectionView,
+                indexPath: indexPath,
+                model: nftsModel,
+                addsSeparator: addsSeparator
+            )
+        case let .pendingTransactions(transactionsModel):
+            provideTransactionsToSignCell(
+                collectionView,
+                indexPath: indexPath,
+                model: transactionsModel,
+                addsSeparator: addsSeparator
+            )
+        }
+    }
+
+    func provideYourNftsCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        model: AssetListNftsViewModel,
+        addsSeparator: Bool
     ) -> AssetListNftsCell {
         let cell = collectionView.dequeueReusableCellWithType(
             AssetListNftsCell.self,
@@ -256,9 +291,31 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         cell.locale = selectedLocale
+        cell.bind(viewModel: model)
 
-        if let viewModel = nftViewModel {
-            cell.bind(viewModel: viewModel)
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
+        }
+
+        return cell
+    }
+
+    func provideTransactionsToSignCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        model: AssetListMultisigOperationsViewModel,
+        addsSeparator: Bool
+    ) -> AssetListMultisigOperationsCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListMultisigOperationsCell.self,
+            for: indexPath
+        )!
+
+        cell.locale = selectedLocale
+        cell.bind(viewModel: model)
+
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
         }
 
         return cell
@@ -331,8 +388,8 @@ private extension AssetListCollectionViewDataSource {
         actionsDelegate?.actionReceive()
     }
 
-    @objc func actionBuy() {
-        actionsDelegate?.actionBuy()
+    @objc func actionBuySell() {
+        actionsDelegate?.actionBuySell()
     }
 
     @objc func actionSwap() {
@@ -345,6 +402,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionCardOpen() {
         actionsDelegate?.actionCardOpen()
+    }
+
+    @objc func actionRefresh() {
+        actionsDelegate?.actionRefresh()
     }
 }
 
@@ -362,8 +423,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             headerViewModel != nil ? 2 : 0
-        case .nfts:
-            nftViewModel != nil ? 1 : 0
+        case .organizer:
+            organizerViewModel?.items.count ?? 0
         case .banners:
             bannersAvailable == true ? 1 : 0
         case .settings:
@@ -379,19 +440,19 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         switch AssetListFlowLayout.CellType(indexPath: indexPath) {
         case .account:
-            return provideAccountCell(collectionView, indexPath: indexPath)
+            provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
-            return provideTotalBalanceCell(collectionView, indexPath: indexPath)
-        case .yourNfts:
-            return provideYourNftsCell(collectionView, indexPath: indexPath)
+            provideTotalBalanceCell(collectionView, indexPath: indexPath)
+        case .organizerItem:
+            provideOrganizerCell(collectionView, indexPath: indexPath)
         case .banner:
-            return provideBannersCell(collectionView, indexPath: indexPath)
+            provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
-            return provideSettingsCell(collectionView, indexPath: indexPath)
+            provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
-            return provideEmptyStateCell(collectionView, indexPath: indexPath)
+            provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
-            return provideAssetCell(collectionView, indexPath: indexPath)
+            provideAssetCell(collectionView, indexPath: indexPath)
         }
     }
 

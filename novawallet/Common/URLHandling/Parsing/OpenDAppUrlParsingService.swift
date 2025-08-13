@@ -2,10 +2,6 @@ import Foundation
 import Operation_iOS
 
 final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
-    enum QueryKey {
-        static let url = "url"
-    }
-
     func parse(
         url: URL,
         completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
@@ -19,7 +15,7 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         let dAppUrl = query.first(where: {
             $0.name
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-                .caseInsensitiveCompare(QueryKey.url) == .orderedSame
+                .caseInsensitiveCompare(UniversalLink.DAppScreen.QueryKey.url) == .orderedSame
         })?.value.map { URL(string: $0) } ?? nil
 
         guard let dAppUrl = dAppUrl, dAppUrl.host != nil else {

@@ -32,7 +32,7 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
             }
 
             let sellStatusResponse = try JSONDecoder().decode(
-                MercuryoGenericResponse<MercuryoSellResponseData>.self,
+                MercuryoGenericResponse<MercuryoRampResponseData>.self,
                 from: message
             )
 
@@ -62,6 +62,8 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
                 delegate?.didOpenCard()
             case .failed:
                 delegate?.didFailToOpenCard()
+            case .paid:
+                break
             }
         } catch {
             logger.error("Unexpected error: \(error)")

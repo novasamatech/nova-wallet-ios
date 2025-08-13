@@ -1,8 +1,17 @@
 import Foundation
+import SubstrateSdk
 
 extension ChainRegistryProtocol {
     func getConnectionOrError(for chainId: ChainModel.Id) throws -> ChainConnection {
         guard let connection = getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        return connection
+    }
+
+    func getOneShotConnectionOrError(for chainId: ChainModel.Id) throws -> JSONRPCEngine {
+        guard let connection = getOneShotConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 

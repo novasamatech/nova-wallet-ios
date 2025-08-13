@@ -210,15 +210,14 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     locale: locale
                 )
             case let .noProvider(model):
-                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
-
                 self?.presentable.presentNoProviderForNonSufficientToken(
                     from: view,
                     utilityMinBalance: viewModelFactory.amountFromValue(
-                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        targetAssetInfo: model.utilityAsset.assetDisplayInfo,
                         value: model.minBalance
                     ).value(for: locale),
                     token: params.receiveChainAsset.asset.symbol,
+                    network: params.receiveChainAsset.chain.name,
                     locale: locale
                 )
             }

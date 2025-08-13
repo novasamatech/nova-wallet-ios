@@ -10,6 +10,8 @@ final class CollatorStakingSelectPresenter {
     let interactor: CollatorStakingSelectInteractorInputProtocol
 
     private var allCollators: [CollatorStakingSelectionInfoProtocol]?
+    private var displayedCollators: [CollatorStakingSelectionInfoProtocol]?
+
     private var collatorsPref: PreferredValidatorsProviderModel?
     private var price: PriceData?
 
@@ -174,12 +176,12 @@ final class CollatorStakingSelectPresenter {
 
     private func provideState() {
         do {
-            guard let allCollators else {
+            guard let displayedCollators else {
                 view?.didReceive(state: .loading)
                 return
             }
 
-            let collatorsViewModels = try allCollators.map { try createViewModel(for: $0) }
+            let collatorsViewModels = try displayedCollators.map { try createViewModel(for: $0) }
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
@@ -207,6 +209,7 @@ final class CollatorStakingSelectPresenter {
     private func applySortingAndSaveResult(_ result: [CollatorStakingSelectionInfoProtocol]) {
         let preferredCollators = collatorsPref?.preferred ?? []
         allCollators = result.sortedByType(sorting, preferredCollators: Set(preferredCollators))
+        displayedCollators = allCollators?.filter { collatorsPref?.excluded.contains($0.accountId) == false }
     }
 }
 
@@ -219,6 +222,7 @@ extension CollatorStakingSelectPresenter: CollatorStakingSelectPresenterProtocol
 
     func refresh() {
         allCollators = nil
+        displayedCollators = nil
         collatorsPref = nil
 
         provideState()

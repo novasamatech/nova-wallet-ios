@@ -53,7 +53,7 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     ShortTextInfoPresentable,
-    PurchasePresentable,
+    RampPresentable,
     FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
@@ -83,7 +83,7 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
 
     func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        purchaseHadler: PurchaseFlowManaging,
+        purchaseHadler: RampFlowManaging & RampDelegate,
         destinationChainAsset: ChainAsset,
         locale: Locale
     )
@@ -98,6 +98,11 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         from view: ControllerBackedProtocol?,
         operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee
+    )
+
+    func popTopControllers(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping () -> Void
     )
 }
 

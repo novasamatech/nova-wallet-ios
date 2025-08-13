@@ -5,14 +5,11 @@ import Operation_iOS
 struct DAppListViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> DAppListViewProtocol? {
-        let interactor = createInteractor(
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        )
+        let interactor = createInteractor(walletNotificationService: walletNotificationService)
 
-        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
+        let wireframe = DAppListWireframe(delegatedAccountSyncService: delegatedAccountSyncService)
 
         let localizationManager = LocalizationManager.shared
 
@@ -51,8 +48,7 @@ struct DAppListViewFactory {
     }
 
     private static func createInteractor(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService _: ProxySyncServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> DAppListInteractor {
         let appConfig = ApplicationConfig.shared
         let dAppsUrl = appConfig.dAppsListURL

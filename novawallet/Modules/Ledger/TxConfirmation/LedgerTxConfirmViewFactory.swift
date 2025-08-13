@@ -40,7 +40,8 @@ struct LedgerTxConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             completion: completion,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = LedgerTxConfirmViewController(
@@ -100,14 +101,14 @@ struct LedgerTxConfirmViewFactory {
 
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication: NewSubstrateLedgerSigningProtocol = if isForMigration {
-            MigrationLedgerSubstrateApplication(
+        let ledgerApplication: NewLedgerPolkadotSigningProtocol = if isForMigration {
+            MigrationLedgerPolkadotApplication(
                 connectionManager: ledgerConnection,
                 chainRegistry: ChainRegistryFacade.sharedRegistry,
                 supportedApps: SupportedLedgerApp.substrate()
             )
         } else {
-            GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+            GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
         }
 
         let runtimeMetadataFactory = RuntimeMetadataRepositoryFactory(

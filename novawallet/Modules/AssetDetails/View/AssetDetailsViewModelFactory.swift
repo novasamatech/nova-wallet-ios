@@ -13,8 +13,15 @@ struct AssetDetailsBalanceModelParams {
 }
 
 protocol AssetDetailsViewModelFactoryProtocol {
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter>
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter>
+
+    func priceFormatter(
+        priceId: Int?,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter>
 
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
 
@@ -48,9 +55,14 @@ private extension AssetDetailsViewModelFactory {
         for value: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
+        shouldDisplayFullInteger: Bool,
         locale: Locale
     ) -> BalanceViewModel {
-        let formatter = amountFormatter(assetDisplayInfo: assetDisplayInfo).value(for: locale)
+        let formatter = amountFormatter(
+            assetDisplayInfo: assetDisplayInfo,
+            shouldDisplayFullInteger: shouldDisplayFullInteger
+        ).value(for: locale)
+
         let amount = value.decimal(precision: UInt16(assetDisplayInfo.assetPrecision))
         let amountString = formatter.stringFromDecimal(amount) ?? ""
 
@@ -64,9 +76,12 @@ private extension AssetDetailsViewModelFactory {
             )
         }
 
-        let priceString = priceFormatter(priceId: priceData.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(price * amount) ?? ""
+        let priceString = priceFormatter(
+            priceId: priceData.currencyId,
+            shouldDisplayFullInteger: shouldDisplayFullInteger
+        )
+        .value(for: locale)
+        .stringFromDecimal(price * amount) ?? ""
 
         return BalanceViewModel(
             amount: amountString,
@@ -86,6 +101,7 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
                 for: value,
                 assetDisplayInfo: params.assetDisplayInfo,
                 priceData: params.priceData,
+                shouldDisplayFullInteger: false,
                 locale: params.locale
             )
         }
@@ -117,12 +133,25 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         )
     }
 
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
+    func priceFormatter(
+        priceId: Int?,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter> {
         let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
-        return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
+
+        return assetBalanceFormatterFactory.createAssetPriceFormatter(
+            for: assetBalanceDisplayInfo,
+            useSuffixForBigNumbers: shouldDisplayFullInteger
+        )
     }
 
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
-        assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter> {
+        assetBalanceFormatterFactory.createTokenFormatter(
+            for: assetDisplayInfo,
+            usesSuffixForBigNumbers: shouldDisplayFullInteger
+        )
     }
 }

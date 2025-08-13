@@ -11,6 +11,8 @@ enum ParitySignerNetworkType: UInt8 {
 
 enum ParitySignerMessageType: UInt8 {
     case transaction = 2
+    case message = 3
+    case transactionWithProof = 6
 
     var bytes: Data {
         Data([rawValue])
@@ -41,8 +43,23 @@ enum ParitySignerCryptoType: UInt8 {
 }
 
 protocol ParitySignerMessageOperationFactoryProtocol {
-    func createTransaction(
+    func createMetadataBasedTransaction(
         for extrinsicPayload: Data,
+        accountId: AccountId,
+        cryptoType: MultiassetCryptoType,
+        genesisHash: String
+    ) -> CompoundOperationWrapper<Data>
+
+    func createProofBasedTransaction(
+        for extrinsicPayload: Data,
+        metadataProofClosure: @escaping () throws -> Data,
+        accountId: AccountId,
+        cryptoType: MultiassetCryptoType,
+        genesisHash: String
+    ) -> CompoundOperationWrapper<Data>
+
+    func createMessage(
+        for payload: Data,
         accountId: AccountId,
         cryptoType: MultiassetCryptoType,
         genesisHash: String
@@ -62,7 +79,7 @@ enum ParitySignerMessageOperationFactoryError: Error {
 }
 
 extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFactoryProtocol {
-    func createTransaction(
+    func createMetadataBasedTransaction(
         for extrinsicPayload: Data,
         accountId: AccountId,
         cryptoType: MultiassetCryptoType,
@@ -79,8 +96,62 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
 
             let genesisHashData = try Data(hexString: genesisHash)
 
-            return networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId +
-                extrinsicPayload + genesisHashData
+            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+
+            return prefix + extrinsicPayload + genesisHashData
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createProofBasedTransaction(
+        for extrinsicPayload: Data,
+        metadataProofClosure: @escaping () throws -> Data,
+        accountId: AccountId,
+        cryptoType: MultiassetCryptoType,
+        genesisHash: String
+    ) -> CompoundOperationWrapper<Data> {
+        let networkCodeBytes = networkType.bytes
+
+        let operation = ClosureOperation<Data> {
+            guard let cryptoTypeBytes = ParitySignerCryptoType(cryptoType: cryptoType)?.bytes else {
+                throw ParitySignerMessageOperationFactoryError.unsupportedCryptoType
+            }
+
+            let messageTypeBytes = ParitySignerMessageType.transactionWithProof.bytes
+
+            let genesisHashData = try Data(hexString: genesisHash)
+
+            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+
+            let metadataProof = try metadataProofClosure()
+
+            return prefix + metadataProof + extrinsicPayload + genesisHashData
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createMessage(
+        for payload: Data,
+        accountId: AccountId,
+        cryptoType: MultiassetCryptoType,
+        genesisHash: String
+    ) -> CompoundOperationWrapper<Data> {
+        let networkCodeBytes = networkType.bytes
+
+        let operation = ClosureOperation<Data> {
+            guard let cryptoTypeBytes = ParitySignerCryptoType(cryptoType: cryptoType)?.bytes else {
+                throw ParitySignerMessageOperationFactoryError.unsupportedCryptoType
+            }
+
+            let messageTypeBytes = ParitySignerMessageType.message.bytes
+
+            let genesisHashData = try Data(hexString: genesisHash)
+
+            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+
+            return prefix + payload + genesisHashData
         }
 
         return CompoundOperationWrapper(targetOperation: operation)

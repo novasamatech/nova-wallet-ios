@@ -2,28 +2,31 @@ import Foundation
 import NovaCrypto
 
 final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
-    private func provideAccountListResponse(from dataSource: DAppBrowserStateDataSource) throws {
+    private func provideAccountListResponse(
+        from dataSource: DAppBrowserStateDataSource,
+        requestId: String
+    ) throws {
         guard let accounts = try? dataSource.fetchAccountList() else {
             throw DAppBrowserStateError.unexpected(reason: "can't fetch account list")
         }
 
-        try provideResponse(for: .accountList, result: accounts, nextState: self)
+        try provideResponse(for: requestId, result: accounts, nextState: self)
     }
 
-    private func provideAccountSubscriptionResult(
-        for requestId: String,
-        dataSource _: DAppBrowserStateDataSource
-    ) throws {
+    private func provideAccountSubscriptionResult(for requestId: String) throws {
         let nextState = DAppBrowserAccountSubscribingState(stateMachine: stateMachine, requestId: requestId)
-        try provideResponse(for: .accountSubscribe, result: true, nextState: nextState)
+        try provideResponse(for: requestId, result: true, nextState: nextState)
     }
 
-    private func provideMetadataList(from dataSource: DAppBrowserStateDataSource) throws {
+    private func provideMetadataList(
+        from dataSource: DAppBrowserStateDataSource,
+        requestId: String
+    ) throws {
         let metadataList = dataSource.metadataStore.map { _, value in
             PolkadotExtensionMetadataResponse(genesisHash: value.genesisHash, specVersion: value.specVersion)
         }
 
-        try provideResponse(for: .metadataList, result: metadataList, nextState: self)
+        try provideResponse(for: requestId, result: metadataList, nextState: self)
     }
 
     private func handleMetadata(from message: PolkadotExtensionMessage) {
@@ -31,7 +34,8 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             let nextState = DAppBrowserMetadataState(
                 stateMachine: stateMachine,
                 previousState: self,
-                metadata: metadata
+                metadata: metadata,
+                requestId: message.identifier
             )
 
             stateMachine?.emit(nextState: nextState)
@@ -78,7 +82,11 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         )
 
         let type: DAppSigningType = .extrinsic(chain: chain)
-        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: type)
+        let nextState = DAppBrowserSigningState(
+            stateMachine: stateMachine,
+            signingType: type,
+            requestId: message.identifier
+        )
         stateMachine?.emit(signingRequest: request, type: type, nextState: nextState)
     }
 
@@ -92,23 +100,13 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             return
         }
 
-        guard
-            let accountId = try? payload.address.toAccountId(),
-            let addressPrefix = try? SS58AddressFactory().type(fromAddress: payload.address).uint16Value else {
+        guard let accountId = try? payload.address.toAccountId() else {
             let error = DAppBrowserStateError.unexpected(reason: "address format")
             stateMachine?.emit(error: error, nextState: self)
             return
         }
 
-        let chains = dataSource.chainStore.values.filter {
-            $0.addressPrefix == addressPrefix
-        }.sorted { $0.order < $1.order }
-
-        let maybeChain = chains.first { chain in
-            dataSource.wallet.fetch(for: chain.accountRequest())?.accountId == accountId
-        }
-
-        guard let chain = maybeChain else {
+        guard let chain = try? dataSource.resolveSignBytesChain(for: payload.address) else {
             let error = DAppBrowserStateError.unexpected(reason: "raw payload chain")
             stateMachine?.emit(error: error, nextState: self)
             return
@@ -125,7 +123,11 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         )
 
         let type: DAppSigningType = .bytes(chain: chain)
-        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: type)
+        let nextState = DAppBrowserSigningState(
+            stateMachine: stateMachine,
+            signingType: type,
+            requestId: message.identifier
+        )
         stateMachine?.emit(signingRequest: request, type: type, nextState: nextState)
     }
 }
@@ -141,13 +143,13 @@ extension DAppBrowserAuthorizedState: DAppBrowserStateProtocol {
         do {
             switch message.messageType {
             case .authorize:
-                try provideResponse(for: .authorize, result: true, nextState: self)
+                try provideResponse(for: message.identifier, result: true, nextState: self)
             case .accountList:
-                try provideAccountListResponse(from: dataSource)
+                try provideAccountListResponse(from: dataSource, requestId: message.identifier)
             case .accountSubscribe:
-                try provideAccountSubscriptionResult(for: message.identifier, dataSource: dataSource)
+                try provideAccountSubscriptionResult(for: message.identifier)
             case .metadataList:
-                try provideMetadataList(from: dataSource)
+                try provideMetadataList(from: dataSource, requestId: message.identifier)
             case .metadataProvide:
                 handleMetadata(from: message)
             case .signExtrinsic:

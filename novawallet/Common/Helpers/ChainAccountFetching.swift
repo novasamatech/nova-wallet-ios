@@ -5,6 +5,7 @@ struct ChainAccountRequest {
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
+    let supportsMultisigs: Bool
 }
 
 struct ChainAccountResponse {
@@ -34,7 +35,19 @@ struct MetaChainAccountResponse {
     let substrateAccountId: AccountId?
     let ethereumAccountId: AccountId?
     let walletIdenticonData: Data?
+    let delegationId: MetaAccountDelegationId?
     let chainAccount: ChainAccountResponse
+}
+
+struct MetaAccountDelegationId: Hashable {
+    let delegateAccountId: AccountId
+    let delegatorId: AccountId
+    let chainId: ChainModel.Id?
+    let delegationType: DelegationType
+
+    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
+        chainId == nil || chainId == identifier
+    }
 }
 
 enum ChainAccountFetchingError: Error {
@@ -54,6 +67,14 @@ extension MetaChainAccountResponse {
 }
 
 extension ChainAccountResponse {
+    var delegated: Bool {
+        type == .proxied || type == .multisig
+    }
+
+    var isProxied: Bool {
+        type == .proxied
+    }
+
     var chainFormat: ChainFormat {
         isEthereumBased
             ? .ethereum
@@ -168,6 +189,12 @@ extension MetaAccountModel {
             }
         case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
             return executeFetch(request: request)
+        case .multisig:
+            if request.supportsMultisigs {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
         }
     }
 
@@ -293,6 +320,7 @@ extension MetaAccountModel {
                 substrateAccountId: substrateAccountId,
                 ethereumAccountId: ethereumAddress,
                 walletIdenticonData: walletIdenticonData(),
+                delegationId: delegationId,
                 chainAccount: $0
             )
         }
@@ -310,34 +338,10 @@ extension MetaAccountModel {
 
     func has(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
         if let chainAccount = chainAccounts.first(where: { $0.chainId == chainId }) {
-            return chainAccount.accountId == accountId
+            chainAccount.accountId == accountId
         } else {
-            return substrateAccountId == accountId || ethereumAddress == accountId
+            substrateAccountId == accountId || ethereumAddress == accountId
         }
-    }
-
-    func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
-        type == .proxied && has(accountId: accountId, chainId: chainId)
-    }
-
-    func proxyChainAccount(
-        chainId: ChainModel.Id
-    ) -> ChainAccountModel? {
-        chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
-    }
-
-    func proxy() -> ProxyAccountModel? {
-        guard type == .proxied,
-              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
-            return nil
-        }
-
-        return chainAccount.proxy
-    }
-
-    func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
-        let request = chainAsset.chain.accountRequest()
-        return fetch(for: request)?.toAddress()
     }
 }
 
@@ -347,7 +351,8 @@ extension ChainModel {
             chainId: chainId,
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp
+            supportsGenericLedger: supportsGenericLedgerApp,
+            supportsMultisigs: hasMultisig
         )
     }
 
@@ -370,5 +375,9 @@ extension ChainModel {
         }
 
         return accountId
+    }
+
+    static func getEvmNullAccountId() -> AccountId {
+        AccountId.zeroAccountId(of: getAccountIdSize(for: .ethereum))
     }
 }

@@ -7,17 +7,20 @@ final class AssetExchangePathFilter {
     let chainRegistry: ChainRegistryProtocol
     let sufficiencyProvider: AssetExchangeSufficiencyProviding
     let feeSupport: AssetExchangeFeeSupporting
+    let delayedCallExecVerifier: WalletDelayedExecVerifing
 
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         sufficiencyProvider: AssetExchangeSufficiencyProviding,
-        feeSupport: AssetExchangeFeeSupporting
+        feeSupport: AssetExchangeFeeSupporting,
+        delayedCallExecVerifier: WalletDelayedExecVerifing
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
         self.sufficiencyProvider = sufficiencyProvider
         self.feeSupport = feeSupport
+        self.delayedCallExecVerifier = delayedCallExecVerifier
     }
 }
 
@@ -41,7 +44,21 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
-        if !sufficiencyProvider.isSufficient(chainAsset: chainAssetOut) {
+        // if call execution is delayed then allow only one segmented paths
+        guard !delayedCallExecVerifier.executesCallWithDelay(
+            selectedWallet,
+            chain: chainIn
+        ) else {
+            return false
+        }
+
+        let isAssetInSufficient = sufficiencyProvider.isSufficient(chainAsset: chainAssetIn)
+        let isAssetOutSufficient = sufficiencyProvider.isSufficient(chainAsset: chainAssetOut)
+
+        let anyInsufficientAsset = !isAssetInSufficient || !isAssetOutSufficient
+
+        // reject any path with len > 1 that includes insufficient asset
+        if anyInsufficientAsset {
             return false
         }
 

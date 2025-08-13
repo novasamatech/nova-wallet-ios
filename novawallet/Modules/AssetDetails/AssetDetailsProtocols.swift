@@ -11,7 +11,7 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
     func setup()
     func handleSend()
     func handleReceive()
-    func handleBuy()
+    func handleBuySell()
     func handleLocks()
     func handleSwap()
 }
@@ -28,10 +28,12 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
-    func didReceive(purchaseActions: [PurchaseAction])
+    func didReceive(rampActions: [RampAction])
 }
 
-protocol AssetDetailsWireframeProtocol: AnyObject, PurchasePresentable, AlertPresentable {
+protocol AssetDetailsWireframeProtocol: AnyObject,
+    RampActionsPresentable, RampPresentable, AlertPresentable,
+    MessageSheetPresentable, FeatureSupportChecking {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,
@@ -42,6 +44,10 @@ protocol AssetDetailsWireframeProtocol: AnyObject, PurchasePresentable, AlertPre
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
     func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
     func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    func dropModalFlow(
+        from view: AssetDetailsViewProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 enum AssetDetailsError: Error {

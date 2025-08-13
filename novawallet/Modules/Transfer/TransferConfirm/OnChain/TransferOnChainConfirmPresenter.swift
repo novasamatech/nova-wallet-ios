@@ -221,8 +221,6 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             return
         }
 
-        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
-
         let validators: [DataValidating] = baseValidators(
             for: amount.value,
             recepientAddress: recepientAccountAddress,
@@ -256,11 +254,18 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 }
 
 extension TransferOnChainConfirmPresenter: TransferConfirmOnChainInteractorOutputProtocol {
-    func didCompleteSubmition() {
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution?) {
         view?.didStopLoading()
-        wireframe.complete(on: view, locale: selectedLocale) { [transferCompletion, chainAsset] in
-            transferCompletion?(chainAsset)
-        }
+
+        // Note: that transferCompletion is not called for delayed transfers
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: sender,
+            completionAction: .dismissWithPostNavigation { [transferCompletion, chainAsset] in
+                transferCompletion?(chainAsset)
+            },
+            locale: selectedLocale
+        )
     }
 }
 

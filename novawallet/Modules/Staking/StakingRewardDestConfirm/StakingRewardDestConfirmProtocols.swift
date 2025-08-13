@@ -24,10 +24,9 @@ protocol StakingRewardDestConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
-    func didSubmitRewardDest(result: Result<String, Error>)
+    func didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol StakingRewardDestConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(from view: StakingRewardDestConfirmViewProtocol?)
-}
+    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

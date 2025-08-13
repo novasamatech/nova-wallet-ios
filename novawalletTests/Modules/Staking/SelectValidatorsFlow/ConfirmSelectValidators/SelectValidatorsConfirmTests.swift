@@ -131,7 +131,10 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).complete(from: any()).then { _ in
+            when(stub).presentExtrinsicSubmission(
+                from: any(),
+                params: any()
+            ).then { _ in
                 completionExpectation.fulfill()
             }
         }

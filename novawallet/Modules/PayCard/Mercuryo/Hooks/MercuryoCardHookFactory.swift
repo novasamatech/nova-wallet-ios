@@ -5,7 +5,7 @@ struct MercuryoCardParams {
     let refundAddress: AccountAddress
 }
 
-enum MercuryoCardApi {
+enum MercuryoApi {
     static let widgetUrl = URL(string: "https://exchange.mercuryo.io/")!
     static let widgetId = "4ce98182-ed76-4933-ba1b-b85e4a51d75a"
     static let theme = "nova"
@@ -15,6 +15,7 @@ enum MercuryoCardApi {
     static let hideRefundAddress = "true"
     static let cardsEndpoint = "https://api.mercuryo.io/v1.6/cards"
     static let topUpEndpoint = "https://api.mercuryo.io/v1.6/widget/sell-request"
+    static let buyEndpoint = "https://api.mercuryo.io/v1.6/widget/buy"
     static let pendingTimeout: TimeInterval = 5.secondsFromMinutes
 }
 

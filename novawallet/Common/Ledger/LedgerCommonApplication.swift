@@ -6,14 +6,16 @@ typealias LedgerPayloadClosure = () throws -> Data
 enum LedgerCryptoScheme: UInt8 {
     case ed25519 = 0x00
     case sr25519 = 0x01
+    case ecdsa = 0x02
 }
 
 enum LedgerConstants {
     static let chunkSize = 250
-    static let defaultCryptoScheme: LedgerCryptoScheme = .ed25519
+    static let defaultSubstrateCryptoScheme: LedgerCryptoScheme = .ed25519
+    static let defaultEvmCryptoScheme: LedgerCryptoScheme = .ecdsa
 }
 
-class SubstrateLedgerCommonApplication {
+class PolkadotLedgerCommonApplication {
     enum Instruction: UInt8 {
         case getAddress = 0x01
         case sign = 0x02
@@ -62,27 +64,27 @@ class SubstrateLedgerCommonApplication {
         }
     }
 
-    func createAccountResponseOperation(
+    func createAccountResponseOperation<A: LedgerAccountProtocol>(
         dependingOn sendOperation: LedgerSendOperation,
         path: Data
-    ) -> BaseOperation<LedgerAccountResponse> {
+    ) -> BaseOperation<LedgerAccountResponse<A>> {
         ClosureOperation {
             let data = try sendOperation.extractNoCancellableResultData()
 
-            let account = try LedgerResponse<LedgerAccount>(ledgerData: data).value
+            let account = try LedgerResponse<A>(ledgerData: data).value
 
             return LedgerAccountResponse(account: account, derivationPath: path)
         }
     }
 
-    func prepareAccountWrapper(
+    func prepareAccountWrapper<A: LedgerAccountProtocol>(
         for deviceId: UUID,
         cla: UInt8,
         derivationPath: Data,
         payloadClosure: @escaping LedgerPayloadClosure,
-        displayVerificationDialog: Bool = false,
-        cryptoScheme: LedgerCryptoScheme = LedgerConstants.defaultCryptoScheme
-    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
+        cryptoScheme: LedgerCryptoScheme,
+        displayVerificationDialog: Bool = false
+    ) -> CompoundOperationWrapper<LedgerAccountResponse<A>> {
         let messageOperation = createAccountMessageOperation(
             for: cla,
             payloadClosure: payloadClosure,
@@ -101,7 +103,10 @@ class SubstrateLedgerCommonApplication {
 
         sendOperation.addDependency(messageOperation)
 
-        let responseOperation = createAccountResponseOperation(dependingOn: sendOperation, path: derivationPath)
+        let responseOperation: BaseOperation<LedgerAccountResponse<A>> = createAccountResponseOperation(
+            dependingOn: sendOperation,
+            path: derivationPath
+        )
 
         responseOperation.addDependency(sendOperation)
 
@@ -114,8 +119,8 @@ class SubstrateLedgerCommonApplication {
     func prepareSignatureWrapper(
         for deviceId: UUID,
         cla: UInt8,
-        chunks: [LedgerPayloadClosure],
-        cryptoScheme: LedgerCryptoScheme = LedgerConstants.defaultCryptoScheme
+        cryptoScheme: LedgerCryptoScheme,
+        chunks: [LedgerPayloadClosure]
     ) -> CompoundOperationWrapper<Data> {
         let requestOperations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
             let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)

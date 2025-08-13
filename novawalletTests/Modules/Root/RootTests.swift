@@ -10,18 +10,20 @@ class RootTests: XCTestCase {
         let wireframe = MockRootWireframeProtocol()
 
         let keystore = InMemoryKeychain()
+        let settings = InMemorySettingsManager()
 
         let expectedPincode = "123456"
         try keystore.saveKey(expectedPincode.data(using: .utf8)!,
                              with: KeystoreTag.pincode.rawValue)
 
-        let settings = SelectedWalletSettings(
+        let walletSettings = SelectedWalletSettings(
             storageFacade: UserDataStorageTestFacade(),
             operationQueue: OperationQueue()
         )
 
         let presenter = createPresenter(
             wireframe: wireframe,
+            walletSettings: walletSettings,
             settings: settings,
             keystore: keystore
         )
@@ -52,18 +54,20 @@ class RootTests: XCTestCase {
         // given
 
         let wireframe = MockRootWireframeProtocol()
+        let settings = InMemorySettingsManager()
 
-        let settings = SelectedWalletSettings(
+        let walletSettings = SelectedWalletSettings(
             storageFacade: UserDataStorageTestFacade(),
             operationQueue: OperationQueue()
         )
 
         let selectedAccount = AccountGenerator.generateMetaAccount()
-        settings.save(value: selectedAccount)
+        walletSettings.save(value: selectedAccount)
 
         let keystore = InMemoryKeychain()
 
         let presenter = createPresenter(wireframe: wireframe,
+                                        walletSettings: walletSettings,
                                         settings: settings,
                                         keystore: keystore)
 
@@ -90,20 +94,22 @@ class RootTests: XCTestCase {
         let wireframe = MockRootWireframeProtocol()
 
         let keystore = InMemoryKeychain()
+        let settings = InMemorySettingsManager()
 
-        let settings = SelectedWalletSettings(
+        let walletSettings = SelectedWalletSettings(
             storageFacade: UserDataStorageTestFacade(),
             operationQueue: OperationQueue()
         )
 
         let selectedAccount = AccountGenerator.generateMetaAccount()
-        settings.save(value: selectedAccount)
+        walletSettings.save(value: selectedAccount)
 
         let expectedPincode = "123456"
         try keystore.saveKey(expectedPincode.data(using: .utf8)!,
                              with: KeystoreTag.pincode.rawValue)
 
         let presenter = createPresenter(wireframe: wireframe,
+                                        walletSettings: walletSettings,
                                         settings: settings,
                                         keystore: keystore)
 
@@ -126,7 +132,8 @@ class RootTests: XCTestCase {
 
     private func createPresenter(
         wireframe: MockRootWireframeProtocol,
-        settings: SelectedWalletSettings,
+        walletSettings: SelectedWalletSettings,
+        settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         securityLayerInteractor: SecurityLayerInteractorInputProtocol? = nil,
         migrators: [Migrating] = []
@@ -146,7 +153,8 @@ class RootTests: XCTestCase {
             actualSecurityLayerInteractor = mockLayer
         }
 
-        let interactor = RootInteractor(settings: settings,
+        let interactor = RootInteractor(walletSettings: walletSettings,
+                                        settings: settings,
                                         keystore: keystore,
                                         applicationConfig: ApplicationConfig.shared,
                                         securityLayerInteractor: actualSecurityLayerInteractor,

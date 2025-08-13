@@ -243,6 +243,105 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+import Operation_iOS
+
+
+ class MockIPAddressProviderProtocol: IPAddressProviderProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = IPAddressProviderProtocol
+    
+     typealias Stubbing = __StubbingProxy_IPAddressProviderProtocol
+     typealias Verification = __VerificationProxy_IPAddressProviderProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: IPAddressProviderProtocol?
+
+     func enableDefaultImplementation(_ stub: IPAddressProviderProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String> {
+        
+    return cuckoo_manager.call("createIPAddressOperation() -> BaseOperation<String>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createIPAddressOperation())
+        
+    }
+    
+
+	 struct __StubbingProxy_IPAddressProviderProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createIPAddressOperation() -> Cuckoo.ProtocolStubFunction<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockIPAddressProviderProtocol.self, method: "createIPAddressOperation() -> BaseOperation<String>", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_IPAddressProviderProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createIPAddressOperation() -> Cuckoo.__DoNotUse<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createIPAddressOperation() -> BaseOperation<String>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class IPAddressProviderProtocolStub: IPAddressProviderProtocol {
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String>  {
+        return DefaultValueRegistry.defaultValue(for: (BaseOperation<String>).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 import Foundation_iOS
 
 
@@ -796,6 +895,230 @@ import Cuckoo
 @testable import novawallet
 
 import UIKit
+
+
+ class MockExtrinsicSubmissionCompliting: ExtrinsicSubmissionCompliting, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = ExtrinsicSubmissionCompliting
+    
+     typealias Stubbing = __StubbingProxy_ExtrinsicSubmissionCompliting
+     typealias Verification = __VerificationProxy_ExtrinsicSubmissionCompliting
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: ExtrinsicSubmissionCompliting?
+
+     func enableDefaultImplementation(_ stub: ExtrinsicSubmissionCompliting) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool {
+        
+    return cuckoo_manager.call("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool",
+            parameters: (view, alertPresenting, params),
+            escapingParameters: (view, alertPresenting, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.handleCompletion(from: view, alertPresenting: alertPresenting, params: params))
+        
+    }
+    
+
+	 struct __StubbingProxy_ExtrinsicSubmissionCompliting: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, alertPresenting: M2, params: M3) -> Cuckoo.ProtocolStubFunction<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: params) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionCompliting.self, method: "handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_ExtrinsicSubmissionCompliting: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, alertPresenting: M2, params: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: params) { $0.2 }]
+	        return cuckoo_manager.verify("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class ExtrinsicSubmissionComplitingStub: ExtrinsicSubmissionCompliting {
+    
+
+    
+
+    
+    
+    
+     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool  {
+        return DefaultValueRegistry.defaultValue(for: (Bool).self)
+    }
+    
+}
+
+
+
+ class MockExtrinsicSubmissionPresenting: ExtrinsicSubmissionPresenting, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = ExtrinsicSubmissionPresenting
+    
+     typealias Stubbing = __StubbingProxy_ExtrinsicSubmissionPresenting
+     typealias Verification = __VerificationProxy_ExtrinsicSubmissionPresenting
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: ExtrinsicSubmissionPresenting?
+
+     func enableDefaultImplementation(_ stub: ExtrinsicSubmissionPresenting) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
+
+	 struct __StubbingProxy_ExtrinsicSubmissionPresenting: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockExtrinsicSubmissionPresenting, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
+	    }
+	    
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionPresenting.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_ExtrinsicSubmissionPresenting: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class ExtrinsicSubmissionPresentingStub: ExtrinsicSubmissionPresenting {
+        
+    
+    
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import UIKit
 import UIKit_iOS
 
 
@@ -1276,14 +1599,14 @@ import Foundation
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return cuckoo_manager.getter("proxySyncService",
+            return cuckoo_manager.getter("delegatedAccountSyncService",
                 superclassCall:
                     
                     Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                     ,
-                defaultCall: __defaultImplStub!.proxySyncService)
+                defaultCall: __defaultImplStub!.delegatedAccountSyncService)
         }
         
     }
@@ -1316,8 +1639,8 @@ import Foundation
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockWalletSwitchPresentable, ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService")
+	    var delegatedAccountSyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockWalletSwitchPresentable, DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService")
 	    }
 	    
 	    
@@ -1341,8 +1664,8 @@ import Foundation
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    var delegatedAccountSyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
@@ -1360,9 +1683,9 @@ import Foundation
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }
@@ -1486,6 +1809,104 @@ import Cuckoo
 import Foundation
 
 
+ class MockMerchantTransactionIdFactoryProtocol: MerchantTransactionIdFactoryProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = MerchantTransactionIdFactoryProtocol
+    
+     typealias Stubbing = __StubbingProxy_MerchantTransactionIdFactoryProtocol
+     typealias Verification = __VerificationProxy_MerchantTransactionIdFactoryProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: MerchantTransactionIdFactoryProtocol?
+
+     func enableDefaultImplementation(_ stub: MerchantTransactionIdFactoryProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String {
+        
+    return cuckoo_manager.call("createTransactionId() -> String",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createTransactionId())
+        
+    }
+    
+
+	 struct __StubbingProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createTransactionId() -> Cuckoo.ProtocolStubFunction<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockMerchantTransactionIdFactoryProtocol.self, method: "createTransactionId() -> String", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createTransactionId() -> Cuckoo.__DoNotUse<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createTransactionId() -> String", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class MerchantTransactionIdFactoryProtocolStub: MerchantTransactionIdFactoryProtocol {
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String  {
+        return DefaultValueRegistry.defaultValue(for: (String).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import Foundation
+
+
  class MockApplicationServiceProtocol: ApplicationServiceProtocol, Cuckoo.ProtocolMock {
     
      typealias MocksType = ApplicationServiceProtocol
@@ -1594,297 +2015,6 @@ import Foundation
 
     
 
-    
-    
-    
-     func setup()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func throttle()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-import Cuckoo
-@testable import novawallet
-
-import Foundation
-import Operation_iOS
-
-
- class MockProxySyncServiceProtocol: ProxySyncServiceProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = ProxySyncServiceProtocol
-    
-     typealias Stubbing = __StubbingProxy_ProxySyncServiceProtocol
-     typealias Verification = __VerificationProxy_ProxySyncServiceProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: ProxySyncServiceProtocol?
-
-     func enableDefaultImplementation(_ stub: ProxySyncServiceProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)  {
-        
-    return cuckoo_manager.call("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)",
-            parameters: (target, queue, closure),
-            escapingParameters: (target, queue, closure),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.subscribeSyncState(target, queue: queue, closure: closure))
-        
-    }
-    
-    
-    
-     func unsubscribeSyncState(_ target: AnyObject)  {
-        
-    return cuckoo_manager.call("unsubscribeSyncState(_: AnyObject)",
-            parameters: (target),
-            escapingParameters: (target),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.unsubscribeSyncState(target))
-        
-    }
-    
-    
-    
-     func updateWalletsStatuses()  {
-        
-    return cuckoo_manager.call("updateWalletsStatuses()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.updateWalletsStatuses())
-        
-    }
-    
-    
-    
-     func syncUp()  {
-        
-    return cuckoo_manager.call("syncUp()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.syncUp())
-        
-    }
-    
-    
-    
-     func syncUp(chainId: ChainModel.Id, blockHash: Data?)  {
-        
-    return cuckoo_manager.call("syncUp(chainId: ChainModel.Id, blockHash: Data?)",
-            parameters: (chainId, blockHash),
-            escapingParameters: (chainId, blockHash),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.syncUp(chainId: chainId, blockHash: blockHash))
-        
-    }
-    
-    
-    
-     func setup()  {
-        
-    return cuckoo_manager.call("setup()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setup())
-        
-    }
-    
-    
-    
-     func throttle()  {
-        
-    return cuckoo_manager.call("throttle()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.throttle())
-        
-    }
-    
-
-	 struct __StubbingProxy_ProxySyncServiceProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (ProxySyncServiceState, ProxySyncServiceState) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)", parameterMatchers: matchers))
-	    }
-	    
-	    func unsubscribeSyncState<M1: Cuckoo.Matchable>(_ target: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject)> where M1.MatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject)>] = [wrap(matchable: target) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "unsubscribeSyncState(_: AnyObject)", parameterMatchers: matchers))
-	    }
-	    
-	    func updateWalletsStatuses() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "updateWalletsStatuses()", parameterMatchers: matchers))
-	    }
-	    
-	    func syncUp() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp()", parameterMatchers: matchers))
-	    }
-	    
-	    func syncUp<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(chainId: M1, blockHash: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id, Data?)> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == Data {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Data?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: blockHash) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp(chainId: ChainModel.Id, blockHash: Data?)", parameterMatchers: matchers))
-	    }
-	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
-	    }
-	    
-	    func throttle() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "throttle()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_ProxySyncServiceProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.__DoNotUse<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void), Void> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (ProxySyncServiceState, ProxySyncServiceState) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return cuckoo_manager.verify("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func unsubscribeSyncState<M1: Cuckoo.Matchable>(_ target: M1) -> Cuckoo.__DoNotUse<(AnyObject), Void> where M1.MatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject)>] = [wrap(matchable: target) { $0 }]
-	        return cuckoo_manager.verify("unsubscribeSyncState(_: AnyObject)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func updateWalletsStatuses() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("updateWalletsStatuses()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func syncUp() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("syncUp()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func syncUp<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(chainId: M1, blockHash: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, Data?), Void> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == Data {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Data?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: blockHash) { $0.1 }]
-	        return cuckoo_manager.verify("syncUp(chainId: ChainModel.Id, blockHash: Data?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func throttle() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("throttle()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class ProxySyncServiceProtocolStub: ProxySyncServiceProtocol {
-    
-
-    
-
-    
-    
-    
-     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func unsubscribeSyncState(_ target: AnyObject)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func updateWalletsStatuses()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func syncUp()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func syncUp(chainId: ChainModel.Id, blockHash: Data?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
     
     
     
@@ -4701,16 +4831,16 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
+     func didReceive(response: DAppScriptResponse)  {
         
-    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
-            parameters: (response, name),
-            escapingParameters: (response, name),
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse)",
+            parameters: (response),
+            escapingParameters: (response),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
+            defaultCall: __defaultImplStub!.didReceive(response: response))
         
     }
     
@@ -4848,9 +4978,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse)> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], DAppScriptResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
@@ -4927,9 +5057,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppScriptResponse), Void> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5015,7 +5145,7 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
+     func didReceive(response: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -6040,16 +6170,16 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
+     func didReceive(response: DAppScriptResponse)  {
         
-    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
-            parameters: (response, name),
-            escapingParameters: (response, name),
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse)",
+            parameters: (response),
+            escapingParameters: (response),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
+            defaultCall: __defaultImplStub!.didReceive(response: response))
         
     }
     
@@ -6187,9 +6317,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse)> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest, DAppSigningType)> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
@@ -6268,9 +6398,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppScriptResponse), Void> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6350,7 +6480,7 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
+     func didReceive(response: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -7534,14 +7664,14 @@ import SubstrateSdk
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return cuckoo_manager.getter("proxySyncService",
+            return cuckoo_manager.getter("delegatedAccountSyncService",
                 superclassCall:
                     
                     Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                     ,
-                defaultCall: __defaultImplStub!.proxySyncService)
+                defaultCall: __defaultImplStub!.delegatedAccountSyncService)
         }
         
     }
@@ -7619,8 +7749,8 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppListWireframeProtocol, ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService")
+	    var delegatedAccountSyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppListWireframeProtocol, DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService")
 	    }
 	    
 	    
@@ -7659,8 +7789,8 @@ import SubstrateSdk
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    var delegatedAccountSyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
@@ -7696,9 +7826,9 @@ import SubstrateSdk
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }
@@ -12663,16 +12793,16 @@ import NovaCrypto
     
     
     
-     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)  {
+     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from origin: SecretSource.Origin)  {
         
-    return cuckoo_manager.call("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)",
-            parameters: (request),
-            escapingParameters: (request),
+    return cuckoo_manager.call("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)",
+            parameters: (request, origin),
+            escapingParameters: (request, origin),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.importAccountWithMnemonic(request: request))
+            defaultCall: __defaultImplStub!.importAccountWithMnemonic(request: request, from: origin))
         
     }
     
@@ -12780,9 +12910,9 @@ import NovaCrypto
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func importAccountWithMnemonic<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMnemonicRequest)> where M1.MatchedType == MetaAccountImportMnemonicRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest)>] = [wrap(matchable: request) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)", parameterMatchers: matchers))
+	    func importAccountWithMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, from origin: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMnemonicRequest, SecretSource.Origin)> where M1.MatchedType == MetaAccountImportMnemonicRequest, M2.MatchedType == SecretSource.Origin {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest, SecretSource.Origin)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: origin) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)", parameterMatchers: matchers))
 	    }
 	    
 	    func importAccountWithSeed<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportSeedRequest)> where M1.MatchedType == MetaAccountImportSeedRequest {
@@ -12838,9 +12968,9 @@ import NovaCrypto
 	    }
 	    
 	    @discardableResult
-	    func importAccountWithMnemonic<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(MetaAccountImportMnemonicRequest), Void> where M1.MatchedType == MetaAccountImportMnemonicRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest)>] = [wrap(matchable: request) { $0 }]
-	        return cuckoo_manager.verify("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func importAccountWithMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, from origin: M2) -> Cuckoo.__DoNotUse<(MetaAccountImportMnemonicRequest, SecretSource.Origin), Void> where M1.MatchedType == MetaAccountImportMnemonicRequest, M2.MatchedType == SecretSource.Origin {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest, SecretSource.Origin)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: origin) { $0.1 }]
+	        return cuckoo_manager.verify("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -12896,7 +13026,7 @@ import NovaCrypto
     
     
     
-     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)   {
+     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from origin: SecretSource.Origin)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -12965,21 +13095,6 @@ import NovaCrypto
     
     
     
-     func didReceiveAccountImport(metadata: MetaAccountImportMetadata)  {
-        
-    return cuckoo_manager.call("didReceiveAccountImport(metadata: MetaAccountImportMetadata)",
-            parameters: (metadata),
-            escapingParameters: (metadata),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceiveAccountImport(metadata: metadata))
-        
-    }
-    
-    
-    
      func didCompleteAccountImport()  {
         
     return cuckoo_manager.call("didCompleteAccountImport()",
@@ -13010,16 +13125,16 @@ import NovaCrypto
     
     
     
-     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)  {
+     func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)  {
         
-    return cuckoo_manager.call("didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)",
+    return cuckoo_manager.call("didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)",
             parameters: (text, preferredInfo),
             escapingParameters: (text, preferredInfo),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didSuggestKeystore(text: text, preferredInfo: preferredInfo))
+            defaultCall: __defaultImplStub!.didSuggestSecret(text: text, preferredInfo: preferredInfo))
         
     }
     
@@ -13032,11 +13147,6 @@ import NovaCrypto
 	    }
 	    
 	    
-	    func didReceiveAccountImport<M1: Cuckoo.Matchable>(metadata: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMetadata)> where M1.MatchedType == MetaAccountImportMetadata {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMetadata)>] = [wrap(matchable: metadata) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didReceiveAccountImport(metadata: MetaAccountImportMetadata)", parameterMatchers: matchers))
-	    }
-	    
 	    func didCompleteAccountImport() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didCompleteAccountImport()", parameterMatchers: matchers))
@@ -13047,9 +13157,9 @@ import NovaCrypto
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didReceiveAccountImport(error: Error)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSuggestKeystore<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(text: M1, preferredInfo: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(String, MetaAccountImportPreferredInfo?)> where M1.MatchedType == String, M2.OptionalMatchedType == MetaAccountImportPreferredInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo?)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)", parameterMatchers: matchers))
+	    func didSuggestSecret<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(text: M1, preferredInfo: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(String, MetaAccountImportPreferredInfo)> where M1.MatchedType == String, M2.MatchedType == MetaAccountImportPreferredInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -13069,12 +13179,6 @@ import NovaCrypto
 	
 	    
 	    @discardableResult
-	    func didReceiveAccountImport<M1: Cuckoo.Matchable>(metadata: M1) -> Cuckoo.__DoNotUse<(MetaAccountImportMetadata), Void> where M1.MatchedType == MetaAccountImportMetadata {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMetadata)>] = [wrap(matchable: metadata) { $0 }]
-	        return cuckoo_manager.verify("didReceiveAccountImport(metadata: MetaAccountImportMetadata)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func didCompleteAccountImport() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("didCompleteAccountImport()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -13087,9 +13191,9 @@ import NovaCrypto
 	    }
 	    
 	    @discardableResult
-	    func didSuggestKeystore<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(text: M1, preferredInfo: M2) -> Cuckoo.__DoNotUse<(String, MetaAccountImportPreferredInfo?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == MetaAccountImportPreferredInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo?)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
-	        return cuckoo_manager.verify("didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSuggestSecret<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(text: M1, preferredInfo: M2) -> Cuckoo.__DoNotUse<(String, MetaAccountImportPreferredInfo), Void> where M1.MatchedType == String, M2.MatchedType == MetaAccountImportPreferredInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
+	        return cuckoo_manager.verify("didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -13100,12 +13204,6 @@ import NovaCrypto
 
     
 
-    
-    
-    
-     func didReceiveAccountImport(metadata: MetaAccountImportMetadata)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
     
     
     
@@ -13121,7 +13219,7 @@ import NovaCrypto
     
     
     
-     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)   {
+     func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14314,61 +14412,31 @@ import Operation_iOS
     
     
     
-     func set(nameViewModel: InputViewModelProtocol)  {
+     func didReceive(walletViewModel: AccountManageWalletViewModel)  {
         
-    return cuckoo_manager.call("set(nameViewModel: InputViewModelProtocol)",
+    return cuckoo_manager.call("didReceive(walletViewModel: AccountManageWalletViewModel)",
+            parameters: (walletViewModel),
+            escapingParameters: (walletViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(walletViewModel: walletViewModel))
+        
+    }
+    
+    
+    
+     func didReceive(nameViewModel: InputViewModelProtocol)  {
+        
+    return cuckoo_manager.call("didReceive(nameViewModel: InputViewModelProtocol)",
             parameters: (nameViewModel),
             escapingParameters: (nameViewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.set(nameViewModel: nameViewModel))
-        
-    }
-    
-    
-    
-     func set(walletType: WalletsListSectionViewModel.SectionType)  {
-        
-    return cuckoo_manager.call("set(walletType: WalletsListSectionViewModel.SectionType)",
-            parameters: (walletType),
-            escapingParameters: (walletType),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.set(walletType: walletType))
-        
-    }
-    
-    
-    
-     func setProxy(viewModel: AccountProxyViewModel)  {
-        
-    return cuckoo_manager.call("setProxy(viewModel: AccountProxyViewModel)",
-            parameters: (viewModel),
-            escapingParameters: (viewModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setProxy(viewModel: viewModel))
-        
-    }
-    
-    
-    
-     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)  {
-        
-    return cuckoo_manager.call("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)",
-            parameters: (migrationViewModel),
-            escapingParameters: (migrationViewModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setLedger(migrationViewModel: migrationViewModel))
+            defaultCall: __defaultImplStub!.didReceive(nameViewModel: nameViewModel))
         
     }
     
@@ -14396,24 +14464,14 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "reload()", parameterMatchers: matchers))
 	    }
 	    
-	    func set<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
+	    func didReceive<M1: Cuckoo.Matchable>(walletViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManageWalletViewModel)> where M1.MatchedType == AccountManageWalletViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManageWalletViewModel)>] = [wrap(matchable: walletViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "didReceive(walletViewModel: AccountManageWalletViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: nameViewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(nameViewModel: InputViewModelProtocol)", parameterMatchers: matchers))
-	    }
-	    
-	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletsListSectionViewModel.SectionType)> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(walletType: WalletsListSectionViewModel.SectionType)", parameterMatchers: matchers))
-	    }
-	    
-	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountProxyViewModel)> where M1.MatchedType == AccountProxyViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setProxy(viewModel: AccountProxyViewModel)", parameterMatchers: matchers))
-	    }
-	    
-	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LedgerMigrationBannerView.ViewModel)> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "didReceive(nameViewModel: InputViewModelProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14449,27 +14507,15 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.__DoNotUse<(InputViewModelProtocol), Void> where M1.MatchedType == InputViewModelProtocol {
+	    func didReceive<M1: Cuckoo.Matchable>(walletViewModel: M1) -> Cuckoo.__DoNotUse<(AccountManageWalletViewModel), Void> where M1.MatchedType == AccountManageWalletViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManageWalletViewModel)>] = [wrap(matchable: walletViewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(walletViewModel: AccountManageWalletViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.__DoNotUse<(InputViewModelProtocol), Void> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: nameViewModel) { $0 }]
-	        return cuckoo_manager.verify("set(nameViewModel: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.__DoNotUse<(WalletsListSectionViewModel.SectionType), Void> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
-	        return cuckoo_manager.verify("set(walletType: WalletsListSectionViewModel.SectionType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AccountProxyViewModel), Void> where M1.MatchedType == AccountProxyViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("setProxy(viewModel: AccountProxyViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.__DoNotUse<(LedgerMigrationBannerView.ViewModel), Void> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
-	        return cuckoo_manager.verify("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("didReceive(nameViewModel: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -14507,25 +14553,13 @@ import Operation_iOS
     
     
     
-     func set(nameViewModel: InputViewModelProtocol)   {
+     func didReceive(walletViewModel: AccountManageWalletViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func set(walletType: WalletsListSectionViewModel.SectionType)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func setProxy(viewModel: AccountProxyViewModel)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)   {
+     func didReceive(nameViewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14633,6 +14667,21 @@ import Operation_iOS
     
     
     
+     func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>? {
+        
+    return cuckoo_manager.call("actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?",
+            parameters: (section),
+            escapingParameters: (section),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.actionForSection(section))
+        
+    }
+    
+    
+    
      func activateDetails(at indexPath: IndexPath)  {
         
     return cuckoo_manager.call("activateDetails(at: IndexPath)",
@@ -14658,6 +14707,21 @@ import Operation_iOS
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.selectItem(at: indexPath))
+        
+    }
+    
+    
+    
+     func activateActionInSection(_ section: Int)  {
+        
+    return cuckoo_manager.call("activateActionInSection(_: Int)",
+            parameters: (section),
+            escapingParameters: (section),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateActionInSection(section))
         
     }
     
@@ -14710,6 +14774,11 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "titleForSection(_: Int) -> LocalizableResource<String>?", parameterMatchers: matchers))
 	    }
 	    
+	    func actionForSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.ProtocolStubFunction<(Int), LocalizableResource<IconWithTitleViewModel>?> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?", parameterMatchers: matchers))
+	    }
+	    
 	    func activateDetails<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(IndexPath)> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "activateDetails(at: IndexPath)", parameterMatchers: matchers))
@@ -14718,6 +14787,11 @@ import Operation_iOS
 	    func selectItem<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(IndexPath)> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "selectItem(at: IndexPath)", parameterMatchers: matchers))
+	    }
+	    
+	    func activateActionInSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "activateActionInSection(_: Int)", parameterMatchers: matchers))
 	    }
 	    
 	    func finalizeName() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -14772,6 +14846,12 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
+	    func actionForSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.__DoNotUse<(Int), LocalizableResource<IconWithTitleViewModel>?> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return cuckoo_manager.verify("actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func activateDetails<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.__DoNotUse<(IndexPath), Void> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return cuckoo_manager.verify("activateDetails(at: IndexPath)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -14781,6 +14861,12 @@ import Operation_iOS
 	    func selectItem<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.__DoNotUse<(IndexPath), Void> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return cuckoo_manager.verify("selectItem(at: IndexPath)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateActionInSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return cuckoo_manager.verify("activateActionInSection(_: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14830,6 +14916,12 @@ import Operation_iOS
     
     
     
+     func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>?  {
+        return DefaultValueRegistry.defaultValue(for: (LocalizableResource<IconWithTitleViewModel>?).self)
+    }
+    
+    
+    
      func activateDetails(at indexPath: IndexPath)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -14837,6 +14929,12 @@ import Operation_iOS
     
     
      func selectItem(at indexPath: IndexPath)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func activateActionInSection(_ section: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15156,16 +15254,16 @@ import Operation_iOS
     
     
     
-     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)  {
+     func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)  {
         
-    return cuckoo_manager.call("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)",
+    return cuckoo_manager.call("didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveProxyWallet(result))
+            defaultCall: __defaultImplStub!.didReceiveDelegateWallet(result))
         
     }
     
@@ -15228,9 +15326,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	    func didReceiveDelegateWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveCloudBackup<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CloudBackupSyncState)> where M1.MatchedType == CloudBackupSyncState {
@@ -15284,9 +15382,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(Result<MetaAccountModel?, Error>), Void> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	    func didReceiveDelegateWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(Result<MetaAccountModel?, Error>), Void> where M1.MatchedType == Result<MetaAccountModel?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15336,7 +15434,7 @@ import Operation_iOS
     
     
     
-     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)   {
+     func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15456,6 +15554,21 @@ import Operation_iOS
     
     
     
+     func showAddGenericLedgerEvmAccounts(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)  {
+        
+    return cuckoo_manager.call("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)",
+            parameters: (view, wallet),
+            escapingParameters: (view, wallet),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAddGenericLedgerEvmAccounts(from: view, wallet: wallet))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -15563,6 +15676,11 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddLedgerAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -15635,6 +15753,12 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
+	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return cuckoo_manager.verify("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15700,6 +15824,12 @@ import Operation_iOS
     
     
      func showAddLedgerAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAddGenericLedgerEvmAccounts(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17818,6 +17948,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Foundation_iOS
 
 
  class MockOnboardingMainViewProtocol: OnboardingMainViewProtocol, Cuckoo.ProtocolMock {
@@ -18238,6 +18369,21 @@ import Foundation
     
     
     
+     func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)  {
+        
+    return cuckoo_manager.call("showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)",
+            parameters: (view, message),
+            escapingParameters: (view, message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showWalletMigration(from: view, message: message))
+        
+    }
+    
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -18305,6 +18451,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)", parameterMatchers: matchers))
 	    }
 	    
+	    func showWalletMigration<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, message: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: message) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)", parameterMatchers: matchers))
+	    }
+	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
@@ -18355,6 +18506,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func showWalletMigration<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, message: M2) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: message) { $0.1 }]
+	        return cuckoo_manager.verify("showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -18396,6 +18553,12 @@ import Foundation
     
     
      func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -18554,6 +18717,21 @@ import Foundation
     
     
     
+     func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)  {
+        
+    return cuckoo_manager.call("didSuggestWalletMigration(with: WalletMigrationMessage.Start)",
+            parameters: (message),
+            escapingParameters: (message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSuggestWalletMigration(with: message))
+        
+    }
+    
+    
+    
      func didReceiveError(_ error: Error)  {
         
     return cuckoo_manager.call("didReceiveError(_: Error)",
@@ -18579,6 +18757,11 @@ import Foundation
 	    func didSuggestSecretImport<M1: Cuckoo.Matchable>(source: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SecretSource)> where M1.MatchedType == SecretSource {
 	        let matchers: [Cuckoo.ParameterMatcher<(SecretSource)>] = [wrap(matchable: source) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestSecretImport(source: SecretSource)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSuggestWalletMigration<M1: Cuckoo.Matchable>(with message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletMigrationMessage.Start)> where M1.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletMigrationMessage.Start)>] = [wrap(matchable: message) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestWalletMigration(with: WalletMigrationMessage.Start)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
@@ -18609,6 +18792,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func didSuggestWalletMigration<M1: Cuckoo.Matchable>(with message: M1) -> Cuckoo.__DoNotUse<(WalletMigrationMessage.Start), Void> where M1.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletMigrationMessage.Start)>] = [wrap(matchable: message) { $0 }]
+	        return cuckoo_manager.verify("didSuggestWalletMigration(with: WalletMigrationMessage.Start)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
 	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
 	        return cuckoo_manager.verify("didReceiveError(_: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -18626,6 +18815,12 @@ import Foundation
     
     
      func didSuggestSecretImport(source: SecretSource)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -22912,14 +23107,14 @@ import UIKit.UIImage
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return cuckoo_manager.getter("proxySyncService",
+            return cuckoo_manager.getter("delegatedAccountSyncService",
                 superclassCall:
                     
                     Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                     ,
-                defaultCall: __defaultImplStub!.proxySyncService)
+                defaultCall: __defaultImplStub!.delegatedAccountSyncService)
         }
         
     }
@@ -23125,6 +23320,21 @@ import UIKit.UIImage
     
     
     
+     func authorize(animated: Bool, cancellable: Bool, with completionBlock: @escaping AuthorizationCompletionBlock)  {
+        
+    return cuckoo_manager.call("authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)",
+            parameters: (animated, cancellable, completionBlock),
+            escapingParameters: (animated, cancellable, completionBlock),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.authorize(animated: animated, cancellable: cancellable, with: completionBlock))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -23222,8 +23432,8 @@ import UIKit.UIImage
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSettingsWireframeProtocol, ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService")
+	    var delegatedAccountSyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSettingsWireframeProtocol, DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService")
 	    }
 	    
 	    
@@ -23292,6 +23502,11 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showAppearance(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func authorize<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(animated: M1, cancellable: M2, with completionBlock: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool, Bool, AuthorizationCompletionBlock)> where M1.MatchedType == Bool, M2.MatchedType == Bool, M3.MatchedType == AuthorizationCompletionBlock {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool, Bool, AuthorizationCompletionBlock)>] = [wrap(matchable: animated) { $0.0 }, wrap(matchable: cancellable) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -23337,8 +23552,8 @@ import UIKit.UIImage
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
-	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    var delegatedAccountSyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
+	        return .init(manager: cuckoo_manager, name: "delegatedAccountSyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
@@ -23422,6 +23637,12 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
+	    func authorize<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(animated: M1, cancellable: M2, with completionBlock: M3) -> Cuckoo.__DoNotUse<(Bool, Bool, AuthorizationCompletionBlock), Void> where M1.MatchedType == Bool, M2.MatchedType == Bool, M3.MatchedType == AuthorizationCompletionBlock {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool, Bool, AuthorizationCompletionBlock)>] = [wrap(matchable: animated) { $0.0 }, wrap(matchable: cancellable) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
+	        return cuckoo_manager.verify("authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -23464,9 +23685,9 @@ import UIKit.UIImage
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }
@@ -23550,6 +23771,12 @@ import UIKit.UIImage
     
     
      func showAppearance(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func authorize(animated: Bool, cancellable: Bool, with completionBlock: @escaping AuthorizationCompletionBlock)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -27999,16 +28226,16 @@ import Foundation_iOS
     
     
     
-     func didCompleteNomination(txHash: String)  {
+     func didCompleteNomination(submission: ExtrinsicSubmittedModel)  {
         
-    return cuckoo_manager.call("didCompleteNomination(txHash: String)",
-            parameters: (txHash),
-            escapingParameters: (txHash),
+    return cuckoo_manager.call("didCompleteNomination(submission: ExtrinsicSubmittedModel)",
+            parameters: (submission),
+            escapingParameters: (submission),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didCompleteNomination(txHash: txHash))
+            defaultCall: __defaultImplStub!.didCompleteNomination(submission: submission))
         
     }
     
@@ -28106,9 +28333,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didStartNomination()", parameterMatchers: matchers))
 	    }
 	    
-	    func didCompleteNomination<M1: Cuckoo.Matchable>(txHash: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: txHash) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didCompleteNomination(txHash: String)", parameterMatchers: matchers))
+	    func didCompleteNomination<M1: Cuckoo.Matchable>(submission: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExtrinsicSubmittedModel)> where M1.MatchedType == ExtrinsicSubmittedModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicSubmittedModel)>] = [wrap(matchable: submission) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmInteractorOutputProtocol.self, method: "didCompleteNomination(submission: ExtrinsicSubmittedModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didFailNomination<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
@@ -28191,9 +28418,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didCompleteNomination<M1: Cuckoo.Matchable>(txHash: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: txHash) { $0 }]
-	        return cuckoo_manager.verify("didCompleteNomination(txHash: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didCompleteNomination<M1: Cuckoo.Matchable>(submission: M1) -> Cuckoo.__DoNotUse<(ExtrinsicSubmittedModel), Void> where M1.MatchedType == ExtrinsicSubmittedModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicSubmittedModel)>] = [wrap(matchable: submission) { $0 }]
+	        return cuckoo_manager.verify("didCompleteNomination(submission: ExtrinsicSubmittedModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -28273,7 +28500,7 @@ import Foundation_iOS
     
     
     
-     func didCompleteNomination(txHash: String)   {
+     func didCompleteNomination(submission: ExtrinsicSubmittedModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -28318,24 +28545,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: SelectValidatorsConfirmViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: SelectValidatorsConfirmViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -28367,6 +28593,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_SelectValidatorsConfirmWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -28376,10 +28647,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectValidatorsConfirmViewProtocol?)> where M1.OptionalMatchedType == SelectValidatorsConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(SelectValidatorsConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "complete(from: SelectValidatorsConfirmViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSelectValidatorsConfirmWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -28389,6 +28660,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -28405,13 +28691,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(SelectValidatorsConfirmViewProtocol?), Void> where M1.OptionalMatchedType == SelectValidatorsConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(SelectValidatorsConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: SelectValidatorsConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -28425,20 +28710,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class SelectValidatorsConfirmWireframeProtocolStub: SelectValidatorsConfirmWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: SelectValidatorsConfirmViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -28449,6 +28755,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -34584,6 +34908,7 @@ import Cuckoo
 
 import BigInt
 import Foundation_iOS
+import Operation_iOS
 
 
  class MockStakingBondMoreViewProtocol: StakingBondMoreViewProtocol, Cuckoo.ProtocolMock {
@@ -35313,6 +35638,21 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveStakingMigratedToHold(result: result))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingBondMoreInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -35350,6 +35690,11 @@ import Foundation_iOS
 	    func didReceiveStakingLedger<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<StakingLedger?, Error>)> where M1.MatchedType == Result<StakingLedger?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<StakingLedger?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Bool, Error>)> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -35404,6 +35749,12 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Bool, Error>), Void> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -35446,6 +35797,12 @@ import Foundation_iOS
     
     
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36507,9 +36864,24 @@ import Foundation_iOS
     
     
     
-     func didSubmitBonding(result: Result<String, Error>)  {
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)  {
         
-    return cuckoo_manager.call("didSubmitBonding(result: Result<String, Error>)",
+    return cuckoo_manager.call("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveStakingMigratedToHold(result: result))
+        
+    }
+    
+    
+    
+     func didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)  {
+        
+    return cuckoo_manager.call("didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -36559,9 +36931,14 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didSubmitBonding(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Bool, Error>)> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -36617,9 +36994,15 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitBonding(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Bool, Error>), Void> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -36669,7 +37052,13 @@ import Foundation_iOS
     
     
     
-     func didSubmitBonding(result: Result<String, Error>)   {
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36696,24 +37085,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingBondMoreConfirmationViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingBondMoreConfirmationViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -36745,6 +37133,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingBondMoreConfirmationWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -36754,10 +37187,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingBondMoreConfirmationViewProtocol?)> where M1.OptionalMatchedType == StakingBondMoreConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingBondMoreConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "complete(from: StakingBondMoreConfirmationViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingBondMoreConfirmationWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -36767,6 +37200,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -36783,13 +37231,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingBondMoreConfirmationViewProtocol?), Void> where M1.OptionalMatchedType == StakingBondMoreConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingBondMoreConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingBondMoreConfirmationViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -36803,20 +37250,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingBondMoreConfirmationWireframeProtocolStub: StakingBondMoreConfirmationWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingBondMoreConfirmationViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -36827,6 +37295,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41044,16 +41530,16 @@ import Foundation_iOS
     
     
     
-     func didCompletePayout(txHashes: [String])  {
+     func didCompletePayout(by sender: ExtrinsicSenderResolution)  {
         
-    return cuckoo_manager.call("didCompletePayout(txHashes: [String])",
-            parameters: (txHashes),
-            escapingParameters: (txHashes),
+    return cuckoo_manager.call("didCompletePayout(by: ExtrinsicSenderResolution)",
+            parameters: (sender),
+            escapingParameters: (sender),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didCompletePayout(txHashes: txHashes))
+            defaultCall: __defaultImplStub!.didCompletePayout(by: sender))
         
     }
     
@@ -41106,9 +41592,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didStartPayout()", parameterMatchers: matchers))
 	    }
 	    
-	    func didCompletePayout<M1: Cuckoo.Matchable>(txHashes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([String])> where M1.MatchedType == [String] {
-	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: txHashes) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didCompletePayout(txHashes: [String])", parameterMatchers: matchers))
+	    func didCompletePayout<M1: Cuckoo.Matchable>(by sender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExtrinsicSenderResolution)> where M1.MatchedType == ExtrinsicSenderResolution {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicSenderResolution)>] = [wrap(matchable: sender) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didCompletePayout(by: ExtrinsicSenderResolution)", parameterMatchers: matchers))
 	    }
 	    
 	    func didFailPayout<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
@@ -41163,9 +41649,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didCompletePayout<M1: Cuckoo.Matchable>(txHashes: M1) -> Cuckoo.__DoNotUse<([String]), Void> where M1.MatchedType == [String] {
-	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: txHashes) { $0 }]
-	        return cuckoo_manager.verify("didCompletePayout(txHashes: [String])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didCompletePayout<M1: Cuckoo.Matchable>(by sender: M1) -> Cuckoo.__DoNotUse<(ExtrinsicSenderResolution), Void> where M1.MatchedType == ExtrinsicSenderResolution {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExtrinsicSenderResolution)>] = [wrap(matchable: sender) { $0 }]
+	        return cuckoo_manager.verify("didCompletePayout(by: ExtrinsicSenderResolution)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -41215,7 +41701,7 @@ import Foundation_iOS
     
     
     
-     func didCompletePayout(txHashes: [String])   {
+     func didCompletePayout(by sender: ExtrinsicSenderResolution)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41248,24 +41734,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingPayoutConfirmationViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingPayoutConfirmationViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -41297,6 +41782,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingPayoutConfirmationWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -41306,10 +41836,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingPayoutConfirmationViewProtocol?)> where M1.OptionalMatchedType == StakingPayoutConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingPayoutConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "complete(from: StakingPayoutConfirmationViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingPayoutConfirmationWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -41319,6 +41849,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -41335,13 +41880,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingPayoutConfirmationViewProtocol?), Void> where M1.OptionalMatchedType == StakingPayoutConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingPayoutConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingPayoutConfirmationViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -41355,20 +41899,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingPayoutConfirmationWireframeProtocolStub: StakingPayoutConfirmationWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingPayoutConfirmationViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -41379,6 +41944,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -42252,9 +42835,9 @@ import Foundation_iOS
     
     
     
-     func didSubmitRebonding(result: Result<String, Error>)  {
+     func didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)  {
         
-    return cuckoo_manager.call("didSubmitRebonding(result: Result<String, Error>)",
+    return cuckoo_manager.call("didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -42304,9 +42887,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didReceiveStashItem(result: Result<StashItem?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSubmitRebonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didSubmitRebonding(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didSubmitRebonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationInteractorOutputProtocol.self, method: "didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -42362,9 +42945,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didSubmitRebonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitRebonding(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSubmitRebonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -42414,7 +42997,7 @@ import Foundation_iOS
     
     
     
-     func didSubmitRebonding(result: Result<String, Error>)   {
+     func didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -42441,24 +43024,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingRebondConfirmationViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingRebondConfirmationViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -42490,6 +43072,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingRebondConfirmationWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -42499,10 +43126,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRebondConfirmationViewProtocol?)> where M1.OptionalMatchedType == StakingRebondConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRebondConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "complete(from: StakingRebondConfirmationViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingRebondConfirmationWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -42512,6 +43139,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -42528,13 +43170,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingRebondConfirmationViewProtocol?), Void> where M1.OptionalMatchedType == StakingRebondConfirmationViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRebondConfirmationViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingRebondConfirmationViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -42548,20 +43189,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingRebondConfirmationWireframeProtocolStub: StakingRebondConfirmationWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingRebondConfirmationViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -42572,6 +43234,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -44601,9 +45281,9 @@ import Foundation_iOS
     
     
     
-     func didSubmitRedeeming(result: Result<String, Error>)  {
+     func didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)  {
         
-    return cuckoo_manager.call("didSubmitRedeeming(result: Result<String, Error>)",
+    return cuckoo_manager.call("didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -44663,9 +45343,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSubmitRedeeming<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didSubmitRedeeming(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didSubmitRedeeming<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemInteractorOutputProtocol.self, method: "didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -44733,9 +45413,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didSubmitRedeeming<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitRedeeming(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSubmitRedeeming<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -44797,7 +45477,7 @@ import Foundation_iOS
     
     
     
-     func didSubmitRedeeming(result: Result<String, Error>)   {
+     func didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -44824,24 +45504,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingRedeemViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingRedeemViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -44873,6 +45552,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingRedeemWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -44882,10 +45606,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRedeemViewProtocol?)> where M1.OptionalMatchedType == StakingRedeemViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRedeemViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "complete(from: StakingRedeemViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingRedeemWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -44895,6 +45619,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -44911,13 +45650,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingRedeemViewProtocol?), Void> where M1.OptionalMatchedType == StakingRedeemViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRedeemViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingRedeemViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -44931,20 +45669,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingRedeemWireframeProtocolStub: StakingRedeemWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingRedeemViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -44955,6 +45714,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -45811,9 +46588,9 @@ import Foundation_iOS
     
     
     
-     func didSubmitRewardDest(result: Result<String, Error>)  {
+     func didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)  {
         
-    return cuckoo_manager.call("didSubmitRewardDest(result: Result<String, Error>)",
+    return cuckoo_manager.call("didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -45858,9 +46635,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmInteractorOutputProtocol.self, method: "didReceiveAccountBalance(result: Result<AssetBalance?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSubmitRewardDest<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmInteractorOutputProtocol.self, method: "didSubmitRewardDest(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didSubmitRewardDest<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmInteractorOutputProtocol.self, method: "didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -45910,9 +46687,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didSubmitRewardDest<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitRewardDest(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSubmitRewardDest<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -45956,7 +46733,7 @@ import Foundation_iOS
     
     
     
-     func didSubmitRewardDest(result: Result<String, Error>)   {
+     func didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -45983,24 +46760,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingRewardDestConfirmViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingRewardDestConfirmViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -46032,6 +46808,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingRewardDestConfirmWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -46041,10 +46862,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardDestConfirmViewProtocol?)> where M1.OptionalMatchedType == StakingRewardDestConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardDestConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "complete(from: StakingRewardDestConfirmViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingRewardDestConfirmWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -46054,6 +46875,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -46070,13 +46906,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingRewardDestConfirmViewProtocol?), Void> where M1.OptionalMatchedType == StakingRewardDestConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardDestConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingRewardDestConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -46090,20 +46925,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingRewardDestConfirmWireframeProtocolStub: StakingRewardDestConfirmWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingRewardDestConfirmViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -46114,6 +46970,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -50199,9 +51073,9 @@ import Foundation_iOS
     
     
     
-     func didSubmitUnbonding(result: Result<String, Error>)  {
+     func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)  {
         
-    return cuckoo_manager.call("didSubmitUnbonding(result: Result<String, Error>)",
+    return cuckoo_manager.call("didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -50276,9 +51150,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveStakingDuration(result: Result<StakingDuration, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didSubmitUnbonding(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -50364,9 +51238,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitUnbonding(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -50446,7 +51320,7 @@ import Foundation_iOS
     
     
     
-     func didSubmitUnbonding(result: Result<String, Error>)   {
+     func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -50473,24 +51347,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(from view: StakingUnbondConfirmViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(from: StakingUnbondConfirmViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(from: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -50522,6 +51395,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingUnbondConfirmWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -50531,10 +51449,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingUnbondConfirmViewProtocol?)> where M1.OptionalMatchedType == StakingUnbondConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingUnbondConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "complete(from: StakingUnbondConfirmViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingUnbondConfirmWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -50544,6 +51462,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -50560,13 +51493,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingUnbondConfirmViewProtocol?), Void> where M1.OptionalMatchedType == StakingUnbondConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingUnbondConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(from: StakingUnbondConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -50580,20 +51512,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class StakingUnbondConfirmWireframeProtocolStub: StakingUnbondConfirmWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(from view: StakingUnbondConfirmViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -50604,6 +51557,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -54677,9 +55648,9 @@ import Foundation_iOS
     
     
     
-     func didSubmitContribution(result: Result<String, Error>)  {
+     func didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)  {
         
-    return cuckoo_manager.call("didSubmitContribution(result: Result<String, Error>)",
+    return cuckoo_manager.call("didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -54894,9 +55865,9 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func didSubmitContribution<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didSubmitContribution(result: Result<String, Error>)", parameterMatchers: matchers))
+	    func didSubmitContribution<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ExtrinsicSubmittedModel, Error>)> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveDisplayAddress<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DisplayAddress, Error>)> where M1.MatchedType == Result<DisplayAddress, Error> {
@@ -54981,9 +55952,9 @@ import Foundation_iOS
 	
 	    
 	    @discardableResult
-	    func didSubmitContribution<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didSubmitContribution(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSubmitContribution<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ExtrinsicSubmittedModel, Error>), Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<ExtrinsicSubmittedModel, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -55075,7 +56046,7 @@ import Foundation_iOS
     
     
     
-     func didSubmitContribution(result: Result<String, Error>)   {
+     func didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -55180,24 +56151,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(on view: CrowdloanContributionConfirmViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(on: CrowdloanContributionConfirmViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(on: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -55229,6 +56199,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanContributionConfirmWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -55238,10 +56253,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(on view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanContributionConfirmViewProtocol?)> where M1.OptionalMatchedType == CrowdloanContributionConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanContributionConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "complete(on: CrowdloanContributionConfirmViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanContributionConfirmWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -55251,6 +56266,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -55267,13 +56297,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(on view: M1) -> Cuckoo.__DoNotUse<(CrowdloanContributionConfirmViewProtocol?), Void> where M1.OptionalMatchedType == CrowdloanContributionConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanContributionConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(on: CrowdloanContributionConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -55287,20 +56316,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class CrowdloanContributionConfirmWireframeProtocolStub: CrowdloanContributionConfirmWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(on view: CrowdloanContributionConfirmViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -55311,6 +56361,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -24,7 +24,7 @@ extension XcmUni {
         case accountKey20(AccountId20)
         case palletInstance(_ index: UInt8)
         case generalIndex(_ index: BigUInt)
-        case generalKey(_ key: Data)
+        case generalKey(_ key: GeneralKeyValue)
         case other(XcmUni.RawName, XcmUni.RawValue)
     }
 
@@ -33,6 +33,23 @@ extension XcmUni {
 
         init(items: [Junction]) {
             self.items = items
+        }
+    }
+
+    struct GeneralKeyValue: Equatable {
+        static let keySize = 32
+
+        let length: Int
+        let data: Data
+
+        init(preV3Data: Data) {
+            length = preV3Data.count
+            data = preV3Data
+        }
+
+        init(postV3Data: Data) {
+            length = postV3Data.count
+            data = (postV3Data + Data(repeating: 0, count: Self.keySize)).prefix(Self.keySize)
         }
     }
 }
@@ -145,6 +162,45 @@ extension XcmUni.AccountId20: XcmUniCodable {
     }
 }
 
+extension XcmUni.GeneralKeyValue: XcmUniCodable {
+    enum PostV3CodingKeys: String, CodingKey {
+        case length
+        case data
+    }
+
+    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
+        switch configuration {
+        case .V0, .V1, .V2:
+            var container = try decoder.unkeyedContainer()
+
+            let bytes = try container.decode(BytesCodable.self).wrappedValue
+            length = bytes.count
+            data = bytes
+
+        case .V3, .V4, .V5:
+            let container = try decoder.container(keyedBy: PostV3CodingKeys.self)
+
+            length = try container.decode(StringCodable.self, forKey: .length).wrappedValue
+            data = try container.decode(BytesCodable.self, forKey: .data).wrappedValue
+        }
+    }
+
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        switch configuration {
+        case .V0, .V1, .V2:
+            var container = encoder.unkeyedContainer()
+
+            try container.encode(BytesCodable(wrappedValue: data))
+
+        case .V3, .V4, .V5:
+            var container = encoder.container(keyedBy: PostV3CodingKeys.self)
+
+            try container.encode(StringCodable(wrappedValue: length), forKey: .length)
+            try container.encode(BytesCodable(wrappedValue: data), forKey: .data)
+        }
+    }
+}
+
 extension XcmUni.Junction: XcmUniCodable {
     static let parachainField = "Parachain"
     static let accountId32Field = "AccountId32"
@@ -175,7 +231,11 @@ extension XcmUni.Junction: XcmUniCodable {
             let index = try container.decode(StringScaleMapper<BigUInt>.self).value
             self = .generalIndex(index)
         case Self.generalKeyField:
-            let key = try container.decode(BytesCodable.self).wrappedValue
+            let key = try container.decode(
+                XcmUni.GeneralKeyValue.self,
+                configuration: configuration
+            )
+
             self = .generalKey(key)
         default:
             let value = try container.decode(XcmUni.RawValue.self)
@@ -204,7 +264,7 @@ extension XcmUni.Junction: XcmUniCodable {
             try container.encode(StringScaleMapper(value: index))
         case let .generalKey(key):
             try container.encode(Self.generalKeyField)
-            try container.encode(BytesCodable(wrappedValue: key))
+            try container.encode(key, configuration: configuration)
         case let .other(rawName, rawValue):
             try container.encode(rawName)
             try container.encode(rawValue)

@@ -341,7 +341,7 @@ extension XcmExecuteDerivator: XcmCallDerivating {
                 let weightResult = try messageWeightWrapper.targetOperation.extractNoCancellableResultData()
                 let weight = try weightResult.ensureOkOrError { XcmExecuteDerivatorError.messageWeightFailed($0) }
 
-                let call = Xcm.ExecuteCall<BlockchainWeight.WeightV2>(
+                let call = Xcm.ExecuteCall<Substrate.WeightV2>(
                     message: message,
                     maxWeight: weight
                 )

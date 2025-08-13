@@ -78,14 +78,36 @@ final class AssetListViewController: UIViewController, ViewHolder {
         rootView.collectionViewLayout.deactivatePromotion()
     }
 
-    private func setNftsActive(_ isActive: Bool) {
-        rootView.collectionViewLayout.setNftsActive(isActive)
+    private func setOrganizerActive(_ isActive: Bool) {
+        rootView.collectionViewLayout.setOrganizerActive(isActive)
+    }
+
+    private func refreshOrganizerItems() {
+        let numberOfOrganizerItems = rootView.collectionView.numberOfItems(
+            inSection: AssetListFlowLayout.SectionType.organizer.index
+        )
+        (0 ..< numberOfOrganizerItems).forEach { index in
+            let itemIndexPath = AssetListFlowLayout.CellType.organizerItem(itemIndex: index).indexPath
+
+            if let organizerCell = rootView.collectionView.cellForItem(at: itemIndexPath) as? AssetListNftsCell {
+                organizerCell.refresh()
+            }
+        }
     }
 }
 
 // MARK: AssetListViewProtocol
 
 extension AssetListViewController: AssetListViewProtocol {
+    func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?) {
+        collectionViewManager.updateOrganizerViewModel(with: viewModel)
+
+        let isOrganizerActive = viewModel != nil
+        setOrganizerActive(isOrganizerActive)
+
+        rootView.collectionView.reloadData()
+    }
+
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
         collectionViewManager.updateHeaderViewModel(with: viewModel)
 
@@ -114,15 +136,6 @@ extension AssetListViewController: AssetListViewProtocol {
         } else {
             rootView.collectionView.reloadData()
         }
-    }
-
-    func didReceiveNft(viewModel: AssetListNftsViewModel?) {
-        collectionViewManager.updateNftViewModel(with: viewModel)
-
-        rootView.collectionView.reloadData()
-
-        let isNftActive = viewModel != nil
-        setNftsActive(isNftActive)
     }
 
     func didCompleteRefreshing() {
@@ -155,12 +168,12 @@ extension AssetListViewController: AssetListViewProtocol {
 // MARK: AssetListCollectionManagerDelegate
 
 extension AssetListViewController: AssetListCollectionManagerDelegate {
-    func selectAsset(for chainAssetId: ChainAssetId) {
-        presenter.selectAsset(for: chainAssetId)
+    func selectOrganizerItem(at index: Int) {
+        presenter.selectOrganizerItem(at: index)
     }
 
-    func selectNfts() {
-        presenter.selectNfts()
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        presenter.selectAsset(for: chainAssetId)
     }
 
     func actionSelectAccount() {
@@ -172,11 +185,7 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
     }
 
     func actionRefresh() {
-        let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
-        if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
-            nftCell.refresh()
-        }
-
+        refreshOrganizerItems()
         presenter.refresh()
     }
 
@@ -200,8 +209,8 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.receive()
     }
 
-    func actionBuy() {
-        presenter.buy()
+    func actionBuySell() {
+        presenter.buySell()
     }
 
     func actionSwap() {

@@ -76,7 +76,6 @@ final class StakingPayoutConfirmationViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
@@ -113,7 +112,7 @@ final class StakingPayoutConfirmationViewFactory {
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             payouts: payouts,
             currencyManager: currencyManager
         )

@@ -16,11 +16,37 @@ struct DelegationCallWrapper {
             + String(delegationsCount)
     }
 
-    func accept(builder: ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol {
+    func accept(
+        builder: ExtrinsicBuilderProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
         if existingBond != nil {
-            let call = ParachainStaking.DelegatorBondMoreCall(
+            return try acceptForStakeMore(builder: builder)
+        } else {
+            return try acceptForStartStaking(
+                builder: builder,
+                codingFactory: codingFactory
+            )
+        }
+    }
+}
+
+private extension DelegationCallWrapper {
+    func acceptForStartStaking(
+        builder: ExtrinsicBuilderProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        if codingFactory.hasCall(
+            for: ParachainStaking.DelegateWithAutocompoundCall.callCodingPath
+        ) {
+            // we currently don't support auto compound in ui
+            let call = ParachainStaking.DelegateWithAutocompoundCall(
                 candidate: collator,
-                more: amount
+                amount: amount,
+                autoCompound: 0,
+                candidateDelegationCount: collatorDelegationsCount,
+                candidateAutoCompoundingDelegationCount: 0,
+                delegationCount: delegationsCount
             )
 
             return try builder.adding(call: call.runtimeCall)
@@ -34,5 +60,16 @@ struct DelegationCallWrapper {
 
             return try builder.adding(call: call.runtimeCall)
         }
+    }
+
+    func acceptForStakeMore(
+        builder: ExtrinsicBuilderProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        let call = ParachainStaking.DelegatorBondMoreCall(
+            candidate: collator,
+            more: amount
+        )
+
+        return try builder.adding(call: call.runtimeCall)
     }
 }

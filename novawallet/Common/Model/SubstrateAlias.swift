@@ -83,19 +83,6 @@ extension Moment {
     }
 }
 
-extension AccountAddress {
-    var truncated: String {
-        guard count > 9 else {
-            return self
-        }
-
-        let prefix = self.prefix(4)
-        let suffix = self.suffix(5)
-
-        return "\(prefix)...\(suffix)"
-    }
-}
-
 extension Percent {
     func percentToFraction() -> Decimal? {
         Decimal.fromSubstratePercent(value: self)

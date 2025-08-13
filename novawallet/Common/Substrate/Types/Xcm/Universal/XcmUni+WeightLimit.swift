@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 extension XcmUni {
-    typealias WeightLimit = Xcm.WeightLimit<BlockchainWeight.WeightV2>
+    typealias WeightLimit = Xcm.WeightLimit<Substrate.WeightV2>
 }
 
 extension XcmUni.WeightLimit: DecodableWithConfiguration {
@@ -11,7 +11,7 @@ extension XcmUni.WeightLimit: DecodableWithConfiguration {
     init(from decoder: any Decoder, configuration: Xcm.Version) throws {
         switch configuration {
         case .V0, .V1, .V2:
-            let v1Limit = try Xcm.WeightLimit<BlockchainWeight.WeightV1>(from: decoder)
+            let v1Limit = try Xcm.WeightLimit<Substrate.WeightV1>(from: decoder)
             self.init(v1Limit: v1Limit)
         case .V3, .V4, .V5:
             try self.init(from: decoder)
@@ -27,7 +27,7 @@ extension XcmUni.WeightLimit: EncodableWithConfiguration {
         case .V0, .V1, .V2:
             let newLimit = map { model in
                 let weight = model.refTime > BigUInt(UInt64.max) ? UInt64.max : UInt64(model.refTime)
-                return BlockchainWeight.WeightV1(value: weight)
+                return Substrate.WeightV1(value: weight)
             }
 
             try newLimit.encode(to: encoder)
@@ -38,9 +38,9 @@ extension XcmUni.WeightLimit: EncodableWithConfiguration {
 }
 
 extension XcmUni.WeightLimit {
-    init(v1Limit: Xcm.WeightLimit<BlockchainWeight.WeightV1>) {
+    init(v1Limit: Xcm.WeightLimit<Substrate.WeightV1>) {
         self = v1Limit.map { weight in
-            BlockchainWeight.WeightV2(refTime: BigUInt(weight.value), proofSize: 0)
+            Substrate.WeightV2(refTime: BigUInt(weight.value), proofSize: 0)
         }
     }
 }

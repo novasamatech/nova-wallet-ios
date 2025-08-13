@@ -9,7 +9,12 @@ struct ChainAddressDetailsViewModel {
         let indicator: ChainAddressDetailsIndicator
     }
 
+    enum Title {
+        case network(NetworkViewModel)
+        case text(LocalizableResource<String>)
+    }
+
+    let title: Title
     let address: DisplayAddressViewModel?
-    let network: NetworkViewModel
     let actions: [Action]
 }

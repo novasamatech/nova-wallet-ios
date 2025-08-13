@@ -1,11 +1,17 @@
 import UIKit
 
+enum ActionManageStyle {
+    case available
+    case unavailable
+    case destructive
+}
+
 struct ActionManageViewModel {
     let icon: UIImage?
     let title: String
     let subtitle: String?
     let details: String?
-    let isDestructive: Bool
+    let style: ActionManageStyle
     let allowsIconModification: Bool
 
     init(
@@ -13,14 +19,14 @@ struct ActionManageViewModel {
         title: String,
         subtitle: String? = nil,
         details: String? = nil,
-        isDestructive: Bool = false,
+        style: ActionManageStyle = .available,
         allowsIconModification: Bool = true
     ) {
         self.icon = icon
         self.title = title
         self.subtitle = subtitle
         self.details = details
-        self.isDestructive = isDestructive
+        self.style = style
         self.allowsIconModification = allowsIconModification
     }
 }

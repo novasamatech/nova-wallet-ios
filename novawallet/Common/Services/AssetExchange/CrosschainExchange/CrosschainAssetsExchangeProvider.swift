@@ -75,9 +75,16 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
                 userStorageFacade: userStorageFacade,
                 substrateStorageFacade: substrateStorageFacade,
                 operationQueue: operationQueue,
-                customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
+                customFeeEstimatingFactory: AssetExchangeFeeEstimatingRouter(
                     graphProxy: graphProxy,
-                    operationQueue: operationQueue
+                    dependencies: .init(
+                        wallet: wallet,
+                        userStorageFacade: userStorageFacade,
+                        substrateStorageFacade: substrateStorageFacade,
+                        chainRegistry: chainRegistry,
+                        operationQueue: operationQueue,
+                        logger: logger
+                    )
                 ),
                 logger: logger
             ),

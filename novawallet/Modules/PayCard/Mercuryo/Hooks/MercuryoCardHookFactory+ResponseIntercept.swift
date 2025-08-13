@@ -12,13 +12,13 @@ extension MercuryoCardHookFactory {
         let originalXhrOpen = XMLHttpRequest.prototype.open;
 
         XMLHttpRequest.prototype.open = function(method, url) {
-            if (url === '\(MercuryoCardApi.cardsEndpoint)') {
+            if (url === '\(MercuryoApi.cardsEndpoint)') {
                 this.addEventListener('load', function() {
                     window.webkit.messageHandlers.\(cardsAction).postMessage(this.responseText);
                 });
             }
 
-            if (url.includes('\(MercuryoCardApi.topUpEndpoint)')) {
+            if (url.includes('\(MercuryoApi.topUpEndpoint)')) {
                 this.addEventListener('load', function() {
                     window.webkit.messageHandlers.\(topUpAction).postMessage(this.responseText);
                 });

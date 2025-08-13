@@ -36,7 +36,7 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
                 delegate?.didOpenCard()
             case .failed:
                 delegate?.didFailToOpenCard()
-            case .new, .pending, nil:
+            case .new, .pending, .paid, nil:
                 break
             }
 

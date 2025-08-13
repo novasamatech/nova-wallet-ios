@@ -1,4 +1,5 @@
 import UIKit
+import Foundation_iOS
 
 protocol MainTabBarProtocol {
     var view: UIView! { get set }
@@ -16,6 +17,8 @@ protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
     func activateStatusAction()
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
+    func presentDelayedOperationCreated()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
@@ -26,6 +29,7 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestImportAccount(source: SecretSource)
+    func didRequestWalletMigration(with message: WalletMigrationMessage.Start)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
@@ -38,8 +42,14 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
 protocol MainTabBarWireframeProtocol: AlertPresentable,
     AuthorizationAccessible,
     ModalAlertPresenting,
-    BrowserOpening {
+    BrowserOpening,
+    MessageSheetPresentable,
+    FeatureSupportChecking
+{
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
+
+    func presentWalletMigration(on view: MainTabBarViewProtocol?, message: WalletMigrationMessage.Start)
+
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
         screen: UrlHandlingScreen,
@@ -66,8 +76,14 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     )
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)
+
+    func presentDelayedOperationCreated(from view: MainTabBarViewProtocol?)
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {
     static func createView() -> MainTabBarViewProtocol?
+}
+
+protocol RootFlowStatusAlertPresenter: AnyObject {
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
 }

@@ -5,16 +5,16 @@ import UIKit_iOS
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         dappMediator: DAppInteractionMediating,
         assetListModelObservable: AssetListModelObservable,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -113,8 +113,16 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showBuyTokens(from view: AssetListViewProtocol?) {
-        guard let assetOperationView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
+    ) {
+        guard let assetOperationView = AssetOperationViewFactory.createRampView(
+            for: assetListModelObservable,
+            action: action,
+            delegate: delegate
+        ) else {
             return
         }
 
@@ -122,10 +130,17 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             rootViewController: assetOperationView.controller
         )
 
-        view?.controller.presentWithCardLayout(
-            navigationController,
-            animated: true
-        )
+        if action == .offRamp {
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        } else {
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        }
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
@@ -165,7 +180,22 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         nftListView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
+        view?.controller.navigationController?.pushViewController(
+            nftListView.controller,
+            animated: true
+        )
+    }
+
+    func showMultisigOperations(from view: AssetListViewProtocol?) {
+        guard let operationsView = MultisigOperationsViewFactory.createView() else {
+            return
+        }
+
+        operationsView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            operationsView.controller,
+            animated: true
+        )
     }
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput) {
@@ -225,12 +255,31 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showCard(from view: AssetListViewProtocol?) {
-        guard let payCardView = PayCardViewFactory.createView() else {
-            return
-        }
+    func showCard(
+        from view: AssetListViewProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        checkingSupport(
+            of: .card,
+            for: wallet,
+            sheetPresentingView: view
+        ) {
+            guard let payCardView = PayCardViewFactory.createView() else {
+                return
+            }
 
-        payCardView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+            payCardView.controller.hidesBottomBarWhenPushed = true
+            view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+        }
+    }
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
     }
 }

@@ -1,26 +1,24 @@
 import UIKit
 import Operation_iOS
+import SubstrateSdk
 
 final class GenericLedgerWalletInteractor {
     weak var presenter: GenericLedgerWalletInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let deviceId: UUID
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
-    let index: UInt32
+    let accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol
+    let model: GenericLedgerWalletConfirmModel
     let operationQueue: OperationQueue
 
     init(
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
-        deviceId: UUID,
-        index: UInt32,
+        model: GenericLedgerWalletConfirmModel,
+        accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.deviceId = deviceId
-        self.ledgerApplication = ledgerApplication
-        self.index = index
+        self.accountFetchFactory = accountFetchFactory
+        self.model = model
         self.operationQueue = operationQueue
     }
 
@@ -45,23 +43,6 @@ final class GenericLedgerWalletInteractor {
             self?.presenter?.didReceiveChains(changes: actualChanges)
         }
     }
-
-    private func provideWalletModel(from response: LedgerAccountResponse) {
-        do {
-            let accountId = try response.account.address.toAccountId()
-
-            let model = SubstrateLedgerWalletModel(
-                accountId: accountId,
-                publicKey: response.account.publicKey,
-                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
-                derivationPath: response.derivationPath
-            )
-
-            presenter?.didReceiveAccountConfirmation(with: model)
-        } catch {
-            presenter?.didReceive(error: .confirmAccount(error))
-        }
-    }
 }
 
 extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProtocol {
@@ -71,27 +52,10 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func fetchAccount() {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId, index: index)
-
-        execute(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(response):
-                self?.presenter?.didReceive(account: response.account)
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .fetAccount(error))
-            }
-        }
-    }
-
-    func confirmAccount() {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(
-            for: deviceId,
-            index: index,
-            displayVerificationDialog: true
+        let wrapper = accountFetchFactory.createConfirmModel(
+            for: model.schemes,
+            index: model.index,
+            shouldConfirm: false
         )
 
         execute(
@@ -100,8 +64,29 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(response):
-                self?.provideWalletModel(from: response)
+            case let .success(model):
+                self?.presenter?.didReceive(model: model)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .fetchAccount(error))
+            }
+        }
+    }
+
+    func confirmAccount() {
+        let wrapper = accountFetchFactory.createConfirmModel(
+            for: model.schemes,
+            index: model.index,
+            shouldConfirm: true
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didReceiveAccountConfirmation()
             case let .failure(error):
                 self?.presenter?.didReceive(error: .confirmAccount(error))
             }
@@ -109,6 +94,6 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func cancelRequest() {
-        ledgerApplication.connectionManager.cancelRequest(for: deviceId)
+        accountFetchFactory.cancelConfirmationRequests()
     }
 }

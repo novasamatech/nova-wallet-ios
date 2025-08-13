@@ -19,6 +19,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     let lockStateFactory: GovernanceLockStateFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
+    let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
     private var priceProvider: StreamableProvider<PriceData>?
@@ -43,6 +44,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -58,6 +60,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
         self.lockStateFactory = lockStateFactory
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -158,7 +161,9 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     func createExtrinsicSplitter(for votes: [ReferendumNewVote]) -> ExtrinsicSplitting {
         let splitter = ExtrinsicSplitter(
             chain: chain,
-            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic
+            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         return extrinsicFactory.vote(using: votes, splitter: splitter)

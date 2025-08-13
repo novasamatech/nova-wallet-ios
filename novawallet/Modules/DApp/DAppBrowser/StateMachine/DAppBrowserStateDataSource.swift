@@ -5,6 +5,8 @@ import BigInt
 final class DAppBrowserStateDataSource {
     private(set) var chainStore: [String: ChainModel] = [:]
     private(set) var metadataStore: [String: PolkadotExtensionMetadata] = [:]
+    let signBytesChainResolver = DAppSignBytesChainResolver()
+
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>
@@ -45,7 +47,7 @@ final class DAppBrowserStateDataSource {
                 for: substrateAccountId,
                 genesisHash: nil,
                 name: wallet.name,
-                chainFormat: .substrate(SubstrateConstants.genericAddressPrefix),
+                chainFormat: .defaultSubstrateFormat,
                 rawCryptoType: cryptoType
             )
 
@@ -132,6 +134,14 @@ final class DAppBrowserStateDataSource {
         addresses.append(contentsOf: chainAddresses)
 
         return addresses
+    }
+
+    func resolveSignBytesChain(for address: AccountAddress) throws -> ChainModel {
+        try signBytesChainResolver.resolveChainForBytesSigning(
+            for: address,
+            wallet: wallet,
+            chains: Array(chainStore.values)
+        )
     }
 
     private func createExtensionAccount(

@@ -9,7 +9,7 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
         do {
             let proof = try performTransferProofGeneration(for: KnowChainId.kusama)
             
-            Logger.shared.info("Kusama info proof: \(proof)")
+            Logger.shared.info("Kusama info proof: \(proof.toHexWithPrefix())")
         } catch {
             XCTFail("Unexpected Kusama error: \(error)")
         }
@@ -54,10 +54,12 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
                 throw CommonError.undefined
             }
             
-            let encoder = codingFactory.createEncoder()
-            
             let callFactory = SubstrateCallFactory()
-            let call = callFactory.nativeTransferAll(to: AccountId.zeroAccountId(of: 32))
+            let call = callFactory.nativeTransfer(
+                to: AccountId.random(of: 32)!,
+                amount: 230000000000,
+                callPath: CallCodingPath.transferAllowDeath
+            )
             
             let customExtensions = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions()
             
@@ -71,14 +73,15 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
             .adding(call: call)
             
             for customExtension in customExtensions {
-                builder = builder.adding(extrinsicSignedExtension: customExtension)
+                builder = builder.adding(transactionExtension: customExtension)
             }
             
             let params = try builder.buildExtrinsicSignatureParams(
-                encodingBy: encoder,
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
             
+            Logger.shared.info("Metadata hash: \(metadataHash.toHexString())")
             Logger.shared.info("Call: \(params.encodedCall.toHexString())")
             Logger.shared.info("Include in extrinsic: \(params.includedInExtrinsicExtra.toHexString())")
             Logger.shared.info("Include in signature: \(params.includedInSignatureExtra.toHexString())")

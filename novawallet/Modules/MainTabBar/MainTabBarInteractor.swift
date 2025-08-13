@@ -1,13 +1,14 @@
 import Foundation
 import Keystore_iOS
-
 import SubstrateSdk
+import Foundation_iOS
 
 final class MainTabBarInteractor {
     weak var presenter: MainTabBarInteractorOutputProtocol?
 
     let eventCenter: EventCenterProtocol
-    let keystoreImportService: KeystoreImportServiceProtocol
+    let secretImportService: SecretImportServiceProtocol
+    let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
@@ -31,7 +32,8 @@ final class MainTabBarInteractor {
     init(
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
+        walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
@@ -42,7 +44,8 @@ final class MainTabBarInteractor {
         logger: LoggerProtocol
     ) {
         self.eventCenter = eventCenter
-        self.keystoreImportService = keystoreImportService
+        self.secretImportService = secretImportService
+        self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
@@ -69,7 +72,7 @@ final class MainTabBarInteractor {
     }
 
     private func suggestSecretImportIfNeeded() {
-        guard let definition = keystoreImportService.definition else {
+        guard let definition = secretImportService.definition else {
             return
         }
 
@@ -77,7 +80,7 @@ final class MainTabBarInteractor {
         case .keystore:
             presenter?.didRequestImportAccount(source: .keystore)
         case .mnemonic:
-            presenter?.didRequestImportAccount(source: .mnemonic)
+            presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
         }
     }
 
@@ -112,12 +115,22 @@ final class MainTabBarInteractor {
             cloudBackupMediator.sync(for: .unknown)
         }
     }
+
+    private func handleWalletMigration(message: WalletMigrationMessage) {
+        switch message {
+        case let .start(content):
+            presenter?.didRequestWalletMigration(with: content)
+        default:
+            break
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
-        keystoreImportService.add(observer: self)
+        secretImportService.add(observer: self)
+        walletMigrationService.addObserver(self)
 
         suggestSecretImportIfNeeded()
 
@@ -130,7 +143,11 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         onLaunchQueue.delegate = self
 
-        if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
+        if
+            let message = walletMigrationService.consumePendingMessage(),
+            case let .start(content) = message {
+            presenter?.didRequestWalletMigration(with: content)
+        } else if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
@@ -174,7 +191,7 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     }
 }
 
-extension MainTabBarInteractor: KeystoreImportObserver {
+extension MainTabBarInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.suggestSecretImportIfNeeded()
@@ -184,6 +201,14 @@ extension MainTabBarInteractor: KeystoreImportObserver {
     func didReceiveError(secretImportError error: Error & ErrorContentConvertible) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didRequestScreenOpen(.error(.content(error)))
+        }
+    }
+}
+
+extension MainTabBarInteractor: WalletMigrationObserver {
+    func didReceiveMigration(message: WalletMigrationMessage) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.handleWalletMigration(message: message)
         }
     }
 }
