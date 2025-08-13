@@ -1786,10 +1786,10 @@
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
 		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
-		2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */; };
-		2D87C1A82E1C752200396A3B /* MultisigOperationsFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */; };
 		2D87C1A02E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */; };
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
+		2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */; };
+		2D87C1A82E1C752200396A3B /* MultisigOperationsFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
@@ -7910,10 +7910,10 @@
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel15.xcdatamodel; sourceTree = "<group>"; };
-		2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigProviderProxySnapshot.swift; sourceTree = "<group>"; };
-		2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsFlowState.swift; sourceTree = "<group>"; };
 		2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManageWalletTypeViewModel.swift; sourceTree = "<group>"; };
 		2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManagementViewModelFactory.swift; sourceTree = "<group>"; };
+		2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigProviderProxySnapshot.swift; sourceTree = "<group>"; };
+		2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsFlowState.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsUpdatingService.swift; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
