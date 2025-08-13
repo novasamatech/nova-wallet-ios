@@ -28,12 +28,12 @@ protocol StakingRewardDestSetupInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)
     func didReceiveRewardDestinationAddress(result: Result<RewardDestination<AccountAddress>?, Error>)
     func didReceiveCalculator(result: Result<RewardCalculatorEngineProtocol?, Error>)
     func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)
-    func didReceiveNomination(result: Result<Nomination?, Error>)
+    func didReceiveNomination(result: Result<Staking.Nomination?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
 }
 

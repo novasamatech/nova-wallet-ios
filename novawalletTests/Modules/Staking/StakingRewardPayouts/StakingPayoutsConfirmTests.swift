@@ -78,7 +78,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
             chainRegistry: chainRegistry,
             signer: signer,
             operationQueue: OperationQueue(),
-            payouts: [PayoutInfo(validator: validatorAccountId, era: 1000, pages: [0], reward: 1, identity: nil)],
+            payouts: [Staking.PayoutInfo(validator: validatorAccountId, era: 1000, pages: [0], reward: 1, identity: nil)],
             currencyManager: CurrencyManagerStub()
         )
 

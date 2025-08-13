@@ -4,9 +4,9 @@ import SubstrateSdk
 
 protocol RelayStkEraStartOperationFactoryProtocol {
     func createEraStartSessionIndexWrapper(
-        activeEraClosure: @escaping () throws -> ActiveEraInfo,
+        activeEraClosure: @escaping () throws -> Staking.ActiveEraInfo,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<EraIndex>
+    ) -> CompoundOperationWrapper<Staking.EraIndex>
 }
 
 enum RelayStkEraStartOperationFactoryError: Error {
@@ -25,7 +25,7 @@ final class RelayStkEraStartOperationFactory {
 
 extension RelayStkEraStartOperationFactory: RelayStkEraStartOperationFactoryProtocol {
     func createEraStartSessionIndexWrapper(
-        activeEraClosure: @escaping () throws -> ActiveEraInfo,
+        activeEraClosure: @escaping () throws -> Staking.ActiveEraInfo,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<SessionIndex> {
         do {

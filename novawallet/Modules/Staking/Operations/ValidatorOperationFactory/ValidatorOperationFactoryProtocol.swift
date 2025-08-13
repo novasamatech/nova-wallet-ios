@@ -4,7 +4,7 @@ import Operation_iOS
 protocol ValidatorOperationFactoryProtocol {
     func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]>
     func allSelectedOperation(
-        by nomination: Nomination,
+        by nomination: Staking.Nomination,
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]>
 

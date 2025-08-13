@@ -35,7 +35,7 @@ class StakingRewardDetailsTests: XCTestCase {
             currencyManager: CurrencyManagerStub()
         )
 
-        let payoutInfo = PayoutInfo(
+        let payoutInfo = Staking.PayoutInfo(
             validator: Data(),
             era: 100,
             pages: [0],

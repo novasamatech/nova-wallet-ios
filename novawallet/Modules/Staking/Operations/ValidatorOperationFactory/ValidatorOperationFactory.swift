@@ -31,7 +31,7 @@ final class ValidatorOperationFactory {
     }
 
     func createUnappliedSlashesWrapper(
-        dependingOn activeEraClosure: @escaping () throws -> EraIndex,
+        dependingOn activeEraClosure: @escaping () throws -> Staking.EraIndex,
         runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
         slashDefer: BaseOperation<UInt32>
     ) -> UnappliedSlashesWrapper {
@@ -76,11 +76,11 @@ final class ValidatorOperationFactory {
 
     func createSlashesOperation(
         for validatorIds: [AccountId],
-        nomination: Nomination
+        nomination: Staking.Nomination
     ) -> CompoundOperationWrapper<[Bool]> {
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let slashingSpansWrapper: CompoundOperationWrapper<[StorageResponse<SlashingSpans>]> =
+        let slashingSpansWrapper: CompoundOperationWrapper<[StorageResponse<Staking.SlashingSpans>]> =
             storageRequestFactory.queryItems(
                 engine: engine,
                 keyParams: { validatorIds },
@@ -163,12 +163,12 @@ final class ValidatorOperationFactory {
     }
 
     func createValidatorPrefsWrapper(for accountIdList: [AccountId])
-        -> CompoundOperationWrapper<[AccountAddress: ValidatorPrefs]> {
+        -> CompoundOperationWrapper<[AccountAddress: Staking.ValidatorPrefs]> {
         let chainFormat = chainInfo.chain
 
         let runtimeFetchOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let fetchOperation: CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> =
+        let fetchOperation: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> =
             storageRequestFactory.queryItems(
                 engine: engine,
                 keyParams: { accountIdList },
@@ -178,10 +178,10 @@ final class ValidatorOperationFactory {
 
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }
 
-        let mapOperation = ClosureOperation<[AccountAddress: ValidatorPrefs]> {
+        let mapOperation = ClosureOperation<[AccountAddress: Staking.ValidatorPrefs]> {
             try fetchOperation.targetOperation.extractNoCancellableResultData()
                 .enumerated()
-                .reduce(into: [AccountAddress: ValidatorPrefs]()) { result, indexedItem in
+                .reduce(into: [AccountAddress: Staking.ValidatorPrefs]()) { result, indexedItem in
                     let address = try accountIdList[indexedItem.offset].toAddress(using: chainFormat)
 
                     if indexedItem.element.data != nil {

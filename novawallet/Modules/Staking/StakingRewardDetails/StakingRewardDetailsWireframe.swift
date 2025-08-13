@@ -7,7 +7,7 @@ final class StakingRewardDetailsWireframe: StakingRewardDetailsWireframeProtocol
         self.state = state
     }
 
-    func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo) {
+    func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: Staking.PayoutInfo) {
         guard
             let confirmationView = StakingPayoutConfirmationViewFactory.createView(
                 for: state,

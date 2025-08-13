@@ -1,8 +1,8 @@
 import Foundation
 
 struct EraCountdown {
-    let activeEra: EraIndex
-    let currentEra: EraIndex
+    let activeEra: Staking.EraIndex
+    let currentEra: Staking.EraIndex
     let eraLength: SessionIndex
     let sessionLength: SessionIndex
     let activeEraStartSessionIndex: SessionIndex
@@ -22,7 +22,7 @@ struct EraCountdown {
         return TimeInterval(eraLengthInSlots) * blockTimeInSeconds
     }
 
-    func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillStart(targetEra: Staking.EraIndex) -> TimeInterval {
         guard targetEra > activeEra else { return 0 }
 
         let numberOfSlotsPerSession = UInt64(sessionLength)
@@ -57,7 +57,7 @@ struct EraCountdown {
         timeIntervalTillStart(targetEra: activeEra + 1)
     }
 
-    func timeIntervalTillSet(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillSet(targetEra: Staking.EraIndex) -> TimeInterval {
         let sessionDuration = TimeInterval(sessionLength) * blockTimeInSeconds
         let tillEraStart = timeIntervalTillStart(targetEra: targetEra)
 

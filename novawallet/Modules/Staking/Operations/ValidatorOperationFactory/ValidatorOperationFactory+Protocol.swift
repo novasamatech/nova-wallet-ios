@@ -70,7 +70,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
     }
 
     func allSelectedOperation(
-        by nomination: Nomination,
+        by nomination: Staking.Nomination,
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         let targets = nomination.targets.distinct()

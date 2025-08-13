@@ -6,7 +6,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendAllEras() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 1, end: 7352)
+        let eraRange = Staking.EraRange(start: 1, end: 7352)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -18,7 +18,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendAllMatchingEras() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 7300, end: 7352)
+        let eraRange = Staking.EraRange(start: 7300, end: 7352)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -30,7 +30,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendAllNonMatchingEras() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 1, end: 7268)
+        let eraRange = Staking.EraRange(start: 1, end: 7268)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -42,7 +42,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendLastMatchingEras() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 1, end: 7269)
+        let eraRange = Staking.EraRange(start: 1, end: 7269)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -54,7 +54,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendFirstMatchingEras() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 7269, end: 7352)
+        let eraRange = Staking.EraRange(start: 7269, end: 7352)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -66,7 +66,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendSingleMatchingEra() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 7269, end: 7269)
+        let eraRange = Staking.EraRange(start: 7269, end: 7269)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -78,7 +78,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendSingleNotMatchingEra() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 7268, end: 7268)
+        let eraRange = Staking.EraRange(start: 7268, end: 7268)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -90,7 +90,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testWestendInvalidRangeEra() {
         let chainId = KnowChainId.westend
-        let eraRange = EraRange(start: 7269, end: 7268)
+        let eraRange = Staking.EraRange(start: 7269, end: 7268)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -102,7 +102,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testKusamaAllRange() {
         let chainId = KnowChainId.kusama
-        let eraRange = EraRange(start: 0, end: 6136)
+        let eraRange = Staking.EraRange(start: 0, end: 6136)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -114,7 +114,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testPolkadotAllRange() {
         let chainId = KnowChainId.polkadot
-        let eraRange = EraRange(start: 0, end: 1322)
+        let eraRange = Staking.EraRange(start: 0, end: 1322)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -126,7 +126,7 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
     
     func testAzeroAllRange() {
         let chainId = KnowChainId.alephZero
-        let eraRange = EraRange(start: 0, end: 627)
+        let eraRange = Staking.EraRange(start: 0, end: 627)
         
         do {
             let era = try findEra(for: chainId, eraRange: eraRange)
@@ -136,7 +136,10 @@ final class EraStakersPagedSearchOperationFactoryTests: XCTestCase {
         }
     }
 
-    private func findEra(for chainId: ChainModel.Id, eraRange: EraRange) throws -> EraIndex? {
+    private func findEra(
+        for chainId: ChainModel.Id,
+        eraRange: Staking.EraRange
+    ) throws -> Staking.EraIndex? {
         // given
         
         let storageFacade = SubstrateStorageTestFacade()

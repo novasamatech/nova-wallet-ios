@@ -16,7 +16,7 @@ final class StakingRewardPayoutsInteractor {
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
-    private var payoutOperationsWrapper: CompoundOperationWrapper<PayoutsInfo>?
+    private var payoutOperationsWrapper: CompoundOperationWrapper<Staking.PayoutsInfo>?
 
     deinit {
         let wrapper = payoutOperationsWrapper
@@ -111,7 +111,7 @@ extension StakingRewardPayoutsInteractor: StakingRewardPayoutsInteractorInputPro
 }
 
 extension StakingRewardPayoutsInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case .success:
             reload()

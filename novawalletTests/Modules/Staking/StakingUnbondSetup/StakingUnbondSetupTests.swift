@@ -91,7 +91,7 @@ class StakingUnbondSetupTests: XCTestCase {
         )
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),

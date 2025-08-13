@@ -46,7 +46,7 @@ extension WeaklyAnalyticsRewardSource: SingleValueProviderSourceProtocol {
                     eventId: wrappedReward.identifier,
                     timestamp: timestamp,
                     validatorAddress: validatorAddress,
-                    era: EraIndex(era),
+                    era: Staking.EraIndex(era),
                     stashAddress: wrappedReward.address,
                     amount: amount,
                     isReward: reward.isReward

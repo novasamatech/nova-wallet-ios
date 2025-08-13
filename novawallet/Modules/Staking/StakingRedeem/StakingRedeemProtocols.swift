@@ -21,14 +21,14 @@ protocol StakingRedeemInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingRedeemInteractorOutputProtocol: AnyObject {
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
+    func didReceiveActiveEra(result: Result<Staking.ActiveEraInfo?, Error>)
 
     func didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)
 }

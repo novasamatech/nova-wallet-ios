@@ -533,7 +533,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
 }
 
 extension StakingNPoolsInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(optActiveEra):
             presenter?.didReceive(activeEra: optActiveEra)
@@ -542,7 +542,7 @@ extension StakingNPoolsInteractor: StakingLocalStorageSubscriber, StakingLocalSu
         }
     }
 
-    func handleNomination(result: Result<Nomination?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+    func handleNomination(result: Result<Staking.Nomination?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
         switch result {
         case let .success(optNomination):
             presenter?.didReceive(poolNomination: optNomination)
@@ -551,7 +551,7 @@ extension StakingNPoolsInteractor: StakingLocalStorageSubscriber, StakingLocalSu
         }
     }
 
-    func handleLedgerInfo(result: Result<StakingLedger?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+    func handleLedgerInfo(result: Result<Staking.Ledger?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
         switch result {
         case let .success(optLedger):
             presenter?.didReceive(poolLedger: optLedger)

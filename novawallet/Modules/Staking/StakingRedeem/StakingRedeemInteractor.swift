@@ -85,7 +85,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
 
     private func fetchSlashingSpansForStash(
         _ stash: AccountAddress,
-        completionClosure: @escaping (Result<SlashingSpans?, Error>) -> Void
+        completionClosure: @escaping (Result<Staking.SlashingSpans?, Error>) -> Void
     ) {
         guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             completionClosure(.failure(ChainRegistryError.connectionUnavailable))
@@ -280,14 +280,14 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
         presenter.didReceiveStakingLedger(result: result)
     }
 
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveActiveEra(result: result)
     }
 }

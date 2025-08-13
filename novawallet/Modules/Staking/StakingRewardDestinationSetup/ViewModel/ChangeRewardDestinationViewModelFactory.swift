@@ -7,7 +7,7 @@ protocol ChangeRewardDestinationViewModelFactoryProtocol {
         selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bondedAmount: Decimal,
         calculator: RewardCalculatorEngineProtocol,
-        nomination: Nomination?,
+        nomination: Staking.Nomination?,
         priceData: PriceData?
     ) -> ChangeRewardDestinationViewModel?
 }
@@ -111,7 +111,7 @@ final class ChangeRewardDestinationViewModelFactory {
     }
 
     private func createRewardDestinationViewModelFromNomination(
-        _ nomination: Nomination,
+        _ nomination: Staking.Nomination,
         originalRewardDestination: RewardDestination<AccountAddress>,
         selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bonded: Decimal,
@@ -160,7 +160,7 @@ extension ChangeRewardDestinationViewModelFactory: ChangeRewardDestinationViewMo
         selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bondedAmount: Decimal,
         calculator: RewardCalculatorEngineProtocol,
-        nomination: Nomination?,
+        nomination: Staking.Nomination?,
         priceData: PriceData?
     ) -> ChangeRewardDestinationViewModel? {
         let maybeRewardDestinationViewModel: LocalizableResource<RewardDestinationViewModelProtocol>? = {
