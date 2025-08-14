@@ -62,6 +62,10 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
 
     var weight: Int { AssetsExchange.defaultEdgeWeight }
 
+    func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
+        currentWeight + weight
+    }
+
     func quote(
         amount: Balance,
         direction _: AssetConversion.Direction

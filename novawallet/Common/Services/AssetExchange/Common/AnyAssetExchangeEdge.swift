@@ -4,7 +4,7 @@ import Operation_iOS
 class AnyAssetExchangeEdge {
     let identifier = UUID()
 
-    private let fetchWeight: () -> Int
+    private let addingWeight: (Int, AnyGraphEdgeProtocol?) -> Int
     private let fetchOrigin: () -> ChainAssetId
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
@@ -30,7 +30,7 @@ class AnyAssetExchangeEdge {
         -> AssetExchangeOperationPrototypeProtocol?
 
     init(_ edge: any AssetExchangableGraphEdge) {
-        fetchWeight = { edge.weight }
+        addingWeight = edge.addingWeight
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
@@ -54,8 +54,11 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
 
     var origin: ChainAssetId { fetchOrigin() }
     var destination: ChainAssetId { fetchDestination() }
-    var weight: Int { fetchWeight() }
     var type: AssetExchangeEdgeType { typeClosure() }
+
+    func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int {
+        addingWeight(currentWeight, edge)
+    }
 
     func beginOperation(for args: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
         try beginOperationClosure(args)

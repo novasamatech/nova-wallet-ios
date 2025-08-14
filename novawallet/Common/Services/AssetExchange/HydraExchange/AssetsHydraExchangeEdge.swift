@@ -130,6 +130,21 @@ class AssetsHydraExchangeEdge {
             host: host
         )
     }
+
+    func addingWeight(
+        to currentWeight: Int,
+        predecessor edge: AnyGraphEdgeProtocol?,
+        suggestedEdgeWeight: Int
+    ) -> Int {
+        guard
+            let predecessorEdge = edge as? (any AssetExchangableGraphEdge),
+            predecessorEdge.type == type
+        else {
+            return currentWeight + suggestedEdgeWeight
+        }
+
+        return currentWeight + (suggestedEdgeWeight / AssetsExchange.mergingEdgesWeightDivider)
+    }
 }
 
 private extension AssetExchangeAtomicOperationArgs {
