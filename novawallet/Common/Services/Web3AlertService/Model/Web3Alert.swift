@@ -44,6 +44,15 @@ enum Web3Alert {
     }
 }
 
+extension Web3Alert.LocalNotifications {
+    var isMultisigOn: Bool {
+        newMultisig?.notificationsEnabled == true ||
+            multisigApproval?.notificationsEnabled == true ||
+            multisigExecuted?.notificationsEnabled == true ||
+            multisigCanceled?.notificationsEnabled == true
+    }
+}
+
 extension Web3Alert.Selection: Codable, Equatable where T: Codable & Equatable {
     private enum CodingKeys: String, CodingKey {
         case type
