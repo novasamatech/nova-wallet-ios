@@ -241,7 +241,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let messageOrigin = try XcmUni.AbsoluteLocation(
+        let messageOrigin = XcmUni.AbsoluteLocation(
             paraId: request.paraIdAfterOrigin
         )
         .fromChainPointOfView(request.origin.parachainId)
@@ -313,7 +313,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let messageOrigin = try XcmUni.AbsoluteLocation(
+        let messageOrigin = XcmUni.AbsoluteLocation(
             paraId: request.destination.parachainId
         )
         .fromChainPointOfView(request.reserve.parachainId)
@@ -342,7 +342,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
             }
 
             let xcmVersion = intermediateResult.forwardedXcm.version
-            let location = try XcmUni.AbsoluteLocation(
+            let location = XcmUni.AbsoluteLocation(
                 paraId: request.origin.parachainId
             )
             .fromChainPointOfView(request.reserve.parachainId)
@@ -419,7 +419,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let xcmVersion = intermediateResult.forwardedXcm.version
 
-            let location = try XcmUni.AbsoluteLocation(
+            let location = XcmUni.AbsoluteLocation(
                 paraId: request.paraIdBeforeDestination
             )
             .fromChainPointOfView(request.destination.parachainId)

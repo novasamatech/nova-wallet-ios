@@ -92,12 +92,12 @@ private extension XcmExecuteDerivator {
             XcmUni.Instruction.buyExecution(
                 XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
-                    weightLimit: .limited(weight: .zero)
+                    weightLimit: .limited(weight: .one)
                 )
             ),
             XcmUni.Instruction.depositReserveAsset(
                 XcmUni.DepositReserveAssetValue(
-                    assets: .wild(.allCounted(1)),
+                    assets: .wild(.singleCounted),
                     dest: destinationLocation,
                     xcm: [
                         XcmUni.Instruction.buyExecution(
@@ -108,7 +108,7 @@ private extension XcmExecuteDerivator {
                         ),
                         XcmUni.Instruction.depositAsset(
                             XcmUni.DepositAssetValue(
-                                assets: .wild(.allCounted(1)),
+                                assets: .wild(.singleCounted),
                                 beneficiary: beneficiary
                             )
                         )
@@ -148,12 +148,12 @@ private extension XcmExecuteDerivator {
             XcmUni.Instruction.buyExecution(
                 XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
-                    weightLimit: .limited(weight: .zero)
+                    weightLimit: .limited(weight: .one)
                 )
             ),
             XcmUni.Instruction.initiateReserveWithdraw(
                 XcmUni.InitiateReserveWithdrawValue(
-                    assets: .wild(.allCounted(1)),
+                    assets: .wild(.singleCounted),
                     reserve: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
                         XcmUni.Instruction.buyExecution(
@@ -164,7 +164,7 @@ private extension XcmExecuteDerivator {
                         ),
                         XcmUni.Instruction.depositAsset(
                             XcmUni.DepositAssetValue(
-                                assets: .wild(.allCounted(1)),
+                                assets: .wild(.singleCounted),
                                 beneficiary: beneficiary
                             )
                         )
@@ -210,12 +210,12 @@ private extension XcmExecuteDerivator {
             XcmUni.Instruction.buyExecution(
                 XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
-                    weightLimit: .limited(weight: .zero)
+                    weightLimit: .limited(weight: .one)
                 )
             ),
             XcmUni.Instruction.initiateReserveWithdraw(
                 XcmUni.InitiateReserveWithdrawValue(
-                    assets: .wild(.allCounted(1)),
+                    assets: .wild(.singleCounted),
                     reserve: reserveAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
                         XcmUni.Instruction.buyExecution(
@@ -226,7 +226,7 @@ private extension XcmExecuteDerivator {
                         ),
                         XcmUni.Instruction.depositReserveAsset(
                             XcmUni.DepositReserveAssetValue(
-                                assets: .wild(.allCounted(1)),
+                                assets: .wild(.singleCounted),
                                 dest: destAbsoluteLocation.fromPointOfView(location: reserveAbsoluteLocation),
                                 xcm: [
                                     XcmUni.Instruction.buyExecution(
@@ -237,7 +237,7 @@ private extension XcmExecuteDerivator {
                                     ),
                                     XcmUni.Instruction.depositAsset(
                                         XcmUni.DepositAssetValue(
-                                            assets: .wild(.allCounted(1)),
+                                            assets: .wild(.singleCounted),
                                             beneficiary: beneficiary
                                         )
                                     )
@@ -278,14 +278,18 @@ private extension XcmExecuteDerivator {
         return [
             XcmUni.Instruction.withdrawAsset([originAsset]),
             XcmUni.Instruction.buyExecution(
+                // Here and onward: we use buy execution for the very first segment to be
+                // able to pay delivery fees in sending asset
+                // WeightLimit.one is used since it doesn't matter anyways as the message on origin is already weighted
+                // The only restriction is that it cannot be zero or Unlimited
                 XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
-                    weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
+                    weightLimit: .limited(weight: .one)
                 )
             ),
             XcmUni.Instruction.initiateTeleport(
                 XcmUni.InitiateTeleportValue(
-                    assets: .wild(.all),
+                    assets: .wild(.singleCounted),
                     dest: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
                         XcmUni.Instruction.buyExecution(
@@ -296,7 +300,7 @@ private extension XcmExecuteDerivator {
                         ),
                         XcmUni.Instruction.depositAsset(
                             XcmUni.DepositAssetValue(
-                                assets: .wild(.all),
+                                assets: .wild(.singleCounted),
                                 beneficiary: beneficiary
                             )
                         )
