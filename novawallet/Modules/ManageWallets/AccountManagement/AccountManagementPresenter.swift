@@ -115,21 +115,29 @@ private extension AccountManagementPresenter {
             let multisigAccount = wallet?.multisigAccount
         else { return }
 
-        let chain: ChainModel? = switch multisigAccount {
+        switch multisigAccount {
         case let .singleChain(chainAccount):
-            chains[chainAccount.chainId]
-        case .universal:
-            chains[KnowChainId.polkadot]
+            guard let chain = chains[chainAccount.chainId] else { return }
+
+            wireframe.presentAccountOptions(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: selectedLocale
+            )
+        case .universalSubstrate:
+            wireframe.presentSubstrateAddressOptions(
+                from: view,
+                address: address,
+                locale: selectedLocale
+            )
+        case .universalEvm:
+            wireframe.presentEvmAddressOptions(
+                from: view,
+                address: address,
+                locale: selectedLocale
+            )
         }
-
-        guard let chain else { return }
-
-        wireframe.presentAccountOptions(
-            from: view,
-            address: address,
-            chain: chain,
-            locale: selectedLocale
-        )
     }
 
     // MARK: Common bottom sheet
