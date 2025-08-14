@@ -46,6 +46,10 @@ extension MockChainRegistryProtocol {
                     closure(filteredChanges)
                 }
             }
+            
+            stub.getChain(for: any()).then { chainId in
+                availableChains[chainId]
+            }
 
             stub.chainsUnsubscribe(any()).thenDoNothing()
             stub.syncUp().thenDoNothing()

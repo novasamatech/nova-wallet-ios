@@ -32,6 +32,12 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     var unlockScheduleCancellable: CancellableCall?
     var offchainVotingCancellable: CancellableCall?
 
+    var timelineChainId: ChainModel.Id? {
+        let chain = governanceState.settings.value?.chain
+
+        return chain?.timelineChain ?? chain?.chainId
+    }
+
     init(
         eventCenter: EventCenterProtocol,
         selectedMetaAccount: MetaAccountModel,
@@ -143,7 +149,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func setupBlockTimeService(for chain: ChainModel) {
         do {
-            let blockTimeService = try serviceFactory.createBlockTimeService(for: chain.chainId)
+            let timelineChain = try chainRegistry.getTimelineChainOrError(for: chain.chainId)
+            let blockTimeService = try serviceFactory.createBlockTimeService(for: timelineChain.chainId)
 
             governanceState.replaceBlockTimeService(blockTimeService)
 
@@ -186,12 +193,14 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         }
     }
 
-    func subscribeToBlockNumber(for chain: ChainModel) {
-        guard blockNumberSubscription == nil else {
+    func subscribeToBlockNumber(for _: ChainModel) {
+        guard
+            blockNumberSubscription == nil,
+            let timelineChainId else {
             return
         }
 
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineChainId)
     }
 
     private func subscribeToAssetBalance(for accountId: AccountId, chain: ChainModel) {
@@ -240,21 +249,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     func provideBlockTime() {
         guard
             blockTimeCancellable == nil,
-            let blockTimeService = governanceState.blockTimeService,
-            let blockTimeFactory = governanceState.createBlockTimeOperationFactory(),
-            let chain = governanceState.settings.value?.chain else {
+            let timelineService = governanceState.createChainTimelineFacade() else {
             return
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.blockTimeFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let blockTimeWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let blockTimeWrapper = timelineService.createBlockTimeOperation()
 
         blockTimeWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

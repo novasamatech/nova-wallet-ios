@@ -75,7 +75,10 @@ class SelectValidatorsConfirmTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            durationOperationFactory: BabeStakingDurationFactory(),
+            durationOperationFactory: BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            ),
             operationManager: OperationManager(),
             signer: signer,
             nomination: initiatedBoding,

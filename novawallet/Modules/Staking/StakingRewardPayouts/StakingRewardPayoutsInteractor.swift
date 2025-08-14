@@ -47,20 +47,7 @@ final class StakingRewardPayoutsInteractor {
     }
 
     private func fetchEraCompletionTime() {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper()
 
         operationWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

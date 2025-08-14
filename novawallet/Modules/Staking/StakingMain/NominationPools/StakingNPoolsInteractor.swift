@@ -11,7 +11,6 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
     let state: NPoolsStakingSharedStateProtocol
     let selectedAccount: MetaChainAccountResponse
     let npoolsOperationFactory: NominationPoolsOperationFactoryProtocol
-    let connection: JSONRPCEngine
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
@@ -40,7 +39,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
     private var durationCancellable: CancellableCall?
     private var bondedAccountIdCancellable: CancellableCall?
     private var activePoolsCancellable: CancellableCall?
-    private var eraCountdownCancellable: CancellableCall?
+    private let eraCountdownCallStore = CancellableCallStore()
 
     private var lastPoolId: NominationPools.PoolId?
     private var currentPoolId: NominationPools.PoolId?
@@ -73,7 +72,6 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
         state: NPoolsStakingSharedStateProtocol,
         selectedAccount: MetaChainAccountResponse,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
-        connection: JSONRPCEngine,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
@@ -86,7 +84,6 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
         self.npoolsOperationFactory = npoolsOperationFactory
         self.runtimeCodingService = runtimeCodingService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.connection = connection
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -104,7 +101,8 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
         clear(cancellable: &durationCancellable)
         clear(cancellable: &bondedAccountIdCancellable)
         clear(cancellable: &activePoolsCancellable)
-        clear(cancellable: &eraCountdownCancellable)
+
+        eraCountdownCallStore.cancel()
     }
 
     func setupBaseProviders() {
@@ -174,7 +172,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
 
         let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
-        let wrapper = stakingDurationFactory.createDurationOperation(from: runtimeCodingService)
+        let wrapper = stakingDurationFactory.createDurationOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -300,32 +298,25 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
     }
 
     private func provideEraCountdown() {
-        clear(cancellable: &eraCountdownCancellable)
+        eraCountdownCallStore.cancel()
 
         let factory = state.createEraCountdownOperationFactory(for: operationQueue)
 
-        let wrapper = factory.fetchCountdownOperationWrapper(for: connection, runtimeService: runtimeCodingService)
+        let wrapper = factory.fetchCountdownOperationWrapper()
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.eraCountdownCancellable else {
-                    return
-                }
-
-                self?.eraCountdownCancellable = nil
-
-                do {
-                    let eraCountdown = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(eraCountdown: eraCountdown)
-                } catch {
-                    self?.presenter?.didReceive(error: .eraCountdown(error))
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: eraCountdownCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(eraCountdown):
+                self?.presenter?.didReceive(eraCountdown: eraCountdown)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .eraCountdown(error))
             }
         }
-
-        eraCountdownCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 

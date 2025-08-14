@@ -10,11 +10,11 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let slashDeferOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .slashDeferDuration
+                path: Staking.slashDeferDurationPath
             )
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
@@ -238,7 +238,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let slashDeferOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .slashDeferDuration
+                path: Staking.slashDeferDurationPath
             )
 
         slashDeferOperation.addDependency(runtimeOperation)

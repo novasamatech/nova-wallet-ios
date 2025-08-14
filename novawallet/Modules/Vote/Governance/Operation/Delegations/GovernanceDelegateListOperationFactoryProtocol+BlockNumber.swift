@@ -5,20 +5,15 @@ import Operation_iOS
 struct GovernanceDelegateListBlockParams {
     let currentBlockNumber: BlockNumber
     let lastVotedDays: Int
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
 }
 
 extension GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListByBlockNumber(
         _ params: GovernanceDelegateListBlockParams,
-        runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]?> {
-        let blockTimeUpdateWrapper = params.blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: params.blockTimeService
-        )
+        let blockTimeUpdateWrapper = params.timelineService.createBlockTimeOperation()
 
         let wrapper: CompoundOperationWrapper<[GovernanceDelegateLocal]?> = OperationCombiningService.compoundWrapper(
             operationManager: operationManager

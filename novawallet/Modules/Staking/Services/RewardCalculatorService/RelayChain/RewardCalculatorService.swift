@@ -40,7 +40,6 @@ final class RewardCalculatorService {
     let operationManager: OperationManagerProtocol
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let storageFacade: StorageFacadeProtocol
-    let runtimeCodingService: RuntimeCodingServiceProtocol
     let stakingDurationFactory: StakingDurationOperationFactoryProtocol
     let rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
     let rewardCalculatorParamsFactory: RewardCalculatorParamsServiceFactoryProtocol
@@ -52,7 +51,6 @@ final class RewardCalculatorService {
         eraValidatorsService: EraValidatorServiceProtocol,
         operationManager: OperationManagerProtocol,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
-        runtimeCodingService: RuntimeCodingServiceProtocol,
         stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         storageFacade: StorageFacadeProtocol,
         logger: LoggerProtocol? = nil
@@ -65,7 +63,6 @@ final class RewardCalculatorService {
         self.operationManager = operationManager
         self.eraValidatorsService = eraValidatorsService
         self.stakingDurationFactory = stakingDurationFactory
-        self.runtimeCodingService = runtimeCodingService
         self.logger = logger
     }
 
@@ -98,9 +95,7 @@ final class RewardCalculatorService {
         to request: PendingRequest,
         rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
     ) {
-        let durationWrapper = stakingDurationFactory.createDurationOperation(
-            from: runtimeCodingService
-        )
+        let durationWrapper = stakingDurationFactory.createDurationOperation()
 
         let eraOperation = eraValidatorsService.fetchInfoOperation()
 

@@ -61,7 +61,7 @@ struct GovernanceDelegateInfoViewFactory {
             let delegateAccountId = try? delegate.stats.address.toAccountId(),
             let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let blockTimeService = state.blockTimeService,
+            let timelineService = state.createChainTimelineFacade(),
             let referendumsOperationFactory = state.referendumsOperationFactory,
             let subscriptionFactory = state.subscriptionFactory else {
             return nil
@@ -95,8 +95,7 @@ struct GovernanceDelegateInfoViewFactory {
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             identityProxyFactory: identityProxyFactory,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeOperationFactory,
+            timelineService: timelineService,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
