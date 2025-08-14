@@ -23,7 +23,7 @@ final class AssetHubExchangeEdge {
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .assetHubSwap }
 
-    var weight: Int { AssetsExchange.defaultEdgeWeight + 1 }
+    var weight: Int { AssetsExchange.defaultEdgeWeight + 2 }
 
     func quote(
         amount: Balance,

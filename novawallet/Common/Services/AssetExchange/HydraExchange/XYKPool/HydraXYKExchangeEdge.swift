@@ -33,7 +33,7 @@ extension AssetsHydraXYKExchangeEdge: AssetsHydraExchangeEdgeProtocol {
 }
 
 extension AssetsHydraXYKExchangeEdge: AssetExchangableGraphEdge {
-    var weight: Int { AssetsExchange.defaultEdgeWeight - 1 }
+    var weight: Int { AssetsExchange.defaultEdgeWeight + 1 }
 
     func quote(
         amount: Balance,
