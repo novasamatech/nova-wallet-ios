@@ -24,6 +24,7 @@ extension EraCountdown {
             currentSlot: 271216483,
             genesisSlot: 262493679,
             blockCreationTime: 6000,
+            eraDelayInBlocks: 0,
             createdAtDate: Date()
         )
     }
