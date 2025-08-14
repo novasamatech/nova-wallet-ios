@@ -6,7 +6,7 @@ protocol StakingRewardsNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [StakingRewardsNotificationsViewModel])
 }
 
-protocol StakingRewardsNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
+protocol StakingRewardsNotificationsPresenterProtocol: BaseNotificationSettingsPresenterProtocol {
     func changeSettings(chainId: ChainModel.Id, isEnabled: Bool)
     func proceed()
 }

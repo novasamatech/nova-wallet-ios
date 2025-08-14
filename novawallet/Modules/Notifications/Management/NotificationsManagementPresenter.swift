@@ -7,6 +7,7 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
+    private var allWallets: [MetaAccountModel.Id: MetaAccountModel]?
     private var notificationStatus: PushNotificationsStatus?
 
     private var settings: Web3Alert.LocalSettings?
@@ -40,16 +41,18 @@ final class NotificationsManagementPresenter {
     private func getParameters() -> NotificationsManagementParameters? {
         guard
             let settings = modifiedSettings,
+            let topicSettings = modifiedTopicsSettings,
             let notificationsEnabled = modifiedNotificationsEnabled ?? notificationsEnabled else {
             return nil
         }
         return .init(
             isNotificationsOn: notificationsEnabled,
             wallets: settings.wallets.count,
-            isAnnouncementsOn: isAnnouncementsOn(),
+            isAnnouncementsOn: topicSettings.isAnnouncementsOn,
             isSentTokensOn: settings.notifications.tokenSent == .all,
             isReceiveTokensOn: settings.notifications.tokenReceived == .all,
-            isGovernanceOn: isGovernanceOn(),
+            isMultisigTransactionsOn: settings.notifications.isMultisigOn,
+            isGovernanceOn: topicSettings.isGovernanceOn,
             isStakingOn: settings.notifications.stakingReward?.notificationsEnabled ?? false
         )
     }
@@ -65,36 +68,6 @@ final class NotificationsManagementPresenter {
         view?.didReceive(sections: viewModel)
 
         view?.didReceive(isSaveActionAvailabe: isSaveAvailable)
-    }
-
-    func isGovernanceOn() -> Bool {
-        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
-            return false
-        }
-
-        return modifiedTopicsSettings.topics.contains {
-            switch $0 {
-            case .chainReferendums, .newChainReferendums:
-                return true
-            case .appCustom:
-                return false
-            }
-        }
-    }
-
-    func isAnnouncementsOn() -> Bool {
-        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
-            return false
-        }
-
-        return modifiedTopicsSettings.topics.contains {
-            switch $0 {
-            case .chainReferendums, .newChainReferendums:
-                return false
-            case .appCustom:
-                return true
-            }
-        }
     }
 
     func areAllNotificationsOff() -> Bool? {
@@ -202,6 +175,16 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 selectedChains: modifiedSettings?.notifications.stakingReward,
                 completion: changeStakingRewardsSettings
             )
+        case .multisig:
+            let settings = MultisigNotificationsModel(from: modifiedSettings)
+            let selectedMetaIds = Set(modifiedSettings?.wallets.map(\.metaId) ?? [])
+
+            wireframe.showMultisigSetup(
+                from: view,
+                settings: settings,
+                selectedMetaIds: selectedMetaIds,
+                completion: changeMultisigSettings
+            )
         }
     }
 
@@ -244,8 +227,38 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         updateView()
     }
 
+    func changeMultisigSettings(result: MultisigNotificationsModel) {
+        modifiedSettings = modifiedSettings?.with {
+            $0.newMultisig = result.signatureRequested ? .all : nil
+            $0.multisigApproval = result.signedBySignatory ? .all : nil
+            $0.multisigExecuted = result.transactionExecuted ? .all : nil
+            $0.multisigCanceled = result.transactionRejected ? .all : nil
+        }
+
+        disableNotificationIfNeeded()
+        updateView()
+    }
+
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
-        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+        guard let allWallets else { return }
+
+        let selectedMultisigs = wallets
+            .compactMap { allWallets[$0.metaId] }
+            .filter { $0.type == .multisig }
+
+        if selectedMultisigs.isEmpty {
+            modifiedSettings = modifiedSettings?
+                .with(wallets: wallets)
+                .with {
+                    $0.newMultisig = nil
+                    $0.multisigApproval = nil
+                    $0.multisigExecuted = nil
+                    $0.multisigCanceled = nil
+                }
+        } else {
+            modifiedSettings = modifiedSettings?.with(wallets: wallets)
+        }
+
         updateView()
     }
 
@@ -276,6 +289,10 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
+    func didReceive(wallets: [MetaAccountModel]) {
+        allWallets = wallets.reduceToDict()
+    }
+
     func didReceive(settings: Web3Alert.LocalSettings) {
         self.settings = settings
         if modifiedSettings == nil {

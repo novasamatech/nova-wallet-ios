@@ -6,6 +6,7 @@ struct NotificationsManagementParameters {
     let isAnnouncementsOn: Bool
     let isSentTokensOn: Bool
     let isReceiveTokensOn: Bool
+    let isMultisigTransactionsOn: Bool
     let isGovernanceOn: Bool
     let isStakingOn: Bool
 
@@ -64,6 +65,12 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
                 )
             ]),
             (.others, [
+                createAccessoryViewModel(
+                    row: .multisig,
+                    isOn: parameters.isMultisigTransactionsOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                ),
                 createAccessoryViewModel(
                     row: .gov,
                     isOn: parameters.isGovernanceOn,
