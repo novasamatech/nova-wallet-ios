@@ -98,7 +98,7 @@ extension Optional where Wrapped == ParaId {
             return paraId.isSystemParachain
         }
     }
-    
+
     var isRelay: Bool {
         switch self {
         case .none:
