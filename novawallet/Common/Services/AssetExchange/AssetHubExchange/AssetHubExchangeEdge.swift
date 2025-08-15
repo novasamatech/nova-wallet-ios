@@ -23,7 +23,7 @@ final class AssetHubExchangeEdge {
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .assetHubSwap }
 
-    var weight: Int { 3 * AssetsExchange.defaultEdgeWeight }
+    var weight: Int { 3 * AssetsExchange.defaultEdgeWeight + 10 }
 
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
         currentWeight + weight

@@ -33,7 +33,7 @@ extension AssetsHydraXYKExchangeEdge: AssetsHydraExchangeEdgeProtocol {
 }
 
 extension AssetsHydraXYKExchangeEdge: AssetExchangableGraphEdge {
-    var weight: Int { AssetsExchange.defaultEdgeWeight + 1 }
+    var weight: Int { AssetsExchange.defaultEdgeWeight + 10 }
 
     func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int {
         addingWeight(to: currentWeight, predecessor: edge, suggestedEdgeWeight: weight)
