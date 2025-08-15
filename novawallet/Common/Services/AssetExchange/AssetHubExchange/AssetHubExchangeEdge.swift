@@ -78,6 +78,10 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
         false
     }
 
+    func shouldIgnoreDelayedCallRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
+        false
+    }
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         true
     }

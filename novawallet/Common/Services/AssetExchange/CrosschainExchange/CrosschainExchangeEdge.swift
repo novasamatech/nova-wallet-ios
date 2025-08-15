@@ -92,6 +92,10 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         false
     }
 
+    func shouldIgnoreDelayedCallRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
+        false
+    }
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         deliveryFeeNotPaidOrFromHolding()
     }

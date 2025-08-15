@@ -15,7 +15,8 @@ class AnyAssetExchangeEdge {
     ) -> AssetExchangeAtomicOperationProtocol?
 
     private let shouldIgnoreFeeRequirementClosure: (any AssetExchangableGraphEdge) -> Bool
-    private let canPayFeesInIntermediatePositionClosure: () -> Bool
+    private let shouldIgnoreDelayedCallReqClosure: (any AssetExchangableGraphEdge) -> Bool
+    private let canPayFeesInIntermedPositionClosure: () -> Bool
     private let requiresKeepAliveOnIntermediatePositionClosure: () -> Bool
     private let typeClosure: () -> AssetExchangeEdgeType
 
@@ -37,7 +38,8 @@ class AnyAssetExchangeEdge {
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
-        canPayFeesInIntermediatePositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
+        shouldIgnoreDelayedCallReqClosure = edge.shouldIgnoreDelayedCallRequirement
+        canPayFeesInIntermedPositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
         requiresKeepAliveOnIntermediatePositionClosure = edge.requiresOriginKeepAliveOnIntermediatePosition
         typeClosure = { edge.type }
         beginMetaOperationClosure = edge.beginMetaOperation
@@ -75,8 +77,14 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         shouldIgnoreFeeRequirementClosure(predecessor)
     }
 
+    func shouldIgnoreDelayedCallRequirement(
+        after predecessor: any AssetExchangableGraphEdge
+    ) -> Bool {
+        shouldIgnoreDelayedCallReqClosure(predecessor)
+    }
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        canPayFeesInIntermediatePositionClosure()
+        canPayFeesInIntermedPositionClosure()
     }
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {

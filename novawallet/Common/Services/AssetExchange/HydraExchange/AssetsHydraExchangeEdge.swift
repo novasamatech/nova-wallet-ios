@@ -48,6 +48,10 @@ class AssetsHydraExchangeEdge {
         type == edge.type
     }
 
+    func shouldIgnoreDelayedCallRequirement(after edge: any AssetExchangableGraphEdge) -> Bool {
+        type == edge.type
+    }
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         true
     }
