@@ -197,7 +197,8 @@ private extension XcmTransfers {
             ),
             fee: .legacy(feeParams),
             paysDeliveryFee: paysDeliveryFee,
-            supportsXcmExecute: false
+            supportsXcmExecute: false,
+            usesTeleport: false
         )
     }
 
@@ -227,7 +228,8 @@ private extension XcmTransfers {
             ),
             fee: .dynamic,
             paysDeliveryFee: transfer.hasDeliveryFee ?? false,
-            supportsXcmExecute: transfer.supportsXcmExecute ?? false
+            supportsXcmExecute: transfer.supportsXcmExecute ?? false,
+            usesTeleport: transfer.usesTeleport ?? false
         )
     }
 }
@@ -306,6 +308,7 @@ struct XcmTransferMetadata {
     let fee: Fee
     let paysDeliveryFee: Bool
     let supportsXcmExecute: Bool
+    let usesTeleport: Bool
 
     var isDynamicConfig: Bool {
         switch fee {

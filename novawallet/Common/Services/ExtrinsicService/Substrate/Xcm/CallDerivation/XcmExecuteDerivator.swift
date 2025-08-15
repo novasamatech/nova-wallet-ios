@@ -40,9 +40,11 @@ private extension XcmExecuteDerivator {
     }
 
     func isTeleport(request: XcmUnweightedTransferRequest) -> Bool {
-        request.origin.parachainId.isRelayOrSystemParachain &&
-            request.destination.parachainId.isRelayOrSystemParachain &&
-            request.origin.chainAsset.isUtilityAsset
+        let systemToRelay = request.origin.parachainId.isSystemParachain && request.destination.parachainId.isRelay
+        let relayToSystem = request.origin.parachainId.isRelay && request.destination.parachainId.isSystemParachain
+        let systemToSystem = request.origin.parachainId.isSystemParachain && request.destination.parachainId.isSystemParachain
+        
+        return systemToRelay || relayToSystem || systemToSystem || request.metadata.usesTeleport
     }
 
     func determineTransferType(
