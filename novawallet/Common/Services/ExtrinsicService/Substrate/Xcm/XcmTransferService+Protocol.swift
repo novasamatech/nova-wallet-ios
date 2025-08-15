@@ -118,13 +118,17 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 chainAccount: chainAccount
             )
 
-            let verificationWrapper = submissionVerifier.createVerificationWrapper(
-                for: request.unweighted,
-                callOrigin: .system(.signed(chainAccount.accountId)),
-                callClosure: {
-                    try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
-                }
-            )
+            let verificationWrapper: CompoundOperationWrapper<Void> = if request.unweighted.metadata.isDynamicConfig {
+                submissionVerifier.createVerificationWrapper(
+                    for: request.unweighted,
+                    callOrigin: .system(.signed(chainAccount.accountId)),
+                    callClosure: {
+                        try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                    }
+                )
+            } else {
+                .createWithResult(())
+            }
 
             verificationWrapper.addDependency(wrapper: callBuilderWrapper)
 

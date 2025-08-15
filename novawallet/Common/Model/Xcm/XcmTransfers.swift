@@ -306,4 +306,13 @@ struct XcmTransferMetadata {
     let fee: Fee
     let paysDeliveryFee: Bool
     let supportsXcmExecute: Bool
+
+    var isDynamicConfig: Bool {
+        switch fee {
+        case .dynamic:
+            return true
+        default:
+            return false
+        }
+    }
 }
