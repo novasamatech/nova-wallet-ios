@@ -2,6 +2,9 @@ import Foundation
 import SubstrateSdk
 
 extension Staking {
+    typealias EraIndex = UInt32
+    typealias EraRange = (start: EraIndex, end: EraIndex)
+
     struct BondedEra: Decodable {
         let era: EraIndex
         let startSessionIndex: SessionIndex
@@ -12,5 +15,9 @@ extension Staking {
             era = try unkeyedContainer.decode(StringScaleMapper<EraIndex>.self).value
             startSessionIndex = try unkeyedContainer.decode(StringScaleMapper<SessionIndex>.self).value
         }
+    }
+
+    struct ActiveEraInfo: Codable, Equatable {
+        @StringCodable var index: EraIndex
     }
 }

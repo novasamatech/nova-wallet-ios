@@ -26,7 +26,7 @@ final class StakingRelaychainPresenter {
     private var balance: Decimal?
     private var networkStakingInfo: NetworkStakingInfo?
     private var accounts: [AccountId: MetaChainAccountResponse] = [:]
-    private var nomination: Nomination?
+    private var nomination: Staking.Nomination?
 
     init(
         stateViewModelFactory: StakingStateViewModelFactoryProtocol,
@@ -123,7 +123,7 @@ final class StakingRelaychainPresenter {
             (state as? StashLedgerStateProtocol)?.stashItem
         }
 
-        let ledgerInfo: StakingLedger? = stateMachine.viewState { (state: BaseStakingState) in
+        let ledgerInfo: Staking.Ledger? = stateMachine.viewState { (state: BaseStakingState) in
             (state as? StashLedgerStateProtocol)?.ledgerInfo
         }
 
@@ -480,7 +480,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         handle(error: stashItemError)
     }
 
-    func didReceive(ledgerInfo: StakingLedger?) {
+    func didReceive(ledgerInfo: Staking.Ledger?) {
         stateMachine.state.process(ledgerInfo: ledgerInfo)
 
         if let ledgerInfo = ledgerInfo {
@@ -494,7 +494,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         handle(error: ledgerInfoError)
     }
 
-    func didReceive(nomination: Nomination?) {
+    func didReceive(nomination: Staking.Nomination?) {
         self.nomination = nomination
         stateMachine.state.process(nomination: nomination)
 
@@ -509,7 +509,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         handle(error: nominationError)
     }
 
-    func didReceive(validatorPrefs: ValidatorPrefs?) {
+    func didReceive(validatorPrefs: Staking.ValidatorPrefs?) {
         stateMachine.state.process(validatorPrefs: validatorPrefs)
 
         if let prefs = validatorPrefs {

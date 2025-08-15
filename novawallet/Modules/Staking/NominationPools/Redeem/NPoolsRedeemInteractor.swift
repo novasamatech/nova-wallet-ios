@@ -104,7 +104,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
 
     private func fetchSlashingSpansForStash(
         poolId: NominationPools.PoolId,
-        completionClosure: @escaping (Result<SlashingSpans?, Error>) -> Void
+        completionClosure: @escaping (Result<Staking.SlashingSpans?, Error>) -> Void
     ) {
         let bondedAccountWrapper = npoolsOperationFactory.createBondedAccountsWrapper(
             for: { [poolId] },
@@ -335,7 +335,7 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
 }
 
 extension NPoolsRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(activeEra):
             presenter?.didReceive(activeEra: activeEra)

@@ -21,7 +21,9 @@ final class BabeTimelineParamsOperationFactory {
 extension BabeTimelineParamsOperationFactory: RelayStkTimelineParamsOperationFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<RelayStkTimelineParams> {
         do {
+            let originalChain = try chainRegistry.getChainOrError(for: chainId)
             let chain = try chainRegistry.getTimelineChainOrError(for: chainId)
+
             let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
             let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
 
@@ -91,6 +93,7 @@ extension BabeTimelineParamsOperationFactory: RelayStkTimelineParamsOperationFac
                     currentEpochIndex: currentEpoch.value,
                     currentSlot: currentSlot.value,
                     genesisSlot: genesisSlot.value,
+                    eraDelayInBlocks: RelayStkTimelineAsync.delay(for: originalChain),
                     blockTime: blockTime
                 )
             }

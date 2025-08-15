@@ -12,7 +12,7 @@ final class PayoutValidatorsForNominatorFactory {
 
     private func createRequestFactory(
         address: AccountAddress,
-        historyRange: @escaping () throws -> EraRange
+        historyRange: @escaping () throws -> Staking.EraRange
     ) -> NetworkRequestFactoryProtocol {
         BlockNetworkRequestFactory {
             var request = URLRequest(url: self.url)
@@ -46,14 +46,14 @@ final class PayoutValidatorsForNominatorFactory {
 
                 let accountId = try address.toAccountId()
 
-                return ResolvedValidatorEra(validator: accountId, era: EraIndex(era))
+                return ResolvedValidatorEra(validator: accountId, era: Staking.EraIndex(era))
             }
 
             return Set(validators)
         }
     }
 
-    private func requestParams(accountAddress: AccountAddress, eraRange: EraRange) -> String {
+    private func requestParams(accountAddress: AccountAddress, eraRange: Staking.EraRange) -> String {
         let start = eraRange.start
         let end = eraRange.end
         let eraFilter: String = "era:{greaterThanOrEqualTo: \(start), lessThanOrEqualTo: \(end)},"
@@ -82,7 +82,7 @@ final class PayoutValidatorsForNominatorFactory {
 extension PayoutValidatorsForNominatorFactory: PayoutValidatorsFactoryProtocol {
     func createResolutionOperation(
         for address: AccountAddress,
-        eraRangeClosure: @escaping () throws -> EraRange
+        eraRangeClosure: @escaping () throws -> Staking.EraRange
     ) -> CompoundOperationWrapper<Set<ResolvedValidatorEra>> {
         let requestFactory = createRequestFactory(address: address, historyRange: { try eraRangeClosure() })
         let resultFactory = createResultFactory()

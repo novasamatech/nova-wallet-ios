@@ -23,7 +23,7 @@ protocol ControllerAccountConfirmationInteractorOutputProtocol: AnyObject {
     func didReceiveStashAccount(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didConfirmed(result: Result<ExtrinsicSubmittedModel, Error>)
 }

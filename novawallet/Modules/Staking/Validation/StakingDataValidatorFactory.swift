@@ -42,11 +42,11 @@ protocol StakingDataValidatingFactoryProtocol: StakingBaseDataValidatingFactoryP
     ) -> DataValidating
 
     func ledgerNotExist(
-        stakingLedger: StakingLedger?,
+        stakingLedger: Staking.Ledger?,
         locale: Locale
     ) -> DataValidating
 
-    func hasRedeemable(stakingLedger: StakingLedger?, in era: UInt32?, locale: Locale) -> DataValidating
+    func hasRedeemable(stakingLedger: Staking.Ledger?, in era: UInt32?, locale: Locale) -> DataValidating
 
     func maxNominatorsCountNotApplied(
         counterForNominators: UInt32?,
@@ -213,7 +213,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func hasRedeemable(stakingLedger: StakingLedger?, in era: UInt32?, locale: Locale) -> DataValidating {
+    func hasRedeemable(stakingLedger: Staking.Ledger?, in era: UInt32?, locale: Locale) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
@@ -230,7 +230,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
     }
 
     func ledgerNotExist(
-        stakingLedger: StakingLedger?,
+        stakingLedger: Staking.Ledger?,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in

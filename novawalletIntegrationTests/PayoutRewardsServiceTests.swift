@@ -55,7 +55,10 @@ class PayoutRewardsServiceTests: XCTestCase {
         }
     }
     
-    private func fetchNominatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
+    private func fetchNominatorPayout(
+        for selectedAccount: AccountAddress,
+        chainId: ChainModel.Id
+    ) throws -> Staking.PayoutsInfo {
         let operationQueue = OperationQueue()
         let operationManager = OperationManager(operationQueue: operationQueue)
 
@@ -119,7 +122,10 @@ class PayoutRewardsServiceTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
     
-    private func fetchValidatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
+    private func fetchValidatorPayout(
+        for selectedAccount: AccountAddress,
+        chainId: ChainModel.Id
+    ) throws -> Staking.PayoutsInfo {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 

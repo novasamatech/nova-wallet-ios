@@ -30,9 +30,10 @@ final class AuraTimelineParamsOperationFactory {
 extension AuraTimelineParamsOperationFactory: RelayStkTimelineParamsOperationFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<RelayStkTimelineParams> {
         do {
-            let chain = try chainRegistry.getTimelineChainOrError(for: chainId)
-            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
-            let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
+            let originalChain = try chainRegistry.getChainOrError(for: chainId)
+            let timelineChain = try chainRegistry.getTimelineChainOrError(for: chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: timelineChain.chainId)
+            let connection = try chainRegistry.getConnectionOrError(for: timelineChain.chainId)
 
             let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -78,6 +79,7 @@ extension AuraTimelineParamsOperationFactory: RelayStkTimelineParamsOperationFac
                     currentEpochIndex: EpochIndex(currentSessionIndex.value),
                     currentSlot: Slot(blockNumber.value),
                     genesisSlot: 0,
+                    eraDelayInBlocks: RelayStkTimelineAsync.delay(for: originalChain),
                     blockTime: Moment(blockTime)
                 )
             }

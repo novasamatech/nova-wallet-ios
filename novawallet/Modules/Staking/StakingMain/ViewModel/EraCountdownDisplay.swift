@@ -1,9 +1,9 @@
 import Foundation
 
 protocol EraCountdownDisplayProtocol {
-    var activeEra: EraIndex { get }
+    var activeEra: Staking.EraIndex { get }
 
-    func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval
+    func timeIntervalTillStart(targetEra: Staking.EraIndex) -> TimeInterval
     func timeIntervalTillNextActiveEraStart() -> TimeInterval
 }
 

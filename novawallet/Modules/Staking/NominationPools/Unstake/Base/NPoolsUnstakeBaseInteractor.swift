@@ -475,7 +475,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
 
 extension NPoolsUnstakeBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

@@ -41,7 +41,7 @@ extension RelayStkEraCountdownOperationFactory: EraCountdownOperationFactoryProt
                 runtimeService: runtimeService
             )
 
-            let activeEraWrapper: CompoundOperationWrapper<StorageResponse<ActiveEraInfo>> =
+            let activeEraWrapper: CompoundOperationWrapper<StorageResponse<Staking.ActiveEraInfo>> =
                 storageRequestFactory.queryItem(
                     engine: connection,
                     factory: { try codingFactoryOperation.extractNoCancellableResultData() },
@@ -50,7 +50,7 @@ extension RelayStkEraCountdownOperationFactory: EraCountdownOperationFactoryProt
 
             activeEraWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let currentEraWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<EraIndex>>> =
+            let currentEraWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<Staking.EraIndex>>> =
                 storageRequestFactory.queryItem(
                     engine: connection,
                     factory: { try codingFactoryOperation.extractNoCancellableResultData() },
@@ -88,6 +88,7 @@ extension RelayStkEraCountdownOperationFactory: EraCountdownOperationFactoryProt
                     currentSlot: timeline.currentSlot,
                     genesisSlot: timeline.genesisSlot,
                     blockCreationTime: timeline.blockTime,
+                    eraDelayInBlocks: timeline.eraDelayInBlocks,
                     createdAtDate: Date()
                 )
             }

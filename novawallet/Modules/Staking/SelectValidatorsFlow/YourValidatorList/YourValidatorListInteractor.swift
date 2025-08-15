@@ -18,7 +18,7 @@ final class YourValidatorListInteractor: AccountFetching {
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var rewardDestinationProvider: AnyDataProvider<DecodedPayee>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
-    private var activeEra: EraIndex?
+    private var activeEra: Staking.EraIndex?
     private var stashAddress: AccountAddress?
 
     init(
@@ -69,7 +69,7 @@ final class YourValidatorListInteractor: AccountFetching {
         clear(dataProvider: &rewardDestinationProvider)
     }
 
-    func handle(activeEra: EraIndex?) {
+    func handle(activeEra: Staking.EraIndex?) {
         stashAddress = nil
         clear(streamableProvider: &stashControllerProvider)
         clear(dataProvider: &nominatorProvider)
@@ -86,7 +86,7 @@ final class YourValidatorListInteractor: AccountFetching {
         }
     }
 
-    func handle(stashItem: StashItem?, at _: EraIndex) {
+    func handle(stashItem: StashItem?, at _: Staking.EraIndex) {
         clear(dataProvider: &nominatorProvider)
         clear(dataProvider: &ledgerProvider)
         clear(dataProvider: &rewardDestinationProvider)
@@ -116,7 +116,11 @@ final class YourValidatorListInteractor: AccountFetching {
         }
     }
 
-    func handle(nomination: Nomination?, stashAddress: AccountAddress, at activeEra: EraIndex) {
+    func handle(
+        nomination: Staking.Nomination?,
+        stashAddress: AccountAddress,
+        at activeEra: Staking.EraIndex
+    ) {
         guard let nomination = nomination else {
             presenter.didReceiveValidators(result: .success(nil))
             return
@@ -143,9 +147,9 @@ final class YourValidatorListInteractor: AccountFetching {
     }
 
     func createValidatorsWrapper(
-        for nomination: Nomination,
+        for nomination: Staking.Nomination,
         stashAddress: AccountAddress,
-        activeEra: EraIndex
+        activeEra: Staking.EraIndex
     ) -> CompoundOperationWrapper<YourValidatorsModel> {
         if nomination.submittedIn >= activeEra {
             let activeValidatorsWrapper = validatorOperationFactory.activeValidatorsOperation(
@@ -222,7 +226,10 @@ extension YourValidatorListInteractor: StakingLocalStorageSubscriber, StakingLoc
         }
     }
 
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(
+        result: Result<Staking.ActiveEraInfo?, Error>,
+        chainId _: ChainModel.Id
+    ) {
         switch result {
         case let .success(activeEra):
             handle(activeEra: activeEra?.index)
@@ -232,7 +239,7 @@ extension YourValidatorListInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
@@ -240,7 +247,7 @@ extension YourValidatorListInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleNomination(
-        result: Result<Nomination?, Error>,
+        result: Result<Staking.Nomination?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

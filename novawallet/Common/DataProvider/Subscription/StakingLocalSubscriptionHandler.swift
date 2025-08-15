@@ -4,16 +4,20 @@ import BigInt
 protocol StakingLocalSubscriptionHandler {
     func handleStashItem(result: Result<StashItem?, Error>, for address: AccountAddress)
 
-    func handleNomination(result: Result<Nomination?, Error>, accountId: AccountId, chainId: ChainModel.Id)
+    func handleNomination(
+        result: Result<Staking.Nomination?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    )
 
     func handleValidator(
-        result: Result<ValidatorPrefs?, Error>,
+        result: Result<Staking.ValidatorPrefs?, Error>,
         accountId: AccountId,
         chainId: ChainModel.Id
     )
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId: AccountId,
         chainId: ChainModel.Id
     )
@@ -40,28 +44,28 @@ protocol StakingLocalSubscriptionHandler {
 
     func handleBagListSize(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
 
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId: ChainModel.Id)
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId: ChainModel.Id)
 
-    func handleCurrentEra(result: Result<EraIndex?, Error>, chainId: ChainModel.Id)
+    func handleCurrentEra(result: Result<Staking.EraIndex?, Error>, chainId: ChainModel.Id)
 }
 
 extension StakingLocalSubscriptionHandler {
     func handleStashItem(result _: Result<StashItem?, Error>, for _: AccountAddress) {}
 
     func handleNomination(
-        result _: Result<Nomination?, Error>,
+        result _: Result<Staking.Nomination?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
 
     func handleValidator(
-        result _: Result<ValidatorPrefs?, Error>,
+        result _: Result<Staking.ValidatorPrefs?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
 
     func handleLedgerInfo(
-        result _: Result<StakingLedger?, Error>,
+        result _: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
@@ -88,7 +92,7 @@ extension StakingLocalSubscriptionHandler {
 
     func handleBagListSize(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
-    func handleActiveEra(result _: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {}
+    func handleActiveEra(result _: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {}
 
-    func handleCurrentEra(result _: Result<EraIndex?, Error>, chainId _: ChainModel.Id) {}
+    func handleCurrentEra(result _: Result<Staking.EraIndex?, Error>, chainId _: ChainModel.Id) {}
 }

@@ -14,13 +14,12 @@ typealias Slot = UInt64
 typealias SessionIndex = UInt32
 typealias EpochIndex = UInt64
 typealias Moment = UInt32
-typealias EraIndex = UInt32
-typealias EraRange = (start: EraIndex, end: EraIndex)
 typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
 typealias Percent = UInt8
+typealias Perbill = BigUInt
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {

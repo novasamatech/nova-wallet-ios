@@ -5,7 +5,7 @@ import SubstrateSdk
 final class StakingPagedExposureFactory {
     struct EraValidatorPage: Equatable, Hashable, NMapKeyStorageKeyProtocol {
         let accountId: AccountId
-        let era: EraIndex
+        let era: Staking.EraIndex
         let page: Staking.ValidatorPage
 
         func appendSubkey(to encoder: DynamicScaleEncoding, type: String, index: Int) throws {
