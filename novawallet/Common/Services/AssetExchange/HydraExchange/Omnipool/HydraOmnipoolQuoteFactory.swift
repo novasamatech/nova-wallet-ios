@@ -105,7 +105,14 @@ final class HydraOmnipoolQuoteFactory {
 
         let inHubReserve = assetInState.hubReserve
         let inReserve = remoteState.assetInBalance ?? 0
-        let deltaHubReserveIn = (amount * inHubReserve) / (inReserve + amount)
+
+        let divider = inReserve + amount
+
+        guard divider > 0 else {
+            throw AssetConversionOperationError.runtimeError("Unexpected zero reserve")
+        }
+
+        let deltaHubReserveIn = (amount * inHubReserve) / divider
 
         let protocolFeeAmount = protocolFee.mul(value: deltaHubReserveIn)
         let deltaHubReserveOut = deltaHubReserveIn - protocolFeeAmount

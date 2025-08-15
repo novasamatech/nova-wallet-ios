@@ -9,10 +9,6 @@ protocol XcmTransferVerifying {
     ) -> CompoundOperationWrapper<Void>
 }
 
-enum XcmTransferVerifierError: Error {
-    case verificationFailed(Error)
-}
-
 final class XcmTransferVerifier {
     let chainRegistry: ChainRegistryProtocol
     let dryRunner: XcmTransferDryRunning

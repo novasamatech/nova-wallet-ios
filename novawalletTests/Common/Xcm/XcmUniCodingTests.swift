@@ -113,15 +113,9 @@ final class XcmUniCodingTests: XCTestCase {
     
     func testEncodeDecodeAssetFromOrml() throws {
         let generalKeyData = try! Data(hexString: "0x0080")
+        let generalKey = XcmUni.GeneralKeyValue(data: generalKeyData)
         
         for version in Xcm.Version.allCases {
-            let generalKey: XcmUni.GeneralKeyValue = switch version {
-            case .V0, .V1, .V2:
-                XcmUni.GeneralKeyValue(preV3Data: generalKeyData)
-            case .V3, .V4, .V5:
-                XcmUni.GeneralKeyValue(postV3Data: generalKeyData)
-            }
-            
             try performEncodeDecodeTest(
                 for: XcmUni.Versioned(
                     entity: XcmUni.Asset(

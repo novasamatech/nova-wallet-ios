@@ -303,6 +303,7 @@
 		0C1CF6F92E4F00F500B1DA66 /* XcmTransferVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6F82E4F00F500B1DA66 /* XcmTransferVerifier.swift */; };
 		0C1CF6FB2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FA2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift */; };
 		0C1CF6FD2E4F048200B1DA66 /* XcmTransferDryRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FC2E4F048200B1DA66 /* XcmTransferDryRunner.swift */; };
+		0C1CF6FF2E4F315F00B1DA66 /* XcmTransferVerifierError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FE2E4F315F00B1DA66 /* XcmTransferVerifierError.swift */; };
 		0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		0C1D9AAD2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */; };
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
@@ -6373,6 +6374,7 @@
 		0C1CF6F82E4F00F500B1DA66 /* XcmTransferVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferVerifier.swift; sourceTree = "<group>"; };
 		0C1CF6FA2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCallCollecting+AnyRuntimeCall.swift"; sourceTree = "<group>"; };
 		0C1CF6FC2E4F048200B1DA66 /* XcmTransferDryRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferDryRunner.swift; sourceTree = "<group>"; };
+		0C1CF6FE2E4F315F00B1DA66 /* XcmTransferVerifierError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferVerifierError.swift; sourceTree = "<group>"; };
 		0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Web3Alert+ChainId.swift"; sourceTree = "<group>"; };
 		0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewModel.swift; sourceTree = "<group>"; };
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
@@ -24568,6 +24570,7 @@
 				0C3D1B1D2DA3BE0A0008057B /* XcmDynamicModelFactory.swift */,
 				0C1CF6F82E4F00F500B1DA66 /* XcmTransferVerifier.swift */,
 				0C1CF6FC2E4F048200B1DA66 /* XcmTransferDryRunner.swift */,
+				0C1CF6FE2E4F315F00B1DA66 /* XcmTransferVerifierError.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -29453,6 +29456,7 @@
 				84D1110E26B931C20016D962 /* ChainModel.swift in Sources */,
 				84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */,
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
+				0C1CF6FF2E4F315F00B1DA66 /* XcmTransferVerifierError.swift in Sources */,
 				0CD846252BDCABEF0026B5CA /* WalletOptionViewModel.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
 				2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */,
