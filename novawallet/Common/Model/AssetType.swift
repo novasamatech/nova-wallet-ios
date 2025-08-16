@@ -6,6 +6,7 @@ enum AssetType: String {
     case evmAsset = "evm"
     case evmNative
     case equilibrium
+    case ormlHydrationEvm = "orml-hydration-evm"
 
     init?(rawType: String?) {
         if let rawType {

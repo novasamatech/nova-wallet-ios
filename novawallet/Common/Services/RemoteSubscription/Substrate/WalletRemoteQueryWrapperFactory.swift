@@ -230,6 +230,15 @@ final class WalletRemoteQueryWrapperFactory {
         )
     }
 
+    func queryOrmlHydrationEvmBalance(
+        for _: AccountId,
+        chainAsset _: ChainAsset,
+        currencyId _: Data
+    ) -> CompoundOperationWrapper<AssetBalance> {
+        // TODO: GDOT Implement query
+        CompoundOperationWrapper.createWithError(CommonError.undefined)
+    }
+
     func queryEquilibriumBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,
@@ -291,29 +300,43 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
                 type: chainAsset.asset.type,
                 typeExtras: chainAsset.asset.typeExtras
             ).mapAssetWithExtras(
-                nativeHandler: {
-                    self.queryNativeBalance(for: accountId, chainAsset: chainAsset)
-                },
-                statemineHandler: { extras in
-                    self.queryAssetsBalance(for: accountId, chainAsset: chainAsset, extras: extras)
-                },
-                ormlHandler: { extras in
-                    do {
-                        let currencyId = try Data(hexString: extras.currencyIdScale)
-                        return self.queryOrmlBalance(for: accountId, chainAsset: chainAsset, currencyId: currencyId)
-                    } catch {
-                        return CompoundOperationWrapper.createWithError(error)
+                .init(
+                    nativeHandler: {
+                        self.queryNativeBalance(for: accountId, chainAsset: chainAsset)
+                    },
+                    statemineHandler: { extras in
+                        self.queryAssetsBalance(for: accountId, chainAsset: chainAsset, extras: extras)
+                    },
+                    ormlHandler: { extras in
+                        do {
+                            let currencyId = try Data(hexString: extras.currencyIdScale)
+                            return self.queryOrmlBalance(for: accountId, chainAsset: chainAsset, currencyId: currencyId)
+                        } catch {
+                            return CompoundOperationWrapper.createWithError(error)
+                        }
+                    },
+                    ormlHydrationEvmHandler: { extras in
+                        do {
+                            let currencyId = try Data(hexString: extras.currencyIdScale)
+                            return self.queryOrmlHydrationEvmBalance(
+                                for: accountId,
+                                chainAsset: chainAsset,
+                                currencyId: currencyId
+                            )
+                        } catch {
+                            return CompoundOperationWrapper.createWithError(error)
+                        }
+                    },
+                    evmHandler: { _ in
+                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                    },
+                    evmNativeHandler: {
+                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                    },
+                    equilibriumHandler: { extras in
+                        self.queryEquilibriumBalance(for: accountId, chainAsset: chainAsset, eqAssetId: extras.assetId)
                     }
-                },
-                evmHandler: { _ in
-                    CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
-                },
-                evmNativeHandler: {
-                    CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
-                },
-                equilibriumHandler: { extras in
-                    self.queryEquilibriumBalance(for: accountId, chainAsset: chainAsset, eqAssetId: extras.assetId)
-                }
+                )
             )
         } catch {
             return CompoundOperationWrapper.createWithError(error)

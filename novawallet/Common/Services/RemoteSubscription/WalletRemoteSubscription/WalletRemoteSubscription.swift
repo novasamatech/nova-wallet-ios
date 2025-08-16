@@ -252,6 +252,19 @@ private extension WalletRemoteSubscription {
         }
     }
 
+    func subscribeOrmlHydrationEvmAccountBalance(
+        for _: AccountId,
+        chainAsset _: ChainAsset,
+        currencyIdScale _: String,
+        callbackQueue: DispatchQueue,
+        callbackClosure: @escaping WalletRemoteSubscriptionClosure
+    ) {
+        // TODO: GDOT implement balance subscription
+        dispatchInQueueWhenPossible(callbackQueue) {
+            callbackClosure(.failure(CommonError.undefined))
+        }
+    }
+
     func createEvmBlockNumberMapper(for chain: ChainModel) throws -> BlockNumberToHashMapping? {
         guard !chain.isPureEvm else {
             return nil
@@ -390,54 +403,65 @@ extension WalletRemoteSubscription: WalletRemoteSubscriptionProtocol {
                 type: chainAsset.asset.type,
                 typeExtras: chainAsset.asset.typeExtras
             ).mapAssetWithExtras(
-                nativeHandler: {
-                    self.subscribeNativeBalance(
-                        for: accountId,
-                        chainAsset: chainAsset,
-                        callbackQueue: callbackQueue,
-                        callbackClosure: callbackClosure
-                    )
-                },
-                statemineHandler: { extras in
-                    self.subscribeAssetsAccountBalance(
-                        for: accountId,
-                        chainAsset: chainAsset,
-                        extras: extras,
-                        callbackQueue: callbackQueue,
-                        callbackClosure: callbackClosure
-                    )
-                },
-                ormlHandler: { extras in
-                    self.subscribeOrmlAccountBalance(
-                        for: accountId,
-                        chainAsset: chainAsset,
-                        currencyIdScale: extras.currencyIdScale,
-                        callbackQueue: callbackQueue,
-                        callbackClosure: callbackClosure
-                    )
-                },
-                evmHandler: { contractAccount in
-                    self.subscribeERC20Balance(
-                        for: accountId,
-                        contractAccount: contractAccount,
-                        chainAsset: chainAsset,
-                        callbackQueue: callbackQueue,
-                        callbackClosure: callbackClosure
-                    )
-                },
-                evmNativeHandler: {
-                    self.subscribeEvmNativeBalance(
-                        for: accountId,
-                        chainAsset: chainAsset,
-                        callbackQueue: callbackQueue,
-                        callbackClosure: callbackClosure
-                    )
-                },
-                equilibriumHandler: { _ in
-                    callbackQueue.async {
-                        callbackClosure(.failure(WalletRemoteQueryWrapperFactoryError.unsupported))
+                .init(
+                    nativeHandler: {
+                        self.subscribeNativeBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    statemineHandler: { extras in
+                        self.subscribeAssetsAccountBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            extras: extras,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    ormlHandler: { extras in
+                        self.subscribeOrmlAccountBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            currencyIdScale: extras.currencyIdScale,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    ormlHydrationEvmHandler: { extras in
+                        self.subscribeOrmlHydrationEvmAccountBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            currencyIdScale: extras.currencyIdScale,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    evmHandler: { contractAccount in
+                        self.subscribeERC20Balance(
+                            for: accountId,
+                            contractAccount: contractAccount,
+                            chainAsset: chainAsset,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    evmNativeHandler: {
+                        self.subscribeEvmNativeBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            callbackQueue: callbackQueue,
+                            callbackClosure: callbackClosure
+                        )
+                    },
+                    equilibriumHandler: { _ in
+                        callbackQueue.async {
+                            callbackClosure(.failure(WalletRemoteQueryWrapperFactoryError.unsupported))
+                        }
                     }
-                }
+                )
             )
         } catch {
             callbackQueue.async { callbackClosure(.failure(error)) }

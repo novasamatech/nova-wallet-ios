@@ -29,79 +29,21 @@ enum AssetStorageInfo {
     case native(info: NativeTokenStorageInfo)
     case statemine(info: AssetsPalletStorageInfo)
     case orml(info: OrmlTokenStorageInfo)
+    case ormlHydrationEvm(info: OrmlTokenStorageInfo)
     case erc20(contractAccount: AccountId)
     case evmNative
     case equilibrium(extras: EquilibriumAssetExtras)
 }
 
-extension AssetStorageInfo {
-    static func extract(
+private extension AssetStorageInfo {
+    static func createOrmlStorageInfo(
         from asset: AssetModel,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> AssetStorageInfo {
-        let assetType = asset.type.flatMap { AssetType(rawValue: $0) }
-
-        switch assetType {
-        case .orml:
-            guard let extras = try asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
-                throw AssetStorageInfoError.unexpectedTypeExtras
-            }
-
-            let info = try createOrmlStorageInfo(from: extras, codingFactory: codingFactory)
-
-            return .orml(info: info)
-        case .statemine:
-            guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
-                throw AssetStorageInfoError.unexpectedTypeExtras
-            }
-
-            let assetId = try StatemineAssetSerializer.decode(
-                assetId: extras.assetId,
-                palletName: extras.palletName,
-                codingFactory: codingFactory
-            )
-
-            let info = AssetsPalletStorageInfo(
-                assetId: assetId,
-                assetIdString: extras.assetId,
-                palletName: extras.palletName
-            )
-
-            return .statemine(info: info)
-        case .evmAsset:
-            guard let contractAddress = asset.evmContractAddress else {
-                throw AssetStorageInfoError.unexpectedTypeExtras
-            }
-
-            let accountId = try contractAddress.toAccountId(using: .ethereum)
-
-            return .erc20(contractAccount: accountId)
-        case .evmNative:
-            return .evmNative
-        case .equilibrium:
-            guard let extras = try asset.typeExtras?.map(to: EquilibriumAssetExtras.self) else {
-                throw AssetStorageInfoError.unexpectedTypeExtras
-            }
-
-            return .equilibrium(extras: extras)
-        case .none:
-            let canTransferAll = codingFactory.hasCall(for: .transferAll)
-            let transferCallPath: CallCodingPath = codingFactory.hasCall(for: .transferAllowDeath) ?
-                .transferAllowDeath : .transfer
-
-            let info = NativeTokenStorageInfo(
-                canTransferAll: canTransferAll,
-                transferCallPath: transferCallPath
-            )
-
-            return .native(info: info)
-        }
-    }
-
-    private static func createOrmlStorageInfo(
-        from extras: OrmlTokenExtras,
-        codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> OrmlTokenStorageInfo {
+        guard let extras = try asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+            throw AssetStorageInfoError.unexpectedTypeExtras
+        }
+
         let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
 
         let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
@@ -137,5 +79,68 @@ extension AssetStorageInfo {
             existentialDeposit: existentialDeposit,
             canTransferAll: canTransferAll
         )
+    }
+}
+
+extension AssetStorageInfo {
+    static func extract(
+        from asset: AssetModel,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> AssetStorageInfo {
+        let assetType = asset.type.flatMap { AssetType(rawValue: $0) }
+
+        switch assetType {
+        case .orml:
+            let info = try createOrmlStorageInfo(from: asset, codingFactory: codingFactory)
+            return .orml(info: info)
+        case .statemine:
+            guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
+                throw AssetStorageInfoError.unexpectedTypeExtras
+            }
+
+            let assetId = try StatemineAssetSerializer.decode(
+                assetId: extras.assetId,
+                palletName: extras.palletName,
+                codingFactory: codingFactory
+            )
+
+            let info = AssetsPalletStorageInfo(
+                assetId: assetId,
+                assetIdString: extras.assetId,
+                palletName: extras.palletName
+            )
+
+            return .statemine(info: info)
+        case .ormlHydrationEvm:
+            let info = try createOrmlStorageInfo(from: asset, codingFactory: codingFactory)
+            return .ormlHydrationEvm(info: info)
+        case .evmAsset:
+            guard let contractAddress = asset.evmContractAddress else {
+                throw AssetStorageInfoError.unexpectedTypeExtras
+            }
+
+            let accountId = try contractAddress.toAccountId(using: .ethereum)
+
+            return .erc20(contractAccount: accountId)
+        case .evmNative:
+            return .evmNative
+        case .equilibrium:
+            guard let extras = try asset.typeExtras?.map(to: EquilibriumAssetExtras.self) else {
+                throw AssetStorageInfoError.unexpectedTypeExtras
+            }
+
+            return .equilibrium(extras: extras)
+        case .none:
+            let canTransferAll = codingFactory.hasCall(for: .transferAll)
+            let transferCallPath: CallCodingPath = codingFactory.hasCall(for: .transferAllowDeath) ?
+                .transferAllowDeath : .transfer
+
+            let info = NativeTokenStorageInfo(
+                canTransferAll: canTransferAll,
+                transferCallPath: transferCallPath
+            )
+
+            return .native(info: info)
+        }
     }
 }
