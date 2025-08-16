@@ -11,6 +11,8 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
 
     func shouldIgnoreFeeRequirement(after predecessor: any AssetExchangableGraphEdge) -> Bool
 
+    func shouldIgnoreDelayedCallRequirement(after predecessor: any AssetExchangableGraphEdge) -> Bool
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool

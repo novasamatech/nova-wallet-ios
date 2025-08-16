@@ -39,17 +39,10 @@ extension XcmUni {
     struct GeneralKeyValue: Equatable {
         static let keySize = 32
 
-        let length: Int
         let data: Data
 
-        init(preV3Data: Data) {
-            length = preV3Data.count
-            data = preV3Data
-        }
-
-        init(postV3Data: Data) {
-            length = postV3Data.count
-            data = (postV3Data + Data(repeating: 0, count: Self.keySize)).prefix(Self.keySize)
+        init(data: Data) {
+            self.data = data
         }
     }
 }
@@ -171,32 +164,30 @@ extension XcmUni.GeneralKeyValue: XcmUniCodable {
     init(from decoder: any Decoder, configuration: Xcm.Version) throws {
         switch configuration {
         case .V0, .V1, .V2:
-            var container = try decoder.unkeyedContainer()
-
-            let bytes = try container.decode(BytesCodable.self).wrappedValue
-            length = bytes.count
-            data = bytes
+            data = try BytesCodable(from: decoder).wrappedValue
 
         case .V3, .V4, .V5:
             let container = try decoder.container(keyedBy: PostV3CodingKeys.self)
 
-            length = try container.decode(StringCodable.self, forKey: .length).wrappedValue
-            data = try container.decode(BytesCodable.self, forKey: .data).wrappedValue
+            let length: Int = try container.decode(StringCodable.self, forKey: .length).wrappedValue
+            let encodedData = try container.decode(BytesCodable.self, forKey: .data).wrappedValue
+
+            data = encodedData.prefix(length)
         }
     }
 
     func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
         switch configuration {
         case .V0, .V1, .V2:
-            var container = encoder.unkeyedContainer()
-
-            try container.encode(BytesCodable(wrappedValue: data))
+            try BytesCodable(wrappedValue: data).encode(to: encoder)
 
         case .V3, .V4, .V5:
             var container = encoder.container(keyedBy: PostV3CodingKeys.self)
 
-            try container.encode(StringCodable(wrappedValue: length), forKey: .length)
-            try container.encode(BytesCodable(wrappedValue: data), forKey: .data)
+            try container.encode(StringCodable(wrappedValue: data.count), forKey: .length)
+
+            let encodedData = (data + Data(repeating: 0, count: Self.keySize)).prefix(Self.keySize)
+            try container.encode(BytesCodable(wrappedValue: encodedData), forKey: .data)
         }
     }
 }

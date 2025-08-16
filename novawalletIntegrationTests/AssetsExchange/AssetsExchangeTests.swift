@@ -124,6 +124,55 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
     
+    func testRouteUSDTAHDOTPolkadot() throws {
+        let params = buildCommonParams()
+        
+        let pahChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        let dotChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadot)
+        
+        let usdtAH = try pahChain.chainAssetForSymbolOrError("USDT").chainAssetId
+        let dotPolkadot = try dotChain.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: usdtAH, to: dotPolkadot, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+    
+    func testRouteUSDTAHDOTAH() throws {
+        let params = buildCommonParams()
+        
+        let pahChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        
+        let usdtAH = try pahChain.chainAssetForSymbolOrError("USDT").chainAssetId
+        let dotAH = try pahChain.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: usdtAH, to: dotAH, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+    
     func testCalculateFee() {
         let params = buildCommonParams()
         

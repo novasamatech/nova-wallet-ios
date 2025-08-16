@@ -8,9 +8,23 @@ extension XcmUni {
     }
 
     enum WildAsset: Equatable {
+        /**
+         * Filter to use all assets from the holding register
+         *
+         * !!! Important !!!
+         * Weight of this instruction is bounded by maximum number of assets usable per instruction,
+         * which can be 100 in some runtimes.
+         * This might result in sever overestimation of instruction weight and thus, the fee.
+         *
+         * Please use other variations that put explicit desired bound like [AllCounted] whenever possible
+         */
         case all
         case allCounted(UInt32)
         case other(RawName, RawValue)
+
+        static var singleCounted: WildAsset {
+            .allCounted(1)
+        }
     }
 
     typealias AssetInstance = RawValue
@@ -196,6 +210,7 @@ extension XcmUni.WildAsset: Codable {
         switch self {
         case .all:
             try container.encode("All")
+            try container.encode(JSON.null)
         case let .allCounted(value):
             try container.encode("AllCounted")
             try container.encode(StringScaleMapper(value: value))

@@ -16,6 +16,10 @@ extension Substrate.WeightV2 {
         Substrate.WeightV2(refTime: 0, proofSize: 0)
     }
 
+    static var one: Self {
+        Substrate.WeightV2(refTime: 1, proofSize: 1)
+    }
+
     static var maxWeight: Self {
         Substrate.WeightV2(refTime: Self.maxDimension, proofSize: Self.maxDimension)
     }

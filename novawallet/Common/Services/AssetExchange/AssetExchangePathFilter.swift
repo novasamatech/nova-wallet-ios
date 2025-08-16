@@ -44,11 +44,13 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
-        // if call execution is delayed then allow only one segmented paths
-        guard !delayedCallExecVerifier.executesCallWithDelay(
+        let delayedCallExec = delayedCallExecVerifier.executesCallWithDelay(
             selectedWallet,
             chain: chainIn
-        ) else {
+        )
+
+        // if call execution is delayed then allow only one segmented paths
+        guard !delayedCallExec || edge.shouldIgnoreDelayedCallRequirement(after: predecessor) else {
             return false
         }
 

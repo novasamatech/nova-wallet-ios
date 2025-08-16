@@ -4,7 +4,7 @@ import Operation_iOS
 class AnyAssetExchangeEdge {
     let identifier = UUID()
 
-    private let fetchWeight: () -> Int
+    private let addingWeight: (Int, AnyGraphEdgeProtocol?) -> Int
     private let fetchOrigin: () -> ChainAssetId
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
@@ -15,7 +15,8 @@ class AnyAssetExchangeEdge {
     ) -> AssetExchangeAtomicOperationProtocol?
 
     private let shouldIgnoreFeeRequirementClosure: (any AssetExchangableGraphEdge) -> Bool
-    private let canPayFeesInIntermediatePositionClosure: () -> Bool
+    private let shouldIgnoreDelayedCallReqClosure: (any AssetExchangableGraphEdge) -> Bool
+    private let canPayFeesInIntermedPositionClosure: () -> Bool
     private let requiresKeepAliveOnIntermediatePositionClosure: () -> Bool
     private let typeClosure: () -> AssetExchangeEdgeType
 
@@ -30,14 +31,15 @@ class AnyAssetExchangeEdge {
         -> AssetExchangeOperationPrototypeProtocol?
 
     init(_ edge: any AssetExchangableGraphEdge) {
-        fetchWeight = { edge.weight }
+        addingWeight = edge.addingWeight
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
-        canPayFeesInIntermediatePositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
+        shouldIgnoreDelayedCallReqClosure = edge.shouldIgnoreDelayedCallRequirement
+        canPayFeesInIntermedPositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
         requiresKeepAliveOnIntermediatePositionClosure = edge.requiresOriginKeepAliveOnIntermediatePosition
         typeClosure = { edge.type }
         beginMetaOperationClosure = edge.beginMetaOperation
@@ -54,8 +56,11 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
 
     var origin: ChainAssetId { fetchOrigin() }
     var destination: ChainAssetId { fetchDestination() }
-    var weight: Int { fetchWeight() }
     var type: AssetExchangeEdgeType { typeClosure() }
+
+    func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int {
+        addingWeight(currentWeight, edge)
+    }
 
     func beginOperation(for args: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
         try beginOperationClosure(args)
@@ -72,8 +77,14 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         shouldIgnoreFeeRequirementClosure(predecessor)
     }
 
+    func shouldIgnoreDelayedCallRequirement(
+        after predecessor: any AssetExchangableGraphEdge
+    ) -> Bool {
+        shouldIgnoreDelayedCallReqClosure(predecessor)
+    }
+
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        canPayFeesInIntermediatePositionClosure()
+        canPayFeesInIntermedPositionClosure()
     }
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {

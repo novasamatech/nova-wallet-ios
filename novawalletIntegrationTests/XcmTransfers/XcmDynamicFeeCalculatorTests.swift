@@ -227,7 +227,7 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         let operationQueue = OperationQueue()
         let feeService = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            callDerivator: XcmCallDerivator(chainRegistry: chainRegistry),
+            callDerivator: XcmOneOfCallDerivator(chainRegistry: chainRegistry, operationQueue: operationQueue),
             operationQueue: operationQueue,
             logger: Logger.shared
         )

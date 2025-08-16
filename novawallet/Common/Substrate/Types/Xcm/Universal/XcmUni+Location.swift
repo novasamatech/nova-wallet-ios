@@ -51,7 +51,7 @@ extension XcmUni.AbsoluteLocation {
         if let generalKeyString = path.generalKey?.stringValue {
             let generalKey = try Data(hexString: generalKeyString)
 
-            let model = XcmUni.GeneralKeyValue(postV3Data: generalKey)
+            let model = XcmUni.GeneralKeyValue(data: generalKey)
 
             junctions.append(.generalKey(model))
         } else if let generalIndexString = path.generalIndex?.stringValue {

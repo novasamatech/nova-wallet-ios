@@ -11,8 +11,7 @@ protocol SwapExecutionViewModelFactoryProtocol {
 
     func createFailedViewModel(
         quote: AssetExchangeQuote,
-        currentOperationIndex: Int,
-        for date: Date,
+        failure: SwapExecutionState.Failure,
         locale: Locale
     ) -> SwapExecutionViewModel
 
@@ -91,19 +90,25 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
 
     func createFailedViewModel(
         quote: AssetExchangeQuote,
-        currentOperationIndex: Int,
-        for date: Date,
+        failure: SwapExecutionState.Failure,
         locale: Locale
     ) -> SwapExecutionViewModel {
-        let time = dateFormatter.value(for: locale).string(from: date)
+        let time = dateFormatter.value(for: locale).string(from: failure.date)
+        let currentOperationIndex = failure.operationIndex
 
         let operationLabel = quote.metaOperations[currentOperationIndex].label.getTitle(for: locale)
 
-        let details = R.string.localizable.swapsExecutionSwapFailure(
+        let operationDescription = R.string.localizable.swapsExecutionSwapFailure(
             String(currentOperationIndex + 1),
             operationLabel,
             preferredLanguages: locale.rLanguages
         )
+
+        let details = if let errorDetails = failure.getErrorDetails(for: locale) {
+            operationDescription + ": " + errorDetails
+        } else {
+            operationDescription
+        }
 
         return .failed(.init(time: time, details: details))
     }

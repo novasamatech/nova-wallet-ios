@@ -196,7 +196,9 @@ private extension XcmTransfers {
                 path: reservePath
             ),
             fee: .legacy(feeParams),
-            paysDeliveryFee: paysDeliveryFee
+            paysDeliveryFee: paysDeliveryFee,
+            supportsXcmExecute: false,
+            usesTeleport: false
         )
     }
 
@@ -225,7 +227,9 @@ private extension XcmTransfers {
                 path: reservePath
             ),
             fee: .dynamic,
-            paysDeliveryFee: false
+            paysDeliveryFee: transfer.hasDeliveryFee ?? false,
+            supportsXcmExecute: transfer.supportsXcmExecute ?? false,
+            usesTeleport: transfer.usesTeleport ?? false
         )
     }
 }
@@ -303,4 +307,15 @@ struct XcmTransferMetadata {
     let reserve: Reserve
     let fee: Fee
     let paysDeliveryFee: Bool
+    let supportsXcmExecute: Bool
+    let usesTeleport: Bool
+
+    var isDynamicConfig: Bool {
+        switch fee {
+        case .dynamic:
+            return true
+        default:
+            return false
+        }
+    }
 }
