@@ -21,6 +21,7 @@ extension SubstrateRuntimeApiOperationFactory {
     func createRuntimeCallWrapper<R: Decodable>(
         for chainId: ChainModel.Id,
         path: StateCallPath,
+        blockHash: BlockHash? = nil,
         paramsClosure: StateCallWithApiParamsClosure?
     ) -> CompoundOperationWrapper<R> {
         do {
@@ -32,7 +33,8 @@ extension SubstrateRuntimeApiOperationFactory {
                 paramsClosure: paramsClosure,
                 runtimeProvider: runtimeProvider,
                 connection: connection,
-                operationQueue: operationQueue
+                operationQueue: operationQueue,
+                at: blockHash
             )
         } catch {
             return CompoundOperationWrapper.createWithError(error)

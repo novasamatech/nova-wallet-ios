@@ -18,6 +18,7 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
 final class ServiceCoordinator {
     let walletSettings: SelectedWalletSettings
     let substrateBalancesService: AssetBalanceUpdatingServiceProtocol
+    let hydrationEvmBalancesService: AssetBalanceUpdatingServiceProtocol
     let evmAssetsService: AssetBalanceUpdatingServiceProtocol
     let evmNativeService: AssetBalanceUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
@@ -32,6 +33,7 @@ final class ServiceCoordinator {
     init(
         walletSettings: SelectedWalletSettings,
         substrateBalancesService: AssetBalanceUpdatingServiceProtocol,
+        hydrationEvmBalancesService: AssetBalanceUpdatingServiceProtocol,
         evmAssetsService: AssetBalanceUpdatingServiceProtocol,
         evmNativeService: AssetBalanceUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
@@ -45,6 +47,7 @@ final class ServiceCoordinator {
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
+        self.hydrationEvmBalancesService = hydrationEvmBalancesService
         self.evmAssetsService = evmAssetsService
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
@@ -62,6 +65,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
             substrateBalancesService.update(selectedMetaAccount: selectedMetaAccount)
+            hydrationEvmBalancesService.update(selectedMetaAccount: selectedMetaAccount)
             evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
@@ -88,6 +92,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func setup() {
         githubPhishingService.setup()
         substrateBalancesService.setup()
+        hydrationEvmBalancesService.setup()
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
@@ -102,6 +107,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func throttle() {
         githubPhishingService.throttle()
         substrateBalancesService.throttle()
+        hydrationEvmBalancesService.throttle()
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
@@ -146,6 +152,21 @@ extension ServiceCoordinator {
             selectedAccount: walletSettings.value,
             chainRegistry: chainRegistry,
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService,
+            eventCenter: EventCenter.shared,
+            logger: Logger.shared
+        )
+
+        let hydrationEvmBalancesService = OrmlHydrationEvmWalletSyncService(
+            selectedAccount: walletSettings.value,
+            syncServiceFactory: OrmlHydrationEvmWalletSyncFactory(
+                chainRegistry: chainRegistry,
+                substrateStorageFacade: substrateStorageFacade,
+                eventCenter: EventCenter.shared,
+                operationQueue: OperationManagerFacade.assetsSyncQueue,
+                workingQueue: .global(),
+                logger: Logger.shared
+            ),
+            chainRegistry: chainRegistry,
             eventCenter: EventCenter.shared,
             logger: Logger.shared
         )
@@ -227,6 +248,7 @@ extension ServiceCoordinator {
         return ServiceCoordinator(
             walletSettings: walletSettings,
             substrateBalancesService: substrateBalancesService,
+            hydrationEvmBalancesService: hydrationEvmBalancesService,
             evmAssetsService: evmAssetsService,
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,

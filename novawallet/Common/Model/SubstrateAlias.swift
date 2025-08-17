@@ -20,6 +20,7 @@ typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
+typealias BlockHashData = Data
 typealias Percent = UInt8
 
 extension AccountId {

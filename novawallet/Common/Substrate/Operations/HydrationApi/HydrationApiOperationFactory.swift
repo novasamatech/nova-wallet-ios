@@ -6,7 +6,8 @@ protocol HydrationApiOperationFactoryProtocol {
     func createCurrencyBalanceWrapper(
         for assetId: @escaping () throws -> HydraDx.AssetId,
         chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        blockHash: BlockHash?
     ) -> CompoundOperationWrapper<HydrationApi.CurrencyData>
 }
 
@@ -16,11 +17,13 @@ extension HydrationApiOperationFactory: HydrationApiOperationFactoryProtocol {
     func createCurrencyBalanceWrapper(
         for assetIdClosure: @escaping () throws -> HydraDx.AssetId,
         chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        blockHash: BlockHash?
     ) -> CompoundOperationWrapper<HydrationApi.CurrencyData> {
         createRuntimeCallWrapper(
             for: chainId,
-            path: HydrationApi.currenciesAccountPath
+            path: HydrationApi.currenciesAccountPath,
+            blockHash: blockHash
         ) { runtimeApi, encoder, context in
             let paramsCount = runtimeApi.method.inputs.count
             guard paramsCount == 2 else {

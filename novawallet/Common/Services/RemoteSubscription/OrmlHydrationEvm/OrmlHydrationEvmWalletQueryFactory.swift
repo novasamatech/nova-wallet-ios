@@ -5,8 +5,22 @@ import SubstrateSdk
 protocol OrmlHydrationEvmWalletQueryFactoryProtocol {
     func queryBalanceWrapper(
         for accountId: AccountId,
-        chainAssetId: ChainAssetId
+        chainAssetId: ChainAssetId,
+        blockHash: BlockHashData?
     ) -> CompoundOperationWrapper<AssetBalance>
+}
+
+extension OrmlHydrationEvmWalletQueryFactoryProtocol {
+    func queryBalanceWrapper(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> CompoundOperationWrapper<AssetBalance> {
+        queryBalanceWrapper(
+            for: accountId,
+            chainAssetId: chainAssetId,
+            blockHash: nil
+        )
+    }
 }
 
 final class OrmlHydrationEvmWalletQueryFactory {
@@ -26,7 +40,8 @@ final class OrmlHydrationEvmWalletQueryFactory {
 extension OrmlHydrationEvmWalletQueryFactory: OrmlHydrationEvmWalletQueryFactoryProtocol {
     func queryBalanceWrapper(
         for accountId: AccountId,
-        chainAssetId: ChainAssetId
+        chainAssetId: ChainAssetId,
+        blockHash: BlockHashData?
     ) -> CompoundOperationWrapper<AssetBalance> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
@@ -44,7 +59,8 @@ extension OrmlHydrationEvmWalletQueryFactory: OrmlHydrationEvmWalletQueryFactory
                     ).remoteAssetId
                 },
                 chainId: chain.chainId,
-                accountId: accountId
+                accountId: accountId,
+                blockHash: blockHash?.toHex(includePrefix: true)
             )
 
             queryWrapper.addDependency(operations: [coderFactoryOperation])
