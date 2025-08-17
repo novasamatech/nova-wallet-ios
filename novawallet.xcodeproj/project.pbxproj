@@ -309,6 +309,8 @@
 		0C1CF7062E508FC000B1DA66 /* HydrationApi+Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7052E508FBF00B1DA66 /* HydrationApi+Currencies.swift */; };
 		0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */; };
 		0C1CF70B2E50976900B1DA66 /* AssetBalance+HydrationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */; };
+		0C1CF70D2E518F1E00B1DA66 /* ChainPollingStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF70C2E518F1E00B1DA66 /* ChainPollingStateStore.swift */; };
+		0C1CF70F2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF70E2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift */; };
 		0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		0C1D9AAD2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */; };
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
@@ -6385,6 +6387,8 @@
 		0C1CF7052E508FBF00B1DA66 /* HydrationApi+Currencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydrationApi+Currencies.swift"; sourceTree = "<group>"; };
 		0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlHydrationEvmWalletQueryFactory.swift; sourceTree = "<group>"; };
 		0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetBalance+HydrationApi.swift"; sourceTree = "<group>"; };
+		0C1CF70C2E518F1E00B1DA66 /* ChainPollingStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainPollingStateStore.swift; sourceTree = "<group>"; };
+		0C1CF70E2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlHydrationEvmSubscriptionService.swift; sourceTree = "<group>"; };
 		0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Web3Alert+ChainId.swift"; sourceTree = "<group>"; };
 		0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewModel.swift; sourceTree = "<group>"; };
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
@@ -13185,6 +13189,7 @@
 			children = (
 				0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */,
 				0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */,
+				0C1CF70E2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift */,
 			);
 			path = OrmlHydrationEvm;
 			sourceTree = "<group>";
@@ -19372,6 +19377,7 @@
 				84BCC7142924ADDC00354DE0 /* Evm */,
 				84BCC7132924ADB200354DE0 /* Substrate */,
 				84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */,
+				0C1CF70C2E518F1E00B1DA66 /* ChainPollingStateStore.swift */,
 			);
 			path = RemoteSubscription;
 			sourceTree = "<group>";
@@ -33912,6 +33918,7 @@
 				0C2DA8A22CC21E5F001F79C8 /* AssetHubExchangeEdge.swift in Sources */,
 				0C992C4A2B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift in Sources */,
 				845B811D28F44A700040CE84 /* ReferendumActionLocal.swift in Sources */,
+				0C1CF70F2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift in Sources */,
 				77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */,
 				0C13D2F72A7D45F40054BB6F /* RelaychainStakingRestrictions.swift in Sources */,
 				3403F3DCDE932B9F9C6D32B6 /* ReferendumDetailsViewLayout.swift in Sources */,
@@ -34195,6 +34202,7 @@
 				0C2DA8A42CC223D9001F79C8 /* AssetsHydraExchangeEdge.swift in Sources */,
 				0C71049C2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift in Sources */,
 				60B66AA63089FC2A3A701CF2 /* GovernanceSelectTracksViewFactory.swift in Sources */,
+				0C1CF70D2E518F1E00B1DA66 /* ChainPollingStateStore.swift in Sources */,
 				1F45D221E855D5340572C243 /* GovernanceUnavailableTracksProtocols.swift in Sources */,
 				0C2285DA2E22AE070093FD44 /* MultisigDepositOperationFactory.swift in Sources */,
 				3EAB85420EDDDE7D5B03A1CF /* GovernanceUnavailableTracksWireframe.swift in Sources */,
