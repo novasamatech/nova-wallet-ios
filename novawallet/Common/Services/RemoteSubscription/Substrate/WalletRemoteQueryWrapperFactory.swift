@@ -12,59 +12,67 @@ enum WalletRemoteQueryWrapperFactoryError: Error {
 
 final class WalletRemoteQueryWrapperFactory {
     let requestFactory: StorageRequestFactoryProtocol
-    let runtimeProvider: RuntimeProviderProtocol
-    let connection: JSONRPCEngine
+    let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
     init(
-        requestFactory: StorageRequestFactoryProtocol,
-        runtimeProvider: RuntimeProviderProtocol,
-        connection: JSONRPCEngine,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.requestFactory = requestFactory
-        self.runtimeProvider = runtimeProvider
-        self.connection = connection
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
+
+        requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
     }
 
     func queryNativeBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetBalance> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let wrapper: CompoundOperationWrapper<[StorageResponse<AccountInfo>]> = requestFactory.queryItems(
-            engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: accountId)] },
-            factory: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            storagePath: SystemPallet.accountPath
-        )
-
-        wrapper.addDependency(operations: [codingFactoryOperation])
-
-        let mappingOperation = ClosureOperation<AssetBalance> {
-            let accountInfo = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-            return AssetBalance(
-                accountInfo: accountInfo,
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+            let wrapper: CompoundOperationWrapper<[StorageResponse<AccountInfo>]> = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [BytesCodable(wrappedValue: accountId)] },
+                factory: {
+                    try codingFactoryOperation.extractNoCancellableResultData()
+                },
+                storagePath: SystemPallet.accountPath
             )
+
+            wrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<AssetBalance> {
+                let accountInfo = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                return AssetBalance(
+                    accountInfo: accountInfo,
+                    chainAssetId: chainAsset.chainAssetId,
+                    accountId: accountId
+                )
+            }
+
+            mappingOperation.addDependency(wrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mappingOperation,
+                dependencies: [codingFactoryOperation] + wrapper.allOperations
+            )
+        } catch {
+            return .createWithError(error)
         }
-
-        mappingOperation.addDependency(wrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: [codingFactoryOperation] + wrapper.allOperations
-        )
     }
 
     private func queryAssetsAccountBalance(
         for accountId: AccountId,
-        extras: StatemineAssetExtras
+        extras: StatemineAssetExtras,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[StorageResponse<PalletAssets.Account>]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -106,7 +114,9 @@ final class WalletRemoteQueryWrapperFactory {
     }
 
     private func queryAssetsDetailsBalance(
-        extras: StatemineAssetExtras
+        extras: StatemineAssetExtras,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[StorageResponse<PalletAssets.Details>]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -150,29 +160,45 @@ final class WalletRemoteQueryWrapperFactory {
         chainAsset: ChainAsset,
         extras: StatemineAssetExtras
     ) -> CompoundOperationWrapper<AssetBalance> {
-        let accountWrapper = queryAssetsAccountBalance(for: accountId, extras: extras)
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
 
-        let assetDetailsWrapper = queryAssetsDetailsBalance(extras: extras)
-
-        let mappingOperation = ClosureOperation<AssetBalance> {
-            let account = try accountWrapper.targetOperation.extractNoCancellableResultData().first?.value
-            let assetDetails = try assetDetailsWrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-            return AssetBalance(
-                assetsAccount: account,
-                assetsDetails: assetDetails,
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId
+            let accountWrapper = queryAssetsAccountBalance(
+                for: accountId,
+                extras: extras,
+                connection: connection,
+                runtimeProvider: runtimeProvider
             )
+
+            let assetDetailsWrapper = queryAssetsDetailsBalance(
+                extras: extras,
+                connection: connection,
+                runtimeProvider: runtimeProvider
+            )
+
+            let mappingOperation = ClosureOperation<AssetBalance> {
+                let account = try accountWrapper.targetOperation.extractNoCancellableResultData().first?.value
+                let assetDetails = try assetDetailsWrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                return AssetBalance(
+                    assetsAccount: account,
+                    assetsDetails: assetDetails,
+                    chainAssetId: chainAsset.chainAssetId,
+                    accountId: accountId
+                )
+            }
+
+            mappingOperation.addDependency(assetDetailsWrapper.targetOperation)
+            mappingOperation.addDependency(accountWrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mappingOperation,
+                dependencies: accountWrapper.allOperations + assetDetailsWrapper.allOperations
+            )
+        } catch {
+            return .createWithError(error)
         }
-
-        mappingOperation.addDependency(assetDetailsWrapper.targetOperation)
-        mappingOperation.addDependency(accountWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: accountWrapper.allOperations + assetDetailsWrapper.allOperations
-        )
     }
 
     func queryOrmlBalance(
@@ -180,63 +206,73 @@ final class WalletRemoteQueryWrapperFactory {
         chainAsset: ChainAsset,
         currencyId: Data
     ) -> CompoundOperationWrapper<AssetBalance> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let encodingOperation = DoubleMapKeyEncodingOperation<BytesCodable, BytesCodable>(
-            path: .ormlTokenAccount,
-            storageKeyFactory: StorageKeyFactory(),
-            keyParams1: [BytesCodable(wrappedValue: accountId)],
-            keyParams2: [BytesCodable(wrappedValue: currencyId)],
-            param1Encoder: nil,
-            param2Encoder: { $0.wrappedValue }
-        )
-
-        encodingOperation.configurationBlock = {
-            do {
-                encodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                encodingOperation.result = .failure(error)
-            }
-        }
-
-        encodingOperation.addDependency(codingFactoryOperation)
-
-        let wrapper: CompoundOperationWrapper<[StorageResponse<OrmlAccount>]> = requestFactory.queryItems(
-            engine: connection,
-            keys: { try encodingOperation.extractNoCancellableResultData() },
-            factory: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            storagePath: .ormlTokenAccount
-        )
-
-        wrapper.addDependency(operations: [codingFactoryOperation, encodingOperation])
-
-        let mappingOperation = ClosureOperation<AssetBalance> {
-            let account = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-            return AssetBalance(
-                ormlAccount: account,
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId
+            let encodingOperation = DoubleMapKeyEncodingOperation<BytesCodable, BytesCodable>(
+                path: .ormlTokenAccount,
+                storageKeyFactory: StorageKeyFactory(),
+                keyParams1: [BytesCodable(wrappedValue: accountId)],
+                keyParams2: [BytesCodable(wrappedValue: currencyId)],
+                param1Encoder: nil,
+                param2Encoder: { $0.wrappedValue }
             )
+
+            encodingOperation.configurationBlock = {
+                do {
+                    encodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                } catch {
+                    encodingOperation.result = .failure(error)
+                }
+            }
+
+            encodingOperation.addDependency(codingFactoryOperation)
+
+            let wrapper: CompoundOperationWrapper<[StorageResponse<OrmlAccount>]> = requestFactory.queryItems(
+                engine: connection,
+                keys: { try encodingOperation.extractNoCancellableResultData() },
+                factory: {
+                    try codingFactoryOperation.extractNoCancellableResultData()
+                },
+                storagePath: .ormlTokenAccount
+            )
+
+            wrapper.addDependency(operations: [codingFactoryOperation, encodingOperation])
+
+            let mappingOperation = ClosureOperation<AssetBalance> {
+                let account = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                return AssetBalance(
+                    ormlAccount: account,
+                    chainAssetId: chainAsset.chainAssetId,
+                    accountId: accountId
+                )
+            }
+
+            mappingOperation.addDependency(wrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mappingOperation,
+                dependencies: [codingFactoryOperation, encodingOperation] + wrapper.allOperations
+            )
+        } catch {
+            return .createWithError(error)
         }
-
-        mappingOperation.addDependency(wrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: [codingFactoryOperation, encodingOperation] + wrapper.allOperations
-        )
     }
 
     func queryOrmlHydrationEvmBalance(
-        for _: AccountId,
-        chainAsset _: ChainAsset,
-        currencyId _: Data
+        for accountId: AccountId,
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetBalance> {
-        // TODO: GDOT Implement query
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+        OrmlHydrationEvmWalletQueryFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        ).queryBalanceWrapper(
+            for: accountId,
+            chainAssetId: chainAsset.chainAssetId
+        )
     }
 
     func queryEquilibriumBalance(
@@ -244,52 +280,58 @@ final class WalletRemoteQueryWrapperFactory {
         chainAsset: ChainAsset,
         eqAssetId: EquilibriumAssetId
     ) -> CompoundOperationWrapper<AssetBalance> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let balancesWrapper: CompoundOperationWrapper<[StorageResponse<EquilibriumAccountInfo>]>
-        balancesWrapper = requestFactory.queryItems(
-            engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: accountId)] },
-            factory: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            storagePath: .equilibriumBalances
-        )
-
-        let reserveWrapper: CompoundOperationWrapper<[StorageResponse<EquilibriumReservedData>]>
-        reserveWrapper = requestFactory.queryItems(
-            engine: connection,
-            keyParams1: { [BytesCodable(wrappedValue: accountId)] },
-            keyParams2: { [StringScaleMapper(value: eqAssetId)] },
-            factory: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            storagePath: .equilibriumReserved
-        )
-
-        balancesWrapper.addDependency(operations: [codingFactoryOperation])
-        reserveWrapper.addDependency(operations: [codingFactoryOperation])
-
-        let mappingOperation = ClosureOperation<AssetBalance> {
-            let account = try balancesWrapper.targetOperation.extractNoCancellableResultData().first?.value
-            let reserve = try reserveWrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-            return AssetBalance(
-                eqAccount: account,
-                eqReserve: reserve,
-                eqAssetId: eqAssetId,
-                isUtilityAsset: chainAsset.isUtilityAsset,
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId
+            let balancesWrapper: CompoundOperationWrapper<[StorageResponse<EquilibriumAccountInfo>]>
+            balancesWrapper = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [BytesCodable(wrappedValue: accountId)] },
+                factory: {
+                    try codingFactoryOperation.extractNoCancellableResultData()
+                },
+                storagePath: .equilibriumBalances
             )
+
+            let reserveWrapper: CompoundOperationWrapper<[StorageResponse<EquilibriumReservedData>]>
+            reserveWrapper = requestFactory.queryItems(
+                engine: connection,
+                keyParams1: { [BytesCodable(wrappedValue: accountId)] },
+                keyParams2: { [StringScaleMapper(value: eqAssetId)] },
+                factory: {
+                    try codingFactoryOperation.extractNoCancellableResultData()
+                },
+                storagePath: .equilibriumReserved
+            )
+
+            balancesWrapper.addDependency(operations: [codingFactoryOperation])
+            reserveWrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<AssetBalance> {
+                let account = try balancesWrapper.targetOperation.extractNoCancellableResultData().first?.value
+                let reserve = try reserveWrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                return AssetBalance(
+                    eqAccount: account,
+                    eqReserve: reserve,
+                    eqAssetId: eqAssetId,
+                    isUtilityAsset: chainAsset.isUtilityAsset,
+                    chainAssetId: chainAsset.chainAssetId,
+                    accountId: accountId
+                )
+            }
+
+            mappingOperation.addDependency(balancesWrapper.targetOperation)
+            mappingOperation.addDependency(reserveWrapper.targetOperation)
+
+            let dependencies = [codingFactoryOperation] + balancesWrapper.allOperations + reserveWrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        } catch {
+            return .createWithError(error)
         }
-
-        mappingOperation.addDependency(balancesWrapper.targetOperation)
-        mappingOperation.addDependency(reserveWrapper.targetOperation)
-
-        let dependencies = [codingFactoryOperation] + balancesWrapper.allOperations + reserveWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }
 
@@ -315,13 +357,11 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
                             return CompoundOperationWrapper.createWithError(error)
                         }
                     },
-                    ormlHydrationEvmHandler: { extras in
+                    ormlHydrationEvmHandler: { _ in
                         do {
-                            let currencyId = try Data(hexString: extras.currencyIdScale)
                             return self.queryOrmlHydrationEvmBalance(
                                 for: accountId,
-                                chainAsset: chainAsset,
-                                currencyId: currencyId
+                                chainAsset: chainAsset
                             )
                         } catch {
                             return CompoundOperationWrapper.createWithError(error)

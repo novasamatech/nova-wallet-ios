@@ -304,6 +304,11 @@
 		0C1CF6FB2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FA2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift */; };
 		0C1CF6FD2E4F048200B1DA66 /* XcmTransferDryRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FC2E4F048200B1DA66 /* XcmTransferDryRunner.swift */; };
 		0C1CF6FF2E4F315F00B1DA66 /* XcmTransferVerifierError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF6FE2E4F315F00B1DA66 /* XcmTransferVerifierError.swift */; };
+		0C1CF7022E508E2D00B1DA66 /* HydrationApiOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7012E508E2D00B1DA66 /* HydrationApiOperationFactory.swift */; };
+		0C1CF7042E508ED100B1DA66 /* HydrationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7032E508ED100B1DA66 /* HydrationApi.swift */; };
+		0C1CF7062E508FC000B1DA66 /* HydrationApi+Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7052E508FBF00B1DA66 /* HydrationApi+Currencies.swift */; };
+		0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */; };
+		0C1CF70B2E50976900B1DA66 /* AssetBalance+HydrationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */; };
 		0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		0C1D9AAD2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */; };
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
@@ -6375,6 +6380,11 @@
 		0C1CF6FA2E4F02ED00B1DA66 /* RuntimeCallCollecting+AnyRuntimeCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCallCollecting+AnyRuntimeCall.swift"; sourceTree = "<group>"; };
 		0C1CF6FC2E4F048200B1DA66 /* XcmTransferDryRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferDryRunner.swift; sourceTree = "<group>"; };
 		0C1CF6FE2E4F315F00B1DA66 /* XcmTransferVerifierError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferVerifierError.swift; sourceTree = "<group>"; };
+		0C1CF7012E508E2D00B1DA66 /* HydrationApiOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydrationApiOperationFactory.swift; sourceTree = "<group>"; };
+		0C1CF7032E508ED100B1DA66 /* HydrationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydrationApi.swift; sourceTree = "<group>"; };
+		0C1CF7052E508FBF00B1DA66 /* HydrationApi+Currencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydrationApi+Currencies.swift"; sourceTree = "<group>"; };
+		0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlHydrationEvmWalletQueryFactory.swift; sourceTree = "<group>"; };
+		0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetBalance+HydrationApi.swift"; sourceTree = "<group>"; };
 		0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Web3Alert+ChainId.swift"; sourceTree = "<group>"; };
 		0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewModel.swift; sourceTree = "<group>"; };
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
@@ -13160,6 +13170,25 @@
 			path = CallDerivation;
 			sourceTree = "<group>";
 		};
+		0C1CF7002E508E1600B1DA66 /* HydrationApi */ = {
+			isa = PBXGroup;
+			children = (
+				0C1CF7012E508E2D00B1DA66 /* HydrationApiOperationFactory.swift */,
+				0C1CF7032E508ED100B1DA66 /* HydrationApi.swift */,
+				0C1CF7052E508FBF00B1DA66 /* HydrationApi+Currencies.swift */,
+			);
+			path = HydrationApi;
+			sourceTree = "<group>";
+		};
+		0C1CF7072E50926600B1DA66 /* OrmlHydrationEvm */ = {
+			isa = PBXGroup;
+			children = (
+				0C1CF7082E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift */,
+				0C1CF70A2E50976900B1DA66 /* AssetBalance+HydrationApi.swift */,
+			);
+			path = OrmlHydrationEvm;
+			sourceTree = "<group>";
+		};
 		0C1FE0E82E4636ED00517A1D /* Operation */ = {
 			isa = PBXGroup;
 			children = (
@@ -14793,6 +14822,7 @@
 		0CCE3AAD2BF5BBBF00D55F03 /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				0C1CF7002E508E1600B1DA66 /* HydrationApi */,
 				0CED71B82D9D252500F79C02 /* XcmPaymentApi */,
 				0C27F37B2DA6B39400191FFF /* BlockLimit */,
 				0C277DA92D82E61D004FF053 /* DryRun */,
@@ -19336,6 +19366,7 @@
 		841AAC2B26F7311200F0A25E /* RemoteSubscription */ = {
 			isa = PBXGroup;
 			children = (
+				0C1CF7072E50926600B1DA66 /* OrmlHydrationEvm */,
 				0CC31FA32DF09E07005A4ADF /* WalletRemoteSubscription */,
 				881CA22329E3F07B00159C5B /* Equilibrium */,
 				84BCC7142924ADDC00354DE0 /* Evm */,
@@ -32195,6 +32226,7 @@
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
 				0CFF82312D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift in Sources */,
+				0C1CF70B2E50976900B1DA66 /* AssetBalance+HydrationApi.swift in Sources */,
 				2D3EA7E02CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift in Sources */,
 				84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
@@ -32976,6 +33008,7 @@
 				51FC48FA6FD4D2FB1781424D /* ReferralCrowdloanWireframe.swift in Sources */,
 				844C3E5E2A06180900C4305F /* SettingsBoxTableViewCell.swift in Sources */,
 				0F3E58FC800ED8722589F89E /* ReferralCrowdloanPresenter.swift in Sources */,
+				0C1CF7062E508FC000B1DA66 /* HydrationApi+Currencies.swift in Sources */,
 				84A9ECC1291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift in Sources */,
 				9F4A48B1BE3A1110A0CF9F36 /* ReferralCrowdloanViewController.swift in Sources */,
 				F4B39C6B2732791900BB6E10 /* RadioButton.swift in Sources */,
@@ -34145,6 +34178,7 @@
 				0CCDB2E42B749523007BC5D6 /* HydraTokensFactory.swift in Sources */,
 				3D61F07E10ED522E389B2192 /* DelegateVotedReferendaViewController.swift in Sources */,
 				C317BBF2F1815F0A8D937428 /* DelegateVotedReferendaViewLayout.swift in Sources */,
+				0C1CF7022E508E2D00B1DA66 /* HydrationApiOperationFactory.swift in Sources */,
 				8846F72929D6BB5300B8B776 /* Data+base16.swift in Sources */,
 				AA3AE7900853DFB4D6FC3F96 /* DelegateVotedReferendaViewFactory.swift in Sources */,
 				179DDEB4F2431F02D60117BD /* GovernanceSelectTracksProtocols.swift in Sources */,
@@ -34188,6 +34222,7 @@
 				590717389ECBA34FA08F247B /* GovernanceRemoveVotesConfirmWireframe.swift in Sources */,
 				0C6353472CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift in Sources */,
 				544C8EB3D71227FAF2FD4658 /* GovernanceRemoveVotesConfirmPresenter.swift in Sources */,
+				0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */,
 				C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */,
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,
 				4883346B78B82D2037DEBA56 /* GovernanceRemoveVotesConfirmViewLayout.swift in Sources */,
@@ -34315,6 +34350,7 @@
 				2D4F55362CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift in Sources */,
 				77DAFF6D2B297DB500D4220C /* ProxyAccountMapper.swift in Sources */,
 				4C06C526C22782939922BEB0 /* StakingRewardFiltersPresenter.swift in Sources */,
+				0C1CF7042E508ED100B1DA66 /* HydrationApi.swift in Sources */,
 				3D798C32B3C960FC6216C8C9 /* StakingRewardFiltersViewController.swift in Sources */,
 				19055A725FD9C18753B74A52 /* StakingRewardFiltersViewLayout.swift in Sources */,
 				3983EDE80B9296F3A252BA03 /* StakingRewardFiltersViewFactory.swift in Sources */,

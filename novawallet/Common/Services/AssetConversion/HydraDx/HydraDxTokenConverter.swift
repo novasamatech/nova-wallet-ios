@@ -53,7 +53,7 @@ enum HydraDxTokenConverter {
             )
 
             switch storageInfo {
-            case let .orml(info):
+            case let .orml(info), let .ormlHydrationEvm(info):
                 let context = codingFactory.createRuntimeJsonContext()
                 let remoteId = try? info.currencyId.map(
                     to: StringScaleMapper<HydraDx.AssetId>.self,
@@ -106,7 +106,7 @@ enum HydraDxTokenConverter {
         switch storageInfo {
         case .native:
             return .init(localAssetId: chainAsset.chainAssetId, remoteAssetId: nativeRemoteAssetId)
-        case let .orml(info):
+        case let .orml(info), let .ormlHydrationEvm(info):
             let context = codingFactory.createRuntimeJsonContext()
             let remoteId = try info.currencyId.map(
                 to: StringScaleMapper<HydraDx.AssetId>.self,
