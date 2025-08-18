@@ -1885,6 +1885,9 @@
 "common.hide" = "Sembunyikan";
 "common.show" = "Tampilkan";
 "multisig.operation.signatories.progress.format" = "Penandatangan (%li dari %li)";
+"swap.dry.run.failed.inline.message" = "Simulasi langkah swap gagal";
+"common.dry.run.failed.title" = "Simulasi transaksi gagal";
+"common.dry.run.failed.message" = "Nova mensimulasikan transaksi sebelumnya untuk mencegah kesalahan. Simulasi ini tidak berhasil. Coba lagi nanti atau dengan jumlah yang lebih tinggi. Jika masalah berlanjut, silakan hubungi Dukungan Nova Wallet di Pengaturan.";
 "call.data.validation.error.title" = "Data pemanggilan tidak valid";
 "enter.call.data.details.button.title" = "Masukkan data pemanggilan untuk melihat detail";
 "enter.call.data" = "Masukkan data pemanggilan";
