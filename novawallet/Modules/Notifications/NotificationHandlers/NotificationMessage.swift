@@ -18,6 +18,10 @@ enum NotificationMessage {
         chainId: ChainModel.Id,
         payload: StakingRewardPayload
     )
+    case newMultisig(
+        chainId: ChainModel.Id,
+        payload: NewMultisigPayload
+    )
     case newRelease(
         payload: NewReleasePayload
     )

@@ -1,6 +1,20 @@
 import Foundation
 import BigInt
 
+struct NewMultisigPayload: Codable {
+    enum CodingKeys: String, CodingKey {
+        case multisigAddress = "multisig"
+        case initiatorAddress = "initiator"
+        case callHash = "call_hash"
+        case callData
+    }
+
+    let multisigAddress: AccountAddress
+    let initiatorAddress: AccountAddress
+    @HexCodable var callHash: Substrate.CallHash
+    let callData: HexCodable<Substrate.CallData>?
+}
+
 struct StakingRewardPayload: Codable {
     let recipient: AccountAddress
     let amount: String

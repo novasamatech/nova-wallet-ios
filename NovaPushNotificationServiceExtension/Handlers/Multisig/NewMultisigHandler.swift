@@ -4,15 +4,15 @@ import Keystore_iOS
 import Foundation_iOS
 import BigInt
 
-final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
+final class NewMultisigHandler: CommonHandler, PushNotificationHandler {
+    let chainId: ChainModel.Id
+    let payload: NewMultisigPayload
     let operationQueue: OperationQueue
     let callStore = CancellableCallStore()
-    let chainId: ChainModel.Id
-    let payload: StakingRewardPayload
 
     init(
         chainId: ChainModel.Id,
-        payload: StakingRewardPayload,
+        payload: NewMultisigPayload,
         operationQueue: OperationQueue
     ) {
         self.chainId = chainId
@@ -99,36 +99,39 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
     private func updatingContent(
         wallets: [Web3Alert.LocalWallet],
         metaAccounts: [MetaAccountModel],
-        chainAsset: ChainAsset,
-        priceData: PriceData?,
-        payload: StakingRewardPayload
+        chainAsset _: ChainAsset,
+        priceData _: PriceData?,
+        payload: NewMultisigPayload
     ) -> NotificationContentResult {
         let walletName = targetWalletName(
-            for: payload.recipient,
+            for: payload.multisigAddress,
             chainId: chainId,
             wallets: wallets,
             metaAccounts: metaAccounts
         )
-        let walletString = walletName.flatMap { "[\($0)]" } ?? ""
-        let title = [
-            R.string.localizable.pushNotificationStakingRewardTitle(preferredLanguages: locale.rLanguages),
-            walletString
-        ].joined(with: .space)
-        let balance = balanceViewModel(
-            asset: chainAsset.asset,
-            amount: payload.amount,
-            priceData: priceData,
-            workingQueue: operationQueue
-        )
-
-        let optPriceString = balance?.price.map { "(\($0))" }
-        let amountWithPrice = [balance?.amount, optPriceString].compactMap { $0 }.joined(with: .space)
-        let body = R.string.localizable.pushNotificationStakingRewardSubtitle(
-            amountWithPrice,
-            chainAsset.chain.name,
+        let title = R.string.localizable.pushNotificationNewMultisigTitle(
             preferredLanguages: locale.rLanguages
         )
+        let subtitle = R.string.localizable.pushNotificationCommonMultisigSubtitle(
+            walletName ?? "",
+            preferredLanguages: locale.rLanguages
+        )
+        let body = "test body"
 
-        return .init(title: title, body: body)
+//        let balance = balanceViewModel(
+//            asset: chainAsset.asset,
+//            amount: payload.amount,
+//            priceData: priceData,
+//            workingQueue: operationQueue
+//        )
+
+//        let optPriceString = balance?.price.map { "(\($0))" }
+//        let amountWithPrice = [balance?.amount, optPriceString].compactMap { $0 }.joined(with: .space)
+
+        return .init(
+            title: title,
+            subtitle: subtitle,
+            body: body
+        )
     }
 }

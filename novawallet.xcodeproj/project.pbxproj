@@ -1951,6 +1951,9 @@
 		2DE668672C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE668662C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift */; };
 		2DE668692C9D5839007883AF /* ReferendumTracksVotingDistribution+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE668682C9D5839007883AF /* ReferendumTracksVotingDistribution+Diffable.swift */; };
 		2DE757322D43D4D200EDE5E8 /* PseudoRandomNumberGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE757312D43D4D200EDE5E8 /* PseudoRandomNumberGenerator.swift */; };
+		2DE8B08E2E53304200F8BD40 /* NewMultisigHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */; };
+		2DE8B0902E5336C100F8BD40 /* HexCodingWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF67629C7AC29002173E6 /* HexCodingWrapper.swift */; };
+		2DE8B0912E5336CC00F8BD40 /* BigInt+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACCD825F8C22A00F32ED4 /* BigInt+Hex.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
 		2DEDEF442E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */; };
@@ -8331,6 +8334,7 @@
 		2DE668662C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumObservingVoteInteractor.swift; sourceTree = "<group>"; };
 		2DE668682C9D5839007883AF /* ReferendumTracksVotingDistribution+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumTracksVotingDistribution+Diffable.swift"; sourceTree = "<group>"; };
 		2DE757312D43D4D200EDE5E8 /* PseudoRandomNumberGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoRandomNumberGenerator.swift; sourceTree = "<group>"; };
+		2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMultisigHandler.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
 		2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsViewFactory.swift; sourceTree = "<group>"; };
@@ -17589,6 +17593,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2DE8B08C2E53302300F8BD40 /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
 		2DEDEF482E4CE488008F07B2 /* ChainProvider */ = {
 			isa = PBXGroup;
 			children = (
@@ -18836,6 +18848,7 @@
 			children = (
 				77AF37692BA2C19500FD1A8E /* Extensions */,
 				778215C72B914E62006C7D13 /* Transfers */,
+				2DE8B08C2E53302300F8BD40 /* Multisig */,
 				778215DB2B95AD67006C7D13 /* Governance */,
 				778215E52B95C42B006C7D13 /* Staking */,
 				778215E42B95BACD006C7D13 /* Technical */,
@@ -29690,6 +29703,7 @@
 				2DEDF02B2E4D1594008F07B2 /* Staking+Hold.swift in Sources */,
 				2DEDF02C2E4D1594008F07B2 /* Staking+Amount.swift in Sources */,
 				2DEDF02D2E4D1594008F07B2 /* AutomationTime.swift in Sources */,
+				2DE8B08E2E53304200F8BD40 /* NewMultisigHandler.swift in Sources */,
 				2DEDF06B2E4D226E008F07B2 /* OfflineRuntimeCodingService.swift in Sources */,
 				2DEDF02E2E4D1594008F07B2 /* AutomationTimeTask.swift in Sources */,
 				2DEDF02F2E4D1594008F07B2 /* StorageCodingPath+AutomationTime.swift in Sources */,
@@ -29894,6 +29908,7 @@
 				2DEDEF872E4D1332008F07B2 /* XcmV5.swift in Sources */,
 				7778FE552B9109C50023E801 /* AssetBalanceFormatterFactory.swift in Sources */,
 				778215CB2B914E9D006C7D13 /* Payload.swift in Sources */,
+				2DE8B0902E5336C100F8BD40 /* HexCodingWrapper.swift in Sources */,
 				2DEDEF702E4D099C008F07B2 /* StorageCodingPath.swift in Sources */,
 				2DEDEF672E4CFB51008F07B2 /* RuntimeCodingService.swift in Sources */,
 				0CCD18B02BA1C2D80068D73A /* AssetBalanceDisplayInfo.swift in Sources */,
@@ -29946,6 +29961,7 @@
 				0CE8622C2D659E9200245992 /* AssetModel+Staking.swift in Sources */,
 				2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */,
 				77AE4FAB2B905E9B00426519 /* TimeInterval+Time.swift in Sources */,
+				2DE8B0912E5336CC00F8BD40 /* BigInt+Hex.swift in Sources */,
 				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,

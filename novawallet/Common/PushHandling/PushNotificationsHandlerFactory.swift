@@ -56,11 +56,10 @@ final class PushNotificationsHandlerFactory: PushNotificationsHandlerFactoryProt
                 settingsRepository: AnyDataProviderRepository(settingsRepository),
                 walletsRepository: AnyDataProviderRepository(walletsRepository)
             )
-
         case .newReferendum, .referendumUpdate:
             let chainRegistry = chainRegistryClosure()
             return GovernanceNotificationMessageHandler(chainRegistry: chainRegistry, settings: settings)
-        case .newRelease:
+        case .newRelease, .newMultisig:
             return nil
         }
     }
