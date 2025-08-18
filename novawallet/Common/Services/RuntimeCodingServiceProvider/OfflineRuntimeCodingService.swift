@@ -2,18 +2,10 @@ import Foundation
 import Operation_iOS
 
 final class OfflineRuntimeCodingService {
-    private let snapshotFactory: RuntimeSnapshotFactoryProtocol
-    private let repository: AnyDataProviderRepository<ChainModel>
-    private let operationQueue: OperationQueue
-    
-    init(
-        snapshotFactory: RuntimeSnapshotFactoryProtocol,
-        repository: AnyDataProviderRepository<ChainModel>,
-        operationQueue: OperationQueue
-    ) {
-        self.snapshotFactory = snapshotFactory
-        self.repository = repository
-        self.operationQueue = operationQueue
+    private let snapshot: RuntimeSnapshot
+
+    init(snapshot: RuntimeSnapshot) {
+        self.snapshot = snapshot
     }
 }
 
@@ -21,6 +13,13 @@ final class OfflineRuntimeCodingService {
 
 extension OfflineRuntimeCodingService: RuntimeCodingServiceProtocol {
     func fetchCoderFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol> {
-        
+        let codingFactory = RuntimeCoderFactory(
+            catalog: snapshot.typeRegistryCatalog,
+            specVersion: snapshot.specVersion,
+            txVersion: snapshot.txVersion,
+            metadata: snapshot.metadata
+        )
+
+        return .createWithResult(codingFactory)
     }
 }
