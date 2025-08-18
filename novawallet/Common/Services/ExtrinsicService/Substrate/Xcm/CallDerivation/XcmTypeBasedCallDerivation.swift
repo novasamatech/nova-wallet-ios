@@ -3,13 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-protocol XcmCallDerivating {
-    func createTransferCallDerivationWrapper(
-        for transferRequest: XcmUnweightedTransferRequest
-    ) -> CompoundOperationWrapper<RuntimeCallCollecting>
-}
-
-final class XcmCallDerivator {
+final class XcmTypeBasedCallDerivator {
     let chainRegistry: ChainRegistryProtocol
 
     private lazy var xcmModelFactory = XcmModelFactory()
@@ -21,7 +15,7 @@ final class XcmCallDerivator {
     }
 }
 
-private extension XcmCallDerivator {
+private extension XcmTypeBasedCallDerivator {
     func createPalletXcmTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         callPathFactory: @escaping (String) -> CallCodingPath,
@@ -157,7 +151,7 @@ private extension XcmCallDerivator {
     }
 }
 
-extension XcmCallDerivator: XcmCallDerivating {
+extension XcmTypeBasedCallDerivator: XcmCallDerivating {
     func createTransferCallDerivationWrapper(
         for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {

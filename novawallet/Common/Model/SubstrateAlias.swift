@@ -99,6 +99,15 @@ extension Optional where Wrapped == ParaId {
         }
     }
 
+    var isRelay: Bool {
+        switch self {
+        case .none:
+            true
+        case .some:
+            false
+        }
+    }
+
     var isRelayOrSystemParachain: Bool {
         switch self {
         case .none:

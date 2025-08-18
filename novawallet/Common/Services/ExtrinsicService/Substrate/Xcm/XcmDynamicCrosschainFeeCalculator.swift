@@ -3,12 +3,6 @@ import SubstrateSdk
 import Operation_iOS
 import BigInt
 
-enum XcmDynamicCrosschainFeeCalculatorError: Error {
-    case emptyForwardedMessages
-    case noForwardedMessage
-    case noDepositFound
-}
-
 /**
  *  This class estimates the fee for an XCM (Cross-Consensus Message) transaction using dry runs.
  *
@@ -33,26 +27,16 @@ final class XcmDynamicCrosschainFeeCalculator {
 
     struct InitialModel {
         let call: AnyRuntimeCall
-        let sender: AccountId
         let amountToSend: Balance
-    }
-
-    struct IntermediateResult {
-        let forwardedXcm: XcmUni.VersionedMessage
-        let deliveryFee: BigUInt
     }
 
     static let minimumSendAmount: Decimal = 100
     static let minimumFundAmount: Decimal = minimumSendAmount * 2
-    static let dryRunXcmVersion: Xcm.Version = .V4
 
     let chainRegistry: ChainRegistryProtocol
-    let dryRunOperationFactory: DryRunOperationFactoryProtocol
     let callDerivator: XcmCallDerivating
-    let palletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol
     let tokenMintingFactory: TokenBalanceMintingFactoryProtocol
-    let operationQueue: OperationQueue
-    let logger: LoggerProtocol
+    let dryRunner: XcmTransferDryRunning
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -63,19 +47,21 @@ final class XcmDynamicCrosschainFeeCalculator {
         self.chainRegistry = chainRegistry
         self.callDerivator = callDerivator
 
-        dryRunOperationFactory = DryRunOperationFactory(
+        dryRunner = XcmTransferDryRunner(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            dryRunOperationFactory: DryRunOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            ),
+            palletMetadataQueryFactory: XcmPalletMetadataQueryFactory(),
+            operationQueue: operationQueue,
+            logger: logger
         )
 
-        palletMetadataQueryFactory = XcmPalletMetadataQueryFactory()
         tokenMintingFactory = TokenBalanceMintingFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
-
-        self.operationQueue = operationQueue
-        self.logger = logger
     }
 }
 
@@ -202,7 +188,6 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
                 return InitialModel(
                     call: call,
-                    sender: senderAccount,
                     amountToSend: request.amount
                 )
             }
@@ -220,238 +205,6 @@ private extension XcmDynamicCrosschainFeeCalculator {
             return .createWithError(error)
         }
     }
-
-    func createOriginIntermediateResult(
-        for request: XcmUnweightedTransferRequest,
-        dryRunResult: DryRun.CallResult,
-        palletName: String,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> IntermediateResult {
-        let effects = try dryRunResult.ensureSuccessExecution()
-
-        let deliveryFee = XcmDeliveryFeeMatcher(
-            palletName: palletName,
-            logger: logger
-        ).matchEventList(
-            effects.emittedEvents,
-            using: codingFactory
-        )
-
-        guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
-            throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
-        }
-
-        let messageOrigin = try XcmUni.AbsoluteLocation(
-            paraId: request.paraIdAfterOrigin
-        )
-        .fromChainPointOfView(request.origin.parachainId)
-        .versioned(xcmVersion)
-
-        guard
-            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
-                effects.forwardedXcms,
-                from: messageOrigin
-            ) else {
-            throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
-        }
-
-        return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: deliveryFee ?? 0)
-    }
-
-    func dryRunOnOriginWrapper(
-        for request: XcmUnweightedTransferRequest,
-        dependingOn initialOperation: BaseOperation<InitialModel>
-    ) -> CompoundOperationWrapper<IntermediateResult> {
-        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let call = try initialOperation.extractNoCancellableResultData().call
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(for: request.originChain.chainId)
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-            let palletResolutionWrapper = self.palletMetadataQueryFactory.createModuleNameResolutionWrapper(
-                for: runtimeProvider
-            )
-
-            let dryRunWrapper = self.dryRunOperationFactory.createDryRunCallWrapper(
-                call,
-                origin: .system(.root),
-                xcmVersion: Self.dryRunXcmVersion,
-                chainId: request.originChain.chainId
-            )
-
-            let resultOperation = ClosureOperation<IntermediateResult> {
-                let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let palletName = try palletResolutionWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                return try self.createOriginIntermediateResult(
-                    for: request,
-                    dryRunResult: dryRunResult,
-                    palletName: palletName,
-                    codingFactory: codingFactory
-                )
-            }
-
-            resultOperation.addDependency(codingFactoryOperation)
-            resultOperation.addDependency(palletResolutionWrapper.targetOperation)
-            resultOperation.addDependency(dryRunWrapper.targetOperation)
-
-            return dryRunWrapper
-                .insertingHead(operations: palletResolutionWrapper.allOperations)
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: resultOperation)
-        }
-    }
-
-    func createReserveIntermediateResult(
-        for request: XcmUnweightedTransferRequest,
-        originResult: IntermediateResult,
-        dryRunResult: DryRun.XcmResult
-    ) throws -> IntermediateResult {
-        let effects = try dryRunResult.ensureSuccessExecution()
-
-        guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
-            throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
-        }
-
-        let messageOrigin = try XcmUni.AbsoluteLocation(
-            paraId: request.destination.parachainId
-        )
-        .fromChainPointOfView(request.reserve.parachainId)
-        .versioned(xcmVersion)
-
-        guard
-            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
-                effects.forwardedXcms,
-                from: messageOrigin
-            ) else {
-            throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
-        }
-
-        return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: originResult.deliveryFee)
-    }
-
-    func dryRunReserveWrapper(
-        for request: XcmUnweightedTransferRequest,
-        dependingOn originResult: BaseOperation<IntermediateResult>
-    ) -> CompoundOperationWrapper<IntermediateResult> {
-        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let intermediateResult = try originResult.extractNoCancellableResultData()
-
-            guard request.isNonReserveTransfer else {
-                return .createWithResult(intermediateResult)
-            }
-
-            let xcmVersion = intermediateResult.forwardedXcm.version
-            let location = try XcmUni.AbsoluteLocation(
-                paraId: request.origin.parachainId
-            )
-            .fromChainPointOfView(request.reserve.parachainId)
-            .versioned(xcmVersion)
-
-            let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: location,
-                xcm: intermediateResult.forwardedXcm,
-                chainId: request.reserveChain.chainId
-            )
-
-            let resultOperation = ClosureOperation<IntermediateResult> {
-                let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-
-                return try self.createReserveIntermediateResult(
-                    for: request,
-                    originResult: intermediateResult,
-                    dryRunResult: dryRunResult
-                )
-            }
-
-            resultOperation.addDependency(dryRunWrapper.targetOperation)
-
-            return dryRunWrapper.insertingTail(operation: resultOperation)
-        }
-    }
-
-    func createDestinationResult(
-        for request: XcmUnweightedTransferRequest,
-        initialModel: InitialModel,
-        reserveResult: IntermediateResult,
-        dryRunResult: DryRun.XcmResult,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> XcmFeeModelProtocol {
-        let effects = try dryRunResult.ensureSuccessExecution()
-
-        let depositEven = XcmTokensArrivalDetector(
-            chainAsset: request.destination.chainAsset,
-            logger: logger
-        )?.searchDepositInEvents(
-            effects.emittedEvents,
-            accountId: request.destination.accountId,
-            codingFactory: codingFactory
-        )
-
-        guard let depositEven else {
-            throw XcmDynamicCrosschainFeeCalculatorError.noDepositFound
-        }
-
-        let totalFee = initialModel.amountToSend.subtractOrZero(depositEven.amount)
-
-        let feeModel = XcmFeeModel(
-            senderPart: reserveResult.deliveryFee,
-            holdingPart: totalFee
-        )
-
-        return feeModel
-    }
-
-    func dryRunDestinationWrapper(
-        for request: XcmUnweightedTransferRequest,
-        dependingOn prevResult: BaseOperation<IntermediateResult>,
-        initialOperation: BaseOperation<InitialModel>
-    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let intermediateResult = try prevResult.extractNoCancellableResultData()
-            let initialModel = try initialOperation.extractNoCancellableResultData()
-
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(
-                for: request.destinationChain.chainId
-            )
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let xcmVersion = intermediateResult.forwardedXcm.version
-
-            let location = try XcmUni.AbsoluteLocation(
-                paraId: request.paraIdBeforeDestination
-            )
-            .fromChainPointOfView(request.destination.parachainId)
-            .versioned(xcmVersion)
-
-            let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: location,
-                xcm: intermediateResult.forwardedXcm,
-                chainId: request.destinationChain.chainId
-            )
-
-            let resultOperation = ClosureOperation<XcmFeeModelProtocol> {
-                let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                return try self.createDestinationResult(
-                    for: request,
-                    initialModel: initialModel,
-                    reserveResult: intermediateResult,
-                    dryRunResult: dryRunResult,
-                    codingFactory: codingFactory
-                )
-            }
-
-            resultOperation.addDependency(codingFactoryOperation)
-            resultOperation.addDependency(dryRunWrapper.targetOperation)
-
-            return dryRunWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: resultOperation)
-        }
-    }
 }
 
 extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
@@ -461,31 +214,20 @@ extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
         let updatedRequest = ensureSafeAmountToSend(for: request)
 
         let initialModelWrapper = createDryCallWrapper(for: updatedRequest)
-        let originDryRunWrapper = dryRunOnOriginWrapper(
-            for: updatedRequest,
-            dependingOn: initialModelWrapper.targetOperation
+        let dryRunWrapper = dryRunner.createDryRunWrapper(
+            for: request,
+            paramsClosure: {
+                let initialModel = try initialModelWrapper.targetOperation.extractNoCancellableResultData()
+                return XcmTransferDryRunParams(
+                    callOrigin: .system(.root),
+                    call: initialModel.call,
+                    amountToSend: initialModel.amountToSend
+                )
+            }
         )
 
-        originDryRunWrapper.addDependency(wrapper: initialModelWrapper)
+        dryRunWrapper.addDependency(wrapper: initialModelWrapper)
 
-        let reserveDryRunWrapper = dryRunReserveWrapper(
-            for: updatedRequest,
-            dependingOn: originDryRunWrapper.targetOperation
-        )
-
-        reserveDryRunWrapper.addDependency(wrapper: originDryRunWrapper)
-
-        let destinationDryRunWrapper = dryRunDestinationWrapper(
-            for: updatedRequest,
-            dependingOn: reserveDryRunWrapper.targetOperation,
-            initialOperation: initialModelWrapper.targetOperation
-        )
-
-        destinationDryRunWrapper.addDependency(wrapper: reserveDryRunWrapper)
-
-        return destinationDryRunWrapper
-            .insertingHead(operations: reserveDryRunWrapper.allOperations)
-            .insertingHead(operations: originDryRunWrapper.allOperations)
-            .insertingHead(operations: initialModelWrapper.allOperations)
+        return dryRunWrapper.insertingHead(operations: initialModelWrapper.allOperations)
     }
 }

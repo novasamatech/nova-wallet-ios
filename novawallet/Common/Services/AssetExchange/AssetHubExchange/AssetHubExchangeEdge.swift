@@ -23,7 +23,11 @@ final class AssetHubExchangeEdge {
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .assetHubSwap }
 
-    var weight: Int { AssetsExchange.defaultEdgeWeight + 1 }
+    var weight: Int { 3 * AssetsExchange.defaultEdgeWeight + 10 }
+
+    func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
+        currentWeight + weight
+    }
 
     func quote(
         amount: Balance,
@@ -71,6 +75,10 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func shouldIgnoreFeeRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
+        false
+    }
+
+    func shouldIgnoreDelayedCallRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
         false
     }
 
