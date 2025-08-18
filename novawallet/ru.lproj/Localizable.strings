@@ -1885,6 +1885,9 @@
 "common.hide" = "Скрыть";
 "common.show" = "Показать";
 "multisig.operation.signatories.progress.format" = "Подписанты (%li из %li)";
+"swap.dry.run.failed.inline.message" = "Симуляция шага обмена не удалась";
+"common.dry.run.failed.title" = "Ошибка симуляции транзакции";
+"common.dry.run.failed.message" = "Nova заранее симулирует транзакцию, чтобы предотвратить ошибки. Эта симуляция не удалась. Попробуйте позже или с большей суммой. Если проблема сохраняется, пожалуйста, свяжитесь со службой поддержки Nova Wallet в Настройках.";
 "call.data.validation.error.title" = "Некорректные данные вызова";
 "enter.call.data.details.button.title" = "Введите данные вызова, чтобы просмотреть детали";
 "enter.call.data" = "Введите данные вызова";
