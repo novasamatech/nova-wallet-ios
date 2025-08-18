@@ -64,6 +64,10 @@ extension NotificationMessage {
             let chainId = userInfo["chainId"] as? String ?? ""
             let payload = try decoder.decode(StakingRewardPayload.self, from: payloadData)
             self = .stakingReward(chainId: chainId, payload: payload)
+        case "newMultisig":
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(NewMultisigPayload.self, from: payloadData)
+            self = .newMultisig(chainId: chainId, payload: payload)
         case "appNewRelease":
             let payload = try decoder.decode(NewReleasePayload.self, from: payloadData)
             self = .newRelease(payload: payload)

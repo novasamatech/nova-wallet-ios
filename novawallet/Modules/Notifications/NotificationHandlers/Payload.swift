@@ -5,14 +5,14 @@ struct NewMultisigPayload: Codable {
     enum CodingKeys: String, CodingKey {
         case multisigAddress = "multisig"
         case initiatorAddress = "initiator"
-        case callHash = "call_hash"
+        case callHash
         case callData
     }
 
     let multisigAddress: AccountAddress
     let initiatorAddress: AccountAddress
-    @HexCodable var callHash: Substrate.CallHash
-    let callData: HexCodable<Substrate.CallData>?
+    let callHash: String
+    let callData: String?
 }
 
 struct StakingRewardPayload: Codable {

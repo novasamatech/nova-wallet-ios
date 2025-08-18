@@ -46,34 +46,22 @@ final class NewMultisigHandler: CommonHandler, PushNotificationHandler {
                     throw PushNotificationsHandlerErrors.assetNotFound(assetId: chainId)
                 }
 
-                let priceOperation: BaseOperation<[PriceData]>
-                if
-                    let priceId = asset.priceId,
-                    let currency = currencyManager(operationQueue: self.operationQueue)?.selectedCurrency {
-                    priceOperation = priceRepository(for: priceId, currencyId: currency.id).fetchAllOperation(with: .init())
-                } else {
-                    priceOperation = .createWithResult([])
-                }
-                priceOperation.addDependency(chainOperation)
-
                 let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
                 let mapOperaion = ClosureOperation {
-                    let price = try priceOperation.extractNoCancellableResultData().first
                     let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
 
                     return self.updatingContent(
                         wallets: settings?.wallets ?? [],
                         metaAccounts: metaAccounts,
                         chainAsset: .init(chain: chain, asset: asset),
-                        priceData: price,
+                        priceData: nil,
                         payload: self.payload
                     )
                 }
 
-                mapOperaion.addDependency(priceOperation)
                 mapOperaion.addDependency(fetchMetaAccountsOperation)
 
-                return .init(targetOperation: mapOperaion, dependencies: [priceOperation, fetchMetaAccountsOperation])
+                return .init(targetOperation: mapOperaion, dependencies: [fetchMetaAccountsOperation])
             }
 
         contentWrapper.addDependency(operations: [settingsOperation, chainOperation])
