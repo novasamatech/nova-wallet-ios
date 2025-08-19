@@ -101,7 +101,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             connection: host.connection,
             runtimeProvider: host.runtimeService,
             notificationsRegistrar: exchangeStateRegistrar,
-            operationQueue: host.operationQueue
+            operationQueue: host.operationQueue,
+            logger: host.logger
         )
 
         stateProviderRegistrar.addStateProvider(flowState)

@@ -12,8 +12,7 @@ final class HydraStableswapQuoteFactory {
     }
 
     private func deriveApiParams(
-        from quoteState: HydraStableswap.QuoteParams,
-        with context: [CodingUserInfoKey: Any]?
+        from quoteState: HydraStableswap.QuoteParams
     ) throws -> HydraStableswapApi.Params {
         guard
             let poolInfo = quoteState.poolInfo.poolInfo,
@@ -22,9 +21,9 @@ final class HydraStableswapQuoteFactory {
         }
 
         let reserves: [HydraStableswapApi.AssetReserveInfo] = try poolInfo.assets.map { asset in
-            let amount = try quoteState.reserves.getReserve(for: asset.value, with: context) ?? 0
+            let amount = quoteState.getReserve(for: asset.value) ?? 0
 
-            guard let decimals = try quoteState.reserves.getDecimals(for: asset.value, with: context) else {
+            guard let decimals = quoteState.getDecimals(for: asset.value) else {
                 throw CommonError.dataCorruption
             }
 
@@ -38,7 +37,7 @@ final class HydraStableswapQuoteFactory {
         return .init(
             poolInfo: poolInfo,
             tradability: quoteState.poolInfo.tradability,
-            shareAssetIssuance: try quoteState.reserves.getPoolTotalIssuance(with: context) ?? 0,
+            shareAssetIssuance: quoteState.reserves.poolIssuance ?? 0,
             reserves: reserves,
             currentBlock: currentBlock
         )
@@ -192,26 +191,20 @@ extension HydraStableswapQuoteFactory {
         let quoteService = flowState.setupQuoteService(for: poolPair)
 
         let quoteStateOperation = quoteService.createFetchOperation()
-        let codingFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
         let calculationOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateOperation.extractNoCancellableResultData()
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let apiParams = try self.deriveApiParams(
-                from: quoteState,
-                with: codingFactory.createRuntimeJsonContext().toRawContext()
-            )
+            let apiParams = try self.deriveApiParams(from: quoteState)
 
             return try self.calculateQuote(for: apiParams, args: args)
         }
 
         calculationOperation.addDependency(quoteStateOperation)
-        calculationOperation.addDependency(codingFactoryOperation)
 
         return CompoundOperationWrapper(
             targetOperation: calculationOperation,
-            dependencies: [quoteStateOperation, codingFactoryOperation]
+            dependencies: [quoteStateOperation]
         )
     }
 }

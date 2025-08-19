@@ -68,7 +68,6 @@ extension HydraStableswapFlowState {
         }
 
         let newService = HydraStableswapQuoteParamsService(
-            userAccountId: account.accountId,
             poolAsset: poolPair.poolAsset,
             assetIn: poolPair.assetIn,
             assetOut: poolPair.assetOut,

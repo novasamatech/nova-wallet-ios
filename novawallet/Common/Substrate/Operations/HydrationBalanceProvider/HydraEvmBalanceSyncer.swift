@@ -73,6 +73,8 @@ final class HydraEvmBalanceSyncer: ObservableSyncService {
 
             loadBalances(for: Array(accountAssets), blockHash: blockHash)
         }
+
+        pollingState?.setup()
     }
 
     override func stopSyncUp() {

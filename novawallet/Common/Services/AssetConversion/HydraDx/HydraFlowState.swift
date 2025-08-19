@@ -10,6 +10,7 @@ final class HydraFlowState {
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     let mutex = NSLock()
 
@@ -28,7 +29,8 @@ final class HydraFlowState {
         runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.account = account
         self.chain = chain
@@ -37,6 +39,7 @@ final class HydraFlowState {
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
@@ -128,7 +131,8 @@ extension HydraFlowState {
             connection: connection,
             runtimeProvider: runtimeProvider,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         xykswapFlowState = newState

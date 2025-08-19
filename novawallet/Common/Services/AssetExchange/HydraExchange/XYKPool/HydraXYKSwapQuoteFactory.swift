@@ -40,15 +40,9 @@ final class HydraXYKSwapQuoteFactory {
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
-        guard
-            let balanceIn = remoteState.assetInBalance,
-            let balanceOut = remoteState.assetOutBalance else {
-            throw AssetConversionOperationError.runtimeError("Pool balance not found")
-        }
-
         let amountOut = try HydraXYKSwapApi.calculateOutGivenIn(
-            for: balanceIn,
-            balanceOut: balanceOut,
+            for: remoteState.assetInBalance,
+            balanceOut: remoteState.assetOutBalance,
             amountIn: amount
         )
 
@@ -66,15 +60,9 @@ final class HydraXYKSwapQuoteFactory {
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
-        guard
-            let balanceIn = remoteState.assetInBalance,
-            let balanceOut = remoteState.assetOutBalance else {
-            throw AssetConversionOperationError.runtimeError("Pool balance not found")
-        }
-
         let amountIn = try HydraXYKSwapApi.calculateInGivenOut(
-            for: balanceIn,
-            balanceOut: balanceOut,
+            for: remoteState.assetInBalance,
+            balanceOut: remoteState.assetOutBalance,
             amountOut: amount
         )
 
