@@ -215,7 +215,10 @@ private extension CommonMultisigHandler {
                 preferredLanguages: locale.rLanguages
             )
         case let .general(general):
-            commonBodyPart = "\(general.callPath.moduleName): \(general.callPath.callName)."
+            commonBodyPart = [
+                general.callPath.moduleName.displayModule,
+                general.callPath.callName.displayCall
+            ].joined(with: .colonSpace)
         }
 
         return createBody(using: commonBodyPart, adding: operationSpecificPart)
