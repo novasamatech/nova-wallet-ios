@@ -59,7 +59,7 @@ final class PushNotificationsHandlerFactory: PushNotificationsHandlerFactoryProt
         case .newReferendum, .referendumUpdate:
             let chainRegistry = chainRegistryClosure()
             return GovernanceNotificationMessageHandler(chainRegistry: chainRegistry, settings: settings)
-        case .newRelease, .newMultisig:
+        case .newRelease, .newMultisig, .multisigApproval, .multisigExecuted, .multisigCancelled:
             return nil
         }
     }

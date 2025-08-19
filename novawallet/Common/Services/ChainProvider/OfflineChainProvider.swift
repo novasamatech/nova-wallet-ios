@@ -14,10 +14,10 @@ final class OfflineChainProvider {
 extension OfflineChainProvider: ChainProviderProtocol {
     func createChainWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<ChainModel> {
         let fetchOperation = repository.fetchOperation(
-            by: chainId,
+            by: { chainId },
             options: .init()
         )
-        let resultOepration = ClosureOperation<ChainModel> {
+        let resultOperation = ClosureOperation<ChainModel> {
             guard let chain = try fetchOperation.extractNoCancellableResultData() else {
                 throw ChainProviderError.chainNotFound(chainId: chainId)
             }
@@ -25,10 +25,10 @@ extension OfflineChainProvider: ChainProviderProtocol {
             return chain
         }
 
-        resultOepration.addDependency(fetchOperation)
+        resultOperation.addDependency(fetchOperation)
 
         return CompoundOperationWrapper(
-            targetOperation: resultOepration,
+            targetOperation: resultOperation,
             dependencies: [fetchOperation]
         )
     }

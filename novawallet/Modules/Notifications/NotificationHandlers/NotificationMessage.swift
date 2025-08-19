@@ -22,6 +22,18 @@ enum NotificationMessage {
         chainId: ChainModel.Id,
         payload: NewMultisigPayload
     )
+    case multisigApproval(
+        chainId: ChainModel.Id,
+        payload: ApprovalMultisigPayload
+    )
+    case multisigExecuted(
+        chainId: ChainModel.Id,
+        payload: ExecutedMultisigPayload
+    )
+    case multisigCancelled(
+        chainId: ChainModel.Id,
+        payload: CancelledMultisigPayload
+    )
     case newRelease(
         payload: NewReleasePayload
     )
@@ -68,6 +80,18 @@ extension NotificationMessage {
             let chainId = userInfo["chainId"] as? String ?? ""
             let payload = try decoder.decode(NewMultisigPayload.self, from: payloadData)
             self = .newMultisig(chainId: chainId, payload: payload)
+        case "multisigApproval":
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(ApprovalMultisigPayload.self, from: payloadData)
+            self = .multisigApproval(chainId: chainId, payload: payload)
+        case "multisigExecuted":
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(ExecutedMultisigPayload.self, from: payloadData)
+            self = .multisigExecuted(chainId: chainId, payload: payload)
+        case "multisigCancelled":
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(CancelledMultisigPayload.self, from: payloadData)
+            self = .multisigCancelled(chainId: chainId, payload: payload)
         case "appNewRelease":
             let payload = try decoder.decode(NewReleasePayload.self, from: payloadData)
             self = .newRelease(payload: payload)

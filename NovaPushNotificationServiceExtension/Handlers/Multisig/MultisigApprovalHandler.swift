@@ -1,10 +1,7 @@
 import Foundation
 import Operation_iOS
-import Keystore_iOS
-import Foundation_iOS
-import BigInt
 
-final class NewMultisigHandler: CommonMultisigHandler, PushNotificationHandler {
+final class MultisigApprovalHandler: CommonMultisigHandler, PushNotificationHandler {
     let payload: MultisigPayloadProtocol
 
     let callStore = CancellableCallStore()

@@ -23,7 +23,7 @@ extension OfflineRuntimeCodingServiceProvider: RuntimeCodingServiceProviderProto
     func createRuntimeCodingServiceWrapper(
         for chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<RuntimeCodingServiceProtocol> {
-        let chainFetchOperation = repository.fetchOperation(by: chainId, options: .init())
+        let chainFetchOperation = repository.fetchOperation(by: { chainId }, options: .init())
 
         let snapshotWrapper: CompoundOperationWrapper<RuntimeSnapshot?>
         snapshotWrapper = OperationCombiningService.compoundNonOptionalWrapper(
