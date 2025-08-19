@@ -36,6 +36,38 @@ enum AssetStorageInfo {
 }
 
 private extension AssetStorageInfo {
+    static func createOrmlHydrationEvmStorageInfo(
+        from asset: AssetModel,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> OrmlTokenStorageInfo {
+        guard let extras = try asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+            throw AssetStorageInfoError.unexpectedTypeExtras
+        }
+
+        let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
+
+        let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
+        let currencyId = try decoder.read(type: extras.currencyIdType)
+
+        let moduleName = CallCodingPath.currenciesTransfer.moduleName
+        let transferAllPath = CallCodingPath.currenciesTransferAll
+
+        let existentialDeposit = BigUInt(extras.existentialDeposit) ?? 0
+
+        let canTransferAll = codingFactory.metadata.getCall(
+            from: transferAllPath.moduleName,
+            with: transferAllPath.callName
+        ) != nil
+
+        return OrmlTokenStorageInfo(
+            currencyId: currencyId,
+            currencyData: rawCurrencyId,
+            module: moduleName,
+            existentialDeposit: existentialDeposit,
+            canTransferAll: canTransferAll
+        )
+    }
+
     static func createOrmlStorageInfo(
         from asset: AssetModel,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -112,7 +144,10 @@ extension AssetStorageInfo {
 
             return .statemine(info: info)
         case .ormlHydrationEvm:
-            let info = try createOrmlStorageInfo(from: asset, codingFactory: codingFactory)
+            let info = try createOrmlHydrationEvmStorageInfo(
+                from: asset,
+                codingFactory: codingFactory
+            )
             return .ormlHydrationEvm(info: info)
         case .evmAsset:
             guard let contractAddress = asset.evmContractAddress else {
