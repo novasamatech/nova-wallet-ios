@@ -12,8 +12,8 @@ final class HydraOmnipoolQuoteFactory {
 
     private func createQuoteStateWrapper(
         dependingOn swapPairOperation: BaseOperation<HydraDx.SwapPair>
-    ) -> CompoundOperationWrapper<HydraDx.QuoteRemoteState> {
-        OperationCombiningService<HydraDx.QuoteRemoteState>.compoundNonOptionalWrapper(
+    ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
+        OperationCombiningService<HydraOmnipool.QuoteRemoteState>.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: flowState.operationQueue)
         ) {
             let swapPair = try swapPairOperation.extractNoCancellableResultData()
@@ -33,7 +33,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func createQuoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
-    ) -> CompoundOperationWrapper<HydraDx.QuoteRemoteState> {
+    ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
 
         let operation = quoteService.createFetchOperation()
@@ -80,7 +80,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func calculateSellQuote(
         for amount: BigUInt,
-        remoteState: HydraDx.QuoteRemoteState,
+        remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {
@@ -131,7 +131,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func calculateBuyQuote(
         for amount: BigUInt,
-        remoteState: HydraDx.QuoteRemoteState,
+        remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {

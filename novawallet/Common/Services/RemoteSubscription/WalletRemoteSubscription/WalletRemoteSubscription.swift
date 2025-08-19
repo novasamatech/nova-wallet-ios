@@ -253,16 +253,38 @@ private extension WalletRemoteSubscription {
     }
 
     func subscribeOrmlHydrationEvmAccountBalance(
-        for _: AccountId,
-        chainAsset _: ChainAsset,
-        currencyIdScale _: String,
+        for accountId: AccountId,
+        chainAsset: ChainAsset,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping WalletRemoteSubscriptionClosure
     ) {
-        // TODO: GDOT implement balance subscription
-        dispatchInQueueWhenPossible(callbackQueue) {
-            callbackClosure(.failure(CommonError.undefined))
+        let pollingState = ChainPollingStateStore(
+            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
+                chainId: chainAsset.chain.chainId,
+                chainRegistry: chainRegistry
+            ),
+            operationQueue: operationQueue
+        )
+
+        let service = OrmlHydrationEvmSubscriptionService(
+            chainAssetId: chainAsset.chainAssetId,
+            accountId: accountId,
+            trigger: pollingState,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            workingQueue: .global(),
+            logger: logger,
+            callbackQueue: callbackQueue
+        ) { balance, blockHash in
+            callbackClosure(.success(.init(balance: balance, blockHash: blockHash)))
         }
+
+        unsubscribeClosure = {
+            pollingState.throttle()
+            service.throttle()
+        }
+
+        service.setup()
     }
 
     func createEvmBlockNumberMapper(for chain: ChainModel) throws -> BlockNumberToHashMapping? {
@@ -430,11 +452,10 @@ extension WalletRemoteSubscription: WalletRemoteSubscriptionProtocol {
                             callbackClosure: callbackClosure
                         )
                     },
-                    ormlHydrationEvmHandler: { extras in
+                    ormlHydrationEvmHandler: { _ in
                         self.subscribeOrmlHydrationEvmAccountBalance(
                             for: accountId,
                             chainAsset: chainAsset,
-                            currencyIdScale: extras.currencyIdScale,
                             callbackQueue: callbackQueue,
                             callbackClosure: callbackClosure
                         )

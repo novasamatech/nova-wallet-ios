@@ -81,7 +81,8 @@ extension HydraFlowState {
             connection: connection,
             runtimeProvider: runtimeProvider,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         omnipoolFlowState = newState
