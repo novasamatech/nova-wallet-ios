@@ -3,10 +3,14 @@ import Foundation
 extension MetaAccountModel {
     var multisigAccount: MultisigAccountType? {
         if let multisig {
-            .universal(multisig: multisig)
+            if substrateAccountId != nil {
+                .universalSubstrate(multisig)
+            } else {
+                .universalEvm(multisig)
+            }
         } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
                   chainAccount.multisig != nil {
-            .singleChain(chainAccount: chainAccount)
+            .singleChain(chainAccount)
         } else {
             nil
         }
@@ -44,7 +48,7 @@ extension MetaAccountModel {
             var chainId: ChainModel.Id?
 
             switch multisigAccount {
-            case let .universal(multisig):
+            case let .universalSubstrate(multisig), let .universalEvm(multisig):
                 multisigModel = multisig
             case let .singleChain(chainAccount):
                 multisigModel = chainAccount.multisig
@@ -84,7 +88,7 @@ extension MetaAccountModel {
 
     func isSignatory(for multisig: MultisigAccountType) -> Bool {
         switch multisig {
-        case let .universal(multisig):
+        case let .universalSubstrate(multisig), let .universalEvm(multisig):
             return multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
         case let .singleChain(chainAccount):
             guard let multisig = chainAccount.multisig else { return false }
@@ -121,12 +125,13 @@ extension MetaAccountModel {
 
 extension MetaAccountModel {
     enum MultisigAccountType {
-        case universal(multisig: DelegatedAccount.MultisigAccountModel)
-        case singleChain(chainAccount: ChainAccountModel)
+        case singleChain(ChainAccountModel)
+        case universalSubstrate(DelegatedAccount.MultisigAccountModel)
+        case universalEvm(DelegatedAccount.MultisigAccountModel)
 
         var anyChainMultisig: DelegatedAccount.MultisigAccountModel? {
             switch self {
-            case let .universal(multisig):
+            case let .universalEvm(multisig), let .universalSubstrate(multisig):
                 multisig
             case let .singleChain(chainAccount):
                 chainAccount.multisig
@@ -134,7 +139,9 @@ extension MetaAccountModel {
         }
 
         var isUniversal: Bool {
-            if case .universal = self {
+            if case .universalEvm = self {
+                true
+            } else if case .universalSubstrate = self {
                 true
             } else {
                 false
