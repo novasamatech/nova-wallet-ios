@@ -187,6 +187,34 @@ private extension CallFormattingOperationFactory {
         return nil
     }
 
+    func detectBatch(
+        from call: AnyRuntimeCall,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> FormattedCall.Definition? {
+        let context = codingFactory.createRuntimeJsonContext()
+
+        guard let runtimeCall = try? call.args.map(
+            to: RuntimeCall<NoRuntimeArgs>.self,
+            with: context.toRawContext()
+        ) else {
+            return nil
+        }
+
+        let batch: FormattedCall.Batch? = if runtimeCall.path == UtilityPallet.batchPath {
+            FormattedCall.Batch(type: UtilityPallet.BatchType.batch)
+        } else if runtimeCall.path == UtilityPallet.batchAllPath {
+            FormattedCall.Batch(type: UtilityPallet.BatchType.batchAll)
+        } else if runtimeCall.path == UtilityPallet.forceBatchPath {
+            FormattedCall.Batch(type: UtilityPallet.BatchType.forceBatch)
+        } else {
+            nil
+        }
+
+        guard let batch else { return nil }
+
+        return .batch(batch)
+    }
+
     func resolveDefinition(
         for call: AnyRuntimeCall,
         chain: ChainModel,
@@ -200,6 +228,11 @@ private extension CallFormattingOperationFactory {
             codingFactory: codingFactory
         ) {
             return transfer
+        } else if let batch = detectBatch(
+            from: call,
+            codingFactory: codingFactory
+        ) {
+            return batch
         } else {
             let general = FormattedCall.General(callPath: call.path)
 
