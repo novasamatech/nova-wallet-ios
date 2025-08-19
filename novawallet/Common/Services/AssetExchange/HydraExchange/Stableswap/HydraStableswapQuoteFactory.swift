@@ -34,12 +34,15 @@ final class HydraStableswapQuoteFactory {
             )
         }
 
+        let pegs = quoteState.poolInfo.pegsInfo?.current ?? HydraStableswap.getDefaultPegs(for: poolInfo.assets.count)
+
         return .init(
             poolInfo: poolInfo,
             tradability: quoteState.poolInfo.tradability,
             shareAssetIssuance: quoteState.reserves.poolIssuance ?? 0,
             reserves: reserves,
-            currentBlock: currentBlock
+            currentBlock: currentBlock,
+            pegs: pegs
         )
     }
 

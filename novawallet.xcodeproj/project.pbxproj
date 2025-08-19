@@ -333,6 +333,7 @@
 		0C1CF73D2E54CF5E00B1DA66 /* HydraSubstrateBalanceGetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF73C2E54CF5E00B1DA66 /* HydraSubstrateBalanceGetter.swift */; };
 		0C1CF73F2E54CFE200B1DA66 /* BatchDictSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF73E2E54CFE200B1DA66 /* BatchDictSubscriptionHandler.swift */; };
 		0C1CF7412E550D5300B1DA66 /* HydraOmnipoolAssetsFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7402E550D5300B1DA66 /* HydraOmnipoolAssetsFeeService.swift */; };
+		0C1CF7432E551EBD00B1DA66 /* HydraStableswap+Pegs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7422E551EBD00B1DA66 /* HydraStableswap+Pegs.swift */; };
 		0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		0C1D9AAD2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */; };
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
@@ -6431,6 +6432,7 @@
 		0C1CF73C2E54CF5E00B1DA66 /* HydraSubstrateBalanceGetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSubstrateBalanceGetter.swift; sourceTree = "<group>"; };
 		0C1CF73E2E54CFE200B1DA66 /* BatchDictSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchDictSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C1CF7402E550D5300B1DA66 /* HydraOmnipoolAssetsFeeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolAssetsFeeService.swift; sourceTree = "<group>"; };
+		0C1CF7422E551EBD00B1DA66 /* HydraStableswap+Pegs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraStableswap+Pegs.swift"; sourceTree = "<group>"; };
 		0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Web3Alert+ChainId.swift"; sourceTree = "<group>"; };
 		0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewModel.swift; sourceTree = "<group>"; };
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
@@ -14860,6 +14862,7 @@
 				0C39766C2C3261A000998DD6 /* HydraXYK+Storages.swift */,
 				0C3976A82C330A1D00998DD6 /* HydraXYK+PoolAccount.swift */,
 				0C3976AA2C33A08900998DD6 /* HydraDx+PoolAccount.swift */,
+				0C1CF7422E551EBD00B1DA66 /* HydraStableswap+Pegs.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -34016,6 +34019,7 @@
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
+				0C1CF7432E551EBD00B1DA66 /* HydraStableswap+Pegs.swift in Sources */,
 				0CA8AF212D85E6E300DB4E6A /* RuntimeCallBuilding.swift in Sources */,
 				842D8B7C2A4179A000660005 /* ShimmeringAnimator.swift in Sources */,
 				0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */,
