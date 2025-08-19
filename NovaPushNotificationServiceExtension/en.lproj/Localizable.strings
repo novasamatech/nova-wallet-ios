@@ -27,6 +27,7 @@
 "push.notification.sent.tokens.subtitle" = "Sent %@ %@ to %@ on %@";
 "push.notification.receive.tokens.subtitle" = "Received %@ %@ on %@";
 "push.notification.common.multisig.subtitle" = "Wallet: %@";
+"push.notification.multisig.general.body" = "%@ on %@.";
 "push.notification.multisig.transfer.body" = "%@ → %@ on %@.";
 "push.notification.multisig.batch.body" = "executes until error";
 "push.notification.multisig.batch.all.body" = "reverts on error";

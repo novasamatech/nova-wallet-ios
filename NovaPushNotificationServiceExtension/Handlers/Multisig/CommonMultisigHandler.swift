@@ -158,11 +158,12 @@ private extension CommonMultisigHandler {
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
 
             let specificBodyPart = createBody(using: payload)
+            let body = createBody(for: formattedCall, adding: specificBodyPart, chain: chain)
 
             return .init(
                 title: title,
                 subtitle: createSubtitle(with: try walletNameOperation.extractNoCancellableResultData()),
-                body: createBody(for: formattedCall, adding: specificBodyPart)
+                body: body
             )
         }
 
@@ -188,7 +189,8 @@ private extension CommonMultisigHandler {
 
     func createBody(
         for formattedCall: FormattedCall,
-        adding operationSpecificPart: String
+        adding operationSpecificPart: String,
+        chain: ChainModel
     ) -> String {
         let commonBodyPart: String
 
@@ -215,10 +217,16 @@ private extension CommonMultisigHandler {
                 preferredLanguages: locale.rLanguages
             )
         case let .general(general):
-            commonBodyPart = [
+            let moduleCallInfo = [
                 general.callPath.moduleName.displayModule,
                 general.callPath.callName.displayCall
             ].joined(with: .colonSpace)
+
+            commonBodyPart = R.string.localizable.pushNotificationMultisigGeneralBody(
+                moduleCallInfo,
+                chain.name.capitalized,
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         return createBody(using: commonBodyPart, adding: operationSpecificPart)
