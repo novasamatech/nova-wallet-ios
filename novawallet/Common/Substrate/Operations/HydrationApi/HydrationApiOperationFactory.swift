@@ -5,48 +5,66 @@ import Operation_iOS
 protocol HydrationApiOperationFactoryProtocol {
     func createCurrencyBalanceWrapper(
         for assetId: @escaping () throws -> HydraDx.AssetId,
-        chainId: ChainModel.Id,
         accountId: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<HydrationApi.CurrencyData>
 }
 
-final class HydrationApiOperationFactory: SubstrateRuntimeApiOperationFactory {}
+final class HydrationApiOperationFactory {
+    let runtimeConnectionStore: RuntimeConnectionStoring
+    let operationQueue: OperationQueue
+
+    let stateCallFactory = StateCallRequestFactory()
+
+    init(runtimeConnectionStore: RuntimeConnectionStoring, operationQueue: OperationQueue) {
+        self.runtimeConnectionStore = runtimeConnectionStore
+        self.operationQueue = operationQueue
+    }
+}
 
 extension HydrationApiOperationFactory: HydrationApiOperationFactoryProtocol {
     func createCurrencyBalanceWrapper(
         for assetIdClosure: @escaping () throws -> HydraDx.AssetId,
-        chainId: ChainModel.Id,
         accountId: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<HydrationApi.CurrencyData> {
-        createRuntimeCallWrapper(
-            for: chainId,
-            path: HydrationApi.currenciesAccountPath,
-            blockHash: blockHash
-        ) { runtimeApi, encoder, context in
-            let paramsCount = runtimeApi.method.inputs.count
-            guard paramsCount == 2 else {
-                throw SubstrateRuntimeApiOperationFactoryError.unexpectedParamsCount
-            }
+        do {
+            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
+            let connection = try runtimeConnectionStore.getConnection()
 
-            let assetId = try assetIdClosure()
+            return stateCallFactory.createWrapper(
+                path: HydrationApi.currenciesAccountPath,
+                paramsClosure: { runtimeApi, encoder, context in
+                    let paramsCount = runtimeApi.method.inputs.count
+                    guard paramsCount == 2 else {
+                        throw SubstrateRuntimeApiOperationFactoryError.unexpectedParamsCount
+                    }
 
-            let assetIdType = runtimeApi.method.inputs[0].paramType
+                    let assetId = try assetIdClosure()
 
-            try encoder.append(
-                StringCodable(wrappedValue: assetId),
-                ofType: assetIdType.asTypeId(),
-                with: context.toRawContext()
+                    let assetIdType = runtimeApi.method.inputs[0].paramType
+
+                    try encoder.append(
+                        StringCodable(wrappedValue: assetId),
+                        ofType: assetIdType.asTypeId(),
+                        with: context.toRawContext()
+                    )
+
+                    let accountIdType = runtimeApi.method.inputs[1].paramType
+
+                    try encoder.append(
+                        BytesCodable(wrappedValue: accountId),
+                        ofType: accountIdType.asTypeId(),
+                        with: context.toRawContext()
+                    )
+                },
+                runtimeProvider: runtimeProvider,
+                connection: connection,
+                operationQueue: operationQueue,
+                at: blockHash
             )
-
-            let accountIdType = runtimeApi.method.inputs[1].paramType
-
-            try encoder.append(
-                BytesCodable(wrappedValue: accountId),
-                ofType: accountIdType.asTypeId(),
-                with: context.toRawContext()
-            )
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
         }
     }
 }

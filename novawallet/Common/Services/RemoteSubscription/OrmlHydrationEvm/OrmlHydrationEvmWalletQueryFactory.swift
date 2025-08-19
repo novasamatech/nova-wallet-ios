@@ -25,15 +25,11 @@ extension OrmlHydrationEvmWalletQueryFactoryProtocol {
 
 final class OrmlHydrationEvmWalletQueryFactory {
     let chainRegistry: ChainRegistryProtocol
-    let apiFactory: HydrationApiOperationFactoryProtocol
+    let operationQueue: OperationQueue
 
     init(chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue) {
         self.chainRegistry = chainRegistry
-
-        apiFactory = HydrationApiOperationFactory(
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue
-        )
+        self.operationQueue = operationQueue
     }
 }
 
@@ -44,7 +40,17 @@ extension OrmlHydrationEvmWalletQueryFactory: OrmlHydrationEvmWalletQueryFactory
         blockHash: BlockHashData?
     ) -> CompoundOperationWrapper<AssetBalance> {
         do {
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
+            let runtimeConnectionProvider = ChainRegistryRuntimeConnectionStore(
+                chainId: chainAssetId.chainId,
+                chainRegistry: chainRegistry
+            )
+
+            let apiFactory = HydrationApiOperationFactory(
+                runtimeConnectionStore: runtimeConnectionProvider,
+                operationQueue: operationQueue
+            )
+
+            let runtimeProvider = try runtimeConnectionProvider.getRuntimeProvider()
             let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
             let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
             let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -58,7 +64,6 @@ extension OrmlHydrationEvmWalletQueryFactory: OrmlHydrationEvmWalletQueryFactory
                         codingFactory: codingFactory
                     ).remoteAssetId
                 },
-                chainId: chain.chainId,
                 accountId: accountId,
                 blockHash: blockHash?.toHex(includePrefix: true)
             )
