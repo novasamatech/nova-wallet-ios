@@ -1,91 +1,39 @@
 import Foundation
 
-protocol ChainPollingStateStoring: ApplicationServiceProtocol & BaseObservableStateStoreProtocol
-    where RemoteState == BlockHashData {}
+struct ChainPollingState: Equatable {
+    typealias TChange = BatchSubscriptionHandler
 
-final class ChainPollingStateStore: BaseObservableStateStore<BlockHashData> {
-    private var subscription: CallbackBatchStorageSubscription<BatchSubscriptionHandler>?
+    let blockHash: BlockHashData?
 
-    let chainId: ChainModel.Id
-    let chainRegistry: ChainRegistryProtocol
-    let workingQueue: DispatchQueue
-    let operationQueue: OperationQueue
-
-    init(
-        chainId: ChainModel.Id,
-        chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue,
-        workingQueue: DispatchQueue,
-        logger: LoggerProtocol
-    ) {
-        self.chainId = chainId
-        self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
-
-        super.init(logger: logger)
+    init(blockHash: BlockHashData?) {
+        self.blockHash = blockHash
     }
 }
 
-private extension ChainPollingStateStore {
-    func setupSubscription() {
-        do {
-            let connection = try chainRegistry.getConnectionOrError(for: chainId)
-            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+extension ChainPollingState: ObservableSubscriptionStateProtocol {
+    init(change: TChange) throws {
+        blockHash = change.blockHash
+    }
 
-            subscription = CallbackBatchStorageSubscription(
-                requests: [
-                    BatchStorageSubscriptionRequest(
-                        innerRequest: UnkeyedSubscriptionRequest(
-                            storagePath: SystemPallet.blockNumberPath,
-                            localKey: ""
-                        ),
-                        mappingKey: nil
-                    )
-                ],
-                connection: connection,
-                runtimeService: runtimeService,
-                repository: nil,
-                operationQueue: operationQueue,
-                callbackQueue: workingQueue
-            ) { [weak self] result in
-                guard let self else {
-                    return
-                }
-
-                switch result {
-                case let .success(change):
-                    logger.debug("New block hash: \(String(describing: change.blockHash?.toHexString()))")
-                    stateObservable.state = change.blockHash
-                case let .failure(error):
-                    logger.error("Unexpected error: \(error)")
-                }
-            }
-
-            subscription?.subscribe()
-        } catch {
-            logger.error("Unexpected error: \(error)")
-        }
+    func merging(change: TChange) -> Self {
+        ChainPollingState(blockHash: change.blockHash)
     }
 }
 
-extension ChainPollingStateStore: ChainPollingStateStoring {
-    func setup() {
-        mutex.lock()
+protocol ChainPollingStateStoring: BaseObservableStateStoreProtocol where RemoteState == ChainPollingState {}
 
-        defer {
-            mutex.unlock()
-        }
-
-        guard subscription == nil else {
-            return
-        }
-
-        setupSubscription()
-    }
-
-    func throttle() {
-        subscription?.unsubscribe()
-        subscription = nil
+final class ChainPollingStateStore: ObservableSubscriptionStateStore<ChainPollingState> {
+    override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
+        [
+            BatchStorageSubscriptionRequest(
+                innerRequest: UnkeyedSubscriptionRequest(
+                    storagePath: SystemPallet.blockNumberPath,
+                    localKey: ""
+                ),
+                mappingKey: nil
+            )
+        ]
     }
 }
+
+extension ChainPollingStateStore: ChainPollingStateStoring {}

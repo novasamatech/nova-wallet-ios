@@ -17,8 +17,10 @@ final class MythosStakingStakeSyncService: ObservableSubscriptionStateStore<Myth
         self.accountId = accountId
 
         super.init(
-            chainId: chainId,
-            chainRegistry: chainRegistry,
+            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
+                chainId: chainId,
+                chainRegistry: chainRegistry
+            ),
             operationQueue: operationQueue,
             repository: repository,
             workQueue: workQueue,

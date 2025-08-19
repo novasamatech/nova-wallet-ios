@@ -1,18 +1,18 @@
 import Foundation
-import BigInt
 
-extension HydraXYK {
+extension HydraAave {
+    // TODO: Consider using shared models
     struct QuoteArgs: Equatable {
         let assetIn: HydraDx.AssetId
         let assetOut: HydraDx.AssetId
-        let amount: BigUInt
+        let amount: Balance
         let direction: AssetConversion.Direction
     }
 
     struct Quote: Equatable {
-        let amountIn: BigUInt
+        let amountIn: Balance
         let assetIn: HydraDx.AssetId
-        let amountOut: BigUInt
+        let amountOut: Balance
         let assetOut: HydraDx.AssetId
     }
 }

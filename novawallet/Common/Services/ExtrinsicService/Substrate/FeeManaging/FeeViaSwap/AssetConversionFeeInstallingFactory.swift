@@ -66,7 +66,8 @@ extension AssetConversionFeeInstallingFactory: ExtrinsicFeeInstallingFactoryProt
                 chainAsset: chainAsset,
                 accountClosure: accountClosure
             )
-        case .orml, .ormlHydrationEvm where chainAsset.chain.hasHydrationFees:
+        case .orml where chainAsset.chain.hasHydrationFees,
+             .ormlHydrationEvm where chainAsset.chain.hasHydrationFees:
             createHydraFeeInstallingWrapper(
                 chainAsset: chainAsset,
                 accountClosure: accountClosure

@@ -65,7 +65,7 @@ private extension OrmlHydrationEvmSubscriptionService {
             sendStateOnSubscription: true,
             queue: workingQueue
         ) { [weak self] _, newState in
-            guard let self, let blockHash = newState else {
+            guard let self, let blockHash = newState?.blockHash else {
                 return
             }
 

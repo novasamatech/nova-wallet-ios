@@ -358,14 +358,10 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
                         }
                     },
                     ormlHydrationEvmHandler: { _ in
-                        do {
-                            return self.queryOrmlHydrationEvmBalance(
-                                for: accountId,
-                                chainAsset: chainAsset
-                            )
-                        } catch {
-                            return CompoundOperationWrapper.createWithError(error)
-                        }
+                        self.queryOrmlHydrationEvmBalance(
+                            for: accountId,
+                            chainAsset: chainAsset
+                        )
                     },
                     evmHandler: { _ in
                         CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)

@@ -16,6 +16,7 @@ final class HydraFlowState {
     private var omnipoolFlowState: HydraOmnipoolFlowState?
     private var stableswapFlowState: HydraStableswapFlowState?
     private var xykswapFlowState: HydraXYKFlowState?
+    private var aaveFlowState: HydraAaveFlowState?
     private var routesFactory: HydraRoutesOperationFactoryProtocol?
 
     private var currentSwapPair: HydraDx.LocalSwapPair?
@@ -131,6 +132,30 @@ extension HydraFlowState {
         )
 
         xykswapFlowState = newState
+
+        return newState
+    }
+
+    func getAaveSwapFlowState() -> HydraAaveFlowState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let state = aaveFlowState {
+            return state
+        }
+
+        let newState = HydraAaveFlowState(
+            account: account,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            notificationsRegistrar: nil,
+            operationQueue: operationQueue
+        )
+
+        aaveFlowState = newState
 
         return newState
     }

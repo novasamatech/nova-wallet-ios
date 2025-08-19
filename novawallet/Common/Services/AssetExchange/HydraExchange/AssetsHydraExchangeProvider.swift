@@ -119,6 +119,31 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
+    private func createAaveExchange(
+        from host: HydraExchangeHostProtocol,
+        registeringStateIn stateProviderRegistrar: AssetsExchangeStateRegistring
+    ) -> AssetsHydraAaveExchange {
+        let flowState = HydraAaveFlowState(
+            account: host.selectedAccount,
+            connection: host.connection,
+            runtimeProvider: host.runtimeService,
+            notificationsRegistrar: exchangeStateRegistrar,
+            operationQueue: operationQueue
+        )
+
+        stateProviderRegistrar.addStateProvider(flowState)
+
+        return AssetsHydraAaveExchange(
+            host: host,
+            apiOperationFactory: HydraAaveTradeExecutorFactory(
+                connection: host.connection,
+                runtimeProvider: host.runtimeService,
+                operationQueue: host.operationQueue
+            ),
+            quoteFactory: HydraAaveSwapQuoteFactory(flowState: flowState)
+        )
+    }
+
     // swiftlint:disable:next function_body_length
     private func setupHost(
         for chain: ChainModel,
@@ -239,7 +264,9 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
             let xykExchange = createXYKExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
-            return [omnipoolExchange, stableswapExchange, xykExchange]
+            let aaveExchange = createAaveExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
+
+            return [omnipoolExchange, stableswapExchange, xykExchange, aaveExchange]
         }
 
         updateState(with: exchanges)

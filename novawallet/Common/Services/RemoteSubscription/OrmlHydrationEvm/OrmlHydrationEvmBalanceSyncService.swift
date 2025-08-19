@@ -122,10 +122,12 @@ extension OrmlHydrationEvmBalanceSyncService: ApplicationServiceProtocol {
             }
 
             let trigger = ChainPollingStateStore(
-                chainId: chainId,
-                chainRegistry: chainRegistry,
+                runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
+                    chainId: chainId,
+                    chainRegistry: chainRegistry
+                ),
                 operationQueue: operationQueue,
-                workingQueue: workingQueue,
+                workQueue: workingQueue,
                 logger: logger
             )
 
