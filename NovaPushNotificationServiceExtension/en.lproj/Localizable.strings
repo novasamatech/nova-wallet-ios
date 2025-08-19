@@ -32,9 +32,10 @@
 "push.notification.multisig.batch.all.body" = "reverts on error";
 "push.notification.multisig.new.title" = "✍🏻 Your signature requested";
 "push.notification.multisig.new.body" = "Initiated by %@.";
-"push.notification.multisig.approval.title" = "Signed by Alice";
+"push.notification.multisig.approval.title" = "Signed by %@";
 "push.notification.multisig.approval.body" = "%d of %d signatures collected.";
 "push.notification.multisig.executed.title" = "✅ Multisig transaction executed";
 "push.notification.multisig.executed.body" = "Signed and executed by %@.";
-"push.notification.multisig.rejected.title" = "❌ Multisig transaction rejected";
-"push.notification.multisig.rejected..body" = "Rejected by %@.";
+"push.notification.multisig.cancelled.title" = "❌ Multisig transaction rejected";
+"push.notification.multisig.cancelled.body" = "Rejected by %@.";
+"push.notification.multisig.unknown.body" = "Unknown operation on %@.";

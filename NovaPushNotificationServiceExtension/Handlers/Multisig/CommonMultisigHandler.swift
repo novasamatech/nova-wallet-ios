@@ -5,8 +5,11 @@ import Foundation_iOS
 import BigInt
 
 class CommonMultisigHandler: CommonHandler {
+    let payload: MultisigPayloadProtocol
     let chainId: ChainModel.Id
     let operationQueue: OperationQueue
+
+    let callStore = CancellableCallStore()
 
     lazy var callFormattingFactory: CallFormattingOperationFactoryProtocol = {
         createCallFormattingOperationFactory(
@@ -17,15 +20,93 @@ class CommonMultisigHandler: CommonHandler {
 
     init(
         chainId: ChainModel.Id,
+        payload: MultisigPayloadProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainId = chainId
+        self.payload = payload
         self.operationQueue = operationQueue
 
         super.init()
     }
 
-    private func createCallFormattingOperationFactory(
+    func createTitle(using _: MultisigPayloadProtocol) -> String {
+        fatalError("This method must be overridden by a subclass.")
+    }
+
+    func createBody(using _: MultisigPayloadProtocol) -> String {
+        fatalError("This method must be overridden by a subclass.")
+    }
+}
+
+// MARK: - Internal
+
+extension CommonMultisigHandler {
+    func handle(
+        callbackQueue: DispatchQueue?,
+        completion: @escaping (PushNotificationHandleResult) -> Void
+    ) {
+        let chainsOperation = chainsRepository.fetchAllOperation(with: .init())
+        let settingsOperation = settingsRepository.fetchAllOperation(with: .init())
+
+        let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
+            OperationCombiningService.compoundNonOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                guard let self else {
+                    throw PushNotificationsHandlerErrors.undefined
+                }
+
+                let chains = try chainsOperation.extractNoCancellableResultData()
+                let settings = try settingsOperation.extractNoCancellableResultData().first
+
+                let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
+
+                guard let chain = search(chainId: chainId, in: chains) else {
+                    throw PushNotificationsHandlerErrors.chainNotFound(chainId: chainId)
+                }
+
+                let notificationContentWrapper = createNotificationContentWrapper(
+                    wallets: settings?.wallets ?? [],
+                    chain: chain,
+                    metaAccounts: { try fetchMetaAccountsOperation.extractNoCancellableResultData() },
+                    payload: self.payload
+                )
+
+                notificationContentWrapper.addDependency(operations: [fetchMetaAccountsOperation])
+
+                return notificationContentWrapper.insertingHead(operations: [fetchMetaAccountsOperation])
+            }
+
+        contentWrapper.addDependency(operations: [chainsOperation])
+        contentWrapper.addDependency(operations: [settingsOperation])
+
+        let wrapper = contentWrapper
+            .insertingHead(operations: [chainsOperation])
+            .insertingHead(operations: [settingsOperation])
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: callbackQueue
+        ) { result in
+            switch result {
+            case let .success(content):
+                completion(.modified(content))
+            case let .failure(error as PushNotificationsHandlerErrors):
+                completion(.original(error))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
+            }
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension CommonMultisigHandler {
+    func createCallFormattingOperationFactory(
         chainsRepository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
     ) -> CallFormattingOperationFactoryProtocol {
@@ -94,8 +175,82 @@ class CommonMultisigHandler: CommonHandler {
             commonBodyPart = "\(general.callPath.moduleName): \(general.callPath.callName)."
         }
 
-        let body = [commonBodyPart, operationSpecificPart].joined(with: .space)
+        return createBody(using: commonBodyPart, adding: operationSpecificPart)
+    }
 
-        return body
+    func createBody(
+        using commonBodyPart: String,
+        adding operationSpecificPart: String
+    ) -> String {
+        [commonBodyPart, operationSpecificPart].joined(with: .space)
+    }
+
+    private func createNotificationContentWrapper(
+        wallets: [Web3Alert.LocalWallet],
+        chain: ChainModel,
+        metaAccounts: @escaping () throws -> [MetaAccountModel],
+        payload: MultisigPayloadProtocol
+    ) -> CompoundOperationWrapper<NotificationContentResult> {
+        let title = createTitle(using: payload)
+
+        let walletNameOperation = ClosureOperation {
+            self.targetWalletName(
+                for: payload.multisigAddress,
+                chainId: self.chainId,
+                wallets: wallets,
+                metaAccounts: try metaAccounts()
+            )
+        }
+
+        guard let callData = payload.callData else {
+            let mapOperation = ClosureOperation<NotificationContentResult> { [weak self] in
+                guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+                let unknownOperationBody = R.string.localizable.pushNotificationMultisigUnknownBody(
+                    chain.name.capitalized,
+                    preferredLanguages: locale.rLanguages
+                )
+
+                return .init(
+                    title: title,
+                    subtitle: createSubtitle(with: try walletNameOperation.extractNoCancellableResultData()),
+                    body: createBody(using: unknownOperationBody, adding: createBody(using: payload))
+                )
+            }
+
+            mapOperation.addDependency(walletNameOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: [walletNameOperation]
+            )
+        }
+
+        let formattedCallWrapper = callFormattingFactory.createFormattingWrapper(
+            for: callData,
+            chainId: chain.chainId
+        )
+
+        let mapOperation = ClosureOperation<NotificationContentResult> { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
+
+            let specificBodyPart = createBody(using: payload)
+
+            return .init(
+                title: title,
+                subtitle: createSubtitle(with: try walletNameOperation.extractNoCancellableResultData()),
+                body: createBody(for: formattedCall, adding: specificBodyPart)
+            )
+        }
+
+        mapOperation.addDependency(walletNameOperation)
+        mapOperation.addDependency(formattedCallWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [walletNameOperation] + formattedCallWrapper.allOperations
+        )
     }
 }
