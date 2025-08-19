@@ -227,7 +227,7 @@ private extension CommonMultisigHandler {
     ) -> String {
         [commonBodyPart, operationSpecificPart].joined(with: .space)
     }
-    
+
     func createCallFormattingOperationFactory(
         chainsRepository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
