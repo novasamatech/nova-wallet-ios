@@ -14,11 +14,4 @@ extension HydraStableswap {
         let amount: BigUInt
         let direction: AssetConversion.Direction
     }
-
-    struct Quote: Equatable {
-        let amountIn: BigUInt
-        let assetIn: HydraDx.AssetId
-        let amountOut: BigUInt
-        let assetOut: HydraDx.AssetId
-    }
 }

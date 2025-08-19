@@ -38,7 +38,7 @@ private extension HydraAaveSwapQuoteFactory {
 }
 
 extension HydraAaveSwapQuoteFactory {
-    func quote(for args: HydraAave.QuoteArgs) -> CompoundOperationWrapper<Balance> {
+    func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<Balance> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 

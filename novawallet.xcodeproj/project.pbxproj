@@ -318,7 +318,6 @@
 		0C1CF71A2E531D0200B1DA66 /* HydraAaveExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7192E531D0200B1DA66 /* HydraAaveExchangeEdge.swift */; };
 		0C1CF71C2E53233D00B1DA66 /* HydrationAave+TradeExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF71B2E53233D00B1DA66 /* HydrationAave+TradeExecutor.swift */; };
 		0C1CF71E2E5367F600B1DA66 /* HydraAaveSwapQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF71D2E5367F600B1DA66 /* HydraAaveSwapQuoteFactory.swift */; };
-		0C1CF7202E53804A00B1DA66 /* HydraAaveQuoteParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF71F2E53804A00B1DA66 /* HydraAaveQuoteParams.swift */; };
 		0C1CF7222E53806300B1DA66 /* HydraAave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7212E53806300B1DA66 /* HydraAave.swift */; };
 		0C1CF7242E53AB4000B1DA66 /* HydraAavePoolsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */; };
 		0C1CF7262E53C20D00B1DA66 /* HydraAaveFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7252E53C20D00B1DA66 /* HydraAaveFlowState.swift */; };
@@ -503,7 +502,6 @@
 		0C39766F2C326C4E00998DD6 /* HydraXYKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39766E2C326C4E00998DD6 /* HydraXYKTests.swift */; };
 		0C3976A32C32E27C00998DD6 /* HydraXYKSwapApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A22C32E27C00998DD6 /* HydraXYKSwapApi.swift */; };
 		0C3976A52C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A42C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift */; };
-		0C3976A72C33088100998DD6 /* HydraXYKQuoteParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A62C33088100998DD6 /* HydraXYKQuoteParams.swift */; };
 		0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A82C330A1D00998DD6 /* HydraXYK+PoolAccount.swift */; };
 		0C3976AB2C33A08900998DD6 /* HydraDx+PoolAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976AA2C33A08900998DD6 /* HydraDx+PoolAccount.swift */; };
 		0C3976AD2C33A64700998DD6 /* HydraXYKQuoteParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976AC2C33A64700998DD6 /* HydraXYKQuoteParamsService.swift */; };
@@ -855,7 +853,6 @@
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
 		0CA7197F2B773E99000B086E /* HydraSwapRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197E2B773E99000B086E /* HydraSwapRoute.swift */; };
 		0CA719832B787FCA000B086E /* HydraFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719822B787FCA000B086E /* HydraFlowState.swift */; };
-		0CA719852B789111000B086E /* HydraOmnipoolQuoteParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719842B789111000B086E /* HydraOmnipoolQuoteParams.swift */; };
 		0CA719872B78AA71000B086E /* HydraRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719862B78AA71000B086E /* HydraRouter.swift */; };
 		0CA719892B78AACD000B086E /* HydraRouter+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719882B78AACD000B086E /* HydraRouter+Call.swift */; };
 		0CA7198C2B78FEF9000B086E /* HydraQuoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7198B2B78FEF9000B086E /* HydraQuoteTests.swift */; };
@@ -6411,7 +6408,6 @@
 		0C1CF7192E531D0200B1DA66 /* HydraAaveExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveExchangeEdge.swift; sourceTree = "<group>"; };
 		0C1CF71B2E53233D00B1DA66 /* HydrationAave+TradeExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydrationAave+TradeExecutor.swift"; sourceTree = "<group>"; };
 		0C1CF71D2E5367F600B1DA66 /* HydraAaveSwapQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveSwapQuoteFactory.swift; sourceTree = "<group>"; };
-		0C1CF71F2E53804A00B1DA66 /* HydraAaveQuoteParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveQuoteParams.swift; sourceTree = "<group>"; };
 		0C1CF7212E53806300B1DA66 /* HydraAave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAave.swift; sourceTree = "<group>"; };
 		0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAavePoolsService.swift; sourceTree = "<group>"; };
 		0C1CF7252E53C20D00B1DA66 /* HydraAaveFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveFlowState.swift; sourceTree = "<group>"; };
@@ -6605,7 +6601,6 @@
 		0C39766E2C326C4E00998DD6 /* HydraXYKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKTests.swift; sourceTree = "<group>"; };
 		0C3976A22C32E27C00998DD6 /* HydraXYKSwapApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKSwapApi.swift; sourceTree = "<group>"; };
 		0C3976A42C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKSwapQuoteFactory.swift; sourceTree = "<group>"; };
-		0C3976A62C33088100998DD6 /* HydraXYKQuoteParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKQuoteParams.swift; sourceTree = "<group>"; };
 		0C3976A82C330A1D00998DD6 /* HydraXYK+PoolAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraXYK+PoolAccount.swift"; sourceTree = "<group>"; };
 		0C3976AA2C33A08900998DD6 /* HydraDx+PoolAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+PoolAccount.swift"; sourceTree = "<group>"; };
 		0C3976AC2C33A64700998DD6 /* HydraXYKQuoteParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKQuoteParamsService.swift; sourceTree = "<group>"; };
@@ -6985,7 +6980,6 @@
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
 		0CA7197E2B773E99000B086E /* HydraSwapRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapRoute.swift; sourceTree = "<group>"; };
 		0CA719822B787FCA000B086E /* HydraFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraFlowState.swift; sourceTree = "<group>"; };
-		0CA719842B789111000B086E /* HydraOmnipoolQuoteParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolQuoteParams.swift; sourceTree = "<group>"; };
 		0CA719862B78AA71000B086E /* HydraRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraRouter.swift; sourceTree = "<group>"; };
 		0CA719882B78AACD000B086E /* HydraRouter+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraRouter+Call.swift"; sourceTree = "<group>"; };
 		0CA7198B2B78FEF9000B086E /* HydraQuoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteTests.swift; sourceTree = "<group>"; };
@@ -13235,7 +13229,6 @@
 				0C1CF7172E531C1700B1DA66 /* AssetsHydraAaveExchange.swift */,
 				0C1CF7192E531D0200B1DA66 /* HydraAaveExchangeEdge.swift */,
 				0C1CF71D2E5367F600B1DA66 /* HydraAaveSwapQuoteFactory.swift */,
-				0C1CF71F2E53804A00B1DA66 /* HydraAaveQuoteParams.swift */,
 				0C1CF7212E53806300B1DA66 /* HydraAave.swift */,
 				0C1CF71B2E53233D00B1DA66 /* HydrationAave+TradeExecutor.swift */,
 				0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */,
@@ -13540,7 +13533,6 @@
 				0C3976682C325E2E00998DD6 /* HydraXYKPoolTokensFactory.swift */,
 				0C3976A22C32E27C00998DD6 /* HydraXYKSwapApi.swift */,
 				0C3976A42C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift */,
-				0C3976A62C33088100998DD6 /* HydraXYKQuoteParams.swift */,
 				0C3976AC2C33A64700998DD6 /* HydraXYKQuoteParamsService.swift */,
 				0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */,
 				0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */,
@@ -14336,7 +14328,6 @@
 				0CCCDF892B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift */,
 				0C85FF2D2B6D300800FC0014 /* HydraOmnipoolFlowState.swift */,
 				0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */,
-				0CA719842B789111000B086E /* HydraOmnipoolQuoteParams.swift */,
 				0C11D8592CCA3377003EC46D /* AssetsHydraOmnipoolExchange.swift */,
 				0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */,
 			);
@@ -31319,7 +31310,6 @@
 				84E25BF027E8EFB500290BF1 /* SubqueryAccumulateReward.swift in Sources */,
 				88AC5ADA2948A8CC0056DD40 /* TransactionSectionModel.swift in Sources */,
 				8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */,
-				0CA719852B789111000B086E /* HydraOmnipoolQuoteParams.swift in Sources */,
 				0CFA161E2B0CED07007AF885 /* GovTreasurySpentLocalHandler.swift in Sources */,
 				0CB64E692B01F798008F268F /* TransferSetupOriginSelectionWireframe.swift in Sources */,
 				0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */,
@@ -31335,7 +31325,6 @@
 				84C6801224D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift in Sources */,
 				845C407B27027AA000BFA50B /* SubscriptionStorageKeys.swift in Sources */,
 				0C3B128F2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift in Sources */,
-				0C1CF7202E53804A00B1DA66 /* HydraAaveQuoteParams.swift in Sources */,
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
 				84E0C52229CA421A000B65C8 /* OperationDetailsContractView.swift in Sources */,
 				844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */,
@@ -32918,7 +32907,6 @@
 				D886425A55425810AD070AB5 /* ControllerAccountConfirmationWireframe.swift in Sources */,
 				84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */,
 				84E2589F2892B5AF00DC8A51 /* WalletSwitchPresentable.swift in Sources */,
-				0C3976A72C33088100998DD6 /* HydraXYKQuoteParams.swift in Sources */,
 				0AAFEFA17F249F4BEF051F6B /* ControllerAccountConfirmationPresenter.swift in Sources */,
 				135CEEC5363BE34130958578 /* ControllerAccountConfirmationInteractor.swift in Sources */,
 				0CE933D72C072697000F3EFE /* SwitchAccount+CloudBackupAddWalletWireframe.swift in Sources */,
