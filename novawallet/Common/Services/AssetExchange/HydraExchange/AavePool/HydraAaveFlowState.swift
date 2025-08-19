@@ -92,17 +92,6 @@ private extension HydraAaveFlowState {
 }
 
 extension HydraAaveFlowState {
-    // TODO: Consider to remove
-    func getAllStateServices() -> [HydraAaveQuoteParamsService] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(quoteStateServices.values)
-    }
-
     func resetServices() {
         mutex.lock()
 

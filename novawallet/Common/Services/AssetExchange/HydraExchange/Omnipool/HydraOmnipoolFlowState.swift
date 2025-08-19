@@ -39,16 +39,6 @@ final class HydraOmnipoolFlowState {
 }
 
 extension HydraOmnipoolFlowState {
-    func getAllStateServices() -> [HydraOmnipoolQuoteParamsService] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(quoteStateServices.values)
-    }
-
     func resetServices() {
         mutex.lock()
 

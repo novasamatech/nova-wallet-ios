@@ -325,6 +325,7 @@
 		0C1CF7282E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */; };
 		0C1CF72A2E54627400B1DA66 /* HydraAaveQuoteParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */; };
 		0C1CF72C2E54697C00B1DA66 /* RuntimeConnectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF72B2E54697C00B1DA66 /* RuntimeConnectionStore.swift */; };
+		0C1CF72E2E54A73E00B1DA66 /* HydraExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF72D2E54A73E00B1DA66 /* HydraExchange.swift */; };
 		0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		0C1D9AAD2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */; };
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
@@ -6417,6 +6418,7 @@
 		0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveTradeExecutorFactory.swift; sourceTree = "<group>"; };
 		0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveQuoteParamsService.swift; sourceTree = "<group>"; };
 		0C1CF72B2E54697C00B1DA66 /* RuntimeConnectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeConnectionStore.swift; sourceTree = "<group>"; };
+		0C1CF72D2E54A73E00B1DA66 /* HydraExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchange.swift; sourceTree = "<group>"; };
 		0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Web3Alert+ChainId.swift"; sourceTree = "<group>"; };
 		0C1D9AAC2B9785E1003CBAB8 /* GovernanceNotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewModel.swift; sourceTree = "<group>"; };
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
@@ -13167,6 +13169,7 @@
 				0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */,
 				0CF4ADFC2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift */,
 				0CBABFEE2CED46200047F29E /* HydraExchangeOperationPrototype.swift */,
+				0C1CF72D2E54A73E00B1DA66 /* HydraExchange.swift */,
 			);
 			path = HydraExchange;
 			sourceTree = "<group>";
@@ -30074,6 +30077,7 @@
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainSelectionState.swift in Sources */,
 				0CAB67532D49338000E3A844 /* StakingGenericRewardsViewController.swift in Sources */,
+				0C1CF72E2E54A73E00B1DA66 /* HydraExchange.swift in Sources */,
 				8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */,

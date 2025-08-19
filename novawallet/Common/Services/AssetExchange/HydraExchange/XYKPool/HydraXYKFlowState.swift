@@ -39,16 +39,6 @@ final class HydraXYKFlowState {
 }
 
 extension HydraXYKFlowState {
-    func getAllStateServices() -> [HydraXYKQuoteParamsService] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(quoteStateServices.values)
-    }
-
     func resetServices() {
         mutex.lock()
 
