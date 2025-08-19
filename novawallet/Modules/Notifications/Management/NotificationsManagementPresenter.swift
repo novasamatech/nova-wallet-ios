@@ -232,7 +232,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             $0.newMultisig = result.signatureRequested ? .all : nil
             $0.multisigApproval = result.signedBySignatory ? .all : nil
             $0.multisigExecuted = result.transactionExecuted ? .all : nil
-            $0.multisigCanceled = result.transactionRejected ? .all : nil
+            $0.multisigCancelled = result.transactionRejected ? .all : nil
         }
 
         disableNotificationIfNeeded()
@@ -253,7 +253,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                     $0.newMultisig = nil
                     $0.multisigApproval = nil
                     $0.multisigExecuted = nil
-                    $0.multisigCanceled = nil
+                    $0.multisigCancelled = nil
                 }
         } else {
             modifiedSettings = modifiedSettings?.with(wallets: wallets)

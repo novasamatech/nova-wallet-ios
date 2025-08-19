@@ -42,7 +42,7 @@ extension Web3Alert {
                 newMultisig: local.notifications.newMultisig?.mapConcreteValue { closure($0) },
                 multisigApproval: local.notifications.multisigApproval?.mapConcreteValue { closure($0) },
                 multisigExecuted: local.notifications.multisigExecuted?.mapConcreteValue { closure($0) },
-                multisigCanceled: local.notifications.multisigCanceled?.mapConcreteValue { closure($0) }
+                multisigCancelled: local.notifications.multisigCancelled?.mapConcreteValue { closure($0) }
             )
         }
     }

@@ -24,7 +24,7 @@ struct MultisigNotificationsModel {
                 signatureRequested: localSettings.notifications.newMultisig != nil,
                 signedBySignatory: localSettings.notifications.multisigApproval != nil,
                 transactionExecuted: localSettings.notifications.multisigExecuted != nil,
-                transactionRejected: localSettings.notifications.multisigCanceled != nil
+                transactionRejected: localSettings.notifications.multisigCancelled != nil
             )
         } else {
             self = .empty()
