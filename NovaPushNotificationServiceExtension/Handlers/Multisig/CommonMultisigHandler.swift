@@ -106,86 +106,7 @@ extension CommonMultisigHandler {
 // MARK: - Private
 
 private extension CommonMultisigHandler {
-    func createCallFormattingOperationFactory(
-        chainsRepository: AnyDataProviderRepository<ChainModel>,
-        operationQueue: OperationQueue
-    ) -> CallFormattingOperationFactoryProtocol {
-        let metadataRepository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem>
-        metadataRepository = substrateStorageFacade.createRepository()
-
-        let snapshotFactory = RuntimeDefaultTypesSnapshotFactory(
-            repository: AnyDataProviderRepository(metadataRepository),
-            runtimeTypeRegistryFactory: RuntimeTypeRegistryFactory(logger: Logger.shared)
-        )
-
-        let codingServiceProvider = OfflineRuntimeCodingServiceProvider(
-            snapshotFactory: snapshotFactory,
-            repository: chainsRepository,
-            operationQueue: operationQueue
-        )
-
-        return CallFormattingOperationFactory(
-            chainProvider: OfflineChainProvider(repository: chainsRepository),
-            runtimeCodingServiceProvider: codingServiceProvider,
-            walletRepository: walletsRepository(),
-            operationQueue: operationQueue
-        )
-    }
-
-    func createSubtitle(with walletName: String?) -> String {
-        if let walletName {
-            R.string.localizable.pushNotificationCommonMultisigSubtitle(
-                walletName,
-                preferredLanguages: locale.rLanguages
-            )
-        } else {
-            ""
-        }
-    }
-
-    func createBody(
-        for formattedCall: FormattedCall,
-        adding operationSpecificPart: String
-    ) -> String {
-        let commonBodyPart: String
-
-        switch formattedCall.definition {
-        case let .transfer(transfer):
-            let balance = balanceViewModel(
-                asset: transfer.asset.asset,
-                amount: String(transfer.amount),
-                priceData: nil,
-                workingQueue: operationQueue
-            )
-
-            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
-
-            guard
-                let amount = balance?.amount,
-                let destinationAddress
-            else { return "" }
-
-            commonBodyPart = R.string.localizable.pushNotificationMultisigTransferBody(
-                amount,
-                destinationAddress.mediumTruncated,
-                transfer.asset.chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
-        case let .general(general):
-            commonBodyPart = "\(general.callPath.moduleName): \(general.callPath.callName)."
-        }
-
-        return createBody(using: commonBodyPart, adding: operationSpecificPart)
-    }
-
-    func createBody(
-        using commonBodyPart: String,
-        adding operationSpecificPart: String
-    ) -> String {
-        [commonBodyPart, operationSpecificPart].joined(with: .space)
-    }
-
-    private func createNotificationContentWrapper(
+    func createNotificationContentWrapper(
         wallets: [Web3Alert.LocalWallet],
         chain: ChainModel,
         metaAccounts: @escaping () throws -> [MetaAccountModel],
@@ -251,6 +172,85 @@ private extension CommonMultisigHandler {
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
             dependencies: [walletNameOperation] + formattedCallWrapper.allOperations
+        )
+    }
+
+    func createSubtitle(with walletName: String?) -> String {
+        if let walletName {
+            R.string.localizable.pushNotificationCommonMultisigSubtitle(
+                walletName,
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            ""
+        }
+    }
+
+    func createBody(
+        for formattedCall: FormattedCall,
+        adding operationSpecificPart: String
+    ) -> String {
+        let commonBodyPart: String
+
+        switch formattedCall.definition {
+        case let .transfer(transfer):
+            let balance = balanceViewModel(
+                asset: transfer.asset.asset,
+                amount: String(transfer.amount),
+                priceData: nil,
+                workingQueue: operationQueue
+            )
+
+            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
+
+            guard
+                let amount = balance?.amount,
+                let destinationAddress
+            else { return "" }
+
+            commonBodyPart = R.string.localizable.pushNotificationMultisigTransferBody(
+                amount,
+                destinationAddress.mediumTruncated,
+                transfer.asset.chain.name.capitalized,
+                preferredLanguages: locale.rLanguages
+            )
+        case let .general(general):
+            commonBodyPart = "\(general.callPath.moduleName): \(general.callPath.callName)."
+        }
+
+        return createBody(using: commonBodyPart, adding: operationSpecificPart)
+    }
+
+    func createBody(
+        using commonBodyPart: String,
+        adding operationSpecificPart: String
+    ) -> String {
+        [commonBodyPart, operationSpecificPart].joined(with: .space)
+    }
+    
+    func createCallFormattingOperationFactory(
+        chainsRepository: AnyDataProviderRepository<ChainModel>,
+        operationQueue: OperationQueue
+    ) -> CallFormattingOperationFactoryProtocol {
+        let metadataRepository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem>
+        metadataRepository = substrateStorageFacade.createRepository()
+
+        let snapshotFactory = RuntimeDefaultTypesSnapshotFactory(
+            repository: AnyDataProviderRepository(metadataRepository),
+            runtimeTypeRegistryFactory: RuntimeTypeRegistryFactory(logger: Logger.shared)
+        )
+
+        let codingServiceProvider = OfflineRuntimeCodingServiceProvider(
+            snapshotFactory: snapshotFactory,
+            repository: chainsRepository,
+            operationQueue: operationQueue
+        )
+
+        return CallFormattingOperationFactory(
+            chainProvider: OfflineChainProvider(repository: chainsRepository),
+            runtimeCodingServiceProvider: codingServiceProvider,
+            walletRepository: walletsRepository(),
+            operationQueue: operationQueue
         )
     }
 }
