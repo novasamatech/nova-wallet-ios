@@ -1973,14 +1973,6 @@
 		2DE8B0A42E544A9C00F8BD40 /* CommonMultisigHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0A32E544A9C00F8BD40 /* CommonMultisigHandler.swift */; };
 		2DE8B0A72E547DA100F8BD40 /* MultisigPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */; };
 		2DE8B0A82E547DA100F8BD40 /* MultisigPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */; };
-		2DE8B0AA2E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0A92E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift */; };
-		2DE8B0AB2E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0A92E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift */; };
-		2DE8B0B02E5480D000F8BD40 /* MultisigPayload+Approval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0AF2E5480D000F8BD40 /* MultisigPayload+Approval.swift */; };
-		2DE8B0B12E5480D000F8BD40 /* MultisigPayload+Approval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0AF2E5480D000F8BD40 /* MultisigPayload+Approval.swift */; };
-		2DE8B0B32E54811B00F8BD40 /* MultisigPayload+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0B22E54811B00F8BD40 /* MultisigPayload+Execute.swift */; };
-		2DE8B0B42E54811B00F8BD40 /* MultisigPayload+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0B22E54811B00F8BD40 /* MultisigPayload+Execute.swift */; };
-		2DE8B0B62E54815B00F8BD40 /* MultisigPayload+Rejected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0B52E54815B00F8BD40 /* MultisigPayload+Rejected.swift */; };
-		2DE8B0B72E54815B00F8BD40 /* MultisigPayload+Rejected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0B52E54815B00F8BD40 /* MultisigPayload+Rejected.swift */; };
 		2DE8B0B92E54846B00F8BD40 /* MultisigApprovalHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0B82E54846B00F8BD40 /* MultisigApprovalHandler.swift */; };
 		2DE8B0BB2E54856D00F8BD40 /* MultisigExecutedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */; };
 		2DE8B0BD2E54858A00F8BD40 /* MultisigCancelledHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */; };
@@ -8368,10 +8360,6 @@
 		2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMultisigHandler.swift; sourceTree = "<group>"; };
 		2DE8B0A32E544A9C00F8BD40 /* CommonMultisigHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMultisigHandler.swift; sourceTree = "<group>"; };
 		2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPayload.swift; sourceTree = "<group>"; };
-		2DE8B0A92E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPayload+NewMultisig.swift"; sourceTree = "<group>"; };
-		2DE8B0AF2E5480D000F8BD40 /* MultisigPayload+Approval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPayload+Approval.swift"; sourceTree = "<group>"; };
-		2DE8B0B22E54811B00F8BD40 /* MultisigPayload+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPayload+Execute.swift"; sourceTree = "<group>"; };
-		2DE8B0B52E54815B00F8BD40 /* MultisigPayload+Rejected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPayload+Rejected.swift"; sourceTree = "<group>"; };
 		2DE8B0B82E54846B00F8BD40 /* MultisigApprovalHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigApprovalHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigExecutedHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCancelledHandler.swift; sourceTree = "<group>"; };
@@ -17645,18 +17633,6 @@
 			path = Multisig;
 			sourceTree = "<group>";
 		};
-		2DE8B0A52E547D8C00F8BD40 /* MultisigPayload */ = {
-			isa = PBXGroup;
-			children = (
-				2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */,
-				2DE8B0A92E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift */,
-				2DE8B0AF2E5480D000F8BD40 /* MultisigPayload+Approval.swift */,
-				2DE8B0B22E54811B00F8BD40 /* MultisigPayload+Execute.swift */,
-				2DE8B0B52E54815B00F8BD40 /* MultisigPayload+Rejected.swift */,
-			);
-			path = MultisigPayload;
-			sourceTree = "<group>";
-		};
 		2DEDEF482E4CE488008F07B2 /* ChainProvider */ = {
 			isa = PBXGroup;
 			children = (
@@ -19153,10 +19129,10 @@
 		77D326E72B98DEDA0055FE88 /* NotificationHandlers */ = {
 			isa = PBXGroup;
 			children = (
-				2DE8B0A52E547D8C00F8BD40 /* MultisigPayload */,
 				778215C82B914E6F006C7D13 /* TransferType.swift */,
 				778215CE2B91B131006C7D13 /* NotificationMessage.swift */,
 				778215CA2B914E9D006C7D13 /* Payload.swift */,
+				2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */,
 			);
 			path = NotificationHandlers;
 			sourceTree = "<group>";
@@ -29909,7 +29885,6 @@
 				77AE4FAC2B905EDB00426519 /* UInt64+TimeInterval.swift in Sources */,
 				2DE8B0972E54448400F8BD40 /* StatemineAssetSerializer.swift in Sources */,
 				2DEDF0502E4D1A2E008F07B2 /* RuntimeChainTypesSnapshotFactory.swift in Sources */,
-				2DE8B0B32E54811B00F8BD40 /* MultisigPayload+Execute.swift in Sources */,
 				2DEDEF7C2E4D1211008F07B2 /* FilesOperationFactory.swift in Sources */,
 				2DEDEFC72E4D1504008F07B2 /* SubstratePrimitives.swift in Sources */,
 				77AE4F942B90595800426519 /* UserDataStorageFacade.swift in Sources */,
@@ -29923,7 +29898,6 @@
 				7778FE542B9109430023E801 /* Observable.swift in Sources */,
 				7778FE432B90F8060023E801 /* CurrencyManager.swift in Sources */,
 				7778FE422B90F5380023E801 /* PriceData.swift in Sources */,
-				2DE8B0B12E5480D000F8BD40 /* MultisigPayload+Approval.swift in Sources */,
 				77AE4FA52B905CFD00426519 /* RemoteChainExternalApi.swift in Sources */,
 				778215CF2B91B131006C7D13 /* NotificationMessage.swift in Sources */,
 				2DEDEF792E4D11C2008F07B2 /* RuntimeSnapshotFactory.swift in Sources */,
@@ -29937,7 +29911,6 @@
 				778215C62B914E25006C7D13 /* CommonHandler.swift in Sources */,
 				7778FE3C2B90CC440023E801 /* SubstrateDataStorageFacade.swift in Sources */,
 				2DEDF0482E4D1773008F07B2 /* BigUInt+Operation.swift in Sources */,
-				2DE8B0B72E54815B00F8BD40 /* MultisigPayload+Rejected.swift in Sources */,
 				2DC6945A2DF836D2004F4584 /* InMemoryCaching.swift in Sources */,
 				77EF9A7E2B9F138A0034D619 /* OperatingCall.swift in Sources */,
 				2DEDEF6D2E4CFC07008F07B2 /* CallCodingPath+Evm.swift in Sources */,
@@ -29967,7 +29940,6 @@
 				0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
 				2DEDEF8B2E4D13C4008F07B2 /* XcmVersionedMultilocation.swift in Sources */,
-				2DE8B0AB2E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift in Sources */,
 				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				2DC6945D2DF837A6004F4584 /* NotEqualWrapper.swift in Sources */,
 				2DEDEF822E4D12DA008F07B2 /* AssetConversionPallet.swift in Sources */,
@@ -31504,7 +31476,6 @@
 				8472C5B5265CF9C500E2481B /* StakingRewardDestConfirmProtocols.swift in Sources */,
 				0C59E8F02AA76361001E11F3 /* OperationDetailsDataProviderProtocol.swift in Sources */,
 				84E83AA2286328660000B418 /* XTokensTransfer.swift in Sources */,
-				2DE8B0B42E54811B00F8BD40 /* MultisigPayload+Execute.swift in Sources */,
 				84CEAAEF26D6DF160021B881 /* SingleToMultiassetMigrationPolicy.swift in Sources */,
 				842BDB23278C229D00AB4B5A /* DAppBrowserStateDataSource.swift in Sources */,
 				2DEDEF552E4CF31B008F07B2 /* RuntimeChainTypesSnapshotFactory.swift in Sources */,
@@ -32316,7 +32287,6 @@
 				841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */,
 				84E8BA2229FFB38600FD9F40 /* EthereumTransaction.swift in Sources */,
 				846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */,
-				2DE8B0AA2E547DC200F8BD40 /* MultisigPayload+NewMultisig.swift in Sources */,
 				0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */,
 				84CFF1EA26526FBC00DB7CF7 /* StakingBondMoreConfirmationViewFactory.swift in Sources */,
 				77EFFC8A2A6E7A24009E28F8 /* AccountExistense.swift in Sources */,
@@ -33317,7 +33287,6 @@
 				2D96D86F2DF04FF700159E91 /* DelegatedAccountsUpdateViewLayout.swift in Sources */,
 				2D96D8702DF04FF700159E91 /* DelegatedAccountsUpdateViewController.swift in Sources */,
 				2D96D8712DF04FF700159E91 /* DelegatedAccountsUpdateInteractor.swift in Sources */,
-				2DE8B0B02E5480D000F8BD40 /* MultisigPayload+Approval.swift in Sources */,
 				8814773E29B071AD001E98A1 /* ImageViewModelProtocol+Optional.swift in Sources */,
 				2DEDF68A2C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift in Sources */,
 				84E493252731C064000534F2 /* AssetListViewModel.swift in Sources */,
@@ -33980,7 +33949,6 @@
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
 				848CC94628D9FC46009EB4B0 /* ConvictionVotingTally.swift in Sources */,
 				77C976282AF426100049272C /* OperationSwapViewModel.swift in Sources */,
-				2DE8B0B62E54815B00F8BD40 /* MultisigPayload+Rejected.swift in Sources */,
 				84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */,
 				0CE629D72AA9B5E200E250BD /* BalanceViewModelFactory.swift in Sources */,
 				CD9359A2720F2EE1D4E09DF6 /* DAppTxDetailsWireframe.swift in Sources */,
