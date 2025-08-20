@@ -163,7 +163,6 @@ extension ServiceCoordinator {
                 substrateStorageFacade: substrateStorageFacade,
                 eventCenter: EventCenter.shared,
                 operationQueue: OperationManagerFacade.assetsSyncQueue,
-                workingQueue: .global(),
                 logger: Logger.shared
             ),
             chainRegistry: chainRegistry,

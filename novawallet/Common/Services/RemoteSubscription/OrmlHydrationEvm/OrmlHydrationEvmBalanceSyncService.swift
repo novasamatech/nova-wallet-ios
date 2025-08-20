@@ -7,7 +7,7 @@ final class OrmlHydrationEvmBalanceSyncService {
     let chainRegistry: ChainRegistryProtocol
     let balanceRepository: AnyDataProviderRepository<AssetBalance>
     let transactionHandlerFactory: TransactionSubscriptionFactoryProtocol
-    let workingQueue: DispatchQueue
+    let syncQueue: DispatchQueue
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -17,6 +17,8 @@ final class OrmlHydrationEvmBalanceSyncService {
     private var subscriptionServices: [ApplicationServiceProtocol]?
     private var transactionHandler: TransactionSubscribing?
 
+    private var saveCallStore: CancellableCallStore?
+
     init(
         chainId: ChainModel.Id,
         accountId: AccountId,
@@ -24,7 +26,6 @@ final class OrmlHydrationEvmBalanceSyncService {
         balanceRepository: AnyDataProviderRepository<AssetBalance>,
         transactionHandlerFactory: TransactionSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.chainId = chainId
@@ -33,7 +34,7 @@ final class OrmlHydrationEvmBalanceSyncService {
         self.balanceRepository = balanceRepository
         self.transactionHandlerFactory = transactionHandlerFactory
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
+        syncQueue = DispatchQueue(label: "io.novawallet.ormlhydraevm.sync.\(UUID().uuidString)")
         self.logger = logger
     }
 }
@@ -41,6 +42,8 @@ final class OrmlHydrationEvmBalanceSyncService {
 private extension OrmlHydrationEvmBalanceSyncService {
     func updateBalance(_ balance: AssetBalance) {
         logger.debug("Saving changed balance \(balance)")
+
+        let newCallStore = CancellableCallStore()
 
         let saveOperation = balanceRepository.saveOperation({
             guard !balance.isZero else {
@@ -56,7 +59,19 @@ private extension OrmlHydrationEvmBalanceSyncService {
             }
         })
 
-        operationQueue.addOperation(saveOperation)
+        // make sure we completely save previous balance before trying new one
+        let processingWrapper = CompoundOperationWrapper(targetOperation: saveOperation)
+
+        saveCallStore?.addDependency(to: processingWrapper)
+        saveCallStore = newCallStore
+
+        executeCancellable(
+            wrapper: processingWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: newCallStore,
+            runningCallbackIn: nil,
+            callbackClosure: { _ in }
+        )
     }
 
     func handleTransactions(on blockHashData: BlockHashData) {
@@ -65,15 +80,17 @@ private extension OrmlHydrationEvmBalanceSyncService {
 
     func setupSubscriptions(for chainAssetIds: [ChainAssetId], trigger: ChainPollingStateStore) {
         subscriptionServices = chainAssetIds.map { chainAssetId in
+            // With sync queue as parameter we are make sure that events of balance change will be passed
+            // and handled in the right order
             OrmlHydrationEvmSubscriptionService(
                 chainAssetId: chainAssetId,
                 accountId: accountId,
                 trigger: trigger,
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue,
-                workingQueue: workingQueue,
+                workingQueue: syncQueue,
                 logger: logger,
-                callbackQueue: workingQueue
+                callbackQueue: syncQueue
             ) { [weak self] newBalance, blockHash in
                 guard let self else {
                     return
@@ -127,7 +144,7 @@ extension OrmlHydrationEvmBalanceSyncService: ApplicationServiceProtocol {
                     chainRegistry: chainRegistry
                 ),
                 operationQueue: operationQueue,
-                workQueue: workingQueue,
+                workQueue: syncQueue,
                 logger: logger
             )
 

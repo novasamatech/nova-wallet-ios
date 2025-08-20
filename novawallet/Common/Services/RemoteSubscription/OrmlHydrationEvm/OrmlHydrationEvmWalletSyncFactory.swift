@@ -11,7 +11,6 @@ final class OrmlHydrationEvmWalletSyncFactory {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    let workingQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
@@ -19,14 +18,12 @@ final class OrmlHydrationEvmWalletSyncFactory {
         substrateStorageFacade: StorageFacadeProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
         self.logger = logger
     }
 }
@@ -53,7 +50,6 @@ extension OrmlHydrationEvmWalletSyncFactory: OrmlHydrationEvmWalletSyncFactoryPr
                 logger: logger
             ),
             operationQueue: operationQueue,
-            workingQueue: workingQueue,
             logger: logger
         )
     }
