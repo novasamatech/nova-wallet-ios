@@ -187,25 +187,13 @@ private extension CallFormattingOperationFactory {
         return nil
     }
 
-    func detectBatch(
-        from call: AnyRuntimeCall,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) -> FormattedCall.Definition? {
-        let context = codingFactory.createRuntimeJsonContext()
-
-        guard let runtimeCall = try? call.args.map(
-            to: RuntimeCall<NoRuntimeArgs>.self,
-            with: context.toRawContext()
-        ) else {
-            return nil
-        }
-
-        let batch: FormattedCall.Batch? = if runtimeCall.path == UtilityPallet.batchPath {
-            FormattedCall.Batch(type: UtilityPallet.BatchType.batch)
-        } else if runtimeCall.path == UtilityPallet.batchAllPath {
-            FormattedCall.Batch(type: UtilityPallet.BatchType.batchAll)
-        } else if runtimeCall.path == UtilityPallet.forceBatchPath {
-            FormattedCall.Batch(type: UtilityPallet.BatchType.forceBatch)
+    func detectBatch(from call: AnyRuntimeCall) -> FormattedCall.Definition? {
+        let batch: FormattedCall.Batch? = if call.path == UtilityPallet.batchPath {
+            FormattedCall.Batch(type: .batch)
+        } else if call.path == UtilityPallet.batchAllPath {
+            FormattedCall.Batch(type: .batchAll)
+        } else if call.path == UtilityPallet.forceBatchPath {
+            FormattedCall.Batch(type: .forceBatch)
         } else {
             nil
         }
@@ -228,10 +216,7 @@ private extension CallFormattingOperationFactory {
             codingFactory: codingFactory
         ) {
             return transfer
-        } else if let batch = detectBatch(
-            from: call,
-            codingFactory: codingFactory
-        ) {
+        } else if let batch = detectBatch(from: call) {
             return batch
         } else {
             let general = FormattedCall.General(callPath: call.path)
@@ -269,8 +254,7 @@ private extension CallFormattingOperationFactory {
 
     func createDecodingWrapper(
         dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>,
-        for callData: Substrate.CallData,
-        chainId _: ChainModel.Id
+        for callData: Substrate.CallData
     ) -> CompoundOperationWrapper<JSON> {
         let decodingWrapper: CompoundOperationWrapper<JSON> = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -287,8 +271,7 @@ private extension CallFormattingOperationFactory {
     }
 
     func createCodingFactoryWrapper(
-        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>,
-        chainId _: ChainModel.Id
+        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>
     ) -> CompoundOperationWrapper<RuntimeCoderFactoryProtocol> {
         let codingFactoryWrapper: CompoundOperationWrapper<RuntimeCoderFactoryProtocol>
         codingFactoryWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -323,13 +306,11 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
         localAccountsWrapper.addDependency(wrapper: chainWrapper)
 
         let codingFactoryWrapper = createCodingFactoryWrapper(
-            dependingOn: runtimeCodingServiceWrapper,
-            chainId: chainId
+            dependingOn: runtimeCodingServiceWrapper
         )
         let decodingWrapper: CompoundOperationWrapper<JSON> = createDecodingWrapper(
             dependingOn: runtimeCodingServiceWrapper,
-            for: callData,
-            chainId: chainId
+            for: callData
         )
 
         codingFactoryWrapper.addDependency(wrapper: runtimeCodingServiceWrapper)

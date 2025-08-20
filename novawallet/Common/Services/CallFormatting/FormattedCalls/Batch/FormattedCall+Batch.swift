@@ -8,6 +8,7 @@ extension FormattedCall {
             case batchAll
             case forceBatch
         }
+
         let type: BatchType
     }
 }
@@ -23,39 +24,22 @@ extension FormattedCall.Batch.BatchType {
             UtilityPallet.forceBatchPath
         }
     }
-    
-    lazy var callDescription = LocalizableResource {
-        [
-            path.callName,
-            "(\(shortDescription.value(for: $0)))"
-        ].joined(with: .space)
-    }
-    
-    lazy var fullModuleCallDescription = LocalizableResource {
-        [
+
+    var fullModuleCallDescription: LocalizableResource<String> {
+        .init {
             [
-                path.moduleName,
-                path.callName
-            ].joined(with: .colonSpace),
-            
-            "(\(shortDescription.value(for: $0)))"
-        ].joined(with: .space)
+                path.moduleName.displayModule,
+                callDescription.value(for: $0)
+            ].joined(with: .colonSpace)
+        }
     }
-    
-    private lazy var shortDescription = LocalizableResource<String> {
-        switch self {
-        case .batch:
-            R.string.localizable.batchOperationDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        case .batchAll:
-            R.string.localizable.batchAllOperationDescription(
-                preferredLanguages: $0.rLanguages
-            )
-        case .forceBatch:
-            R.string.localizable.forceBatchOperationDescription(
-                preferredLanguages: $0.rLanguages
-            )
+
+    var callDescription: LocalizableResource<String> {
+        .init {
+            [
+                path.callName.displayCall,
+                "(\(shortDescription.value(for: $0)))"
+            ].joined(with: .space)
         }
     }
 }

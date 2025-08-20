@@ -1,9 +1,10 @@
-//
-//  FormattedCall+Transfer.swift
-//  novawallet
-//
-//  Created by Levan Chikvaidze on 19/08/2025.
-//  Copyright © 2025 Nova Foundation. All rights reserved.
-//
-
 import Foundation
+import BigInt
+
+extension FormattedCall {
+    struct Transfer {
+        let amount: BigUInt
+        let account: Account
+        let asset: ChainAsset
+    }
+}

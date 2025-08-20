@@ -196,7 +196,7 @@ private extension CommonMultisigHandler {
 
         switch formattedCall.definition {
         case let .transfer(transfer):
-            commonBodyPart = createTransferBodyContent(for: transfer, chain: chain)
+            commonBodyPart = createTransferBodyContent(for: transfer)
         case let .batch(batch):
             commonBodyPart = createBatchBodyContent(for: batch, chain: chain)
         case let .general(general):
@@ -239,10 +239,7 @@ private extension CommonMultisigHandler {
         )
     }
 
-    func createTransferBodyContent(
-        for transfer: FormattedCall.Transfer,
-        chain _: ChainModel
-    ) -> String {
+    func createTransferBodyContent(for transfer: FormattedCall.Transfer) -> String {
         let balance = balanceViewModel(
             asset: transfer.asset.asset,
             amount: String(transfer.amount),
@@ -269,27 +266,8 @@ private extension CommonMultisigHandler {
         for batch: FormattedCall.Batch,
         chain: ChainModel
     ) -> String {
-        let batchTypeDescription = switch batch.type {
-        case .batch:
-            R.string.localizable.pushNotificationMultisigBatchBody(
-                preferredLanguages: locale.rLanguages
-            )
-        case .batchAll:
-            R.string.localizable.pushNotificationMultisigBatchAllBody(
-                preferredLanguages: locale.rLanguages
-            )
-        case .forceBatch:
-            R.string.localizable.pushNotificationMultisigForceBatchBody(
-                preferredLanguages: locale.rLanguages
-            )
-        }
-
-        let moduleCallInfo = createModuleCallInfo(for: batch.type.path)
-
-        let fullBatchDescription = "\(moduleCallInfo) (\(batchTypeDescription))"
-
-        return R.string.localizable.pushNotificationMultisigGeneralBody(
-            fullBatchDescription,
+        R.string.localizable.pushNotificationMultisigGeneralBody(
+            batch.type.fullModuleCallDescription.value(for: locale),
             chain.name.capitalized,
             preferredLanguages: locale.rLanguages
         )
