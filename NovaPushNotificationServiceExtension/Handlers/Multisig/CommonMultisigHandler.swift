@@ -52,21 +52,17 @@ extension CommonMultisigHandler {
         let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
             OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
-            ) { [weak self] in
-                guard let self else {
-                    throw PushNotificationsHandlerErrors.undefined
-                }
-
+            ) {
                 let chains = try chainsOperation.extractNoCancellableResultData()
                 let settings = try settingsOperation.extractNoCancellableResultData().first
 
                 let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
 
-                guard let chain = search(chainId: chainId, in: chains) else {
-                    throw PushNotificationsHandlerErrors.chainNotFound(chainId: chainId)
+                guard let chain = self.search(chainId: self.chainId, in: chains) else {
+                    throw PushNotificationsHandlerErrors.chainNotFound(chainId: self.chainId)
                 }
 
-                let notificationContentWrapper = createNotificationContentWrapper(
+                let notificationContentWrapper = self.createNotificationContentWrapper(
                     wallets: settings?.wallets ?? [],
                     chain: chain,
                     metaAccounts: { try fetchMetaAccountsOperation.extractNoCancellableResultData() },
@@ -124,18 +120,18 @@ private extension CommonMultisigHandler {
         }
 
         guard let callData = payload.callData else {
-            let mapOperation = ClosureOperation<NotificationContentResult> { [weak self] in
-                guard let self else { throw BaseOperationError.parentOperationCancelled }
-
+            let mapOperation = ClosureOperation<NotificationContentResult> {
                 let unknownOperationBody = R.string.localizable.pushNotificationMultisigUnknownBody(
                     chain.name.capitalized,
-                    preferredLanguages: locale.rLanguages
+                    preferredLanguages: self.locale.rLanguages
                 )
+                let subtitle = self.createSubtitle(with: try walletNameOperation.extractNoCancellableResultData())
+                let body = self.createBody(using: unknownOperationBody, adding: self.createBody(using: payload))
 
                 return .init(
                     title: title,
-                    subtitle: createSubtitle(with: try walletNameOperation.extractNoCancellableResultData()),
-                    body: createBody(using: unknownOperationBody, adding: createBody(using: payload))
+                    subtitle: subtitle,
+                    body: body
                 )
             }
 
@@ -152,17 +148,16 @@ private extension CommonMultisigHandler {
             chainId: chain.chainId
         )
 
-        let mapOperation = ClosureOperation<NotificationContentResult> { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
+        let mapOperation = ClosureOperation<NotificationContentResult> {
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
 
-            let specificBodyPart = createBody(using: payload)
-            let body = createBody(for: formattedCall, adding: specificBodyPart, chain: chain)
+            let subtitle = self.createSubtitle(with: try walletNameOperation.extractNoCancellableResultData())
+            let specificBodyPart = self.createBody(using: payload)
+            let body = self.createBody(for: formattedCall, adding: specificBodyPart, chain: chain)
 
             return .init(
                 title: title,
-                subtitle: createSubtitle(with: try walletNameOperation.extractNoCancellableResultData()),
+                subtitle: subtitle,
                 body: body
             )
         }
