@@ -187,25 +187,42 @@ private extension CommonMultisigHandler {
         adding operationSpecificPart: String,
         chain: ChainModel
     ) -> String {
-        let commonBodyPart: String
+        let commonPart: String
 
         switch formattedCall.definition {
         case let .transfer(transfer):
-            commonBodyPart = createTransferBodyContent(for: transfer)
+            commonPart = createTransferBodyContent(for: transfer)
         case let .batch(batch):
-            commonBodyPart = createBatchBodyContent(for: batch, chain: chain)
+            commonPart = createBatchBodyContent(for: batch, chain: chain)
         case let .general(general):
-            commonBodyPart = createGeneralBodyContent(for: general, chain: chain)
+            commonPart = createGeneralBodyContent(for: general, chain: chain)
         }
 
-        return createBody(using: commonBodyPart, adding: operationSpecificPart)
+        guard
+            let delegatedAccount = formattedCall.delegatedAccount,
+            let delegatedAddress = try? delegatedAccount.accountId.toAddress(using: chain.chainFormat)
+        else {
+            return createBody(using: commonPart, adding: operationSpecificPart)
+        }
+
+        let delegatedAccountPart = [
+            R.string.localizable.pushNotificationOnBehalfOf(preferredLanguages: locale.rLanguages),
+            delegatedAddress.mediumTruncated
+        ].joined(with: .space)
+
+        let delegatedCommonPart = [
+            commonPart,
+            delegatedAccountPart
+        ].joined(with: .newLine)
+
+        return createBody(using: delegatedCommonPart, adding: operationSpecificPart)
     }
 
     func createBody(
         using commonBodyPart: String,
         adding operationSpecificPart: String
     ) -> String {
-        [commonBodyPart, operationSpecificPart].joined(with: .space)
+        [commonBodyPart, operationSpecificPart].joined(with: .newLine)
     }
 
     func createCallFormattingOperationFactory(

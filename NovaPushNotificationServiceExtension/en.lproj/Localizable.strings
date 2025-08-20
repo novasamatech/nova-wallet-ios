@@ -41,3 +41,4 @@
 "push.notification.multisig.cancelled.title" = "❌ Multisig transaction rejected";
 "push.notification.multisig.cancelled.body" = "Rejected by %@.";
 "push.notification.multisig.unknown.body" = "Unknown operation on %@.";
+"push.notification.on.behalf.of" = "On behalf of";
