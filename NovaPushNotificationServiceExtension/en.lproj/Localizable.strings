@@ -31,6 +31,7 @@
 "push.notification.multisig.transfer.body" = "%@ → %@ on %@.";
 "push.notification.multisig.batch.body" = "executes until error";
 "push.notification.multisig.batch.all.body" = "reverts on error";
+"push.notification.multisig.force.batch.body" = "ignores errors";
 "push.notification.multisig.new.title" = "✍🏻 Your signature requested";
 "push.notification.multisig.new.body" = "Initiated by %@.";
 "push.notification.multisig.approval.title" = "Signed by %@";

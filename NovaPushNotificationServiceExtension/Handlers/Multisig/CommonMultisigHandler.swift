@@ -191,37 +191,11 @@ private extension CommonMultisigHandler {
 
         switch formattedCall.definition {
         case let .transfer(transfer):
-            let balance = balanceViewModel(
-                asset: transfer.asset.asset,
-                amount: String(transfer.amount),
-                priceData: nil,
-                workingQueue: operationQueue
-            )
-
-            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
-
-            guard
-                let amount = balance?.amount,
-                let destinationAddress
-            else { return "" }
-
-            commonBodyPart = R.string.localizable.pushNotificationMultisigTransferBody(
-                amount,
-                destinationAddress.mediumTruncated,
-                transfer.asset.chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
+            commonBodyPart = createTransferBodyContent(for: transfer)
+        case let .batch(batch):
+            commonBodyPart = createBatchBodyContent(for: batch, chain: chain)
         case let .general(general):
-            let moduleCallInfo = [
-                general.callPath.moduleName.displayModule,
-                general.callPath.callName.displayCall
-            ].joined(with: .colonSpace)
-
-            commonBodyPart = R.string.localizable.pushNotificationMultisigGeneralBody(
-                moduleCallInfo,
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
+            commonBodyPart = createGeneralBodyContent(for: general, chain: chain)
         }
 
         return createBody(using: commonBodyPart, adding: operationSpecificPart)
@@ -258,5 +232,57 @@ private extension CommonMultisigHandler {
             walletRepository: walletsRepository(),
             operationQueue: operationQueue
         )
+    }
+
+    func createTransferBodyContent(for transfer: FormattedCall.Transfer) -> String {
+        let balance = balanceViewModel(
+            asset: transfer.asset.asset,
+            amount: String(transfer.amount),
+            priceData: nil,
+            workingQueue: operationQueue
+        )
+
+        let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
+
+        guard
+            let amount = balance?.amount,
+            let destinationAddress
+        else { return "" }
+
+        return R.string.localizable.pushNotificationMultisigTransferBody(
+            amount,
+            destinationAddress.mediumTruncated,
+            transfer.asset.chain.name.capitalized,
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    func createBatchBodyContent(
+        for batch: FormattedCall.Batch,
+        chain: ChainModel
+    ) -> String {
+        R.string.localizable.pushNotificationMultisigGeneralBody(
+            batch.type.fullModuleCallDescription.value(for: locale),
+            chain.name.capitalized,
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    func createGeneralBodyContent(
+        for generalDefinition: FormattedCall.General,
+        chain: ChainModel
+    ) -> String {
+        R.string.localizable.pushNotificationMultisigGeneralBody(
+            createModuleCallInfo(for: generalDefinition.callPath),
+            chain.name.capitalized,
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    func createModuleCallInfo(for callPath: CallCodingPath) -> String {
+        [
+            callPath.moduleName.displayModule,
+            callPath.callName.displayCall
+        ].joined(with: .colonSpace)
     }
 }

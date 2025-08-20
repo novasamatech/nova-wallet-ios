@@ -187,6 +187,22 @@ private extension CallFormattingOperationFactory {
         return nil
     }
 
+    func detectBatch(from call: AnyRuntimeCall) -> FormattedCall.Definition? {
+        let batch: FormattedCall.Batch? = if call.path == UtilityPallet.batchPath {
+            FormattedCall.Batch(type: .batch)
+        } else if call.path == UtilityPallet.batchAllPath {
+            FormattedCall.Batch(type: .batchAll)
+        } else if call.path == UtilityPallet.forceBatchPath {
+            FormattedCall.Batch(type: .forceBatch)
+        } else {
+            nil
+        }
+
+        guard let batch else { return nil }
+
+        return .batch(batch)
+    }
+
     func resolveDefinition(
         for call: AnyRuntimeCall,
         chain: ChainModel,
@@ -200,6 +216,8 @@ private extension CallFormattingOperationFactory {
             codingFactory: codingFactory
         ) {
             return transfer
+        } else if let batch = detectBatch(from: call) {
+            return batch
         } else {
             let general = FormattedCall.General(callPath: call.path)
 
