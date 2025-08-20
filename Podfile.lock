@@ -1557,7 +1557,7 @@ DEPENDENCIES:
   - FirebaseMessaging (~> 11.3.0)
   - FireMock
   - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, tag `1.1.0`)
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, commit `2b423eb6ad8d2f368201b9c081d550c8f024e85d`)
+  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.3`)
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
@@ -1653,8 +1653,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Foundation-iOS.git
     :tag: 1.1.0
   HydraMath:
-    :commit: 2b423eb6ad8d2f368201b9c081d550c8f024e85d
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.3'
   Keystore-iOS:
     :git: https://github.com/novasamatech/Keystore-iOS.git
     :tag: 1.0.0
@@ -1708,8 +1708,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Foundation-iOS.git
     :tag: 1.1.0
   HydraMath:
-    :commit: 2b423eb6ad8d2f368201b9c081d550c8f024e85d
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.3'
   Keystore-iOS:
     :git: https://github.com/novasamatech/Keystore-iOS.git
     :tag: 1.0.0
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 1cbe75083677232062b521b6e5e737d85fa6fae4
+PODFILE CHECKSUM: 37a323d31da6a42ba0adbf574256bbe89360907f
 
 COCOAPODS: 1.15.2

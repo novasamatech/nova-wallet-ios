@@ -142,7 +142,8 @@ final class HydraOmnipoolSwapTests: XCTestCase {
             connection: connection,
             runtimeProvider: runtimeService,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         
         let operationFactory = HydraOmnipoolQuoteFactory(flowState: flowState)
