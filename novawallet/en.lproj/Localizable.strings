@@ -1937,3 +1937,4 @@
 "batch.operation.description" = "executes until error";
 "batch.all.operation.description" = "reverts on error";
 "force.batch.operation.description" = "ignores errors";
+"multisig.operation.loading.placeholder.text" = "Loading transaction details…";
