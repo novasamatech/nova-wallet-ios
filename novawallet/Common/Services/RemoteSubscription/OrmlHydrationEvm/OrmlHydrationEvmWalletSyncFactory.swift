@@ -9,20 +9,20 @@ protocol OrmlHydrationEvmWalletSyncFactoryProtocol {
 final class OrmlHydrationEvmWalletSyncFactory {
     let chainRegistry: ChainRegistryProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
-    let eventCenter: EventCenterProtocol
+    let transactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
-        eventCenter: EventCenterProtocol,
+        transactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
-        self.eventCenter = eventCenter
+        self.transactionSubscriptionFactory = transactionSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -38,17 +38,7 @@ extension OrmlHydrationEvmWalletSyncFactory: OrmlHydrationEvmWalletSyncFactoryPr
             accountId: accountId,
             chainRegistry: chainRegistry,
             balanceRepository: repositoryFactory.createAssetBalanceRepository(),
-            transactionHandlerFactory: TransactionSubscriptionFactory(
-                chainRegistry: chainRegistry,
-                eventCenter: eventCenter,
-                repositoryFactory: repositoryFactory,
-                storageRequestFactory: StorageRequestFactory(
-                    remoteFactory: StorageKeyFactory(),
-                    operationManager: OperationManager(operationQueue: operationQueue)
-                ),
-                operationQueue: operationQueue,
-                logger: logger
-            ),
+            transactionHandlerFactory: transactionSubscriptionFactory,
             operationQueue: operationQueue,
             logger: logger
         )

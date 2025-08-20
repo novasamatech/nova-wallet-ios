@@ -161,7 +161,7 @@ extension ServiceCoordinator {
             syncServiceFactory: OrmlHydrationEvmWalletSyncFactory(
                 chainRegistry: chainRegistry,
                 substrateStorageFacade: substrateStorageFacade,
-                eventCenter: EventCenter.shared,
+                transactionSubscriptionFactory: WalletServiceFacade.sharedTransactionSubscriptionFactory,
                 operationQueue: OperationManagerFacade.assetsSyncQueue,
                 logger: Logger.shared
             ),
