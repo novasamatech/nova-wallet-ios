@@ -275,10 +275,6 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
         for callData: Substrate.CallData,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<FormattedCall> {
-        let runtimeCodingServiceWrapper = runtimeCodingServiceProvider.createRuntimeCodingServiceWrapper(
-            for: chainId
-        )
-
         let chainWrapper = chainProvider.createChainWrapper(for: chainId)
 
         let localAccountsWrapper = walletRepository.createWalletsWrapperByAccountId {
@@ -287,16 +283,15 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
 
         localAccountsWrapper.addDependency(wrapper: chainWrapper)
 
-        let codingFactoryWrapper = createCodingFactoryWrapper(
-            dependingOn: runtimeCodingServiceWrapper
+        let codingFactoryWrapper = runtimeCodingServiceProvider.createCoderFactoryWrapper(
+            for: chainId,
+            in: operationQueue
         )
-        let decodingWrapper: CompoundOperationWrapper<JSON> = createDecodingWrapper(
-            dependingOn: runtimeCodingServiceWrapper,
-            for: callData
+        let decodingWrapper: CompoundOperationWrapper<JSON> = runtimeCodingServiceProvider.createDecodingWrapper(
+            for: callData,
+            chainId: chainId,
+            in: operationQueue
         )
-
-        codingFactoryWrapper.addDependency(wrapper: runtimeCodingServiceWrapper)
-        decodingWrapper.addDependency(wrapper: runtimeCodingServiceWrapper)
 
         let formattingOperation = ClosureOperation<FormattedCall> {
             let jsonCall = try decodingWrapper.targetOperation.extractNoCancellableResultData()
@@ -319,7 +314,6 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
         return decodingWrapper
             .insertingHead(operations: localAccountsWrapper.allOperations)
             .insertingHead(operations: codingFactoryWrapper.allOperations)
-            .insertingHead(operations: runtimeCodingServiceWrapper.allOperations)
             .insertingHead(operations: chainWrapper.allOperations)
             .insertingTail(operation: formattingOperation)
     }
