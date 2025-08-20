@@ -236,8 +236,7 @@ private extension CallFormattingOperationFactory {
 
     func createDecodingWrapper(
         dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>,
-        for callData: Substrate.CallData,
-        chainId _: ChainModel.Id
+        for callData: Substrate.CallData
     ) -> CompoundOperationWrapper<JSON> {
         let decodingWrapper: CompoundOperationWrapper<JSON> = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -254,8 +253,7 @@ private extension CallFormattingOperationFactory {
     }
 
     func createCodingFactoryWrapper(
-        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>,
-        chainId _: ChainModel.Id
+        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>
     ) -> CompoundOperationWrapper<RuntimeCoderFactoryProtocol> {
         let codingFactoryWrapper: CompoundOperationWrapper<RuntimeCoderFactoryProtocol>
         codingFactoryWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -290,13 +288,11 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
         localAccountsWrapper.addDependency(wrapper: chainWrapper)
 
         let codingFactoryWrapper = createCodingFactoryWrapper(
-            dependingOn: runtimeCodingServiceWrapper,
-            chainId: chainId
+            dependingOn: runtimeCodingServiceWrapper
         )
         let decodingWrapper: CompoundOperationWrapper<JSON> = createDecodingWrapper(
             dependingOn: runtimeCodingServiceWrapper,
-            for: callData,
-            chainId: chainId
+            for: callData
         )
 
         codingFactoryWrapper.addDependency(wrapper: runtimeCodingServiceWrapper)
