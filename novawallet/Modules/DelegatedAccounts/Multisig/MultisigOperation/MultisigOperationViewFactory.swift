@@ -5,7 +5,7 @@ import Foundation_iOS
 struct MultisigOperationViewFactory {
     static func createView(
         for moduleInput: MultisigOperationModuleInput,
-        flowState: MultisigOperationsFlowState
+        flowState: MultisigOperationsFlowState?
     ) -> MultisigOperationViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 

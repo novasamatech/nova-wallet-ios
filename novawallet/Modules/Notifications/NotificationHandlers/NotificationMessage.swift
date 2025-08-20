@@ -20,19 +20,19 @@ enum NotificationMessage {
     )
     case newMultisig(
         chainId: ChainModel.Id,
-        payload: NewMultisigPayload
+        payload: MultisigPayloadProtocol
     )
     case multisigApproval(
         chainId: ChainModel.Id,
-        payload: ApprovalMultisigPayload
+        payload: MultisigPayloadProtocol
     )
     case multisigExecuted(
         chainId: ChainModel.Id,
-        payload: ExecutedMultisigPayload
+        payload: MultisigPayloadProtocol
     )
     case multisigCancelled(
         chainId: ChainModel.Id,
-        payload: CancelledMultisigPayload
+        payload: MultisigPayloadProtocol
     )
     case newRelease(
         payload: NewReleasePayload

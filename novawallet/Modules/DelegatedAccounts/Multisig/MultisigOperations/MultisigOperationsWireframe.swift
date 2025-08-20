@@ -8,14 +8,16 @@ extension MultisigOperationsWireframe: MultisigOperationsWireframeProtocol {
         operation: Multisig.PendingOperationProxyModel,
         flowState: MultisigOperationsFlowState
     ) {
-        guard let confirmView = MultisigOperationViewFactory.createView(
+        guard let multisigOperationView = MultisigOperationViewFactory.createView(
             for: .operation(operation),
             flowState: flowState
         ) else {
             return
         }
 
-        let operationNavigationController = NovaNavigationController(rootViewController: confirmView.controller)
+        let operationNavigationController = NovaNavigationController(
+            rootViewController: multisigOperationView.controller
+        )
 
         view?.controller.presentWithCardLayout(operationNavigationController, animated: true)
     }

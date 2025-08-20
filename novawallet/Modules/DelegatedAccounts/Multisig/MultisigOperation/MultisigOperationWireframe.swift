@@ -1,9 +1,9 @@
 import Foundation
 
 final class MultisigOperationWireframe {
-    let flowState: MultisigOperationsFlowState
+    let flowState: MultisigOperationsFlowState?
 
-    init(flowState: MultisigOperationsFlowState) {
+    init(flowState: MultisigOperationsFlowState?) {
         self.flowState = flowState
     }
 }

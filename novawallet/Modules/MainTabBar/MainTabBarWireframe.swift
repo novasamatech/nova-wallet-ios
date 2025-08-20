@@ -96,6 +96,32 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func openMultisigOperationScreen(
+        in controller: UITabBarController,
+        moduleInput: MultisigOperationModuleInput
+    ) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        guard let multisigOperationView = MultisigOperationViewFactory.createView(
+            for: moduleInput,
+            flowState: nil
+        ) else {
+            return
+        }
+
+        let operationNavigationController = NovaNavigationController(
+            rootViewController: multisigOperationView.controller
+        )
+
+        navigationController?.viewControllers.first?.presentWithCardLayout(
+            operationNavigationController,
+            animated: true
+        )
+    }
+
     func openTransactionsToSign(in controller: UITabBarController) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
@@ -272,6 +298,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .historyDetails(chainAsset):
             openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
+        case let .multisigOperation(moduleInput):
+            openMultisigOperationScreen(in: controller, moduleInput: moduleInput)
         case .error:
             break
         }

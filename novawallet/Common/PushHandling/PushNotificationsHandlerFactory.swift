@@ -49,17 +49,38 @@ final class PushNotificationsHandlerFactory: PushNotificationsHandlerFactoryProt
             )
             return AssetDetailsNotificationMessageHandler(
                 chainRegistry: chainRegistry,
-                operationQueue: operationQueue,
-                workingQueue: workingQueue,
                 settings: walletSettings,
                 eventCenter: eventCenter,
                 settingsRepository: AnyDataProviderRepository(settingsRepository),
-                walletsRepository: AnyDataProviderRepository(walletsRepository)
+                walletsRepository: AnyDataProviderRepository(walletsRepository),
+                operationQueue: operationQueue,
+                workingQueue: workingQueue
             )
         case .newReferendum, .referendumUpdate:
             let chainRegistry = chainRegistryClosure()
             return GovernanceNotificationMessageHandler(chainRegistry: chainRegistry, settings: settings)
-        case .newRelease, .newMultisig, .multisigApproval, .multisigExecuted, .multisigCancelled:
+        case .newMultisig, .multisigApproval, .multisigExecuted, .multisigCancelled:
+            let chainRegistry = chainRegistryClosure()
+            let settingsRepository = userDataStorageFacade.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+            )
+            let walletsRepository = userDataStorageFacade.createRepository(
+                filter: nil,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(MetaAccountMapper())
+            )
+            return MultisigNotificationMessageHandler(
+                chainRegistry: chainRegistry,
+                settings: walletSettings,
+                eventCenter: eventCenter,
+                settingsRepository: AnyDataProviderRepository(settingsRepository),
+                walletsRepository: AnyDataProviderRepository(walletsRepository),
+                operationQueue: operationQueue,
+                workingQueue: workingQueue
+            )
+        case .newRelease:
             return nil
         }
     }
