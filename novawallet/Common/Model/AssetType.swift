@@ -16,3 +16,14 @@ enum AssetType: String {
         }
     }
 }
+
+extension AssetType {
+    var isOrmlCompatible: Bool {
+        switch self {
+        case .orml, .ormlHydrationEvm:
+            return true
+        default:
+            return false
+        }
+    }
+}
