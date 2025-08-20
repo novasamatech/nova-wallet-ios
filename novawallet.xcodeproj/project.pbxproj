@@ -1977,12 +1977,13 @@
 		2DE8B0BB2E54856D00F8BD40 /* MultisigExecutedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */; };
 		2DE8B0BD2E54858A00F8BD40 /* MultisigCancelledHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */; };
 		2DE8B0BE2E54C14500F8BD40 /* String+Substrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D33995262250B800130A89 /* String+Substrate.swift */; };
+		2DE8B0D52E55D63700F8BD40 /* ChainRegistryChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */; };
+		2DE8B0D92E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
 		2DEDEF442E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */; };
 		2DEDEF462E4C8EC7008F07B2 /* MultisigNotificationsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF452E4C8EC7008F07B2 /* MultisigNotificationsInteractor.swift */; };
 		2DEDEF4A2E4CE4A1008F07B2 /* ChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF492E4CE4A1008F07B2 /* ChainProvider.swift */; };
-		2DEDEF4C2E4CE4C7008F07B2 /* ChainRegistry+ChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF4B2E4CE4C7008F07B2 /* ChainRegistry+ChainProvider.swift */; };
 		2DEDEF4E2E4CE4F9008F07B2 /* OfflineChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF4D2E4CE4F9008F07B2 /* OfflineChainProvider.swift */; };
 		2DEDEF512E4CF058008F07B2 /* RuntimeCommonTypesSnapshotFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF502E4CF058008F07B2 /* RuntimeCommonTypesSnapshotFactory.swift */; };
 		2DEDEF532E4CF283008F07B2 /* RuntimeCommonAndChainTypesSnapshotFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF522E4CF283008F07B2 /* RuntimeCommonAndChainTypesSnapshotFactory.swift */; };
@@ -1992,7 +1993,6 @@
 		2DEDEF5B2E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF592E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift */; };
 		2DEDEF5D2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF5C2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift */; };
 		2DEDEF5E2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF5C2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift */; };
-		2DEDEF612E4CFA2E008F07B2 /* ChainRegistry+RuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF5F2E4CFA2E008F07B2 /* ChainRegistry+RuntimeCodingServiceProvider.swift */; };
 		2DEDEF652E4CFB40008F07B2 /* RuntimeSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436E94526C85405003D4EA7 /* RuntimeSnapshot.swift */; };
 		2DEDEF672E4CFB51008F07B2 /* RuntimeCodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB57126F9EB2000396E13 /* RuntimeCodingService.swift */; };
 		2DEDEF682E4CFB55008F07B2 /* RuntimeCoderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */; };
@@ -8363,12 +8363,13 @@
 		2DE8B0B82E54846B00F8BD40 /* MultisigApprovalHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigApprovalHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigExecutedHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCancelledHandler.swift; sourceTree = "<group>"; };
+		2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryChainProvider.swift; sourceTree = "<group>"; };
+		2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryRuntimeCodingServiceProvider.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
 		2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsViewFactory.swift; sourceTree = "<group>"; };
 		2DEDEF452E4C8EC7008F07B2 /* MultisigNotificationsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsInteractor.swift; sourceTree = "<group>"; };
 		2DEDEF492E4CE4A1008F07B2 /* ChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainProvider.swift; sourceTree = "<group>"; };
-		2DEDEF4B2E4CE4C7008F07B2 /* ChainRegistry+ChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+ChainProvider.swift"; sourceTree = "<group>"; };
 		2DEDEF4D2E4CE4F9008F07B2 /* OfflineChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineChainProvider.swift; sourceTree = "<group>"; };
 		2DEDEF502E4CF058008F07B2 /* RuntimeCommonTypesSnapshotFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCommonTypesSnapshotFactory.swift; sourceTree = "<group>"; };
 		2DEDEF522E4CF283008F07B2 /* RuntimeCommonAndChainTypesSnapshotFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCommonAndChainTypesSnapshotFactory.swift; sourceTree = "<group>"; };
@@ -8376,7 +8377,6 @@
 		2DEDEF562E4CF3B7008F07B2 /* RuntimeDefaultTypesSnapshotFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeDefaultTypesSnapshotFactory.swift; sourceTree = "<group>"; };
 		2DEDEF592E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceProvider.swift; sourceTree = "<group>"; };
 		2DEDEF5C2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRuntimeCodingServiceProvider.swift; sourceTree = "<group>"; };
-		2DEDEF5F2E4CFA2E008F07B2 /* ChainRegistry+RuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+RuntimeCodingServiceProvider.swift"; sourceTree = "<group>"; };
 		2DEDF0452E4D1740008F07B2 /* ErrorContentConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorContentConvertible.swift; sourceTree = "<group>"; };
 		2DEDF04C2E4D19DB008F07B2 /* Collection+SafeSubscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+SafeSubscript.swift"; sourceTree = "<group>"; };
 		2DEDF0562E4D1B6A008F07B2 /* CommonError+ErrorContentConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CommonError+ErrorContentConvertible.swift"; sourceTree = "<group>"; };
@@ -17637,8 +17637,8 @@
 			isa = PBXGroup;
 			children = (
 				2DEDEF492E4CE4A1008F07B2 /* ChainProvider.swift */,
+				2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */,
 				2DEDEF4D2E4CE4F9008F07B2 /* OfflineChainProvider.swift */,
-				2DEDEF4B2E4CE4C7008F07B2 /* ChainRegistry+ChainProvider.swift */,
 			);
 			path = ChainProvider;
 			sourceTree = "<group>";
@@ -17659,9 +17659,9 @@
 			isa = PBXGroup;
 			children = (
 				2DEDEF592E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift */,
+				2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */,
 				2DEDEF5C2E4CFA0B008F07B2 /* OfflineRuntimeCodingServiceProvider.swift */,
 				2DEDF0692E4D226E008F07B2 /* OfflineRuntimeCodingService.swift */,
-				2DEDEF5F2E4CFA2E008F07B2 /* ChainRegistry+RuntimeCodingServiceProvider.swift */,
 			);
 			path = RuntimeCodingServiceProvider;
 			sourceTree = "<group>";
@@ -30574,6 +30574,7 @@
 				0CA72A882D4A2DA000B3FD02 /* CollatorStkPartialUnstakeSetupVC.swift in Sources */,
 				84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */,
 				0C85FF302B6D35D600FC0014 /* AssetHubFlowState.swift in Sources */,
+				2DE8B0D52E55D63700F8BD40 /* ChainRegistryChainProvider.swift in Sources */,
 				2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */,
 				842876B324AE059700D91AD8 /* AboutData.swift in Sources */,
 				8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */,
@@ -32209,6 +32210,7 @@
 				0CD61EC62D3554B80064AC97 /* DryRunOperationFactory.swift in Sources */,
 				840302E4292CFCF90013F356 /* ChainAssetSelectionBasePresenter.swift in Sources */,
 				0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */,
+				2DE8B0D92E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift in Sources */,
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
 				0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */,
 				84E0C52029CA413C000B65C8 /* OperationContractCallViewModel.swift in Sources */,
@@ -32400,7 +32402,6 @@
 				AE805FC526B3DF8B00007CE9 /* ValidatorInfoInteractorBase.swift in Sources */,
 				0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */,
 				0C0F6DC62D40442900943A7C /* MythosStakingBalanceState.swift in Sources */,
-				2DEDEF4C2E4CE4C7008F07B2 /* ChainRegistry+ChainProvider.swift in Sources */,
 				AEE5FB0526415E5D002B8FDC /* StakingRebondSetupViewFactory.swift in Sources */,
 				AEAC68F726E9FB8400346599 /* CoingeckoOperationFactory.swift in Sources */,
 				843910C5253F561500E3C217 /* CompoundOperationWrapper+Result.swift in Sources */,
@@ -35658,7 +35659,6 @@
 				F395A6E9B4AA2286742C5736 /* MythosStkUnstakeConfirmInteractor.swift in Sources */,
 				B18C415B489D9AFDF0968347 /* MythosStkUnstakeConfirmViewFactory.swift in Sources */,
 				A1626B9B19B46C6904EF894D /* MythosStakingRedeemProtocols.swift in Sources */,
-				2DEDEF612E4CFA2E008F07B2 /* ChainRegistry+RuntimeCodingServiceProvider.swift in Sources */,
 				D27703E5A374047C631C9BC8 /* MythosStakingRedeemWireframe.swift in Sources */,
 				57DE9DDE57F86846EDDA0126 /* MythosStakingRedeemPresenter.swift in Sources */,
 				AA7FC6E16F442B6C1569C172 /* MythosStakingRedeemInteractor.swift in Sources */,

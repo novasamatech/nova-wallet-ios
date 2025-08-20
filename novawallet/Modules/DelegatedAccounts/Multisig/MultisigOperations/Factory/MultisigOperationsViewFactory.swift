@@ -4,12 +4,16 @@ import Foundation_iOS
 final class MultisigOperationsViewFactory {
     static func createView() -> MultisigOperationsViewProtocol? {
         guard
-            let chainRegistry = ChainRegistryFacade.sharedRegistry as? ChainRegistry,
             let selectedWallet = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let chainProvider = ChainRegistryChainProvider(chainRegistry: chainRegistry)
+        let runtimeCodingServiceProvider = ChainRegistryRuntimeCodingServiceProvider(chainRegistry: chainRegistry)
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -25,8 +29,8 @@ final class MultisigOperationsViewFactory {
         let pendingOperationsProvider = MultisigOperationProviderProxy(
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             callFormattingFactory: CallFormattingOperationFactory(
-                chainProvider: chainRegistry,
-                runtimeCodingServiceProvider: chainRegistry,
+                chainProvider: chainProvider,
+                runtimeCodingServiceProvider: runtimeCodingServiceProvider,
                 walletRepository: walletRepository,
                 operationQueue: operationQueue
             ),
