@@ -1934,3 +1934,6 @@
 "notifications.management.multisig.transaction.rejected" = "Multisig transaction rejected";
 "notifications.management.multisig.no.wallets.alert.title" = "No multisig wallets";
 "notifications.management.multisig.no.wallets.alert.message" = "You haven’t added or selected any multisig wallets in Nova. Add and select at least one to receive multisig push notifications.";
+"batch.operation.description" = "executes until error";
+"batch.all.operation.description" = "reverts on error";
+"force.batch.operation.description" = "ignores errors";

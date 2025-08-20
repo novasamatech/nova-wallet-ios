@@ -5,15 +5,15 @@ import BigInt
 
 protocol XcmPalletMetadataQueryFactoryProtocol {
     func createModuleNameResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<String>
 
     func createLowestXcmVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Xcm.Version>
 
     func createXcmMessageTypeResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<String?>
 }
 
@@ -21,7 +21,7 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory {}
 
 extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
     func createLowestXcmVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Xcm.Version> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let xcmMessageTypeWrapper = createXcmMessageTypeResolutionWrapper(for: runtimeProvider)
@@ -55,7 +55,7 @@ extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
     }
 
     func createModuleNameResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<String> {
         createModuleNameResolutionWrapper(
             for: runtimeProvider,
@@ -64,7 +64,7 @@ extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
     }
 
     func createXcmMessageTypeResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
+        for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<String?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let moduleResolutionWrapper = createModuleNameResolutionWrapper(for: runtimeProvider)

@@ -123,12 +123,12 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
 
         let optPriceString = balance?.price.map { "(\($0))" }
         let amountWithPrice = [balance?.amount, optPriceString].compactMap { $0 }.joined(with: .space)
-        let subtitle = R.string.localizable.pushNotificationStakingRewardSubtitle(
+        let body = R.string.localizable.pushNotificationStakingRewardSubtitle(
             amountWithPrice,
             chainAsset.chain.name,
             preferredLanguages: locale.rLanguages
         )
 
-        return .init(title: title, subtitle: subtitle)
+        return .init(title: title, body: body)
     }
 }

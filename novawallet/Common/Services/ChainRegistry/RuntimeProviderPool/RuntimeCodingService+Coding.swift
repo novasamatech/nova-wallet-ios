@@ -31,7 +31,7 @@ extension RuntimeCodingServiceProtocol {
         let encodingOperation = ClosureOperation<Data> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let encoder = try codingFactory.createEncoder()
+            let encoder = codingFactory.createEncoder()
             let context = codingFactory.createRuntimeJsonContext()
 
             try encoder.append(

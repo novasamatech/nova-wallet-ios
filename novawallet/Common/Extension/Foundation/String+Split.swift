@@ -11,6 +11,7 @@ extension String {
 
     enum CompoundSeparator: String {
         case commaSpace = ", "
+        case colonSpace = ": "
     }
 
     func split(by separator: Separator, maxSplits: Int = .max) -> [String] {

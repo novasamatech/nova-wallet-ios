@@ -40,7 +40,7 @@ enum Web3Alert {
         var newMultisig: Selection<C>?
         var multisigApproval: Selection<C>?
         var multisigExecuted: Selection<C>?
-        var multisigCanceled: Selection<C>?
+        var multisigCancelled: Selection<C>?
     }
 }
 
@@ -49,7 +49,7 @@ extension Web3Alert.LocalNotifications {
         newMultisig?.notificationsEnabled == true ||
             multisigApproval?.notificationsEnabled == true ||
             multisigExecuted?.notificationsEnabled == true ||
-            multisigCanceled?.notificationsEnabled == true
+            multisigCancelled?.notificationsEnabled == true
     }
 }
 

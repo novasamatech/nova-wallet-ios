@@ -10,11 +10,16 @@ final class MultisigOperationsViewFactory {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let chainProvider = ChainRegistryChainProvider(chainRegistry: chainRegistry)
+        let runtimeCodingServiceProvider = ChainRegistryRuntimeCodingServiceProvider(chainRegistry: chainRegistry)
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let wireframe = MultisigOperationsWireframe()
 
-        let walletsRepository = AccountRepositoryFactory(
+        let walletRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(
             for: nil,
@@ -24,8 +29,10 @@ final class MultisigOperationsViewFactory {
         let pendingOperationsProvider = MultisigOperationProviderProxy(
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             callFormattingFactory: CallFormattingOperationFactory(
-                chainRegistry: ChainRegistryFacade.sharedRegistry,
-                walletRepository: walletsRepository
+                chainProvider: chainProvider,
+                runtimeCodingServiceProvider: runtimeCodingServiceProvider,
+                walletRepository: walletRepository,
+                operationQueue: operationQueue
             ),
             operationQueue: operationQueue
         )

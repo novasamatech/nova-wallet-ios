@@ -104,11 +104,16 @@ struct MultisigOperationConfirmViewFactory {
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
         )
 
+        let chainProvider = ChainRegistryChainProvider(chainRegistry: chainRegistry)
+        let runtimeCodingServiceProvider = ChainRegistryRuntimeCodingServiceProvider(chainRegistry: chainRegistry)
+
         let pendingOperationsProvider = MultisigOperationProviderProxy(
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             callFormattingFactory: CallFormattingOperationFactory(
-                chainRegistry: chainRegistry,
-                walletRepository: walletRepository
+                chainProvider: chainProvider,
+                runtimeCodingServiceProvider: runtimeCodingServiceProvider,
+                walletRepository: walletRepository,
+                operationQueue: operationQueue
             ),
             operationQueue: operationQueue
         )

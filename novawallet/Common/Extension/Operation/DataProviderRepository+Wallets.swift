@@ -3,12 +3,13 @@ import Operation_iOS
 
 extension AnyDataProviderRepository where T == MetaAccountModel {
     func createWalletsWrapperByAccountId(
-        for chain: ChainModel
+        for chainProvider: @escaping () throws -> ChainModel
     ) -> CompoundOperationWrapper<[AccountId: MetaChainAccountResponse]> {
         let allWalletsOperation = fetchAllOperation(with: RepositoryFetchOptions())
 
         let mapOperation = ClosureOperation<[AccountId: MetaChainAccountResponse]> {
             let wallets = try allWalletsOperation.extractNoCancellableResultData()
+            let chain = try chainProvider()
 
             let localDict = wallets.reduce(
                 into: [AccountId: [MetaChainAccountResponse]]()

@@ -51,11 +51,13 @@ private extension MultisigOperationsViewModelFactory {
             )
         }
 
-        switch call.definition {
+        return switch call.definition {
         case let .general(general):
-            return general.callPath.callName.displayCall
+            general.callPath.callName.displayCall
+        case let .batch(batch):
+            batch.type.callDescription.value(for: locale)
         case .transfer:
-            return R.string.localizable.transferTitle(
+            R.string.localizable.transferTitle(
                 preferredLanguages: locale.rLanguages
             )
         }
@@ -70,19 +72,21 @@ private extension MultisigOperationsViewModelFactory {
             return nil
         }
 
-        switch call.definition {
+        return switch call.definition {
         case let .general(general):
-            return general.callPath.moduleName.displayCall
+            general.callPath.moduleName.displayCall
+        case let .batch(batch):
+            batch.type.path.moduleName.displayCall
         case let .transfer(transfer):
             if let address = try? transfer.account.accountId.toAddress(
                 using: chain.chainFormat
             ) {
-                return R.string.localizable.walletHistoryTransferOutgoingDetails(
+                R.string.localizable.walletHistoryTransferOutgoingDetails(
                     address.truncated,
                     preferredLanguages: locale.rLanguages
                 )
             } else {
-                return nil
+                nil
             }
         }
     }
@@ -175,7 +179,7 @@ private extension MultisigOperationsViewModelFactory {
         switch callDefinition {
         case .transfer:
             return StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
-        case let .general(generalCall):
+        case .general, .batch:
             return assetIconViewModelFactory.createAssetIconViewModel(
                 for: chain.utilityChainAsset()?.asset.icon,
                 with: .white
