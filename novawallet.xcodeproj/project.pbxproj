@@ -1998,6 +1998,7 @@
 		2DE8B0EB2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */; };
 		2DE8B0ED2E56456900F8BD40 /* MultisigNotificationHandlingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */; };
 		2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */; };
+		2DE8B0F62E566EEF00F8BD40 /* MultisigPassedDescriptionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F52E566EEF00F8BD40 /* MultisigPassedDescriptionParams.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
 		2DEDEF442E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */; };
@@ -8399,6 +8400,7 @@
 		2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationMessageHandler.swift; sourceTree = "<group>"; };
 		2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationHandlingError.swift; sourceTree = "<group>"; };
 		2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSelectingNotificationHandling.swift; sourceTree = "<group>"; };
+		2DE8B0F52E566EEF00F8BD40 /* MultisigPassedDescriptionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPassedDescriptionParams.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
 		2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsViewFactory.swift; sourceTree = "<group>"; };
@@ -17715,6 +17717,7 @@
 			isa = PBXGroup;
 			children = (
 				2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */,
+				2DE8B0F52E566EEF00F8BD40 /* MultisigPassedDescriptionParams.swift */,
 				2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */,
 			);
 			path = Multisig;
@@ -35382,6 +35385,7 @@
 				34E4B25CDFE0D7B5F4F18185 /* TransferNetworkSelectionInteractor.swift in Sources */,
 				7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */,
 				0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */,
+				2DE8B0F62E566EEF00F8BD40 /* MultisigPassedDescriptionParams.swift in Sources */,
 				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
 				0C0F6E0B2D43C81000943A7C /* CollatorStakingInfoViewFactory+ParachainStaking.swift in Sources */,

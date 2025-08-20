@@ -25,7 +25,7 @@ extension MultisigOperationInteractor: MultisigOperationInteractorInputProtocol 
     func setup() {
         switch input {
         case let .operation(operation):
-            presenter?.didReceiveOperation(operation)
+            presenter?.didReceiveOperation(nil)
         case let .key(operationKey):
             presenter?.didReceiveOperation(nil)
 

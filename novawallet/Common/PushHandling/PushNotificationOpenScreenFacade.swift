@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 protocol PushNotificationOpenDelegate: AnyObject {
     func didAskScreenOpen(_ screen: PushNotification.OpenScreen)
@@ -8,7 +9,8 @@ extension PushNotification {
     enum OpenScreen {
         case gov(Referenda.ReferendumIndex)
         case historyDetails(ChainAsset)
-        case multisigOperation(MultisigOperationModuleInput)
+        case multisigOperationDetails(MultisigOperationModuleInput)
+        case multisigOperationEnded(MultisigEndedMessageModel)
         case error(Error)
     }
 }

@@ -122,6 +122,27 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func showMultisigEndedAlert(
+        in controller: MainTabBarViewProtocol?,
+        tabBar: UITabBarController,
+        model: MultisigEndedMessageModel,
+        locale: Locale
+    ) {
+        tabBar.selectedIndex = MainTabBarIndex.wallet
+        let viewController = tabBar.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        let localizedModel = model.value(for: locale)
+
+        present(
+            message: localizedModel.description,
+            title: localizedModel.title,
+            closeAction: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages),
+            from: controller
+        )
+    }
+
     func openTransactionsToSign(in controller: UITabBarController) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
@@ -285,7 +306,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushNotification.OpenScreen
+        screen: PushNotification.OpenScreen,
+        locale: Locale
     ) {
         guard
             let controller = view?.controller as? UITabBarController,
@@ -298,8 +320,10 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .historyDetails(chainAsset):
             openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
-        case let .multisigOperation(moduleInput):
+        case let .multisigOperationDetails(moduleInput):
             openMultisigOperationScreen(in: controller, moduleInput: moduleInput)
+        case let .multisigOperationEnded(model):
+            showMultisigEndedAlert(in: view, tabBar: controller, model: model, locale: locale)
         case .error:
             break
         }

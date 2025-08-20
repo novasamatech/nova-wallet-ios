@@ -8,6 +8,7 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
     let eventCenter: EventCenterProtocol
     let settingsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>
     let walletsRepository: AnyDataProviderRepository<MetaAccountModel>
+    let callFormattingFactory: CallFormattingOperationFactoryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
@@ -19,6 +20,7 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
         eventCenter: EventCenterProtocol,
         settingsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
+        callFormattingFactory: CallFormattingOperationFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue
     ) {
@@ -27,6 +29,7 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
         self.eventCenter = eventCenter
         self.settingsRepository = settingsRepository
         self.walletsRepository = walletsRepository
+        self.callFormattingFactory = callFormattingFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
@@ -89,7 +92,7 @@ private extension MultisigNotificationMessageHandler {
             with: payload.multisigAddress,
             chainId: chain.chainId,
             filter: { $0.multisigAccount?.anyChainMultisig?.signatory != signatoryAccountId },
-            successClosure: { completion(.success(.multisigOperation(.key(key)))) },
+            successClosure: { completion(.success(.multisigOperationDetails(.key(key)))) },
             failureClosure: { completion(.failure($0)) }
         )
     }
@@ -123,3 +126,5 @@ extension MultisigNotificationMessageHandler: PushNotificationMessageHandlingPro
 
     func cancel() {}
 }
+
+// MARK: - MultisigNotificationMessageHandler
