@@ -200,14 +200,14 @@ private extension CommonMultisigHandler {
 
         guard
             let delegatedAccount = formattedCall.delegatedAccount,
-            let delegatedAddress = try? delegatedAccount.accountId.toAddress(using: chain.chainFormat).mediumTruncated
+            let delegatedAddress = try? delegatedAccount.accountId.toAddress(using: chain.chainFormat)
         else {
             return createBody(using: commonPart, adding: operationSpecificPart)
         }
 
         let delegatedAccountPart = [
             R.string.localizable.pushNotificationOnBehalfOf(preferredLanguages: locale.rLanguages),
-            delegatedAddress
+            delegatedAddress.mediumTruncated
         ].joined(with: .space)
 
         let delegatedCommonPart = [
