@@ -16461,9 +16461,9 @@
 				0C521C1A2E17BF3100ABAC97 /* PendingOperationProxy */,
 				2DFF39D82E18056200529984 /* MultisigCallDataImport */,
 				0C85F5BF2E140CFA003789DC /* Operation */,
-				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2D0673922E141BAA006392EB /* Validation */,
 				2D3C71D42E1267CA00DF9E49 /* MultisigOperations */,
+				2DE8B0DA2E56318E00F8BD40 /* MultisigOperation */,
 				2D3C71A72E087CA000DF9E49 /* Models */,
 			);
 			path = Multisig;
@@ -17693,6 +17693,7 @@
 		2DE8B0DA2E56318E00F8BD40 /* MultisigOperation */ = {
 			isa = PBXGroup;
 			children = (
+				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2DE8B0DB2E5631A900F8BD40 /* MultisigOperationInteractor.swift */,
 				2DE8B0DD2E5631B300F8BD40 /* MultisigOperationPresenter.swift */,
 				2DE8B0DF2E5631BC00F8BD40 /* MultisigOperationViewController.swift */,
@@ -18466,7 +18467,6 @@
 		5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */ = {
 			isa = PBXGroup;
 			children = (
-				2DE8B0DA2E56318E00F8BD40 /* MultisigOperation */,
 				2DFF39CB2E1686A000529984 /* Model */,
 				0C85F5C82E142841003789DC /* Reject */,
 				0C85F5C72E14281A003789DC /* Approve */,
