@@ -67,7 +67,7 @@ private extension MultisigNotificationsPresenter {
             action: actionSignedBySignatory
         )
         let signedTransactionExecutedModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.notificationsManagementMultisigTransactionExecuted(
+            title: R.string.localizable.commonMultisigExecuted(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
             ),
             icon: nil,
@@ -75,7 +75,7 @@ private extension MultisigNotificationsPresenter {
             action: actionTransactionExecuted
         )
         let signedTransactionRejectedModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.notificationsManagementMultisigTransactionRejected(
+            title: R.string.localizable.commonMultisigRejected(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
             ),
             icon: nil,

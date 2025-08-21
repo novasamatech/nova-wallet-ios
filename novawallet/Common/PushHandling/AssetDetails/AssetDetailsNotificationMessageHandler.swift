@@ -135,7 +135,7 @@ extension AssetDetailsNotificationMessageHandler: PushNotificationMessageHandlin
             return
         }
     }
-    
+
     func cancel() {
         chainRegistry.chainsUnsubscribe(self)
     }

@@ -1930,11 +1930,15 @@
 "notifications.management.multisig.transactions" = "Multisig transactions";
 "notifications.management.multisig.signature.requested" = "Your signature requested";
 "notifications.management.multisig.signed.by.signatory" = "Signed by signatory";
-"notifications.management.multisig.transaction.executed" = "Multisig transaction executed";
-"notifications.management.multisig.transaction.rejected" = "Multisig transaction rejected";
 "notifications.management.multisig.no.wallets.alert.title" = "No multisig wallets";
 "notifications.management.multisig.no.wallets.alert.message" = "You haven’t added or selected any multisig wallets in Nova. Add and select at least one to receive multisig push notifications.";
 "batch.operation.description" = "executes until error";
 "batch.all.operation.description" = "reverts on error";
 "force.batch.operation.description" = "ignores errors";
 "multisig.operation.loading.placeholder.text" = "Loading transaction details…";
+"multisig.operation.format.general.text" = "%@ on %@.";
+"multisig.operation.format.transfer.text" = "%@ → %@ on %@.";
+"multisig.operation.format.cancelled.text" = "Rejected by: %@.";
+"multisig.operation.no.actions.required" = "No further actions are required from you.";
+"common.multisig.executed" = "Multisig transaction executed";
+"common.multisig.rejected" = "Multisig transaction rejected";
