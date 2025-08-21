@@ -45,7 +45,7 @@ private extension MultisigOperationFetchProxyPresenter {
             preferredLanguages: languages
         )
         let actionTitle = R.string.localizable.commonGotIt(preferredLanguages: languages)
-        let action = AlertPresentableAction(title: actionTitle) { [weak self] in
+        let action = AlertPresentableAction(title: actionTitle, style: .cancel) { [weak self] in
             self?.wireframe.close(from: self?.view)
         }
 
