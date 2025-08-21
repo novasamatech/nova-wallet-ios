@@ -13,6 +13,8 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
+    let multisigEndedMessageFactory: MultisigEndedMessageFactoryProtocol
+
     let callStore = CancellableCallStore()
 
     init(
@@ -22,6 +24,7 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
         settingsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
         callFormattingFactory: CallFormattingOperationFactoryProtocol,
+        multisigEndedMessageFactory: MultisigEndedMessageFactoryProtocol = MultisigEndedMessageFactory(),
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue
     ) {
@@ -31,6 +34,7 @@ final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandl
         self.settingsRepository = settingsRepository
         self.walletsRepository = walletsRepository
         self.callFormattingFactory = callFormattingFactory
+        self.multisigEndedMessageFactory = multisigEndedMessageFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
@@ -139,23 +143,23 @@ private extension MultisigNotificationMessageHandler {
         callData: Substrate.CallData?,
         completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
     ) {
-        guard let callData else {
-            return
-        }
-
-        let formattedCallWrapper = callFormattingFactory.createFormattingWrapper(
-            for: callData,
-            chainId: chain.chainId
+        let wrapper = createExecutedMessageWrapper(
+            chain: chain,
+            callData: callData
         )
 
-        let resultOperation = ClosureOperation {
-            let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
-            let messageModel = self.createExecutedMessageModel(
-                for: formattedCall,
-                chain: chain
-            )
-
-            completion(.success(.multisigOperationEnded(messageModel)))
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue
+        ) { result in
+            switch result {
+            case let .success(messageModel):
+                completion(.success(.multisigOperationEnded(messageModel)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
         }
     }
 
@@ -165,8 +169,38 @@ private extension MultisigNotificationMessageHandler {
         callData: Substrate.CallData?,
         completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
     ) {
+        let wrapper = createCancelledMessageWrapper(
+            chain: chain,
+            cancellerAddress: cancellerAddress,
+            callData: callData
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue
+        ) { result in
+            switch result {
+            case let .success(messageModel):
+                completion(.success(.multisigOperationEnded(messageModel)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func createCancelledMessageWrapper(
+        chain: ChainModel,
+        cancellerAddress: AccountAddress,
+        callData: Substrate.CallData?
+    ) -> CompoundOperationWrapper<MultisigEndedMessageModel> {
         guard let callData else {
-            return
+            let message = multisigEndedMessageFactory.createRejectedMessageModel(
+                for: chain,
+                cancellerAddress: cancellerAddress
+            )
+            return .createWithResult(message)
         }
 
         let formattedCallWrapper = callFormattingFactory.createFormattingWrapper(
@@ -174,234 +208,49 @@ private extension MultisigNotificationMessageHandler {
             chainId: chain.chainId
         )
 
-        let resultOperation = ClosureOperation {
+        let resultOperation = ClosureOperation<MultisigEndedMessageModel> {
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
-            let messageModel = self.createRejectedMessageModel(
+            let messageModel = self.multisigEndedMessageFactory.createRejectedMessageModel(
                 for: formattedCall,
                 cancellerAddress: cancellerAddress,
                 chain: chain
             )
 
-            completion(.success(.multisigOperationEnded(messageModel)))
+            return messageModel
         }
+
+        resultOperation.addDependency(formattedCallWrapper.targetOperation)
+
+        return formattedCallWrapper.insertingTail(operation: resultOperation)
     }
 
-    func createFormattedCommonBody(
-        from formattedCall: FormattedCall,
-        adding operationSpecificPart: LocalizableResource<String>,
-        chain: ChainModel
-    ) -> LocalizableResource<String> {
-        let commonPart: LocalizableResource<String>
-
-        switch formattedCall.definition {
-        case let .transfer(transfer):
-            commonPart = createTransferBodyContent(for: transfer)
-        case let .batch(batch):
-            commonPart = createBatchBodyContent(for: batch, chain: chain)
-        case let .general(general):
-            commonPart = createGeneralBodyContent(for: general, chain: chain)
+    func createExecutedMessageWrapper(
+        chain: ChainModel,
+        callData: Substrate.CallData?
+    ) -> CompoundOperationWrapper<MultisigEndedMessageModel> {
+        guard let callData else {
+            let message = multisigEndedMessageFactory.createExecutedMessageModel(for: chain)
+            return .createWithResult(message)
         }
 
-        guard
-            let delegatedAccount = formattedCall.delegatedAccount,
-            let delegatedAddress = try? delegatedAccount.accountId.toAddress(using: chain.chainFormat)
-        else {
-            return createBody(using: commonPart, adding: operationSpecificPart)
-        }
-
-        let delegatedCommonPart = createDelegatedCommonPart(
-            using: commonPart,
-            delegatedAddress: delegatedAddress
+        let formattedCallWrapper = callFormattingFactory.createFormattingWrapper(
+            for: callData,
+            chainId: chain.chainId
         )
 
-        return createBody(using: delegatedCommonPart, adding: operationSpecificPart)
-    }
-
-    func createExecutedBodySpecificPart() -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            R.string.localizable.multisigOperationNoActionsRequired(
-                preferredLanguages: locale.rLanguages
+        let resultOperation = ClosureOperation<MultisigEndedMessageModel> {
+            let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
+            let messageModel = self.multisigEndedMessageFactory.createExecutedMessageModel(
+                for: formattedCall,
+                chain: chain
             )
-        }
-    }
 
-    func createRejectedBodySpecificPart(cancellerAddress: AccountAddress) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            [
-                R.string.localizable.multisigOperationFormatCancelledText(
-                    cancellerAddress.mediumTruncated,
-                    preferredLanguages: locale.rLanguages
-                ),
-                R.string.localizable.multisigOperationNoActionsRequired(
-                    preferredLanguages: locale.rLanguages
-                )
-            ].joined(with: .newLine)
-        }
-    }
-
-    func createBody(
-        using commonBodyPart: LocalizableResource<String>,
-        adding operationSpecificPart: LocalizableResource<String>
-    ) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            [
-                commonBodyPart.value(for: locale),
-                operationSpecificPart.value(for: locale)
-            ].joined(with: .newLine)
-        }
-    }
-
-    func createDelegatedCommonPart(
-        using commonPart: LocalizableResource<String>,
-        delegatedAddress: String
-    ) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            let delegatedAccountPart = [
-                R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
-                delegatedAddress.mediumTruncated
-            ].joined(with: .space)
-
-            let delegatedCommonPart = [
-                commonPart.value(for: locale),
-                delegatedAccountPart
-            ].joined(with: .newLine)
-
-            return delegatedCommonPart
-        }
-    }
-
-    func createTransferBodyContent(for transfer: FormattedCall.Transfer) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            let balance = self.balanceViewModel(
-                asset: transfer.asset.asset,
-                amount: String(transfer.amount),
-                priceData: nil
-            )?.value(for: locale)
-
-            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
-
-            guard
-                let amount = balance?.amount,
-                let destinationAddress
-            else { return "" }
-
-            return R.string.localizable.multisigOperationFormatTransferText(
-                amount,
-                destinationAddress.mediumTruncated,
-                transfer.asset.chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
-        }
-    }
-
-    func createBatchBodyContent(
-        for batch: FormattedCall.Batch,
-        chain: ChainModel
-    ) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
-                batch.type.fullModuleCallDescription.value(for: locale),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
-        }
-    }
-
-    func createGeneralBodyContent(
-        for generalDefinition: FormattedCall.General,
-        chain: ChainModel
-    ) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
-                self.createModuleCallInfo(for: generalDefinition.callPath),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
-            )
-        }
-    }
-
-    func createModuleCallInfo(for callPath: CallCodingPath) -> String {
-        [
-            callPath.moduleName.displayModule,
-            callPath.callName.displayCall
-        ].joined(with: .colonSpace)
-    }
-
-    func createExecutedTitle() -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            R.string.localizable.commonMultisigExecuted(preferredLanguages: locale.rLanguages)
-        }
-    }
-
-    func createRejectedTitle() -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            R.string.localizable.commonMultisigRejected(preferredLanguages: locale.rLanguages)
-        }
-    }
-
-    func createExecutedMessageModel(
-        for formattedCall: FormattedCall,
-        chain: ChainModel
-    ) -> MultisigEndedMessageModel {
-        let title = createExecutedTitle()
-        let body = createFormattedCommonBody(
-            from: formattedCall,
-            adding: createExecutedBodySpecificPart(),
-            chain: chain
-        )
-        let messageModel = MultisigEndedMessageModel { locale in
-            .init(
-                title: title.value(for: locale),
-                description: body.value(for: locale)
-            )
+            return messageModel
         }
 
-        return messageModel
-    }
+        resultOperation.addDependency(formattedCallWrapper.targetOperation)
 
-    func createRejectedMessageModel(
-        for formattedCall: FormattedCall,
-        cancellerAddress: AccountAddress,
-        chain: ChainModel
-    ) -> MultisigEndedMessageModel {
-        let title = createRejectedTitle()
-        let body = createFormattedCommonBody(
-            from: formattedCall,
-            adding: createRejectedBodySpecificPart(cancellerAddress: cancellerAddress),
-            chain: chain
-        )
-        let messageModel = MultisigEndedMessageModel { locale in
-            .init(
-                title: title.value(for: locale),
-                description: body.value(for: locale)
-            )
-        }
-
-        return messageModel
-    }
-
-    func balanceViewModel(
-        asset: AssetModel,
-        amount: String,
-        priceData: PriceData?
-    ) -> LocalizableResource<BalanceViewModelProtocol>? {
-        guard
-            let currencyManager = CurrencyManager.shared,
-            let amountInPlank = BigUInt(amount) else {
-            return nil
-        }
-        let decimalAmount = amountInPlank.decimal(precision: asset.precision)
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let factory = PrimitiveBalanceViewModelFactory(
-            targetAssetInfo: asset.displayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            formatterFactory: AssetBalanceFormatterFactory()
-        )
-
-        return factory.balanceFromPrice(
-            decimalAmount,
-            priceData: priceData
-        )
+        return formattedCallWrapper.insertingTail(operation: resultOperation)
     }
 }
 

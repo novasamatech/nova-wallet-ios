@@ -1940,5 +1940,7 @@
 "multisig.operation.format.transfer.text" = "%@ → %@ on %@.";
 "multisig.operation.format.cancelled.text" = "Rejected by: %@.";
 "multisig.operation.no.actions.required" = "No further actions are required from you.";
+"multisig.operation.executed.no.format" = "Transaction without initial on-chain information (call data) was executed on %@.";
+"multisig.operation.cancelled.no.format" = "Transaction without initial on-chain information (call data) was rejected on %@.";
 "common.multisig.executed" = "Multisig transaction executed";
 "common.multisig.rejected" = "Multisig transaction rejected";
