@@ -1102,7 +1102,6 @@
 		0CD61EC82D356B770064AC97 /* XcmTransfersProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61EC72D356B770064AC97 /* XcmTransfersProtocol.swift */; };
 		0CD61ECA2D356BCF0064AC97 /* XcmTypeBasedCallDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61EC92D356BCF0064AC97 /* XcmTypeBasedCallDerivation.swift */; };
 		0CD61ECE2D3572AC0064AC97 /* XcmTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61ECD2D3572AC0064AC97 /* XcmTransfers+Protocol.swift */; };
-		0CD76AE92E56757F00C6E34B /* XcmTransferFeaturesFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD76AE82E56757F00C6E34B /* XcmTransferFeaturesFacade.swift */; };
 		0CD76AEB2E5675C200C6E34B /* XcmTransferFeaturesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD76AEA2E5675C200C6E34B /* XcmTransferFeaturesFactory.swift */; };
 		0CD76AED2E5675D400C6E34B /* XcmTransferFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD76AEC2E5675D400C6E34B /* XcmTransferFeatures.swift */; };
 		0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */; };
@@ -7242,7 +7241,6 @@
 		0CD61EC72D356B770064AC97 /* XcmTransfersProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersProtocol.swift; sourceTree = "<group>"; };
 		0CD61EC92D356BCF0064AC97 /* XcmTypeBasedCallDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTypeBasedCallDerivation.swift; sourceTree = "<group>"; };
 		0CD61ECD2D3572AC0064AC97 /* XcmTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmTransfers+Protocol.swift"; sourceTree = "<group>"; };
-		0CD76AE82E56757F00C6E34B /* XcmTransferFeaturesFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferFeaturesFacade.swift; sourceTree = "<group>"; };
 		0CD76AEA2E5675C200C6E34B /* XcmTransferFeaturesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferFeaturesFactory.swift; sourceTree = "<group>"; };
 		0CD76AEC2E5675D400C6E34B /* XcmTransferFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferFeatures.swift; sourceTree = "<group>"; };
 		0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMessageSheetViewFactory.swift; sourceTree = "<group>"; };
@@ -19381,7 +19379,6 @@
 			children = (
 				8411707E285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift */,
 				0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */,
-				0CD76AE82E56757F00C6E34B /* XcmTransferFeaturesFacade.swift */,
 				0CD76AEA2E5675C200C6E34B /* XcmTransferFeaturesFactory.swift */,
 				0CD76AEC2E5675D400C6E34B /* XcmTransferFeatures.swift */,
 			);
@@ -35039,7 +35036,6 @@
 				5D78BE84F4F606898AF9228F /* NovaMainAppContainerViewLayout.swift in Sources */,
 				3E1B06134DC99824B38A558A /* NovaMainAppContainerViewFactory.swift in Sources */,
 				E68590AFBEF0BDF5919B73F1 /* DAppFavoritesProtocols.swift in Sources */,
-				0CD76AE92E56757F00C6E34B /* XcmTransferFeaturesFacade.swift in Sources */,
 				2D6CC2642DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift in Sources */,
 				916E7A1B6B0CADBD5AB56353 /* DAppFavoritesWireframe.swift in Sources */,
 				8F961B0DC4CE7648D50F81D3 /* DAppFavoritesPresenter.swift in Sources */,

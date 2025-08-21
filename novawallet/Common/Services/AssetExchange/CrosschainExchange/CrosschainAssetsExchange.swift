@@ -3,21 +3,13 @@ import Operation_iOS
 
 final class CrosschainAssetsExchange {
     let host: CrosschainExchangeHostProtocol
-    let featureFactoryFacade: XcmTransferFeaturesFacadeProtocol
 
     init(host: CrosschainExchangeHostProtocol) {
         self.host = host
-
-        featureFactoryFacade = XcmTransferFeaturesFacade(
-            chainRegistry: host.chainRegistry,
-            operationQueue: host.operationQueue
-        )
     }
 }
 
 private extension CrosschainAssetsExchange {
-    typealias XcmFeatureFactories = [ChainModel.Id: XcmTransferFeaturesFactoryProtocol]
-
     func createExchange(
         from origin: ChainAssetId,
         destination: ChainAssetId,
@@ -46,57 +38,16 @@ private extension CrosschainAssetsExchange {
             return nil
         }
     }
-
-    func createFeaturesFactoriesWrapper() -> CompoundOperationWrapper<XcmFeatureFactories> {
-        let allChainsList = host.xcmTransfers.getAllTransfers()
-            .keys
-            .map(\.chainId)
-            .distinct()
-
-        let allWrappers = allChainsList.map { chainId in
-            if host.xcmTransfers.hasDynamicConfig(for: chainId) {
-                return featureFactoryFacade.createFeaturesFactoryWrapper(for: chainId)
-            } else {
-                return .createWithResult(XcmTransferFeaturesFactory(hasXcmPaymentApi: false))
-            }
-        }
-
-        let mappingOperation = ClosureOperation<XcmFeatureFactories> {
-            let factories: [XcmTransferFeaturesFactoryProtocol?] = allWrappers.map {
-                do {
-                    return try $0.targetOperation.extractNoCancellableResultData()
-                } catch {
-                    self.host.logger.error("Unexpected error \(error)")
-                    return nil
-                }
-            }
-
-            return zip(allChainsList, factories).reduce(into: XcmFeatureFactories()) {
-                $0[$1.0] = $1.1
-            }
-        }
-
-        let dependencies = allWrappers.flatMap(\.allOperations)
-
-        dependencies.forEach { mappingOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
-    }
 }
 
 extension CrosschainAssetsExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let featuresFactoriesWrapper = createFeaturesFactoriesWrapper()
+        let featuresFactory = XcmTransferFeaturesFactory()
 
         let mapOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
-            let factories = try featuresFactoriesWrapper.targetOperation.extractNoCancellableResultData()
             let edges = self.host.xcmTransfers.getAllTransfers()
                 .map { keyValue in
-                    guard let featuresFactory = factories[keyValue.key.chainId] else {
-                        return [any AssetExchangableGraphEdge]()
-                    }
-
-                    return keyValue.value.compactMap { destinationAssetId in
+                    keyValue.value.compactMap { destinationAssetId in
                         self.createExchange(
                             from: keyValue.key,
                             destination: destinationAssetId,
@@ -108,8 +59,6 @@ extension CrosschainAssetsExchange: AssetsExchangeProtocol {
             return edges
         }
 
-        mapOperation.addDependency(featuresFactoriesWrapper.targetOperation)
-
-        return featuresFactoriesWrapper.insertingTail(operation: mapOperation)
+        return CompoundOperationWrapper(targetOperation: mapOperation)
     }
 }

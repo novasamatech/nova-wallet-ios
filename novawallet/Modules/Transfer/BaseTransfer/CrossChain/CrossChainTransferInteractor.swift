@@ -11,7 +11,7 @@ private struct CrossChainAssetsStorageInfo {
 }
 
 class CrossChainTransferInteractor: RuntimeConstantFetching {
-    private typealias SetupResult = (XcmTransferParties, CrossChainAssetsStorageInfo, XcmTransferFeatures)
+    private typealias SetupResult = (XcmTransferParties, CrossChainAssetsStorageInfo)
 
     weak var presenter: CrossChainTransferSetupInteractorOutputProtocol?
 
@@ -32,10 +32,6 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
-    private lazy var xcmTransferFeaturesFacade = XcmTransferFeaturesFacade(
-        chainRegistry: chainRegistry,
-        operationQueue: operationQueue
-    )
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetProvider: StreamableProvider<AssetBalance>?
@@ -48,7 +44,6 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private var assetsInfo: CrossChainAssetsStorageInfo?
     private(set) var transferParties: XcmTransferParties?
-    private(set) var transferFeatures: XcmTransferFeatures?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
@@ -220,30 +215,17 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         let assetsInfoWrapper = createAssetExtractionWrapper()
 
-        let featuresFactoryWrapper = xcmTransferFeaturesFacade.createFeaturesFactoryWrapper(
-            for: originChainAsset.chain.chainId
-        )
-
         let mergeOperation = ClosureOperation<SetupResult> {
             let transferParties = try transferResolution.targetOperation.extractNoCancellableResultData()
             let assetsInfo = try assetsInfoWrapper.targetOperation.extractNoCancellableResultData()
 
-            let featuresFactory = try featuresFactoryWrapper.targetOperation.extractNoCancellableResultData()
-            let features = try featuresFactory.createFeatures(
-                for: xcmTransfers,
-                originAsset: originChainAsset,
-                destinationChain: destinationChainAsset.chain
-            )
-
-            return (transferParties, assetsInfo, features)
+            return (transferParties, assetsInfo)
         }
 
         mergeOperation.addDependency(transferResolution.targetOperation)
         mergeOperation.addDependency(assetsInfoWrapper.targetOperation)
-        mergeOperation.addDependency(featuresFactoryWrapper.targetOperation)
 
-        return featuresFactoryWrapper
-            .insertingHead(operations: assetsInfoWrapper.allOperations)
+        return assetsInfoWrapper
             .insertingHead(operations: transferResolution.allOperations)
             .insertingTail(operation: mergeOperation)
     }
@@ -384,13 +366,15 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func provideOriginRequiresKeepAlive() {
-        guard let transferFeatures else {
+        guard let transferParties else {
             return
         }
 
+        let features = XcmTransferFeaturesFactory().createFeatures(for: transferParties.metadata)
+
         let keepAlive = fungibilityPreservationProvider.requiresPreservationForCrosschain(
             assetIn: originChainAsset,
-            features: transferFeatures
+            features: features
         )
 
         presenter?.didReceiveRequiresOriginKeepAlive(keepAlive)
@@ -513,10 +497,9 @@ extension CrossChainTransferInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(model):
-                let (transferParties, assetsInfo, features) = model
+                let (transferParties, assetsInfo) = model
                 self?.transferParties = transferParties
                 self?.assetsInfo = assetsInfo
-                self?.transferFeatures = features
 
                 self?.continueSetup()
             case let .failure(error):

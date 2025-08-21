@@ -20,15 +20,11 @@ extension XcmTransferFeaturesFactoryProtocol {
 }
 
 struct XcmTransferFeaturesFactory {
-    let hasXcmPaymentApi: Bool
-}
-
-private extension XcmTransferFeaturesFactory {
-    func getShouldUseXcmExecute(for metadata: XcmTransferMetadata) -> Bool {
+    private func getShouldUseXcmExecute(for metadata: XcmTransferMetadata) -> Bool {
         // we are enabling xcm execute to take advantage of delivery fee payment
         // also we need to have xcm payment api
 
-        metadata.paysDeliveryFee && metadata.supportsXcmExecute && hasXcmPaymentApi
+        metadata.paysDeliveryFee && metadata.supportsXcmExecute
     }
 }
 
