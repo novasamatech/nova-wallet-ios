@@ -3,7 +3,7 @@ import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
 
-final class AssetDetailsNotificationMessageHandler: WalletSelectingNotificationHandling {
+final class AssetDetailsNotificationMessageHandler: WalletSelectingNotificationHandling, ChainAcquiring {
     let chainRegistry: ChainRegistryProtocol
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
@@ -37,41 +37,6 @@ final class AssetDetailsNotificationMessageHandler: WalletSelectingNotificationH
 
 private extension AssetDetailsNotificationMessageHandler {
     func handle(
-        parameters: ResolvedParameters,
-        completion: @escaping (Result<ChainAsset, Error>) -> Void
-    ) {
-        guard let address = parameters.address else {
-            completion(.failure(AssetDetailsHandlingError.invalidAddress))
-            return
-        }
-
-        chainRegistry.chainsSubscribe(
-            self,
-            runningInQueue: workingQueue
-        ) { [weak self] changes in
-            guard let self = self else {
-                return
-            }
-            let chains: [ChainModel] = changes.allChangedItems()
-
-            guard let chainModel = chains.first(where: {
-                Web3Alert.createRemoteChainId(from: $0.chainId) == parameters.chainId
-            }) else {
-                return
-            }
-
-            self.chainRegistry.chainsUnsubscribe(self)
-
-            self.handle(
-                chain: chainModel,
-                assetId: parameters.assetId,
-                address: address,
-                completion: completion
-            )
-        }
-    }
-
-    func handle(
         chain: ChainModel,
         assetId: String?,
         address: AccountAddress,
@@ -104,12 +69,23 @@ private extension AssetDetailsNotificationMessageHandler {
         _ parameters: ResolvedParameters,
         completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
     ) {
-        handle(parameters: parameters) {
-            switch $0 {
-            case let .success(chainAsset):
-                completion(.success(.historyDetails(chainAsset)))
-            case let .failure(error):
-                completion(.failure(error))
+        guard let address = parameters.address else {
+            completion(.failure(AssetDetailsHandlingError.invalidAddress))
+            return
+        }
+
+        getChain(for: parameters.chainId) { [weak self] chain in
+            self?.handle(
+                chain: chain,
+                assetId: parameters.assetId,
+                address: address
+            ) { result in
+                switch result {
+                case let .success(chainAsset):
+                    completion(.success(.historyDetails(chainAsset)))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
             }
         }
     }
@@ -137,7 +113,7 @@ extension AssetDetailsNotificationMessageHandler: PushNotificationMessageHandlin
     }
 
     func cancel() {
-        chainRegistry.chainsUnsubscribe(self)
+        callStore.cancel()
     }
 }
 

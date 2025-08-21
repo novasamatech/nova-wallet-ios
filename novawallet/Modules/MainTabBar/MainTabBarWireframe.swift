@@ -106,8 +106,7 @@ private extension MainTabBarWireframe {
         navigationController?.popToRootViewController(animated: true)
 
         guard let multisigOperationView = MultisigOperationFetchProxyViewFactory.createView(
-            for: operationKey,
-            flowState: nil
+            for: operationKey
         ) else {
             return
         }

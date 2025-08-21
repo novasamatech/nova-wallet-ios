@@ -107,10 +107,6 @@ extension MultisigOperationFetchProxyInteractor: MultisigOperationFetchProxyInte
             }
         }
     }
-
-    func createFlowState() -> MultisigOperationsFlowState {
-        MultisigOperationsFlowState(providerSnapshot: pendingOperationProvider.createSnapshot())
-    }
 }
 
 // MARK: - MultisigOperationProviderHandlerProtocol

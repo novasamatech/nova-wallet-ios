@@ -5,10 +5,11 @@ import SubstrateSdk
 
 struct MultisigOperationFetchProxyViewFactory {
     static func createView(
-        for operationKey: Multisig.PendingOperation.Key,
-        flowState: MultisigOperationsFlowState?
+        for operationKey: Multisig.PendingOperation.Key
     ) -> MultisigOperationFetchProxyViewProtocol? {
-        guard let interactor = createInteractor(for: operationKey) else {
+        let flowState = MultisigOperationsFlowState()
+
+        guard let interactor = createInteractor(for: operationKey, flowState: flowState) else {
             return nil
         }
 
@@ -34,7 +35,8 @@ struct MultisigOperationFetchProxyViewFactory {
     }
 
     private static func createInteractor(
-        for operationKey: Multisig.PendingOperation.Key
+        for operationKey: Multisig.PendingOperation.Key,
+        flowState: MultisigOperationsFlowState
     ) -> MultisigOperationFetchProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -44,24 +46,11 @@ struct MultisigOperationFetchProxyViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
+        let userStorageFacade = UserDataStorageFacade.shared
 
         let walletRepository = AccountRepositoryFactory(
-            storageFacade: UserDataStorageFacade.shared
+            storageFacade: userStorageFacade
         ).createMetaAccountRepository(for: nil, sortDescriptors: [])
-
-        let chainProvider = ChainRegistryChainProvider(chainRegistry: chainRegistry)
-        let runtimeCodingServiceProvider = ChainRegistryRuntimeCodingServiceProvider(chainRegistry: chainRegistry)
-
-        let pendingOperationsProvider = MultisigOperationProviderProxy(
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
-            callFormattingFactory: CallFormattingOperationFactory(
-                chainProvider: chainProvider,
-                runtimeCodingServiceProvider: runtimeCodingServiceProvider,
-                walletRepository: walletRepository,
-                operationQueue: operationQueue
-            ),
-            operationQueue: operationQueue
-        )
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -92,7 +81,7 @@ struct MultisigOperationFetchProxyViewFactory {
         return MultisigOperationFetchProxyInteractor(
             operationKey: operationKey,
             pendingOperationFetchFactory: pendingOperationsFetchFactory,
-            pendingOperationProviderProxy: pendingOperationsProvider,
+            pendingOperationProviderProxy: flowState.getOperationProviderProxy(),
             pendingOperationsRepository: AnyDataProviderRepository(coreDataRepository),
             operationQueue: operationQueue,
             logger: Logger.shared

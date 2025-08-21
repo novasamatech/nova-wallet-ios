@@ -1615,6 +1615,7 @@
 		2D3C71E62E1271B600DF9E49 /* MultisigOperationsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */; };
 		2D3C71E92E12757400DF9E49 /* MultisigOperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */; };
 		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
+		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -1789,7 +1790,6 @@
 		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2D87C1A02E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */; };
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
-		2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */; };
 		2D87C1A82E1C752200396A3B /* MultisigOperationsFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
@@ -8056,6 +8056,7 @@
 		2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewLayout.swift; sourceTree = "<group>"; };
 		2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationCell.swift; sourceTree = "<group>"; };
 		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
+		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -8224,7 +8225,6 @@
 		2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel15.xcdatamodel; sourceTree = "<group>"; };
 		2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManageWalletTypeViewModel.swift; sourceTree = "<group>"; };
 		2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManagementViewModelFactory.swift; sourceTree = "<group>"; };
-		2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigProviderProxySnapshot.swift; sourceTree = "<group>"; };
 		2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsFlowState.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsUpdatingService.swift; sourceTree = "<group>"; };
@@ -13989,7 +13989,6 @@
 			isa = PBXGroup;
 			children = (
 				0C521C182E17BEDD00ABAC97 /* MultisigPendingOperationProviderProxy.swift */,
-				2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */,
 				0C521C1B2E17C01000ABAC97 /* MultisigPendingOperationProxyModel.swift */,
 			);
 			path = PendingOperationProxy;
@@ -17730,6 +17729,7 @@
 			isa = PBXGroup;
 			children = (
 				2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */,
+				2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -31773,6 +31773,7 @@
 				880CC0AC29E7F168008C7F65 /* EquilibriumReservedSubscription.swift in Sources */,
 				AEF505A92620249F0098574D /* UIColor+HEX.swift in Sources */,
 				F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */,
+				2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */,
 				888797B429F11EF90078633F /* SettingsBaseTableViewCell.swift in Sources */,
 				84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */,
 				0C0387812D0A1283000A2F24 /* AssetAmountView.swift in Sources */,
@@ -34912,7 +34913,6 @@
 				0C028E892DC910520060A0E8 /* SelectRampProviderViewModelFactory.swift in Sources */,
 				0C028E8A2DC910520060A0E8 /* SelectRampProviderViewFactory.swift in Sources */,
 				2DD83BC02E420AF400E83B4C /* BanxaRampURLFactory.swift in Sources */,
-				2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */,
 				0C028E8B2DC910520060A0E8 /* SelectRampProviderWireframe.swift in Sources */,
 				0C028E8C2DC910520060A0E8 /* RampInteractor.swift in Sources */,
 				0C028E8D2DC910520060A0E8 /* MercuryoOnRampHookFactory.swift in Sources */,

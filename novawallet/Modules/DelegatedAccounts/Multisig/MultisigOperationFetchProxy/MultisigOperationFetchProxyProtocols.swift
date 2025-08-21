@@ -10,7 +10,6 @@ protocol MultisigOperationFetchProxyPresenterProtocol: AnyObject {
 
 protocol MultisigOperationFetchProxyInteractorInputProtocol: AnyObject {
     func setup()
-    func createFlowState() -> MultisigOperationsFlowState
 }
 
 protocol MultisigOperationFetchProxyInteractorOutputProtocol: AnyObject {
@@ -21,8 +20,7 @@ protocol MultisigOperationFetchProxyInteractorOutputProtocol: AnyObject {
 protocol MultisigOperationFetchProxyWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showConfirmationData(
         from view: ControllerBackedProtocol?,
-        for operation: Multisig.PendingOperationProxyModel,
-        flowState: MultisigOperationsFlowState
+        for operation: Multisig.PendingOperationProxyModel
     )
 
     func close(from view: ControllerBackedProtocol?)

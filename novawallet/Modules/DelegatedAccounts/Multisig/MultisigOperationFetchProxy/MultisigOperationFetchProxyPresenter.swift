@@ -26,12 +26,9 @@ private extension MultisigOperationFetchProxyPresenter {
     func showConfirmation(for operation: Multisig.PendingOperationProxyModel) {
         view?.didReceive(loading: false)
 
-        let flowState = interactor.createFlowState()
-
         wireframe.showConfirmationData(
             from: view,
-            for: operation,
-            flowState: flowState
+            for: operation
         )
     }
 

@@ -1,9 +1,9 @@
 import Foundation
 
 final class MultisigOperationFetchProxyWireframe {
-    let flowState: MultisigOperationsFlowState?
+    private let flowState: MultisigOperationsFlowState
 
-    init(flowState: MultisigOperationsFlowState?) {
+    init(flowState: MultisigOperationsFlowState) {
         self.flowState = flowState
     }
 }
@@ -17,8 +17,7 @@ extension MultisigOperationFetchProxyWireframe: MultisigOperationFetchProxyWiref
 
     func showConfirmationData(
         from view: ControllerBackedProtocol?,
-        for operation: Multisig.PendingOperationProxyModel,
-        flowState: MultisigOperationsFlowState
+        for operation: Multisig.PendingOperationProxyModel
     ) {
         guard let confirmView = MultisigOperationConfirmViewFactory.createView(
             for: operation,

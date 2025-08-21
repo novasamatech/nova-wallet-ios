@@ -3,7 +3,7 @@ import Foundation_iOS
 import Operation_iOS
 import BigInt
 
-final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandling {
+final class MultisigNotificationMessageHandler: WalletSelectingNotificationHandling, ChainAcquiring {
     let chainRegistry: ChainRegistryProtocol
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
@@ -83,30 +83,6 @@ private extension MultisigNotificationMessageHandler {
                 callData: payload.callData,
                 completion: completion
             )
-        }
-    }
-
-    func getChain(
-        for chainId: ChainModel.Id,
-        completion: @escaping (ChainModel) -> Void
-    ) {
-        chainRegistry.chainsSubscribe(
-            self,
-            runningInQueue: workingQueue
-        ) { [weak self] changes in
-            guard let self else { return }
-
-            let chains: [ChainModel] = changes.allChangedItems()
-
-            guard let chain = chains.first(where: {
-                Web3Alert.createRemoteChainId(from: $0.chainId) == chainId
-            }) else {
-                return
-            }
-
-            chainRegistry.chainsUnsubscribe(self)
-
-            completion(chain)
         }
     }
 
@@ -287,6 +263,6 @@ extension MultisigNotificationMessageHandler: PushNotificationMessageHandlingPro
     }
 
     func cancel() {
-        chainRegistry.chainsUnsubscribe(self)
+        callStore.cancel()
     }
 }
