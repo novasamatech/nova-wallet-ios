@@ -1614,6 +1614,8 @@
 		2D3C71E42E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E32E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift */; };
 		2D3C71E62E1271B600DF9E49 /* MultisigOperationsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */; };
 		2D3C71E92E12757400DF9E49 /* MultisigOperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */; };
+		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
+		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -1788,7 +1790,6 @@
 		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2D87C1A02E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */; };
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
-		2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */; };
 		2D87C1A82E1C752200396A3B /* MultisigOperationsFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
@@ -1977,8 +1978,6 @@
 		2DE8B0BB2E54856D00F8BD40 /* MultisigExecutedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */; };
 		2DE8B0BD2E54858A00F8BD40 /* MultisigCancelledHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */; };
 		2DE8B0BE2E54C14500F8BD40 /* String+Substrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D33995262250B800130A89 /* String+Substrate.swift */; };
-		2DE8B0D52E55D63700F8BD40 /* ChainRegistryChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */; };
-		2DE8B0D92E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */; };
 		2DE8B0BF2E54D99600F8BD40 /* UtilityBatchType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */; };
 		2DE8B0C22E54E4A500F8BD40 /* FormattedCall+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0C12E54E4A500F8BD40 /* FormattedCall+Transfer.swift */; };
 		2DE8B0C32E54E4A500F8BD40 /* FormattedCall+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0C12E54E4A500F8BD40 /* FormattedCall+Transfer.swift */; };
@@ -1988,6 +1987,19 @@
 		2DE8B0C92E54E4FE00F8BD40 /* FormattedCall+Batch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0C72E54E4FE00F8BD40 /* FormattedCall+Batch.swift */; };
 		2DE8B0CD2E54E7C400F8BD40 /* FormattedCall+BatchDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0CB2E54E7C400F8BD40 /* FormattedCall+BatchDescription.swift */; };
 		2DE8B0D02E55A60A00F8BD40 /* FormattedCall+BatchDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0CF2E55A60A00F8BD40 /* FormattedCall+BatchDescription.swift */; };
+		2DE8B0D52E55D63700F8BD40 /* ChainRegistryChainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */; };
+		2DE8B0D92E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */; };
+		2DE8B0DC2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0DB2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift */; };
+		2DE8B0DE2E5631B300F8BD40 /* MultisigOperationFetchProxyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0DD2E5631B300F8BD40 /* MultisigOperationFetchProxyPresenter.swift */; };
+		2DE8B0E02E5631BC00F8BD40 /* MultisigOperationFetchProxyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0DF2E5631BC00F8BD40 /* MultisigOperationFetchProxyViewController.swift */; };
+		2DE8B0E22E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0E12E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift */; };
+		2DE8B0E42E56323500F8BD40 /* MultisigOperationFetchProxyWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0E32E56323500F8BD40 /* MultisigOperationFetchProxyWireframe.swift */; };
+		2DE8B0E62E56324D00F8BD40 /* MultisigOperationFetchProxyViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0E52E56324D00F8BD40 /* MultisigOperationFetchProxyViewFactory.swift */; };
+		2DE8B0E82E56327E00F8BD40 /* MultisigOperationFetchProxyProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0E72E56327E00F8BD40 /* MultisigOperationFetchProxyProtocols.swift */; };
+		2DE8B0EB2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */; };
+		2DE8B0ED2E56456900F8BD40 /* MultisigNotificationHandlingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */; };
+		2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */; };
+		2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
 		2DEDEF442E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */; };
@@ -8043,6 +8055,8 @@
 		2D3C71E32E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewModelFactory.swift; sourceTree = "<group>"; };
 		2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewLayout.swift; sourceTree = "<group>"; };
 		2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationCell.swift; sourceTree = "<group>"; };
+		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
+		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -8211,7 +8225,6 @@
 		2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel15.xcdatamodel; sourceTree = "<group>"; };
 		2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManageWalletTypeViewModel.swift; sourceTree = "<group>"; };
 		2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManagementViewModelFactory.swift; sourceTree = "<group>"; };
-		2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigProviderProxySnapshot.swift; sourceTree = "<group>"; };
 		2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsFlowState.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsUpdatingService.swift; sourceTree = "<group>"; };
@@ -8372,13 +8385,24 @@
 		2DE8B0B82E54846B00F8BD40 /* MultisigApprovalHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigApprovalHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BA2E54856D00F8BD40 /* MultisigExecutedHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigExecutedHandler.swift; sourceTree = "<group>"; };
 		2DE8B0BC2E54858A00F8BD40 /* MultisigCancelledHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCancelledHandler.swift; sourceTree = "<group>"; };
-		2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryChainProvider.swift; sourceTree = "<group>"; };
-		2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryRuntimeCodingServiceProvider.swift; sourceTree = "<group>"; };
 		2DE8B0C12E54E4A500F8BD40 /* FormattedCall+Transfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormattedCall+Transfer.swift"; sourceTree = "<group>"; };
 		2DE8B0C42E54E4D900F8BD40 /* FormattedCall+General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormattedCall+General.swift"; sourceTree = "<group>"; };
 		2DE8B0C72E54E4FE00F8BD40 /* FormattedCall+Batch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormattedCall+Batch.swift"; sourceTree = "<group>"; };
 		2DE8B0CB2E54E7C400F8BD40 /* FormattedCall+BatchDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormattedCall+BatchDescription.swift"; sourceTree = "<group>"; };
 		2DE8B0CF2E55A60A00F8BD40 /* FormattedCall+BatchDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormattedCall+BatchDescription.swift"; sourceTree = "<group>"; };
+		2DE8B0D42E55D63700F8BD40 /* ChainRegistryChainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryChainProvider.swift; sourceTree = "<group>"; };
+		2DE8B0D72E55D75C00F8BD40 /* ChainRegistryRuntimeCodingServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryRuntimeCodingServiceProvider.swift; sourceTree = "<group>"; };
+		2DE8B0DB2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyInteractor.swift; sourceTree = "<group>"; };
+		2DE8B0DD2E5631B300F8BD40 /* MultisigOperationFetchProxyPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyPresenter.swift; sourceTree = "<group>"; };
+		2DE8B0DF2E5631BC00F8BD40 /* MultisigOperationFetchProxyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyViewController.swift; sourceTree = "<group>"; };
+		2DE8B0E12E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyViewLayout.swift; sourceTree = "<group>"; };
+		2DE8B0E32E56323500F8BD40 /* MultisigOperationFetchProxyWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyWireframe.swift; sourceTree = "<group>"; };
+		2DE8B0E52E56324D00F8BD40 /* MultisigOperationFetchProxyViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyViewFactory.swift; sourceTree = "<group>"; };
+		2DE8B0E72E56327E00F8BD40 /* MultisigOperationFetchProxyProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFetchProxyProtocols.swift; sourceTree = "<group>"; };
+		2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationMessageHandler.swift; sourceTree = "<group>"; };
+		2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationHandlingError.swift; sourceTree = "<group>"; };
+		2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSelectingNotificationHandling.swift; sourceTree = "<group>"; };
+		2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageModel.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
 		2DEDEF432E4BE208008F07B2 /* MultisigNotificationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsViewFactory.swift; sourceTree = "<group>"; };
@@ -13965,7 +13989,6 @@
 			isa = PBXGroup;
 			children = (
 				0C521C182E17BEDD00ABAC97 /* MultisigPendingOperationProviderProxy.swift */,
-				2D87C1A52E1C698A00396A3B /* MultisigProviderProxySnapshot.swift */,
 				0C521C1B2E17C01000ABAC97 /* MultisigPendingOperationProxyModel.swift */,
 			);
 			path = PendingOperationProxy;
@@ -16447,9 +16470,10 @@
 				0C521C1A2E17BF3100ABAC97 /* PendingOperationProxy */,
 				2DFF39D82E18056200529984 /* MultisigCallDataImport */,
 				0C85F5BF2E140CFA003789DC /* Operation */,
-				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2D0673922E141BAA006392EB /* Validation */,
 				2D3C71D42E1267CA00DF9E49 /* MultisigOperations */,
+				2DE8B0DA2E56318E00F8BD40 /* MultisigOperationFetchProxy */,
+				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2D3C71A72E087CA000DF9E49 /* Models */,
 			);
 			path = Multisig;
@@ -17674,6 +17698,40 @@
 				2DE8B0CF2E55A60A00F8BD40 /* FormattedCall+BatchDescription.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2DE8B0DA2E56318E00F8BD40 /* MultisigOperationFetchProxy */ = {
+			isa = PBXGroup;
+			children = (
+				2DE8B0DB2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift */,
+				2DE8B0DD2E5631B300F8BD40 /* MultisigOperationFetchProxyPresenter.swift */,
+				2DE8B0DF2E5631BC00F8BD40 /* MultisigOperationFetchProxyViewController.swift */,
+				2DE8B0E12E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift */,
+				2DE8B0E32E56323500F8BD40 /* MultisigOperationFetchProxyWireframe.swift */,
+				2DE8B0E52E56324D00F8BD40 /* MultisigOperationFetchProxyViewFactory.swift */,
+				2DE8B0E72E56327E00F8BD40 /* MultisigOperationFetchProxyProtocols.swift */,
+			);
+			path = MultisigOperationFetchProxy;
+			sourceTree = "<group>";
+		};
+		2DE8B0E92E56444800F8BD40 /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2DE8B0EA2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift */,
+				2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */,
+				2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */,
+				2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
+		2DE8B0F42E56570400F8BD40 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */,
+				2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		2DEDEF482E4CE488008F07B2 /* ChainProvider */ = {
@@ -19299,8 +19357,10 @@
 		77EF9A6E2B9ECAC70034D619 /* PushHandling */ = {
 			isa = PBXGroup;
 			children = (
+				2DE8B0F42E56570400F8BD40 /* Common */,
 				77EF9A7A2B9ECF210034D619 /* Governance */,
 				77EF9A772B9ECED40034D619 /* AssetDetails */,
+				2DE8B0E92E56444800F8BD40 /* Multisig */,
 				77EF9A6F2B9ECAE00034D619 /* PushNotificationHandlingService.swift */,
 				77EF9A712B9ECCA90034D619 /* PushNotificationOpenScreenFacade.swift */,
 				77EF9A732B9ECE4D0034D619 /* PushNotificationsHandlerFactory.swift */,
@@ -30153,6 +30213,7 @@
 				84A9ECC429129FF10094C763 /* GovernanceRemainedLockViewModel.swift in Sources */,
 				F4C2009C2727ED1C00B0F3D0 /* SystemRemarkCall.swift in Sources */,
 				AEF505102616769F0098574D /* InitiatedBonding.swift in Sources */,
+				2DE8B0E02E5631BC00F8BD40 /* MultisigOperationFetchProxyViewController.swift in Sources */,
 				8434C9E625403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift in Sources */,
 				0C6FE8082D4D206100E5B651 /* DAppNavigation.swift in Sources */,
 				0C2D1E3D2D9708350030E43C /* LedgerDeviceDisplayInfo.swift in Sources */,
@@ -30195,6 +30256,8 @@
 				849014BD24AA87E4008F705E /* PinViewFactory.swift in Sources */,
 				8428765524ADDE0200D91AD8 /* SettingsAccountViewModel.swift in Sources */,
 				0C8AF7AC2B3437E700005AC9 /* ExtrinsicSenderResolving.swift in Sources */,
+				2DE8B0E82E56327E00F8BD40 /* MultisigOperationFetchProxyProtocols.swift in Sources */,
+				2DE8B0E62E56324D00F8BD40 /* MultisigOperationFetchProxyViewFactory.swift in Sources */,
 				0CC2E5662A6E64EC004092E7 /* NPoolsLocalStorageSubscriber.swift in Sources */,
 				777BD86629F9C426004969A2 /* ReferendumsFiltersDelegate.swift in Sources */,
 				842D8B7A2A416A9A00660005 /* UIView+Shimmering.swift in Sources */,
@@ -30301,6 +30364,7 @@
 				0CCD18C42BA1F03E0068D73A /* ChainModeModel+Remote.swift in Sources */,
 				0CFA16202B0CEF31007AF885 /* GovTreasuryApproveHandler.swift in Sources */,
 				8490141324A92F6D008F705E /* AttributedStringDecorator+Terms.swift in Sources */,
+				2DE8B0E22E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift in Sources */,
 				849976CA27B2F9E000B14A6C /* DAppMetamaskAuthorizingState.swift in Sources */,
 				F484FF5F264BA2720015320F /* ControllerAccountConfirmationLayout.swift in Sources */,
 				841494402604E71C000D8D1A /* TotalRewardItem.swift in Sources */,
@@ -31709,6 +31773,7 @@
 				880CC0AC29E7F168008C7F65 /* EquilibriumReservedSubscription.swift in Sources */,
 				AEF505A92620249F0098574D /* UIColor+HEX.swift in Sources */,
 				F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */,
+				2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */,
 				888797B429F11EF90078633F /* SettingsBaseTableViewCell.swift in Sources */,
 				84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */,
 				0C0387812D0A1283000A2F24 /* AssetAmountView.swift in Sources */,
@@ -32338,6 +32403,7 @@
 				84E8BA2229FFB38600FD9F40 /* EthereumTransaction.swift in Sources */,
 				846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */,
 				0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */,
+				2DE8B0E42E56323500F8BD40 /* MultisigOperationFetchProxyWireframe.swift in Sources */,
 				84CFF1EA26526FBC00DB7CF7 /* StakingBondMoreConfirmationViewFactory.swift in Sources */,
 				77EFFC8A2A6E7A24009E28F8 /* AccountExistense.swift in Sources */,
 				8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */,
@@ -33523,6 +33589,7 @@
 				772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */,
 				0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */,
 				77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */,
+				2DE8B0DE2E5631B300F8BD40 /* MultisigOperationFetchProxyPresenter.swift in Sources */,
 				2DE8B0CD2E54E7C400F8BD40 /* FormattedCall+BatchDescription.swift in Sources */,
 				8465DA35298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift in Sources */,
 				0CA72A9E2D4BC29F00B3FD02 /* CollatorStakingRedeemProtocols.swift in Sources */,
@@ -33593,6 +33660,7 @@
 				0C0F6D752D3A5C5C00943A7C /* StartStakingInfoMythosPresenter.swift in Sources */,
 				D886425A55425810AD070AB5 /* ControllerAccountConfirmationWireframe.swift in Sources */,
 				84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */,
+				2DE8B0EB2E5644BD00F8BD40 /* MultisigNotificationMessageHandler.swift in Sources */,
 				84E2589F2892B5AF00DC8A51 /* WalletSwitchPresentable.swift in Sources */,
 				0C3976A72C33088100998DD6 /* HydraXYKQuoteParams.swift in Sources */,
 				0AAFEFA17F249F4BEF051F6B /* ControllerAccountConfirmationPresenter.swift in Sources */,
@@ -34541,6 +34609,7 @@
 				33B0D1D29AB3FC3CA23567B6 /* LedgerWalletAccountConfirmationWireframe.swift in Sources */,
 				FF2E6053091276EBBA4D986C /* LedgerAccountConfirmationPresenter.swift in Sources */,
 				97872BDCD915B56F2F2E7E3B /* LedgerWalletAccountConfirmationInteractor.swift in Sources */,
+				2DE8B0ED2E56456900F8BD40 /* MultisigNotificationHandlingError.swift in Sources */,
 				0C2F86892A723E5400593C01 /* NominationPoolsOperationFactory.swift in Sources */,
 				2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */,
 				E5DC2660D78D3CC9FC48E748 /* LedgerAccountConfirmationViewController.swift in Sources */,
@@ -34844,7 +34913,6 @@
 				0C028E892DC910520060A0E8 /* SelectRampProviderViewModelFactory.swift in Sources */,
 				0C028E8A2DC910520060A0E8 /* SelectRampProviderViewFactory.swift in Sources */,
 				2DD83BC02E420AF400E83B4C /* BanxaRampURLFactory.swift in Sources */,
-				2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */,
 				0C028E8B2DC910520060A0E8 /* SelectRampProviderWireframe.swift in Sources */,
 				0C028E8C2DC910520060A0E8 /* RampInteractor.swift in Sources */,
 				0C028E8D2DC910520060A0E8 /* MercuryoOnRampHookFactory.swift in Sources */,
@@ -35133,6 +35201,7 @@
 				84B24FAA2A2F243700F9BF59 /* BlurredCollectionViewCell.swift in Sources */,
 				0CA7199A2B79DF5B000B086E /* HydraStableswapApi.swift in Sources */,
 				0CCCDF8C2B67BCA000473D42 /* ChainModelFetchError.swift in Sources */,
+				2DE8B0DC2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift in Sources */,
 				6DC454C4BA27C98987F5DC52 /* WalletConnectSessionsViewFactory.swift in Sources */,
 				F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */,
 				D0AD3C44BBFD6A9F9FDEC933 /* WalletConnectSessionDetailsWireframe.swift in Sources */,
@@ -35239,6 +35308,7 @@
 				77DF40472B7FE79500ABDB53 /* BaseNotificationSettingsViewController.swift in Sources */,
 				BD556407702A75D66B73A55C /* NominationPoolBondMoreSetupViewFactory.swift in Sources */,
 				19B35C4E96708405754B8EC5 /* NPoolsUnstakeSetupProtocols.swift in Sources */,
+				2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */,
 				5103B0A6919721E7E1284829 /* NPoolsUnstakeSetupWireframe.swift in Sources */,
 				2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */,
 				594EA36463252924AB73475B /* NPoolsUnstakeSetupPresenter.swift in Sources */,
@@ -35319,6 +35389,7 @@
 				34E4B25CDFE0D7B5F4F18185 /* TransferNetworkSelectionInteractor.swift in Sources */,
 				7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */,
 				0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */,
+				2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */,
 				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
 				0C0F6E0B2D43C81000943A7C /* CollatorStakingInfoViewFactory+ParachainStaking.swift in Sources */,
@@ -35373,6 +35444,7 @@
 				2D21BD412D6760CC00B1C480 /* AssetPriceChart.swift in Sources */,
 				640EC907607A3D5F633D26A7 /* NotificationsManagementInteractor.swift in Sources */,
 				FF90D0EE563E63611644B95B /* NotificationsManagementViewController.swift in Sources */,
+				2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */,
 				D0A73CEDB6B3CF2DD4511963 /* NotificationsManagementViewLayout.swift in Sources */,
 				4793F9845673EBD3F0A38F78 /* NotificationsManagementViewFactory.swift in Sources */,
 				E508D9B26418B220FBD157B9 /* GovernanceNotificationsProtocols.swift in Sources */,

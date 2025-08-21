@@ -104,22 +104,6 @@ struct MultisigOperationConfirmViewFactory {
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
         )
 
-        let chainProvider = ChainRegistryChainProvider(chainRegistry: chainRegistry)
-        let runtimeCodingServiceProvider = ChainRegistryRuntimeCodingServiceProvider(chainRegistry: chainRegistry)
-
-        let pendingOperationsProvider = MultisigOperationProviderProxy(
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
-            callFormattingFactory: CallFormattingOperationFactory(
-                chainProvider: chainProvider,
-                runtimeCodingServiceProvider: runtimeCodingServiceProvider,
-                walletRepository: walletRepository,
-                operationQueue: operationQueue
-            ),
-            operationQueue: operationQueue
-        )
-
-        flowState.providerSnapshot.apply(to: pendingOperationsProvider)
-
         let remoteOperationFactory = MultisigStorageOperationFactory(
             operationQueue: operationQueue
         )
@@ -138,7 +122,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingOperationProvider: pendingOperationsProvider,
+                pendingOperationProvider: flowState.getOperationProviderProxy(),
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
@@ -158,7 +142,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingOperationProvider: pendingOperationsProvider,
+                pendingOperationProvider: flowState.getOperationProviderProxy(),
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
