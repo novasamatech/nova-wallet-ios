@@ -76,22 +76,34 @@ enum HydraDxTokenConverter {
     static func convertToRemoteLocalMapping(
         remoteAssets: Set<HydraDx.AssetId>,
         chain: ChainModel,
-        codingFactory: RuntimeCoderFactoryProtocol,
-        failureClosure: (HydraDx.AssetId, Error) throws -> Void
+        codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [HydraDx.AssetId: ChainAssetId] {
-        try remoteAssets.reduce(into: [:]) { accum, remoteAsset in
-            do {
-                let localAsset = try HydraDxTokenConverter.convertToLocal(
-                    for: remoteAsset,
-                    chain: chain,
-                    codingFactory: codingFactory
-                )
+        let assetsMapping: [HydraDx.AssetId: ChainAssetId] = chain.assets.reduce(into: [:]) { accum, asset in
+            switch AssetType(rawType: asset.type) {
+            case .orml, .ormlHydrationEvm:
+                do {
+                    guard let extras = try asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+                        return
+                    }
 
-                accum[remoteAsset] = localAsset
-            } catch {
-                try failureClosure(remoteAsset, error)
+                    let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
+
+                    let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
+                    let currencyId: StringCodable<HydraDx.AssetId> = try decoder.read(of: extras.currencyIdType)
+
+                    accum[currencyId.wrappedValue] = ChainAssetId(
+                        chainId: chain.chainId,
+                        assetId: asset.assetId
+                    )
+                } catch {
+                    return
+                }
+            case .none, .statemine, .equilibrium, .evmAsset, .evmNative:
+                return
             }
         }
+
+        return assetsMapping.filter { remoteAssets.contains($0.key) }
     }
 
     static func convertToRemote(

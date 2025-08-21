@@ -37,8 +37,7 @@ extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: remoteAssets,
                 chain: self.host.chain,
-                codingFactory: codingFactory,
-                failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
+                codingFactory: codingFactory
             )
 
             self.logger.debug("Complete processing edges \(remoteLocalMapping.count)")

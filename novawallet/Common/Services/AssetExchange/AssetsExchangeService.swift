@@ -113,7 +113,6 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
         let directionsOperation = ClosureOperation<AssetsExchageGraphReachabilityProtocol> {
             let graph = try graphWrapper.targetOperation.extractNoCancellableResultData()
-
             return graph.fetchReachability()
         }
 
