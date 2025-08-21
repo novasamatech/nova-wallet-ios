@@ -31,12 +31,16 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
 
             let allRemoteAssets = Set(allPools.flatMap(\.value) + allPools.keys)
 
+            self.logger.debug("Started processing edges")
+
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: allRemoteAssets,
                 chain: self.host.chain,
                 codingFactory: codingFactory,
                 failureClosure: { self.logger.warning("Token \($0) conversion failed: \($1)") }
             )
+
+            self.logger.debug("Complete processing edges \(remoteLocalMapping.count)")
 
             return allPools.flatMap { keyValue in
                 let remotePoolAsset = keyValue.key

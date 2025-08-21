@@ -45,23 +45,23 @@ enum HydraDxTokenConverter {
         }
 
         let optLocalAsset = chain.assets.first { asset in
-            let chainAsset = ChainAsset(chain: chain, asset: asset)
+            switch AssetType(rawType: asset.type) {
+            case .orml, .ormlHydrationEvm:
+                do {
+                    guard let extras = try asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+                        return false
+                    }
 
-            let storageInfo = try? AssetStorageInfo.extract(
-                from: chainAsset.asset,
-                codingFactory: codingFactory
-            )
+                    let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
 
-            switch storageInfo {
-            case let .orml(info), let .ormlHydrationEvm(info):
-                let context = codingFactory.createRuntimeJsonContext()
-                let remoteId = try? info.currencyId.map(
-                    to: StringScaleMapper<HydraDx.AssetId>.self,
-                    with: context.toRawContext()
-                ).value
+                    let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
+                    let currencyId: StringCodable<HydraDx.AssetId> = try decoder.read(of: extras.currencyIdType)
 
-                return remoteId == remoteAsset
-            default:
+                    return currencyId.wrappedValue == remoteAsset
+                } catch {
+                    return false
+                }
+            case .none, .statemine, .equilibrium, .evmAsset, .evmNative:
                 return false
             }
         }
