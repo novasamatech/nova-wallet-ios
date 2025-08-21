@@ -5,8 +5,8 @@ struct AssetExchangeFeeSupport {
 }
 
 extension AssetExchangeFeeSupport: AssetExchangeFeeSupporting {
-    func canPayFee(inNonNative chainAsset: ChainAsset) -> Bool {
-        supportedAssets.contains(chainAsset.chainAssetId)
+    func canPayFee(inNonNative chainAssetId: ChainAssetId) -> Bool {
+        supportedAssets.contains(chainAssetId)
     }
 }
 
@@ -15,7 +15,7 @@ struct CompoundAssetExchangeFeeSupport {
 }
 
 extension CompoundAssetExchangeFeeSupport: AssetExchangeFeeSupporting {
-    func canPayFee(inNonNative chainAsset: ChainAsset) -> Bool {
-        supporters.contains { $0.canPayFee(inNonNative: chainAsset) }
+    func canPayFee(inNonNative chainAssetId: ChainAssetId) -> Bool {
+        supporters.contains { $0.canPayFee(inNonNative: chainAssetId) }
     }
 }

@@ -178,7 +178,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
         let operation = AsyncClosureOperation<Bool>(operationClosure: { completionClosure in
             self.feeSupportProvider.fetchCurrentState(in: .global()) { state in
-                let isFeeSupported = state?.canPayFee(inNonNative: asset) ?? false
+                let isFeeSupported = state?.canPayFee(inNonNative: asset.chainAssetId) ?? false
                 completionClosure(.success(isFeeSupported))
             }
         })

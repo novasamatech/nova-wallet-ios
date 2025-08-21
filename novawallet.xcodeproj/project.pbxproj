@@ -839,6 +839,7 @@
 		0C9C64382A8D6949004DC078 /* NPoolsStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9C64372A8D6949004DC078 /* NPoolsStakingSharedState.swift */; };
 		0C9C643A2A8DF97E004DC078 /* StakingNPoolsError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9C64392A8DF97E004DC078 /* StakingNPoolsError.swift */; };
 		0C9D87AE2AC708070095FE8C /* AssetHubTokensConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9D87AD2AC708070095FE8C /* AssetHubTokensConverter.swift */; };
+		0C9EC36F2E57BFEA002E5660 /* CurrenciesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9EC36E2E57BFEA002E5660 /* CurrenciesPallet.swift */; };
 		0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */; };
 		0CA26D8B2BBBB4450086748F /* CloudBackupServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA26D8A2BBBB4450086748F /* CloudBackupServiceFactory.swift */; };
 		0CA26D8D2BBBB5BA0086748F /* CloudBackupServiceFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA26D8C2BBBB5BA0086748F /* CloudBackupServiceFactoryProtocol.swift */; };
@@ -6979,6 +6980,7 @@
 		0C9C64372A8D6949004DC078 /* NPoolsStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsStakingSharedState.swift; sourceTree = "<group>"; };
 		0C9C64392A8DF97E004DC078 /* StakingNPoolsError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNPoolsError.swift; sourceTree = "<group>"; };
 		0C9D87AD2AC708070095FE8C /* AssetHubTokensConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubTokensConverter.swift; sourceTree = "<group>"; };
+		0C9EC36E2E57BFEA002E5660 /* CurrenciesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrenciesPallet.swift; sourceTree = "<group>"; };
 		0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAccountCell.swift; sourceTree = "<group>"; };
 		0CA26D8A2BBBB4450086748F /* CloudBackupServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFactory.swift; sourceTree = "<group>"; };
 		0CA26D8C2BBBB5BA0086748F /* CloudBackupServiceFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFactoryProtocol.swift; sourceTree = "<group>"; };
@@ -14326,6 +14328,14 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		0C9EC36D2E57BFDC002E5660 /* CurrenciesPallet */ = {
+			isa = PBXGroup;
+			children = (
+				0C9EC36E2E57BFEA002E5660 /* CurrenciesPallet.swift */,
+			);
+			path = CurrenciesPallet;
+			sourceTree = "<group>";
+		};
 		0CA26D8E2BBBBD9A0086748F /* CloudBackup */ = {
 			isa = PBXGroup;
 			children = (
@@ -20233,6 +20243,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				0C9EC36D2E57BFDC002E5660 /* CurrenciesPallet */,
 				0C71D3F42DF0E9960042134B /* MoonbeamEvmPallet */,
 				2DA8DAC02DC2023D00AFE390 /* Multisig */,
 				0C277DAE2D82E873004FF053 /* Primitives */,
@@ -29016,9 +29027,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -29072,9 +29087,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -29111,9 +29130,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -33691,6 +33714,7 @@
 				0CEBAD542D5F941E000EBA45 /* CallDispatchErrorDecoder.swift in Sources */,
 				B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */,
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,
+				0C9EC36F2E57BFEA002E5660 /* CurrenciesPallet.swift in Sources */,
 				F6F73F4862779FE0B58A7931 /* ParaStkRebondInteractor.swift in Sources */,
 				58D5B4F17DA37C241FF96A5F /* ParaStkRebondViewController.swift in Sources */,
 				0C0F6D922D3AADB600943A7C /* ChainSessionCountdown.swift in Sources */,
