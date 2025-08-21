@@ -3,7 +3,7 @@ import Foundation
 protocol AssetFungibilityPreservationProviding {
     func requiresPreservationForCrosschain(
         assetIn: ChainAsset,
-        metadata: XcmTransferMetadata
+        features: XcmTransferFeatures
     ) -> Bool
 }
 
@@ -20,10 +20,10 @@ final class AssetFungibilityPreservationProvider {
 extension AssetFungibilityPreservationProvider: AssetFungibilityPreservationProviding {
     func requiresPreservationForCrosschain(
         assetIn: ChainAsset,
-        metadata: XcmTransferMetadata
+        features: XcmTransferFeatures
     ) -> Bool {
         // xcm execute allows to bypass keep alive requirements
-        guard !metadata.supportsXcmExecute else {
+        guard !features.shouldUseXcmExecute else {
             return false
         }
 

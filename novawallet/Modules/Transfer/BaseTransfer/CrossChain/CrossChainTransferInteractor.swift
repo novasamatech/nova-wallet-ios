@@ -11,6 +11,8 @@ private struct CrossChainAssetsStorageInfo {
 }
 
 class CrossChainTransferInteractor: RuntimeConstantFetching {
+    private typealias SetupResult = (XcmTransferParties, CrossChainAssetsStorageInfo, XcmTransferFeatures)
+
     weak var presenter: CrossChainTransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
@@ -30,6 +32,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
+    private lazy var xcmTransferFeaturesFacade = XcmTransferFeaturesFacade(
+        chainRegistry: chainRegistry,
+        operationQueue: operationQueue
+    )
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetProvider: StreamableProvider<AssetBalance>?
@@ -38,10 +44,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private var recepientAccountId: AccountId?
 
-    private var setupCall: CancellableCall?
+    private var setupCallStore = CancellableCallStore()
 
     private var assetsInfo: CrossChainAssetsStorageInfo?
     private(set) var transferParties: XcmTransferParties?
+    private(set) var transferFeatures: XcmTransferFeatures?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
@@ -98,7 +105,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     deinit {
-        cancelSetupCall()
+        setupCallStore.cancel()
 
         clearSendingAssetRemoteRecepientSubscription()
         clearUtilityAssetRemoteRecepientSubscriptions()
@@ -195,7 +202,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
-    private func createSetupWrapper() -> CompoundOperationWrapper<(XcmTransferParties, CrossChainAssetsStorageInfo)> {
+    private func createSetupWrapper(
+        xcmTransfers: XcmTransfers,
+        originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<SetupResult> {
         let destinationId = XcmTransferDestinationId(
             chainAssetId: destinationChainAsset.chainAssetId,
             accountId: AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
@@ -209,19 +220,32 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         let assetsInfoWrapper = createAssetExtractionWrapper()
 
-        let mergeOperation = ClosureOperation<(XcmTransferParties, CrossChainAssetsStorageInfo)> {
+        let featuresFactoryWrapper = xcmTransferFeaturesFacade.createFeaturesFactoryWrapper(
+            for: originChainAsset.chain.chainId
+        )
+
+        let mergeOperation = ClosureOperation<SetupResult> {
             let transferParties = try transferResolution.targetOperation.extractNoCancellableResultData()
             let assetsInfo = try assetsInfoWrapper.targetOperation.extractNoCancellableResultData()
 
-            return (transferParties, assetsInfo)
+            let featuresFactory = try featuresFactoryWrapper.targetOperation.extractNoCancellableResultData()
+            let features = try featuresFactory.createFeatures(
+                for: xcmTransfers,
+                originAsset: originChainAsset,
+                destinationChain: destinationChainAsset.chain
+            )
+
+            return (transferParties, assetsInfo, features)
         }
 
         mergeOperation.addDependency(transferResolution.targetOperation)
         mergeOperation.addDependency(assetsInfoWrapper.targetOperation)
+        mergeOperation.addDependency(featuresFactoryWrapper.targetOperation)
 
-        let dependencies = transferResolution.allOperations + assetsInfoWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+        return featuresFactoryWrapper
+            .insertingHead(operations: assetsInfoWrapper.allOperations)
+            .insertingHead(operations: transferResolution.allOperations)
+            .insertingTail(operation: mergeOperation)
     }
 
     private func continueSetup() {
@@ -360,22 +384,16 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func provideOriginRequiresKeepAlive() {
-        guard let transferParties else {
+        guard let transferFeatures else {
             return
         }
 
         let keepAlive = fungibilityPreservationProvider.requiresPreservationForCrosschain(
             assetIn: originChainAsset,
-            metadata: transferParties.metadata
+            features: transferFeatures
         )
 
         presenter?.didReceiveRequiresOriginKeepAlive(keepAlive)
-    }
-
-    private func cancelSetupCall() {
-        let cancellingCall = setupCall
-        setupCall = nil
-        cancellingCall?.cancel()
     }
 
     private func subscribeUtilityRecepientAssetBalance() {
@@ -477,37 +495,34 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
 extension CrossChainTransferInteractor {
     func setup() {
-        guard setupCall == nil else {
+        guard !setupCallStore.hasCall else {
             return
         }
 
-        let setupWrapper = createSetupWrapper()
+        let setupWrapper = createSetupWrapper(
+            xcmTransfers: xcmTransfers,
+            originChainAsset: originChainAsset,
+            destinationChainAsset: destinationChainAsset
+        )
 
-        setupWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.setupCall === setupWrapper else {
-                    return
-                }
+        executeCancellable(
+            wrapper: setupWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: setupCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(model):
+                let (transferParties, assetsInfo, features) = model
+                self?.transferParties = transferParties
+                self?.assetsInfo = assetsInfo
+                self?.transferFeatures = features
 
-                self?.setupCall = nil
-
-                do {
-                    let (transferParties, assetsInfo) = try setupWrapper.targetOperation
-                        .extractNoCancellableResultData()
-
-                    self?.transferParties = transferParties
-                    self?.assetsInfo = assetsInfo
-
-                    self?.continueSetup()
-                } catch {
-                    self?.presenter?.didCompleteSetup(result: .failure(error))
-                }
+                self?.continueSetup()
+            case let .failure(error):
+                self?.presenter?.didCompleteSetup(result: .failure(error))
             }
         }
-
-        setupCall = setupWrapper
-
-        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
     }
 
     func estimateOriginFee(for amount: BigUInt, recepient: AccountId?) {

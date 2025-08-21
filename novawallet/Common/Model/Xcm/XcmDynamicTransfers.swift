@@ -10,6 +10,16 @@ struct XcmDynamicTransfers: Decodable {
     let reserveIdOverrides: [ChainModel.Id: [AssetIdKey: AssetLocationId]]
     let chains: [XcmDynamicChain]
 
+    init(
+        assetsLocation: [AssetLocationId: AssetLocation],
+        reserveIdOverrides: [ChainModel.Id: [AssetIdKey: AssetLocationId]],
+        chains: [XcmDynamicChain]
+    ) {
+        self.assetsLocation = assetsLocation
+        self.reserveIdOverrides = reserveIdOverrides
+        self.chains = chains
+    }
+
     func transfer(
         from chainAssetId: ChainAssetId,
         destinationChainId: ChainModel.Id
@@ -44,5 +54,9 @@ struct XcmDynamicTransfers: Decodable {
         let assetLocationId = reserveIdOverrides[chainId]?[assetIdKey] ?? chainAsset.asset.symbol
 
         return assetsLocation[assetLocationId]?.chainId?.stringValue
+    }
+
+    func hasTransfers(from chainId: ChainModel.Id) -> Bool {
+        chains.contains { $0.chainId == chainId }
     }
 }
