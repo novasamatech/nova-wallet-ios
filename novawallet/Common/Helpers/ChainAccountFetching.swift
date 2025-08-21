@@ -213,7 +213,7 @@ extension MetaAccountModel {
     func hasAccount(in chain: ChainModel) -> Bool {
         switch type {
         case .genericLedger:
-            if chain.supportsGenericLedger {
+            if chain.supportsGenericLedgerApp {
                 return executeHasAccount(for: chain)
             } else {
                 return false
