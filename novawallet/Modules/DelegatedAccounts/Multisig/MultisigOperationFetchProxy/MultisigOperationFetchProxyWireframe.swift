@@ -1,6 +1,6 @@
 import Foundation
 
-final class MultisigOperationWireframe {
+final class MultisigOperationFetchProxyWireframe {
     let flowState: MultisigOperationsFlowState?
 
     init(flowState: MultisigOperationsFlowState?) {
@@ -8,12 +8,17 @@ final class MultisigOperationWireframe {
     }
 }
 
-// MARK: - MultisigOperationWireframeProtocol
+// MARK: - MultisigOperationFetchProxyWireframeProtocol
 
-extension MultisigOperationWireframe: MultisigOperationWireframeProtocol {
+extension MultisigOperationFetchProxyWireframe: MultisigOperationFetchProxyWireframeProtocol {
+    func close(from view: ControllerBackedProtocol?) {
+        view?.controller.dismiss(animated: true)
+    }
+
     func showConfirmationData(
         from view: ControllerBackedProtocol?,
-        for operation: Multisig.PendingOperationProxyModel
+        for operation: Multisig.PendingOperationProxyModel,
+        flowState: MultisigOperationsFlowState
     ) {
         guard let confirmView = MultisigOperationConfirmViewFactory.createView(
             for: operation,

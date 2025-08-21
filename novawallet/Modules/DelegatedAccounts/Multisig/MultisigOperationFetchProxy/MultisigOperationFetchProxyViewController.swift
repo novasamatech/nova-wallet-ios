@@ -1,14 +1,14 @@
 import UIKit
 import Foundation_iOS
 
-final class MultisigOperationViewController: UIViewController, ViewHolder {
-    typealias RootViewType = MultisigOperationViewLayout
+final class MultisigOperationFetchProxyViewController: UIViewController, ViewHolder {
+    typealias RootViewType = MultisigOperationFetchProxyViewLayout
 
-    let presenter: MultisigOperationPresenterProtocol
+    let presenter: MultisigOperationFetchProxyPresenterProtocol
     let localizationManager: LocalizationManagerProtocol
 
     init(
-        presenter: MultisigOperationPresenterProtocol,
+        presenter: MultisigOperationFetchProxyPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -23,7 +23,7 @@ final class MultisigOperationViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = MultisigOperationViewLayout()
+        view = MultisigOperationFetchProxyViewLayout()
     }
 
     override func viewDidLoad() {
@@ -36,7 +36,7 @@ final class MultisigOperationViewController: UIViewController, ViewHolder {
 
 // MARK: - Private
 
-private extension MultisigOperationViewController {
+private extension MultisigOperationFetchProxyViewController {
     func setupLocalization() {
         rootView.loadingView.titleLabel.text = R.string.localizable.multisigOperationLoadingPlaceholderText(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -44,9 +44,9 @@ private extension MultisigOperationViewController {
     }
 }
 
-// MARK: - MultisigOperationViewProtocol
+// MARK: - MultisigOperationFetchProxyViewProtocol
 
-extension MultisigOperationViewController: MultisigOperationViewProtocol {
+extension MultisigOperationFetchProxyViewController: MultisigOperationFetchProxyViewProtocol {
     func didReceive(loading: Bool) {
         loading ? didStartLoading() : didStopLoading()
     }
@@ -54,7 +54,7 @@ extension MultisigOperationViewController: MultisigOperationViewProtocol {
 
 // MARK: - LoadableViewProtocol
 
-extension MultisigOperationViewController: LoadableViewProtocol {
+extension MultisigOperationFetchProxyViewController: LoadableViewProtocol {
     func didStartLoading() {
         rootView.loadingView.start()
     }

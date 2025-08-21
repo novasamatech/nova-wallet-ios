@@ -98,15 +98,15 @@ private extension MainTabBarWireframe {
 
     func openMultisigOperationScreen(
         in controller: UITabBarController,
-        moduleInput: MultisigOperationModuleInput
+        operationKey: Multisig.PendingOperation.Key
     ) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
         let navigationController = viewController as? UINavigationController
         navigationController?.popToRootViewController(animated: true)
 
-        guard let multisigOperationView = MultisigOperationViewFactory.createView(
-            for: moduleInput,
+        guard let multisigOperationView = MultisigOperationFetchProxyViewFactory.createView(
+            for: operationKey,
             flowState: nil
         ) else {
             return
@@ -320,8 +320,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .historyDetails(chainAsset):
             openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
-        case let .multisigOperationDetails(moduleInput):
-            openMultisigOperationScreen(in: controller, moduleInput: moduleInput)
+        case let .multisigOperationDetails(operationKey):
+            openMultisigOperationScreen(in: controller, operationKey: operationKey)
         case let .multisigOperationEnded(model):
             showMultisigEndedAlert(in: view, tabBar: controller, model: model, locale: locale)
         case .error:

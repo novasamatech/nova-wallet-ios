@@ -133,7 +133,7 @@ private extension MultisigNotificationMessageHandler {
             with: payload.multisigAddress,
             chainId: chain.chainId,
             filter: { $0.multisigAccount?.anyChainMultisig?.signatory != signatoryAccountId },
-            successClosure: { completion(.success(.multisigOperationDetails(.key(key)))) },
+            successClosure: { completion(.success(.multisigOperationDetails(key))) },
             failureClosure: { completion(.failure($0)) }
         )
     }

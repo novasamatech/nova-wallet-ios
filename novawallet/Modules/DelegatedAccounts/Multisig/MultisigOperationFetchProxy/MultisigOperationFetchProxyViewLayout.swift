@@ -1,6 +1,6 @@
 import UIKit
 
-final class MultisigOperationViewLayout: UIView {
+final class MultisigOperationFetchProxyViewLayout: UIView {
     let loadingView = ListLoadingView()
 
     override init(frame: CGRect) {

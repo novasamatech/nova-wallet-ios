@@ -1944,3 +1944,5 @@
 "multisig.operation.cancelled.no.format" = "Transaction without initial on-chain information (call data) was rejected on %@.";
 "common.multisig.executed" = "Multisig transaction executed";
 "common.multisig.rejected" = "Multisig transaction rejected";
+"multisig.operation.ended.alert.title" = "Signing is over";
+"multisig.operation.ended.alert.message" = "Transaction has already been executed or rejected.";

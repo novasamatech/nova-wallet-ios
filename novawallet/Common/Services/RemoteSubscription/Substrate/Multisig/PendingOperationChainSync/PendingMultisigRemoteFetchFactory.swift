@@ -7,7 +7,7 @@ protocol PendingMultisigRemoteFetchFactoryProtocol {
 }
 
 final class PendingMultisigRemoteFetchFactory {
-    private let multisigAccount: DelegatedAccount.MultisigAccountModel
+    private let multisigAccountId: AccountId
     private let chain: ChainModel
     private let chainRegistry: ChainRegistryProtocol
     private let pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol
@@ -16,7 +16,7 @@ final class PendingMultisigRemoteFetchFactory {
     private let operationManager: OperationManagerProtocol
 
     init(
-        multisigAccount: DelegatedAccount.MultisigAccountModel,
+        multisigAccountId: AccountId,
         chain: ChainModel,
         chainRegistry: ChainRegistryProtocol,
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
@@ -24,7 +24,7 @@ final class PendingMultisigRemoteFetchFactory {
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
-        self.multisigAccount = multisigAccount
+        self.multisigAccountId = multisigAccountId
         self.chain = chain
         self.chainRegistry = chainRegistry
         self.pendingCallHashesOperationFactory = pendingCallHashesOperationFactory
@@ -43,7 +43,7 @@ private extension PendingMultisigRemoteFetchFactory {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
 
             return pendingCallHashesOperationFactory.fetchPendingOperations(
-                for: multisigAccount.accountId,
+                for: multisigAccountId,
                 connection: connection,
                 runtimeProvider: runtimeProvider
             )
@@ -74,7 +74,7 @@ private extension PendingMultisigRemoteFetchFactory {
             let remoteCallDataFetchFactory = SubqueryMultisigsOperationFactory(url: apiURL)
 
             let operationInfoFetchOperation = remoteCallDataFetchFactory.createFetchOffChainOperationInfo(
-                for: multisigAccount.accountId,
+                for: multisigAccountId,
                 callHashes: Set(callHashes)
             )
 
@@ -106,7 +106,7 @@ private extension PendingMultisigRemoteFetchFactory {
                 call: offchainOperations[callHash]?.callData,
                 callHash: callHash,
                 timestamp: timestamp,
-                multisigAccountId: multisigAccount.accountId,
+                multisigAccountId: multisigAccountId,
                 chainId: chain.chainId,
                 multisigDefinition: .init(from: operationDefinition)
             )

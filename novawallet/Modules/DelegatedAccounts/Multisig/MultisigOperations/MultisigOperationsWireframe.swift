@@ -8,8 +8,8 @@ extension MultisigOperationsWireframe: MultisigOperationsWireframeProtocol {
         operation: Multisig.PendingOperationProxyModel,
         flowState: MultisigOperationsFlowState
     ) {
-        guard let multisigOperationView = MultisigOperationViewFactory.createView(
-            for: .operation(operation),
+        guard let multisigOperationView = MultisigOperationConfirmViewFactory.createView(
+            for: operation,
             flowState: flowState
         ) else {
             return

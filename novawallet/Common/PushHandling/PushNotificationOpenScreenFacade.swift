@@ -9,7 +9,7 @@ extension PushNotification {
     enum OpenScreen {
         case gov(Referenda.ReferendumIndex)
         case historyDetails(ChainAsset)
-        case multisigOperationDetails(MultisigOperationModuleInput)
+        case multisigOperationDetails(Multisig.PendingOperation.Key)
         case multisigOperationEnded(MultisigEndedMessageModel)
         case error(Error)
     }
