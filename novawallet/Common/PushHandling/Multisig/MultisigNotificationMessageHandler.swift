@@ -96,6 +96,22 @@ private extension MultisigNotificationMessageHandler {
             failureClosure: { completion(.failure($0)) }
         )
     }
+    
+    func handleOperationExecuted(
+        chainId: ChainModel.Id,
+        callData: Substrate.CallData?,
+        completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
+    ) {
+        
+    }
+    
+    func handleOperationCancelled(
+        chainId: ChainModel.Id,
+        callData: Substrate.CallData?,
+        completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
+    ) {
+        
+    }
 }
 
 // MARK: - PushNotificationMessageHandlingProtocol
@@ -113,18 +129,24 @@ extension MultisigNotificationMessageHandler: PushNotificationMessageHandlingPro
                 completion: completion
             )
         case let .multisigExecuted(chainId, payload):
-            completion(.failure(MultisigNotificationHandlingError.unsupportedMessage))
-            return
+            handleOperationExecuted(
+                chainId: chainId,
+                callData: payload.callData,
+                completion: completion
+            )
         case let .multisigCancelled(chainId, payload):
-            completion(.failure(MultisigNotificationHandlingError.unsupportedMessage))
-            return
+            handleOperationCancelled(
+                chainId: chainId,
+                callData: payload.callData,
+                completion: completion
+            )
         default:
             completion(.failure(MultisigNotificationHandlingError.unsupportedMessage))
             return
         }
     }
 
-    func cancel() {}
+    func cancel() {
+        chainRegistry.chainsUnsubscribe(self)
+    }
 }
-
-// MARK: - MultisigNotificationMessageHandler

@@ -31,10 +31,6 @@ final class AssetDetailsNotificationMessageHandler: WalletSelectingNotificationH
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
-
-    func cancel() {
-        chainRegistry.chainsUnsubscribe(self)
-    }
 }
 
 // MARK: - Private
@@ -139,9 +135,15 @@ extension AssetDetailsNotificationMessageHandler: PushNotificationMessageHandlin
             return
         }
     }
+    
+    func cancel() {
+        chainRegistry.chainsUnsubscribe(self)
+    }
 }
 
-extension AssetDetailsNotificationMessageHandler {
+// MARK: - Private types
+
+private extension AssetDetailsNotificationMessageHandler {
     struct ResolvedParameters {
         let chainId: ChainModel.Id
         let assetId: String?
