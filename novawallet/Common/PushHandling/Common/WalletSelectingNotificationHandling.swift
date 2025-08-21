@@ -22,13 +22,13 @@ private extension WalletSelectingNotificationHandling {
         failureClosure: @escaping (Error) -> Void
     ) {
         guard let wallet = wallet else {
-            failureClosure(AssetDetailsHandlingError.unknownWallet)
+            failureClosure(WalletSelectingNotificationHandlingError.unknownWallet)
             return
         }
 
         select(wallet: wallet) { error in
             if let error = error {
-                failureClosure(AssetDetailsHandlingError.select(error))
+                failureClosure(WalletSelectingNotificationHandlingError.select(error))
             } else {
                 successClosure()
             }
@@ -137,8 +137,15 @@ extension WalletSelectingNotificationHandling {
                     failureClosure: failureClosure
                 )
             case let .failure(error):
-                failureClosure(AssetDetailsHandlingError.select(error))
+                failureClosure(WalletSelectingNotificationHandlingError.select(error))
             }
         }
     }
+}
+
+// MARK: - Errors
+
+enum WalletSelectingNotificationHandlingError: Error {
+    case unknownWallet
+    case select(Error)
 }
