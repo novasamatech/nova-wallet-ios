@@ -373,7 +373,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         let features = XcmTransferFeaturesFactory().createFeatures(for: transferParties.metadata)
 
         let keepAlive = fungibilityPreservationProvider.requiresPreservationForCrosschain(
-            assetIn: originChainAsset,
+            assetIn: originChainAsset.chainAssetId,
             features: features
         )
 

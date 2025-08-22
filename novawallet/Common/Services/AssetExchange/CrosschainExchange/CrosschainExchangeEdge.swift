@@ -25,14 +25,8 @@ final class CrosschainExchangeEdge {
     }
 
     private func shouldProhibitTransferOutAll() -> Bool {
-        guard
-            let originChain = host.allChains[origin.chainId],
-            let originChainAsset = originChain.chainAsset(for: origin.assetId) else {
-            return false
-        }
-
-        return host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
-            assetIn: originChainAsset,
+        host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
+            assetIn: origin,
             features: features
         )
     }
