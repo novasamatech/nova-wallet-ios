@@ -19,7 +19,6 @@ protocol MainTabBarPresenterProtocol: AnyObject {
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
     func presentDelayedOperationCreated()
-    func presentMultisigNotificationsPromo()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
