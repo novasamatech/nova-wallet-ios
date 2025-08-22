@@ -267,10 +267,6 @@ extension XcmTransfers {
     func getDestinations(for chainAssetId: ChainAssetId) -> Set<ChainAssetId> {
         indexedByOrigins[chainAssetId] ?? []
     }
-
-    func hasDynamicConfig(for chainId: ChainModel.Id) -> Bool {
-        dynamicTransfers.hasTransfers(from: chainId)
-    }
 }
 
 struct XcmTransferMetadata {
