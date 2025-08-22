@@ -56,6 +56,7 @@ private extension NotificationWalletListInteractor {
 
 extension NotificationWalletListInteractor: NotificationWalletListInteractorInputProtocol {
     func setup() {
+        setupInitialState()
         subscribeChains()
         subscribeWallets()
     }

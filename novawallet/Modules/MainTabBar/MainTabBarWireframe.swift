@@ -183,6 +183,8 @@ private extension MainTabBarWireframe {
             walletSelectView.controller
         ]
 
+        viewControllerStack.forEach { $0.loadViewIfNeeded() }
+
         notificationManagementView.controller.hidesBottomBarWhenPushed = true
 
         navigationController?.setViewControllers(

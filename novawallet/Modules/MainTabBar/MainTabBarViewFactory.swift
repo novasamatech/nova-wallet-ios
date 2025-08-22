@@ -62,6 +62,7 @@ private extension MainTabBarViewFactory {
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,

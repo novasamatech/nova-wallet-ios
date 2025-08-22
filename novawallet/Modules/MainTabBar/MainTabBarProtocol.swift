@@ -36,6 +36,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
+    func didRequestMultisigNotificationsPromoOpen()
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
