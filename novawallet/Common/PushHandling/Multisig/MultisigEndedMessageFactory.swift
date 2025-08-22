@@ -156,16 +156,21 @@ private extension MultisigEndedMessageFactory {
                 priceData: nil
             )?.value(for: locale)
 
-            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
+            let destination = switch transfer.account {
+            case let .local(chainAccountResponse):
+                chainAccountResponse.chainAccount.name
+            case let .remote(accountId):
+                try? accountId.toAddress(using: transfer.asset.chain.chainFormat).mediumTruncated
+            }
 
             guard
                 let amount = balance?.amount,
-                let destinationAddress
+                let destination
             else { return "" }
 
             return R.string.localizable.multisigOperationFormatTransferText(
                 amount,
-                destinationAddress.mediumTruncated,
+                destination,
                 transfer.asset.chain.name.capitalized,
                 preferredLanguages: locale.rLanguages
             )

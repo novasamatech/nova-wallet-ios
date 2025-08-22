@@ -34,7 +34,10 @@ class CommonMultisigHandler: CommonHandler {
         fatalError("This method must be overridden by a subclass.")
     }
 
-    func createBody(using _: MultisigPayloadProtocol) -> String {
+    func createBody(
+        using _: MultisigPayloadProtocol,
+        walletNames _: MultisigNotificationAccounts
+    ) -> String {
         fatalError("This method must be overridden by a subclass.")
     }
 }
@@ -102,6 +105,43 @@ extension CommonMultisigHandler {
 // MARK: - Private
 
 private extension CommonMultisigHandler {
+    func convertAddress(
+        _ address: String,
+        for chain: ChainModel
+    ) -> AccountAddress? {
+        try? address
+            .toAccountId()
+            .toAddress(using: chain.chainFormat)
+    }
+
+    func createWalletNamesOperation(
+        wallets: [Web3Alert.LocalWallet],
+        chain: ChainModel,
+        metaAccounts: @escaping () throws -> [MetaAccountModel],
+        payload: MultisigPayloadProtocol
+    ) -> BaseOperation<MultisigNotificationAccounts> {
+        ClosureOperation {
+            let multisig = self.targetWalletName(
+                for: payload.multisigAddress,
+                chainId: self.chainId,
+                wallets: wallets,
+                metaAccounts: try metaAccounts()
+            ) ?? payload.multisigAddress
+
+            let signatory = self.targetWalletName(
+                for: payload.signatoryAddress,
+                chainId: self.chainId,
+                wallets: wallets,
+                metaAccounts: try metaAccounts()
+            ) ?? self.convertAddress(payload.signatoryAddress, for: chain)?.mediumTruncated
+
+            return MultisigNotificationAccounts(
+                signatory: signatory,
+                multisig: multisig
+            )
+        }
+    }
+
     func createNotificationContentWrapper(
         wallets: [Web3Alert.LocalWallet],
         chain: ChainModel,
@@ -110,14 +150,12 @@ private extension CommonMultisigHandler {
     ) -> CompoundOperationWrapper<NotificationContentResult> {
         let title = createTitle(using: payload)
 
-        let walletNameOperation = ClosureOperation {
-            self.targetWalletName(
-                for: payload.multisigAddress,
-                chainId: self.chainId,
-                wallets: wallets,
-                metaAccounts: try metaAccounts()
-            )
-        }
+        let walletNamesOperation = createWalletNamesOperation(
+            wallets: wallets,
+            chain: chain,
+            metaAccounts: metaAccounts,
+            payload: payload
+        )
 
         guard let callData = payload.callData else {
             let mapOperation = ClosureOperation<NotificationContentResult> {
@@ -125,8 +163,12 @@ private extension CommonMultisigHandler {
                     chain.name.capitalized,
                     preferredLanguages: self.locale.rLanguages
                 )
-                let subtitle = self.createSubtitle(with: try walletNameOperation.extractNoCancellableResultData())
-                let body = self.createBody(using: unknownOperationBody, adding: self.createBody(using: payload))
+                let walletNames = try walletNamesOperation.extractNoCancellableResultData()
+                let subtitle = self.createSubtitle(with: walletNames.multisig)
+                let body = self.createBody(
+                    using: unknownOperationBody,
+                    adding: self.createBody(using: payload, walletNames: walletNames)
+                )
 
                 return .init(
                     title: title,
@@ -135,11 +177,11 @@ private extension CommonMultisigHandler {
                 )
             }
 
-            mapOperation.addDependency(walletNameOperation)
+            mapOperation.addDependency(walletNamesOperation)
 
             return CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [walletNameOperation]
+                dependencies: [walletNamesOperation]
             )
         }
 
@@ -151,8 +193,9 @@ private extension CommonMultisigHandler {
         let mapOperation = ClosureOperation<NotificationContentResult> {
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
 
-            let subtitle = self.createSubtitle(with: try walletNameOperation.extractNoCancellableResultData())
-            let specificBodyPart = self.createBody(using: payload)
+            let walletNames = try walletNamesOperation.extractNoCancellableResultData()
+            let subtitle = self.createSubtitle(with: walletNames.multisig)
+            let specificBodyPart = self.createBody(using: payload, walletNames: walletNames)
             let body = self.createBody(for: formattedCall, adding: specificBodyPart, chain: chain)
 
             return .init(
@@ -162,12 +205,12 @@ private extension CommonMultisigHandler {
             )
         }
 
-        mapOperation.addDependency(walletNameOperation)
+        mapOperation.addDependency(walletNamesOperation)
         mapOperation.addDependency(formattedCallWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [walletNameOperation] + formattedCallWrapper.allOperations
+            dependencies: [walletNamesOperation] + formattedCallWrapper.allOperations
         )
     }
 
@@ -259,16 +302,21 @@ private extension CommonMultisigHandler {
             workingQueue: operationQueue
         )
 
-        let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
+        let destination = switch transfer.account {
+        case let .local(chainAccountResponse):
+            chainAccountResponse.chainAccount.name
+        case let .remote(accountId):
+            try? accountId.toAddress(using: transfer.asset.chain.chainFormat).mediumTruncated
+        }
 
         guard
             let amount = balance?.amount,
-            let destinationAddress
+            let destination
         else { return "" }
 
         return R.string.localizable.pushNotificationMultisigTransferBody(
             amount,
-            destinationAddress.mediumTruncated,
+            destination,
             transfer.asset.chain.name.capitalized,
             preferredLanguages: locale.rLanguages
         )

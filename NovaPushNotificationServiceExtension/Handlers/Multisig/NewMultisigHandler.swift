@@ -7,9 +7,12 @@ final class NewMultisigHandler: CommonMultisigHandler, PushNotificationHandler {
         )
     }
 
-    override func createBody(using payload: MultisigPayloadProtocol) -> String {
+    override func createBody(
+        using payload: MultisigPayloadProtocol,
+        walletNames: MultisigNotificationAccounts
+    ) -> String {
         R.string.localizable.pushNotificationMultisigNewBody(
-            payload.signatoryAddress.mediumTruncated,
+            walletNames.signatory ?? payload.signatoryAddress.mediumTruncated,
             preferredLanguages: locale.rLanguages
         )
     }

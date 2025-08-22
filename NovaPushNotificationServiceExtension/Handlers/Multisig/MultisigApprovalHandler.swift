@@ -8,7 +8,10 @@ final class MultisigApprovalHandler: CommonMultisigHandler, PushNotificationHand
         )
     }
 
-    override func createBody(using _: MultisigPayloadProtocol) -> String {
+    override func createBody(
+        using _: MultisigPayloadProtocol,
+        walletNames _: MultisigNotificationAccounts
+    ) -> String {
         ""
     }
 }
