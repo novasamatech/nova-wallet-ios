@@ -1617,6 +1617,8 @@
 		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
 		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
 		2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */; };
+		2D3E40132E58579200CDA28F /* MainTabBarController+MultisigNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40122E58579200CDA28F /* MainTabBarController+MultisigNotifications.swift */; };
+		2D3E40152E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -8059,6 +8061,8 @@
 		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
 		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
 		2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsSheetFactory.swift; sourceTree = "<group>"; };
+		2D3E40122E58579200CDA28F /* MainTabBarController+MultisigNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainTabBarController+MultisigNotifications.swift"; sourceTree = "<group>"; };
+		2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManagementExternalCallbacks.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -15660,6 +15664,7 @@
 				772BCCA92B7A28F400A516D9 /* NotificationsManagementTableFooterView.swift */,
 				772BCCAD2B7A2E8800A516D9 /* NotificationsManagementSection.swift */,
 				772BCCAF2B7A360500A516D9 /* NotificationsManagemenViewModelFactory.swift */,
+				2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */,
 			);
 			path = Management;
 			sourceTree = "<group>";
@@ -23484,6 +23489,7 @@
 				0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */,
 				0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */,
 				0C2BE78F2E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift */,
+				2D3E40122E58579200CDA28F /* MainTabBarController+MultisigNotifications.swift */,
 			);
 			path = MainTabBar;
 			sourceTree = "<group>";
@@ -30821,6 +30827,7 @@
 				84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */,
 				0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */,
 				847999B42888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift in Sources */,
+				2D3E40152E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift in Sources */,
 				0C2F8C4F2D53C325003A9DA0 /* ExternalLinkFactory.swift in Sources */,
 				841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */,
 				0C39766B2C32615A00998DD6 /* HydraXYK.swift in Sources */,
@@ -35742,6 +35749,7 @@
 				B44A4E340F8A4A53A902DF26 /* DAppBrowserTabListInteractor.swift in Sources */,
 				E735C59D10FF7759C4DA70FB /* DAppBrowserTabListViewController.swift in Sources */,
 				8614F070CD3DEEA3D41B3635 /* DAppBrowserTabListViewLayout.swift in Sources */,
+				2D3E40132E58579200CDA28F /* MainTabBarController+MultisigNotifications.swift in Sources */,
 				A97DF8254A8786A9860DEFEC /* DAppBrowserTabListViewFactory.swift in Sources */,
 				7132A71C2B0A91EE6237A137 /* DAppBrowserWidgetProtocols.swift in Sources */,
 				5627C7D0D08B1B4308EAC0DE /* DAppBrowserWidgetPresenter.swift in Sources */,

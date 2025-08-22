@@ -14,11 +14,12 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         completion: @escaping ([Web3Alert.LocalWallet]) -> Void
     ) {
         guard let walletsView = NotificationWalletListViewFactory.createView(
-            initState: initState,
+            initState: .modified(initState),
             completion: completion
         ) else {
             return
         }
+
         view?.controller.navigationController?.pushViewController(
             walletsView.controller,
             animated: true

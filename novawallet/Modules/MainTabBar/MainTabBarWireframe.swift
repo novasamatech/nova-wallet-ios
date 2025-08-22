@@ -160,6 +160,37 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func openNotificationsWalletSelect(in controller: UITabBarController) {
+        controller.selectedIndex = MainTabBarIndex.settings
+        let viewController = controller.viewControllers?[MainTabBarIndex.settings]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        guard
+            let settingsController = navigationController?.viewControllers.first,
+            let notificationManagementView = NotificationsManagementViewFactory.createView(),
+            let walletSelectView = NotificationWalletListViewFactory.createView(
+                initState: .persisted,
+                completion: notificationManagementView.getExternalCallbacks().changeWalletSettings
+            )
+        else {
+            return
+        }
+
+        let viewControllerStack = [
+            settingsController,
+            notificationManagementView.controller,
+            walletSelectView.controller
+        ]
+
+        notificationManagementView.controller.hidesBottomBarWhenPushed = true
+
+        navigationController?.setViewControllers(
+            viewControllerStack,
+            animated: true
+        )
+    }
+
     func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
         guard let tabBarController = view.topModalViewController as? UITabBarController else {
             // some flow is currently presented modally
@@ -413,6 +444,22 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
         let bottomSheet = DelegatedMessageSheetViewFactory.createMultisigOpCreated { [weak self] in
             self?.openTransactionsToSign(in: tabBarController)
+        }
+
+        guard let controllerToPresent = bottomSheet?.controller else {
+            return
+        }
+
+        view?.controller.present(controllerToPresent, animated: true)
+    }
+
+    func presentMultisigNotificationsPromo(from view: MainTabBarViewProtocol?) {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return
+        }
+
+        let bottomSheet = MultisigNotificationsSheetFactory.createMultisigNotificationsPromo { [weak self] in
+            self?.openNotificationsWalletSelect(in: tabBarController)
         }
 
         guard let controllerToPresent = bottomSheet?.controller else {

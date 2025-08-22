@@ -3,6 +3,7 @@ protocol NotificationsManagementViewProtocol: ControllerBackedProtocol {
     func didReceive(isSaveActionAvailabe: Bool)
     func startLoading()
     func stopLoading()
+    func getExternalCallbacks() -> NotificationsManagementExternalCallbacks
 }
 
 protocol NotificationsManagementPresenterProtocol: AnyObject {

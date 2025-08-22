@@ -3,7 +3,7 @@ import Foundation_iOS
 import UIKit_iOS
 
 enum MultisigNotificationsSheetFactory {
-    static func createMultisigOpCreated(
+    static func createMultisigNotificationsPromo(
         enableSettingsClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in

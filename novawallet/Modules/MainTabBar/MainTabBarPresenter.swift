@@ -30,6 +30,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func presentDelayedOperationCreated() {
         wireframe.presentDelayedOperationCreated(from: view)
     }
+
+    func presentMultisigNotificationsPromo() {
+        wireframe.presentMultisigNotificationsPromo(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {

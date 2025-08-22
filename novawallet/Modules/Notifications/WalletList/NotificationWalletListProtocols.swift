@@ -10,7 +10,9 @@ protocol NotificationWalletListPresenterProtocol: WalletsListPresenterProtocol {
 
 protocol NotificationWalletListInteractorInputProtocol: WalletsListInteractorInputProtocol {}
 
-protocol NotificationWalletListInteractorOutputProtocol: WalletsListInteractorOutputProtocol {}
+protocol NotificationWalletListInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
+    func didReceive(initialState: [Web3Alert.LocalWallet]?)
+}
 
 protocol NotificationWalletListWireframeProtocol: WalletsListWireframeProtocol {
     func complete(from view: ControllerBackedProtocol?, selectedWallets: [Web3Alert.LocalWallet])
