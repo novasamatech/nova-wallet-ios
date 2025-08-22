@@ -173,6 +173,31 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
     
+    func testRouteGDOTDOTPolkadot() throws {
+        let params = buildCommonParams()
+        
+        let polkadot = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadot)
+        let hydration = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+        
+        let gdotHydraion = try hydration.chainAssetForSymbolOrError("GDOT").chainAssetId
+        let dotPolkadot = try polkadot.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: gdotHydraion, to: dotPolkadot, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+    
     func testCalculateFee() {
         let params = buildCommonParams()
         

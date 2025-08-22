@@ -64,6 +64,17 @@ final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraS
             mappingKey: HydraStableswap.PoolRemoteStateChange.Key.tradability.rawValue
         )
 
+        let pegsInfo = BatchStorageSubscriptionRequest(
+            innerRequest: MapSubscriptionRequest(
+                storagePath: HydraStableswap.poolPegs,
+                localKey: "",
+                keyParamClosure: {
+                    StringScaleMapper(value: poolAsset)
+                }
+            ),
+            mappingKey: HydraStableswap.PoolRemoteStateChange.Key.pegsInfo.rawValue
+        )
+
         let currentBlockRequest = BatchStorageSubscriptionRequest(
             innerRequest: UnkeyedSubscriptionRequest(
                 storagePath: SystemPallet.blockNumberPath,
@@ -72,7 +83,7 @@ final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraS
             mappingKey: HydraStableswap.PoolRemoteStateChange.Key.currentBlock.rawValue
         )
 
-        return [poolRequest, tradabilityRequest, currentBlockRequest]
+        return [poolRequest, tradabilityRequest, pegsInfo, currentBlockRequest]
     }
 
     override func getRequests() throws -> [BatchStorageSubscriptionRequest] {

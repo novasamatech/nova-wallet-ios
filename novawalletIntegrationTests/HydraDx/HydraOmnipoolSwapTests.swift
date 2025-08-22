@@ -118,7 +118,7 @@ final class HydraOmnipoolSwapTests: XCTestCase {
     }
     
     private func performQuoteFetch(
-        for args: HydraOmnipool.QuoteArgs,
+        for args: HydraExchange.QuoteArgs,
         chainId: ChainModel.Id = KnowChainId.hydra
     ) throws -> String {
         let storageFacade = SubstrateStorageTestFacade()
@@ -142,7 +142,8 @@ final class HydraOmnipoolSwapTests: XCTestCase {
             connection: connection,
             runtimeProvider: runtimeService,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         
         let operationFactory = HydraOmnipoolQuoteFactory(flowState: flowState)

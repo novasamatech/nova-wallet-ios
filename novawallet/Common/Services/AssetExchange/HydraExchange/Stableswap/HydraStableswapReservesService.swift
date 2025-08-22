@@ -4,13 +4,9 @@ import Operation_iOS
 
 final class HydraStableswapReservesService: ObservableSubscriptionSyncService<HydraStableswap.ReservesRemoteState> {
     let poolAsset: HydraDx.AssetId
-    let otherAssets: [HydraDx.AssetId]
-    let userAccountId: AccountId
 
     init(
-        userAccountId: AccountId,
         poolAsset: HydraDx.AssetId,
-        otherAssets: [HydraDx.AssetId],
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -19,9 +15,7 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.userAccountId = userAccountId
         self.poolAsset = poolAsset
-        self.otherAssets = otherAssets
 
         super.init(
             connection: connection,
@@ -34,41 +28,7 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
         )
     }
 
-    func getReserveRequests(
-        for asset: HydraDx.AssetId,
-        poolAccountId: AccountId
-    ) -> [BatchStorageSubscriptionRequest] {
-        let balanceRequest = BatchStorageSubscriptionRequest(
-            innerRequest: DoubleMapSubscriptionRequest(
-                storagePath: StorageCodingPath.ormlTokenAccount,
-                localKey: "",
-                keyParamClosure: {
-                    (BytesCodable(wrappedValue: poolAccountId), StringScaleMapper(value: asset))
-                }
-            ),
-            mappingKey: HydraStableswap.ReservesRemoteState.assetReserveKey(asset)
-        )
-
-        let decimalsRequest = BatchStorageSubscriptionRequest(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: HydraAssetRegistry.assetsPath,
-                localKey: "",
-                keyParamClosure: {
-                    StringScaleMapper(value: asset)
-                }
-            ),
-            mappingKey: HydraStableswap.ReservesRemoteState.assetKey(asset)
-        )
-
-        return [balanceRequest, decimalsRequest]
-    }
-
-    func getRequests(
-        poolAsset: HydraDx.AssetId,
-        otherAssets: [HydraDx.AssetId],
-        userAccountId _: AccountId,
-        poolAccount: AccountId
-    ) throws -> [BatchStorageSubscriptionRequest] {
+    func getRequests(for poolAsset: HydraDx.AssetId) throws -> [BatchStorageSubscriptionRequest] {
         let poolAssetTotalIssuanceRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
                 storagePath: StorageCodingPath.ormlTotalIssuance,
@@ -77,22 +37,13 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
                     StringScaleMapper(value: poolAsset)
                 }
             ),
-            mappingKey: HydraStableswap.ReservesRemoteState.poolIssuanceKey
+            mappingKey: HydraStableswap.ReservesRemoteStateChange.Key.poolIssuance.rawValue
         )
 
-        let reserves = otherAssets.flatMap { getReserveRequests(for: $0, poolAccountId: poolAccount) }
-
-        return [poolAssetTotalIssuanceRequest] + reserves
+        return [poolAssetTotalIssuanceRequest]
     }
 
     override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
-        let poolAccountId = try HydraStableswap.poolAccountId(for: poolAsset)
-
-        return try getRequests(
-            poolAsset: poolAsset,
-            otherAssets: otherAssets,
-            userAccountId: userAccountId,
-            poolAccount: poolAccountId
-        )
+        try getRequests(for: poolAsset)
     }
 }
