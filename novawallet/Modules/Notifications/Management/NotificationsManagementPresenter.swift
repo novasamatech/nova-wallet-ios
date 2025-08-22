@@ -45,17 +45,22 @@ final class NotificationsManagementPresenter {
             .compactMap { allWallets[$0.metaId] }
             .filter { $0.type == .multisig }
 
+        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+
         if selectedMultisigs.isEmpty {
-            modifiedSettings = modifiedSettings?
-                .with(wallets: wallets)
-                .with {
-                    $0.newMultisig = nil
-                    $0.multisigApproval = nil
-                    $0.multisigExecuted = nil
-                    $0.multisigCancelled = nil
-                }
-        } else {
-            modifiedSettings = modifiedSettings?.with(wallets: wallets)
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = nil
+                $0.multisigApproval = nil
+                $0.multisigExecuted = nil
+                $0.multisigCancelled = nil
+            }
+        } else if modifiedSettings?.notifications.isMultisigOn == false {
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = .all
+                $0.multisigApproval = .all
+                $0.multisigExecuted = .all
+                $0.multisigCancelled = .all
+            }
         }
 
         updateView()
