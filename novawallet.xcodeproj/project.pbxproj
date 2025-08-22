@@ -1616,6 +1616,7 @@
 		2D3C71E92E12757400DF9E49 /* MultisigOperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */; };
 		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
 		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
+		2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -8057,6 +8058,7 @@
 		2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationCell.swift; sourceTree = "<group>"; };
 		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
 		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
+		2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsSheetFactory.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -16580,6 +16582,14 @@
 				2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D3E400B2E584C8900CDA28F /* MultisigNotificationsSheet */ = {
+			isa = PBXGroup;
+			children = (
+				2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */,
+			);
+			path = MultisigNotificationsSheet;
 			sourceTree = "<group>";
 		};
 		2D3EA7D22CF9BB7C0033AFD2 /* Transition */ = {
@@ -26391,6 +26401,7 @@
 		85D192A683920D50BCD10893 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
+				2D3E400B2E584C8900CDA28F /* MultisigNotificationsSheet */,
 				2D8DE4E42E4A0F780004291B /* MultisigNotifications */,
 				77DF40452B7FE77A00ABDB53 /* BaseNotificationSettings */,
 				6FF518658B8D6E46DDF118A7 /* GovernanceNotifications */,
@@ -34427,6 +34438,7 @@
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
 				84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */,
 				84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */,
+				2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */,
 				2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,

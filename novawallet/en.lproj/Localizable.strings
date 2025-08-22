@@ -1946,3 +1946,6 @@
 "common.multisig.rejected" = "Multisig transaction rejected";
 "multisig.operation.ended.alert.title" = "Signing is over";
 "multisig.operation.ended.alert.message" = "Transaction has already been executed or rejected.";
+"multisig.notifications.promo.sheet.title" = "Multisig push notifications are here!";
+"multisig.notifications.promo.sheet.message" = "Get notified about signing requests, new signatures, and completed transactions — so you’re always in control. Manage anytime in Settings.";
+"common.enable.settings" = "Enable in Settings";
