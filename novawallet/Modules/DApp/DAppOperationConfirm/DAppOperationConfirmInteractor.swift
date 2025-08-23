@@ -19,6 +19,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let runtimeProvider: RuntimeProviderProtocol
     let metadataHashFactory: MetadataHashOperationFactoryProtocol
     let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
+    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
@@ -36,6 +37,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         connection: JSONRPCEngine,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         metadataHashFactory: MetadataHashOperationFactoryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -47,6 +49,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.connection = connection
         self.signingWrapperFactory = signingWrapperFactory
         self.metadataHashFactory = metadataHashFactory
+        self.userStorageFacade = userStorageFacade
         priceLocalSubscriptionFactory = priceProviderFactory
         self.operationQueue = operationQueue
         super.init()
@@ -94,7 +97,12 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
             runtimeProvider: runtimeProvider,
             connection: connection,
             feeRegistry: feeEstimationRegistry,
-            metadataHashOperationFactory: metadataHashFactory
+            metadataHashOperationFactory: metadataHashFactory,
+            senderResolvingFactory: ExtrinsicSenderResolutionFactory(
+                chainAccount: result.account,
+                chain: chain,
+                userStorageFacade: userStorageFacade
+            )
         )
 
         feeAsset = result.feeAsset

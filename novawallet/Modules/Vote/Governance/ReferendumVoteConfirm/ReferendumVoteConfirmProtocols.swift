@@ -34,7 +34,7 @@ protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteIntera
 }
 
 protocol ReferendumVoteConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {
-    func didReceiveVotingHash(_ hash: String)
+    func didReceiveVotingCompletion(_ sender: ExtrinsicSenderResolution)
 }
 
 protocol BaseReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,

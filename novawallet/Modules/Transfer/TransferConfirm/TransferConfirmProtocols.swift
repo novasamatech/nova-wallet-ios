@@ -32,15 +32,13 @@ protocol TransferConfirmCrossChainInteractorInputProtocol: CrossChainTransferSet
 }
 
 protocol TransferConfirmOnChainInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
-    func didCompleteSubmition()
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution?)
 }
 
 protocol TransferConfirmCrossChainInteractorOutputProtocol: CrossChainTransferSetupInteractorOutputProtocol {
-    func didCompleteSubmition()
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution)
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, MessageSheetPresentable,
-    ExtrinsicSigningErrorHandling {
-    func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale, completion: @escaping () -> Void)
-}
+    ModalAlertPresenting, ExtrinsicSigningErrorHandling, ExtrinsicSubmissionPresenting {}

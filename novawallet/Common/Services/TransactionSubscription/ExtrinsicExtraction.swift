@@ -3,7 +3,7 @@ import SubstrateSdk
 
 enum ExtrinsicExtraction {
     static func getSender(from extrinsic: Extrinsic, codingFactory: RuntimeCoderFactoryProtocol) -> AccountId? {
-        try? extrinsic.signature?.address.map(
+        try? extrinsic.getSignedExtrinsic()?.signature.address.map(
             to: MultiAddress.self,
             with: codingFactory.createRuntimeJsonContext().toRawContext()
         ).accountId

@@ -9,15 +9,27 @@ enum MetaAccountModelType: UInt8 {
     case polkadotVault
     case proxied
     case genericLedger
+    case multisig
     case polkadotVaultRoot
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .ledger, .proxied, .genericLedger:
-            return true
+        case .secrets,
+             .paritySigner,
+             .polkadotVault,
+             .polkadotVaultRoot,
+             .ledger,
+             .proxied,
+             .genericLedger,
+             .multisig:
+            true
         case .watchOnly:
-            return false
+            false
         }
+    }
+
+    var isDelegated: Bool {
+        self == .proxied || self == .multisig
     }
 }
 
@@ -30,6 +42,7 @@ extension MetaAccountModelType {
             .paritySigner,
             .ledger,
             .proxied,
+            .multisig,
             .watchOnly
         ]
     }
@@ -48,6 +61,7 @@ struct MetaAccountModel: Equatable, Hashable {
     let ethereumPublicKey: Data?
     let chainAccounts: Set<ChainAccountModel>
     let type: MetaAccountModelType
+    let multisig: DelegatedAccount.MultisigAccountModel?
 }
 
 extension MetaAccountModel: Identifiable {
@@ -71,7 +85,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: newChainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -85,7 +100,8 @@ extension MetaAccountModel {
             ethereumAddress: newEthereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -99,7 +115,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: newEthereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -113,18 +130,109 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
-    func replacingProxy(chainId: ChainModel.Id, proxy: ProxyAccountModel) -> MetaAccountModel {
+    func replacingProxy(
+        chainId: ChainModel.Id,
+        proxy: DelegatedAccount.ProxyAccountModel
+    ) -> MetaAccountModel {
         let proxyChainAccount = chainAccounts.first {
             $0.chainId == chainId && $0.proxy != nil
         }
-        if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
-            return replacingChainAccount(newProxyChainAccount)
+
+        return if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
+            replacingChainAccount(newProxyChainAccount)
         } else {
+            self
+        }
+    }
+
+    func replacingMultisig(with multisigType: MultisigAccountType) -> MetaAccountModel? {
+        switch multisigType {
+        case let .universalSubstrate(multisig), let .universalEvm(multisig):
+            MetaAccountModel(
+                metaId: metaId,
+                name: name,
+                substrateAccountId: substrateAccountId,
+                substrateCryptoType: substrateCryptoType,
+                substratePublicKey: substratePublicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: ethereumPublicKey,
+                chainAccounts: [],
+                type: type,
+                multisig: multisig
+            )
+        case let .singleChain(chainAccount):
+            replacingChainAccount(chainAccount.replacingMultisig(multisig))
+        }
+    }
+
+    func replacingDelegatedAccountStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        guard type == .multisig || type == .proxied else {
             return self
         }
+
+        return if let multisig {
+            replacingUniversalMultisigStatus(from: oldStatus, to: newStatus)
+        } else {
+            replacingDelegatedChainAccountStatus(from: oldStatus, to: newStatus)
+        }
+    }
+}
+
+private extension MetaAccountModel {
+    func replacingUniversalMultisigStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        guard multisig?.status == oldStatus else { return self }
+
+        return MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: chainAccounts,
+            type: type,
+            multisig: multisig?.replacingStatus(newStatus)
+        )
+    }
+
+    func replacingDelegatedChainAccountStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        let updatedChainAccounts = chainAccounts.map { delegatorAccount in
+            let status = delegatorAccount.proxy?.status ?? delegatorAccount.multisig?.status
+
+            guard status == oldStatus else { return delegatorAccount }
+
+            return delegatorAccount.replacingDelegatedAccountStatus(
+                from: oldStatus,
+                to: newStatus
+            )
+        }
+
+        return MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: Set(updatedChainAccounts),
+            type: type,
+            multisig: multisig
+        )
     }
 }

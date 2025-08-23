@@ -480,7 +480,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         }
     }
 
-    func didReceive(response: DAppScriptResponse, forTransport _: String) {
+    func didReceive(response: DAppScriptResponse) {
         rootView.webView?.evaluateJavaScript(response.content)
     }
 
@@ -599,9 +599,9 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
 
     func webView(
         _: WKWebView,
-        runJavaScriptAlertPanelWithMessage message: String,
+        runJavaScriptConfirmPanelWithMessage message: String,
         initiatedByFrame _: WKFrameInfo,
-        completionHandler: @escaping () -> Void
+        completionHandler: @escaping @MainActor(Bool) -> Void
     ) {
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
@@ -611,14 +611,36 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         )
 
         alertController.addAction(UIAlertAction(title: confirmTitle, style: .default, handler: { _ in
-            completionHandler()
+            completionHandler(true)
         }))
 
         let cancelTitle = R.string.localizable.commonCancel(
             preferredLanguages: languages
         )
 
-        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { _ in
+            completionHandler(false)
+        }))
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    func webView(
+        _: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame _: WKFrameInfo,
+        completionHandler: @escaping () -> Void
+    ) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+
+        let languages = selectedLocale.rLanguages
+        let okTitle = R.string.localizable.commonOk(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: okTitle, style: .default, handler: { _ in
+            completionHandler()
+        }))
 
         present(alertController, animated: true, completion: nil)
     }

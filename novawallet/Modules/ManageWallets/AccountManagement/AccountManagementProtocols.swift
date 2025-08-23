@@ -4,10 +4,8 @@ import Foundation_iOS
 
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
-    func set(nameViewModel: InputViewModelProtocol)
-    func set(walletType: WalletsListSectionViewModel.SectionType)
-    func setProxy(viewModel: AccountProxyViewModel)
-    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)
+    func didReceive(walletViewModel: AccountManageWalletViewModel)
+    func didReceive(nameViewModel: InputViewModelProtocol)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
@@ -41,7 +39,7 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
         metaAccount: MetaAccountModel,
         chain: ChainModel
     )
-    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)
+    func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)
     func didReceiveCloudBackup(state: CloudBackupSyncState)
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)
 }
@@ -54,7 +52,8 @@ protocol AccountManagementWireframeProtocol: AlertPresentable,
     ActionsManagePresentable,
     CloudBackupRemindPresentable,
     CopyAddressPresentable,
-    UnifiedAddressPopupPresentable
+    UnifiedAddressPopupPresentable,
+    AddressOptionsPresentable
 {
     func showCreateAccount(
         from view: ControllerBackedProtocol?,

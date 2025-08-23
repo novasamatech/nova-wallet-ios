@@ -1386,35 +1386,35 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NovaCrypto (0.1.0):
-    - NovaCrypto/BIP39 (= 0.1.0)
-    - NovaCrypto/blake2 (= 0.1.0)
-    - NovaCrypto/Common (= 0.1.0)
-    - NovaCrypto/ed25519 (= 0.1.0)
-    - NovaCrypto/Scrypt (= 0.1.0)
-    - NovaCrypto/secp256k1 (= 0.1.0)
-    - NovaCrypto/sr25519 (= 0.1.0)
-    - NovaCrypto/ss58 (= 0.1.0)
-  - NovaCrypto/BIP39 (0.1.0):
+  - NovaCrypto (0.2.0):
+    - NovaCrypto/BIP39 (= 0.2.0)
+    - NovaCrypto/blake2 (= 0.2.0)
+    - NovaCrypto/Common (= 0.2.0)
+    - NovaCrypto/ed25519 (= 0.2.0)
+    - NovaCrypto/Scrypt (= 0.2.0)
+    - NovaCrypto/secp256k1 (= 0.2.0)
+    - NovaCrypto/sr25519 (= 0.2.0)
+    - NovaCrypto/ss58 (= 0.2.0)
+  - NovaCrypto/BIP39 (0.2.0):
     - NovaCrypto/Common
-  - NovaCrypto/blake2 (0.1.0):
+  - NovaCrypto/blake2 (0.2.0):
     - blake2.c (~> 0.1.0)
-  - NovaCrypto/Common (0.1.0)
-  - NovaCrypto/ed25519 (0.1.0):
+  - NovaCrypto/Common (0.2.0)
+  - NovaCrypto/ed25519 (0.2.0):
     - ed25519.c (~> 0.1.0)
     - NovaCrypto/Common
-  - NovaCrypto/Scrypt (0.1.0):
+  - NovaCrypto/Scrypt (0.2.0):
     - NovaCrypto/Common
     - scrypt.c (~> 0.1)
-  - NovaCrypto/secp256k1 (0.1.0):
+  - NovaCrypto/secp256k1 (0.2.0):
     - NovaCrypto/Common
     - secp256k1.c (~> 0.1)
-  - NovaCrypto/sr25519 (0.1.0):
+  - NovaCrypto/sr25519 (0.2.0):
     - NovaCrypto/BIP39
     - NovaCrypto/blake2
     - NovaCrypto/Common
-    - sr25519.c (~> 0.1.0)
-  - NovaCrypto/ss58 (0.1.0):
+    - sr25519c (~> 0.2.0)
+  - NovaCrypto/ss58 (0.2.0):
     - NovaCrypto/blake2
     - NovaCrypto/Common
   - Operation-iOS (2.1.0)
@@ -1429,16 +1429,16 @@ PODS:
   - secp256k1.c (0.1.3)
   - SnapKit (5.0.1)
   - Sourcery (1.4.1)
-  - sr25519.c (0.1.0)
+  - sr25519c (0.2.0)
   - Starscream (4.0.12)
-  - SubstrateSdk (3.7.2):
+  - SubstrateSdk (4.4.0):
     - BigInt (~> 5.0)
-    - keccak.c (~> 0.1.0)
-    - NovaCrypto/ed25519 (~> 0.1.0)
-    - NovaCrypto/Scrypt (~> 0.1.0)
-    - NovaCrypto/secp256k1 (~> 0.1.0)
-    - NovaCrypto/sr25519 (~> 0.1.0)
-    - NovaCrypto/ss58 (~> 0.1.0)
+    - keccak.c (~> 0.1.3)
+    - NovaCrypto/ed25519 (~> 0.2.0)
+    - NovaCrypto/Scrypt (~> 0.2.0)
+    - NovaCrypto/secp256k1 (~> 0.2.0)
+    - NovaCrypto/sr25519 (~> 0.2.0)
+    - NovaCrypto/ss58 (~> 0.2.0)
     - Operation-iOS (~> 2.1.0)
     - ReachabilitySwift (~> 5.2.4)
     - Starscream
@@ -1562,17 +1562,17 @@ DEPENDENCIES:
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
-  - NovaCrypto (from `https://github.com/novasamatech/Crypto-iOS`, tag `0.1.0`)
+  - NovaCrypto (from `https://github.com/novasamatech/Crypto-iOS`, tag `0.2.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.1.0`)
   - R.swift
-  - RaptorQ-iOS (from `https://github.com/novasamatech/raptorq-ios`, commit `8e3255f833e012d2f7f26de754725d387d36983f`)
+  - RaptorQ-iOS (from `https://github.com/novasamatech/raptorq-ios`, commit `c25030dbb56d389319b9de2d4bc45dac3471f06c`)
   - ReachabilitySwift (~> 5.2.4)
   - secp256k1.c (from `https://github.com/novasamatech/secp256k1.c`, tag `0.1.3`)
   - SnapKit (~> 5.0.0)
   - Sourcery (~> 1.4)
-  - sr25519.c (from `https://github.com/novasamatech/sr25519.c`, tag `0.1.0`)
+  - sr25519c (from `https://github.com/novasamatech/sr25519.c`, tag `0.2.0`)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.7.2`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `4.4.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1665,25 +1665,25 @@ EXTERNAL SOURCES:
     :tag: 0.1.0
   NovaCrypto:
     :git: https://github.com/novasamatech/Crypto-iOS
-    :tag: 0.1.0
+    :tag: 0.2.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.1.0
   RaptorQ-iOS:
-    :commit: 8e3255f833e012d2f7f26de754725d387d36983f
+    :commit: c25030dbb56d389319b9de2d4bc45dac3471f06c
     :git: https://github.com/novasamatech/raptorq-ios
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
-  sr25519.c:
+  sr25519c:
     :git: https://github.com/novasamatech/sr25519.c
-    :tag: 0.1.0
+    :tag: 0.2.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.7.2
+    :tag: 4.4.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   UIKit-iOS:
@@ -1723,25 +1723,25 @@ CHECKOUT OPTIONS:
     :tag: 0.1.0
   NovaCrypto:
     :git: https://github.com/novasamatech/Crypto-iOS
-    :tag: 0.1.0
+    :tag: 0.2.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.1.0
   RaptorQ-iOS:
-    :commit: 8e3255f833e012d2f7f26de754725d387d36983f
+    :commit: c25030dbb56d389319b9de2d4bc45dac3471f06c
     :git: https://github.com/novasamatech/raptorq-ios
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
-  sr25519.c:
+  sr25519c:
     :git: https://github.com/novasamatech/sr25519.c
-    :tag: 0.1.0
+    :tag: 0.2.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.7.2
+    :tag: 4.4.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1795,7 +1795,7 @@ SPEC CHECKSUMS:
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
   MetadataShortenerApi: b2d5d3ddb2e75e34688cc5f162881a943939ea9a
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NovaCrypto: bf2afb5b00bc3b9c956b1ae13fd09716c2a21e1d
+  NovaCrypto: 31cffd8156a53f557033cd10d92378b02516f474
   Operation-iOS: 29111118f2bc5049f7bdc4e27c3967f5acc61802
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
@@ -1807,9 +1807,9 @@ SPEC CHECKSUMS:
   secp256k1.c: 9df12a79da0a6735022c5d996d2df6a6e57e1d99
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
-  sr25519.c: 6c5d747682f45fd081c1e34d54cd322acee321b5
+  sr25519c: 296fca27b68d685ef515473c4a6dfe7325195688
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: c7205ad049a346226fff1e4df462c017d2380d72
+  SubstrateSdk: 782a78dbe4e87d7caae53c5fd3955b29813cba09
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1827,6 +1827,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 89b640f178a981af5e208c1ce7dd883d75c52f21
+PODFILE CHECKSUM: f6afa68f3371bee1a3ccd1d5d70ec0d8e3408c04
 
 COCOAPODS: 1.15.2

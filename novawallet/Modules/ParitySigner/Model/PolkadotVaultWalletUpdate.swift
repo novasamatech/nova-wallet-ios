@@ -81,7 +81,8 @@ extension PolkadotVaultWalletUpdate {
                 accountId: addressItem.accountId,
                 publicKey: publicKey,
                 cryptoType: addressItem.cryptoType.rawValue,
-                proxy: nil
+                proxy: nil,
+                multisig: nil
             )
         }
     }

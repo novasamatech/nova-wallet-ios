@@ -92,10 +92,16 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         viewController?.rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListMultisigOperationsCell.self)
         viewController?.rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
         viewController?.rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
+
+        collectionViewLayout?.register(
+            AssetListOrganizerDecorationView.self,
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.organizer
         )
 
         collectionViewLayout?.register(
@@ -173,8 +179,8 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         collectionViewDataSource.headerViewModel = model
     }
 
-    func updateNftViewModel(with model: AssetListNftsViewModel?) {
-        collectionViewDataSource.nftViewModel = model
+    func updateOrganizerViewModel(with model: AssetListOrganizerViewModel?) {
+        collectionViewDataSource.organizerViewModel = model
     }
 
     func updateBanners(available: Bool) {
@@ -227,11 +233,11 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
 // MARK: AssetListCollectionSelectionDelegate
 
 extension AssetListCollectionManager: AssetListCollectionSelectionDelegate {
-    func selectAsset(for chainAssetId: ChainAssetId) {
-        delegate?.selectAsset(for: chainAssetId)
+    func selectOrganizerItem(at index: Int) {
+        delegate?.selectOrganizerItem(at: index)
     }
 
-    func selectNfts() {
-        delegate?.selectNfts()
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        delegate?.selectAsset(for: chainAssetId)
     }
 }

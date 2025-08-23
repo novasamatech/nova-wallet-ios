@@ -47,19 +47,9 @@ final class AssetExchangeExecutionManager {
 
     private func startFirstSegmentExecution() {
         do {
-            guard
-                let firstSegment = fee.route.items.first,
-                let firstFees = fee.operationFees.first else {
-                throw AssetExchangeExecutionManagerError.invalidRouteDetails
-            }
+            let initialAmount = try fee.getInitialAmountIn()
 
-            let amountIn = firstSegment.amountIn(for: fee.route.direction)
-            let amountInWithFee = amountIn + fee.intermediateFeesInAssetIn
-
-            let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: firstSegment.edge.origin)
-            let amountInWithHolding = amountInWithFee + holdingFee
-
-            executeSegment(at: 0, amountIn: amountInWithHolding)
+            executeSegment(at: 0, amountIn: initialAmount)
         } catch {
             logger.error("Failed first segment processing: \(error)")
             complete(with: .failure(error))

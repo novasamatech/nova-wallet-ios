@@ -240,14 +240,17 @@ extension MythosStakingRedeemPresenter: MythosStakingRedeemInteractorOutputProto
         }
     }
 
-    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(
-                view: view,
-                redeemedAll: isRedeemAll(),
+        case let .success(model):
+            let action: ExtrinsicSubmissionPresentingAction = isRedeemAll() ? .popBaseAndDismiss : .dismiss
+
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: action,
                 locale: selectedLocale
             )
         case let .failure(error):

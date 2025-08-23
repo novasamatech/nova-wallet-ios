@@ -2,16 +2,16 @@ import Foundation
 import Operation_iOS
 import CoreData
 
-final class ProxiedSettingsMapper {
-    var entityIdentifierFieldName: String { #keyPath(CDProxiedSettings.identifier) }
+final class DelegatedAccountSettingsMapper {
+    var entityIdentifierFieldName: String { #keyPath(CDDelegatedAccountSettings.identifier) }
 
-    typealias DataProviderModel = ProxiedSettings
-    typealias CoreDataEntity = CDProxiedSettings
+    typealias DataProviderModel = DelegatedAccountSettings
+    typealias CoreDataEntity = CDDelegatedAccountSettings
 }
 
-extension ProxiedSettingsMapper: CoreDataMapperProtocol {
+extension DelegatedAccountSettingsMapper: CoreDataMapperProtocol {
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
-        ProxiedSettings(identifier: entity.identifier!, confirmsOperation: entity.confirmsOperation)
+        DelegatedAccountSettings(identifier: entity.identifier!, confirmsOperation: entity.confirmsOperation)
     }
 
     func populate(

@@ -47,5 +47,10 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let pendingMultisigQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }

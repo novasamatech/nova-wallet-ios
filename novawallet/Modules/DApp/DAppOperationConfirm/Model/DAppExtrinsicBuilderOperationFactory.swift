@@ -14,6 +14,12 @@ struct DAppExtrinsicRawExtrinsicResult {
 }
 
 final class DAppExtrinsicBuilderOperationFactory {
+    struct ExtrinsicSenderResult {
+        let sender: ExtrinsicSenderResolution
+        let builder: ExtrinsicBuilderProtocol
+        let nonce: UInt32
+    }
+
     struct ExtrinsicSenderBuilderResult {
         let sender: ExtrinsicSenderResolution
         let builder: ExtrinsicBuilderProtocol
@@ -31,6 +37,8 @@ final class DAppExtrinsicBuilderOperationFactory {
     let connection: JSONRPCEngine
     let feeRegistry: ExtrinsicFeeEstimationRegistring
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
+    let nonceOperationFactory = TransactionNonceOperationFactory()
 
     init(
         processedResult: DAppOperationProcessedResult,
@@ -38,7 +46,8 @@ final class DAppExtrinsicBuilderOperationFactory {
         runtimeProvider: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         feeRegistry: ExtrinsicFeeEstimationRegistring,
-        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
     ) {
         self.chain = chain
         self.processedResult = processedResult
@@ -46,49 +55,34 @@ final class DAppExtrinsicBuilderOperationFactory {
         self.connection = connection
         self.feeRegistry = feeRegistry
         self.metadataHashOperationFactory = metadataHashOperationFactory
+        self.senderResolvingFactory = senderResolvingFactory
     }
 
-    private func createExtrinsicBuilderResultOperation(
+    private func createPartialExtrinsicBuilderWrapper(
         from result: DAppOperationProcessedResult,
         metadataHashOperation: BaseOperation<MetadataHashResult>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         feeInstallerOperation: BaseOperation<ExtrinsicFeeInstalling>?
-    ) -> BaseOperation<ExtrinsicSenderBuilderResult> {
-        ClosureOperation<ExtrinsicSenderBuilderResult> {
+    ) -> CompoundOperationWrapper<ExtrinsicBuilderProtocol> {
+        let operation = ClosureOperation<ExtrinsicBuilderProtocol> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let metadataHashResult = try metadataHashOperation.extractNoCancellableResultData()
             let feeInstaller = try feeInstallerOperation?.extractNoCancellableResultData()
 
             let extrinsic = result.extrinsic
 
-            // DApp signing currently doesn't allow to modify extrinsic
-            let sender = ExtrinsicSenderResolution.current(result.account)
-
-            let address = MultiAddress.accoundId(sender.account.accountId)
-
-            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(
-                for: result.account.chainId
-            )
-
             let runtimeContext = codingFactory.createRuntimeJsonContext()
 
-            var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
+            var builder: ExtrinsicBuilderProtocol = ExtrinsicBuilder(
                 specVersion: extrinsic.specVersion,
                 transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
             )
-            .with(signaturePayloadFormat: sender.account.type.signaturePayloadFormat)
             .with(runtimeJsonContext: runtimeContext)
-            .with(address: address)
-            .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
 
             if let metadataHash = metadataHashResult.metadataHash {
                 builder = builder.with(metadataHash: metadataHash)
-            }
-
-            for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicSignedExtension: signedExtension)
             }
 
             builder = try result.extrinsic.method.accept(builder: builder)
@@ -108,17 +102,134 @@ final class DAppExtrinsicBuilderOperationFactory {
                     assetId: rawFeeAssetId
                 )
 
-                builder = builder.adding(extrinsicSignedExtension: txPayment)
+                builder = builder.adding(transactionExtension: txPayment)
             }
 
-            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal
+            return builder
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    private func createExtrinsicSenderResolutionWrapper(
+        from result: DAppOperationProcessedResult,
+        partialBuilderOperation: BaseOperation<ExtrinsicBuilderProtocol>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<ExtrinsicSenderResult> {
+        if result.extrinsic.withSignedTransaction {
+            let senderResolutionWrapper = senderResolvingFactory.createWrapper()
+            let updateOperation = ClosureOperation<ExtrinsicSenderBuilderResolution> {
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let senderResolution = try senderResolutionWrapper.targetOperation.extractNoCancellableResultData()
+                let builder = try partialBuilderOperation.extractNoCancellableResultData()
+
+                return try senderResolution.resolveSender(
+                    wrapping: [builder],
+                    codingFactory: codingFactory
+                )
+            }
+
+            updateOperation.addDependency(senderResolutionWrapper.targetOperation)
+
+            let nonceWrapper = nonceOperationFactory.createWrapper(
+                for: chain,
+                connection: connection
+            ) {
+                try updateOperation.extractNoCancellableResultData().sender.account.accountId
+            }
+
+            nonceWrapper.addDependency(operations: [updateOperation])
+
+            let mappingOperation = ClosureOperation<ExtrinsicSenderResult> {
+                let update = try updateOperation.extractNoCancellableResultData()
+                let nonce = try nonceWrapper.targetOperation.extractNoCancellableResultData()
+
+                guard let builder = update.builders.first else {
+                    throw CommonError.dataCorruption
+                }
+
+                return ExtrinsicSenderResult(
+                    sender: update.sender,
+                    builder: builder,
+                    nonce: nonce
+                )
+            }
+
+            mappingOperation.addDependency(nonceWrapper.targetOperation)
+
+            return nonceWrapper
+                .insertingHead(operations: [updateOperation])
+                .insertingHead(operations: senderResolutionWrapper.allOperations)
+                .insertingTail(operation: mappingOperation)
+        } else {
+            let operation = ClosureOperation<ExtrinsicSenderResult> {
+                let builder = try partialBuilderOperation.extractNoCancellableResultData()
+                let nonce = UInt32(result.extrinsic.nonce)
+
+                return ExtrinsicSenderResult(
+                    sender: ExtrinsicSenderResolution.current(result.account),
+                    builder: builder,
+                    nonce: nonce
+                )
+            }
+
+            return CompoundOperationWrapper(targetOperation: operation)
+        }
+    }
+
+    private func createExtrinsicBuilderResultWrapper(
+        from result: DAppOperationProcessedResult,
+        metadataHashOperation: BaseOperation<MetadataHashResult>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        feeInstallerOperation: BaseOperation<ExtrinsicFeeInstalling>?
+    ) -> CompoundOperationWrapper<ExtrinsicSenderBuilderResult> {
+        let partialBuilderWrapper = createPartialExtrinsicBuilderWrapper(
+            from: result,
+            metadataHashOperation: metadataHashOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            feeInstallerOperation: feeInstallerOperation
+        )
+
+        let senderResolutionWrapper = createExtrinsicSenderResolutionWrapper(
+            from: result,
+            partialBuilderOperation: partialBuilderWrapper.targetOperation,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        senderResolutionWrapper.addDependency(wrapper: partialBuilderWrapper)
+
+        let finalizationOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
+            let senderUpdate = try senderResolutionWrapper.targetOperation.extractNoCancellableResultData()
+            let sender = senderUpdate.sender
+            var builder = senderUpdate.builder
+
+            let address = MultiAddress.accoundId(sender.account.accountId)
+
+            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(
+                for: result.account.chainId
+            )
+
+            builder = try builder
+                .with(signaturePayloadFormat: sender.account.type.signaturePayloadFormat)
+                .with(address: address)
+                .with(nonce: senderUpdate.nonce)
+
+            for signedExtension in signedExtensionFactory.createExtensions() {
+                builder = builder.adding(transactionExtension: signedExtension)
+            }
 
             return ExtrinsicSenderBuilderResult(
                 sender: sender,
                 builder: builder,
-                modifiedOriginalExtrinsic: isModifiedExtrinsic
+                modifiedOriginalExtrinsic: result.extrinsic.withSignedTransaction
             )
         }
+
+        finalizationOperation.addDependency(senderResolutionWrapper.targetOperation)
+
+        return senderResolutionWrapper
+            .insertingHead(operations: partialBuilderWrapper.allOperations)
+            .insertingTail(operation: finalizationOperation)
     }
 
     private func createActualMetadataHashWrapper(
@@ -191,19 +302,19 @@ final class DAppExtrinsicBuilderOperationFactory {
             nil
         }
 
-        let builderOperation = createExtrinsicBuilderResultOperation(
+        let builderWrapper = createExtrinsicBuilderResultWrapper(
             from: result,
             metadataHashOperation: metadataHashWrapper.targetOperation,
             codingFactoryOperation: codingFactoryOperation,
             feeInstallerOperation: feeInstallerWrapper?.targetOperation
         )
 
-        builderOperation.addDependency(metadataHashWrapper.targetOperation)
-        builderOperation.addDependencyIfExists(feeInstallerWrapper?.targetOperation)
+        builderWrapper.addDependency(wrapper: metadataHashWrapper)
+        builderWrapper.addDependencyIfExists(wrapper: feeInstallerWrapper)
 
-        return metadataHashWrapper
+        return builderWrapper
+            .insertingHead(operations: metadataHashWrapper.allOperations)
             .insertingHeadIfExists(operations: feeInstallerWrapper?.allOperations)
-            .insertingTail(operation: builderOperation)
     }
 
     private func createRawSignatureOperation(
@@ -237,7 +348,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                 context: context,
                 codingFactory: codingFactory
             )
-            .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+            .build(using: codingFactory, metadata: codingFactory.metadata)
 
             return DAppExtrinsicRawExtrinsicResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
         }
@@ -313,7 +424,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                 using: { data in
                     try signingClosure(data, .substrateExtrinsic(context))
                 },
-                encoder: codingFactory.createEncoder(),
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
 
@@ -322,7 +433,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                     with: { _, _ in rawSignature },
                     context: context,
                     codingFactory: codingFactory
-                ).build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+                ).build(using: codingFactory, metadata: codingFactory.metadata)
             } else {
                 nil
             }

@@ -5,6 +5,7 @@ struct ChainAccountRequest {
         let addressPrefix: ChainModel.AddressPrefix
         let isEthereumBased: Bool
         let supportsGenericLedger: Bool
+        let supportsMultisigs: Bool
         let hasSubstrateRuntime: Bool
     }
 
@@ -22,6 +23,10 @@ struct ChainAccountRequest {
 
     var supportsGenericLedger: Bool {
         properties.supportsGenericLedger
+    }
+
+    var supportsMultisigs: Bool {
+        properties.supportsMultisigs
     }
 
     var hasSubstrateRuntime: Bool {
@@ -56,7 +61,19 @@ struct MetaChainAccountResponse {
     let substrateAccountId: AccountId?
     let ethereumAccountId: AccountId?
     let walletIdenticonData: Data?
+    let delegationId: MetaAccountDelegationId?
     let chainAccount: ChainAccountResponse
+}
+
+struct MetaAccountDelegationId: Hashable {
+    let delegateAccountId: AccountId
+    let delegatorId: AccountId
+    let chainId: ChainModel.Id?
+    let delegationType: DelegationType
+
+    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
+        chainId == nil || chainId == identifier
+    }
 }
 
 enum ChainAccountFetchingError: Error {
@@ -76,6 +93,14 @@ extension MetaChainAccountResponse {
 }
 
 extension ChainAccountResponse {
+    var delegated: Bool {
+        type == .proxied || type == .multisig
+    }
+
+    var isProxied: Bool {
+        type == .proxied
+    }
+
     var chainFormat: ChainFormat {
         isEthereumBased
             ? .ethereum
@@ -119,6 +144,7 @@ extension ChainModel {
                 addressPrefix: addressPrefix,
                 isEthereumBased: isEthereumBased,
                 supportsGenericLedger: supportsGenericLedgerApp,
+                supportsMultisigs: hasMultisig,
                 hasSubstrateRuntime: hasSubstrateRuntime
             )
         )

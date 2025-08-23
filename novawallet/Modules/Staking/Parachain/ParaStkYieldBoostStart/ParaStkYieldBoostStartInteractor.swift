@@ -97,10 +97,12 @@ extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostStartInteractorInpu
 
         let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
             switch result {
-            case let .success(statusUpdate):
-                if case let .inBlock(extrinsicHash) = statusUpdate.extrinsicStatus {
+            case let .success(updateModel):
+                if case .inBlock = updateModel.statusUpdate.extrinsicStatus {
                     self?.cancelExtrinsicSubscriptionIfNeeded()
-                    self?.confirmPresenter?.didScheduleYieldBoost(for: extrinsicHash)
+                    self?.confirmPresenter?.didScheduleYieldBoost(
+                        for: updateModel.extrinsicSubmittedModel
+                    )
                 }
             case let .failure(error):
                 self?.cancelExtrinsicSubscriptionIfNeeded()

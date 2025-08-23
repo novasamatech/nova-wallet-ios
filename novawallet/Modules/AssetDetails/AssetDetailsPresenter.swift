@@ -74,29 +74,22 @@ private extension AssetDetailsPresenter {
         view.didReceive(availableOperations: availableOperations)
     }
 
-    func showRamp() {
-        let availableOptions: RampActionAvailabilityOptions = if availableOperations.buySellAvailable() {
-            .init([.onRamp, .offRamp])
-        } else if availableOperations.buyAvailable() {
-            .init([.onRamp])
-        } else if availableOperations.sellAvailable() {
-            .init([.offRamp])
-        } else {
-            .init([])
-        }
-
-        wireframe.presentRampActionsSheet(
-            from: view,
-            availableOptions: availableOptions,
-            delegate: self,
-            locale: selectedLocale
-        ) { [weak self] selectedAction in
+    func validateAndProccedRamp(with type: RampActionType) {
+        wireframe.checkingSupport(
+            of: .ramp(
+                type: type,
+                chainAsset: chainAsset,
+                all: rampActions
+            ),
+            for: selectedAccount,
+            sheetPresentingView: view
+        ) { [weak self] in
             guard let self else { return }
 
             startRampFlow(
                 from: view,
                 actions: rampActions,
-                rampType: selectedAction,
+                rampType: type,
                 wireframe: wireframe,
                 chainAsset: chainAsset,
                 locale: selectedLocale
@@ -137,7 +130,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 
     func handleReceive() {
         switch selectedAccount.type {
-        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied, .multisig:
             showReceiveTokens()
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
@@ -152,17 +145,23 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 
     func handleBuySell() {
-        switch selectedAccount.type {
-        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied:
-            showRamp()
-        case .ledger, .genericLedger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
-            } else {
-                showRamp()
-            }
-        case .watchOnly:
-            wireframe.showNoSigning(from: view)
+        let availableOptions: RampActionAvailabilityOptions = if availableOperations.buySellAvailable() {
+            .init([.onRamp, .offRamp])
+        } else if availableOperations.buyAvailable() {
+            .init([.onRamp])
+        } else if availableOperations.sellAvailable() {
+            .init([.offRamp])
+        } else {
+            .init([])
+        }
+
+        wireframe.presentRampActionsSheet(
+            from: view,
+            availableOptions: availableOptions,
+            delegate: self,
+            locale: selectedLocale
+        ) { [weak self] selectedAction in
+            self?.validateAndProccedRamp(with: selectedAction)
         }
     }
 

@@ -24,20 +24,20 @@ final class ParaStkCollatorsOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityFactory: IdentityProxyFactoryProtocol
     let chainFormat: ChainFormat
 
     init(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityFactory: IdentityProxyFactoryProtocol,
         chainFormat: ChainFormat
     ) {
         self.requestFactory = requestFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.identityProxyFactory = identityProxyFactory
+        self.identityFactory = identityFactory
         self.chainFormat = chainFormat
     }
 
@@ -178,7 +178,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
 
         metadataWrapper.addDependency(operations: [codingFactoryOperation, selectedCollatorsOperation])
 
-        let identityWrapper = identityProxyFactory.createIdentityWrapper(
+        let identityWrapper = identityFactory.createIdentityWrapper(
             for: { try selectedCollatorsOperation.extractNoCancellableResultData().collators.map(\.accountId) }
         )
 
@@ -237,7 +237,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
 
         metadataWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let identityWrapper = identityProxyFactory.createIdentityWrapper(
+        let identityWrapper = identityFactory.createIdentityWrapper(
             for: { accountIds }
         )
 

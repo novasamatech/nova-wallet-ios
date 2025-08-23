@@ -202,8 +202,8 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         view?.didReceiveReplacement(transports: transports, postExecution: script)
     }
 
-    func didReceive(response: DAppScriptResponse, forTransport name: String) {
-        view?.didReceive(response: response, forTransport: name)
+    func didReceive(response: DAppScriptResponse) {
+        view?.didReceive(response: response)
     }
 
     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType) {

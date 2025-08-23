@@ -2,30 +2,69 @@ import Foundation
 import SubstrateSdk
 
 enum ExtrinsicSenderResolution {
-    struct ResolutionProxyFailure {
+    struct ResolutionDelegateFailure {
         let callPath: CallCodingPath
-        let possibleTypes: Set<Proxy.ProxyType>
-        let paths: ProxyResolution.GraphResult
+        let paths: DelegationResolution.GraphResult
     }
 
-    struct ResolvedProxy {
-        let proxyAccount: MetaChainAccountResponse?
-        let proxiedAccount: ChainAccountResponse
-        let paths: [CallCodingPath: ProxyResolution.PathFinderPath]?
+    struct ResolvedDelegate {
+        let delegateAccount: MetaChainAccountResponse?
+        let delegatedAccount: ChainAccountResponse
+        let paths: [JSON: DelegationResolution.PathFinderPath]
         let allWallets: [MetaAccountModel]
         let chain: ChainModel
-        let failures: [ResolutionProxyFailure]
+        let failures: [ResolutionDelegateFailure]
+
+        var canSignWithDelegate: Bool {
+            guard failures.isEmpty, let delegateAccount else {
+                return false
+            }
+
+            return !delegateAccount.chainAccount.delegated
+        }
+
+        func getNonResolvedProxiedWallet() -> MetaAccountModel? {
+            guard !canSignWithDelegate else {
+                return nil
+            }
+
+            if let delegateAccount {
+                guard delegateAccount.chainAccount.isProxied else {
+                    return nil
+                }
+
+                return allWallets.first(where: { $0.metaId == delegateAccount.metaId })
+            } else if delegatedAccount.isProxied {
+                return allWallets.first(where: { $0.metaId == delegatedAccount.metaId })
+            } else {
+                return nil
+            }
+        }
+
+        func getNotEnoughPermissionProxyWallet() -> MetaAccountModel? {
+            guard
+                let proxiedWallet = getNonResolvedProxiedWallet(),
+                let proxyModel = proxiedWallet.proxy else {
+                return nil
+            }
+
+            let accountRequest = chain.accountRequest()
+
+            return allWallets.first {
+                $0.fetch(for: accountRequest)?.accountId == proxyModel.accountId
+            }
+        }
     }
 
     case current(ChainAccountResponse)
-    case proxy(ResolvedProxy)
+    case delegate(ResolvedDelegate)
 
     var account: ChainAccountResponse {
         switch self {
         case let .current(account):
             return account
-        case let .proxy(proxy):
-            return proxy.proxyAccount?.chainAccount ?? proxy.proxiedAccount
+        case let .delegate(delegate):
+            return delegate.delegateAccount?.chainAccount ?? delegate.delegatedAccount
         }
     }
 }

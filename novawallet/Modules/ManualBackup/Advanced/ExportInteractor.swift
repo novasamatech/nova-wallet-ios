@@ -160,7 +160,7 @@ private extension ExportInteractor {
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) throws -> ExportChainData {
-        var accountResponse = try accountResponse(
+        let accountResponse = try accountResponse(
             for: chain,
             metaAccount: metaAccount
         )

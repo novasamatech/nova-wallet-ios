@@ -212,10 +212,15 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
         provideFeeViewModel()
     }
 
-    func didReceiveConfirmation(hash _: String) {
+    func didReceiveConfirmation(model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .popBaseAndDismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: model.sender,
+            completionAction: .popBaseAndDismiss,
+            locale: selectedLocale
+        )
     }
 
     func didReceive(restrictions: RelaychainStakingRestrictions) {

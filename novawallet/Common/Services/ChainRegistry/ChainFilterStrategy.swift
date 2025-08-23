@@ -9,6 +9,7 @@ enum ChainFilterStrategy {
 
     case enabledChains
     case hasProxy
+    case hasMultisig
     case chainId(ChainModel.Id)
     case genericLedger
     case hasSubstrateRuntime
@@ -35,6 +36,18 @@ enum ChainFilterStrategy {
                         && change.item?.isTestnet == false
                 #else
                     return change.item?.hasProxy == true
+                #endif
+            }
+        case .hasMultisig: { change in
+                if case .delete = change {
+                    return true
+                }
+
+                #if F_RELEASE
+                    return change.item?.hasMultisig == true
+                        && change.item?.isTestnet == false
+                #else
+                    return change.item?.hasMultisig == true
                 #endif
             }
         case let .chainId(chainId): { change in
@@ -106,6 +119,31 @@ enum ChainFilterStrategy {
                     change,
                     for: currentHasProxy,
                     updatedHasProxy
+                )
+            }
+        case .hasMultisig: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                var currentHasMultisig: Bool {
+                    #if F_RELEASE
+                        currentChain?.hasMultisig == true
+                            && currentChain?.isTestnet == false
+                    #else
+                        currentChain?.hasMultisig == true
+                    #endif
+                }
+
+                var updatedHasMultisig: Bool {
+                    #if F_RELEASE
+                        changedChain.hasMultisig && !changedChain.isTestnet
+                    #else
+                        changedChain.hasMultisig
+                    #endif
+                }
+                return transform(
+                    change,
+                    for: currentHasMultisig,
+                    updatedHasMultisig
                 )
             }
         case let .chainId(chainId): { change, currentChain in

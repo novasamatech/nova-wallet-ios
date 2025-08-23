@@ -207,6 +207,7 @@ private extension DAppOperationConfirmViewFactory {
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageFacade.shared,
             priceProviderFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue

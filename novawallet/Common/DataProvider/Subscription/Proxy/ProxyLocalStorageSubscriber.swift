@@ -6,7 +6,7 @@ protocol ProxyListLocalStorageSubscriber where Self: AnyObject {
 
     var proxyListLocalSubscriptionHandler: ProxyListLocalSubscriptionHandler { get }
 
-    func subscribeAllProxies() -> StreamableProvider<ProxyAccountModel>?
+    func subscribeAllProxies() -> StreamableProvider<DelegatedAccount.ProxyAccountModel>?
 
     func subscribeProxies(
         for accountId: AccountId,
@@ -16,12 +16,12 @@ protocol ProxyListLocalStorageSubscriber where Self: AnyObject {
 }
 
 extension ProxyListLocalStorageSubscriber {
-    func subscribeAllProxies() -> StreamableProvider<ProxyAccountModel>? {
+    func subscribeAllProxies() -> StreamableProvider<DelegatedAccount.ProxyAccountModel>? {
         guard let provider = try? proxyListLocalSubscriptionFactory.getProxyListProvider() else {
             return nil
         }
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<ProxyAccountModel>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DelegatedAccount.ProxyAccountModel>]) in
             self?.proxyListLocalSubscriptionHandler.handleAllProxies(result: .success(changes))
             return
         }

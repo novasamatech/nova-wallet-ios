@@ -117,10 +117,9 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let signatureParamsOperation = ClosureOperation<ExtrinsicSignatureParams> {
             let builder = params.extrinsicMemo.restoreBuilder()
-            let encoder = params.codingFactory.createEncoder()
 
             return try builder.buildExtrinsicSignatureParams(
-                encodingBy: encoder,
+                encodingFactory: params.codingFactory,
                 metadata: params.codingFactory.metadata
             )
         }
@@ -138,7 +137,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
         return proofWrapper.insertingHead(operations: [signatureParamsOperation])
     }
 
-    private func createChanAccountOperation(
+    private func createChainAccountOperation(
         dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
         chain: ChainModel
     ) -> BaseOperation<ChainAccountModel> {
@@ -154,7 +153,8 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                 accountId: response.accountId,
                 publicKey: response.publicKey,
                 cryptoType: response.cryptoType.rawValue,
-                proxy: nil
+                proxy: nil,
+                multisig: nil
             )
         }
     }
@@ -219,7 +219,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
         signatureFetchWrapper.addDependency(operations: [signatureParamsOperation])
 
-        let chainAccountOperation = createChanAccountOperation(
+        let chainAccountOperation = createChainAccountOperation(
             dependingOn: walletOperation,
             chain: chain
         )

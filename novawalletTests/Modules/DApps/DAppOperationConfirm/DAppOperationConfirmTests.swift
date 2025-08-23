@@ -58,7 +58,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chainId = try Data(hexString: extrinsicRequest.genesisHash).toHex()
@@ -150,6 +151,7 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory, 
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
@@ -242,7 +244,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chain = ChainModelGenerator.generateChain(

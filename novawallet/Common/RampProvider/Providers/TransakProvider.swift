@@ -56,37 +56,6 @@ private extension TransakProvider {
         return fiatPaymentsMethods
     }
 
-    func buildURLForToken(
-        _ token: String,
-        network: String,
-        address: String,
-        type: RampActionType
-    ) -> URL? {
-        var components = URLComponents(string: Self.baseUrlString)
-
-        var queryItems = [
-            URLQueryItem(name: "apiKey", value: Self.pubToken),
-            URLQueryItem(name: "network", value: network),
-            URLQueryItem(name: "cryptoCurrencyCode", value: token)
-        ]
-
-        let productsAvailed = switch type {
-        case .offRamp: "SELL"
-        case .onRamp: "BUY"
-        }
-
-        if type == .onRamp {
-            queryItems.append(URLQueryItem(name: "walletAddress", value: address))
-            queryItems.append(URLQueryItem(name: "disableWalletAddressForm", value: "true"))
-        }
-
-        queryItems.append(URLQueryItem(name: "productsAvailed", value: productsAvailed))
-
-        components?.queryItems = queryItems
-
-        return components?.url
-    }
-
     func buildOffRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
@@ -100,14 +69,14 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(
-            token,
-            network: network,
+        let urlFactory = TransakRampURLFactory(
+            actionType: .offRamp,
+            pubToken: Self.pubToken,
+            baseURL: Self.baseUrlString,
             address: address,
-            type: .offRamp
-        ) else {
-            return []
-        }
+            token: token,
+            network: network
+        )
 
         let action = RampAction(
             type: .offRamp,
@@ -115,7 +84,7 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )
@@ -136,14 +105,14 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(
-            token,
-            network: network,
+        let urlFactory = TransakRampURLFactory(
+            actionType: .onRamp,
+            pubToken: Self.pubToken,
+            baseURL: Self.baseUrlString,
             address: address,
-            type: .onRamp
-        ) else {
-            return []
-        }
+            token: token,
+            network: network
+        )
 
         let action = RampAction(
             type: .onRamp,
@@ -151,7 +120,7 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )

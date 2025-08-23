@@ -37,7 +37,8 @@ private extension ParitySignerWalletOperationFactory {
                     ethereumAddress: nil,
                     ethereumPublicKey: nil,
                     chainAccounts: [],
-                    type: .paritySigner
+                    type: .paritySigner,
+                    multisig: nil
                 )
             case .evm:
                 return MetaAccountModel(
@@ -49,7 +50,8 @@ private extension ParitySignerWalletOperationFactory {
                     ethereumAddress: account.accountId,
                     ethereumPublicKey: publicKey,
                     chainAccounts: [],
-                    type: .paritySigner
+                    type: .paritySigner,
+                    multisig: nil
                 )
             }
         }
@@ -71,7 +73,8 @@ private extension ParitySignerWalletOperationFactory {
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: Set(chainAccounts),
-                type: .polkadotVault
+                type: .polkadotVault,
+                multisig: nil
             )
         }
     }
@@ -96,7 +99,8 @@ private extension ParitySignerWalletOperationFactory {
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: Set(updatedChainAccounts),
-                type: .polkadotVault
+                type: .polkadotVault,
+                multisig: nil
             )
         }
     }

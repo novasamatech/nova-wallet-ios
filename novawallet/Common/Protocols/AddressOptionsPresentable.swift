@@ -146,6 +146,32 @@ extension AddressOptionsPresentable {
             completion: nil
         )
     }
+
+    func presentSubstrateAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        locale: Locale
+    ) {
+        presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: .substrate,
+            locale: locale
+        )
+    }
+
+    func presentEvmAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        locale: Locale
+    ) {
+        presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: .evm,
+            locale: locale
+        )
+    }
 }
 
 enum AddressOptionsPresentableFactory {

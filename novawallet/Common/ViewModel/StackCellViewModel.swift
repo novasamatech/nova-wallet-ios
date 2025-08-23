@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct StackCellViewModel {
     let details: String

@@ -59,6 +59,10 @@ extension NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.metaId), identifier)
     }
 
+    static func metaAccountsByType(_ type: MetaAccountModelType) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.type), type.rawValue)
+    }
+
     static func selectedMetaAccount() -> NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDMetaAccount.isSelected))
     }
@@ -490,6 +494,42 @@ extension NSPredicate {
 
         return NSCompoundPredicate(
             andPredicateWithSubpredicates: [chainPredicate, metaAccountPredicate]
+        )
+    }
+
+    static func pendingMultisigOperations(
+        for chainId: ChainModel.Id,
+        multisigAccountId: AccountId
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.chainId),
+            chainId
+        )
+        let accountIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+
+        return NSCompoundPredicate(
+            andPredicateWithSubpredicates: [chainPredicate, accountIdPredicate]
+        )
+    }
+
+    static func pendingMultisigOperations(multisigAccountId: AccountId) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+    }
+
+    static func pendingOperation(identifier: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.identifier),
+            identifier
         )
     }
 }

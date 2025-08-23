@@ -30,7 +30,7 @@ extension ExtrinsicAssetConversionFeeInstaller: ExtrinsicFeeInstalling {
         }
 
         return builder.adding(
-            extrinsicSignedExtension: AssetConversionTxPayment(
+            transactionExtension: AssetConversionTxPayment(
                 tip: tip,
                 assetId: assetId
             )

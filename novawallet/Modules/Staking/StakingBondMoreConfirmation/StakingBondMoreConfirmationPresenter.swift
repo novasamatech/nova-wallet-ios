@@ -21,12 +21,14 @@ final class StakingBondMoreConfirmationPresenter {
     private var fee: ExtrinsicFeeProtocol?
     private var stashAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
+    private var isStakingMigratedToHolds: Bool = false
 
     private var availableAmountToStake: Decimal? {
-        let free = freeBalance ?? 0
-        let bond = bondBalance ?? 0
-
-        return free >= bond ? free - bond : 0
+        Staking.getAvailableAmountToStake(
+            from: freeBalance ?? 0,
+            bonded: bondBalance ?? 0,
+            isStakingMigratedToHolds: isStakingMigratedToHolds
+        )
     }
 
     init(
@@ -201,6 +203,15 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
+    func didReceiveStakingMigratedToHold(result: Result<Bool, Error>) {
+        switch result {
+        case let .success(value):
+            isStakingMigratedToHolds = value
+        case let .failure(error):
+            logger?.error("Did receive staking migrated to holds error: \(error)")
+        }
+    }
+
     func didReceivePriceData(result: Result<PriceData?, Error>) {
         switch result {
         case let .success(priceData):
@@ -246,7 +257,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
-    func didSubmitBonding(result: Result<String, Error>) {
+    func didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -254,8 +265,13 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
 
         switch result {
-        case .success:
-            wireframe.complete(from: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: view.selectedLocale
+            )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

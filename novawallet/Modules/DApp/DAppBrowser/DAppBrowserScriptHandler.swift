@@ -38,6 +38,8 @@ extension DAppBrowserScriptHandler {
         clearScript(for: self.viewModel?.name)
         clearScript(for: viewModel.name)
 
+        viewModel.handlerNames.forEach { clearScript(for: $0) }
+
         self.viewModel = viewModel
 
         for script in viewModel.scripts {

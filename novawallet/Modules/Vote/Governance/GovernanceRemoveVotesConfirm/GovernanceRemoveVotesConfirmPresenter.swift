@@ -215,7 +215,12 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmInt
                     return
                 }
 
-                strongSelf.wireframe.complete(on: strongSelf.view, locale: strongSelf.selectedLocale)
+                strongSelf.wireframe.presentExtrinsicSubmission(
+                    from: strongSelf.view,
+                    sender: result.senders().first,
+                    completionAction: .popBack,
+                    locale: strongSelf.selectedLocale
+                )
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
 

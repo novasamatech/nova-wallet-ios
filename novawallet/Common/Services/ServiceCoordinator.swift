@@ -7,7 +7,7 @@ import Operation_iOS
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
     var walletNotificationService: WalletNotificationServiceProtocol { get }
-    var proxySyncService: ProxySyncServiceProtocol { get }
+    var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol { get }
 
     func updateOnWalletSelectionChange()
 
@@ -23,10 +23,11 @@ final class ServiceCoordinator {
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetBalanceUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+    let pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -35,11 +36,12 @@ final class ServiceCoordinator {
         evmNativeService: AssetBalanceUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetBalanceUpdatingServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
-        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
@@ -47,11 +49,12 @@ final class ServiceCoordinator {
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.dappMediator = dappMediator
         self.walletNotificationService = walletNotificationService
         self.syncModeUpdateService = syncModeUpdateService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.pendingMultisigSyncService = pendingMultisigSyncService
     }
 }
 
@@ -63,13 +66,14 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
             syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
+            pendingMultisigSyncService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
     func updateOnWalletChange(for source: WalletsChangeSource) {
         switch source {
         case .byUserManually, .byCloudBackup:
-            proxySyncService.syncUp()
+            delegatedAccountSyncService.syncUp()
         case .byProxyService:
             break
         }
@@ -87,11 +91,12 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
-        proxySyncService.setup()
+        delegatedAccountSyncService.setup()
         dappMediator.setup()
         syncModeUpdateService.setup()
         walletNotificationService.setup()
         pushNotificationsFacade.setup()
+        pendingMultisigSyncService.setup()
     }
 
     func throttle() {
@@ -100,11 +105,12 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
-        proxySyncService.throttle()
+        delegatedAccountSyncService.throttle()
         dappMediator.throttle()
         syncModeUpdateService.throttle()
         walletNotificationService.throttle()
         pushNotificationsFacade.throttle()
+        pendingMultisigSyncService.throttle()
     }
 }
 
@@ -192,13 +198,12 @@ extension ServiceCoordinator {
             operationQueue: operationQueue
         )
 
-        let proxySyncService = ProxySyncService(
+        let delegatedAccountSyncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
-            proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
-            chainWalletFilter: { _, wallet in
+            chainWalletFilter: { wallet in
                 #if F_RELEASE
                     return wallet.type != .watchOnly
                 #else
@@ -209,6 +214,7 @@ extension ServiceCoordinator {
 
         let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            multisigListLocalSubscriptionFactory: MultisigListLocalSubscriptionFactory.shared,
             logger: logger
         )
 
@@ -225,11 +231,12 @@ extension ServiceCoordinator {
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
             equilibriumService: equilibriumService,
-            proxySyncService: proxySyncService,
+            delegatedAccountSyncService: delegatedAccountSyncService,
             dappMediator: DAppInteractionFactory.createMediator(for: urlHandlingFacade),
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
-            pushNotificationsFacade: PushNotificationsServiceFacade.shared
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            pendingMultisigSyncService: MultisigPendingOperationsService.shared
         )
     }
 }

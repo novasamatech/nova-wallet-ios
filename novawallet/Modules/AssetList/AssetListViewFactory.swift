@@ -6,7 +6,7 @@ struct AssetListViewFactory {
     static func createView(
         with dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dappMediator.children.first(
@@ -24,6 +24,7 @@ struct AssetListViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             walletNotificationService: walletNotificationService,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
@@ -36,7 +37,7 @@ struct AssetListViewFactory {
         let wireframe = AssetListWireframe(
             dappMediator: dappMediator,
             assetListModelObservable: assetListModelObservable,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )
 
         let nftDownloadService = NftFileDownloadService(

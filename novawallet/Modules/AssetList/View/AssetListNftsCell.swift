@@ -1,7 +1,28 @@
 import UIKit
 import UIKit_iOS
 
-final class AssetListNftsCell: UICollectionViewCell {
+final class AssetListNftsCell: CollectionViewContainerCell<AssetListNftsView> {
+    var locale: Locale {
+        get { view.locale }
+        set { view.locale = newValue }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        changesContentOpacityWhenHighlighted = true
+    }
+
+    func refresh() {
+        view.refresh()
+    }
+
+    func bind(viewModel: AssetListNftsViewModel) {
+        view.bind(viewModel: viewModel)
+    }
+}
+
+final class AssetListNftsView: UIView {
     private enum Constants {
         static let mediaSize = CGSize(width: 32.0, height: 32.0)
         static let mediaStrokeSize: CGFloat = 0.0
@@ -10,44 +31,26 @@ final class AssetListNftsCell: UICollectionViewCell {
         static let mediaTrailing: CGFloat = 8.0
     }
 
-    let backgroundBlurView: BlockBackgroundView = {
-        let view = BlockBackgroundView()
-        view.sideLength = 12.0
-        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
-        return view
-    }()
+    private var mediaViews: [NftMediaView] = []
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .regularSubheadline
-        return label
-    }()
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .regularSubhedlinePrimary)
+    }
 
-    let counterLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorChipText()
-        label.font = .semiBoldFootnote
-        return label
-    }()
+    let counterLabel: UILabel = .create { view in
+        view.apply(style: .semiboldChip)
+    }
 
-    let counterBackgroundView: RoundedView = {
-        let view = RoundedView()
+    let counterBackgroundView: RoundedView = .create { view in
         view.apply(style: .chips)
-        view.cornerRadius = 6.0
-        return view
-    }()
+        view.cornerRadius = 8.0
+    }
 
-    let accessoryImageView: UIImageView = {
-        let imageView = UIImageView()
-        let image = R.image.iconSmallArrow()?
+    let accessoryImageView: UIImageView = .create { view in
+        view.image = R.image.iconSmallArrow()?
             .withRenderingMode(.alwaysTemplate)
             .tinted(with: R.color.colorIconSecondary()!)
-        imageView.image = image
-        return imageView
-    }()
-
-    private var mediaViews: [NftMediaView] = []
+    }
 
     var locale = Locale.current {
         didSet {
@@ -57,24 +60,16 @@ final class AssetListNftsCell: UICollectionViewCell {
         }
     }
 
-    override var isHighlighted: Bool {
-        didSet {
-            if isHighlighted {
-                backgroundBlurView.set(highlighted: true, animated: false)
-            } else {
-                backgroundBlurView.set(highlighted: false, animated: oldValue)
-            }
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = .clear
         setupLayout()
     }
 
-    private func setupLocalization() {
-        titleLabel.text = R.string.localizable.walletListYourNftsTitle(preferredLanguages: locale.rLanguages)
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     func bind(viewModel: AssetListNftsViewModel) {
@@ -91,13 +86,16 @@ final class AssetListNftsCell: UICollectionViewCell {
     func refresh() {
         mediaViews.forEach { $0.refreshMediaIfNeeded() }
     }
+}
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+// MARK: - Private
+
+private extension AssetListNftsView {
+    func setupLocalization() {
+        titleLabel.text = R.string.localizable.walletListYourNftsTitle(preferredLanguages: locale.rLanguages)
     }
 
-    private func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
+    func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
@@ -134,16 +132,16 @@ final class AssetListNftsCell: UICollectionViewCell {
         }
     }
 
-    private func createMediaView() -> NftMediaView {
+    func createMediaView() -> NftMediaView {
         let mediaView = NftMediaView()
         mediaView.contentInsets = .zero
 
         return mediaView
     }
 
-    private func updatingMediaViewList(_ list: [NftMediaView], appending: [NftMediaView]) -> [NftMediaView] {
+    func updatingMediaViewList(_ list: [NftMediaView], appending: [NftMediaView]) -> [NftMediaView] {
         let views = appending.reduce(list) { result, mediaView in
-            contentView.addSubview(mediaView)
+            addSubview(mediaView)
 
             if let previousView = result.last {
                 mediaView.snp.makeConstraints { make in
@@ -165,26 +163,20 @@ final class AssetListNftsCell: UICollectionViewCell {
         return views
     }
 
-    private func setupLayout() {
-        contentView.addSubview(backgroundBlurView)
-        backgroundBlurView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.bottom.equalToSuperview()
-        }
-
-        contentView.addSubview(accessoryImageView)
+    func setupLayout() {
+        addSubview(accessoryImageView)
         accessoryImageView.snp.makeConstraints { make in
-            make.trailing.equalTo(backgroundBlurView.snp.trailing).offset(-16.0)
+            make.trailing.equalToSuperview().inset(32.0)
             make.centerY.equalToSuperview()
         }
 
-        contentView.addSubview(titleLabel)
+        addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(backgroundBlurView.snp.leading).offset(16.0)
+            make.leading.equalToSuperview().inset(28.0)
             make.centerY.equalToSuperview()
         }
 
-        contentView.addSubview(counterBackgroundView)
+        addSubview(counterBackgroundView)
         counterBackgroundView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
             make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-8.0)
