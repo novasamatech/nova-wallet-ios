@@ -165,8 +165,10 @@ private extension AccountManagementViewModelFactory {
             } else {
                 .multichainDisplayFormat
             }
-        case .universal:
+        case .universalSubstrate:
             .multichainDisplayFormat
+        case .universalEvm:
+            .ethereum
         }
 
         let signatoryViewModel = createDelegateViewModel(

@@ -8,4 +8,10 @@ final class WalletCheckboxTableViewCell: WalletsListTableViewCell<WalletView, UI
 
         checkmarkView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
     }
+
+    override func setupLayout() {
+        super.setupLayout()
+
+        checkmarkView.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
 }

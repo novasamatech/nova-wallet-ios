@@ -149,7 +149,7 @@ extension MetaAccountModel {
 
     func replacingMultisig(with multisigType: MultisigAccountType) -> MetaAccountModel? {
         switch multisigType {
-        case let .universal(multisig):
+        case let .universalSubstrate(multisig), let .universalEvm(multisig):
             MetaAccountModel(
                 metaId: metaId,
                 name: name,
