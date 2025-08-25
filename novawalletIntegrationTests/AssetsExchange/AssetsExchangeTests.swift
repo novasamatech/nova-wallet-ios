@@ -69,13 +69,11 @@ final class AssetsExchangeTests: XCTestCase {
                 return
             }
             
-            let hasDirections = !reachability.getAllAssetIn().isEmpty &&
-                !reachability.getAllAssetOut().isEmpty &&
-                !reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty &&
-                !reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty &&
-                !reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty
-            
-            XCTAssert(hasDirections, "Some directions were not found")
+            XCTAssert(!reachability.getAllAssetIn().isEmpty)
+            XCTAssert(!reachability.getAllAssetOut().isEmpty)
+            XCTAssert(!reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty)
+            XCTAssert(!reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty)
+            XCTAssert(!reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty)
         }
     }
     

@@ -27,9 +27,12 @@ enum TokenDepositEventMatcherFactory {
                     ]
                 },
                 ormlHydrationEvmHandler: { extras in
-                    // TODO: GDOT Check that this actually works
                     [
-                        TokensPalletDepositEventMatcher(extras: extras, logger: logger)
+                        TokensPalletDepositEventMatcher(
+                            extras: extras,
+                            eventPath: CurrenciesPallet.depositedEventPath,
+                            logger: logger
+                        )
                     ]
                 },
                 evmHandler: { contractAccountId in

@@ -32,12 +32,15 @@ private extension AssetsHydraAaveExchange {
                 accum.insert(pair.asset2)
             }
 
+            self.host.logger.debug("Started processing edges")
+
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: allRemoteAssets,
                 chain: self.host.chain,
-                codingFactory: codingFactory,
-                failureClosure: { self.host.logger.warning("Token \($0) conversion failed: \($1)") }
+                codingFactory: codingFactory
             )
+
+            self.host.logger.debug("Complete processing edges \(remoteLocalMapping.count)")
 
             let edges: [AnyAssetExchangeEdge] = remotePairs.flatMap { pair in
                 guard

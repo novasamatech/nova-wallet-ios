@@ -5,55 +5,30 @@ final class CrosschainExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
     let host: CrosschainExchangeHostProtocol
+    let features: XcmTransferFeatures
 
-    init(origin: ChainAssetId, destination: ChainAssetId, host: CrosschainExchangeHostProtocol) {
+    init(
+        origin: ChainAssetId,
+        destination: ChainAssetId,
+        host: CrosschainExchangeHostProtocol,
+        features: XcmTransferFeatures
+    ) {
         self.origin = origin
         self.destination = destination
         self.host = host
+        self.features = features
     }
 
     private func deliveryFeeNotPaidOrFromHolding() -> Bool {
-        guard
-            let originChain = host.allChains[origin.chainId],
-            let originChainAsset = originChain.chainAsset(for: origin.assetId),
-            let destinationChain = host.allChains[destination.chainId] else {
-            return false
-        }
-
-        do {
-            let metadata = try host.xcmTransfers.getTransferMetadata(
-                for: originChainAsset,
-                destinationChain: destinationChain
-            )
-
-            // xcm execute allows to pay delivery fee from holding
-            return !metadata.paysDeliveryFee || metadata.supportsXcmExecute
-        } catch {
-            return false
-        }
+        // xcm execute allows to pay delivery fee from holding
+        !features.hasDeliveryFee || features.shouldUseXcmExecute
     }
 
     private func shouldProhibitTransferOutAll() -> Bool {
-        guard
-            let originChain = host.allChains[origin.chainId],
-            let originChainAsset = originChain.chainAsset(for: origin.assetId),
-            let destinationChain = host.allChains[destination.chainId] else {
-            return false
-        }
-
-        do {
-            let metadata = try host.xcmTransfers.getTransferMetadata(
-                for: originChainAsset,
-                destinationChain: destinationChain
-            )
-
-            return host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
-                assetIn: originChainAsset,
-                metadata: metadata
-            )
-        } catch {
-            return false
-        }
+        host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
+            assetIn: origin,
+            features: features
+        )
     }
 }
 

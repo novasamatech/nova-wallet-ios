@@ -5,17 +5,21 @@ final class XcmOneOfCallDerivator {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
+    private let featuresFactory = XcmTransferFeaturesFactory()
+
     init(chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue) {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
     }
 }
 
-extension XcmOneOfCallDerivator: XcmCallDerivating {
-    func createTransferCallDerivationWrapper(
+private extension XcmOneOfCallDerivator {
+    func createCallDerivationWrapper(
         for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
-        let actualDerivator: XcmCallDerivating = if transferRequest.metadata.supportsXcmExecute {
+        let features = featuresFactory.createFeatures(for: transferRequest.metadata)
+
+        let actualDerivator: XcmCallDerivating = if features.shouldUseXcmExecute {
             XcmExecuteDerivator(
                 chainRegistry: chainRegistry,
                 xcmPaymentFactory: XcmPaymentOperationFactory(
@@ -29,5 +33,13 @@ extension XcmOneOfCallDerivator: XcmCallDerivating {
         }
 
         return actualDerivator.createTransferCallDerivationWrapper(for: transferRequest)
+    }
+}
+
+extension XcmOneOfCallDerivator: XcmCallDerivating {
+    func createTransferCallDerivationWrapper(
+        for transferRequest: XcmUnweightedTransferRequest
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
+        createCallDerivationWrapper(for: transferRequest)
     }
 }

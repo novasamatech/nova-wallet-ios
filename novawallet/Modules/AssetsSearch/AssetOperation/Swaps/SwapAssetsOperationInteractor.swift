@@ -54,7 +54,6 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             case let .success(reachibility):
                 self?.reachability = reachibility
                 self?.builder?.reload()
-                self?.presenter?.directionsLoaded()
             case let .failure(error):
                 self?.presenter?.didReceive(error: .directions(error))
             }
@@ -101,6 +100,9 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)
+
+                let hasNoDirections = self?.reachability?.isEmpty ?? true
+                self?.presenter?.didUpdate(hasDirections: !hasNoDirections)
             },
             operationQueue: searchQueue,
             logger: logger
