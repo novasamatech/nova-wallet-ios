@@ -28,12 +28,7 @@ enum DSFeeValidationInteractoryFactory {
         let assetInfoOperationFactory = AssetStorageInfoOperationFactory()
 
         let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
-            requestFactory: StorageRequestFactory(
-                remoteFactory: StorageKeyFactory(),
-                operationManager: OperationManagerFacade.sharedManager
-            ),
-            runtimeProvider: runtimeProvider,
-            connection: connection,
+            chainRegistry: chainRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

@@ -9,35 +9,47 @@ enum TokenDepositEventMatcherFactory {
             type: chainAsset.asset.type,
             typeExtras: chainAsset.asset.typeExtras
         ).mapAssetWithExtras(
-            nativeHandler: {
-                [
-                    NativeTokenMintedEventMatcher(logger: logger),
-                    NativeTokenDepositedEventMatcher(logger: logger)
-                ]
-            },
-            statemineHandler: { extras in
-                [
-                    PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
-                ]
-            },
-            ormlHandler: { extras in
-                [
-                    TokensPalletDepositEventMatcher(extras: extras, logger: logger)
-                ]
-            }, evmHandler: { contractAccountId in
-                [
-                    MoonbeamEvmMintedEventMatcher(
-                        contractAccountId: contractAccountId,
-                        logger: logger
-                    )
-                ]
-            },
-            evmNativeHandler: {
-                nil
-            },
-            equilibriumHandler: { _ in
-                nil
-            }
+            .init(
+                nativeHandler: {
+                    [
+                        NativeTokenMintedEventMatcher(logger: logger),
+                        NativeTokenDepositedEventMatcher(logger: logger)
+                    ]
+                },
+                statemineHandler: { extras in
+                    [
+                        PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
+                    ]
+                },
+                ormlHandler: { extras in
+                    [
+                        TokensPalletDepositEventMatcher(extras: extras, logger: logger)
+                    ]
+                },
+                ormlHydrationEvmHandler: { extras in
+                    [
+                        TokensPalletDepositEventMatcher(
+                            extras: extras,
+                            eventPath: CurrenciesPallet.depositedEventPath,
+                            logger: logger
+                        )
+                    ]
+                },
+                evmHandler: { contractAccountId in
+                    [
+                        MoonbeamEvmMintedEventMatcher(
+                            contractAccountId: contractAccountId,
+                            logger: logger
+                        )
+                    ]
+                },
+                evmNativeHandler: {
+                    nil
+                },
+                equilibriumHandler: { _ in
+                    nil
+                }
+            )
         )
     }
 }

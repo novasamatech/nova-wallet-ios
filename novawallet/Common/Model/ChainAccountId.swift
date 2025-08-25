@@ -1,6 +1,6 @@
 import Foundation
 
-struct ChainAccountId {
+struct ChainAccountId: Equatable, Hashable {
     let chainId: ChainModel.Id
     let accountId: AccountId
 }

@@ -11,9 +11,9 @@ extension Xcm {
             case weightLimit = "weight_limit"
         }
 
-        let destination: VersionedMultilocation
-        let beneficiary: VersionedMultilocation // must be set relatively to destination
-        let assets: VersionedMultiassets
+        let destination: XcmUni.VersionedLocation
+        let beneficiary: XcmUni.VersionedLocation // must be set relatively to destination
+        let assets: XcmUni.VersionedAssets
         @StringCodable var feeAssetItem: UInt32 // index of the fee asset in assets
         let weightLimit: Xcm.WeightLimit<JSON> // maximum weight for remote execution
 

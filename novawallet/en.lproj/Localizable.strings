@@ -1925,3 +1925,6 @@
 "feature.unsupported.sheet.message.sell.proxied" = "To sell crypto for fiat, please switch to a different wallet.";
 "common.trust.wallet" = "Trust wallet";
 "trust.wallet.import.description" = "Use your Trust Wallet accounts in Nova";
+"swap.dry.run.failed.inline.message" = "Simulation of swap step failed";
+"common.dry.run.failed.title" = "Transaction simulation failed";
+"common.dry.run.failed.message" = "Nova simulates the transaction beforehand to prevent errors. This simulation didn’t succeed. Try again later or with a higher amount. If the issue persists, please contact Nova Wallet Support in Settings.";

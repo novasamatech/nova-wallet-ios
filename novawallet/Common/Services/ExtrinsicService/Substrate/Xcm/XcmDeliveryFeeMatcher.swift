@@ -44,11 +44,11 @@ extension XcmDeliveryFeeMatcher: XcmDeliveryFeeMatching {
             }
 
             let feesPaidEvent = try event.params.map(
-                to: Xcm.FeesPaidEvent<XcmV4.Multiasset>.self,
+                to: Xcm.FeesPaidEvent<Xcm.Version4<XcmUni.Asset>>.self,
                 with: codingFactory.createRuntimeJsonContext().toRawContext()
             )
 
-            guard case let .fungible(amount) = feesPaidEvent.assets.first?.fun else {
+            guard case let .fungible(amount) = feesPaidEvent.assets.first?.wrapped.fun else {
                 return nil
             }
 

@@ -1885,6 +1885,9 @@
 "common.hide" = "숨기기";
 "common.show" = "표시";
 "multisig.operation.signatories.progress.format" = "서명자 (%li 중 %li)";
+"swap.dry.run.failed.inline.message" = "스왑 단계 시뮬레이션 실패";
+"common.dry.run.failed.title" = "거래 시뮬레이션 실패";
+"common.dry.run.failed.message" = "Nova는 오류를 방지하기 위해 거래를 사전에 시뮬레이션합니다. 이 시뮬레이션이 성공하지 못했습니다. 나중에 다시 시도하거나 더 높은 금액으로 시도하십시오. 문제가 지속되면, 설정의 Nova Wallet 지원팀에 문의하십시오.";
 "call.data.validation.error.title" = "잘못된 호출 데이터";
 "enter.call.data.details.button.title" = "세부 정보를 보려면 호출 데이터를 입력하십시오";
 "enter.call.data" = "호출 데이터 입력";

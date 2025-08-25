@@ -206,7 +206,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
                 connection: connection,
                 runtimeService: runtimeService
             )
-        case let .orml(info):
+        case let .orml(info), let .ormlHydrationEvm(info):
             let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
         case .erc20, .evmNative:

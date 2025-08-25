@@ -135,25 +135,11 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let operationQueue = OperationQueue()
         
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
-        
-        guard
-            let chain = chainRegistry.getChain(for: chainId),
-            let asset = chain.asset(for: assetId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
-            let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-        
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
+        let chain = try chainRegistry.getChainOrError(for: chainId)
+        let chainAsset = try chain.chainAssetOrError(for: assetId)
         
         let operationFactory = WalletRemoteQueryWrapperFactory(
-            requestFactory: requestFactory,
-            runtimeProvider: runtimeProvider,
-            connection: connection,
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
         

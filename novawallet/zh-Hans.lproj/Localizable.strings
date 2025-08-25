@@ -1885,6 +1885,9 @@
 "common.hide" = "隐藏";
 "common.show" = "显示";
 "multisig.operation.signatories.progress.format" = "签署人 (%li / %li)";
+"swap.dry.run.failed.inline.message" = "交换步骤模拟失败";
+"common.dry.run.failed.title" = "交易模拟失败";
+"common.dry.run.failed.message" = "Nova 会提前模拟交易以防止错误。此次模拟未成功。稍后再试或尝试更高金额。如果问题仍然存在，请在设置中联系 Nova Wallet 支持。";
 "call.data.validation.error.title" = "无效的调用数据";
 "enter.call.data.details.button.title" = "输入调用数据以查看详细信息";
 "enter.call.data" = "输入调用数据";

@@ -1375,7 +1375,7 @@ PODS:
   - gRPC-Core/Interface (1.65.5)
   - gRPC-Core/Privacy (1.65.5)
   - GTMSessionFetcher/Core (3.5.0)
-  - HydraMath (0.2.0)
+  - HydraMath (0.3.0)
   - keccak.c (0.1.3)
   - Keystore-iOS (1.0.0)
   - Kingfisher (6.3.0)
@@ -1557,7 +1557,7 @@ DEPENDENCIES:
   - FirebaseMessaging (~> 11.3.0)
   - FireMock
   - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, tag `1.1.0`)
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
+  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.3`)
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
@@ -1654,7 +1654,7 @@ EXTERNAL SOURCES:
     :tag: 1.1.0
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.2'
+    :tag: '0.3'
   Keystore-iOS:
     :git: https://github.com/novasamatech/Keystore-iOS.git
     :tag: 1.0.0
@@ -1709,7 +1709,7 @@ CHECKOUT OPTIONS:
     :tag: 1.1.0
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.2'
+    :tag: '0.3'
   Keystore-iOS:
     :git: https://github.com/novasamatech/Keystore-iOS.git
     :tag: 1.0.0
@@ -1780,7 +1780,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  HydraMath: eb2fa7220956045ae5502b36cc91a34fd8ee4dcb
+  HydraMath: 3a53bad758aa1661ab671f9288f1884b7c97c659
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Keystore-iOS: 57d88fd6cfd11c7f70d63d9f443c848aed23ebaa
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 83618f679a1140ed30d661d55f9ade580d99c5e8
+PODFILE CHECKSUM: 37a323d31da6a42ba0adbf574256bbe89360907f
 
 COCOAPODS: 1.15.2

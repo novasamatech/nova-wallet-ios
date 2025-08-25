@@ -162,7 +162,8 @@ final class HydraQuoteTests: XCTestCase {
             runtimeProvider: runtimeService,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: storageFacade,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         
         let quoteFactory = HydraQuoteFactory(flowState: flowState)

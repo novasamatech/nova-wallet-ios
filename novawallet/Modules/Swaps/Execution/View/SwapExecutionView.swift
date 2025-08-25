@@ -14,6 +14,7 @@ final class SwapExecutionView: UIView {
         view.contentInsets = UIEdgeInsets(verticalInset: 0, horizontalInset: 16)
         view.contentView.textAlignment = .center
         view.backgroundView.cornerRadius = 12
+        view.contentView.numberOfLines = 0
     }
 
     convenience init() {

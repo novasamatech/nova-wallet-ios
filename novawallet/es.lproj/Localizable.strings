@@ -1885,6 +1885,9 @@
 "common.hide" = "Ocultar";
 "common.show" = "Mostrar";
 "multisig.operation.signatories.progress.format" = "Firmantes (%li de %li)";
+"swap.dry.run.failed.inline.message" = "La simulación del paso de intercambio falló";
+"common.dry.run.failed.title" = "Fallo en la simulación de transacción";
+"common.dry.run.failed.message" = "Nova simula la transacción de antemano para evitar errores. Esta simulación no tuvo éxito. Inténtalo de nuevo más tarde o con una cantidad mayor. Si el problema persiste, por favor contacta al Soporte de Nova Wallet en Configuración.";
 "call.data.validation.error.title" = "Datos de la llamada no válidos";
 "enter.call.data.details.button.title" = "Ingresa datos de la llamada para ver detalles";
 "enter.call.data" = "Introducir datos de la llamada";
