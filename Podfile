@@ -82,6 +82,7 @@ abstract_target 'novawalletAll' do
     pod 'sr25519c', :git => 'https://github.com/novasamatech/sr25519.c', :tag => '0.2.0'
     pod 'ed25519.c', :git => 'https://github.com/novasamatech/ed25519.c', :tag => '0.1.1'
     pod 'blake2.c', :git => 'https://github.com/novasamatech/blake2.c', :tag => '0.1.0'
+    pod 'web3swift', :git => 'https://github.com/web3swift-team/web3swift.git', :tag => '3.0.6'
   end
 
 

@@ -29,9 +29,11 @@ extension String {
     }
 
     func replacingCamelCase() -> String {
-        var replacedCamelCase: String = ""
+        guard let first else { return self }
+
+        var replacedCamelCase: String = "\(first.lowercased())"
         let upperCase = CharacterSet.uppercaseLetters
-        for scalar in unicodeScalars {
+        for scalar in unicodeScalars.dropFirst() {
             if upperCase.contains(scalar) {
                 replacedCamelCase.append(" ")
             }

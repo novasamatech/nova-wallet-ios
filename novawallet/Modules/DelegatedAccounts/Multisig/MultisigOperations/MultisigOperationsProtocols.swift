@@ -12,7 +12,6 @@ protocol MultisigOperationsPresenterProtocol: AnyObject {
 
 protocol MultisigOperationsInteractorInputProtocol: AnyObject {
     func setup()
-    func createFlowState() -> MultisigOperationsFlowState
 }
 
 protocol MultisigOperationsInteractorOutputProtocol: AnyObject {
@@ -24,7 +23,6 @@ protocol MultisigOperationsInteractorOutputProtocol: AnyObject {
 protocol MultisigOperationsWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showOperationDetails(
         from view: MultisigOperationsViewProtocol?,
-        operation: Multisig.PendingOperationProxyModel,
-        flowState: MultisigOperationsFlowState
+        operation: Multisig.PendingOperationProxyModel
     )
 }

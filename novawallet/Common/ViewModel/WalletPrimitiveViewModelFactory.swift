@@ -49,7 +49,7 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
             )
         case .multisig:
             return .init(
-                title: R.string.localizable.walletListMultisig(
+                title: R.string.localizable.commonMultisig(
                     preferredLanguages: locale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconMultisig()

@@ -31,6 +31,31 @@ extension ChainRegistryProtocol {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
+    func asyncWaitChainForeverWrapper(
+        where filter: @escaping (ChainModel) -> Bool,
+        workQueue: DispatchQueue = .global()
+    ) -> CompoundOperationWrapper<ChainModel?> {
+        let subscriptionId = NSObject()
+
+        let operation = AsyncClosureOperation<ChainModel?>(operationClosure: { [weak self] closure in
+            self?.chainsSubscribe(
+                subscriptionId,
+                runningInQueue: workQueue
+            ) { changes in
+                let allChains = changes.allChangedItems()
+
+                guard let chain = allChains.first(where: { filter($0) }) else { return }
+
+                self?.chainsUnsubscribe(subscriptionId)
+                closure(.success(chain))
+            }
+        }, cancelationClosure: { [weak self] in
+            self?.chainsUnsubscribe(subscriptionId)
+        })
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
     func asyncWaitChainOrErrorWrapper(
         for chainId: ChainModel.Id,
         workQueue: DispatchQueue = .global()

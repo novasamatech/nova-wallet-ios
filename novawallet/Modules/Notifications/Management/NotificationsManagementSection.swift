@@ -35,6 +35,7 @@ enum NotificationsManagementRow {
     case receivedTokens
     case gov
     case staking
+    case multisig
 
     var icon: UIImage? {
         switch self {
@@ -42,7 +43,7 @@ enum NotificationsManagementRow {
             return R.image.iconNotiifcation()
         case .wallets:
             return R.image.iconWallets()
-        case .announcements, .sentTokens, .receivedTokens, .gov, .staking:
+        case .announcements, .sentTokens, .receivedTokens, .gov, .staking, .multisig:
             return nil
         }
     }
@@ -75,6 +76,10 @@ enum NotificationsManagementRow {
             )
         case .staking:
             return R.string.localizable.notificationsManagementStakingRewards(
+                preferredLanguages: locale.rLanguages
+            )
+        case .multisig:
+            return R.string.localizable.notificationsManagementMultisigTransactions(
                 preferredLanguages: locale.rLanguages
             )
         }

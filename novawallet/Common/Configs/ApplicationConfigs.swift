@@ -330,8 +330,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var multisigWikiURL: URL {
-        // TODO: - Update to use the correct URL for multisig when wiki url is available
-        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/multisig-wallets")!
     }
 
     var unifiedAddressWikiURL: URL {

@@ -59,6 +59,26 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         )
     }
 
+    func showMultisigSetup(
+        from view: (any ControllerBackedProtocol)?,
+        settings: MultisigNotificationsModel,
+        selectedMetaIds: Set<MetaAccountModel.Id>,
+        completion: @escaping (MultisigNotificationsModel) -> Void
+    ) {
+        guard let multisigNotificationsView = MultisigNotificationsViewFactory.createView(
+            with: settings,
+            selectedMetaIds: selectedMetaIds,
+            completion: completion
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            multisigNotificationsView.controller,
+            animated: true
+        )
+    }
+
     func complete(from view: ControllerBackedProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }

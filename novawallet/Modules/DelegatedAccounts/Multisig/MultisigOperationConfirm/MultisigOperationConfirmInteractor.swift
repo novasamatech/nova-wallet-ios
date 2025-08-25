@@ -410,7 +410,7 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     }
 }
 
-// MARK: - MultisigOperationsLocalStorageSubscriber
+// MARK: - MultisigOperationProviderHandlerProtocol
 
 extension MultisigOperationConfirmInteractor: MultisigOperationProviderHandlerProtocol {
     func handleMultisigPendingOperation(

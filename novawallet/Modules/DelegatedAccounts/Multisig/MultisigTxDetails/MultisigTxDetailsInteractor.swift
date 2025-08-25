@@ -106,7 +106,7 @@ private extension MultisigTxDetailsInteractor {
 
     func createTxDetailsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<MultisigTxDetails> {
         let localAccountsWrapper = walletRepository.createWalletsWrapperByAccountId(
-            for: chain
+            for: { chain }
         )
 
         let mapOperation: BaseOperation<MultisigTxDetails> = ClosureOperation { [weak self] in

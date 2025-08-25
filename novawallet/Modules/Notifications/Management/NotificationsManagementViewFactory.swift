@@ -9,12 +9,19 @@ struct NotificationsManagementViewFactory {
             return nil
         }
 
+        let walletRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createMetaAccountRepository(for: nil, sortDescriptors: [])
+
         let interactor = NotificationsManagementInteractor(
+            walletRepository: walletRepository,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
             settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared,
             localPushSettingsFactory: PushNotificationSettingsFactory(),
             selectedWallet: selectedWallet,
-            chainRegistry: ChainRegistryFacade.sharedRegistry
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let wireframe = NotificationsManagementWireframe(

@@ -23,7 +23,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     }
 
     let localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
-    private let walletsLimit: Int = 3
+    private let walletsLimit: Int = 10
 
     init(
         initState: [Web3Alert.LocalWallet]?,
@@ -46,6 +46,14 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         )
     }
 
+    // MARK: - Overrides
+
+    override func setup() {
+        super.setup()
+
+        provideTitle()
+    }
+
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         let updatedChanges = filterIgnoredWallet(changes: changes)
         walletsList.apply(changes: updatedChanges)
@@ -57,8 +65,21 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
 
         updateViewModels()
     }
+}
 
-    private func updateViewModels() {
+// MARK: - Private
+
+private extension NotificationWalletListPresenter {
+    func provideTitle() {
+        let title = R.string.localizable.notificationsWalletListTitle(
+            walletsLimit,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        view?.setTitle(title)
+    }
+
+    func updateViewModels() {
         let walletsList = walletsList.allItems.map {
             let isSelected = selectedWallets.contains($0.identifier)
             return ManagedMetaAccountModel(
@@ -77,7 +98,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         view?.setAction(enabled: !selectedWallets.isEmpty)
     }
 
-    private func select(walletId: String) {
+    func select(walletId: String) {
         if selectedWallets.count < walletsLimit {
             selectedWallets.insert(walletId)
         } else {
@@ -101,12 +122,14 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         updateViewModels()
     }
 
-    private func deselect(walletId: String) {
+    func deselect(walletId: String) {
         selectedWallets.remove(walletId)
 
         updateViewModels()
     }
 }
+
+// MARK: - NotificationWalletListPresenterProtocol
 
 extension NotificationWalletListPresenter: NotificationWalletListPresenterProtocol {
     func selectItem(at index: Int, section: Int) {
@@ -131,5 +154,7 @@ extension NotificationWalletListPresenter: NotificationWalletListPresenterProtoc
         wireframe?.complete(from: view, selectedWallets: wallets)
     }
 }
+
+// MARK: - NotificationWalletListInteractorOutputProtocol
 
 extension NotificationWalletListPresenter: NotificationWalletListInteractorOutputProtocol {}

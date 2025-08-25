@@ -463,16 +463,21 @@ private extension MultisigOperationConfirmViewModelFactory {
         return actions
     }
 
-    func createTitle(for formattedCall: FormattedCall?, locale: Locale) -> String {
+    func createTitle(
+        for formattedCall: FormattedCall?,
+        locale: Locale
+    ) -> String {
         switch formattedCall?.definition {
         case let .general(general):
-            return general.callPath.callName.displayCall
+            general.callPath.callName.displayCall
+        case let .batch(batch):
+            batch.type.callDescription.value(for: locale)
         case .transfer:
-            return R.string.localizable.transferTitle(
+            R.string.localizable.transferTitle(
                 preferredLanguages: locale.rLanguages
             )
         case nil:
-            return R.string.localizable.multisigOperationTypeUnknown(
+            R.string.localizable.multisigOperationTypeUnknown(
                 preferredLanguages: locale.rLanguages
             )
         }

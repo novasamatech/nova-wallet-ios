@@ -12,8 +12,6 @@ protocol MultisigOperationProviderProxyProtocol: AnyObject {
         identifier: String,
         handler: MultisigOperationProviderHandlerProtocol
     )
-
-    func createSnapshot() -> MultisigProviderProxySnapshotProtocol
 }
 
 protocol MultisigOperationProviderHandlerProtocol: AnyObject {
@@ -38,14 +36,14 @@ extension MultisigOperationProviderHandlerProtocol {
     ) {}
 }
 
-final class MultisigOperationProviderProxy: AnyProviderAutoCleaning, MultisigProviderProxySnapshotApplicable {
+final class MultisigOperationProviderProxy: AnyProviderAutoCleaning {
     let callFormattingFactory: CallFormattingOperationFactoryProtocol
     let operationQueue: OperationQueue
     let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
 
     weak var handler: MultisigOperationProviderHandlerProtocol?
 
-    var formattingCache = InMemoryCache<Substrate.CallHash, FormattedCall>()
+    let formattingCache: InMemoryCache<Substrate.CallHash, FormattedCall>
 
     private var provider: StreamableProvider<Multisig.PendingOperation>?
 
@@ -54,10 +52,12 @@ final class MultisigOperationProviderProxy: AnyProviderAutoCleaning, MultisigPro
     init(
         pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
         callFormattingFactory: CallFormattingOperationFactoryProtocol,
+        formattingCache: InMemoryCache<Substrate.CallHash, FormattedCall>,
         operationQueue: OperationQueue
     ) {
         self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
         self.callFormattingFactory = callFormattingFactory
+        self.formattingCache = formattingCache
         self.operationQueue = operationQueue
     }
 }
@@ -157,10 +157,6 @@ private extension MultisigOperationProviderProxy {
 }
 
 extension MultisigOperationProviderProxy: MultisigOperationProviderProxyProtocol {
-    func createSnapshot() -> MultisigProviderProxySnapshotProtocol {
-        MultisigProviderProxySnapshot(formattingCache: formattingCache)
-    }
-
     func subscribePendingOperations(
         for accountId: AccountId,
         chainId: ChainModel.Id?,

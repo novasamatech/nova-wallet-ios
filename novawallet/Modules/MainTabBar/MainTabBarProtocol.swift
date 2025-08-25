@@ -57,7 +57,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     )
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushNotification.OpenScreen
+        screen: PushNotification.OpenScreen,
+        locale: Locale
     )
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,

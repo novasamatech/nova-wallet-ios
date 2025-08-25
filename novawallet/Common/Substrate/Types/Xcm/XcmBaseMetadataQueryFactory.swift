@@ -10,7 +10,7 @@ enum XcmMetadataQueryError: Error {
 
 class XcmBaseMetadataQueryFactory {
     func createXcmTypeVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol,
+        for runtimeProvider: RuntimeCodingServiceProtocol,
         oneOfTypes: [String]
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -38,7 +38,7 @@ class XcmBaseMetadataQueryFactory {
     }
 
     func createModuleNameResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol,
+        for runtimeProvider: RuntimeCodingServiceProtocol,
         possibleNames: [String]
     ) -> CompoundOperationWrapper<String> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

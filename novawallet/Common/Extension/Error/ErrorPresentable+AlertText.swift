@@ -1,15 +1,6 @@
 import Foundation
 import Operation_iOS
 
-struct ErrorContent {
-    let title: String
-    let message: String
-}
-
-protocol ErrorContentConvertible {
-    func toErrorContent(for locale: Locale?) -> ErrorContent
-}
-
 extension ErrorPresentable where Self: AlertPresentable {
     func present(error: Error, from view: ControllerBackedProtocol?, locale: Locale?) -> Bool {
         guard let content = errorContent(from: error, locale: locale) else {

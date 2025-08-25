@@ -1,15 +1,15 @@
 import UIKit
 import Foundation_iOS
 
-class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ChainNotificationSettingsViewLayout
+class BaseNotificationSettingsViewController: UIViewController, ViewHolder {
+    typealias RootViewType = BaseNotificationSettingsViewLayout
 
-    private let presenter: ChainNotificationSettingsPresenterProtocol
+    private let presenter: BaseNotificationSettingsPresenterProtocol
     private var models: [Section] = []
     let navigationItemTitle: LocalizableResource<String>
 
     init(
-        presenter: ChainNotificationSettingsPresenterProtocol,
+        presenter: BaseNotificationSettingsPresenterProtocol,
         localizationManager: LocalizationManagerProtocol,
         navigationItemTitle: LocalizableResource<String>
     ) {
@@ -25,33 +25,37 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ChainNotificationSettingsViewLayout()
+        view = BaseNotificationSettingsViewLayout()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setup()
+    }
+
+    func setup() {
         setupNavigationItem()
         setupTableView()
         setupLocalization()
         presenter.setup()
     }
 
-    private func setupTableView() {
+    func setupTableView() {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SwitchSettingsTableViewCell.self)
         rootView.tableView.registerClassForCell(SettingsSubtitleTableViewCell.self)
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let rightBarButtonItemTitle = R.string.localizable.commonClear(
             preferredLanguages: selectedLocale.rLanguages)
         navigationItem.title = navigationItemTitle.value(for: selectedLocale)
         navigationItem.rightBarButtonItem?.title = rightBarButtonItemTitle
     }
 
-    private func setupNavigationItem() {
+    func setupNavigationItem() {
         let title = R.string.localizable.commonClear(preferredLanguages: selectedLocale.rLanguages)
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: title,
@@ -95,7 +99,7 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     private func action(section: Int, row: Int) {
         let model = models[section]
         switch model {
-        case let .collapsable(cells):
+        case let .collapsable(cells), let .grouped(cells):
             switch cells[row] {
             case let .accessoryCell(accessory):
                 accessory.action()
@@ -103,10 +107,9 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
                 models[section] = model.togglingSwitch(at: row)
                 models[section].isOn(at: row).map { switchCell.action($0) }
 
-                if row == 0 {
-                    rootView.tableView.reloadSections([section], with: .automatic)
-                    return
-                }
+                guard case .collapsable = model, row == 0 else { return }
+
+                rootView.tableView.reloadSections([section], with: .automatic)
             }
         case let .common(cell):
             models[section] = model.togglingSwitch(at: row)
@@ -117,7 +120,7 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ChainNotificationSettingsViewController {
+extension BaseNotificationSettingsViewController {
     func set(isClearActionAvailabe: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isClearActionAvailabe
     }
@@ -131,9 +134,13 @@ extension ChainNotificationSettingsViewController {
         models[index] = model
         rootView.tableView.reloadSections([index], with: .automatic)
     }
+
+    func needsReload(for sections: [Section]) -> Bool {
+        sections.count != models.count
+    }
 }
 
-extension ChainNotificationSettingsViewController: UITableViewDataSource {
+extension BaseNotificationSettingsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         models.count
     }
@@ -145,6 +152,8 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
                 return 0
             }
             return model.isOn ? cells.count : 1
+        case let .grouped(cells):
+            return cells.count
         case .common:
             return 1
         }
@@ -157,6 +166,15 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
         case let .common(cell):
             let cell = switchCell(tableView, indexPath: indexPath, model: cell)
             cell.apply(position: .single)
+            return cell
+        case let .grouped(cells):
+            let cell: UITableViewCell & TableViewCellPositioning = switch cells[indexPath.row] {
+            case let .accessoryCell(accessoryModel):
+                accessoryCell(tableView, indexPath: indexPath, model: accessoryModel)
+            case let .switchCell(switchModel):
+                switchCell(tableView, indexPath: indexPath, model: switchModel)
+            }
+            cell.apply(position: .init(row: indexPath.row, count: cells.count))
             return cell
         case let .collapsable(cells):
             switch cells[indexPath.row] {
@@ -174,7 +192,7 @@ extension ChainNotificationSettingsViewController: UITableViewDataSource {
     }
 }
 
-extension ChainNotificationSettingsViewController: UITableViewDelegate {
+extension BaseNotificationSettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -182,7 +200,7 @@ extension ChainNotificationSettingsViewController: UITableViewDelegate {
     }
 }
 
-extension ChainNotificationSettingsViewController: SwitchSettingsTableViewCellDelegate {
+extension BaseNotificationSettingsViewController: SwitchSettingsTableViewCellDelegate {
     func didToggle(cell: SwitchSettingsTableViewCell) {
         guard let indexPath = rootView.tableView.indexPath(for: cell) else {
             return
@@ -192,7 +210,7 @@ extension ChainNotificationSettingsViewController: SwitchSettingsTableViewCellDe
     }
 }
 
-extension ChainNotificationSettingsViewController: Localizable {
+extension BaseNotificationSettingsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -200,7 +218,7 @@ extension ChainNotificationSettingsViewController: Localizable {
     }
 }
 
-extension ChainNotificationSettingsViewController {
+extension BaseNotificationSettingsViewController {
     enum Row {
         case switchCell(SwitchTitleIconViewModel)
         case accessoryCell(AccessoryTitleIconViewModel)
@@ -217,6 +235,7 @@ extension ChainNotificationSettingsViewController {
 
     enum Section {
         case collapsable([Row])
+        case grouped([Row])
         case common(SwitchTitleIconViewModel)
 
         func togglingSwitch(at index: Int) -> Section {
@@ -228,6 +247,13 @@ extension ChainNotificationSettingsViewController {
                 model.isOn.toggle()
                 cells[index] = .switchCell(model)
                 return .collapsable(cells)
+            case var .grouped(cells):
+                guard case var .switchCell(model) = cells[index] else {
+                    return self
+                }
+                model.isOn.toggle()
+                cells[index] = .switchCell(model)
+                return .grouped(cells)
             case var .common(cell):
                 cell.isOn.toggle()
                 return .common(cell)
@@ -236,7 +262,7 @@ extension ChainNotificationSettingsViewController {
 
         func isOn(at index: Int) -> Bool? {
             switch self {
-            case let .collapsable(cells):
+            case let .collapsable(cells), let .grouped(cells):
                 return cells[index].isOn
             case let .common(cell):
                 return cell.isOn

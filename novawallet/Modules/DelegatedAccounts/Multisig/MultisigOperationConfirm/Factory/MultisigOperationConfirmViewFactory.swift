@@ -104,17 +104,6 @@ struct MultisigOperationConfirmViewFactory {
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
         )
 
-        let pendingOperationsProvider = MultisigOperationProviderProxy(
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
-            callFormattingFactory: CallFormattingOperationFactory(
-                chainRegistry: chainRegistry,
-                walletRepository: walletRepository
-            ),
-            operationQueue: operationQueue
-        )
-
-        flowState.providerSnapshot.apply(to: pendingOperationsProvider)
-
         let remoteOperationFactory = MultisigStorageOperationFactory(
             operationQueue: operationQueue
         )
@@ -133,7 +122,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingOperationProvider: pendingOperationsProvider,
+                pendingOperationProvider: flowState.getOperationProviderProxy(),
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
@@ -153,7 +142,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingOperationProvider: pendingOperationsProvider,
+                pendingOperationProvider: flowState.getOperationProviderProxy(),
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),

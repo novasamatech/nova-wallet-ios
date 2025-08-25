@@ -39,6 +39,10 @@ class WalletsListPresenter {
         self.localizationManager = localizationManager
     }
 
+    func setup() {
+        baseInteractor.setup()
+    }
+
     func replaceViewModels(_ items: [WalletsListViewModel], section: Int) {
         let type = viewModels[section].type
         viewModels[section] = WalletsListSectionViewModel(type: type, items: items)
@@ -88,10 +92,6 @@ class WalletsListPresenter {
 }
 
 extension WalletsListPresenter: WalletsListPresenterProtocol {
-    func setup() {
-        baseInteractor.setup()
-    }
-
     func numberOfSections() -> Int {
         viewModels.count
     }

@@ -6,7 +6,7 @@ protocol GovernanceNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [GovernanceNotificationsViewModel])
 }
 
-protocol GovernanceNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
+protocol GovernanceNotificationsPresenterProtocol: BaseNotificationSettingsPresenterProtocol {
     func changeSettings(chainId: ChainModel.Id, isEnabled: Bool)
     func changeSettings(chainId: ChainModel.Id, newReferendum: Bool)
     func changeSettings(chainId: ChainModel.Id, referendumUpdate: Bool)

@@ -1,6 +1,6 @@
 import UIKit
 
-final class ChainNotificationSettingsViewLayout: UIView {
+final class BaseNotificationSettingsViewLayout: UIView {
     let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()

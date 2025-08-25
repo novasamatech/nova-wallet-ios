@@ -130,7 +130,7 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             metaAccounts: metaAccounts
         ) ?? address?.truncated
 
-        let subtitle = type.subtitle(
+        let body = type.subtitle(
             amount: balance?.amount ?? "",
             price: balance?.price ?? "",
             chainName: chainAsset.chain.name,
@@ -138,7 +138,7 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             locale: locale
         )
 
-        return .init(title: title, subtitle: subtitle)
+        return .init(title: title, body: body)
     }
 
     private func targetWalletName(

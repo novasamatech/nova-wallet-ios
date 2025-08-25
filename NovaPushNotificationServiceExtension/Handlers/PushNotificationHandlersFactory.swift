@@ -54,6 +54,30 @@ final class PushNotificationHandlersFactory: PushNotificationHandlersFactoryProt
                 payload: payload,
                 operationQueue: operationQueue
             )
+        case let .newMultisig(chainId, payload):
+            return NewMultisigHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigApproval(chainId, payload):
+            return MultisigApprovalHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigExecuted(chainId, payload):
+            return MultisigExecutedHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigCancelled(chainId, payload):
+            return MultisigCancelledHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
         }
     }
 }

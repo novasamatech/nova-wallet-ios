@@ -52,7 +52,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     preferredLanguages: self.locale.rLanguages
                 )
 
-                let subtitle = R.string.localizable.pushNotificationNewReferendumSubtitle(
+                let body = R.string.localizable.pushNotificationNewReferendumSubtitle(
                     chain.name,
                     self.payload.referendumNumber,
                     preferredLanguages: self.locale.rLanguages
@@ -60,7 +60,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
 
                 let notificationContentResult: NotificationContentResult = .init(
                     title: title,
-                    subtitle: subtitle
+                    body: body
                 )
                 completion(.modified(notificationContentResult))
             case let .failure(error):
