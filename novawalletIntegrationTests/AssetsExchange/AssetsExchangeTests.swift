@@ -77,6 +77,74 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
     
+    func testFindAllAssetIn() {
+        let params = buildCommonParams()
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetsIn = graph?.fetchAssetsIn(given: nil) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            XCTAssert(!assetsIn.isEmpty)
+        }
+    }
+    
+    func testFindAssetsOutGivenIn() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(
+                for: KnowChainId.polkadot
+            )?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetsIn = graph?.fetchAssetsOut(given: polkadotUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            XCTAssert(!assetsIn.isEmpty)
+        }
+    }
+    
+    func testAssetsInGivenOut() {
+        let params = buildCommonParams()
+        
+        guard
+            let hydraUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.hydra)?.utilityChainAssetId(),
+            let assetHubUtilityAsset = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetInHydration = graph?.fetchAssetsIn(given: hydraUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            guard let assetInAH = graph?.fetchAssetsIn(given: assetHubUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            XCTAssert(!assetInAH.isEmpty)
+            XCTAssert(!assetInHydration.isEmpty)
+        }
+    }
+    
     func testNoRoute() {
         let params = buildCommonParams()
         
@@ -118,6 +186,29 @@ final class AssetsExchangeTests: XCTestCase {
         
         measure {
             let route = graph.fetchPaths(from: polkadotUtilityAsset, to: ibtcInterlayAsset, maxTopPaths: 1)
+            XCTAssert(!route.isEmpty, "No routes founds")
+        }
+    }
+    
+    func testMeasureMultiRouteSearch() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
+            let ibtcInterlayAsset = params.chainRegistry.getChain(
+                for: "bf88efe70e9e0e916416e8bed61f2b45717f517d7f3523e33c7b001e5ffcbc72"
+            )?.chainAssetForSymbol("iBTC")?.chainAssetId else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        measure {
+            let route = graph.fetchPaths(from: polkadotUtilityAsset, to: ibtcInterlayAsset, maxTopPaths: 4)
             XCTAssert(!route.isEmpty, "No routes founds")
         }
     }
