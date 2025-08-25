@@ -38,7 +38,39 @@ final class NotificationsManagementPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func getParameters() -> NotificationsManagementParameters? {
+    func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
+        guard let allWallets else { return }
+
+        let selectedMultisigs = wallets
+            .compactMap { allWallets[$0.metaId] }
+            .filter { $0.type == .multisig }
+
+        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+
+        if selectedMultisigs.isEmpty {
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = nil
+                $0.multisigApproval = nil
+                $0.multisigExecuted = nil
+                $0.multisigCancelled = nil
+            }
+        } else if modifiedSettings?.notifications.isMultisigOn == false {
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = .all
+                $0.multisigApproval = .all
+                $0.multisigExecuted = .all
+                $0.multisigCancelled = .all
+            }
+        }
+
+        updateView()
+    }
+}
+
+// MARK: - Private
+
+private extension NotificationsManagementPresenter {
+    func getParameters() -> NotificationsManagementParameters? {
         guard
             let settings = modifiedSettings,
             let topicSettings = modifiedTopicsSettings,
@@ -118,7 +150,44 @@ final class NotificationsManagementPresenter {
 
         return false
     }
+
+    func changeGovSettings(settings: GovernanceNotificationsModel) {
+        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
+        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
+        disableNotificationIfNeeded()
+        updateView()
+    }
+
+    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
+        modifiedSettings = modifiedSettings?.with {
+            switch result {
+            case .all:
+                $0.stakingReward = .all
+            case let .concrete(selectedChains):
+                $0.stakingReward = !selectedChains.isEmpty ? .concrete(selectedChains) : nil
+            case nil:
+                $0.stakingReward = nil
+            }
+        }
+
+        disableNotificationIfNeeded()
+        updateView()
+    }
+
+    func changeMultisigSettings(result: MultisigNotificationsModel) {
+        modifiedSettings = modifiedSettings?.with {
+            $0.newMultisig = result.signatureRequested ? .all : nil
+            $0.multisigApproval = result.signedBySignatory ? .all : nil
+            $0.multisigExecuted = result.transactionExecuted ? .all : nil
+            $0.multisigCancelled = result.transactionRejected ? .all : nil
+        }
+
+        disableNotificationIfNeeded()
+        updateView()
+    }
 }
+
+// MARK: - NotificationsManagementPresenterProtocol
 
 extension NotificationsManagementPresenter: NotificationsManagementPresenterProtocol {
     func setup() {
@@ -204,64 +273,6 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         )
     }
 
-    func changeGovSettings(settings: GovernanceNotificationsModel) {
-        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
-        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
-        disableNotificationIfNeeded()
-        updateView()
-    }
-
-    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
-        modifiedSettings = modifiedSettings?.with {
-            switch result {
-            case .all:
-                $0.stakingReward = .all
-            case let .concrete(selectedChains):
-                $0.stakingReward = !selectedChains.isEmpty ? .concrete(selectedChains) : nil
-            case nil:
-                $0.stakingReward = nil
-            }
-        }
-
-        disableNotificationIfNeeded()
-        updateView()
-    }
-
-    func changeMultisigSettings(result: MultisigNotificationsModel) {
-        modifiedSettings = modifiedSettings?.with {
-            $0.newMultisig = result.signatureRequested ? .all : nil
-            $0.multisigApproval = result.signedBySignatory ? .all : nil
-            $0.multisigExecuted = result.transactionExecuted ? .all : nil
-            $0.multisigCancelled = result.transactionRejected ? .all : nil
-        }
-
-        disableNotificationIfNeeded()
-        updateView()
-    }
-
-    func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
-        guard let allWallets else { return }
-
-        let selectedMultisigs = wallets
-            .compactMap { allWallets[$0.metaId] }
-            .filter { $0.type == .multisig }
-
-        if selectedMultisigs.isEmpty {
-            modifiedSettings = modifiedSettings?
-                .with(wallets: wallets)
-                .with {
-                    $0.newMultisig = nil
-                    $0.multisigApproval = nil
-                    $0.multisigExecuted = nil
-                    $0.multisigCancelled = nil
-                }
-        } else {
-            modifiedSettings = modifiedSettings?.with(wallets: wallets)
-        }
-
-        updateView()
-    }
-
     func back() {
         guard isSaveAvailable else {
             wireframe.complete(from: view)
@@ -287,6 +298,8 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
 }
+
+// MARK: - NotificationsManagementInteractorOutputProtocol
 
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
     func didReceive(wallets: [MetaAccountModel]) {
@@ -358,6 +371,8 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         wireframe.saved(on: view)
     }
 }
+
+// MARK: - Localizable
 
 extension NotificationsManagementPresenter: Localizable {
     func applyLocalization() {

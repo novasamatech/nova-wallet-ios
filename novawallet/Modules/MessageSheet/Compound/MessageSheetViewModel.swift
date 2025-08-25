@@ -108,6 +108,14 @@ extension MessageSheetAction {
         return MessageSheetAction(title: title, handler: handler)
     }
 
+    static func notNowAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+        }
+
+        return MessageSheetAction(title: title, handler: handler)
+    }
+
     static func okBackAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
             R.string.localizable.commonOkBack(preferredLanguages: locale.rLanguages)

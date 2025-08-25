@@ -29,6 +29,7 @@ enum SettingsKey: String {
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
+    case multisigNotificationsPromoSeen
 }
 
 extension SettingsManagerProtocol {
@@ -345,6 +346,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.hideUnifiedAddressPopup.rawValue)
+        }
+    }
+
+    var multisigNotificationsPromoSeen: Bool {
+        get {
+            bool(for: SettingsKey.multisigNotificationsPromoSeen.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.multisigNotificationsPromoSeen.rawValue)
         }
     }
 }

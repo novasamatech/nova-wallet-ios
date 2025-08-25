@@ -1,9 +1,14 @@
 import Foundation
 import Foundation_iOS
 
-struct NotificationWalletListViewFactory {
+enum NotificationWalletListInitialState {
+    case modified([Web3Alert.LocalWallet]?)
+    case persisted
+}
+
+enum NotificationWalletListViewFactory {
     static func createView(
-        initState: [Web3Alert.LocalWallet]?,
+        initState: NotificationWalletListInitialState,
         completion: @escaping ([Web3Alert.LocalWallet]) -> Void
     ) -> NotificationWalletListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
@@ -21,12 +26,13 @@ struct NotificationWalletListViewFactory {
 
         let interactor = NotificationWalletListInteractor(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            initialState: initState,
+            settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared
         )
         let wireframe = NotificationWalletListWireframe(completion: completion)
 
         let presenter = NotificationWalletListPresenter(
-            initState: initState,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,

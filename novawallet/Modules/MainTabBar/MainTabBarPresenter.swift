@@ -33,6 +33,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
+    func didRequestMultisigNotificationsPromoOpen() {
+        wireframe.presentMultisigNotificationsPromo(from: view)
+    }
+
     func didRequestImportAccount(source: SecretSource) {
         wireframe.presentAccountImport(on: view, source: source)
     }

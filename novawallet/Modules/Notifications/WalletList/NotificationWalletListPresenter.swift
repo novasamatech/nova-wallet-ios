@@ -26,7 +26,6 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     private let walletsLimit: Int = 10
 
     init(
-        initState: [Web3Alert.LocalWallet]?,
         interactor: NotificationWalletListInteractorInputProtocol,
         wireframe: NotificationWalletListWireframeProtocol,
         viewModelFactory: WalletsListViewModelFactoryProtocol,
@@ -35,7 +34,6 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         logger: LoggerProtocol
     ) {
         self.localPushSettingsFactory = localPushSettingsFactory
-        selectedWallets = Set((initState ?? []).map(\.metaId))
 
         super.init(
             baseInteractor: interactor,
@@ -157,4 +155,10 @@ extension NotificationWalletListPresenter: NotificationWalletListPresenterProtoc
 
 // MARK: - NotificationWalletListInteractorOutputProtocol
 
-extension NotificationWalletListPresenter: NotificationWalletListInteractorOutputProtocol {}
+extension NotificationWalletListPresenter: NotificationWalletListInteractorOutputProtocol {
+    func didReceive(initialState: [Web3Alert.LocalWallet]?) {
+        selectedWallets = Set((initialState ?? []).map(\.metaId))
+
+        updateViewModels()
+    }
+}

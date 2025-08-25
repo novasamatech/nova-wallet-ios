@@ -1490,7 +1490,6 @@
 "notifications.management.gov.referendum.update" = "Referendum Update";
 "common.clear" = "Clear";
 "notifications.wallet.list.limit.error.title" = "You cannot select more than %d wallets";
-//"notifications.wallet.list.title" = "Select up to 3 wallets to be notified when wallet has activity";
 "notifications.wallet.list.title" = "Select up to %d wallets to be notified when wallet has activity";
 "notifications.management.staking.rewards" = "Staking rewards";
 "notifications.management.others" = "Others";
@@ -1862,7 +1861,6 @@
 "common.multisig" = "Multisig";
 "common.proxied" = "Proxied";
 "common.signatory" = "Signatory";
-//"wallet.list.multisig" = "Shared control (multisig)";
 "multisig.details.hint" = "Transactions from this wallet require approval from multiple signatories. Your account is one of the signatories:";
 "multisig.signing.title" = "Multisig transaction";
 "multisig.signing.message" = "The multisig transaction will be initiated by %@. The initiator pays the network fee and reserves a multisig deposit, which will be unreserved once the transaction is executed.";
@@ -1946,3 +1944,6 @@
 "common.multisig.rejected" = "Multisig transaction rejected";
 "multisig.operation.ended.alert.title" = "Signing is over";
 "multisig.operation.ended.alert.message" = "Transaction has already been executed or rejected.";
+"multisig.notifications.promo.sheet.title" = "Multisig push notifications are here!";
+"multisig.notifications.promo.sheet.message" = "Get notified about signing requests, new signatures, and completed transactions — so you’re always in control. Manage anytime in Settings.";
+"common.enable.settings" = "Enable in Settings";

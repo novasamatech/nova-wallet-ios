@@ -39,8 +39,13 @@ struct NotificationsManagementViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        let externalCallbacks = NotificationsManagementExternalCallbacks(
+            changeWalletSettings: presenter.changeWalletsSettings
+        )
+
         let view = NotificationsManagementViewController(
             presenter: presenter,
+            externalCallbacks: externalCallbacks,
             localizationManager: LocalizationManager.shared
         )
 
