@@ -1,18 +1,18 @@
 import Foundation
 
 final class NewMultisigHandler: CommonMultisigHandler, PushNotificationHandler {
-    override func createTitle(using _: MultisigPayloadProtocol) -> String {
+    override func createTitle(params _: MultisigNotificationParams) -> String {
         R.string.localizable.pushNotificationMultisigNewTitle(
             preferredLanguages: locale.rLanguages
         )
     }
 
     override func createBody(
-        using payload: MultisigPayloadProtocol,
-        walletNames: MultisigNotificationAccounts
+        using _: MultisigPayloadProtocol,
+        params: MultisigNotificationParams
     ) -> String {
         R.string.localizable.pushNotificationMultisigNewBody(
-            walletNames.signatory ?? payload.signatoryAddress.mediumTruncated,
+            params.signatory,
             preferredLanguages: locale.rLanguages
         )
     }

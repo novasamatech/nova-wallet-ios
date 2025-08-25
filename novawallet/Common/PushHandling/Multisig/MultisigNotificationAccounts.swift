@@ -1,6 +1,7 @@
 import Foundation
 
-struct MultisigNotificationAccounts {
-    let signatory: String?
-    let multisig: String?
+struct MultisigNotificationParams {
+    let signatory: String
+    let multisigName: String
+    let multisigAccount: DelegatedAccount.MultisigAccountModel
 }

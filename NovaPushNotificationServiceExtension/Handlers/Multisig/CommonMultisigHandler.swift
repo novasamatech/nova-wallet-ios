@@ -30,13 +30,13 @@ class CommonMultisigHandler: CommonHandler {
         super.init()
     }
 
-    func createTitle(using _: MultisigPayloadProtocol) -> String {
+    func createTitle(params _: MultisigNotificationParams) -> String {
         fatalError("This method must be overridden by a subclass.")
     }
 
     func createBody(
         using _: MultisigPayloadProtocol,
-        walletNames _: MultisigNotificationAccounts
+        params _: MultisigNotificationParams
     ) -> String {
         fatalError("This method must be overridden by a subclass.")
     }
@@ -50,14 +50,12 @@ extension CommonMultisigHandler {
         completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let chainsOperation = chainsRepository.fetchAllOperation(with: .init())
-        let settingsOperation = settingsRepository.fetchAllOperation(with: .init())
 
         let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
             OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
                 let chains = try chainsOperation.extractNoCancellableResultData()
-                let settings = try settingsOperation.extractNoCancellableResultData().first
 
                 let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
 
@@ -66,7 +64,6 @@ extension CommonMultisigHandler {
                 }
 
                 let notificationContentWrapper = self.createNotificationContentWrapper(
-                    wallets: settings?.wallets ?? [],
                     chain: chain,
                     metaAccounts: { try fetchMetaAccountsOperation.extractNoCancellableResultData() },
                     payload: self.payload
@@ -78,11 +75,9 @@ extension CommonMultisigHandler {
             }
 
         contentWrapper.addDependency(operations: [chainsOperation])
-        contentWrapper.addDependency(operations: [settingsOperation])
 
         let wrapper = contentWrapper
             .insertingHead(operations: [chainsOperation])
-            .insertingHead(operations: [settingsOperation])
 
         executeCancellable(
             wrapper: wrapper,
@@ -108,50 +103,49 @@ private extension CommonMultisigHandler {
     func convertAddress(
         _ address: String,
         for chain: ChainModel
-    ) -> AccountAddress? {
-        try? address
-            .toAccountId()
-            .toAddress(using: chain.chainFormat)
+    ) -> AccountAddress {
+        (
+            try? address
+                .toChainAccountIdOrSubstrateGeneric(using: chain.chainFormat)
+                .toAddress(using: chain.chainFormat)
+        ) ?? address
     }
 
-    func createWalletNamesOperation(
-        wallets: [Web3Alert.LocalWallet],
+    func createNotificationParams(
         chain: ChainModel,
         metaAccounts: @escaping () throws -> [MetaAccountModel],
         payload: MultisigPayloadProtocol
-    ) -> BaseOperation<MultisigNotificationAccounts> {
+    ) -> BaseOperation<MultisigNotificationParams> {
         ClosureOperation {
-            let multisig = self.targetWalletName(
-                for: payload.multisigAddress,
-                chainId: self.chainId,
-                wallets: wallets,
-                metaAccounts: try metaAccounts()
-            ) ?? payload.multisigAddress
+            guard
+                let multisigWallet = self.targetWallet(
+                    for: payload.multisigAddress,
+                    chain: chain,
+                    metaAccounts: try metaAccounts()
+                ),
+                let multisigAccount = multisigWallet.multisigAccount?.anyChainMultisig
+            else { throw PushNotificationsHandlerErrors.undefined }
 
-            let signatory = self.targetWalletName(
+            let signatory = self.targetWallet(
                 for: payload.signatoryAddress,
-                chainId: self.chainId,
-                wallets: wallets,
+                chain: chain,
                 metaAccounts: try metaAccounts()
-            ) ?? self.convertAddress(payload.signatoryAddress, for: chain)?.mediumTruncated
+            )?.name ?? self.convertAddress(payload.signatoryAddress, for: chain).mediumTruncated
 
-            return MultisigNotificationAccounts(
+            return MultisigNotificationParams(
                 signatory: signatory,
-                multisig: multisig
+                multisigName: multisigWallet.name,
+                multisigAccount: multisigAccount
             )
         }
     }
 
     func createNotificationContentWrapper(
-        wallets: [Web3Alert.LocalWallet],
         chain: ChainModel,
         metaAccounts: @escaping () throws -> [MetaAccountModel],
         payload: MultisigPayloadProtocol
     ) -> CompoundOperationWrapper<NotificationContentResult> {
-        let title = createTitle(using: payload)
-
-        let walletNamesOperation = createWalletNamesOperation(
-            wallets: wallets,
+        let notificationParamsOperation = createNotificationParams(
             chain: chain,
             metaAccounts: metaAccounts,
             payload: payload
@@ -163,25 +157,20 @@ private extension CommonMultisigHandler {
                     chain.name.capitalized,
                     preferredLanguages: self.locale.rLanguages
                 )
-                let walletNames = try walletNamesOperation.extractNoCancellableResultData()
-                let subtitle = self.createSubtitle(with: walletNames.multisig)
-                let body = self.createBody(
-                    using: unknownOperationBody,
-                    adding: self.createBody(using: payload, walletNames: walletNames)
-                )
+                let params = try notificationParamsOperation.extractNoCancellableResultData()
+                let title = self.createTitle(params: params)
+                let subtitle = self.createSubtitle(with: params.multisigName)
+                let specificBodyPart = self.createBody(using: payload, params: params)
+                let body = self.createBody(using: unknownOperationBody, adding: specificBodyPart)
 
-                return .init(
-                    title: title,
-                    subtitle: subtitle,
-                    body: body
-                )
+                return .init(title: title, subtitle: subtitle, body: body)
             }
 
-            mapOperation.addDependency(walletNamesOperation)
+            mapOperation.addDependency(notificationParamsOperation)
 
             return CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [walletNamesOperation]
+                dependencies: [notificationParamsOperation]
             )
         }
 
@@ -193,24 +182,21 @@ private extension CommonMultisigHandler {
         let mapOperation = ClosureOperation<NotificationContentResult> {
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
 
-            let walletNames = try walletNamesOperation.extractNoCancellableResultData()
-            let subtitle = self.createSubtitle(with: walletNames.multisig)
-            let specificBodyPart = self.createBody(using: payload, walletNames: walletNames)
+            let params = try notificationParamsOperation.extractNoCancellableResultData()
+            let title = self.createTitle(params: params)
+            let subtitle = self.createSubtitle(with: params.multisigName)
+            let specificBodyPart = self.createBody(using: payload, params: params)
             let body = self.createBody(for: formattedCall, adding: specificBodyPart, chain: chain)
 
-            return .init(
-                title: title,
-                subtitle: subtitle,
-                body: body
-            )
+            return .init(title: title, subtitle: subtitle, body: body)
         }
 
-        mapOperation.addDependency(walletNamesOperation)
+        mapOperation.addDependency(notificationParamsOperation)
         mapOperation.addDependency(formattedCallWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [walletNamesOperation] + formattedCallWrapper.allOperations
+            dependencies: [notificationParamsOperation] + formattedCallWrapper.allOperations
         )
     }
 
