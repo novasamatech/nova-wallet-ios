@@ -109,7 +109,7 @@ extension CommonHandler {
         chain: ChainModel,
         metaAccounts: [MetaAccountModel]
     ) -> MetaAccountModel? {
-        guard let accountId = try? address?.toChainAccountIdOrSubstrateGeneric(using: chain.chainFormat) else {
+        guard let accountId = try? address?.toAccountId() else {
             return nil
         }
 

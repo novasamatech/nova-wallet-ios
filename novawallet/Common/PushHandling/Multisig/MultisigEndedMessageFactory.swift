@@ -252,7 +252,7 @@ private extension MultisigEndedMessageFactory {
         chain: ChainModel
     ) -> String {
         guard
-            let accountId = try? address.toChainAccountIdOrSubstrateGeneric(using: chain.chainFormat),
+            let accountId = try? address.toAccountId(),
             let convertedAddress = try? accountId.toAddress(using: chain.chainFormat)
         else {
             return address

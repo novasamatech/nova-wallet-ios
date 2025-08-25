@@ -104,11 +104,7 @@ private extension CommonMultisigHandler {
         _ address: String,
         for chain: ChainModel
     ) -> AccountAddress {
-        (
-            try? address
-                .toChainAccountIdOrSubstrateGeneric(using: chain.chainFormat)
-                .toAddress(using: chain.chainFormat)
-        ) ?? address
+        (try? address.toAccountId().toAddress(using: chain.chainFormat)) ?? address
     }
 
     func createNotificationParams(
