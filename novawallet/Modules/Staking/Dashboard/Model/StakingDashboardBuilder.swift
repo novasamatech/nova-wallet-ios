@@ -235,15 +235,15 @@ final class StakingDashboardBuilder {
 
         let newActive = currentModel.active.map { item in
             item.byChangingSyncState(
-                isOnchainSync: newOffchainSync,
-                isOffchainSync: deriveOnchainSync(for: item.stakingOption)
+                isOnchainSync: deriveOnchainSync(for: item.stakingOption),
+                isOffchainSync: newOffchainSync
             )
         }
 
         let newInactive = currentModel.inactive.map { item in
             item.byChangingSyncState(
-                isOnchainSync: newOffchainSync,
-                isOffchainSync: deriveOnchainSync(for: item.chainAsset)
+                isOnchainSync: deriveOnchainSync(for: item.chainAsset),
+                isOffchainSync: newOffchainSync
             )
         }
 
@@ -251,15 +251,15 @@ final class StakingDashboardBuilder {
             switch item {
             case let .concrete(concrete):
                 let newConcrete = concrete.byChangingSyncState(
-                    isOnchainSync: newOffchainSync,
-                    isOffchainSync: deriveOnchainSync(for: concrete.stakingOption)
+                    isOnchainSync: deriveOnchainSync(for: concrete.stakingOption),
+                    isOffchainSync: newOffchainSync
                 )
 
                 return StakingDashboardItemModel.concrete(newConcrete)
             case let .combined(combined):
                 let newCombined = combined.byChangingSyncState(
-                    isOnchainSync: newOffchainSync,
-                    isOffchainSync: deriveOnchainSync(for: combined.chainAsset)
+                    isOnchainSync: deriveOnchainSync(for: combined.chainAsset),
+                    isOffchainSync: newOffchainSync
                 )
 
                 return StakingDashboardItemModel.combined(newCombined)
