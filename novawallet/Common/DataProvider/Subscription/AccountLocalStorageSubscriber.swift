@@ -16,7 +16,10 @@ extension AccountLocalStorageSubscriber {
         _ accountId: AccountId,
         chain: ChainModel
     ) -> StreamableProvider<MetaAccountModel> {
-        let provider = accountProviderFactory.createStreambleProvider(for: accountId)
+        let provider = accountProviderFactory.createStreambleProvider(
+            for: accountId,
+            chainId: chain.chainId
+        )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<MetaAccountModel>]) in
             let maybeAccount: MetaChainAccountResponse? = changes.compactMap { change in
