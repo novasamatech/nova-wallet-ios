@@ -2,15 +2,18 @@ import Foundation
 import Operation_iOS
 
 final class MultisigExecutedHandler: CommonMultisigHandler, PushNotificationHandler {
-    override func createTitle(using _: MultisigPayloadProtocol) -> String {
+    override func createTitle(params _: MultisigNotificationParams) -> String {
         R.string.localizable.pushNotificationMultisigExecutedTitle(
             preferredLanguages: locale.rLanguages
         )
     }
 
-    override func createBody(using payload: MultisigPayloadProtocol) -> String {
+    override func createBody(
+        using _: MultisigPayloadProtocol,
+        params: MultisigNotificationParams
+    ) -> String {
         R.string.localizable.pushNotificationMultisigExecutedBody(
-            payload.signatoryAddress.mediumTruncated,
+            params.signatory,
             preferredLanguages: locale.rLanguages
         )
     }

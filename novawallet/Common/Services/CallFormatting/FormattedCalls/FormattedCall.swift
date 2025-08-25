@@ -15,6 +15,15 @@ struct FormattedCall {
                 return accountId
             }
         }
+
+        var name: String? {
+            switch self {
+            case let .local(account):
+                account.chainAccount.name
+            case .remote:
+                nil
+            }
+        }
     }
 
     enum Definition {

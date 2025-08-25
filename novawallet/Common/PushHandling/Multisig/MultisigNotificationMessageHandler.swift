@@ -171,12 +171,17 @@ private extension MultisigNotificationMessageHandler {
         cancellerAddress: AccountAddress,
         callData: Substrate.CallData?
     ) -> CompoundOperationWrapper<MultisigEndedMessageModel> {
+        let walletsOperation = walletsRepository.fetchAllOperation(with: .init())
+
         guard let callData else {
-            let message = multisigEndedMessageFactory.createRejectedMessageModel(
-                for: chain,
-                cancellerAddress: cancellerAddress
+            let unformattedWrapper = createUnformattedCancelledMessageWrapper(
+                chain: chain,
+                cancellerAddress: cancellerAddress,
+                dependingOn: walletsOperation
             )
-            return .createWithResult(message)
+            unformattedWrapper.addDependency(operations: [walletsOperation])
+
+            return unformattedWrapper.insertingHead(operations: [walletsOperation])
         }
 
         let formattedCallWrapper = callFormattingFactory.createFormattingWrapper(
@@ -185,9 +190,11 @@ private extension MultisigNotificationMessageHandler {
         )
 
         let resultOperation = ClosureOperation<MultisigEndedMessageModel> {
+            let wallets = try walletsOperation.extractNoCancellableResultData()
             let formattedCall = try formattedCallWrapper.targetOperation.extractNoCancellableResultData()
             let messageModel = self.multisigEndedMessageFactory.createRejectedMessageModel(
                 for: formattedCall,
+                wallets: wallets,
                 cancellerAddress: cancellerAddress,
                 chain: chain
             )
@@ -195,9 +202,33 @@ private extension MultisigNotificationMessageHandler {
             return messageModel
         }
 
+        resultOperation.addDependency(walletsOperation)
         resultOperation.addDependency(formattedCallWrapper.targetOperation)
 
-        return formattedCallWrapper.insertingTail(operation: resultOperation)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [walletsOperation] + formattedCallWrapper.allOperations
+        )
+    }
+
+    func createUnformattedCancelledMessageWrapper(
+        chain: ChainModel,
+        cancellerAddress: AccountAddress,
+        dependingOn walletsOperation: BaseOperation<[MetaAccountModel]>
+    ) -> CompoundOperationWrapper<MultisigEndedMessageModel> {
+        let operation = ClosureOperation<MultisigEndedMessageModel> {
+            let wallets = try walletsOperation.extractNoCancellableResultData()
+
+            let message = self.multisigEndedMessageFactory.createRejectedMessageModel(
+                for: chain,
+                wallets: wallets,
+                cancellerAddress: cancellerAddress
+            )
+
+            return message
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 
     func createExecutedMessageWrapper(
