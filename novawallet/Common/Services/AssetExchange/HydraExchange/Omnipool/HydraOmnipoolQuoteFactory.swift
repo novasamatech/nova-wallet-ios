@@ -12,8 +12,8 @@ final class HydraOmnipoolQuoteFactory {
 
     private func createQuoteStateWrapper(
         dependingOn swapPairOperation: BaseOperation<HydraDx.SwapPair>
-    ) -> CompoundOperationWrapper<HydraDx.QuoteRemoteState> {
-        OperationCombiningService<HydraDx.QuoteRemoteState>.compoundNonOptionalWrapper(
+    ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
+        OperationCombiningService<HydraOmnipool.QuoteRemoteState>.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: flowState.operationQueue)
         ) {
             let swapPair = try swapPairOperation.extractNoCancellableResultData()
@@ -33,7 +33,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func createQuoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
-    ) -> CompoundOperationWrapper<HydraDx.QuoteRemoteState> {
+    ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
 
         let operation = quoteService.createFetchOperation()
@@ -80,7 +80,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func calculateSellQuote(
         for amount: BigUInt,
-        remoteState: HydraDx.QuoteRemoteState,
+        remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {
@@ -105,7 +105,14 @@ final class HydraOmnipoolQuoteFactory {
 
         let inHubReserve = assetInState.hubReserve
         let inReserve = remoteState.assetInBalance ?? 0
-        let deltaHubReserveIn = (amount * inHubReserve) / (inReserve + amount)
+
+        let divider = inReserve + amount
+
+        guard divider > 0 else {
+            throw AssetConversionOperationError.runtimeError("Unexpected zero reserve")
+        }
+
+        let deltaHubReserveIn = (amount * inHubReserve) / divider
 
         let protocolFeeAmount = protocolFee.mul(value: deltaHubReserveIn)
         let deltaHubReserveOut = deltaHubReserveIn - protocolFeeAmount
@@ -124,7 +131,7 @@ final class HydraOmnipoolQuoteFactory {
 
     private func calculateBuyQuote(
         for amount: BigUInt,
-        remoteState: HydraDx.QuoteRemoteState,
+        remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> BigUInt {
         guard let assetInState = remoteState.assetInState else {
@@ -181,7 +188,7 @@ final class HydraOmnipoolQuoteFactory {
 }
 
 extension HydraOmnipoolQuoteFactory {
-    func quote(for args: HydraOmnipool.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
+    func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 

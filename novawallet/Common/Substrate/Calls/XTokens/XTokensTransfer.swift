@@ -12,8 +12,8 @@ extension XTokens {
             case destinationWeight = "dest_weight"
         }
 
-        let asset: Xcm.VersionedMultiasset
-        let destination: Xcm.VersionedMultilocation
+        let asset: XcmUni.VersionedAsset
+        let destination: XcmUni.VersionedLocation
 
         // must be set as maximum between reserve and destination
         @StringCodable var destinationWeight: BigUInt
@@ -36,8 +36,8 @@ extension XTokens {
 
         static let callName = "transfer_multiasset"
 
-        let asset: Xcm.VersionedMultiasset
-        let destination: Xcm.VersionedMultilocation
+        let asset: XcmUni.VersionedAsset
+        let destination: XcmUni.VersionedLocation
 
         // must be set as maximum between reserve and destination
         let destinationWeightLimit: Xcm.WeightLimit<JSON>
@@ -57,8 +57,8 @@ extension XTokens {
     }
 
     static func appendTransferCall(
-        asset: Xcm.VersionedMultiasset,
-        destination: Xcm.VersionedMultilocation,
+        asset: XcmUni.VersionedAsset,
+        destination: XcmUni.VersionedLocation,
         module: String,
         weightOption: XcmTransferMetadata.Fee,
         codingFactory: RuntimeCoderFactoryProtocol

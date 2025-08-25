@@ -75,12 +75,12 @@ private extension AssetDetailsInteractor {
             return
         }
 
-        let wrapper = assetExchangeService.fetchReachibilityWrapper()
+        let wrapper = assetExchangeService.fetchAssetsOutWrapper(given: chainAsset.chainAssetId)
 
         let checkOperation = ClosureOperation<Bool> {
             let reachability = try wrapper.targetOperation.extractNoCancellableResultData()
 
-            return !reachability.getAssetsOut(for: chainAsset.chainAssetId).isEmpty
+            return !reachability.isEmpty
         }
 
         checkOperation.addDependency(wrapper.targetOperation)

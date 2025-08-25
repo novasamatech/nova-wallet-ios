@@ -5,7 +5,7 @@ import BigInt
 enum AssetConversionPallet {
     static let name = "AssetConversion"
 
-    typealias AssetId = XcmV4.Multilocation
+    typealias AssetId = Xcm.Version4<XcmUni.AssetId>
 
     enum PoolAsset {
         case native
@@ -43,15 +43,31 @@ enum AssetConversionPallet {
     }
 }
 
+extension AssetConversionPallet.AssetId {
+    var location: XcmUni.RelativeLocation {
+        wrapped.location
+    }
+
+    init(parents: UInt8, interior: XcmUni.Junctions) {
+        wrapped = XcmUni.AssetId(
+            location: XcmUni.RelativeLocation(
+                parents: parents,
+                interior: interior
+            )
+        )
+    }
+}
+
 protocol AssetConversionAssetIdProtocol {
     var parents: UInt8 { get }
-    var items: [XcmV3.Junction] { get }
+    var items: [XcmUni.Junction] { get }
 }
 
 extension AssetConversionPallet.AssetId: AssetConversionAssetIdProtocol {
-    var items: [XcmV3.Junction] { interior.items }
+    var parents: UInt8 { location.parents }
+    var items: [XcmUni.Junction] { location.interior.items }
 }
 
-extension XcmV3.Multilocation: AssetConversionAssetIdProtocol {
-    var items: [XcmV3.Junction] { interior.items }
+extension XcmUni.RelativeLocation: AssetConversionAssetIdProtocol {
+    var items: [XcmUni.Junction] { interior.items }
 }

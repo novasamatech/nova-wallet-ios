@@ -5,14 +5,14 @@ enum DryRun {
     static let apiName = "DryRunApi"
 
     struct ForwardedXcm: Decodable {
-        let location: Xcm.VersionedMultilocation
-        let messages: [Xcm.Message]
+        let location: XcmUni.VersionedLocation
+        let messages: [XcmUni.VersionedMessage]
 
         init(from decoder: any Decoder) throws {
             var container = try decoder.unkeyedContainer()
 
-            location = try container.decode(Xcm.VersionedMultilocation.self)
-            messages = try container.decode([Xcm.Message].self)
+            location = try container.decode(XcmUni.VersionedLocation.self)
+            messages = try container.decode([XcmUni.VersionedMessage].self)
         }
     }
 
@@ -21,7 +21,7 @@ enum DryRun {
     struct CallDryRunEffects: Decodable {
         let executionResult: CallExecutionResult
         let emittedEvents: [Event]
-        let localXcm: Xcm.Message?
+        let localXcm: XcmUni.VersionedMessage?
         let forwardedXcms: [ForwardedXcm]
     }
 

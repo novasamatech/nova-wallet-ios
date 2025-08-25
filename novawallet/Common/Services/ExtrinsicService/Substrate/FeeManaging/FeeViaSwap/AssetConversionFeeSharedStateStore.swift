@@ -31,7 +31,8 @@ enum AssetConversionFeeSharedStateStore {
             runtimeProvider: host.runtimeProvider,
             userStorageFacade: host.userStorageFacade,
             substrateStorageFacade: host.substrateStorageFacade,
-            operationQueue: host.operationQueue
+            operationQueue: host.operationQueue,
+            logger: host.logger
         )
 
         states[state] = WeakWrapper(target: flowState)

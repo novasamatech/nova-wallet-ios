@@ -46,8 +46,7 @@ extension HydraExchangeFeeSupportFetcher: AssetExchangeFeeSupportFetching {
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: Set(allAssets.map(\.assetId)),
                 chain: self.chain,
-                codingFactory: codingFactory,
-                failureClosure: { self.logger.warning("Token \($0) conversion failed: \($1)") }
+                codingFactory: codingFactory
             )
 
             let localFeeAssetIds = Set(remoteLocalMapping.values)

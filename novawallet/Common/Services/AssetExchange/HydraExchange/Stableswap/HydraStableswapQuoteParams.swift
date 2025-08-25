@@ -5,6 +5,16 @@ extension HydraStableswap {
     struct QuoteParams {
         let poolInfo: PoolRemoteState
         let reserves: ReservesRemoteState
+        let balances: [HydraDx.AssetId: HydraBalance]
+        let assetMetadata: [HydraDx.AssetId: HydraAssetRegistry.Asset]
+
+        func getReserve(for assetId: HydraDx.AssetId) -> Balance? {
+            balances[assetId]?.free
+        }
+
+        func getDecimals(for assetId: HydraDx.AssetId) -> UInt8? {
+            assetMetadata[assetId]?.decimals
+        }
     }
 
     struct QuoteArgs: Equatable {
@@ -13,12 +23,5 @@ extension HydraStableswap {
         let poolAsset: HydraDx.AssetId
         let amount: BigUInt
         let direction: AssetConversion.Direction
-    }
-
-    struct Quote: Equatable {
-        let amountIn: BigUInt
-        let assetIn: HydraDx.AssetId
-        let amountOut: BigUInt
-        let assetOut: HydraDx.AssetId
     }
 }

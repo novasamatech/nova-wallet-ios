@@ -1,16 +1,16 @@
 import Foundation
 
 protocol AssetExchangeSufficiencyProviding {
-    func isSufficient(chainAsset: ChainAsset) -> Bool
+    func isSufficient(asset: AssetModel) -> Bool
 }
 
 final class AssetExchangeSufficiencyProvider: AssetExchangeSufficiencyProviding {
-    func isSufficient(chainAsset: ChainAsset) -> Bool {
-        switch AssetType(rawType: chainAsset.asset.type) {
-        case .none, .orml, .equilibrium, .evmAsset, .evmNative:
+    func isSufficient(asset: AssetModel) -> Bool {
+        switch AssetType(rawType: asset.type) {
+        case .none, .orml, .ormlHydrationEvm, .equilibrium, .evmAsset, .evmNative:
             return true
         case .statemine:
-            return chainAsset.asset.typeExtras?.isSufficient?.boolValue ?? false
+            return asset.typeExtras?.isSufficient?.boolValue ?? false
         }
     }
 }

@@ -36,6 +36,7 @@ enum HydraStableswapApi {
         let shareAssetIssuance: BigUInt
         let reserves: [AssetReserveInfo]
         let currentBlock: BlockNumber
+        let pegs: [[StringCodable<BigUInt>]]
     }
 
     static func calculateAmplification(
@@ -78,7 +79,8 @@ enum HydraStableswapApi {
             UInt32(assetOut),
             String(amountIn),
             String(amplification),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {
@@ -109,7 +111,8 @@ enum HydraStableswapApi {
             UInt32(assetOut),
             String(amountOut),
             String(amplification),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {
@@ -139,7 +142,8 @@ enum HydraStableswapApi {
             UInt32(asset),
             String(amplification),
             String(params.shareAssetIssuance),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {
@@ -169,7 +173,8 @@ enum HydraStableswapApi {
             UInt32(asset),
             String(amplification),
             String(params.shareAssetIssuance),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {
@@ -199,7 +204,8 @@ enum HydraStableswapApi {
             String(assetAmount),
             String(amplification),
             String(params.shareAssetIssuance),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {
@@ -230,7 +236,8 @@ enum HydraStableswapApi {
             try JsonStringify.jsonString(from: assets),
             String(amplification),
             String(params.shareAssetIssuance),
-            fee
+            fee,
+            try JsonStringify.jsonString(from: params.pegs)
         )
 
         guard let amount = BigUInt(result.toString()) else {

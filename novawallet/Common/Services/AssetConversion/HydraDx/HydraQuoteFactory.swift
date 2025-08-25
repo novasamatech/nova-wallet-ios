@@ -60,6 +60,18 @@ final class HydraQuoteFactory {
                         direction: direction
                     )
                 )
+            case .aave:
+                let aaveState = flowState.getAaveSwapFlowState()
+                let quoteFactory = HydraAaveSwapQuoteFactory(flowState: aaveState)
+
+                return quoteFactory.quote(
+                    for: .init(
+                        assetIn: component.assetIn,
+                        assetOut: component.assetOut,
+                        amount: amount,
+                        direction: direction
+                    )
+                )
             }
         }
     }

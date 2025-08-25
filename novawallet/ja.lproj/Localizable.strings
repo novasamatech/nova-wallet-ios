@@ -1885,6 +1885,9 @@
 "common.hide" = "非表示";
 "common.show" = "表示";
 "multisig.operation.signatories.progress.format" = "署名者 (%li/%li)";
+"swap.dry.run.failed.inline.message" = "スワップステップのシミュレーションが失敗しました";
+"common.dry.run.failed.title" = "トランザクションシミュレーション失敗";
+"common.dry.run.failed.message" = "Novaはエラーを防ぐためにトランザクションを事前にシミュレートします。このシミュレーションは成功しませんでした。後でもう一度試すか、より高い額で試してください。問題が続く場合は、設定でNovaウォレットのサポートに連絡してください。";
 "call.data.validation.error.title" = "無効なコールデータ";
 "enter.call.data.details.button.title" = "詳細を表示するにはコールデータを入力してください";
 "enter.call.data" = "コールデータを入力";

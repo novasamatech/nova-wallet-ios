@@ -101,8 +101,8 @@ enum AssetHubTokensConverter {
                     return nil
                 }
 
-                let palletJunction = XcmV3.Junction.palletInstance(palletIndex)
-                let generalIndexJunction = XcmV3.Junction.generalIndex(generalIndex)
+                let palletJunction = XcmUni.Junction.palletInstance(palletIndex)
+                let generalIndexJunction = XcmUni.Junction.generalIndex(generalIndex)
 
                 return .init(parents: 0, interior: .init(items: [palletJunction, generalIndexJunction]))
             }

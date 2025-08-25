@@ -1,6 +1,8 @@
 import Foundation
 
 protocol AssetsExchageGraphReachabilityProtocol {
+    var isEmpty: Bool { get }
+
     func getAllAssetIn() -> Set<ChainAssetId>
     func getAllAssetOut() -> Set<ChainAssetId>
     func getAssetsIn(for assetOut: ChainAssetId) -> Set<ChainAssetId>
@@ -16,6 +18,10 @@ final class AssetsExchageGraphReachability {
 }
 
 extension AssetsExchageGraphReachability: AssetsExchageGraphReachabilityProtocol {
+    var isEmpty: Bool {
+        mapping.isEmpty
+    }
+
     func getAllAssetIn() -> Set<ChainAssetId> {
         Set(mapping.keys)
     }

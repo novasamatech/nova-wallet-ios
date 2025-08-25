@@ -10,6 +10,7 @@ final class XcmTransferService {
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
+    let submissionVerifier: XcmTransferVerifying
 
     let callDerivator: XcmCallDerivating
     let crosschainFeeCalculator: XcmCrosschainFeeCalculating
@@ -30,14 +31,25 @@ final class XcmTransferService {
         self.operationQueue = operationQueue
         self.customFeeEstimatingFactory = customFeeEstimatingFactory
 
-        callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
+        callDerivator = XcmOneOfCallDerivator(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         crosschainFeeCalculator = XcmCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
+            callDerivator: callDerivator,
             operationQueue: operationQueue,
             wallet: wallet,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade,
             customFeeEstimatingFactory: customFeeEstimatingFactory,
+            logger: logger
+        )
+
+        submissionVerifier = XcmTransferVerifier(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
             logger: logger
         )
     }

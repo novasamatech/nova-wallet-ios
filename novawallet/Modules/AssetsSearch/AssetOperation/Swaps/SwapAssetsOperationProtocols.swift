@@ -7,7 +7,7 @@ protocol SwapAssetsOperationWireframeProtocol: AssetsSearchWireframeProtocol, Er
 }
 
 protocol SwapAssetsOperationPresenterProtocol: AssetsSearchInteractorOutputProtocol {
-    func directionsLoaded()
+    func didUpdate(hasDirections: Bool)
     func didReceive(error: SwapAssetsOperationError)
 }
 

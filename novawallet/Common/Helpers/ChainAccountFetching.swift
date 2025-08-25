@@ -1,6 +1,6 @@
 import Foundation
 
-struct ChainAccountRequest {
+struct ChainAccountRequest: Equatable, Hashable {
     let chainId: ChainModel.Id
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
@@ -110,6 +110,18 @@ extension ChainAccountResponse {
 }
 
 extension MetaAccountModel {
+    private func executeHasAccount(for chain: ChainModel) -> Bool {
+        if chainAccounts.contains(where: { $0.chainId == chain.chainId }) {
+            return true
+        }
+
+        if chain.isEthereumBased {
+            return ethereumAddress != nil
+        }
+
+        return substrateAccountId != nil
+    }
+
     private func executeFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
         if let chainAccount = chainAccounts.first(where: { $0.chainId == request.chainId }) {
             guard let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) else {
@@ -199,7 +211,22 @@ extension MetaAccountModel {
     }
 
     func hasAccount(in chain: ChainModel) -> Bool {
-        fetch(for: chain.accountRequest()) != nil
+        switch type {
+        case .genericLedger:
+            if chain.supportsGenericLedgerApp {
+                return executeHasAccount(for: chain)
+            } else {
+                return false
+            }
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+            return executeHasAccount(for: chain)
+        case .multisig:
+            if chain.hasMultisig {
+                return executeHasAccount(for: chain)
+            } else {
+                return false
+            }
+        }
     }
 
     // Note that this query might return an account in another chain if it can't be found for provided chain

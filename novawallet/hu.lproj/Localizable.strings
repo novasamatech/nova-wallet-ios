@@ -1885,6 +1885,9 @@
 "common.hide" = "Elrejt";
 "common.show" = "Megjelenít";
 "multisig.operation.signatories.progress.format" = "Aláírók (%li a %li-ből)";
+"swap.dry.run.failed.inline.message" = "Az átváltási lépés szimulációja nem sikerült";
+"common.dry.run.failed.title" = "A tranzakciós szimuláció nem sikerült";
+"common.dry.run.failed.message" = "A Nova előre szimulálja a tranzakciót a hibák megelőzése érdekében. Ez a szimuláció nem sikerült. Próbálja újra később vagy nagyobb összeggel. Ha a probléma továbbra is fennáll, kérjük, vegye fel a kapcsolatot a Nova Wallet Támogatással a Beállításokban.";
 "call.data.validation.error.title" = "Érvénytelen hívás adatok";
 "enter.call.data.details.button.title" = "Adja meg a hívás adatokat a részletek megtekintéséhez";
 "enter.call.data" = "Adja meg a hívás adatokat";

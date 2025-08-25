@@ -7,8 +7,7 @@ protocol ObservableSubscriptionStateStoreProtocol: ApplicationServiceProtocol {}
 typealias EquatableObservableSubscriptionState = ObservableSubscriptionStateProtocol & Equatable
 
 class ObservableSubscriptionStateStore<T: EquatableObservableSubscriptionState>: BaseObservableStateStore<T> {
-    let chainId: ChainModel.Id
-    let chainRegistry: ChainRegistryProtocol
+    let runtimeConnectionStore: RuntimeConnectionStoring
     let repository: AnyDataProviderRepository<ChainStorageItem>?
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
@@ -16,15 +15,13 @@ class ObservableSubscriptionStateStore<T: EquatableObservableSubscriptionState>:
     var subscription: CallbackBatchStorageSubscription<T.TChange>?
 
     init(
-        chainId: ChainModel.Id,
-        chainRegistry: ChainRegistryProtocol,
+        runtimeConnectionStore: RuntimeConnectionStoring,
         operationQueue: OperationQueue,
         repository: AnyDataProviderRepository<ChainStorageItem>? = nil,
         workQueue: DispatchQueue = .global(),
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.chainId = chainId
-        self.chainRegistry = chainRegistry
+        self.runtimeConnectionStore = runtimeConnectionStore
         self.operationQueue = operationQueue
         self.repository = repository
         self.workQueue = workQueue
@@ -46,8 +43,8 @@ private extension ObservableSubscriptionStateStore {
         do {
             let requests = try getRequests()
 
-            let connection = try chainRegistry.getConnectionOrError(for: chainId)
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            let connection = try runtimeConnectionStore.getConnection()
+            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
 
             subscription = CallbackBatchStorageSubscription(
                 requests: requests,

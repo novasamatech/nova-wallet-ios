@@ -10,12 +10,14 @@ final class HydraFlowState {
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     let mutex = NSLock()
 
     private var omnipoolFlowState: HydraOmnipoolFlowState?
     private var stableswapFlowState: HydraStableswapFlowState?
     private var xykswapFlowState: HydraXYKFlowState?
+    private var aaveFlowState: HydraAaveFlowState?
     private var routesFactory: HydraRoutesOperationFactoryProtocol?
 
     private var currentSwapPair: HydraDx.LocalSwapPair?
@@ -27,7 +29,8 @@ final class HydraFlowState {
         runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.account = account
         self.chain = chain
@@ -36,6 +39,7 @@ final class HydraFlowState {
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
@@ -77,7 +81,8 @@ extension HydraFlowState {
             connection: connection,
             runtimeProvider: runtimeProvider,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         omnipoolFlowState = newState
@@ -127,10 +132,35 @@ extension HydraFlowState {
             connection: connection,
             runtimeProvider: runtimeProvider,
             notificationsRegistrar: nil,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         xykswapFlowState = newState
+
+        return newState
+    }
+
+    func getAaveSwapFlowState() -> HydraAaveFlowState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let state = aaveFlowState {
+            return state
+        }
+
+        let newState = HydraAaveFlowState(
+            account: account,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            notificationsRegistrar: nil,
+            operationQueue: operationQueue
+        )
+
+        aaveFlowState = newState
 
         return newState
     }

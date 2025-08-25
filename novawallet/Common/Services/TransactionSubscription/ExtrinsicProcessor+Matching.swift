@@ -134,7 +134,8 @@ extension ExtrinsicProcessor {
     ) -> AssetModel? {
         assets.first { asset in
             guard
-                asset.type == AssetType.orml.rawValue,
+                let type = AssetType(rawType: asset.type),
+                type.isOrmlCompatible,
                 let typeExtra = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
                 return false
             }

@@ -59,6 +59,12 @@ enum HydraExchangeExtrinsicConverter {
                     assetIn: component.assetIn,
                     assetOut: component.assetOut
                 )
+            case .aave:
+                return HydraRouter.Trade(
+                    pool: .aave,
+                    assetIn: component.assetIn,
+                    assetOut: component.assetOut
+                )
             }
         }
     }

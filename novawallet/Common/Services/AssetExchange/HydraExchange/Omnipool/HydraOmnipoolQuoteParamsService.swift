@@ -2,147 +2,168 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class HydraOmnipoolQuoteParamsService: ObservableSubscriptionSyncService<HydraDx.QuoteRemoteState> {
+final class HydraOmnipoolQuoteParamsService: ObservableSyncService, ObservableSubscriptionSyncServiceProtocol {
+    typealias TState = HydraOmnipool.QuoteRemoteState
+
     let chain: ChainModel
     let assetIn: HydraDx.AssetId
     let assetOut: HydraDx.AssetId
+    let connection: JSONRPCEngine
+    let runtimeProvider: RuntimeProviderProtocol
+    let operationQueue: OperationQueue
+    let workQueue: DispatchQueue
+
+    private var assetFeeService: HydraOmnipoolAssetsFeeService?
+    private var balanceService: HydraBalanceSyncer?
+    private var poolAccountId: AccountId?
 
     init(
         chain: ChainModel,
         assetIn: HydraDx.AssetId,
         assetOut: HydraDx.AssetId,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol,
+        runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue,
-        repository: AnyDataProviderRepository<ChainStorageItem>? = nil,
-        workQueue: DispatchQueue = .global(),
-        retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
-        logger: LoggerProtocol = Logger.shared
+        workQueue: DispatchQueue,
+        logger: LoggerProtocol
     ) {
         self.chain = chain
         self.assetIn = assetIn
         self.assetOut = assetOut
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
+        self.workQueue = workQueue
+        self.operationQueue = operationQueue
 
-        super.init(
+        super.init(logger: logger)
+    }
+
+    override func performSyncUp() {
+        clearServices()
+
+        setupAssetFeeServiceIfNeeded()
+        setupBalanceServiceIfNeeded()
+    }
+
+    override func stopSyncUp() {
+        clearServices()
+    }
+
+    func getState() -> TState? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            let assetFeeState = assetFeeService?.getState(),
+            let balanceState = balanceService?.getBalancesState(),
+            let poolAccountId
+        else {
+            return nil
+        }
+
+        let accountAssetIn = HydraAccountAsset(accountId: poolAccountId, assetId: assetIn)
+        let accountAssetOut = HydraAccountAsset(accountId: poolAccountId, assetId: assetOut)
+
+        guard
+            let balanceIn = balanceState[accountAssetIn],
+            let balanceOut = balanceState[accountAssetOut] else {
+            return nil
+        }
+
+        return .init(
+            assetInState: assetFeeState.assetInState,
+            assetOutState: assetFeeState.assetOutState,
+            assetInBalance: balanceIn.free,
+            assetOutBalance: balanceOut.free,
+            assetInFee: assetFeeState.assetInFee,
+            assetOutFee: assetFeeState.assetOutFee,
+            blockHash: assetFeeState.blockHash
+        )
+    }
+}
+
+private extension HydraOmnipoolQuoteParamsService {
+    func updateIsSyncing() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let assetsFeeSyncing = assetFeeService?.getIsSyncing() ?? true
+        let balancesSyncing = balanceService?.getIsSyncing() ?? true
+
+        isSyncing = assetsFeeSyncing || balancesSyncing
+    }
+
+    func setupAssetFeeServiceIfNeeded() {
+        guard assetFeeService == nil else {
+            return
+        }
+
+        assetFeeService = HydraOmnipoolAssetsFeeService(
+            chain: chain,
+            assetIn: assetIn,
+            assetOut: assetOut,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue,
-            repository: repository,
             workQueue: workQueue,
-            retryStrategy: retryStrategy,
             logger: logger
         )
+
+        assetFeeService?.subscribeSyncState(
+            self,
+            queue: workQueue
+        ) { [weak self] _, _ in
+            self?.updateIsSyncing()
+        }
+
+        assetFeeService?.setup()
     }
 
-    private func getBalanceRequest(
-        for accountId: AccountId,
-        assetId: HydraDx.AssetId,
-        mappingKeyClosure: (Bool) -> HydraDx.QuoteRemoteStateChange.Key
-    ) -> BatchStorageSubscriptionRequest {
-        if assetId == HydraDx.nativeAssetId {
-            return .init(
-                innerRequest: MapSubscriptionRequest(
-                    storagePath: SystemPallet.accountPath,
-                    localKey: "",
-                    keyParamClosure: {
-                        BytesCodable(wrappedValue: accountId)
-                    }
-                ),
-                mappingKey: mappingKeyClosure(true).rawValue
+    func setupBalanceServiceIfNeeded() {
+        guard balanceService == nil else {
+            return
+        }
+
+        do {
+            let poolAccountId = try HydraOmnipool.getPoolAccountId(for: chain.accountIdSize)
+            self.poolAccountId = poolAccountId
+
+            balanceService = HydraBalanceSyncer(
+                accountAssets: [
+                    HydraAccountAsset(accountId: poolAccountId, assetId: assetIn),
+                    HydraAccountAsset(accountId: poolAccountId, assetId: assetOut)
+                ],
+                runtimeProvider: runtimeProvider,
+                connection: connection,
+                operationQueue: operationQueue,
+                workQueue: workQueue,
+                logger: logger
             )
-        } else {
-            return .init(
-                innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: StorageCodingPath.ormlTokenAccount,
-                    localKey: "",
-                    keyParamClosure: {
-                        (BytesCodable(wrappedValue: accountId), StringScaleMapper(value: assetId))
-                    },
-                    param1Encoder: nil,
-                    param2Encoder: nil
-                ),
-                mappingKey: mappingKeyClosure(false).rawValue
-            )
+
+            balanceService?.subscribeSyncState(
+                self,
+                queue: workQueue
+            ) { [weak self] _, _ in
+                self?.updateIsSyncing()
+            }
+
+            balanceService?.setup()
+        } catch {
+            logger.error("Unexpected error: \(error)")
         }
     }
 
-    private func getFeeRequest(
-        for assetId: HydraDx.AssetId,
-        mappingKey: HydraDx.QuoteRemoteStateChange.Key
-    ) -> BatchStorageSubscriptionRequest {
-        .init(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.dynamicFeesPath,
-                localKey: "",
-                keyParamClosure: {
-                    StringScaleMapper(value: assetId)
-                }
-            ),
-            mappingKey: mappingKey.rawValue
-        )
-    }
+    func clearServices() {
+        assetFeeService?.throttle()
+        assetFeeService = nil
 
-    private func getAssetStateRequest(
-        for assetId: HydraDx.AssetId,
-        mappingKey: HydraDx.QuoteRemoteStateChange.Key
-    ) -> BatchStorageSubscriptionRequest {
-        .init(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: HydraOmnipool.assetsPath,
-                localKey: "",
-                keyParamClosure: { StringScaleMapper(value: assetId) }
-            ),
-            mappingKey: mappingKey.rawValue
-        )
-    }
-
-    override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
-        let assetInStateRequest = getAssetStateRequest(
-            for: assetIn,
-            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInState
-        )
-
-        let assetOutStateRequest = getAssetStateRequest(
-            for: assetOut,
-            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutState
-        )
-
-        let poolAccountId = try HydraOmnipool.getPoolAccountId(for: chain.accountIdSize)
-
-        let assetInBalanceRequest = getBalanceRequest(
-            for: poolAccountId,
-            assetId: assetIn,
-            mappingKeyClosure: {
-                $0 ? HydraDx.QuoteRemoteStateChange.Key.assetInNativeBalance :
-                    HydraDx.QuoteRemoteStateChange.Key.assetInOrmlBalance
-            }
-        )
-        let assetOutBalanceRequest = getBalanceRequest(
-            for: poolAccountId,
-            assetId: assetOut,
-            mappingKeyClosure: {
-                $0 ? HydraDx.QuoteRemoteStateChange.Key.assetOutNativeBalance :
-                    HydraDx.QuoteRemoteStateChange.Key.assetOutOrmlBalance
-            }
-        )
-
-        let assetInFeeRequest = getFeeRequest(
-            for: assetIn,
-            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetInFee
-        )
-
-        let assetOutFeeRequest = getFeeRequest(
-            for: assetOut,
-            mappingKey: HydraDx.QuoteRemoteStateChange.Key.assetOutFee
-        )
-
-        return [
-            assetInStateRequest,
-            assetOutStateRequest,
-            assetInBalanceRequest,
-            assetOutBalanceRequest,
-            assetInFeeRequest,
-            assetOutFeeRequest
-        ]
+        balanceService?.throttle()
+        balanceService = nil
     }
 }

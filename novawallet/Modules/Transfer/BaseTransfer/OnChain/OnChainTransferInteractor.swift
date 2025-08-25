@@ -120,7 +120,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         }
 
         switch sendingAssetInfo {
-        case let .orml(info):
+        case let .orml(info), let .ormlHydrationEvm(info):
             return try addingOrmlTransferCommand(
                 to: builder,
                 amount: amount,

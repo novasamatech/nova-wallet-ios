@@ -1,7 +1,7 @@
 import Foundation
 
-protocol Weightable {
-    var weight: Int { get }
-}
+typealias AnyGraphEdgeProtocol = any GraphEdgeProtocol
 
-typealias GraphWeightableEdgeProtocol = GraphEdgeProtocol & Weightable
+protocol GraphWeightableEdgeProtocol: GraphEdgeProtocol {
+    func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int
+}

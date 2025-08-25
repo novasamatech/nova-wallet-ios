@@ -1885,6 +1885,9 @@
 "common.hide" = "Ẩn";
 "common.show" = "Hiển thị";
 "multisig.operation.signatories.progress.format" = "Người ký (%li của %li)";
+"swap.dry.run.failed.inline.message" = "Mô phỏng bước hoán đổi đã thất bại";
+"common.dry.run.failed.title" = "Mô phỏng giao dịch thất bại";
+"common.dry.run.failed.message" = "Nova mô phỏng giao dịch trước để ngăn ngừa lỗi. Mô phỏng này không thành công. Thử lại sau hoặc với số tiền lớn hơn. Nếu vấn đề vẫn tồn tại, vui lòng liên hệ Hỗ trợ Ví Nova trong Cài đặt.";
 "call.data.validation.error.title" = "Dữ liệu cuộc gọi không hợp lệ";
 "enter.call.data.details.button.title" = "Nhập dữ liệu cuộc gọi để xem chi tiết";
 "enter.call.data" = "Nhập dữ liệu cuộc gọi";

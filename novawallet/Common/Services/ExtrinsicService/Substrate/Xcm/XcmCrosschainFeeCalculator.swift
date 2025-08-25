@@ -7,6 +7,7 @@ final class XcmCrosschainFeeCalculator {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        callDerivator: XcmCallDerivating,
         operationQueue: OperationQueue,
         wallet: MetaAccountModel,
         userStorageFacade: StorageFacadeProtocol,
@@ -25,6 +26,7 @@ final class XcmCrosschainFeeCalculator {
 
         dynamicCalculator = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
+            callDerivator: callDerivator,
             operationQueue: operationQueue,
             logger: logger
         )

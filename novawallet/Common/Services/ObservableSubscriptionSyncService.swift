@@ -43,7 +43,6 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
         operationQueue: OperationQueue,
         repository: AnyDataProviderRepository<ChainStorageItem>? = nil,
         workQueue: DispatchQueue = .global(),
-
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {

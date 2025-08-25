@@ -118,12 +118,30 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 chainAccount: chainAccount
             )
 
+            let verificationWrapper: CompoundOperationWrapper<Void> = if request.unweighted.metadata.isDynamicConfig {
+                submissionVerifier.createVerificationWrapper(
+                    for: request.unweighted,
+                    callOrigin: .system(.signed(chainAccount.accountId)),
+                    callClosure: {
+                        try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                    }
+                )
+            } else {
+                .createWithResult(())
+            }
+
+            verificationWrapper.addDependency(wrapper: callBuilderWrapper)
+
             let submitWrapper = operationFactory.submit({ builder in
+                // submit extrinsic only if verification passed
+                try verificationWrapper.targetOperation.extractNoCancellableResultData()
+
                 let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
                 return try collector.addingToExtrinsic(builder: builder)
             }, signer: signer, payingIn: request.originFeeAsset)
 
             submitWrapper.addDependency(wrapper: callBuilderWrapper)
+            submitWrapper.addDependency(wrapper: verificationWrapper)
 
             submitWrapper.targetOperation.completionBlock = {
                 do {
@@ -140,7 +158,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 }
             }
 
-            let operations = callBuilderWrapper.allOperations + submitWrapper.allOperations
+            let operations = callBuilderWrapper.allOperations + verificationWrapper.allOperations +
+                submitWrapper.allOperations
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {

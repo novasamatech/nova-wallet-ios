@@ -1,7 +1,10 @@
 import Foundation
 
 protocol AssetFungibilityPreservationProviding {
-    func requiresPreservationForCrosschain(assetIn: ChainAsset) -> Bool
+    func requiresPreservationForCrosschain(
+        assetIn: ChainAssetId,
+        features: XcmTransferFeatures
+    ) -> Bool
 }
 
 final class AssetFungibilityPreservationProvider {
@@ -15,8 +18,19 @@ final class AssetFungibilityPreservationProvider {
 }
 
 extension AssetFungibilityPreservationProvider: AssetFungibilityPreservationProviding {
-    func requiresPreservationForCrosschain(assetIn: ChainAsset) -> Bool {
-        allAssets.contains(assetIn.chain.chainId) || concreteAssets.contains(assetIn.chainAssetId)
+    func requiresPreservationForCrosschain(
+        assetIn: ChainAssetId,
+        features: XcmTransferFeatures
+    ) -> Bool {
+        // xcm execute allows to bypass keep alive requirements
+        guard !features.shouldUseXcmExecute else {
+            return false
+        }
+
+        let requiresKeepAlive = allAssets.contains(assetIn.chainId) ||
+            concreteAssets.contains(assetIn)
+
+        return requiresKeepAlive
     }
 }
 

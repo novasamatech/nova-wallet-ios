@@ -41,8 +41,9 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
     }
 
     override func setup() {
-        interactor.setup()
         swapAssetsView?.didStartLoading()
+
+        interactor.setup()
     }
 
     override func selectAsset(for chainAssetId: ChainAssetId) {
@@ -81,8 +82,12 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
 }
 
 extension SwapAssetsOperationPresenter: SwapAssetsOperationPresenterProtocol {
-    func directionsLoaded() {
-        swapAssetsView?.didStopLoading()
+    func didUpdate(hasDirections: Bool) {
+        if hasDirections {
+            swapAssetsView?.didStopLoading()
+        } else {
+            swapAssetsView?.didStartLoading()
+        }
     }
 
     func didReceive(error: SwapAssetsOperationError) {

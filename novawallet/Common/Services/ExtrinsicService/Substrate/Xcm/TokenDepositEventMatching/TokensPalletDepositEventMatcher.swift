@@ -1,12 +1,20 @@
 import Foundation
 import SubstrateSdk
 
+// Tokens and Currencies pallets share the same deposited event structure
+// Select which pallet to use by providing event path
 final class TokensPalletDepositEventMatcher {
     let extras: OrmlTokenExtras
     let logger: LoggerProtocol
+    let eventPath: EventCodingPath
 
-    init(extras: OrmlTokenExtras, logger: LoggerProtocol) {
+    init(
+        extras: OrmlTokenExtras,
+        eventPath: EventCodingPath = TokensPallet.depositedEventPath,
+        logger: LoggerProtocol
+    ) {
         self.extras = extras
+        self.eventPath = eventPath
         self.logger = logger
     }
 }
@@ -17,7 +25,7 @@ extension TokensPalletDepositEventMatcher: TokenDepositEventMatching {
         using codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
         do {
-            guard codingFactory.metadata.eventMatches(event, path: TokensPallet.depositedEventPath) else {
+            guard codingFactory.metadata.eventMatches(event, path: eventPath) else {
                 return nil
             }
 

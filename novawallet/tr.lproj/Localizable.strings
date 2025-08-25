@@ -1885,6 +1885,9 @@
 "common.hide" = "Gizle";
 "common.show" = "Göster";
 "multisig.operation.signatories.progress.format" = "İmza yetkilileri (%li / %li)";
+"swap.dry.run.failed.inline.message" = "Swap adımının simülasyonu başarısız oldu";
+"common.dry.run.failed.title" = "İşlem simülasyonu başarısız oldu";
+"common.dry.run.failed.message" = "Nova, hataları önlemek için işlemi önceden simüle eder. Bu simülasyon başarılı olmadı. Daha sonra veya daha yüksek bir miktarla yeniden deneyin. Sorun devam ederse, Ayarlar'dan Nova Cüzdan Desteği ile iletişime geçin.";
 "call.data.validation.error.title" = "Geçersiz arama verisi";
 "enter.call.data.details.button.title" = "Detayları görmek için arama verisi girin";
 "enter.call.data" = "Arama verisini girin";

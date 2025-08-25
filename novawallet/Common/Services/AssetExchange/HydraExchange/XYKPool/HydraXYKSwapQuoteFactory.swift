@@ -40,15 +40,9 @@ final class HydraXYKSwapQuoteFactory {
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
-        guard
-            let balanceIn = remoteState.assetInBalance,
-            let balanceOut = remoteState.assetOutBalance else {
-            throw AssetConversionOperationError.runtimeError("Pool balance not found")
-        }
-
         let amountOut = try HydraXYKSwapApi.calculateOutGivenIn(
-            for: balanceIn,
-            balanceOut: balanceOut,
+            for: remoteState.assetInBalance,
+            balanceOut: remoteState.assetOutBalance,
             amountIn: amount
         )
 
@@ -66,15 +60,9 @@ final class HydraXYKSwapQuoteFactory {
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
-        guard
-            let balanceIn = remoteState.assetInBalance,
-            let balanceOut = remoteState.assetOutBalance else {
-            throw AssetConversionOperationError.runtimeError("Pool balance not found")
-        }
-
         let amountIn = try HydraXYKSwapApi.calculateInGivenOut(
-            for: balanceIn,
-            balanceOut: balanceOut,
+            for: remoteState.assetInBalance,
+            balanceOut: remoteState.assetOutBalance,
             amountOut: amount
         )
 
@@ -89,7 +77,7 @@ final class HydraXYKSwapQuoteFactory {
 }
 
 extension HydraXYKSwapQuoteFactory {
-    func quote(for args: HydraXYK.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
+    func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 

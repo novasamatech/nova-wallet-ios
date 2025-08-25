@@ -14,6 +14,10 @@ struct AssetBalance: Equatable {
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
 
+    var isZero: Bool {
+        [freeInPlank, reservedInPlank, frozenInPlank].allSatisfy { $0 == 0 }
+    }
+
     var transferable: BigUInt {
         Self.transferrableBalance(
             from: freeInPlank,

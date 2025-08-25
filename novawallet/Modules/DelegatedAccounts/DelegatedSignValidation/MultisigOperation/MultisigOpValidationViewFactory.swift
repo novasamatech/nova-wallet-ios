@@ -62,25 +62,14 @@ struct MultisigOpValidationViewFactory {
     ) -> MultisigOpValidationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let chainId = chainAsset.chain.chainId
-
-        guard
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
-            let connection = chainRegistry.getConnection(for: chainId)
-        else {
-            return nil
-        }
+        let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
-            requestFactory: storageRequestFactory,
-            runtimeProvider: runtimeProvider,
-            connection: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         return MultisigOpValidationInteractor(
