@@ -10,4 +10,10 @@ enum OnLaunchAction {
             visitor.onLaunchProccessPushNotificationsSetup(self)
         }
     }
+
+    struct MultisigNotificationsPromo: OnLaunchActionProtocol {
+        func accept(visitor: OnLaunchActionsQueueDelegate) {
+            visitor.onLaunchProcessMultisigNotificationPromo(self)
+        }
+    }
 }

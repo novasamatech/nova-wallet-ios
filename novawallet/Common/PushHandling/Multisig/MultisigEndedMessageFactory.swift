@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 import BigInt
 
 protocol MultisigEndedMessageFactoryProtocol {
@@ -14,12 +15,14 @@ protocol MultisigEndedMessageFactoryProtocol {
 
     func createRejectedMessageModel(
         for formattedCall: FormattedCall,
+        wallets: [MetaAccountModel],
         cancellerAddress: AccountAddress,
         chain: ChainModel
     ) -> MultisigEndedMessageModel
 
     func createRejectedMessageModel(
         for chain: ChainModel,
+        wallets: [MetaAccountModel],
         cancellerAddress: AccountAddress
     ) -> MultisigEndedMessageModel
 }
@@ -47,14 +50,15 @@ private extension MultisigEndedMessageFactory {
 
         guard
             let delegatedAccount = formattedCall.delegatedAccount,
-            let delegatedAddress = try? delegatedAccount.accountId.toAddress(using: chain.chainFormat)
+            let delegatedNameOrAddress = delegatedAccount.name
+            ?? (try? delegatedAccount.accountId.toAddress(using: chain.chainFormat))?.mediumTruncated
         else {
             return createBody(using: commonPart, adding: operationSpecificPart)
         }
 
         let delegatedCommonPart = createDelegatedCommonPart(
             using: commonPart,
-            delegatedAddress: delegatedAddress
+            delegatedAccount: delegatedNameOrAddress
         )
 
         return createBody(using: delegatedCommonPart, adding: operationSpecificPart)
@@ -76,7 +80,7 @@ private extension MultisigEndedMessageFactory {
 
     func createUnformattedRejectedBody(
         for chain: ChainModel,
-        cancellerAddress: AccountAddress
+        canceller: String
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
@@ -85,7 +89,7 @@ private extension MultisigEndedMessageFactory {
                     preferredLanguages: locale.rLanguages
                 ),
                 R.string.localizable.multisigOperationFormatCancelledText(
-                    cancellerAddress.mediumTruncated,
+                    canceller,
                     preferredLanguages: locale.rLanguages
                 ),
                 R.string.localizable.multisigOperationNoActionsRequired(
@@ -103,11 +107,11 @@ private extension MultisigEndedMessageFactory {
         }
     }
 
-    func createRejectedBodySpecificPart(cancellerAddress: AccountAddress) -> LocalizableResource<String> {
+    func createRejectedBodySpecificPart(canceller: String) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
                 R.string.localizable.multisigOperationFormatCancelledText(
-                    cancellerAddress.mediumTruncated,
+                    canceller,
                     preferredLanguages: locale.rLanguages
                 ),
                 R.string.localizable.multisigOperationNoActionsRequired(
@@ -131,12 +135,12 @@ private extension MultisigEndedMessageFactory {
 
     func createDelegatedCommonPart(
         using commonPart: LocalizableResource<String>,
-        delegatedAddress: String
+        delegatedAccount: String
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             let delegatedAccountPart = [
                 R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
-                delegatedAddress.mediumTruncated
+                delegatedAccount
             ].joined(with: .space)
 
             let delegatedCommonPart = [
@@ -156,16 +160,17 @@ private extension MultisigEndedMessageFactory {
                 priceData: nil
             )?.value(for: locale)
 
-            let destinationAddress = try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat)
+            let nameOrAddress = transfer.account.name
+                ?? (try? transfer.account.accountId.toAddress(using: transfer.asset.chain.chainFormat).mediumTruncated)
 
             guard
                 let amount = balance?.amount,
-                let destinationAddress
+                let nameOrAddress
             else { return "" }
 
             return R.string.localizable.multisigOperationFormatTransferText(
                 amount,
-                destinationAddress.mediumTruncated,
+                nameOrAddress,
                 transfer.asset.chain.name.capitalized,
                 preferredLanguages: locale.rLanguages
             )
@@ -240,6 +245,28 @@ private extension MultisigEndedMessageFactory {
             priceData: priceData
         )
     }
+
+    func targetWalletName(
+        for address: AccountAddress,
+        wallets: [MetaAccountModel],
+        chain: ChainModel
+    ) -> String {
+        guard
+            let accountId = try? address.toAccountId(),
+            let convertedAddress = try? accountId.toAddress(using: chain.chainFormat)
+        else {
+            return address
+        }
+
+        let chainRequest = chain.accountRequest()
+
+        let name = wallets
+            .filter { $0.fetchByAccountId(accountId, request: chainRequest) != nil }
+            .sorted { $0.type.signingDelegateOrder < $1.type.signingDelegateOrder }
+            .first?.name
+
+        return name ?? convertedAddress.mediumTruncated
+    }
 }
 
 // MARK: - MultisigEndedMessageFactoryProtocol
@@ -280,13 +307,19 @@ extension MultisigEndedMessageFactory: MultisigEndedMessageFactoryProtocol {
 
     func createRejectedMessageModel(
         for formattedCall: FormattedCall,
+        wallets: [MetaAccountModel],
         cancellerAddress: AccountAddress,
         chain: ChainModel
     ) -> MultisigEndedMessageModel {
         let title = createRejectedTitle()
+        let cancellesNameOrAddress = targetWalletName(
+            for: cancellerAddress,
+            wallets: wallets,
+            chain: chain
+        )
         let body = createFormattedCommonBody(
             from: formattedCall,
-            adding: createRejectedBodySpecificPart(cancellerAddress: cancellerAddress),
+            adding: createRejectedBodySpecificPart(canceller: cancellesNameOrAddress),
             chain: chain
         )
 
@@ -300,10 +333,16 @@ extension MultisigEndedMessageFactory: MultisigEndedMessageFactoryProtocol {
 
     func createRejectedMessageModel(
         for chain: ChainModel,
+        wallets: [MetaAccountModel],
         cancellerAddress: AccountAddress
     ) -> MultisigEndedMessageModel {
         let title = createExecutedTitle()
-        let body = createUnformattedRejectedBody(for: chain, cancellerAddress: cancellerAddress)
+        let cancellesNameOrAddress = targetWalletName(
+            for: cancellerAddress,
+            wallets: wallets,
+            chain: chain
+        )
+        let body = createUnformattedRejectedBody(for: chain, canceller: cancellesNameOrAddress)
 
         return MultisigEndedMessageModel { locale in
             .init(

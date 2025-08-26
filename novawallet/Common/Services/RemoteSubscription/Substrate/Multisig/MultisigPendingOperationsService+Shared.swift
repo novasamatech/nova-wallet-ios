@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
 extension MultisigPendingOperationsService {
@@ -37,6 +38,7 @@ extension MultisigPendingOperationsService {
 
         return MultisigPendingOperationsService(
             selectedMetaAccount: walletSettings.value,
+            applicationHandler: ApplicationHandler(),
             chainRegistry: chainRegistry,
             callDataSyncService: callDataSyncService,
             chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory

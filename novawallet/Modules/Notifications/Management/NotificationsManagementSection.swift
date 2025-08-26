@@ -40,7 +40,7 @@ enum NotificationsManagementRow {
     var icon: UIImage? {
         switch self {
         case .enableNotifications:
-            return R.image.iconNotiifcation()
+            return R.image.iconNotification()
         case .wallets:
             return R.image.iconWallets()
         case .announcements, .sentTokens, .receivedTokens, .gov, .staking, .multisig:

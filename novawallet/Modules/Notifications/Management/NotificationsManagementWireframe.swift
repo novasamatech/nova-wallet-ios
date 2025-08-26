@@ -19,6 +19,7 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         ) else {
             return
         }
+
         view?.controller.navigationController?.pushViewController(
             walletsView.controller,
             animated: true

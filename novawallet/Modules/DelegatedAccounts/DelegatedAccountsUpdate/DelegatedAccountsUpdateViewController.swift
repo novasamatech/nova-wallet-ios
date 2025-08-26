@@ -243,7 +243,7 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .delegated where currentMode == .multisig:
-            R.string.localizable.delegateUpdatesWalletTypeMultisig(
+            R.string.localizable.commonMultisig(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .revoked:

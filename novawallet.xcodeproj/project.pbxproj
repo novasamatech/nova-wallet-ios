@@ -1616,6 +1616,8 @@
 		2D3C71E92E12757400DF9E49 /* MultisigOperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */; };
 		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
 		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
+		2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */; };
+		2D3E40152E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -1652,6 +1654,7 @@
 		2D4F55362CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
+		2D51D68C2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* RampActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
@@ -1813,6 +1816,8 @@
 		2D8FDEB12D06F22F008D0E28 /* DAppListViewController+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
+		2D94C26D2E58CE4D0057A887 /* MultisigNotificationAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */; };
+		2D94C26E2E58CE6F0057A887 /* MultisigNotificationAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */; };
 		2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */; };
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
@@ -8057,6 +8062,8 @@
 		2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationCell.swift; sourceTree = "<group>"; };
 		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
 		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
+		2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsSheetFactory.swift; sourceTree = "<group>"; };
+		2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManagementExternalCallbacks.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -8092,6 +8099,7 @@
 		2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
+		2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPromoService.swift; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
@@ -8248,6 +8256,7 @@
 		2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppListViewController+DataSource.swift"; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
+		2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationAccounts.swift; sourceTree = "<group>"; };
 		2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicFeeInstaller.swift; sourceTree = "<group>"; };
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeSharedStateStore.swift; sourceTree = "<group>"; };
@@ -15658,6 +15667,7 @@
 				772BCCA92B7A28F400A516D9 /* NotificationsManagementTableFooterView.swift */,
 				772BCCAD2B7A2E8800A516D9 /* NotificationsManagementSection.swift */,
 				772BCCAF2B7A360500A516D9 /* NotificationsManagemenViewModelFactory.swift */,
+				2D3E40142E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift */,
 			);
 			path = Management;
 			sourceTree = "<group>";
@@ -16582,6 +16592,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D3E400B2E584C8900CDA28F /* MultisigNotificationsSheet */ = {
+			isa = PBXGroup;
+			children = (
+				2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */,
+			);
+			path = MultisigNotificationsSheet;
+			sourceTree = "<group>";
+		};
 		2D3EA7D22CF9BB7C0033AFD2 /* Transition */ = {
 			isa = PBXGroup;
 			children = (
@@ -16760,6 +16778,14 @@
 				2D4F552F2CCC388700B65B76 /* Send */,
 			);
 			path = Presenter;
+			sourceTree = "<group>";
+		};
+		2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromoService */ = {
+			isa = PBXGroup;
+			children = (
+				2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */,
+			);
+			path = MultisigNotificationsPromoService;
 			sourceTree = "<group>";
 		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
@@ -17721,6 +17747,7 @@
 				2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */,
 				2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */,
 				2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */,
+				2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */,
 			);
 			path = Multisig;
 			sourceTree = "<group>";
@@ -19808,6 +19835,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromoService */,
 				2D06CC272E38F4E80093CA84 /* AppAttest */,
 				0CD9801D2E268EA4005251E1 /* WalletDelayedExecution */,
 				0C521C0E2E1728C500ABAC97 /* CallFormatting */,
@@ -26391,6 +26419,7 @@
 		85D192A683920D50BCD10893 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
+				2D3E400B2E584C8900CDA28F /* MultisigNotificationsSheet */,
 				2D8DE4E42E4A0F780004291B /* MultisigNotifications */,
 				77DF40452B7FE77A00ABDB53 /* BaseNotificationSettings */,
 				6FF518658B8D6E46DDF118A7 /* GovernanceNotifications */,
@@ -29810,6 +29839,7 @@
 				2DEDF00E2E4D1594008F07B2 /* Democracy.swift in Sources */,
 				2DEDF00F2E4D1594008F07B2 /* DemocracyReferendum.swift in Sources */,
 				2DEDF0102E4D1594008F07B2 /* DemocracyVoteThreshold.swift in Sources */,
+				2D94C26E2E58CE6F0057A887 /* MultisigNotificationAccounts.swift in Sources */,
 				2DEDF0112E4D1594008F07B2 /* DemocracyVoting.swift in Sources */,
 				2DEDF0122E4D1594008F07B2 /* Democracy+CodingPath.swift in Sources */,
 				2DEDF0622E4D1D96008F07B2 /* XcmBaseMetadataQueryFactory.swift in Sources */,
@@ -30730,6 +30760,7 @@
 				0CCCDF842B64C63D00473D42 /* HydraDxTokenConverter.swift in Sources */,
 				0CEBAD4E2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift in Sources */,
 				2D4431E02D01096300017951 /* DAppItemViewCollectionCell.swift in Sources */,
+				2D51D68C2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift in Sources */,
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,
 				777DC2E12B2368EC0060CB2C /* ProxyType+title.swift in Sources */,
@@ -30810,6 +30841,7 @@
 				84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */,
 				0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */,
 				847999B42888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift in Sources */,
+				2D3E40152E58786F00CDA28F /* NotificationsManagementExternalCallbacks.swift in Sources */,
 				0C2F8C4F2D53C325003A9DA0 /* ExternalLinkFactory.swift in Sources */,
 				841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */,
 				0C39766B2C32615A00998DD6 /* HydraXYK.swift in Sources */,
@@ -34427,6 +34459,7 @@
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
 				84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */,
 				84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */,
+				2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */,
 				2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,
@@ -34643,6 +34676,7 @@
 				0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,
 				77E304B22AEFC0F3006FD6F0 /* FeeAssetSelectSheetViewController.swift in Sources */,
+				2D94C26D2E58CE4D0057A887 /* MultisigNotificationAccounts.swift in Sources */,
 				2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
 				0C32729C2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift in Sources */,

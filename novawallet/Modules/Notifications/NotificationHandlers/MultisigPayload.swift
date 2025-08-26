@@ -5,6 +5,11 @@ protocol MultisigPayloadProtocol: Codable {
     var signatoryAddress: AccountAddress { get }
     var callHash: Substrate.CallHash { get }
     var callData: Substrate.CallData? { get }
+    var approvals: Int? { get }
+}
+
+extension MultisigPayloadProtocol {
+    var approvals: Int? { nil }
 }
 
 struct NewMultisigPayload: MultisigPayloadProtocol {
@@ -27,12 +32,14 @@ struct ApprovalMultisigPayload: MultisigPayloadProtocol {
         case signatoryAddress = "approver"
         case callHash
         case callData
+        case approvals
     }
 
     let multisigAddress: AccountAddress
     let signatoryAddress: AccountAddress
     @HexCodable var callHash: Substrate.CallHash
     @OptionHexCodable var callData: Substrate.CallData?
+    let approvals: Int?
 }
 
 typealias ExecutedMultisigPayload = ApprovalMultisigPayload
