@@ -1875,6 +1875,7 @@
 		2DA3AE972E5DB11200689F65 /* XcmUni+WeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */; };
 		2DA3AE982E5DB32100689F65 /* Xcm+V4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4E12DA08782002A57C5 /* Xcm+V4.swift */; };
 		2DA3AE992E5DB34C00689F65 /* Xcm+LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */; };
+		2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
@@ -8335,6 +8336,7 @@
 		2D96D8662DF04FF700159E91 /* DelegatedAccountsUpdateViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateViewFactory.swift; sourceTree = "<group>"; };
 		2D96D8672DF04FF700159E91 /* DelegatedAccountsUpdateViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateViewLayout.swift; sourceTree = "<group>"; };
 		2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateWireframe.swift; sourceTree = "<group>"; };
+		2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -16342,6 +16344,7 @@
 			isa = PBXGroup;
 			children = (
 				2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */,
+				2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */,
 				2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */,
 			);
 			path = RemovedWallet;
@@ -30701,6 +30704,7 @@
 				2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */,
 				7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */,
 				0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */,
+				2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */,
 				0C59E8D32AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift in Sources */,
 				84AE7AAB27D373A200495267 /* StackInfoTableCell.swift in Sources */,
 				84A59160292B468300BCCF8F /* EvmTransactionService.swift in Sources */,
