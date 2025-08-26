@@ -1816,6 +1816,8 @@
 		2D8FDEB12D06F22F008D0E28 /* DAppListViewController+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
+		2D94C26D2E58CE4D0057A887 /* MultisigNotificationAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */; };
+		2D94C26E2E58CE6F0057A887 /* MultisigNotificationAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */; };
 		2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */; };
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
@@ -8254,6 +8256,7 @@
 		2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppListViewController+DataSource.swift"; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
+		2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationAccounts.swift; sourceTree = "<group>"; };
 		2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicFeeInstaller.swift; sourceTree = "<group>"; };
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeSharedStateStore.swift; sourceTree = "<group>"; };
@@ -17744,6 +17747,7 @@
 				2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */,
 				2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */,
 				2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */,
+				2D94C26C2E58CE4D0057A887 /* MultisigNotificationAccounts.swift */,
 			);
 			path = Multisig;
 			sourceTree = "<group>";
@@ -29835,6 +29839,7 @@
 				2DEDF00E2E4D1594008F07B2 /* Democracy.swift in Sources */,
 				2DEDF00F2E4D1594008F07B2 /* DemocracyReferendum.swift in Sources */,
 				2DEDF0102E4D1594008F07B2 /* DemocracyVoteThreshold.swift in Sources */,
+				2D94C26E2E58CE6F0057A887 /* MultisigNotificationAccounts.swift in Sources */,
 				2DEDF0112E4D1594008F07B2 /* DemocracyVoting.swift in Sources */,
 				2DEDF0122E4D1594008F07B2 /* Democracy+CodingPath.swift in Sources */,
 				2DEDF0622E4D1D96008F07B2 /* XcmBaseMetadataQueryFactory.swift in Sources */,
@@ -34671,6 +34676,7 @@
 				0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,
 				77E304B22AEFC0F3006FD6F0 /* FeeAssetSelectSheetViewController.swift in Sources */,
+				2D94C26D2E58CE4D0057A887 /* MultisigNotificationAccounts.swift in Sources */,
 				2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
 				0C32729C2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift in Sources */,
