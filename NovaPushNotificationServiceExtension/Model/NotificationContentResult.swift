@@ -15,13 +15,3 @@ struct NotificationContentResult {
         self.body = body
     }
 }
-
-extension NotificationContentResult {
-    static func createUnsupportedResult(for locale: Locale) -> NotificationContentResult {
-        .init(
-            title: R.string.localizable.pushNotificationDefaultTitle(preferredLanguages: locale.rLanguages),
-            subtitle: nil,
-            body: R.string.localizable.pushNotificationUnsupportedBody(preferredLanguages: locale.rLanguages)
-        )
-    }
-}

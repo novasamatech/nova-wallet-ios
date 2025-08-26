@@ -23,7 +23,7 @@
 "push.notification.referendum.deciding" = "Deciding";
 "push.notification.referendum.created" = "Preparing";
 "push.notification.default.title" = "Nova Wallet";
-"push.notification.unsupported.body" = "Unsupported message content";
+//"push.notification.unsupported.body" = "Unsupported message content";
 "push.notification.sent.tokens.subtitle" = "Sent %@ %@ to %@ on %@";
 "push.notification.receive.tokens.subtitle" = "Received %@ %@ on %@";
 "push.notification.common.multisig.subtitle" = "Wallet: %@";

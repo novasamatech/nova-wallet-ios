@@ -57,7 +57,7 @@ extension CommonMultisigHandler {
             ) {
                 let chains = try chainsOperation.extractNoCancellableResultData()
 
-                let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
+                let fetchMetaAccountsOperation = self.walletsRepository.fetchAllOperation(with: .init())
 
                 guard let chain = self.search(chainId: self.chainId, in: chains) else {
                     throw PushNotificationsHandlerErrors.chainNotFound(chainId: self.chainId)
@@ -136,16 +136,41 @@ private extension CommonMultisigHandler {
         }
     }
 
+    func createNotificationSilenceOperation(
+        metaAccounts: @escaping () throws -> [MetaAccountModel],
+        payload: MultisigPayloadProtocol
+    ) -> BaseOperation<Void> {
+        ClosureOperation {
+            let wallets = try metaAccounts()
+            let multisigAccounts = wallets.compactMap { $0.multisigAccount?.anyChainMultisig }
+            let relevantMultisigAccounts = try multisigAccounts.filter {
+                $0.signatory == (try payload.signatoryAddress.toAccountId())
+            }
+
+            guard relevantMultisigAccounts.count != 1 else {
+                throw MultisigNotificationsHandlerErrors.actingSignatoryFiltered
+            }
+
+            return
+        }
+    }
+
     func createNotificationContentWrapper(
         chain: ChainModel,
         metaAccounts: @escaping () throws -> [MetaAccountModel],
         payload: MultisigPayloadProtocol
     ) -> CompoundOperationWrapper<NotificationContentResult> {
+        let notificationSilenceOperation = createNotificationSilenceOperation(
+            metaAccounts: metaAccounts,
+            payload: payload
+        )
         let notificationParamsOperation = createNotificationParams(
             chain: chain,
             metaAccounts: metaAccounts,
             payload: payload
         )
+
+        notificationParamsOperation.addDependency(notificationSilenceOperation)
 
         guard let callData = payload.callData else {
             let mapOperation = ClosureOperation<NotificationContentResult> {
@@ -166,7 +191,7 @@ private extension CommonMultisigHandler {
 
             return CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [notificationParamsOperation]
+                dependencies: [notificationParamsOperation, notificationSilenceOperation]
             )
         }
 
@@ -190,9 +215,14 @@ private extension CommonMultisigHandler {
         mapOperation.addDependency(notificationParamsOperation)
         mapOperation.addDependency(formattedCallWrapper.targetOperation)
 
+        let dependencies = [
+            notificationParamsOperation,
+            notificationSilenceOperation
+        ] + formattedCallWrapper.allOperations
+
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [notificationParamsOperation] + formattedCallWrapper.allOperations
+            dependencies: dependencies
         )
     }
 
@@ -272,7 +302,7 @@ private extension CommonMultisigHandler {
         return CallFormattingOperationFactory(
             chainProvider: OfflineChainProvider(repository: chainsRepository),
             runtimeCodingServiceProvider: codingServiceProvider,
-            walletRepository: walletsRepository(),
+            walletRepository: walletsRepository,
             operationQueue: operationQueue
         )
     }
@@ -333,4 +363,10 @@ private extension CommonMultisigHandler {
             callPath.callName.displayCall
         ].joined(with: .colonSpace)
     }
+}
+
+// MARK: Errors
+
+enum MultisigNotificationsHandlerErrors: Error {
+    case actingSignatoryFiltered
 }

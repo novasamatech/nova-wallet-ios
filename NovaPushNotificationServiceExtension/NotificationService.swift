@@ -40,11 +40,7 @@ final class NotificationService: UNNotificationServiceExtension {
                 contentHandler(notification.toUserNotificationContent(with: bestAttemptContent))
             case let .original(error):
                 self?.logError(error)
-
-                let unsupported = NotificationContentResult.createUnsupportedResult(
-                    for: LocalizationManager.shared.selectedLocale
-                )
-                contentHandler(unsupported.toUserNotificationContent())
+                contentHandler(UNNotificationContent())
             }
         }
     }

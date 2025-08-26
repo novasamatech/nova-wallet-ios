@@ -12,6 +12,8 @@ class CommonHandler {
 
     lazy var settingsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings> = createSettingsRepository()
     lazy var chainsRepository: AnyDataProviderRepository<ChainModel> = createChainsRepository()
+    lazy var walletsRepository: AnyDataProviderRepository<MetaAccountModel> = createWalletsRepository()
+
     let settingsManager: SettingsManagerProtocol
 
     init(
@@ -121,7 +123,7 @@ extension CommonHandler {
             .first
     }
 
-    func walletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {
+    func createWalletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {
         let mapper = MetaAccountMapper()
 
         let repository = userStorageFacade.createRepository(
