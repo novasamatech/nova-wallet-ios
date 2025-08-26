@@ -27,7 +27,7 @@ final class AssetExchangeFeeEstimatingRouter {
 private extension AssetExchangeFeeEstimatingRouter {
     func canSwapViaGraph(chainAsset: ChainAsset) -> Bool {
         switch AssetType(rawType: chainAsset.asset.type) {
-        case .orml:
+        case .orml, .ormlHydrationEvm:
             chainAsset.chain.hasSwapHydra
         case .statemine:
             chainAsset.chain.hasSwapHub

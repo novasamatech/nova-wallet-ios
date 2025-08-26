@@ -38,7 +38,7 @@ private extension ExtrinsicFeeEstimationRegistry {
             return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
-        case .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
+        case .equilibrium, .evmNative, .evmAsset, .orml, .ormlHydrationEvm, .statemine:
             return estimatingWrapperFactory.createCustomFeeEstimatingWrapper(
                 asset: asset,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure

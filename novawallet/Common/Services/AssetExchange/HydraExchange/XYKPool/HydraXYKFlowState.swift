@@ -9,6 +9,8 @@ final class HydraXYKFlowState {
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
     let notificationsRegistrar: AssetsExchangeStateRegistring?
+    let workQueue: DispatchQueue
+    let logger: LoggerProtocol
 
     let mutex = NSLock()
 
@@ -20,7 +22,9 @@ final class HydraXYKFlowState {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         notificationsRegistrar: AssetsExchangeStateRegistring?,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        workQueue: DispatchQueue = .global(),
+        logger: LoggerProtocol
     ) {
         self.account = account
         self.chain = chain
@@ -28,6 +32,8 @@ final class HydraXYKFlowState {
         self.runtimeProvider = runtimeProvider
         self.notificationsRegistrar = notificationsRegistrar
         self.operationQueue = operationQueue
+        self.workQueue = workQueue
+        self.logger = logger
     }
 
     deinit {
@@ -39,16 +45,6 @@ final class HydraXYKFlowState {
 }
 
 extension HydraXYKFlowState {
-    func getAllStateServices() -> [HydraXYKQuoteParamsService] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(quoteStateServices.values)
-    }
-
     func resetServices() {
         mutex.lock()
 
@@ -81,7 +77,9 @@ extension HydraXYKFlowState {
             assetOut: swapPair.assetOut,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            workQueue: workQueue,
+            logger: logger
         )
 
         quoteStateServices[swapPair] = newService

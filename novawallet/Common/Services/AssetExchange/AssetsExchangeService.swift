@@ -5,7 +5,9 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func subscribeUpdates(for target: AnyObject, notifyingIn queue: DispatchQueue, closure: @escaping () -> Void)
     func unsubscribeUpdates(for target: AnyObject)
 
-    func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol>
+    func fetchAssetsInWrapper(given assetOutId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
+    func fetchAssetsOutWrapper(given assetInId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
+
     func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func canPayFee(in asset: ChainAsset) -> CompoundOperationWrapper<Bool>
@@ -113,8 +115,35 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
         let directionsOperation = ClosureOperation<AssetsExchageGraphReachabilityProtocol> {
             let graph = try graphWrapper.targetOperation.extractNoCancellableResultData()
-
             return graph.fetchReachability()
+        }
+
+        directionsOperation.addDependency(graphWrapper.targetOperation)
+
+        return graphWrapper.insertingTail(operation: directionsOperation)
+    }
+
+    func fetchAssetsInWrapper(
+        given assetOutId: ChainAssetId?
+    ) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        let graphWrapper = graphProvider.asyncWaitGraphWrapper()
+
+        let directionsOperation = ClosureOperation<Set<ChainAssetId>> {
+            let graph = try graphWrapper.targetOperation.extractNoCancellableResultData()
+            return graph.fetchAssetsIn(given: assetOutId)
+        }
+
+        directionsOperation.addDependency(graphWrapper.targetOperation)
+
+        return graphWrapper.insertingTail(operation: directionsOperation)
+    }
+
+    func fetchAssetsOutWrapper(given assetInId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        let graphWrapper = graphProvider.asyncWaitGraphWrapper()
+
+        let directionsOperation = ClosureOperation<Set<ChainAssetId>> {
+            let graph = try graphWrapper.targetOperation.extractNoCancellableResultData()
+            return graph.fetchAssetsOut(given: assetInId)
         }
 
         directionsOperation.addDependency(graphWrapper.targetOperation)
@@ -179,7 +208,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
         let operation = AsyncClosureOperation<Bool>(operationClosure: { completionClosure in
             self.feeSupportProvider.fetchCurrentState(in: .global()) { state in
-                let isFeeSupported = state?.canPayFee(inNonNative: asset) ?? false
+                let isFeeSupported = state?.canPayFee(inNonNative: asset.chainAssetId) ?? false
                 completionClosure(.success(isFeeSupported))
             }
         })

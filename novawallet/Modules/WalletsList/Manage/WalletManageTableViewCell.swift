@@ -11,7 +11,7 @@ final class WalletManageTableViewCell<V: WalletViewProtocol>: WalletsListTableVi
 
         let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
         disclosureIndicatorView.image = icon
-        disclosureIndicatorView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        disclosureIndicatorView.setContentCompressionResistancePriority(.required, for: .horizontal)
         disclosureIndicatorView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
     }
 

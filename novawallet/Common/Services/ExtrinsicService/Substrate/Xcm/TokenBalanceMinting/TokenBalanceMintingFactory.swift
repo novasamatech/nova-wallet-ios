@@ -141,7 +141,7 @@ extension TokenBalanceMintingFactory: TokenBalanceMintingFactoryProtocol {
                         info: info,
                         codingFactory: codingFactory
                     )
-                case let .orml(info):
+                case let .orml(info), let .ormlHydrationEvm(info):
                     return self.createOrmlTokenMintWrapper(
                         accountId: accountId,
                         amount: amount,

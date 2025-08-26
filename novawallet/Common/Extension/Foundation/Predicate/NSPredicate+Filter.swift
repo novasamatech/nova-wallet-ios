@@ -55,6 +55,36 @@ extension NSPredicate {
         ])
     }
 
+    static func filterMetaAccount(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
+        let hexAccountId = accountId.toHex()
+
+        let substrateAccountFilter = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMetaAccount.substrateAccountId), hexAccountId
+        )
+
+        let ethereumAccountFilter = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMetaAccount.ethereumAddress), hexAccountId
+        )
+
+        let chainAccountFilter = NSPredicate(
+            format: "SUBQUERY(%K, $account, $account.%K == %@ AND $account.%K == %@).@count > 0",
+            #keyPath(CDMetaAccount.chainAccounts),
+            #keyPath(CDChainAccount.accountId), hexAccountId,
+            #keyPath(CDChainAccount.chainId), chainId
+        )
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [
+            substrateAccountFilter,
+            ethereumAccountFilter,
+            chainAccountFilter
+        ])
+    }
+
     static func metaAccountById(_ identifier: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.metaId), identifier)
     }

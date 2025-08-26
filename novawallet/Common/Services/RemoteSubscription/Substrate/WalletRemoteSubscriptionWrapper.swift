@@ -43,7 +43,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case .erc20, .evmNative, .equilibrium:
+        case .erc20, .evmNative, .equilibrium, .ormlHydrationEvm:
             // not supported
             return nil
         }
@@ -65,7 +65,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case .erc20, .evmNative, .equilibrium:
+        case .erc20, .evmNative, .equilibrium, .ormlHydrationEvm:
             // not supported
             return
         }
