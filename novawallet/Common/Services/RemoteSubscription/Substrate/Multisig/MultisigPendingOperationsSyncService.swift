@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import SubstrateSdk
 import Operation_iOS
 
@@ -9,6 +10,7 @@ protocol MultisigPendingOperationsServiceProtocol: ApplicationServiceProtocol {
 final class MultisigPendingOperationsService {
     private let mutex = NSLock()
 
+    private let applicationHandler: ApplicationHandlerProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let callDataSyncService: MultisigCallDataSyncServiceProtocol
     private let chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol
@@ -22,6 +24,7 @@ final class MultisigPendingOperationsService {
 
     init(
         selectedMetaAccount: MetaAccountModel,
+        applicationHandler: ApplicationHandlerProtocol,
         chainRegistry: ChainRegistryProtocol,
         callDataSyncService: MultisigCallDataSyncServiceProtocol,
         chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol,
@@ -29,6 +32,7 @@ final class MultisigPendingOperationsService {
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
+        self.applicationHandler = applicationHandler
         self.chainRegistry = chainRegistry
         self.callDataSyncService = callDataSyncService
         self.chainSyncServiceFactory = chainSyncServiceFactory
@@ -41,6 +45,7 @@ final class MultisigPendingOperationsService {
 
 private extension MultisigPendingOperationsService {
     func performSetup() {
+        applicationHandler.delegate = self
         callDataSyncService.startSyncUp()
         subscribeChains()
     }
@@ -146,6 +151,18 @@ extension MultisigPendingOperationsService: MultisigPendingOperationsServiceProt
         } else {
             clearChainSyncServices()
         }
+    }
+}
+
+// MARK: - ApplicationHandlerDelegate
+
+extension MultisigPendingOperationsService: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        setup()
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        throttle()
     }
 }
 
