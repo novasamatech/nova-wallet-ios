@@ -14,7 +14,7 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         completion: @escaping ([Web3Alert.LocalWallet]) -> Void
     ) {
         guard let walletsView = NotificationWalletListViewFactory.createView(
-            initState: .modified(initState),
+            initState: initState,
             completion: completion
         ) else {
             return

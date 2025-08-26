@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import Operation_iOS
 import Keystore_iOS
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
@@ -53,8 +54,27 @@ private extension MainTabBarViewFactory {
             return nil
         }
 
+        let logger = Logger.shared
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let settingsManager = SettingsManager.shared
         let securedLayer = SecurityLayerService.shared
         let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
+
+        let notificationsSettingsRepository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
+            UserDataStorageFacade.shared.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+            )
+
+        let notificationsPromoService = MultisigNotificationsPromoService(
+            settingsManager: settingsManager,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            notificationsSettingsrepository: AnyDataProviderRepository(notificationsSettingsRepository),
+            operationQueue: operationQueue,
+            workingQueue: .main,
+            logger: logger
+        )
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
@@ -62,14 +82,14 @@ private extension MainTabBarViewFactory {
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            notificationsPromoService: notificationsPromoService,
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService,
-            settingsManager: SettingsManager.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            settingsManager: settingsManager,
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         return interactor

@@ -2,7 +2,6 @@ import Foundation
 import Keystore_iOS
 import SubstrateSdk
 import Foundation_iOS
-import Operation_iOS
 
 final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?
@@ -14,14 +13,12 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
-    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+    let notificationsPromoService: MultisigNotificationsPromoServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-
-    private var multisigwWalletListProvider: StreamableProvider<ManagedMetaAccountModel>?
 
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
@@ -40,7 +37,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        notificationsPromoService: MultisigNotificationsPromoServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
         securedLayer: SecurityLayerServiceProtocol,
@@ -53,7 +50,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
-        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
         self.serviceCoordinator = serviceCoordinator
@@ -106,12 +103,20 @@ private extension MainTabBarInteractor {
     }
 
     func setupMultisigNotificationPromoOrNextAction() {
-        if !settingsManager.multisigNotificationsPromoSeen {
-            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-                self?.multisigwWalletListProvider = self?.subscribeForWallets(of: .multisig)
-                self?.onLaunchQueue.runNext()
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            guard let self else { return }
+
+            notificationsPromoService.add(
+                observer: self,
+                sendStateOnSubscription: true,
+                queue: .main
+            ) { _, newState in
+                guard let newState, case let .requestingShow(params) = newState else {
+                    return
+                }
+
+                self.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
             }
-        } else {
             onLaunchQueue.runNext()
         }
     }
@@ -145,17 +150,6 @@ private extension MainTabBarInteractor {
         default:
             break
         }
-    }
-
-    func checkMultisigNotificationsPromo(for wallets: [ManagedMetaAccountModel]) {
-        let allMultisigAccounts = wallets.compactMap { $0.info.multisigAccount?.anyChainMultisig }
-
-        guard allMultisigAccounts.contains(where: { $0.status == .active }) else { return }
-
-        presenter?.didRequestMultisigNotificationsPromoOpen()
-        settingsManager.multisigNotificationsPromoSeen = true
-
-        clear(streamableProvider: &multisigwWalletListProvider)
     }
 }
 
@@ -225,22 +219,6 @@ extension MainTabBarInteractor: EventVisitorProtocol {
 
     func processWalletRemoved(event _: WalletRemoved) {
         serviceCoordinator.updateOnWalletRemove()
-    }
-}
-
-// MARK: - WalletListLocalSubscriptionHandler
-
-extension MainTabBarInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleWallets(
-        result: Result<[DataProviderChange<ManagedMetaAccountModel>], any Error>,
-        of _: MetaAccountModelType
-    ) {
-        guard
-            let allWallets = try? result.get().allChangedItems(),
-            !allWallets.isEmpty
-        else { return }
-
-        checkMultisigNotificationsPromo(for: allWallets)
     }
 }
 

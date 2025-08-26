@@ -160,17 +160,19 @@ private extension MainTabBarWireframe {
         )
     }
 
-    func openNotificationsWalletSelect(in controller: UITabBarController) {
+    func openNotificationsWalletSelect(
+        in controller: UITabBarController,
+        selectedWallets: [Web3Alert.LocalWallet]?
+    ) {
         controller.selectedIndex = MainTabBarIndex.settings
         let viewController = controller.viewControllers?[MainTabBarIndex.settings]
         let navigationController = viewController as? UINavigationController
-        navigationController?.popToRootViewController(animated: true)
 
         guard
             let settingsController = navigationController?.viewControllers.first,
             let notificationManagementView = NotificationsManagementViewFactory.createView(),
             let walletSelectView = NotificationWalletListViewFactory.createView(
-                initState: .persisted,
+                initState: selectedWallets,
                 completion: notificationManagementView.getExternalCallbacks().changeWalletSettings
             )
         else {
@@ -455,19 +457,27 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         view?.controller.present(controllerToPresent, animated: true)
     }
 
-    func presentMultisigNotificationsPromo(from view: MainTabBarViewProtocol?) {
+    func presentMultisigNotificationsPromo(
+        from view: MainTabBarViewProtocol?,
+        with params: MultisigNotificationsPromoParams
+    ) {
         guard let tabBarController = view?.controller as? UITabBarController else {
             return
         }
 
         let bottomSheet = MultisigNotificationsSheetFactory.createMultisigNotificationsPromo { [weak self] in
-            self?.openNotificationsWalletSelect(in: tabBarController)
+            self?.openNotificationsWalletSelect(
+                in: tabBarController,
+                selectedWallets: params.selectedWallets
+            )
         }
 
         guard let controllerToPresent = bottomSheet?.controller else {
             return
         }
 
-        view?.controller.present(controllerToPresent, animated: true)
+        view?.controller.present(controllerToPresent, animated: true) {
+            params.completion()
+        }
     }
 }
