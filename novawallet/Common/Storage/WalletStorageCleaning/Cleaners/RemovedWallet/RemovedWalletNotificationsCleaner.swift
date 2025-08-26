@@ -3,7 +3,6 @@ import Keystore_iOS
 import Operation_iOS
 
 final class RemoverStorageNotificationsCleaner {
-    private let chainRepository: AnyDataProviderRepository<ChainModel>
     private let notificationsSettingsrepository: AnyDataProviderRepository<Web3Alert.LocalSettings>
     private let notificationsTopicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>
     private let notificationsFacade: PushNotificationsServiceFacadeProtocol
@@ -11,14 +10,12 @@ final class RemoverStorageNotificationsCleaner {
     private let operationQueue: OperationQueue
     
     init(
-        chainRepository: AnyDataProviderRepository<ChainModel>,
         notificationsSettingsrepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
         notificationsTopicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>,
         notificationsFacade: PushNotificationsServiceFacadeProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.chainRepository = chainRepository
         self.notificationsFacade = notificationsFacade
         self.notificationsSettingsrepository = notificationsSettingsrepository
         self.notificationsTopicsRepository = notificationsTopicsRepository
@@ -61,7 +58,7 @@ extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
             
             let allSettings = PushNotification.AllSettings(
                 notificationsEnabled: settingsManager.notificationsEnabled,
-                accountBased: updatedSettings,
+                accountBased: updatedSettings.settingCurrentDate(),
                 topics: topicSettings
             )
             
