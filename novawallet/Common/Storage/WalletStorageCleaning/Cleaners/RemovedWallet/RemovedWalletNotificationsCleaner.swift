@@ -8,7 +8,7 @@ final class RemoverStorageNotificationsCleaner {
     private let notificationsFacade: PushNotificationsServiceFacadeProtocol
     private let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
-    
+
     init(
         notificationsSettingsrepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
         notificationsTopicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>,
@@ -32,19 +32,19 @@ extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
     ) -> CompoundOperationWrapper<Void> {
         let settingsOperation = notificationsSettingsrepository.fetchAllOperation(with: .init())
         let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
-        
+
         let cleaningOperation = AsyncClosureOperation<Void> { [weak self] completion in
             guard let self else {
                 completion(.success(()))
                 return
             }
-            
+
             let metaIds = Set(
                 try providers.changesProvider()
                     .filter { $0.isDeletion }
                     .map(\.identifier)
             )
-            
+
             guard
                 let settings = try settingsOperation.extractNoCancellableResultData().first,
                 let topicSettings = try topicsOperation.extractNoCancellableResultData().first
@@ -52,27 +52,27 @@ extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
                 completion(.success(()))
                 return
             }
-            
+
             let updatedWallets = settings.wallets.filter { !metaIds.contains($0.metaId) }
             let updatedSettings = settings.with(wallets: updatedWallets)
-            
+
             let allSettings = PushNotification.AllSettings(
                 notificationsEnabled: settingsManager.notificationsEnabled,
                 accountBased: updatedSettings.settingCurrentDate(),
                 topics: topicSettings
             )
-            
+
             self.notificationsFacade.save(
                 settings: allSettings,
                 completion: { completion($0.mapError { $0 as Error }) }
             )
         }
-        
+
         cleaningOperation.addDependency(settingsOperation)
         cleaningOperation.addDependency(topicsOperation)
-        
+
         let dependencies = [settingsOperation, topicsOperation]
-        
+
         return CompoundOperationWrapper(
             targetOperation: cleaningOperation,
             dependencies: dependencies
