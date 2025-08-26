@@ -121,11 +121,7 @@ struct SupportAndVotesLocal {
             currentBlock < (since + period),
             let approvalFraction,
             let approvalDelay = approvalFunction?.delay(for: approvalFraction),
-            let supportDelay = supportFunction?.delay(for: supportFraction),
-            let approvalDelayedThreshold = approvalFunction?.calculateThreshold(for: approvalDelay),
-            let supportDelayedThreshold = supportFunction?.calculateThreshold(for: supportDelay),
-            approvalFraction >= approvalDelayedThreshold,
-            supportFraction >= supportDelayedThreshold
+            let supportDelay = supportFunction?.delay(for: supportFraction)
         else {
             return .notPassing
         }

@@ -36,13 +36,13 @@ class VotingCurveTests: XCTestCase {
             ceil: BigUInt(0.9 * 1_000_000_000)
         )
         
-        let delayStubs: [(Decimal, Decimal)] = [
+        let delayStubs: [(Decimal?, Decimal)] = [
             (x: .zero, y: 1.0),
             (x: .zero, y: 0.9),
             (x: 0.25, y: 0.5),
             (x: 0.5, y: 0.1),
-            (x: 1.0, y: 0.09),
-            (x: 1.0, y: .zero)
+            (x: nil, y: 0.09),
+            (x: nil, y: .zero)
         ]
         
         let thresholdStubs: [(Decimal, Decimal)] = [
@@ -66,12 +66,12 @@ class VotingCurveTests: XCTestCase {
             period: BigUInt(0.15 * 1_000_000_000)
         )
         
-        let delayStubs: [(Decimal, Decimal)] = [
+        let delayStubs: [(Decimal?, Decimal)] = [
             (x: .zero, y: 0.8),
             (x: 0.15, y: 0.7),
             (x: 0.3, y: 0.6),
             (x: 0.75, y: 0.3),
-            (x: 1.0, y: 0.1)
+            (x: nil, y: 0.1)
         ]
         
         let thresholdStubs: [(Decimal, Decimal)] = [
@@ -91,7 +91,7 @@ class VotingCurveTests: XCTestCase {
     
     private func testDelay(
         for curve: Referenda.Curve,
-        with stubs: [(x: Decimal, y: Decimal)]
+        with stubs: [(x: Decimal?, y: Decimal)]
     ) {
         let function: ReferendumDecidingFunctionProtocol = Gov2LocalDecidingFunction(
             curve: curve,
@@ -101,7 +101,10 @@ class VotingCurveTests: XCTestCase {
         
         stubs.forEach { expectedX, y in
             let resultX = function.delay(for: y)
-            XCTAssertTrue(resultX == expectedX, "Expected \(expectedX) for input \(y) but got: \(String(describing: resultX))")
+            XCTAssertTrue(
+                resultX == expectedX,
+                "Expected \(String(describing: expectedX)) for input \(y) but got: \(String(describing: resultX))"
+            )
         }
     }
     

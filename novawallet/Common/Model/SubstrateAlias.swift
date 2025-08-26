@@ -18,6 +18,7 @@ typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
+typealias BlockHashData = Data
 typealias Percent = UInt8
 typealias Perbill = BigUInt
 
@@ -93,6 +94,24 @@ extension Optional where Wrapped == ParaId {
         switch self {
         case .none:
             return false
+        case let .some(paraId):
+            return paraId.isSystemParachain
+        }
+    }
+
+    var isRelay: Bool {
+        switch self {
+        case .none:
+            true
+        case .some:
+            false
+        }
+    }
+
+    var isRelayOrSystemParachain: Bool {
+        switch self {
+        case .none:
+            return true
         case let .some(paraId):
             return paraId.isSystemParachain
         }

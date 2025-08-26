@@ -69,13 +69,79 @@ final class AssetsExchangeTests: XCTestCase {
                 return
             }
             
-            let hasDirections = !reachability.getAllAssetIn().isEmpty &&
-                !reachability.getAllAssetOut().isEmpty &&
-                !reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty &&
-                !reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty &&
-                !reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty
+            XCTAssert(!reachability.getAllAssetIn().isEmpty)
+            XCTAssert(!reachability.getAllAssetOut().isEmpty)
+            XCTAssert(!reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty)
+            XCTAssert(!reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty)
+            XCTAssert(!reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty)
+        }
+    }
+    
+    func testFindAllAssetIn() {
+        let params = buildCommonParams()
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetsIn = graph?.fetchAssetsIn(given: nil) else {
+                XCTFail("No graph")
+                return
+            }
             
-            XCTAssert(hasDirections, "Some directions were not found")
+            XCTAssert(!assetsIn.isEmpty)
+        }
+    }
+    
+    func testFindAssetsOutGivenIn() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(
+                for: KnowChainId.polkadot
+            )?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetsIn = graph?.fetchAssetsOut(given: polkadotUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            XCTAssert(!assetsIn.isEmpty)
+        }
+    }
+    
+    func testAssetsInGivenOut() {
+        let params = buildCommonParams()
+        
+        guard
+            let hydraUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.hydra)?.utilityChainAssetId(),
+            let assetHubUtilityAsset = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        let graph = createGraph(for: params)
+        
+        measure {
+            guard let assetInHydration = graph?.fetchAssetsIn(given: hydraUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            guard let assetInAH = graph?.fetchAssetsIn(given: assetHubUtilityAsset) else {
+                XCTFail("No graph")
+                return
+            }
+            
+            XCTAssert(!assetInAH.isEmpty)
+            XCTAssert(!assetInHydration.isEmpty)
         }
     }
     
@@ -121,6 +187,103 @@ final class AssetsExchangeTests: XCTestCase {
         measure {
             let route = graph.fetchPaths(from: polkadotUtilityAsset, to: ibtcInterlayAsset, maxTopPaths: 1)
             XCTAssert(!route.isEmpty, "No routes founds")
+        }
+    }
+    
+    func testMeasureMultiRouteSearch() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
+            let ibtcInterlayAsset = params.chainRegistry.getChain(
+                for: "bf88efe70e9e0e916416e8bed61f2b45717f517d7f3523e33c7b001e5ffcbc72"
+            )?.chainAssetForSymbol("iBTC")?.chainAssetId else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        measure {
+            let route = graph.fetchPaths(from: polkadotUtilityAsset, to: ibtcInterlayAsset, maxTopPaths: 4)
+            XCTAssert(!route.isEmpty, "No routes founds")
+        }
+    }
+    
+    func testRouteUSDTAHDOTPolkadot() throws {
+        let params = buildCommonParams()
+        
+        let pahChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        let dotChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadot)
+        
+        let usdtAH = try pahChain.chainAssetForSymbolOrError("USDT").chainAssetId
+        let dotPolkadot = try dotChain.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: usdtAH, to: dotPolkadot, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+    
+    func testRouteUSDTAHDOTAH() throws {
+        let params = buildCommonParams()
+        
+        let pahChain = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        
+        let usdtAH = try pahChain.chainAssetForSymbolOrError("USDT").chainAssetId
+        let dotAH = try pahChain.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: usdtAH, to: dotAH, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+    
+    func testRouteGDOTDOTPolkadot() throws {
+        let params = buildCommonParams()
+        
+        let polkadot = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadot)
+        let hydration = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+        
+        let gdotHydraion = try hydration.chainAssetForSymbolOrError("GDOT").chainAssetId
+        let dotPolkadot = try polkadot.chainAssetForSymbolOrError("DOT").chainAssetId
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        let route = graph.fetchPaths(from: gdotHydraion, to: dotPolkadot, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+            
+            Logger.shared.info("Route: \(pathDescription)")
         }
     }
     

@@ -24,32 +24,56 @@ final class PushNotificationHandlersFactory: PushNotificationHandlersFactoryProt
     func createHandler(message: NotificationMessage) -> PushNotificationHandler {
         switch message {
         case let .transfer(type, chainId, payload):
-            return TransferHandler(
+            TransferHandler(
                 chainId: chainId,
                 payload: payload,
                 type: type,
                 operationQueue: operationQueue
             )
         case let .newReferendum(chainId, payload):
-            return NewReferendumHandler(
+            NewReferendumHandler(
                 chainId: chainId,
                 payload: payload,
                 operationQueue: operationQueue
             )
         case let .referendumUpdate(chainId, payload):
-            return ReferendumUpdatesHandler(
+            ReferendumUpdatesHandler(
                 chainId: chainId,
                 payload: payload,
                 operationQueue: operationQueue
             )
         case let .newRelease(payload):
-            return NewReleaseHandler(
+            NewReleaseHandler(
                 payload: payload,
                 localizationManager: localizationManager,
                 operationQueue: operationQueue
             )
         case let .stakingReward(chainId, payload):
-            return StakingRewardsHandler(
+            StakingRewardsHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .newMultisig(chainId, payload):
+            NewMultisigHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigApproval(chainId, payload):
+            MultisigApprovalHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigExecuted(chainId, payload):
+            MultisigExecutedHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
+        case let .multisigCancelled(chainId, payload):
+            MultisigCancelledHandler(
                 chainId: chainId,
                 payload: payload,
                 operationQueue: operationQueue
@@ -67,15 +91,17 @@ enum PushNotificationsHandlerErrors: Error, Hashable {
     ) -> Bool {
         switch (lhs, rhs) {
         case (.chainDisabled, .chainDisabled):
-            return true
+            true
         case let (.chainNotFound(lhsChainId), .chainNotFound(rhsChainId)):
-            return lhsChainId == rhsChainId
+            lhsChainId == rhsChainId
         case let (.assetNotFound(lhsAssetId), .assetNotFound(rhsAssetId)):
-            return lhsAssetId == rhsAssetId
+            lhsAssetId == rhsAssetId
         case let (.internalError(lhsError), .internalError(rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+            lhsError.localizedDescription == rhsError.localizedDescription
+        case (.targetWalletNotFound, .targetWalletNotFound):
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -92,8 +118,10 @@ enum PushNotificationsHandlerErrors: Error, Hashable {
         case let .internalError(error):
             hasher.combine(3)
             hasher.combine(error.localizedDescription)
-        case .undefined:
+        case .targetWalletNotFound:
             hasher.combine(4)
+        case .undefined:
+            hasher.combine(5)
         }
     }
 
@@ -101,5 +129,6 @@ enum PushNotificationsHandlerErrors: Error, Hashable {
     case chainNotFound(chainId: ChainModel.Id)
     case assetNotFound(assetId: String?)
     case internalError(error: Error)
+    case targetWalletNotFound
     case undefined
 }

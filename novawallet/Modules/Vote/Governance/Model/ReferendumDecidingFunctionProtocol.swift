@@ -7,6 +7,9 @@ protocol ReferendumDecidingFunctionProtocol {
 }
 
 extension ReferendumDecidingFunctionProtocol {
+    // the function returns smallest x for which given treshold value is passing
+    // the function returns nil either if there is no x for given treshold
+    // or calculation error occured
     func delay(for yVal: Decimal) -> Decimal? {
         switch curve {
         case let .linearDecreasing(params):
@@ -33,7 +36,7 @@ extension ReferendumDecidingFunctionProtocol {
         }
 
         if yVal < floor {
-            return Decimal(1)
+            return nil
         } else if yVal > ceil {
             return .zero
         } else {
@@ -62,7 +65,7 @@ extension ReferendumDecidingFunctionProtocol {
         }
 
         if yVal < end {
-            return Decimal(1)
+            return nil
         } else {
             let steps = (begin - min(yVal, begin) + step.lessEpsilon()).divideToIntegralValue(by: step)
             return period * steps
@@ -80,7 +83,7 @@ extension ReferendumDecidingFunctionProtocol {
         let yTerm = yVal - yOffset
 
         guard yTerm > 0 else {
-            return Decimal(1)
+            return nil
         }
 
         let term = factor.dividing(

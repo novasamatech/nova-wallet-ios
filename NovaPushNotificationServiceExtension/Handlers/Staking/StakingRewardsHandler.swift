@@ -24,7 +24,6 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         callbackQueue: DispatchQueue?,
         completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
-        let settingsOperation = settingsRepository.fetchAllOperation(with: .init())
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
         let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
@@ -35,7 +34,6 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                     throw PushNotificationsHandlerErrors.undefined
                 }
 
-                let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
 
                 guard let chain = self.search(chainId: chainId, in: chains) else {
@@ -62,7 +60,6 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                     let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
 
                     return self.updatingContent(
-                        wallets: settings?.wallets ?? [],
                         metaAccounts: metaAccounts,
                         chainAsset: .init(chain: chain, asset: asset),
                         priceData: price,
@@ -76,8 +73,8 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 return .init(targetOperation: mapOperaion, dependencies: [priceOperation, fetchMetaAccountsOperation])
             }
 
-        contentWrapper.addDependency(operations: [settingsOperation, chainOperation])
-        let wrapper = contentWrapper.insertingHead(operations: [settingsOperation, chainOperation])
+        contentWrapper.addDependency(operations: [chainOperation])
+        let wrapper = contentWrapper.insertingHead(operations: [chainOperation])
 
         executeCancellable(
             wrapper: wrapper,
@@ -97,18 +94,17 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
     }
 
     private func updatingContent(
-        wallets: [Web3Alert.LocalWallet],
         metaAccounts: [MetaAccountModel],
         chainAsset: ChainAsset,
         priceData: PriceData?,
         payload: StakingRewardPayload
     ) -> NotificationContentResult {
-        let walletName = targetWalletName(
+        let walletName = targetWallet(
             for: payload.recipient,
-            chainId: chainId,
-            wallets: wallets,
+            chain: chainAsset.chain,
             metaAccounts: metaAccounts
-        )
+        )?.name
+
         let walletString = walletName.flatMap { "[\($0)]" } ?? ""
         let title = [
             R.string.localizable.pushNotificationStakingRewardTitle(preferredLanguages: locale.rLanguages),
@@ -123,12 +119,12 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
 
         let optPriceString = balance?.price.map { "(\($0))" }
         let amountWithPrice = [balance?.amount, optPriceString].compactMap { $0 }.joined(with: .space)
-        let subtitle = R.string.localizable.pushNotificationStakingRewardSubtitle(
+        let body = R.string.localizable.pushNotificationStakingRewardSubtitle(
             amountWithPrice,
             chainAsset.chain.name,
             preferredLanguages: locale.rLanguages
         )
 
-        return .init(title: title, subtitle: subtitle)
+        return .init(title: title, body: body)
     }
 }

@@ -38,11 +38,6 @@ final class NotificationWalletListViewController: WalletsListViewController<
     override func setupLocalization() {
         super.setupLocalization()
 
-        let title = R.string.localizable.notificationsWalletListTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        rootView.headerView.bind(topValue: title, bottomValue: nil)
         rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -88,6 +83,10 @@ final class NotificationWalletListViewController: WalletsListViewController<
 }
 
 extension NotificationWalletListViewController: NotificationWalletListViewProtocol {
+    func setTitle(_ title: String) {
+        rootView.headerView.bind(topValue: title, bottomValue: nil)
+    }
+
     func setAction(enabled: Bool) {
         isActionEnabled = enabled
         updateActionView()

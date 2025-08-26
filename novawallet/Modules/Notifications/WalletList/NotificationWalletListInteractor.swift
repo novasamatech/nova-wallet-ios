@@ -1,10 +1,11 @@
 import UIKit
 import Operation_iOS
 
-final class NotificationWalletListInteractor {
+final class NotificationWalletListInteractor: AnyProviderAutoCleaning {
     weak var presenter: NotificationWalletListInteractorOutputProtocol?
     let chainRegistry: ChainRegistryProtocol
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+
     private var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
 
     init(
@@ -14,17 +15,23 @@ final class NotificationWalletListInteractor {
         self.chainRegistry = chainRegistry
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
     }
+}
 
-    private func subscribeWallets() {
+// MARK: - Private
+
+private extension NotificationWalletListInteractor {
+    func subscribeWallets() {
         walletsSubscription = subscribeAllWalletsProvider()
     }
 
-    private func subscribeChains() {
+    func subscribeChains() {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.presenter?.didReceiveChainChanges(changes)
         }
     }
 }
+
+// MARK: - NotificationWalletListInteractorInputProtocol
 
 extension NotificationWalletListInteractor: NotificationWalletListInteractorInputProtocol {
     func setup() {
@@ -32,6 +39,8 @@ extension NotificationWalletListInteractor: NotificationWalletListInteractorInpu
         subscribeWallets()
     }
 }
+
+// MARK: - WalletListLocalSubscriptionHandler
 
 extension NotificationWalletListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {

@@ -9,18 +9,10 @@ final class MultisigMetaAccountFactory {
 }
 
 private extension MultisigMetaAccountFactory {
-    enum MultisigMetaAccountType {
-        case singleChain(ChainAccountModel)
-        case universalSubstrate(DelegatedAccount.MultisigAccountModel)
-        case universalEvm(DelegatedAccount.MultisigAccountModel)
-    }
-}
-
-private extension MultisigMetaAccountFactory {
     func createMultisigType(
         discoveredMultisig: DiscoveredMultisig,
         metaAccounts: [ManagedMetaAccountModel]
-    ) -> MultisigMetaAccountType? {
+    ) -> MetaAccountModel.MultisigAccountType? {
         let signatoryAccountId = discoveredMultisig.signatory
 
         let signatoryWallets: [MetaAccountModel] = metaAccounts.compactMap { wallet in
@@ -84,7 +76,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         }
 
         let name = try identities[multisig.accountId]?.displayName
-            ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
+            ?? multisig.accountId.toAddressWithDefaultConversion()
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
 
@@ -168,7 +160,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
             return chainAccount.chainId == chainModel.chainId &&
                 delegatedAccount.delegateAccountId == localMultisig.signatory &&
                 delegatedAccount.accountId == localMultisig.accountId
-        case let .universal(localMultisig):
+        case let .universalSubstrate(localMultisig), let .universalEvm(localMultisig):
             return localMultisig.accountId == delegatedAccount.accountId &&
                 localMultisig.signatory == delegatedAccount.delegateAccountId
         }
@@ -194,7 +186,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return switch localMultisigAccountType {
         case let .singleChain(chainAccount):
             chainAccount.chainId == chainModel.chainId
-        case .universal:
+        case .universalEvm, .universalSubstrate:
             true
         }
     }

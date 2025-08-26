@@ -28,6 +28,18 @@ extension AccountId {
             )
         }
     }
+
+    func toAddressWithDefaultConversion() throws -> AccountAddress {
+        let conversion: ChainFormat = if count == SubstrateConstants.ethereumAddressLength {
+            .ethereum
+        } else if count == SubstrateConstants.accountIdLength {
+            .multichainDisplayFormat
+        } else {
+            throw AccountAddressConversionError.invalidChainAddress
+        }
+
+        return try toAddress(using: conversion)
+    }
 }
 
 enum AccountAddressConversionError: Error {

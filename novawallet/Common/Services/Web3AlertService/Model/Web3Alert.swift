@@ -37,6 +37,19 @@ enum Web3Alert {
         var stakingReward: Selection<C>?
         var tokenSent: Selection<C>?
         var tokenReceived: Selection<C>?
+        var newMultisig: Selection<C>?
+        var multisigApproval: Selection<C>?
+        var multisigExecuted: Selection<C>?
+        var multisigCancelled: Selection<C>?
+    }
+}
+
+extension Web3Alert.LocalNotifications {
+    var isMultisigOn: Bool {
+        newMultisig?.notificationsEnabled == true ||
+            multisigApproval?.notificationsEnabled == true ||
+            multisigExecuted?.notificationsEnabled == true ||
+            multisigCancelled?.notificationsEnabled == true
     }
 }
 

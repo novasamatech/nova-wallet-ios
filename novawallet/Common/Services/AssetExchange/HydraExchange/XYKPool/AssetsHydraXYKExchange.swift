@@ -32,12 +32,15 @@ extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
             let remotePairs = try remotePairsWrapper.targetOperation.extractNoCancellableResultData()
             let remoteAssets = Set(remotePairs.values.flatMap { [$0.asset1, $0.asset2] })
 
+            self.logger.debug("Started processing edges")
+
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: remoteAssets,
                 chain: self.host.chain,
-                codingFactory: codingFactory,
-                failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
+                codingFactory: codingFactory
             )
+
+            self.logger.debug("Complete processing edges \(remoteLocalMapping.count)")
 
             let edges: [AnyAssetExchangeEdge] = remotePairs.values.flatMap { remotePair in
                 guard

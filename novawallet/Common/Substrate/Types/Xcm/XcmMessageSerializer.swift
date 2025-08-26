@@ -3,7 +3,7 @@ import SubstrateSdk
 
 enum XcmMessageSerializer {
     static func serialize(
-        message: Xcm.Message,
+        message: XcmUni.VersionedMessage,
         type: String,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Data {

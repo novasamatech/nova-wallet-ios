@@ -21,7 +21,7 @@ final class XcmLegacyCrosschainFeeCalculator {
 
     private lazy var xcmModelFactory = XcmModelFactory()
     private lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
-    private lazy var xcmWeightMessagesFactory = XcmWeightMessagesFactory()
+    private lazy var xcmWeightMessagesFactory = XcmLegacyMessagesFactory()
     private lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
 
     init(
@@ -193,7 +193,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createStardardFeeEstimationWrapper(
         chain: ChainModel,
-        message: Xcm.Message,
+        message: XcmUni.VersionedMessage,
         maxWeight: BigUInt
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
@@ -238,11 +238,11 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createOneOfFeeEstimationWrapper(
         for chain: ChainModel,
-        message: Xcm.Message,
+        message: XcmUni.VersionedMessage,
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        let maxWeight = baseWeight * BigUInt(message.instructionsCount)
+        let maxWeight = baseWeight * BigUInt(message.entity.count)
 
         switch info.mode.type {
         case .proportional:
@@ -256,7 +256,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
     }
 
     func createDestinationFeeWrapper(
-        for message: Xcm.Message,
+        for message: XcmUni.VersionedMessage,
         request: XcmUnweightedTransferRequest,
         destinationFee: XcmTransferMetadata.LegacyFeeDetails
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
@@ -269,7 +269,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
     }
 
     func createReserveFeeWrapper(
-        for message: Xcm.Message,
+        for message: XcmUni.VersionedMessage,
         request: XcmUnweightedTransferRequest,
         reserveFee: XcmTransferMetadata.LegacyFeeDetails
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {

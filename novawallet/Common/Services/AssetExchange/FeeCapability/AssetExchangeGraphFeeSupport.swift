@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol AssetExchangeFeeSupporting {
-    func canPayFee(inNonNative chainAsset: ChainAsset) -> Bool
+    func canPayFee(inNonNative chainAssetId: ChainAssetId) -> Bool
 }
 
 protocol AssetExchangeFeeSupportFetching {
