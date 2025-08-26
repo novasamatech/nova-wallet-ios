@@ -58,7 +58,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
         )
 
         let remoteFetchFactory = PendingMultisigRemoteFetchFactory(
-            multisigAccount: selectedMultisigAccount,
+            multisigAccountId: selectedMultisigAccount.accountId,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,

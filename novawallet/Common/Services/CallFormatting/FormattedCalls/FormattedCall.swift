@@ -15,27 +15,27 @@ struct FormattedCall {
                 return accountId
             }
         }
-    }
 
-    struct Transfer {
-        let amount: BigUInt
-        let account: Account
-        let asset: ChainAsset
-    }
-
-    struct General {
-        let callPath: CallCodingPath
+        var name: String? {
+            switch self {
+            case let .local(account):
+                account.chainAccount.name
+            case .remote:
+                nil
+            }
+        }
     }
 
     enum Definition {
         case transfer(Transfer)
+        case batch(Batch)
         case general(General)
 
         var amount: BigUInt? {
             switch self {
             case let .transfer(transfer):
                 transfer.amount
-            case .general:
+            case .general, .batch:
                 nil
             }
         }
@@ -44,7 +44,7 @@ struct FormattedCall {
             switch self {
             case let .transfer(transfer):
                 transfer.asset
-            case .general:
+            case .general, .batch:
                 nil
             }
         }

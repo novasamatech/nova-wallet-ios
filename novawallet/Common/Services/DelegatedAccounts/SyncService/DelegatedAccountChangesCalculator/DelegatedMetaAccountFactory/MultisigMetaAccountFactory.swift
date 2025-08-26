@@ -76,7 +76,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         }
 
         let name = try identities[multisig.accountId]?.displayName
-            ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
+            ?? multisig.accountId.toAddressWithDefaultConversion()
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
 

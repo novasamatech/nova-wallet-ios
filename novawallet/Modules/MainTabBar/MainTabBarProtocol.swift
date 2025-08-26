@@ -35,6 +35,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
+    func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams)
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
@@ -57,7 +58,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     )
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushNotification.OpenScreen
+        screen: PushNotification.OpenScreen,
+        locale: Locale
     )
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
@@ -78,6 +80,11 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)
 
     func presentDelayedOperationCreated(from view: MainTabBarViewProtocol?)
+
+    func presentMultisigNotificationsPromo(
+        from view: MainTabBarViewProtocol?,
+        with params: MultisigNotificationsPromoParams
+    )
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {

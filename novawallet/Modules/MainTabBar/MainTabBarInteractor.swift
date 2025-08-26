@@ -3,7 +3,7 @@ import Keystore_iOS
 import SubstrateSdk
 import Foundation_iOS
 
-final class MainTabBarInteractor {
+final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?
 
     let eventCenter: EventCenterProtocol
@@ -13,6 +13,7 @@ final class MainTabBarInteractor {
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
+    let notificationsPromoService: MultisigNotificationsPromoServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
@@ -21,7 +22,8 @@ final class MainTabBarInteractor {
 
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
-            OnLaunchAction.PushNotificationsSetup()
+            OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.MultisigNotificationsPromo()
         ]
     )
 
@@ -35,6 +37,7 @@ final class MainTabBarInteractor {
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
+        notificationsPromoService: MultisigNotificationsPromoServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
         securedLayer: SecurityLayerServiceProtocol,
@@ -47,6 +50,7 @@ final class MainTabBarInteractor {
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
+        self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
         self.serviceCoordinator = serviceCoordinator
@@ -60,18 +64,22 @@ final class MainTabBarInteractor {
 
         startServices()
     }
+}
 
-    private func startServices() {
+// MARK: - Private
+
+private extension MainTabBarInteractor {
+    func startServices() {
         serviceCoordinator.setup()
         inAppUpdatesService.syncUp()
     }
 
-    private func stopServices() {
+    func stopServices() {
         serviceCoordinator.throttle()
         inAppUpdatesService.stopSyncUp()
     }
 
-    private func suggestSecretImportIfNeeded() {
+    func suggestSecretImportIfNeeded() {
         guard let definition = secretImportService.definition else {
             return
         }
@@ -84,7 +92,7 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func showPushNotificationsSetupOrNextAction() {
+    func showPushNotificationsSetupOrNextAction() {
         if !settingsManager.notificationsSetupSeen {
             securedLayer.scheduleExecutionIfAuthorized { [weak self] in
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
@@ -94,7 +102,26 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func subscribeCloudSyncMonitor() {
+    func setupMultisigNotificationPromoOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            guard let self else { return }
+
+            notificationsPromoService.add(
+                observer: self,
+                sendStateOnSubscription: true,
+                queue: .main
+            ) { _, newState in
+                guard let newState, case let .requestingShow(params) = newState else {
+                    return
+                }
+
+                self.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
+            }
+            onLaunchQueue.runNext()
+        }
+    }
+
+    func subscribeCloudSyncMonitor() {
         cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] oldStatus, newStatus in
             self?.securedLayer.scheduleExecutionIfAuthorized {
                 self?.presenter?.didReceiveCloudSync(status: newStatus)
@@ -103,7 +130,7 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func checkNeededSync(
+    func checkNeededSync(
         for oldStatus: CloudBackupSyncMonitorStatus?,
         newStatus: CloudBackupSyncMonitorStatus?
     ) {
@@ -116,7 +143,7 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func handleWalletMigration(message: WalletMigrationMessage) {
+    func handleWalletMigration(message: WalletMigrationMessage) {
         switch message {
         case let .start(content):
             presenter?.didRequestWalletMigration(with: content)
@@ -125,6 +152,8 @@ final class MainTabBarInteractor {
         }
     }
 }
+
+// MARK: - MainTabBarInteractorInputProtocol
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setup() {
@@ -165,6 +194,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     }
 }
 
+// MARK: - EventVisitorProtocol
+
 extension MainTabBarInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         serviceCoordinator.updateOnWalletSelectionChange()
@@ -191,6 +222,8 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     }
 }
 
+// MARK: - SecretImportObserver
+
 extension MainTabBarInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
@@ -205,6 +238,8 @@ extension MainTabBarInteractor: SecretImportObserver {
     }
 }
 
+// MARK: - WalletMigrationObserver
+
 extension MainTabBarInteractor: WalletMigrationObserver {
     func didReceiveMigration(message: WalletMigrationMessage) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
@@ -212,6 +247,8 @@ extension MainTabBarInteractor: WalletMigrationObserver {
         }
     }
 }
+
+// MARK: - ScreenOpenDelegate
 
 extension MainTabBarInteractor: ScreenOpenDelegate {
     func didAskScreenOpen(_ screen: UrlHandlingScreen) {
@@ -221,6 +258,8 @@ extension MainTabBarInteractor: ScreenOpenDelegate {
     }
 }
 
+// MARK: - PushNotificationOpenDelegate
+
 extension MainTabBarInteractor: PushNotificationOpenDelegate {
     func didAskScreenOpen(_ screen: PushNotification.OpenScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
@@ -228,6 +267,8 @@ extension MainTabBarInteractor: PushNotificationOpenDelegate {
         }
     }
 }
+
+// MARK: - CloudBackupSynсUIPresenting
 
 extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     func cloudBackup(
@@ -250,8 +291,14 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     }
 }
 
+// MARK: - OnLaunchActionsQueueDelegate
+
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
+    }
+
+    func onLaunchProcessMultisigNotificationPromo(_: OnLaunchAction.MultisigNotificationsPromo) {
+        setupMultisigNotificationPromoOrNextAction()
     }
 }

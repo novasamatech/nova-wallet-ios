@@ -33,6 +33,13 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
+    func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams) {
+        wireframe.presentMultisigNotificationsPromo(
+            from: view,
+            with: params
+        )
+    }
+
     func didRequestImportAccount(source: SecretSource) {
         wireframe.presentAccountImport(on: view, source: source)
     }
@@ -52,7 +59,8 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen) {
         wireframe.presentScreenIfNeeded(
             on: view,
-            screen: screen
+            screen: screen,
+            locale: localizationManager.selectedLocale
         )
     }
 
