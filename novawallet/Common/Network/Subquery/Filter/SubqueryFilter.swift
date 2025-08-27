@@ -102,7 +102,7 @@ struct SubqueryFieldInFilter: SubqueryFilter {
 struct SubqueryFieldInnerFilter: SubqueryFilter {
     let fieldName: String
     let innerFilter: SubqueryFilter
-    
+
     func rawSubqueryFilter() -> String {
         "\(fieldName): { \(innerFilter.rawSubqueryFilter()) }"
     }
@@ -126,7 +126,7 @@ struct SubqueryStringConvertibleValue<T: LosslessStringConvertible>: SubqueryFil
     let value: T
 
     func rawSubqueryFilter() -> String {
-        "\(self)"
+        "\(value)"
     }
 }
 

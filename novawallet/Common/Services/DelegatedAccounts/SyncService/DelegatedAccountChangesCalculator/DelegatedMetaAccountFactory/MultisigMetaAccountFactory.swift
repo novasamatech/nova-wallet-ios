@@ -10,7 +10,7 @@ final class MultisigMetaAccountFactory {
 
 private extension MultisigMetaAccountFactory {
     func createMultisigType(
-        discoveredMultisig: DiscoveredMultisig,
+        discoveredMultisig: DiscoveredAccount.MultisigModel,
         metaAccounts: [ManagedMetaAccountModel]
     ) -> MetaAccountModel.MultisigAccountType? {
         let signatoryAccountId = discoveredMultisig.signatory
@@ -66,7 +66,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         metaAccounts: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
         guard
-            let multisig = delegatedAccount as? DiscoveredMultisig,
+            let multisig = delegatedAccount as? DiscoveredAccount.MultisigModel,
             let multisigAccountType = createMultisigType(
                 discoveredMultisig: multisig,
                 metaAccounts: metaAccounts
@@ -192,6 +192,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
-        delegatedAccount is DiscoveredMultisig
+        delegatedAccount is DiscoveredAccount.MultisigModel &&
+            delegatedAccount.usability.supports(chainId: chainModel.chainId)
     }
 }

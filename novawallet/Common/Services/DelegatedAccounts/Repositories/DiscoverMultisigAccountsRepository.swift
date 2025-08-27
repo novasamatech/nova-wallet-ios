@@ -4,23 +4,21 @@ import Operation_iOS
 
 final class DiscoverMultisigAccountsRepository: SubqueryBaseOperationFactory {
     struct Response: Decodable {
-        let accounts: SubqueryNodes<MultisigWrapper>
+        let accountMultisigs: SubqueryNodes<MultisigWrapper>
     }
-    
+
     struct MultisigWrapper: Decodable {
         let multisig: Multisig
     }
-    
+
     struct Multisig: Decodable {
         let threshold: Int
-    }
-
-    struct RemoteSignatoryWrapper: Decodable {
-        let signatory: RemoteSignatory
+        let signatories: SubqueryNodes<Signatory>
+        @HexCodable var accountId: AccountId
     }
 
     struct Signatory: Decodable {
-        @HexCodable var id: AccountId
+        @HexCodable var signatoryId: AccountId
     }
 }
 
@@ -31,24 +29,26 @@ private extension DiscoverMultisigAccountsRepository {
                 fieldName: "signatory",
                 innerFilter: SubqueryFieldInFilter(
                     fieldName: "id",
-                    values: signatoryIds.map({ $0.toHexWithPrefix() })
+                    values: signatoryIds.map { $0.toHexWithPrefix() }
                 )
             )
         )
-        
+
         return """
-        accountMultisigs(
-            \(filter)
-        ) {
-            nodes {
-                multisig {
-                    threshold
-                    signatories {
-                        nodes {
-                            signatoryId
+        {
+            accountMultisigs(
+                \(filter)
+            ) {
+                nodes {
+                    multisig {
+                        threshold
+                        signatories {
+                            nodes {
+                                signatoryId
+                            }
                         }
+                        accountId
                     }
-                    accountId
                 }
             }
         }
@@ -58,8 +58,36 @@ private extension DiscoverMultisigAccountsRepository {
 
 extension DiscoverMultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for signatoryIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        
+        for accountIds: Set<AccountId>
+    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegateMapping> {
+        let query = createQuery(for: accountIds)
+
+        let queryOperation: BaseOperation<DelegatedAccountsByDelegateMapping> = createOperation(
+            for: query
+        ) { (response: Response) in
+            let multisigs: Set<DiscoveredAccount.MultisigModel> = response.accountMultisigs.nodes.reduce(
+                into: []
+            ) { accum, multisigWrapper in
+                let signatories = multisigWrapper.multisig.signatories.nodes.map(\.signatoryId)
+
+                for signatory in signatories where accountIds.contains(signatory) {
+                    accum.insert(
+                        DiscoveredAccount.MultisigModel(
+                            accountId: multisigWrapper.multisig.accountId,
+                            signatory: signatory,
+                            signatories: signatories,
+                            threshold: multisigWrapper.multisig.threshold
+                        )
+                    )
+                }
+            }
+
+            return multisigs.reduce(into: DelegatedAccountsByDelegateMapping()) { accum, multisig in
+                let prev = accum[multisig.signatory] ?? []
+                accum[multisig.signatory] = prev + [multisig]
+            }
+        }
+
+        return CompoundOperationWrapper(targetOperation: queryOperation)
     }
 }

@@ -5,31 +5,24 @@ typealias DelegatedAccountsByDelegate = [(delegate: AccountId, accounts: [Discov
 
 protocol DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(
-        for accountIds: [AccountId]
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate>
 }
 
 final class DelegatedAccountsAggregator {
-    private let sources: [DelegatedAccountsRepositoryProtocol]
-    private let operationQueue: OperationQueue
+    let sources: [DelegatedAccountsRepositoryProtocol]
 
-    init(
-        sources: [DelegatedAccountsRepositoryProtocol],
-        operationQueue: OperationQueue
-    ) {
+    init(sources: [DelegatedAccountsRepositoryProtocol]) {
         self.sources = sources
-        self.operationQueue = operationQueue
     }
 }
 
 extension DelegatedAccountsAggregator: DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(
-        for accountIds: [AccountId]
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
-        let accountIdsSet = Set(accountIds)
-
         let fetchWrappers = sources.map {
-            $0.fetchDelegatedAccountsWrapper(for: accountIdsSet)
+            $0.fetchDelegatedAccountsWrapper(for: accountIds)
         }
 
         let mapOperation = ClosureOperation<DelegatedAccountsByDelegate> {

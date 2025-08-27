@@ -39,11 +39,8 @@ enum Proxy {
             static let nominationPools = "NominationPools"
         }
 
-        public init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-            let type = try container.decode(String.self)
-
-            switch type {
+        public init(rawType: String) {
+            switch rawType {
             case Field.any:
                 self = .any
             case Field.nonTransfer:
@@ -61,8 +58,15 @@ enum Proxy {
             case Field.auction:
                 self = .auction
             default:
-                self = .other(type)
+                self = .other(rawType)
             }
+        }
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+            let type = try container.decode(String.self)
+
+            self.init(rawType: type)
         }
 
         public func encode(to encoder: Encoder) throws {

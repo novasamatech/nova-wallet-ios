@@ -12,10 +12,6 @@ private typealias FetchMultisigCallDataResponse = SubqueryMultisigs.MultisigsRes
 >
 
 protocol SubqueryMultisigsOperationFactoryProtocol {
-    func createDiscoverMultisigsOperation(
-        for accountIds: Set<AccountId>
-    ) -> BaseOperation<[DiscoveredMultisig]>
-
     func createFetchOffChainOperationInfo(
         for accountId: AccountId,
         callHashes: Set<Substrate.CallHash>
@@ -104,45 +100,6 @@ private extension SubqueryMultisigsOperationFactory {
 // MARK: SubqueryMultisigsOperationFactoryProtocol
 
 extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryProtocol {
-    func createDiscoverMultisigsOperation(
-        for accountIds: Set<AccountId>
-    ) -> BaseOperation<[DiscoveredMultisig]> {
-        let query = createDiscoverMultisigsRequestQuery(for: accountIds)
-
-        let operation: BaseOperation<[DiscoveredMultisig]>
-
-        operation = createOperation(
-            for: query
-        ) { (response: FindMultisigsResponse) in
-            let nodes: [AccountId: [SubqueryMultisigs.RemoteMultisig]] = response.query.accounts.nodes.reduce(
-                into: [:]
-            ) { acc, node in
-                node.signatories.nodes.forEach {
-                    if acc[$0.signatory.id] != nil {
-                        acc[$0.signatory.id]?.append(node)
-                    } else {
-                        acc[$0.signatory.id] = [node]
-                    }
-                }
-            }
-
-            return accountIds.reduce(into: []) { acc, accountId in
-                nodes[accountId]?.forEach { remoteMultisig in
-                    let discoveredMultisig = DiscoveredMultisig(
-                        accountId: remoteMultisig.id,
-                        signatory: accountId,
-                        signatories: remoteMultisig.signatories.nodes.map(\.signatory.id),
-                        threshold: remoteMultisig.threshold
-                    )
-
-                    acc.append(discoveredMultisig)
-                }
-            }
-        }
-
-        return operation
-    }
-
     func createFetchOffChainOperationInfo(
         for accountId: AccountId,
         callHashes: Set<Substrate.CallHash>

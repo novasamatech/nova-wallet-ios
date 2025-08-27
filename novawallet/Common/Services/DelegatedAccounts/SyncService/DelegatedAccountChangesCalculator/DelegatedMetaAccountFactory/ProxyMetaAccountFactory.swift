@@ -29,15 +29,15 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         using identities: [AccountId: AccountIdentity],
         metaAccounts _: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
-        guard let proxied = delegatedAccount as? DelegatedAccountsRepository.ProxiedModel else {
+        guard let proxied = delegatedAccount as? DiscoveredAccount.ProxiedModel else {
             throw DelegatedAccountError.invalidAccountType
         }
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
 
         let proxy = DelegatedAccount.ProxyAccountModel(
-            type: proxied.proxyAccount.type,
-            accountId: proxied.proxyAccount.accountId,
+            type: proxied.type,
+            accountId: proxied.proxyAccountId,
             status: .new
         )
 
@@ -101,14 +101,14 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         delegatedAccount: DiscoveredDelegatedAccountProtocol
     ) -> Bool {
         guard
-            let remoteProxied = delegatedAccount as? DelegatedAccountsRepository.ProxiedModel,
+            let remoteProxied = delegatedAccount as? DiscoveredAccount.ProxiedModel,
             let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
             let localProxyModel = chainAccount.proxy
         else { return false }
 
         return chainAccount.accountId == remoteProxied.accountId &&
-            localProxyModel.accountId == remoteProxied.proxyAccount.accountId &&
-            localProxyModel.type == remoteProxied.proxyAccount.type
+            localProxyModel.accountId == remoteProxied.proxyAccountId &&
+            localProxyModel.type == remoteProxied.type
     }
 
     func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
@@ -133,7 +133,8 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
-        delegatedAccount is ProxiedAccount
+        delegatedAccount is DiscoveredAccount.ProxiedModel &&
+            delegatedAccount.usability.supports(chainId: chainModel.chainId)
     }
 }
 

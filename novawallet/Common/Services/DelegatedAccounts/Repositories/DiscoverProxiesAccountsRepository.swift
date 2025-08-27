@@ -9,7 +9,7 @@ final class DiscoverProxiesAccountsRepository: SubqueryBaseOperationFactory {
 
     struct Proxied: Decodable {
         @HexCodable var chainId: Data
-        let type: Proxy.ProxyType
+        let type: String
         @HexCodable var proxyAccountId: AccountId
         @HexCodable var accountId: Data
     }
@@ -33,14 +33,16 @@ private extension DiscoverProxiesAccountsRepository {
         )
 
         return """
-        proxieds(
-            \(filter)
-        ) {
-            nodes {
-                chainId
-                type
-                proxyAccountId
-                accountId
+        {
+            proxieds(
+                \(filter)
+            ) {
+                nodes {
+                    chainId
+                    type
+                    proxyAccountId
+                    accountId
+                }
             }
         }
         """
@@ -53,18 +55,18 @@ extension DiscoverProxiesAccountsRepository: DelegatedAccountsRepositoryProtocol
     ) -> CompoundOperationWrapper<DelegatedAccountsByDelegateMapping> {
         let query = createQuery(for: accountIds)
 
-        let queryOperation: BaseOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> = createOperation(
+        let queryOperation: BaseOperation<DelegatedAccountsByDelegateMapping> = createOperation(
             for: query
         ) { (response: Response) in
             let proxyToProxieds = response.proxieds.nodes.reduce(
-                into: [AccountId: Set<DelegatedAccountsRepository.ProxiedModel>]()
+                into: [AccountId: Set<DiscoveredAccount.ProxiedModel>]()
             ) { accum, node in
                 let chainId = node.chainId.toHex(includePrefix: false)
 
-                let newModel = DelegatedAccountsRepository.ProxiedModel(
+                let newModel = DiscoveredAccount.ProxiedModel(
                     proxyAccountId: node.proxyAccountId,
                     proxiedAccountId: node.accountId,
-                    type: node.type,
+                    type: Proxy.ProxyType(rawType: node.type),
                     chainId: chainId
                 )
 
@@ -72,7 +74,9 @@ extension DiscoverProxiesAccountsRepository: DelegatedAccountsRepositoryProtocol
                 accum[node.proxyAccountId] = (prevSet ?? []).union([newModel])
             }
 
-            return proxyToProxieds.mapValues { Array($0) }
+            return proxyToProxieds
+                .mapValues { Array($0) }
+                .filter { accountIds.contains($0.key) }
         }
 
         return CompoundOperationWrapper(targetOperation: queryOperation)

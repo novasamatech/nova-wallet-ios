@@ -1,6 +1,6 @@
 import Foundation
 
-protocol DelegatedAccountsChangesCalcualtorProtocol {
+protocol DelegatedAccountsChangesCalculatorProtocol {
     func calculateUpdates(
         from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
         chainMetaAccounts: [ManagedMetaAccountModel],
@@ -130,7 +130,7 @@ private extension DelegatedAccountsChangesCalculator {
 
 // MARK: - DelegatedAccountsChangesCalcualtorProtocol
 
-extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtorProtocol {
+extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalculatorProtocol {
     func calculateUpdates(
         from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
         chainMetaAccounts: [ManagedMetaAccountModel],
