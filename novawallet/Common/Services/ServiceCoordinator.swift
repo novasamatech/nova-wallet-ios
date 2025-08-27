@@ -222,7 +222,7 @@ extension ServiceCoordinator {
             chainRegistry: chainRegistry,
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
-            chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
+            chainFilter: .allSatisfies([.enabledChains, .hasDelegatedAccounts]),
             chainWalletFilter: { wallet in
                 #if F_RELEASE
                     return wallet.type != .watchOnly
