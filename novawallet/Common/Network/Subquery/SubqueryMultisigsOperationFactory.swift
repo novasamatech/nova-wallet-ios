@@ -3,6 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+// TODO: Refactor this to separate factories
 private typealias FindMultisigsResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
     SubqueryMultisigs.FindMultisigsResponse
 >

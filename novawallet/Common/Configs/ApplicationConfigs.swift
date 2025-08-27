@@ -232,6 +232,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var multichainDelegationIndexer: URL {
+        URL(string: "https://subquery-account-manager-stg.novasama-tech.org")!
+    }
+
     var canDebugDApp: Bool {
         #if F_RELEASE
             false

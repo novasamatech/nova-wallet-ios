@@ -29,7 +29,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         using identities: [AccountId: AccountIdentity],
         metaAccounts _: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
-        guard let proxied = delegatedAccount as? ProxiedAccount else {
+        guard let proxied = delegatedAccount as? DelegatedAccountsRepository.ProxiedModel else {
             throw DelegatedAccountError.invalidAccountType
         }
 
@@ -101,7 +101,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         delegatedAccount: DiscoveredDelegatedAccountProtocol
     ) -> Bool {
         guard
-            let remoteProxied = delegatedAccount as? ProxiedAccount,
+            let remoteProxied = delegatedAccount as? DelegatedAccountsRepository.ProxiedModel,
             let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
             let localProxyModel = chainAccount.proxy
         else { return false }

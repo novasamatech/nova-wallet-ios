@@ -27,28 +27,16 @@ class DelegatedAccountSourceFactory {
 // MARK: - DelegatedAccountSourceFactoryProtocol
 
 extension DelegatedAccountSourceFactory: DelegatedAccountSourceFactoryProtocol {
-    func createSource(for blockHash: Data?) -> DelegatedAccountsAggregatorProtocol {
-        var sources: [DelegatedAccountsRepositoryProtocol] = []
-
-        let chainId = chain.chainId
-
-        if
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
-            let connection = chainRegistry.getConnection(for: chainId) {
-            let proxyRepository = ChainProxyAccountsRepository(
-                requestFactory: requestFactory,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                blockHash: blockHash
-            )
-            sources.append(proxyRepository)
-        }
+    func createSource(for _: Data?) -> DelegatedAccountsAggregatorProtocol {
+        // TODO: Receive it from remote config as staking
+        let proxyRepository = DiscoverProxiesAccountsRepository(
+            url: ApplicationConfig.shared.multichainDelegationIndexer
+        )
 
         let multisigRepository = MultisigAccountsRepository(chain: chain)
-        sources.append(multisigRepository)
 
         let repository = DelegatedAccountsAggregator(
-            sources: sources,
+            sources: [proxyRepository, multisigRepository],
             operationQueue: operationQueue
         )
 

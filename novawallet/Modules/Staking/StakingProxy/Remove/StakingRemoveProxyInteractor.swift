@@ -14,11 +14,11 @@ final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
 
-    let proxyAccount: ProxyAccount
+    let proxyAccount: Proxy.Account
     let signingWrapper: SigningWrapperProtocol
 
     init(
-        proxyAccount: ProxyAccount,
+        proxyAccount: Proxy.Account,
         signingWrapper: SigningWrapperProtocol,
         chainAsset: ChainAsset,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,

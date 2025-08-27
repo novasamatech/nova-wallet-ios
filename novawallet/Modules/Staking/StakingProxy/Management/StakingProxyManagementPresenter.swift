@@ -87,7 +87,7 @@ final class StakingProxyManagementPresenter {
         view?.didReceive(viewModels: viewModels)
     }
 
-    private func showAccountOptions(account: ProxyAccount) {
+    private func showAccountOptions(account: Proxy.Account) {
         guard let view = view else {
             return
         }
@@ -125,7 +125,7 @@ extension StakingProxyManagementPresenter: StakingProxyManagementPresenterProtoc
         wireframe.showAddProxy(from: view)
     }
 
-    func showOptions(account: ProxyAccount) {
+    func showOptions(account: Proxy.Account) {
         showAccountOptions(account: account)
     }
 }

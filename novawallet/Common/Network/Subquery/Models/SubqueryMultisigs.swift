@@ -44,23 +44,9 @@ enum SubqueryMultisigs {
     }
 }
 
+// TODO: Move this to a separate place
 struct OffChainMultisigInfo {
     let callHash: Substrate.CallHash
     let callData: Substrate.CallData?
     let timestamp: Int
-}
-
-struct DiscoveredMultisig: DiscoveredDelegatedAccountProtocol {
-    var delegateAccountId: AccountId {
-        signatory
-    }
-
-    let accountId: AccountId
-    let signatory: AccountId
-    let signatories: [AccountId]
-    let threshold: Int
-
-    func otherSignatories(than signatory: AccountId) -> [AccountId] {
-        signatories.filter { $0 != signatory }
-    }
 }

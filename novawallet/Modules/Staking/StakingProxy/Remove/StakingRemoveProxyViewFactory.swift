@@ -4,7 +4,7 @@ import Foundation_iOS
 struct StakingRemoveProxyViewFactory {
     static func createView(
         state: RelaychainStakingSharedStateProtocol,
-        proxyAccount: ProxyAccount
+        proxyAccount: Proxy.Account
     ) -> StakingConfirmProxyViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -64,7 +64,7 @@ struct StakingRemoveProxyViewFactory {
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
         wallet: MetaAccountModel,
-        proxyAccount: ProxyAccount
+        proxyAccount: Proxy.Account
     ) -> StakingRemoveProxyInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chainAsset = state.stakingOption.chainAsset

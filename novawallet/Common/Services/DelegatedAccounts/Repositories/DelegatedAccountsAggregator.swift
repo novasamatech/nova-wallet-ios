@@ -3,12 +3,6 @@ import Operation_iOS
 // Type used to represent ordered collection of accounts grouped by their delegate
 typealias DelegatedAccountsByDelegate = [(delegate: AccountId, accounts: [DiscoveredDelegatedAccountProtocol])]
 
-protocol DelegatedAccountsRepositoryProtocol {
-    func fetchDelegatedAccountsWrapper(
-        for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
-}
-
 protocol DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(
         for accountIds: [AccountId]
