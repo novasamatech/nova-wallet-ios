@@ -1876,6 +1876,7 @@
 		2DA3AE982E5DB32100689F65 /* Xcm+V4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4E12DA08782002A57C5 /* Xcm+V4.swift */; };
 		2DA3AE992E5DB34C00689F65 /* Xcm+LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */; };
 		2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */; };
+		2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
@@ -8337,6 +8338,7 @@
 		2D96D8672DF04FF700159E91 /* DelegatedAccountsUpdateViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateViewLayout.swift; sourceTree = "<group>"; };
 		2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateWireframe.swift; sourceTree = "<group>"; };
 		2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
+		2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -16354,6 +16356,7 @@
 			isa = PBXGroup;
 			children = (
 				2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */,
+				2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */,
 			);
 			path = UpdatedWallet;
 			sourceTree = "<group>";
@@ -34959,6 +34962,7 @@
 				2D06738D2E13EF8C006392EB /* MultisigOpValidationProtocols.swift in Sources */,
 				9097EE6D11E2E023D2637BE5 /* GovernanceUnlockSetupPresenter.swift in Sources */,
 				0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */,
+				2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */,
 				845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */,
 				2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */,
 				38D0977931828C7894579968 /* GovernanceUnlockSetupInteractor.swift in Sources */,
