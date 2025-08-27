@@ -31,6 +31,12 @@ final class HydraAaveQuoteParamsService: ObservableSyncService {
                 return
             }
 
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
             updatePool(from: pools)
         }
     }
