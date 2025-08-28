@@ -64,15 +64,20 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
         metaAccounts: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel {
+    ) throws -> ManagedMetaAccountModel? {
         guard
-            let multisig = delegatedAccount as? DiscoveredAccount.MultisigModel,
+            let multisig = delegatedAccount as? DiscoveredAccount.MultisigModel
+        else {
+            throw DelegatedAccountError.invalidAccountType
+        }
+
+        // make sure signatory wallet already added
+        guard
             let multisigAccountType = createMultisigType(
                 discoveredMultisig: multisig,
                 metaAccounts: metaAccounts
-            )
-        else {
-            throw DelegatedAccountError.invalidAccountType
+            ) else {
+            return nil
         }
 
         let name = try identities[multisig.accountId]?.displayName

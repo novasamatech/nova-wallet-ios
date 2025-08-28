@@ -68,6 +68,10 @@ extension DiscoverMultisigAccountsRepository: DelegatedAccountsRepositoryProtoco
             let multisigs: Set<DiscoveredAccount.MultisigModel> = response.accountMultisigs.nodes.reduce(
                 into: []
             ) { accum, multisigWrapper in
+                guard multisigWrapper.multisig.isValid else {
+                    return
+                }
+
                 let signatories = multisigWrapper.multisig.signatories.nodes.map(\.signatoryId)
 
                 for signatory in signatories where accountIds.contains(signatory) {
@@ -89,5 +93,12 @@ extension DiscoverMultisigAccountsRepository: DelegatedAccountsRepositoryProtoco
         }
 
         return CompoundOperationWrapper(targetOperation: queryOperation)
+    }
+}
+
+private extension DiscoverMultisigAccountsRepository.Multisig {
+    var isValid: Bool {
+        // we might have some broken thresholds
+        threshold > 0
     }
 }

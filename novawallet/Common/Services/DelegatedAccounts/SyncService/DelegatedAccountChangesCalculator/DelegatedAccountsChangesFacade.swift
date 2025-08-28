@@ -11,11 +11,14 @@ protocol DelegatedAccountsChangesFacadeProtocol {
 
 final class DelegatedAccountsChangesFacade {
     let chainRegistry: ChainRegistryProtocol
+    let logger: LoggerProtocol
 
     init(
-        chainRegistry: ChainRegistryProtocol
+        chainRegistry: ChainRegistryProtocol,
+        logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
+        self.logger = logger
     }
 }
 
@@ -26,7 +29,10 @@ private extension DelegatedAccountsChangesFacade {
         try supportedChains.map { chainId in
             let chain = try chainRegistry.getChainOrError(for: chainId)
 
-            return DelegatedAccountsChangesCalculator(chainModel: chain)
+            return DelegatedAccountsChangesCalculator(
+                chainModel: chain,
+                logger: logger
+            )
         }
     }
 }

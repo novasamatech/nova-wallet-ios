@@ -61,14 +61,7 @@ extension DiscoverProxiesAccountsRepository: DelegatedAccountsRepositoryProtocol
             let proxyToProxieds = response.proxieds.nodes.reduce(
                 into: [AccountId: Set<DiscoveredAccount.ProxiedModel>]()
             ) { accum, node in
-                let chainId = node.chainId.toHex(includePrefix: false)
-
-                let newModel = DiscoveredAccount.ProxiedModel(
-                    proxyAccountId: node.proxyAccountId,
-                    proxiedAccountId: node.accountId,
-                    type: Proxy.ProxyType(rawType: node.type),
-                    chainId: chainId
-                )
+                let newModel = DiscoveredAccount.ProxiedModel(subqueryModel: node)
 
                 let prevSet = accum[node.proxyAccountId]
                 accum[node.proxyAccountId] = (prevSet ?? []).union([newModel])
@@ -80,5 +73,14 @@ extension DiscoverProxiesAccountsRepository: DelegatedAccountsRepositoryProtocol
         }
 
         return CompoundOperationWrapper(targetOperation: queryOperation)
+    }
+}
+
+private extension DiscoveredAccount.ProxiedModel {
+    init(subqueryModel: DiscoverProxiesAccountsRepository.Proxied) {
+        chainId = subqueryModel.chainId.toHex(includePrefix: false)
+        type = Proxy.ProxyType(rawType: subqueryModel.type)
+        proxyAccountId = subqueryModel.proxyAccountId
+        proxiedAccountId = subqueryModel.accountId
     }
 }

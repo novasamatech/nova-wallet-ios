@@ -18,6 +18,7 @@ final class DelegatedAccountSyncFactory {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        configProvider: GlobalConfigProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -25,14 +26,19 @@ final class DelegatedAccountSyncFactory {
         self.chainRegistry = chainRegistry
         self.logger = logger
 
-        // TODO: Receive it from remote config as staking
-        let proxyRepository = DiscoverProxiesAccountsRepository(
-            url: ApplicationConfig.shared.multichainDelegationIndexer
-        )
+        let proxyRepository = DelegatedAccountsRepositoryFacade(
+            configProvider: configProvider,
+            operationQueue: operationQueue
+        ) { config in
+            DiscoverProxiesAccountsRepository(url: config.proxyApiUrl)
+        }
 
-        let multisigRepository = DiscoverMultisigAccountsRepository(
-            url: ApplicationConfig.shared.multichainDelegationIndexer
-        )
+        let multisigRepository = DelegatedAccountsRepositoryFacade(
+            configProvider: configProvider,
+            operationQueue: operationQueue
+        ) { config in
+            DiscoverMultisigAccountsRepository(url: config.multisigsApiUrl)
+        }
 
         discoveryFactory = DelegatedAccountDiscoveryFactory(
             remoteSource: DelegatedAccountsAggregator(
@@ -120,7 +126,7 @@ private extension DelegatedAccountSyncFactory {
 
         identityWrapper.addDependency(operations: [accountIdsOperation])
 
-        let mapOperation = ClosureOperation<[SyncChanges<ManagedMetaAccountModel>]> { [chainRegistry] in
+        let mapOperation = ClosureOperation<[SyncChanges<ManagedMetaAccountModel>]> { [chainRegistry, logger] in
             let metaAccounts = try metaAccountsClosure()
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let remoteAccounts = try discoveryWrapper.targetOperation.extractNoCancellableResultData()
@@ -128,7 +134,10 @@ private extension DelegatedAccountSyncFactory {
             self.logger.debug("Discovered accounts: \(remoteAccounts.count)")
             self.logger.debug("Discovered identities: \(identities.count)")
 
-            return try DelegatedAccountsChangesFacade(chainRegistry: chainRegistry).calculateUpdates(
+            return try DelegatedAccountsChangesFacade(
+                chainRegistry: chainRegistry,
+                logger: logger
+            ).calculateUpdates(
                 from: remoteAccounts,
                 supportedChains: supportedChains,
                 chainMetaAccounts: metaAccounts,

@@ -27,10 +27,23 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: any DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
-        metaAccounts _: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel {
+        metaAccounts: [ManagedMetaAccountModel]
+    ) throws -> ManagedMetaAccountModel? {
         guard let proxied = delegatedAccount as? DiscoveredAccount.ProxiedModel else {
             throw DelegatedAccountError.invalidAccountType
+        }
+
+        // make sure we have proxy wallet already added
+        guard metaAccounts.contains(
+            where: { account in
+                let chainAccount = account.info.fetch(
+                    for: chainModel.accountRequest()
+                )
+
+                return chainAccount?.accountId == proxied.proxyAccountId
+            }
+        ) else {
+            return nil
         }
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
@@ -140,5 +153,4 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
 enum DelegatedAccountError: Error {
     case invalidAccountType
-    case callHashNotFound
 }

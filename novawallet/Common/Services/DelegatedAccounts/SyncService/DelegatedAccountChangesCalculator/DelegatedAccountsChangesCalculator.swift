@@ -11,21 +11,24 @@ protocol DelegatedAccountsChangesCalculatorProtocol {
 final class DelegatedAccountsChangesCalculator {
     let chainModel: ChainModel
     let factories: [DelegatedMetaAccountFactoryProtocol]
+    let logger: LoggerProtocol
 
     init(
         chainModel: ChainModel,
-        factories: [DelegatedMetaAccountFactoryProtocol]
+        factories: [DelegatedMetaAccountFactoryProtocol],
+        logger: LoggerProtocol
     ) {
         self.chainModel = chainModel
         self.factories = factories
+        self.logger = logger
     }
 
-    convenience init(chainModel: ChainModel) {
+    convenience init(chainModel: ChainModel, logger: LoggerProtocol) {
         let factories: [DelegatedMetaAccountFactoryProtocol] = [
             ProxyMetaAccountFactory(chainModel: chainModel),
             MultisigMetaAccountFactory(chainModel: chainModel)
         ]
-        self.init(chainModel: chainModel, factories: factories)
+        self.init(chainModel: chainModel, factories: factories, logger: logger)
     }
 }
 

@@ -5,7 +5,7 @@ protocol DelegatedMetaAccountFactoryProtocol {
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
         metaAccounts: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel
+    ) throws -> ManagedMetaAccountModel?
 
     func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel
 

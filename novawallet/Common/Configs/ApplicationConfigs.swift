@@ -26,7 +26,7 @@ protocol ApplicationConfigProtocol {
     var chainListURL: URL { get }
     var xcmDynamicTransfersURL: URL { get }
     var xcmTransfersURL: URL { get }
-    var stakingGlobalConfigURL: URL { get }
+    var globalConfigURL: URL { get }
     var dAppsListURL: URL { get }
     var preferredValidatorsURL: URL { get }
     var governanceDAppsListURL: URL { get }
@@ -200,11 +200,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var stakingGlobalConfigURL: URL {
+    var globalConfigURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config_dev.json")!
         #endif
     }
 
@@ -230,10 +230,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/governance/v2/dapps_dev.json")!
         #endif
-    }
-
-    var multichainDelegationIndexer: URL {
-        URL(string: "https://subquery-account-manager-stg.novasama-tech.org")!
     }
 
     var canDebugDApp: Bool {

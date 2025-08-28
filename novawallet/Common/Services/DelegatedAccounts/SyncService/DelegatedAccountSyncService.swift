@@ -27,6 +27,7 @@ final class DelegatedAccountSyncService: ObservableSyncService {
         chainRegistry: ChainRegistryProtocol,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         walletUpdateMediator: WalletUpdateMediating,
+        configProvider: GlobalConfigProviding = GlobalConfigProvider.shared,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         workingQueue: DispatchQueue = DispatchQueue(
@@ -49,6 +50,7 @@ final class DelegatedAccountSyncService: ObservableSyncService {
 
         syncFactory = DelegatedAccountSyncFactory(
             chainRegistry: chainRegistry,
+            configProvider: configProvider,
             operationQueue: operationQueue,
             logger: logger
         )
@@ -150,9 +152,13 @@ private extension DelegatedAccountSyncService {
             }
         }
 
-        guard isActive, newChainIds != supportedChainIds else { return }
+        guard newChainIds != supportedChainIds else { return }
 
         supportedChainIds = newChainIds
+
+        guard isActive else {
+            return
+        }
 
         isSyncing = true
         performSyncUp()

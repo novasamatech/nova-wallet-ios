@@ -738,7 +738,7 @@
 		0C846B892BE50BF2000EBFC2 /* VaraRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */; };
 		0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */; };
 		0C846B8D2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */; };
-		0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */; };
+		0C846B902BE5F069000EBFC2 /* GlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* GlobalConfigProvider.swift */; };
 		0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C85F5BE2E133B8A003789DC /* CallWeightOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5BD2E133B8A003789DC /* CallWeightOperationFactory.swift */; };
@@ -786,6 +786,9 @@
 		0C8FC2112E5F50B300034ED3 /* MultichainIdentityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2102E5F50B300034ED3 /* MultichainIdentityFactory.swift */; };
 		0C8FC2132E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2122E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift */; };
 		0C8FC2152E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2142E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift */; };
+		0C8FC2172E6063B500034ED3 /* GlobalConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */; };
+		0C8FC2192E60653800034ED3 /* GlobalConfigProvide+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */; };
+		0C8FC21B2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC21A2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
@@ -7180,7 +7183,7 @@
 		0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaraRewardEngine.swift; sourceTree = "<group>"; };
 		0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaraRewardParamsService.swift; sourceTree = "<group>"; };
 		0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingProxy.swift; sourceTree = "<group>"; };
-		0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGlobalConfigProvider.swift; sourceTree = "<group>"; };
+		0C846B8F2BE5F069000EBFC2 /* GlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProvider.swift; sourceTree = "<group>"; };
 		0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C85F5BD2E133B8A003789DC /* CallWeightOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallWeightOperationFactory.swift; sourceTree = "<group>"; };
@@ -7228,6 +7231,9 @@
 		0C8FC2102E5F50B300034ED3 /* MultichainIdentityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainIdentityFactory.swift; sourceTree = "<group>"; };
 		0C8FC2122E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountDiscoveryFactory.swift; sourceTree = "<group>"; };
 		0C8FC2142E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsChangesFacade.swift; sourceTree = "<group>"; };
+		0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfig.swift; sourceTree = "<group>"; };
+		0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GlobalConfigProvide+Singleton.swift"; sourceTree = "<group>"; };
+		0C8FC21A2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountRepositoryFacade.swift; sourceTree = "<group>"; };
 		0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel22.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB802CAD022700775D7F /* SubstrateDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB812CAD022700775D7F /* SubstrateDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -14458,12 +14464,14 @@
 			path = Staking;
 			sourceTree = "<group>";
 		};
-		0C846B8E2BE5F05A000EBFC2 /* Staking */ = {
+		0C846B8E2BE5F05A000EBFC2 /* GlobalConfig */ = {
 			isa = PBXGroup;
 			children = (
-				0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */,
+				0C846B8F2BE5F069000EBFC2 /* GlobalConfigProvider.swift */,
+				0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */,
+				0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */,
 			);
-			path = Staking;
+			path = GlobalConfig;
 			sourceTree = "<group>";
 		};
 		0C85F5BF2E140CFA003789DC /* Operation */ = {
@@ -16546,6 +16554,7 @@
 				2DA8DAD22DC89C0500AFE390 /* DiscoverMultisigAccountsRepository.swift */,
 				0CB2E8962E5EF9EB0067DE12 /* DiscoverProxiesAccountsRepository.swift */,
 				0CB2E8982E5EFC2D0067DE12 /* DelegatedAccountsRepository.swift */,
+				0C8FC21A2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -22824,6 +22833,7 @@
 				849013D324A927E2008F705E /* Logger */,
 				F418E86D264D0EF600699085 /* Migration */,
 				849013E024A9287F008F705E /* Model */,
+				0C846B8E2BE5F05A000EBFC2 /* GlobalConfig */,
 				8490150124AB6BEA008F705E /* Network */,
 				8490147924AA13C7008F705E /* Operation */,
 				8490142624A935FE008F705E /* Protocols */,
@@ -23631,7 +23641,6 @@
 			isa = PBXGroup;
 			children = (
 				2DD83BC12E420C1C00E83B4C /* IPAddressProvider */,
-				0C846B8E2BE5F05A000EBFC2 /* Staking */,
 				84E8BA1029FFB38600FD9F40 /* Ethereum */,
 				84953F642934B2C90033F47D /* Etherscan */,
 				84C9CF39291AE30F002BF328 /* GovMetadataOperationFactory */,
@@ -34569,6 +34578,7 @@
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
 				849B036B2A14FCC3009624D9 /* PriceHistoryItem.swift in Sources */,
 				2DFF39EA2E18308500529984 /* MultilineTextInputViewDelegate.swift in Sources */,
+				0C8FC2172E6063B500034ED3 /* GlobalConfig.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */,
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
@@ -35159,6 +35169,7 @@
 				2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */,
 				835AE15B1F58CB87F775272F /* DelegateVotedReferendaPresenter.swift in Sources */,
 				FBB0A83A6F48E4E0EE15E11A /* DelegateVotedReferendaInteractor.swift in Sources */,
+				0C8FC2192E60653800034ED3 /* GlobalConfigProvide+Singleton.swift in Sources */,
 				84B8AA7F29F9064300347A37 /* WalletConnectStateSigning.swift in Sources */,
 				77A6F5B92A2E2AAD004AFD1A /* RampAssetOperationPresenter.swift in Sources */,
 				0CCDB2E42B749523007BC5D6 /* HydraTokensFactory.swift in Sources */,
@@ -35372,6 +35383,7 @@
 				0C1CF7302E54B2DC00B1DA66 /* HydraBalanceSyncer.swift in Sources */,
 				84B24FAA2A2F243700F9BF59 /* BlurredCollectionViewCell.swift in Sources */,
 				0CA7199A2B79DF5B000B086E /* HydraStableswapApi.swift in Sources */,
+				0C8FC21B2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift in Sources */,
 				0CCCDF8C2B67BCA000473D42 /* ChainModelFetchError.swift in Sources */,
 				2DE8B0DC2E5631A900F8BD40 /* MultisigOperationFetchProxyInteractor.swift in Sources */,
 				6DC454C4BA27C98987F5DC52 /* WalletConnectSessionsViewFactory.swift in Sources */,
@@ -35530,7 +35542,7 @@
 				0C3976582C2D7B9000998DD6 /* MigrationLedgerPolkadotApplication.swift in Sources */,
 				92984DFE797C52644C084377 /* SwapSetupProtocols.swift in Sources */,
 				5B02D050E6E067906A05B46B /* SwapSetupWireframe.swift in Sources */,
-				0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */,
+				0C846B902BE5F069000EBFC2 /* GlobalConfigProvider.swift in Sources */,
 				3EE29545824B68594751769C /* SwapSetupPresenter.swift in Sources */,
 				0C0F6DF32D428C0000943A7C /* MythosStakableCollatorOperationFactory.swift in Sources */,
 				54813408A51B4AEBA3EED0A5 /* SwapSetupInteractor.swift in Sources */,
