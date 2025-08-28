@@ -96,6 +96,52 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func openMultisigOperationScreen(
+        in controller: UITabBarController,
+        operationKey: Multisig.PendingOperation.Key
+    ) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        guard let multisigOperationView = MultisigOperationFetchProxyViewFactory.createView(
+            for: operationKey
+        ) else {
+            return
+        }
+
+        let operationNavigationController = NovaNavigationController(
+            rootViewController: multisigOperationView.controller
+        )
+
+        navigationController?.viewControllers.first?.presentWithCardLayout(
+            operationNavigationController,
+            animated: true
+        )
+    }
+
+    func showMultisigEndedAlert(
+        in controller: MainTabBarViewProtocol?,
+        tabBar: UITabBarController,
+        model: MultisigEndedMessageModel,
+        locale: Locale
+    ) {
+        tabBar.selectedIndex = MainTabBarIndex.wallet
+        let viewController = tabBar.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        let localizedModel = model.value(for: locale)
+
+        present(
+            message: localizedModel.description,
+            title: localizedModel.title,
+            closeAction: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages),
+            from: controller
+        )
+    }
+
     func openTransactionsToSign(in controller: UITabBarController) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
@@ -110,6 +156,41 @@ private extension MainTabBarWireframe {
 
         navigationController?.pushViewController(
             transactionsToSignView.controller,
+            animated: true
+        )
+    }
+
+    func openNotificationsWalletSelect(
+        in controller: UITabBarController,
+        selectedWallets: [Web3Alert.LocalWallet]?
+    ) {
+        controller.selectedIndex = MainTabBarIndex.settings
+        let viewController = controller.viewControllers?[MainTabBarIndex.settings]
+        let navigationController = viewController as? UINavigationController
+
+        guard
+            let settingsController = navigationController?.viewControllers.first,
+            let notificationManagementView = NotificationsManagementViewFactory.createView(),
+            let walletSelectView = NotificationWalletListViewFactory.createView(
+                initState: selectedWallets,
+                completion: notificationManagementView.getExternalCallbacks().changeWalletSettings
+            )
+        else {
+            return
+        }
+
+        let viewControllerStack = [
+            settingsController,
+            notificationManagementView.controller,
+            walletSelectView.controller
+        ]
+
+        viewControllerStack.forEach { $0.loadViewIfNeeded() }
+
+        notificationManagementView.controller.hidesBottomBarWhenPushed = true
+
+        navigationController?.setViewControllers(
+            viewControllerStack,
             animated: true
         )
     }
@@ -259,7 +340,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushNotification.OpenScreen
+        screen: PushNotification.OpenScreen,
+        locale: Locale
     ) {
         guard
             let controller = view?.controller as? UITabBarController,
@@ -272,6 +354,10 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .historyDetails(chainAsset):
             openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
+        case let .multisigOperationDetails(operationKey):
+            openMultisigOperationScreen(in: controller, operationKey: operationKey)
+        case let .multisigOperationEnded(model):
+            showMultisigEndedAlert(in: view, tabBar: controller, model: model, locale: locale)
         case .error:
             break
         }
@@ -369,5 +455,29 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         view?.controller.present(controllerToPresent, animated: true)
+    }
+
+    func presentMultisigNotificationsPromo(
+        from view: MainTabBarViewProtocol?,
+        with params: MultisigNotificationsPromoParams
+    ) {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return
+        }
+
+        let bottomSheet = MultisigNotificationsSheetFactory.createMultisigNotificationsPromo { [weak self] in
+            self?.openNotificationsWalletSelect(
+                in: tabBarController,
+                selectedWallets: params.selectedWallets
+            )
+        }
+
+        guard let controllerToPresent = bottomSheet?.controller else {
+            return
+        }
+
+        view?.controller.present(controllerToPresent, animated: true) {
+            params.completion()
+        }
     }
 }

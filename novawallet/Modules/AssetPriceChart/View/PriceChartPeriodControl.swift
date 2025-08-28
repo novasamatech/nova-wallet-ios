@@ -213,9 +213,3 @@ private extension PriceChartPeriodControl {
         static let animationScale: CGFloat = 0.85
     }
 }
-
-extension Collection {
-    subscript(safe index: Index) -> Element? {
-        indices.contains(index) ? self[index] : nil
-    }
-}

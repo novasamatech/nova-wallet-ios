@@ -117,7 +117,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                         value: model.available
                     ).value(for: locale),
                     fee: viewModelFactory.amountFromValue(
-                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
                         value: model.feeInPayAsset
                     ).value(for: locale)
                 )

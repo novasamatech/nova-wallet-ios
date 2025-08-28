@@ -66,7 +66,7 @@ extension Caip19 {
                 } else {
                     return nil
                 }
-            case .none, .statemine, .orml, .evmNative, .equilibrium:
+            case .none, .statemine, .orml, .ormlHydrationEvm, .evmNative, .equilibrium:
                 if
                     let slip44 = slip44Store.matchFirstCaip19(
                         of: MultichainToken.reserveTokensOf(symbol: asset.symbol)

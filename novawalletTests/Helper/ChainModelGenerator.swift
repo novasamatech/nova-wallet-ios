@@ -188,6 +188,7 @@ enum ChainModelGenerator {
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
         hasProxy: Bool = true,
+        hasMultisig: Bool = true,
         enabled: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
@@ -207,6 +208,7 @@ enum ChainModelGenerator {
             hasCrowdloans: hasCrowdloans,
             hasSubstrateRuntime: hasSubstrateRuntime,
             hasProxy: hasProxy,
+            hasMultisig: hasMultisig,
             enabled: enabled
         )
     }
@@ -220,6 +222,7 @@ enum ChainModelGenerator {
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
         hasProxy: Bool = true,
+        hasMultisig: Bool = true,
         enabled: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
@@ -246,6 +249,10 @@ enum ChainModelGenerator {
         
         if hasProxy {
             options.append(.proxy)
+        }
+        
+        if hasMultisig {
+            options.append(.multisig)
         }
 
         let externalApis = generateExternaApis(

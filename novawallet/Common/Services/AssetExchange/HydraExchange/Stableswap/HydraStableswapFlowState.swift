@@ -39,16 +39,6 @@ final class HydraStableswapFlowState {
 }
 
 extension HydraStableswapFlowState {
-    func getAllStateServices() -> [HydraStableswapQuoteParamsService] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(quoteStateServices.values)
-    }
-
     func resetServices() {
         mutex.lock()
 
@@ -78,7 +68,6 @@ extension HydraStableswapFlowState {
         }
 
         let newService = HydraStableswapQuoteParamsService(
-            userAccountId: account.accountId,
             poolAsset: poolPair.poolAsset,
             assetIn: poolPair.assetIn,
             assetOut: poolPair.assetOut,

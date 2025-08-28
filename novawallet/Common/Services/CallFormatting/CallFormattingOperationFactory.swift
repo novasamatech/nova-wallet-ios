@@ -10,17 +10,25 @@ protocol CallFormattingOperationFactoryProtocol {
 }
 
 final class CallFormattingOperationFactory {
-    let chainRegistry: ChainRegistryProtocol
+    let chainProvider: ChainProviderProtocol
+    let runtimeCodingServiceProvider: RuntimeCodingServiceProviderProtocol
     let walletRepository: AnyDataProviderRepository<MetaAccountModel>
+    let operationQueue: OperationQueue
 
     init(
-        chainRegistry: ChainRegistryProtocol,
-        walletRepository: AnyDataProviderRepository<MetaAccountModel>
+        chainProvider: ChainProviderProtocol,
+        runtimeCodingServiceProvider: RuntimeCodingServiceProviderProtocol,
+        walletRepository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue
     ) {
-        self.chainRegistry = chainRegistry
+        self.chainProvider = chainProvider
+        self.runtimeCodingServiceProvider = runtimeCodingServiceProvider
         self.walletRepository = walletRepository
+        self.operationQueue = operationQueue
     }
 }
+
+// MARK: - Private
 
 private extension CallFormattingOperationFactory {
     func resolveAccount(
@@ -179,6 +187,22 @@ private extension CallFormattingOperationFactory {
         return nil
     }
 
+    func detectBatch(from call: AnyRuntimeCall) -> FormattedCall.Definition? {
+        let batch: FormattedCall.Batch? = if call.path == UtilityPallet.batchPath {
+            FormattedCall.Batch(type: .batch)
+        } else if call.path == UtilityPallet.batchAllPath {
+            FormattedCall.Batch(type: .batchAll)
+        } else if call.path == UtilityPallet.forceBatchPath {
+            FormattedCall.Batch(type: .forceBatch)
+        } else {
+            nil
+        }
+
+        guard let batch else { return nil }
+
+        return .batch(batch)
+    }
+
     func resolveDefinition(
         for call: AnyRuntimeCall,
         chain: ChainModel,
@@ -192,6 +216,8 @@ private extension CallFormattingOperationFactory {
             codingFactory: codingFactory
         ) {
             return transfer
+        } else if let batch = detectBatch(from: call) {
+            return batch
         } else {
             let general = FormattedCall.General(callPath: call.path)
 
@@ -225,48 +251,94 @@ private extension CallFormattingOperationFactory {
             decoded: decodedCall
         )
     }
+
+    func createDecodingWrapper(
+        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>,
+        for callData: Substrate.CallData
+    ) -> CompoundOperationWrapper<JSON> {
+        let decodingWrapper: CompoundOperationWrapper<JSON> = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let codingService = try runtimeCodingServiceWrapper.targetOperation.extractNoCancellableResultData()
+
+            return codingService.createDecodingWrapper(
+                for: callData,
+                of: GenericType.call.name
+            )
+        }
+
+        return decodingWrapper
+    }
+
+    func createCodingFactoryWrapper(
+        dependingOn runtimeCodingServiceWrapper: CompoundOperationWrapper<RuntimeCodingServiceProtocol>
+    ) -> CompoundOperationWrapper<RuntimeCoderFactoryProtocol> {
+        let codingFactoryWrapper: CompoundOperationWrapper<RuntimeCoderFactoryProtocol>
+        codingFactoryWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let codingService = try runtimeCodingServiceWrapper.targetOperation.extractNoCancellableResultData()
+
+            return CompoundOperationWrapper(targetOperation: codingService.fetchCoderFactoryOperation())
+        }
+
+        return codingFactoryWrapper
+    }
 }
+
+// MARK: - CallFormattingOperationFactoryProtocol
 
 extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol {
     func createFormattingWrapper(
         for callData: Substrate.CallData,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<FormattedCall> {
-        do {
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
-            let chain = try chainRegistry.getChainOrError(for: chainId)
+        let chainWrapper = chainProvider.createChainWrapper(for: chainId)
 
-            let localAccountsWrapper = walletRepository.createWalletsWrapperByAccountId(for: chain)
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-            let decodingWrapper: CompoundOperationWrapper<JSON> = runtimeProvider.createDecodingWrapper(
-                for: callData,
-                of: GenericType.call.name
-            )
-
-            let formattingOperation = ClosureOperation<FormattedCall> {
-                let jsonCall = try decodingWrapper.targetOperation.extractNoCancellableResultData()
-                let localAccounts = try localAccountsWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                return try self.performFormatting(
-                    of: jsonCall,
-                    chain: chain,
-                    localAccounts: localAccounts,
-                    codingFactory: codingFactory
-                )
-            }
-
-            formattingOperation.addDependency(decodingWrapper.targetOperation)
-            formattingOperation.addDependency(codingFactoryOperation)
-            formattingOperation.addDependency(localAccountsWrapper.targetOperation)
-
-            return decodingWrapper
-                .insertingHead(operations: localAccountsWrapper.allOperations)
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: formattingOperation)
-        } catch {
-            return .createWithError(error)
+        let localAccountsWrapper = walletRepository.createWalletsWrapperByAccountId {
+            try chainWrapper.targetOperation.extractNoCancellableResultData()
         }
+
+        localAccountsWrapper.addDependency(wrapper: chainWrapper)
+
+        let codingFactoryWrapper = runtimeCodingServiceProvider.createCoderFactoryWrapper(
+            for: chainId,
+            in: operationQueue
+        )
+        let decodingWrapper: CompoundOperationWrapper<JSON> = runtimeCodingServiceProvider.createDecodingWrapper(
+            for: callData,
+            chainId: chainId,
+            in: operationQueue
+        )
+
+        let formattingOperation = ClosureOperation<FormattedCall> {
+            let jsonCall = try decodingWrapper.targetOperation.extractNoCancellableResultData()
+            let localAccounts = try localAccountsWrapper.targetOperation.extractNoCancellableResultData()
+            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try self.performFormatting(
+                of: jsonCall,
+                chain: chain,
+                localAccounts: localAccounts,
+                codingFactory: codingFactory
+            )
+        }
+
+        formattingOperation.addDependency(decodingWrapper.targetOperation)
+        formattingOperation.addDependency(codingFactoryWrapper.targetOperation)
+        formattingOperation.addDependency(localAccountsWrapper.targetOperation)
+
+        return decodingWrapper
+            .insertingHead(operations: localAccountsWrapper.allOperations)
+            .insertingHead(operations: codingFactoryWrapper.allOperations)
+            .insertingHead(operations: chainWrapper.allOperations)
+            .insertingTail(operation: formattingOperation)
     }
 }
+
+// MARK: - Private types
+
+private typealias CodingWrapper = CompoundOperationWrapper<
+    (decoded: JSON, codingFactory: RuntimeCoderFactoryProtocol)
+>

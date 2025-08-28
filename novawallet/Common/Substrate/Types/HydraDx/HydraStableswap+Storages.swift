@@ -8,4 +8,8 @@ extension HydraStableswap {
     static var tradability: StorageCodingPath {
         StorageCodingPath(moduleName: Self.module, itemName: "AssetTradability")
     }
+
+    static var poolPegs: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.module, itemName: "PoolPegs")
+    }
 }

@@ -19,6 +19,7 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         ) else {
             return
         }
+
         view?.controller.navigationController?.pushViewController(
             walletsView.controller,
             animated: true
@@ -55,6 +56,26 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
         }
         view?.controller.navigationController?.pushViewController(
             govNotificationsView.controller,
+            animated: true
+        )
+    }
+
+    func showMultisigSetup(
+        from view: (any ControllerBackedProtocol)?,
+        settings: MultisigNotificationsModel,
+        selectedMetaIds: Set<MetaAccountModel.Id>,
+        completion: @escaping (MultisigNotificationsModel) -> Void
+    ) {
+        guard let multisigNotificationsView = MultisigNotificationsViewFactory.createView(
+            with: settings,
+            selectedMetaIds: selectedMetaIds,
+            completion: completion
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            multisigNotificationsView.controller,
             animated: true
         )
     }
