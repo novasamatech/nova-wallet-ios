@@ -24,19 +24,42 @@ final class RemoverStorageNotificationsCleaner {
     }
 }
 
-// MARK: - WalletStorageCleaning
+// MARK: - Private
 
-extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
-    func cleanStorage(
+private extension RemoverStorageNotificationsCleaner {
+    func createCleaningWrapper(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
+        let unregisterWrapper = createUnregisterOperation(using: providers)
+            
+        let localCleaningWrapper: CompoundOperationWrapper<Void>
+        localCleaningWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let updatedAllSettings = try unregisterWrapper.targetOperation.extractNoCancellableResultData()
+            
+            let removeSettingsOperation = self.notificationsSettingsrepository.saveOperation(
+                { [updatedAllSettings.accountBased] },
+                { [] }
+            )
+            
+            return CompoundOperationWrapper(targetOperation: removeSettingsOperation)
+        }
+        
+        localCleaningWrapper.addDependency(wrapper: unregisterWrapper)
+        
+        return localCleaningWrapper.insertingHead(operations: unregisterWrapper.allOperations)
+    }
+    
+    func createUnregisterOperation(
+        using providers: WalletStorageCleaningProviders
+    ) -> CompoundOperationWrapper<PushNotification.AllSettings> {
         let settingsOperation = notificationsSettingsrepository.fetchAllOperation(with: .init())
         let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
 
-        let cleaningOperation = AsyncClosureOperation<Void> { [weak self] completion in
+        let unregisterOperation = AsyncClosureOperation<PushNotification.AllSettings> { [weak self] completion in
             guard let self else {
-                completion(.success(()))
-                return
+                throw BaseOperationError.parentOperationCancelled
             }
 
             let metaIds = Set(
@@ -49,33 +72,55 @@ extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
                 let settings = try settingsOperation.extractNoCancellableResultData().first,
                 let topicSettings = try topicsOperation.extractNoCancellableResultData().first
             else {
-                completion(.success(()))
-                return
+                throw RemovedWalletNotificationsCleanerError.settingsNotFound
             }
 
             let updatedWallets = settings.wallets.filter { !metaIds.contains($0.metaId) }
             let updatedSettings = settings.with(wallets: updatedWallets)
 
-            let allSettings = PushNotification.AllSettings(
+            let updatedAllSettings = PushNotification.AllSettings(
                 notificationsEnabled: settingsManager.notificationsEnabled,
                 accountBased: updatedSettings.settingCurrentDate(),
                 topics: topicSettings
             )
 
             self.notificationsFacade.save(
-                settings: allSettings,
-                completion: { completion($0.mapError { $0 as Error }) }
+                settings: updatedAllSettings,
+                completion: { result in
+                    switch result {
+                    case .success:
+                        completion(.success(updatedAllSettings))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
             )
         }
-
-        cleaningOperation.addDependency(settingsOperation)
-        cleaningOperation.addDependency(topicsOperation)
-
+        
+        unregisterOperation.addDependency(settingsOperation)
+        unregisterOperation.addDependency(topicsOperation)
+        
         let dependencies = [settingsOperation, topicsOperation]
 
         return CompoundOperationWrapper(
-            targetOperation: cleaningOperation,
+            targetOperation: unregisterOperation,
             dependencies: dependencies
         )
     }
+}
+
+// MARK: - WalletStorageCleaning
+
+extension RemoverStorageNotificationsCleaner: WalletStorageCleaning {
+    func cleanStorage(
+        using providers: WalletStorageCleaningProviders
+    ) -> CompoundOperationWrapper<Void> {
+        createCleaningWrapper(using: providers)
+    }
+}
+
+// MARK: - Errors
+
+enum RemovedWalletNotificationsCleanerError: Error {
+    case settingsNotFound
 }
