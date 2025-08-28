@@ -14,15 +14,18 @@ final class PendingMultisigChainSyncServiceFactory {
     private let storageFacade: StorageFacadeProtocol
     private let operationManager: OperationManagerProtocol
     private let operationQueue: OperationQueue
+    private let configProvider: GlobalConfigProviding
 
     init(
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
+        configProvider: GlobalConfigProviding,
         operationManager: OperationManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
+        self.configProvider = configProvider
         self.operationManager = operationManager
         self.operationQueue = operationQueue
     }
@@ -67,6 +70,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
             ),
+            configProvider: configProvider,
             operationManager: operationManager
         )
         let localSyncFactory = PendingMultisigLocalSyncFactory(

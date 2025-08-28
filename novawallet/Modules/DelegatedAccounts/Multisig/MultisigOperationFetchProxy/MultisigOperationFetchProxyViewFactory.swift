@@ -46,11 +46,6 @@ struct MultisigOperationFetchProxyViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
-        let userStorageFacade = UserDataStorageFacade.shared
-
-        let walletRepository = AccountRepositoryFactory(
-            storageFacade: userStorageFacade
-        ).createMetaAccountRepository(for: nil, sortDescriptors: [])
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -70,6 +65,7 @@ struct MultisigOperationFetchProxyViewFactory {
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
             ),
+            configProvider: GlobalConfigProvider.shared,
             operationManager: operationManager
         )
 
