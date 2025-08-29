@@ -65,8 +65,9 @@ private extension DelegatedAccountSyncFactory {
     func createDiscoveryWrapper(
         supportedChainIds: Set<ChainModel.Id>,
         metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel]
-    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
-        let accountsListWrapper = OperationCombiningService<DelegatedAccountsByDelegate>.compoundNonOptionalWrapper(
+    ) -> CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]> {
+        let accountsListWrapper: CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]>
+        accountsListWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             let metaAccounts = try metaAccountsClosure()
@@ -101,21 +102,21 @@ private extension DelegatedAccountSyncFactory {
     }
 
     func createChangesWrapper(
-        dependingOn discoveryWrapper: CompoundOperationWrapper<DelegatedAccountsByDelegate>,
+        dependingOn discoveryWrapper: CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]>,
         supportedChains: Set<ChainModel.Id>,
         metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel]
-    ) -> CompoundOperationWrapper<[SyncChanges<ManagedMetaAccountModel>]> {
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let accountIdsOperation = ClosureOperation<[AccountId]> {
-            Array(
-                try discoveryWrapper
-                    .targetOperation
-                    .extractNoCancellableResultData()
-                    .flatMap(\.accounts)
-                    .reduce(into: Set<AccountId>()) {
-                        $0.insert($1.accountId)
-                        $0.insert($1.delegateAccountId)
-                    }
-            )
+            let accountIds = try discoveryWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .reduce(into: Set<AccountId>()) {
+                    $0.insert($1.accountId)
+                    $0.insert($1.delegateAccountId)
+                }
+                .filter { !$0.matchesEvmAddress() } // evm identities not supported
+
+            return Array(accountIds)
         }
 
         let identityWrapper = identityFactory.createIdentityWrapperByAccountId(
@@ -126,7 +127,7 @@ private extension DelegatedAccountSyncFactory {
 
         identityWrapper.addDependency(operations: [accountIdsOperation])
 
-        let mapOperation = ClosureOperation<[SyncChanges<ManagedMetaAccountModel>]> { [chainRegistry, logger] in
+        let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> { [chainRegistry, logger] in
             let metaAccounts = try metaAccountsClosure()
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let remoteAccounts = try discoveryWrapper.targetOperation.extractNoCancellableResultData()
@@ -134,13 +135,13 @@ private extension DelegatedAccountSyncFactory {
             self.logger.debug("Discovered accounts: \(remoteAccounts.count)")
             self.logger.debug("Discovered identities: \(identities.count)")
 
-            return try DelegatedAccountsChangesFacade(
+            return DelegatedAccountsChangesCalculator(
+                chainIds: supportedChains,
                 chainRegistry: chainRegistry,
                 logger: logger
             ).calculateUpdates(
                 from: remoteAccounts,
-                supportedChains: supportedChains,
-                chainMetaAccounts: metaAccounts,
+                initialMetaAccounts: metaAccounts,
                 identities: identities
             )
         }
@@ -150,67 +151,6 @@ private extension DelegatedAccountSyncFactory {
         return identityWrapper
             .insertingHead(operations: [accountIdsOperation])
             .insertingTail(operation: mapOperation)
-    }
-
-    func createMergeChangesOperation(
-        dependingOn changesOperation: BaseOperation<[SyncChanges<ManagedMetaAccountModel>]>
-    ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
-        ClosureOperation {
-            let changes = try changesOperation.extractNoCancellableResultData()
-            let delegateStatusMap: [MetaAccountDelegationId: (Set<DelegatedAccount.Status>, ManagedMetaAccountModel)]
-
-            delegateStatusMap = changes
-                .flatMap(\.newOrUpdatedItems)
-                .reduce(into: [:]) { acc, managedMetaAccount in
-                    guard
-                        let delegationId = managedMetaAccount.info.delegationId,
-                        let status = managedMetaAccount.info.delegatedAccountStatus()
-                    else { return }
-
-                    if acc[delegationId] == nil {
-                        acc[delegationId] = ([status], managedMetaAccount)
-                    } else {
-                        acc[delegationId]?.0.insert(status)
-                    }
-                }
-
-            let resultUpdates = delegateStatusMap.map { delegationId, value in
-                let collectedStatuses = value.0
-                let managedMetaAccount = value.1
-
-                guard
-                    collectedStatuses.count > 1,
-                    let currentStatus = managedMetaAccount.info.delegatedAccountStatus()
-                else { return managedMetaAccount }
-
-                // We don't want to overwrite revoke status for chain-specific delegation
-                // since the only revoke status comes for the delegation's chain
-
-                let chainSpecificRevoke = delegationId.chainId != nil && collectedStatuses.contains(.revoked)
-
-                let resultStatus: DelegatedAccount.Status = if chainSpecificRevoke {
-                    .revoked
-                } else if collectedStatuses.contains(.new) {
-                    .new
-                } else if collectedStatuses.contains(.active) {
-                    .active
-                } else {
-                    .revoked
-                }
-
-                return managedMetaAccount.replacingInfo(
-                    managedMetaAccount.info.replacingDelegatedAccountStatus(
-                        from: currentStatus,
-                        to: resultStatus
-                    )
-                )
-            }
-
-            return SyncChanges(
-                newOrUpdatedItems: resultUpdates,
-                removedItems: changes.flatMap(\.removedItems)
-            )
-        }
     }
 }
 
@@ -234,12 +174,6 @@ extension DelegatedAccountSyncFactory: DelegatedAccountSyncFactoryProtocol {
 
         changesWrapper.addDependency(wrapper: discoveryWrapper)
 
-        let mergeOperation = createMergeChangesOperation(dependingOn: changesWrapper.targetOperation)
-
-        mergeOperation.addDependency(changesWrapper.targetOperation)
-
-        return changesWrapper
-            .insertingHead(operations: discoveryWrapper.allOperations)
-            .insertingTail(operation: mergeOperation)
+        return changesWrapper.insertingHead(operations: discoveryWrapper.allOperations)
     }
 }

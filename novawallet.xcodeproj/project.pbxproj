@@ -785,12 +785,16 @@
 		0C8FC20D2E5F3FF700034ED3 /* DiscoveredAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC20C2E5F3FF700034ED3 /* DiscoveredAccount.swift */; };
 		0C8FC2112E5F50B300034ED3 /* MultichainIdentityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2102E5F50B300034ED3 /* MultichainIdentityFactory.swift */; };
 		0C8FC2132E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2122E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift */; };
-		0C8FC2152E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2142E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift */; };
 		0C8FC2172E6063B500034ED3 /* GlobalConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */; };
 		0C8FC2192E60653800034ED3 /* GlobalConfigProvide+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */; };
 		0C8FC21B2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC21A2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift */; };
 		0C8FC21D2E60BCD600034ED3 /* OffchainMultisigOperationsFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC21C2E60BCD600034ED3 /* OffchainMultisigOperationsFactoryFacade.swift */; };
 		0C8FC21F2E60BD8C00034ED3 /* OffchainMultisigOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC21E2E60BD8C00034ED3 /* OffchainMultisigOperation.swift */; };
+		0C8FC2212E60FE6600034ED3 /* ManagedMetaAccountModel+DelegateStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2202E60FE6600034ED3 /* ManagedMetaAccountModel+DelegateStatus.swift */; };
+		0C8FC2232E61020900034ED3 /* MetaAccountModel+DelegationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */; };
+		0C8FC2252E61987000034ED3 /* MultisigUniMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2242E61987000034ED3 /* MultisigUniMetaAccountFactory.swift */; };
+		0C8FC2262E61E68500034ED3 /* MetaAccountModel+DelegationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */; };
+		0C8FC2282E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2272E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
@@ -1777,7 +1781,7 @@
 		2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */; };
 		2D6CC2522DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */; };
 		2D6CC25B2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */; };
-		2D6CC25D2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */; };
+		2D6CC25D2DD1F22F00FF5FA8 /* MultisigSingleChainAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25C2DD1F22F00FF5FA8 /* MultisigSingleChainAccountFactory.swift */; };
 		2D6CC2602DD212D600FF5FA8 /* DelegateIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25F2DD212D600FF5FA8 /* DelegateIdentifier.swift */; };
 		2D6CC2642DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2632DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift */; };
 		2D6CC2662DD26BD700FF5FA8 /* DelegatedAccount+MultisigAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2652DD26BD700FF5FA8 /* DelegatedAccount+MultisigAccountModel.swift */; };
@@ -7231,12 +7235,15 @@
 		0C8FC20C2E5F3FF700034ED3 /* DiscoveredAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredAccount.swift; sourceTree = "<group>"; };
 		0C8FC2102E5F50B300034ED3 /* MultichainIdentityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainIdentityFactory.swift; sourceTree = "<group>"; };
 		0C8FC2122E5F5C1D00034ED3 /* DelegatedAccountDiscoveryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountDiscoveryFactory.swift; sourceTree = "<group>"; };
-		0C8FC2142E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsChangesFacade.swift; sourceTree = "<group>"; };
 		0C8FC2162E6063B500034ED3 /* GlobalConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfig.swift; sourceTree = "<group>"; };
 		0C8FC2182E60653800034ED3 /* GlobalConfigProvide+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GlobalConfigProvide+Singleton.swift"; sourceTree = "<group>"; };
 		0C8FC21A2E6065F900034ED3 /* DelegatedAccountRepositoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountRepositoryFacade.swift; sourceTree = "<group>"; };
 		0C8FC21C2E60BCD600034ED3 /* OffchainMultisigOperationsFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffchainMultisigOperationsFactoryFacade.swift; sourceTree = "<group>"; };
 		0C8FC21E2E60BD8C00034ED3 /* OffchainMultisigOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffchainMultisigOperation.swift; sourceTree = "<group>"; };
+		0C8FC2202E60FE6600034ED3 /* ManagedMetaAccountModel+DelegateStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ManagedMetaAccountModel+DelegateStatus.swift"; sourceTree = "<group>"; };
+		0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+DelegationId.swift"; sourceTree = "<group>"; };
+		0C8FC2242E61987000034ED3 /* MultisigUniMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigUniMetaAccountFactory.swift; sourceTree = "<group>"; };
+		0C8FC2272E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ManageMetaAccountModel+DelegationId.swift"; sourceTree = "<group>"; };
 		0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel22.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB802CAD022700775D7F /* SubstrateDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB812CAD022700775D7F /* SubstrateDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -8260,7 +8267,7 @@
 		2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTabLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMetaAccountFactory.swift; sourceTree = "<group>"; };
 		2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMetaAccountFactory.swift; sourceTree = "<group>"; };
-		2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigMetaAccountFactory.swift; sourceTree = "<group>"; };
+		2D6CC25C2DD1F22F00FF5FA8 /* MultisigSingleChainAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSingleChainAccountFactory.swift; sourceTree = "<group>"; };
 		2D6CC25F2DD212D600FF5FA8 /* DelegateIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateIdentifier.swift; sourceTree = "<group>"; };
 		2D6CC2632DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DelegatedAccount+ProxyAccountModel.swift"; sourceTree = "<group>"; };
 		2D6CC2652DD26BD700FF5FA8 /* DelegatedAccount+MultisigAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DelegatedAccount+MultisigAccountModel.swift"; sourceTree = "<group>"; };
@@ -17178,7 +17185,6 @@
 			children = (
 				2D6CC25E2DD212B600FF5FA8 /* DelegatedMetaAccountFactory */,
 				7725EB432B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift */,
-				0C8FC2142E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift */,
 			);
 			path = DelegatedAccountChangesCalculator;
 			sourceTree = "<group>";
@@ -17188,8 +17194,12 @@
 			children = (
 				2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */,
 				2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */,
-				2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */,
+				2D6CC25C2DD1F22F00FF5FA8 /* MultisigSingleChainAccountFactory.swift */,
+				0C8FC2242E61987000034ED3 /* MultisigUniMetaAccountFactory.swift */,
 				0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */,
+				0C8FC2202E60FE6600034ED3 /* ManagedMetaAccountModel+DelegateStatus.swift */,
+				0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */,
+				0C8FC2272E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift */,
 			);
 			path = DelegatedMetaAccountFactory;
 			sourceTree = "<group>";
@@ -30030,6 +30040,7 @@
 				2DEDEFB42E4D14E1008F07B2 /* (null) in Sources */,
 				2DEDEFB52E4D14E1008F07B2 /* (null) in Sources */,
 				2DEDEFB62E4D14E1008F07B2 /* (null) in Sources */,
+				0C8FC2262E61E68500034ED3 /* MetaAccountModel+DelegationId.swift in Sources */,
 				2DEDEFB72E4D14E1008F07B2 /* (null) in Sources */,
 				2DEDEFB82E4D14E1008F07B2 /* (null) in Sources */,
 				2DEDEFB92E4D14E1008F07B2 /* (null) in Sources */,
@@ -31913,7 +31924,6 @@
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
 				2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */,
-				0C8FC2152E5F742100034ED3 /* DelegatedAccountsChangesFacade.swift in Sources */,
 				0C3AD30D2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift in Sources */,
 				0CB313622C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift in Sources */,
 				842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */,
@@ -31980,6 +31990,7 @@
 				849013E224A9288B008F705E /* Language.swift in Sources */,
 				2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */,
 				840D92A1278D8D6F0007B979 /* DAppBrowserStateError.swift in Sources */,
+				0C8FC2282E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift in Sources */,
 				77ECB4702ACEEE2E0015CE9F /* NetworkFeeInfoView.swift in Sources */,
 				84FC190B29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift in Sources */,
 				849707A128F3E0AC00DD0A02 /* ReferendumVoterLocal.swift in Sources */,
@@ -32066,6 +32077,7 @@
 				AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */,
 				848F8B222863BD1000204BC4 /* TransferSetupInputState.swift in Sources */,
 				84113B6C255B2835009BD21A /* AccountCreateError.swift in Sources */,
+				0C8FC2232E61020900034ED3 /* MetaAccountModel+DelegationId.swift in Sources */,
 				849014C024AA87E4008F705E /* ScreenAuthorizationPresenter.swift in Sources */,
 				84A1742928ED625D0096F943 /* Gov2OperationFactory.swift in Sources */,
 				8849C5ED29806F4500DE35CC /* VersionTableViewCell.swift in Sources */,
@@ -33657,7 +33669,7 @@
 				640A79BD1335394818E70366 /* WalletHistoryFilterViewController.swift in Sources */,
 				DD090C2ED91726FF7779F6C7 /* WalletHistoryFilterViewFactory.swift in Sources */,
 				0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */,
-				2D6CC25D2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift in Sources */,
+				2D6CC25D2DD1F22F00FF5FA8 /* MultisigSingleChainAccountFactory.swift in Sources */,
 				2D65F6D92CD0067500CC6F72 /* AppearanceFacade.swift in Sources */,
 				84ED6BE0286900B600B3C558 /* TransferNetworkContainerViewModel.swift in Sources */,
 				0CA72A792D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift in Sources */,
@@ -33934,6 +33946,7 @@
 				847A6C0B28817E4000477F77 /* AssetListBaseInteractor.swift in Sources */,
 				0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
+				0C8FC2212E60FE6600034ED3 /* ManagedMetaAccountModel+DelegateStatus.swift in Sources */,
 				2D2B6AEB2D6C7581002F8C77 /* AssetDetailsBalanceWidget.swift in Sources */,
 				2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */,
 				840B3D632899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift in Sources */,
@@ -34951,6 +34964,7 @@
 				84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */,
 				0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */,
 				77C3D7D52B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift in Sources */,
+				0C8FC2252E61987000034ED3 /* MultisigUniMetaAccountFactory.swift in Sources */,
 				84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */,
 				DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */,
 				844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */,

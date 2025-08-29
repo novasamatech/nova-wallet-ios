@@ -4,13 +4,13 @@ import Operation_iOS
 protocol DelegatedAccountDiscoveryFactoryProtocol {
     func createDiscoveryWrapper(
         startingFrom accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate>
+    ) -> CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]>
 }
 
 final class DelegatedAccountDiscoveryFactory {
     struct PartialDiscovery {
         let possibleAccountIds: Set<AccountId>
-        let discoveredAccounts: DelegatedAccountsByDelegate
+        let discoveredAccounts: [DiscoveredDelegatedAccountProtocol]
     }
 
     let remoteSource: DelegatedAccountsAggregatorProtocol
@@ -29,12 +29,12 @@ private extension DelegatedAccountDiscoveryFactory {
     func createDiscoverAccountsWrapper(
         partialDiscovery: PartialDiscovery,
         discoveryQueue: Set<AccountId>
-    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
+    ) -> CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]> {
         let accountsFetchWrapper = remoteSource.fetchDelegatedAccountsWrapper(
             for: discoveryQueue
         )
 
-        let resultWrapper: CompoundOperationWrapper<DelegatedAccountsByDelegate>
+        let resultWrapper: CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]>
         resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
@@ -43,7 +43,6 @@ private extension DelegatedAccountDiscoveryFactory {
                 .extractNoCancellableResultData()
 
             let newPossibleAccountIds: Set<AccountId> = delegatedAccounts
-                .flatMap(\.accounts)
                 .reduce(into: partialDiscovery.possibleAccountIds) { $0.insert($1.accountId) }
 
             let newDiscoveredAccounts = partialDiscovery.discoveredAccounts + delegatedAccounts
@@ -72,7 +71,7 @@ private extension DelegatedAccountDiscoveryFactory {
 extension DelegatedAccountDiscoveryFactory: DelegatedAccountDiscoveryFactoryProtocol {
     func createDiscoveryWrapper(
         startingFrom accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
+    ) -> CompoundOperationWrapper<[DiscoveredDelegatedAccountProtocol]> {
         createDiscoverAccountsWrapper(
             partialDiscovery: PartialDiscovery(
                 possibleAccountIds: accountIds,

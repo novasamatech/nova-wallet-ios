@@ -93,6 +93,10 @@ extension OffchainMultisigOperationsFactory: OffchainMultisigOperationsFactoryPr
         for accountId: AccountId,
         callHashes: Set<Substrate.CallHash>
     ) -> CompoundOperationWrapper<[Substrate.CallHash: OffChainMultisigInfo]> {
+        guard !callHashes.isEmpty else {
+            return .createWithResult([:])
+        }
+
         let query = createCallDataRequestQuery(
             for: accountId,
             callHashes: callHashes

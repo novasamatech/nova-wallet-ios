@@ -36,6 +36,10 @@ extension AccountId {
             return data.count == SubstrateConstants.accountIdLength ? data : nil
         }
     }
+
+    func matchesEvmAddress() -> Bool {
+        count == SubstrateConstants.ethereumAddressLength
+    }
 }
 
 extension BlockNumber {
