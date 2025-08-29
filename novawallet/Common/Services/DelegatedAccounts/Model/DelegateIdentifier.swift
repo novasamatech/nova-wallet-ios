@@ -19,8 +19,8 @@ struct DelegateIdentifier: Hashable {
     }
 }
 
-enum DelegationType: Hashable {
-    enum MultisigModel: Hashable {
+enum DelegationType: Hashable, Equatable {
+    enum MultisigModel: Hashable, Equatable {
         case uniSubstrate
         case uniEvm
         case singleChain(ChainModel.Id)
@@ -35,7 +35,7 @@ enum DelegationType: Hashable {
         }
     }
 
-    struct ProxyModel: Hashable {
+    struct ProxyModel: Hashable, Equatable {
         let type: Proxy.ProxyType
         let chainId: ChainModel.Id
     }

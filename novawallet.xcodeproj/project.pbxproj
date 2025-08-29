@@ -795,6 +795,7 @@
 		0C8FC2252E61987000034ED3 /* MultisigUniMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2242E61987000034ED3 /* MultisigUniMetaAccountFactory.swift */; };
 		0C8FC2262E61E68500034ED3 /* MetaAccountModel+DelegationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */; };
 		0C8FC2282E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC2272E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift */; };
+		0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC22C2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
@@ -7244,6 +7245,7 @@
 		0C8FC2222E61020900034ED3 /* MetaAccountModel+DelegationId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+DelegationId.swift"; sourceTree = "<group>"; };
 		0C8FC2242E61987000034ED3 /* MultisigUniMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigUniMetaAccountFactory.swift; sourceTree = "<group>"; };
 		0C8FC2272E61E71400034ED3 /* ManageMetaAccountModel+DelegationId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ManageMetaAccountModel+DelegationId.swift"; sourceTree = "<group>"; };
+		0C8FC22C2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsChangeCalculatorTests.swift; sourceTree = "<group>"; };
 		0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel22.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB802CAD022700775D7F /* SubstrateDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB812CAD022700775D7F /* SubstrateDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -14592,6 +14594,14 @@
 			path = Multisig;
 			sourceTree = "<group>";
 		};
+		0C8FC2292E623F7000034ED3 /* DelegatedAccounts */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FC22C2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift */,
+			);
+			path = DelegatedAccounts;
+			sourceTree = "<group>";
+		};
 		0C8FDBA62CAE4E6B00775D7F /* Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -21140,6 +21150,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
 				84300B2D26C110C400D64514 /* ChainRegistry */,
 				8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */,
@@ -36208,6 +36219,7 @@
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,
+				0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
