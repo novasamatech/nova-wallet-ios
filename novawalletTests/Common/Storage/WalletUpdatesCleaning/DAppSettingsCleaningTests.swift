@@ -60,7 +60,6 @@ final class DAppSettingsCleaningTests: XCTestCase {
         // then
         XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
         
-        // Verify settings were removed
         let fetchOperation = authorizedDAppRepository.fetchAllOperation(with: .init())
         operationQueue.addOperations([fetchOperation], waitUntilFinished: true)
         

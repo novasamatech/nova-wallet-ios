@@ -83,7 +83,6 @@ final class BrowserStateCleaningTests: XCTestCase {
             order: 0
         )
         
-        // Update wallet with different chain accounts
         let updatedInfo = originalWallet.info.replacingChainAccount(
             AccountGenerator.generateChainAccount()
         )
