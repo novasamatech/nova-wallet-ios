@@ -84,6 +84,212 @@ class ChainFilterStrategyTests: XCTestCase {
         XCTAssert(updatedChains.allSatisfy { resultChains[$0.chainId] != nil })
     }
     
+    // MARK: hasMultisig
+
+    func testHasMultisigFilterDelete() {
+        hasMultisigFilterDeletes { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.update(newItem: $0) }
+        }
+        
+        hasMultisigFilterDeletes { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
+        }
+    }
+
+    func hasMultisigFilterDeletes(changes: ([ChainModel]) -> [DataProviderChange<ChainModel>]) {
+        // given
+        let filterStrategy = ChainFilterStrategy.hasMultisig
+        
+        var currentChains = [
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasMultisig: true),
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasMultisig: true)
+        ].reduceToDict()
+        
+        let updatedChains = currentChains.values.map {
+            ChainModelGenerator.generateChain(
+                defaultChainId: $0.chainId,
+                generatingAssets: 0,
+                addressPrefix: 0,
+                hasMultisig: !$0.hasMultisig
+            )
+        }
+        
+        let beforeFilterChanges = changes(updatedChains)
+        
+        // when
+        let resultChanges = filterStrategy.filter(beforeFilterChanges, using: currentChains)
+        currentChains = resultChanges.mergeToDict(currentChains)
+        
+        // then
+        XCTAssert(currentChains.isEmpty)
+    }
+
+    func testHasMultisigFilterInsert() {
+        hasMultisigFilterInserts { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.update(newItem: $0) }
+        }
+        
+        hasMultisigFilterInserts { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
+        }
+    }
+
+    func hasMultisigFilterInserts(changes: ([ChainModel]) -> [DataProviderChange<ChainModel>]) {
+        // given
+        let filterStrategy = ChainFilterStrategy.hasMultisig
+        
+        let currentChains = [
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasMultisig: false),
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasMultisig: false)
+        ].reduceToDict()
+        
+        var resultChains: [ChainModel.Id: ChainModel] = [:]
+        
+        let updatedChains = currentChains.values.map {
+            ChainModelGenerator.generateChain(
+                defaultChainId: $0.chainId,
+                generatingAssets: 0,
+                addressPrefix: 0,
+                hasMultisig: !$0.hasMultisig
+            )
+        }
+        
+        let beforeFilterChanges = changes(updatedChains)
+        
+        // when
+        let resultChanges = filterStrategy.filter(beforeFilterChanges, using: currentChains)
+        resultChains = resultChanges.mergeToDict(resultChains)
+        
+        // then
+        XCTAssert(updatedChains.allSatisfy { resultChains[$0.chainId] != nil })
+    }
+
+    // MARK: hasDelegatedAccounts
+
+    func testHasDelegatedAccountsFilterDelete() {
+        hasDelegatedAccountsFilterDeletes { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.update(newItem: $0) }
+        }
+        
+        hasDelegatedAccountsFilterDeletes { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
+        }
+    }
+
+    func hasDelegatedAccountsFilterDeletes(changes: ([ChainModel]) -> [DataProviderChange<ChainModel>]) {
+        // given
+        let filterStrategy = ChainFilterStrategy.hasDelegatedAccounts
+        
+        var currentChains = [
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: true, hasMultisig: false),
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false, hasMultisig: true),
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: true, hasMultisig: true)
+        ].reduceToDict()
+        
+        let updatedChains = currentChains.values.map {
+            ChainModelGenerator.generateChain(
+                defaultChainId: $0.chainId,
+                generatingAssets: 0,
+                addressPrefix: 0,
+                hasProxy: false,
+                hasMultisig: false
+            )
+        }
+        
+        let beforeFilterChanges = changes(updatedChains)
+        
+        // when
+        let resultChanges = filterStrategy.filter(beforeFilterChanges, using: currentChains)
+        currentChains = resultChanges.mergeToDict(currentChains)
+        
+        // then
+        XCTAssert(currentChains.isEmpty)
+    }
+
+    func testHasDelegatedAccountsFilterInsert() {
+        hasDelegatedAccountsFilterInserts { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.update(newItem: $0) }
+        }
+        
+        hasDelegatedAccountsFilterInserts { updatedChains in
+            updatedChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
+        }
+    }
+
+    func hasDelegatedAccountsFilterInserts(changes: ([ChainModel]) -> [DataProviderChange<ChainModel>]) {
+        // given
+        let filterStrategy = ChainFilterStrategy.hasDelegatedAccounts
+        
+        let currentChains = [
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false, hasMultisig: false),
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false, hasMultisig: false)
+        ].reduceToDict()
+        
+        var resultChains: [ChainModel.Id: ChainModel] = [:]
+        
+        let updatedChains = currentChains.values.enumerated().map { index, chain in
+            if index == 0 {
+                // First chain gets proxy enabled
+                return ChainModelGenerator.generateChain(
+                    defaultChainId: chain.chainId,
+                    generatingAssets: 0,
+                    addressPrefix: 0,
+                    hasProxy: true,
+                    hasMultisig: false
+                )
+            } else {
+                // Second chain gets multisig enabled
+                return ChainModelGenerator.generateChain(
+                    defaultChainId: chain.chainId,
+                    generatingAssets: 0,
+                    addressPrefix: 0,
+                    hasProxy: false,
+                    hasMultisig: true
+                )
+            }
+        }
+        
+        let beforeFilterChanges = changes(updatedChains)
+        
+        // when
+        let resultChanges = filterStrategy.filter(beforeFilterChanges, using: currentChains)
+        resultChains = resultChanges.mergeToDict(resultChains)
+        
+        // then
+        XCTAssert(updatedChains.allSatisfy { resultChains[$0.chainId] != nil })
+    }
+
+    // MARK: hasDelegatedAccounts - Additional edge case tests
+
+    func testHasDelegatedAccountsFilterMixedConditions() {
+        // Test that chains with either proxy OR multisig (or both) are included
+        let filterStrategy = ChainFilterStrategy.hasDelegatedAccounts
+        
+        let testChains = [
+            // Chain with only proxy - should be included
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: true, hasMultisig: false),
+            // Chain with only multisig - should be included
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 1, hasProxy: false, hasMultisig: true),
+            // Chain with both - should be included
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 2, hasProxy: true, hasMultisig: true),
+            // Chain with neither - should be excluded
+            ChainModelGenerator.generateChain(assets: [], addressPrefix: 3, hasProxy: false, hasMultisig: false)
+        ]
+        
+        let changes = testChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
+        
+        // when
+        let resultChanges = filterStrategy.filter(changes, using: [:])
+        
+        // then
+        XCTAssertEqual(resultChanges.count, 3) // Should exclude the chain with neither proxy nor multisig
+        
+        let resultChainIds = Set(resultChanges.compactMap { $0.item?.chainId })
+        let expectedChainIds = Set(testChains.prefix(3).map { $0.chainId }) // First 3 chains
+        
+        XCTAssertEqual(resultChainIds, expectedChainIds)
+    }
+    
     // MARK: enabledChains
     
     func testEnabledChainsFilterDelete() {

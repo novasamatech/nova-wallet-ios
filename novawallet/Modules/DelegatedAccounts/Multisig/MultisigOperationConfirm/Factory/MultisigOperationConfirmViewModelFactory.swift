@@ -491,12 +491,14 @@ private extension MultisigOperationConfirmViewModelFactory {
         let hasCall = pendingOperation.operation.call != nil
             || pendingOperation.formattedModel?.decoded != nil
         let createdBySignatory = pendingOperation.operation.isCreator(accountId: multisigContext.signatory)
+        let approvedBySignatory = definition.approvals.contains(multisigContext.signatory)
         let approved = definition.approvals.count >= multisigContext.threshold
         let willExecute = (multisigContext.threshold - definition.approvals.count) == 1
 
         return OperationProperties(
             hasCall: hasCall,
             createdBySignatory: createdBySignatory,
+            approvedBySignatory: approvedBySignatory,
             approved: approved,
             willExecute: willExecute
         )
@@ -610,6 +612,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
 private struct OperationProperties {
     let hasCall: Bool
     let createdBySignatory: Bool
+    let approvedBySignatory: Bool
     let approved: Bool
     let willExecute: Bool
 
@@ -618,7 +621,7 @@ private struct OperationProperties {
     }
 
     var canApprove: Bool {
-        !createdBySignatory && hasCall
+        !approvedBySignatory && hasCall
     }
 
     var canReject: Bool {
