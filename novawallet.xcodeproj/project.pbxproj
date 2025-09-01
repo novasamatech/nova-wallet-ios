@@ -1590,6 +1590,8 @@
 		2D3286F62E00B70B004D5D24 /* MultisigCallDataSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286F52E00B70B004D5D24 /* MultisigCallDataSyncService.swift */; };
 		2D3286FD2E04562E004D5D24 /* MultisigCallOrHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */; };
 		2D32AA242E65DEF90083233B /* WalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32AA232E65DEF90083233B /* WalletNotificationsCleaner.swift */; };
+		2D32AA282E660BAE0083233B /* BrowserStateCleaningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32AA272E660BAE0083233B /* BrowserStateCleaningTests.swift */; };
+		2D32AA2A2E660C410083233B /* DAppSettingsCleaningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32AA292E660C410083233B /* DAppSettingsCleaningTests.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
 		2D32BE132C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */; };
 		2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */; };
@@ -8071,6 +8073,8 @@
 		2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallOrHash.swift; sourceTree = "<group>"; };
 		2D32AA232E65DEF90083233B /* WalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2D32AA252E6604CF0083233B /* MultiassetUserDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel18.xcdatamodel; sourceTree = "<group>"; };
+		2D32AA272E660BAE0083233B /* BrowserStateCleaningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserStateCleaningTests.swift; sourceTree = "<group>"; };
+		2D32AA292E660C410083233B /* DAppSettingsCleaningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsCleaningTests.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
 		2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeInstaller.swift; sourceTree = "<group>"; };
 		2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimationProtocol.swift; sourceTree = "<group>"; };
@@ -16503,6 +16507,15 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		2D32AA262E660B900083233B /* WalletUpdatesCleaning */ = {
+			isa = PBXGroup;
+			children = (
+				2D32AA272E660BAE0083233B /* BrowserStateCleaningTests.swift */,
+				2D32AA292E660C410083233B /* DAppSettingsCleaningTests.swift */,
+			);
+			path = WalletUpdatesCleaning;
+			sourceTree = "<group>";
+		};
 		2D32BE112C6A49900047F520 /* FeeManaging */ = {
 			isa = PBXGroup;
 			children = (
@@ -20586,6 +20599,7 @@
 		8432E54F24EFDF4A00B05B58 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				2D32AA262E660B900083233B /* WalletUpdatesCleaning */,
 				8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */,
 				84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */,
 				845B822226EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift */,
@@ -36125,10 +36139,12 @@
 				84741ADF290F116B00C98E17 /* Gov2UnlockScheduleTests.swift in Sources */,
 				8476CA0B25EFB17A003EEAE1 /* RewardCalculatorServiceStub.swift in Sources */,
 				84F81318265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift in Sources */,
+				2D32AA2A2E660C410083233B /* DAppSettingsCleaningTests.swift in Sources */,
 				847F2D5727AB08D200AFD476 /* GradientColorFactoryTests.swift in Sources */,
 				84B7C73F289BFA79001A3566 /* WalletPurchaseProvidersTests.swift in Sources */,
 				0C41D21E2BFB0719000950EE /* WalletsFetchHelper.swift in Sources */,
 				8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */,
+				2D32AA282E660BAE0083233B /* BrowserStateCleaningTests.swift in Sources */,
 				847CD46626416D0900E1542F /* SlashesOperationFactoryStub.swift in Sources */,
 				0C41D21C2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift in Sources */,
 				84B7C71F289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift in Sources */,
