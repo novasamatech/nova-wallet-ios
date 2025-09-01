@@ -14,6 +14,9 @@ enum WalletStorageCleanerFactory {
         let updatedBrowserStateCleaner = createUpdatedWalletBrowserStateCleaner(
             using: operationQueue
         )
+        let updateNotificationsSettingsCleaner = createUpdatedNotificationsSettingsCleaner(
+            operationQueue: operationQueue
+        )
 
         // Add every cleaner to the array
         // in the same order it should get called
@@ -21,6 +24,7 @@ enum WalletStorageCleanerFactory {
             removedNotificationsSettingsCleaner,
             removedBrowserStateCleaner,
             removedDAppSettingsCleaner,
+            updateNotificationsSettingsCleaner,
             updatedBrowserStateCleaner
         ]
 
@@ -80,8 +84,8 @@ enum WalletStorageCleanerFactory {
             mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
         )
 
-        return RemoverStorageNotificationsCleaner(
-            notificationsSettingsrepository: AnyDataProviderRepository(notificationsSettingsRepository),
+        return RemovedWalletNotificationsCleaner(
+            notificationsSettingsRepository: AnyDataProviderRepository(notificationsSettingsRepository),
             notificationsTopicsRepository: AnyDataProviderRepository(topicsSettingsRepository),
             notificationsFacade: PushNotificationsServiceFacade.shared,
             settingsManager: SettingsManager.shared,
@@ -104,5 +108,35 @@ enum WalletStorageCleanerFactory {
         )
 
         return browserStateCleaner
+    }
+
+    private static func createUpdatedNotificationsSettingsCleaner(
+        operationQueue: OperationQueue
+    ) -> WalletStorageCleaning {
+        let storageFacade = UserDataStorageFacade.shared
+
+        let notificationsSettingsRepository = storageFacade.createRepository(
+            filter: .pushSettings,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+        )
+        let topicsSettingsRepository = storageFacade.createRepository(
+            filter: .topicSettings,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
+        )
+        let chainRepository = SubstrateDataStorageFacade.shared.createRepository(
+            mapper: AnyCoreDataMapper(ChainModelMapper())
+        )
+
+        return UpdatedWalletNotificationsCleaner(
+            pushNotificationSettingsFactory: PushNotificationSettingsFactory(),
+            chainRepository: AnyDataProviderRepository(chainRepository),
+            notificationsSettingsRepository: AnyDataProviderRepository(notificationsSettingsRepository),
+            notificationsTopicsRepository: AnyDataProviderRepository(topicsSettingsRepository),
+            notificationsFacade: PushNotificationsServiceFacade.shared,
+            settingsManager: SettingsManager.shared,
+            operationQueue: operationQueue
+        )
     }
 }
