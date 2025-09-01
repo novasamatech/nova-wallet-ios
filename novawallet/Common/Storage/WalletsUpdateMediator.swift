@@ -20,7 +20,6 @@ final class WalletUpdateMediator {
     let walletsCleaner: WalletStorageCleaning
     let operationQueue: OperationQueue
 
-    // TODO: Implement wallet cleaner usage
     init(
         selectedWalletSettings: SelectedWalletSettings,
         repository: AnyDataProviderRepository<ManagedMetaAccountModel>,

@@ -411,45 +411,133 @@ final class WalletUpdateMediatorTests: XCTestCase {
         }
     }
     
-    // TODO: Uncomment after fix
-//    func testBrowserStateClearingCalledAndOtherOperationsCompleted() throws {
-//        // given
-//        
-//        let storageCleaner = MockWalletStorageCleaning()
-//        let common = Common(storageCleaner: storageCleaner)
-//        
-//        let wallets = (0..<10).map { index in
-//            ManagedMetaAccountModel(
-//                info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-//                isSelected: index == 0,
-//                order: index
-//            )
-//        }
-//        
-//        common.setup(with: wallets)
-//        
-//        let removedWallet = wallets[0]
-//        
-//        let walletStorageCleanerExpectation = XCTestExpectation()
-//        
-//        stub(storageCleaner) { stub in
-//            when(stub).cleanStorage(using: any()).then { _ in
-//                walletStorageCleanerExpectation.fulfill()
-//                
-//                return .createWithResult(())
-//            }
-//        }
-//        
-//        // when
-//        
-//        let result = try common.update(with: [], remove: [removedWallet])
-//        
-//        wait(for: [walletStorageCleanerExpectation], timeout: 5)
-//        
-//         then
-//        
-//        XCTAssertTrue(result.isWalletSwitched)
-//        XCTAssertTrue(result.selectedWallet != nil)
-//        XCTAssertTrue(common.selectedAccountSettings.value.identifier != removedWallet.identifier)
-//    }
+    // MARK: - RemovedWalletBrowserStateCleaner Tests
+    
+    @MainActor func testRemovedWalletBrowserStateCleanerRemovesTabsAndWebViews() throws {
+        // given
+        let operationQueue = OperationQueue()
+        let browserTabManager = MockDAppBrowserTabManagerProtocol()
+        let webViewPoolEraser = MockWebViewPoolEraserProtocol()
+        
+        let cleaner = RemovedWalletBrowserStateCleaner(
+            browserTabManager: browserTabManager,
+            webViewPoolEraser: webViewPoolEraser,
+            operationQueue: operationQueue
+        )
+        
+        let removedWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
+            isSelected: false,
+            order: 0
+        )
+        
+        let tabIds: Set<UUID> = [UUID(), UUID()]
+        
+        stub(browserTabManager) { stub in
+            when(stub.removeAllWrapper(for: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult(tabIds)
+            )
+        }
+        
+        var removedTabIds: Set<UUID> = []
+        stub(webViewPoolEraser) { stub in
+            when(stub.removeWebView(for: any())).then { tabId in
+                removedTabIds.insert(tabId)
+            }
+        }
+        
+        let providers = WalletStorageCleaningProviders(
+            changesProvider: {
+                [DataProviderChange.delete(deletedIdentifier: removedWallet.identifier)]
+            },
+            walletsBeforeChangesProvider: {
+                [removedWallet.identifier: removedWallet]
+            }
+        )
+        
+        let expectation = XCTestExpectation()
+        
+        // when
+        let wrapper = cleaner.cleanStorage(using: providers)
+        
+        wrapper.targetOperation.completionBlock = {
+            expectation.fulfill()
+        }
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        
+        wait(for: [expectation], timeout: 10.0)
+        
+        // then
+        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
+        verify(browserTabManager, times(1)).removeAllWrapper(for: equal(to: Set([removedWallet.info.metaId])))
+        XCTAssertEqual(removedTabIds, tabIds)
+    }
+    
+    // MARK: - RemovedWalletDAppSettingsCleaner Tests
+    
+    func testRemovedWalletDAppSettingsCleanerRemovesSettings() throws {
+        // given
+        let operationQueue = OperationQueue()
+        let facade = UserDataStorageTestFacade()
+        let mapper = DAppSettingsMapper()
+        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        let authorizedDAppRepository = AnyDataProviderRepository(repository)
+        
+        let cleaner = RemovedWalletDAppSettingsCleaner(
+            authorizedDAppRepository: authorizedDAppRepository
+        )
+        
+        let removedWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
+            isSelected: false,
+            order: 0
+        )
+        let keepWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
+            isSelected: true,
+            order: 1
+        )
+        
+        let removedSettings = DAppSettings(
+            dAppId: "google.com",
+            metaId: removedWallet.info.metaId,
+            source: nil
+        )
+        let keepSettings = DAppSettings(
+            dAppId: "novasama.io",
+            metaId: keepWallet.info.metaId,
+            source: nil
+        )
+        
+        let saveOperation = authorizedDAppRepository.saveOperation(
+            { [removedSettings, keepSettings] },
+            { [] }
+        )
+        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+        
+        let providers = WalletStorageCleaningProviders(
+            changesProvider: {
+                [DataProviderChange.delete(deletedIdentifier: removedWallet.identifier)]
+            },
+            walletsBeforeChangesProvider: {
+                [removedWallet.identifier: removedWallet, keepWallet.identifier: keepWallet]
+            }
+        )
+        
+        // when
+        let wrapper = cleaner.cleanStorage(using: providers)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        // then
+        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
+        
+        // Verify settings were removed
+        let fetchOperation = authorizedDAppRepository.fetchAllOperation(with: .init())
+        operationQueue.addOperations([fetchOperation], waitUntilFinished: true)
+        
+        let remainingSettings = try fetchOperation.extractNoCancellableResultData()
+        XCTAssertEqual(remainingSettings.count, 1)
+        XCTAssertEqual(remainingSettings.first?.metaId, keepWallet.info.metaId)
+    }
 }
