@@ -31,33 +31,35 @@ private extension RemoverStorageNotificationsCleaner {
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
         let unregisterWrapper = createUnregisterOperation(using: providers)
-            
+
         let localCleaningWrapper: CompoundOperationWrapper<Void>
         localCleaningWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             let updatedAllSettings = try unregisterWrapper.targetOperation.extractNoCancellableResultData()
-            
+
+            guard let updatedAllSettings else { return .createWithResult(()) }
+
             let removeSettingsOperation = self.notificationsSettingsrepository.saveOperation(
                 { [updatedAllSettings.accountBased] },
                 { [] }
             )
-            
+
             return CompoundOperationWrapper(targetOperation: removeSettingsOperation)
         }
-        
+
         localCleaningWrapper.addDependency(wrapper: unregisterWrapper)
-        
+
         return localCleaningWrapper.insertingHead(operations: unregisterWrapper.allOperations)
     }
-    
+
     func createUnregisterOperation(
         using providers: WalletStorageCleaningProviders
-    ) -> CompoundOperationWrapper<PushNotification.AllSettings> {
+    ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
         let settingsOperation = notificationsSettingsrepository.fetchAllOperation(with: .init())
         let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
 
-        let unregisterOperation = AsyncClosureOperation<PushNotification.AllSettings> { [weak self] completion in
+        let unregisterOperation = AsyncClosureOperation<PushNotification.AllSettings?> { [weak self] completion in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
@@ -67,6 +69,11 @@ private extension RemoverStorageNotificationsCleaner {
                     .filter { $0.isDeletion }
                     .map(\.identifier)
             )
+
+            guard !metaIds.isEmpty else {
+                completion(.success(nil))
+                return
+            }
 
             guard
                 let settings = try settingsOperation.extractNoCancellableResultData().first,
@@ -96,10 +103,10 @@ private extension RemoverStorageNotificationsCleaner {
                 }
             )
         }
-        
+
         unregisterOperation.addDependency(settingsOperation)
         unregisterOperation.addDependency(topicsOperation)
-        
+
         let dependencies = [settingsOperation, topicsOperation]
 
         return CompoundOperationWrapper(

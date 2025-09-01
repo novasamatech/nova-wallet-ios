@@ -44,7 +44,7 @@ private extension WalletUpdateMediator {
     ) -> Bool {
         var currentDelegatedSet: Set<MetaAccountModel.Id> = [delegatedWallet.info.metaId]
         var prevDelegated = currentDelegatedSet
-        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [delegatedWallet.info.metaId: delegatedWallet]
+        var foundWallets = [delegatedWallet.info.metaId: delegatedWallet]
 
         repeat {
             let newReachableWallets: [ManagedMetaAccountModel] = currentDelegatedSet.flatMap { delegatedId in
@@ -214,6 +214,31 @@ private extension WalletUpdateMediator {
             }
         }
     }
+
+    func walletsCleaningWrapper(
+        dependingOn allWalletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
+        changesOperation: BaseOperation<WalletUpdateMediator.ProcessingResult>
+    ) -> CompoundOperationWrapper<Void> {
+        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+            let allWallets = try allWalletsOperation.extractNoCancellableResultData()
+            let changesResult = try changesOperation.extractNoCancellableResultData()
+
+            let updates = changesResult.changes.newOrUpdatedItems.map {
+                DataProviderChange.update(newItem: $0)
+            }
+
+            let deletes: [DataProviderChange<ManagedMetaAccountModel>] = changesResult.changes.removedItems.map {
+                DataProviderChange.delete(deletedIdentifier: $0.identifier)
+            }
+
+            let providers = WalletStorageCleaningProviders(
+                changesProvider: { updates + deletes },
+                walletsBeforeChangesProvider: { allWallets.reduceToDict() }
+            )
+
+            return self.walletsCleaner.cleanStorage(using: providers)
+        }
+    }
 }
 
 // MARK: - WalletUpdateMediating
@@ -252,32 +277,36 @@ extension WalletUpdateMediator: WalletUpdateMediating {
 
         saveOperation.addDependency(newSelectedWalletOperation)
 
+        let cleanerWrapper = walletsCleaningWrapper(
+            dependingOn: allWalletsOperation,
+            changesOperation: newSelectedWalletOperation
+        )
+
+        cleanerWrapper.addDependency(operations: [saveOperation])
+
         let selectedWalletUpdateOperation = selectedWalletUpdateOperation(
             in: selectedWalletSettings,
             dependingOn: newSelectedWalletOperation
         )
 
-        selectedWalletUpdateOperation.addDependency(saveOperation)
+        selectedWalletUpdateOperation.addDependency(cleanerWrapper.targetOperation)
 
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
-            try saveOperation.extractNoCancellableResultData()
+            try cleanerWrapper.targetOperation.extractNoCancellableResultData()
             let isWalletSwitched = try selectedWalletUpdateOperation.extractNoCancellableResultData()
             let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().walletToSelect
 
             return .init(selectedWallet: currentWallet, isWalletSwitched: isWalletSwitched)
         }
 
-        resultOperation.addDependency(saveOperation)
         resultOperation.addDependency(selectedWalletUpdateOperation)
-        resultOperation.addDependency(newSelectedWalletOperation)
 
         let dependencies = [
             allWalletsOperation,
             delegatedAccountRemovalOperation,
             newSelectedWalletOperation,
-            saveOperation,
-            selectedWalletUpdateOperation
-        ]
+            saveOperation
+        ] + cleanerWrapper.allOperations + [selectedWalletUpdateOperation]
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,

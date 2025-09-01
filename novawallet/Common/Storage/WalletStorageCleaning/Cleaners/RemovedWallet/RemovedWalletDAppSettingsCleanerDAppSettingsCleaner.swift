@@ -22,7 +22,6 @@ extension RemovedWalletDAppSettingsCleaner: WalletStorageCleaning {
             let removedWallets = try providers.changesProvider()
                 .filter { $0.isDeletion }
                 .map(\.identifier)
-            let removedWalletsSet = Set(removedWallets)
             let dappSettingsIds = try fetchSettingsOperation.extractNoCancellableResultData()
                 .compactMap(\.metaId)
                 .filter { removedWallets.contains($0) }
