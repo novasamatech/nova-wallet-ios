@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 import Operation_iOS
 
 struct StakingBondMoreConfirmViewFactory {
@@ -110,7 +110,8 @@ struct StakingBondMoreConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: OperationManagerFacade.sharedManager,
+            runtimeProvider: runtimeRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

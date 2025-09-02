@@ -22,22 +22,15 @@ struct AssetModel: Equatable, Codable, Hashable {
     let priceId: PriceId?
     let stakings: [StakingType]?
     let type: String?
-    let typeExtras: JSON?
+    let typeExtras: AssetTypeExtras?
     let buyProviders: JSON?
+    let sellProviders: JSON?
 
     // local properties
     let enabled: Bool
     let source: Source
 
     var isUtility: Bool { assetId == Self.utilityAssetId }
-
-    var hasStaking: Bool {
-        stakings?.contains { $0 != .unsupported } ?? false
-    }
-
-    var hasPoolStaking: Bool {
-        stakings?.contains { $0 == .nominationPools } ?? false
-    }
 
     init(
         assetId: Id,
@@ -48,8 +41,9 @@ struct AssetModel: Equatable, Codable, Hashable {
         priceId: PriceId?,
         stakings: [StakingType]?,
         type: String?,
-        typeExtras: JSON?,
+        typeExtras: AssetTypeExtras?,
         buyProviders: JSON?,
+        sellProviders: JSON?,
         enabled: Bool,
         source: Source
     ) {
@@ -63,6 +57,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.type = type
         self.typeExtras = typeExtras
         self.buyProviders = buyProviders
+        self.sellProviders = sellProviders
         self.enabled = enabled
         self.source = source
     }
@@ -91,14 +86,9 @@ extension AssetModel {
             type: type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,
+            sellProviders: sellProviders,
             enabled: enabled,
             source: source
         )
-    }
-}
-
-extension AssetModel {
-    var supportedStakings: [StakingType]? {
-        stakings?.filter { $0 != .unsupported }
     }
 }

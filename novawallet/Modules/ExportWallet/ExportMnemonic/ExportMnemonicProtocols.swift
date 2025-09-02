@@ -1,4 +1,4 @@
-import IrohaCrypto
+import NovaCrypto
 
 protocol ExportMnemonicInteractorInputProtocol: AnyObject {
     func fetchExportData()

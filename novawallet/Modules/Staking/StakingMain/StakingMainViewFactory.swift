@@ -1,13 +1,13 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
@@ -20,7 +20,7 @@ enum StakingMainViewFactory {
         let sharedStateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            proxySyncService: proxySyncService,
+            delegatedAccountSyncService: delegatedAccountSyncService,
             eventCenter: EventCenter.shared,
             syncOperationQueue: OperationManagerFacade.sharedDefaultQueue,
             repositoryOperationQueue: OperationManagerFacade.sharedDefaultQueue,

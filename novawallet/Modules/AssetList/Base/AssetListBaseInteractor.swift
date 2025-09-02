@@ -1,10 +1,12 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import BigInt
 
-class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+class AssetListBaseInteractor: WalletLocalStorageSubscriber,
+    WalletLocalSubscriptionHandler,
+    AnyProviderAutoCleaning {
     var baseBuilder: AssetListBaseBuilder?
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -239,7 +241,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
 
         if prevPrices != availableTokenPrice {
             removeNotExistingPriceIds(from: Set(availableTokenPrice.keys))
-            updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+            updatePriceProvider(currency: selectedCurrency)
         }
     }
 
@@ -256,58 +258,9 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         baseBuilder?.applyRemovedPriceChainAssets(chainAssetIds)
     }
 
-    private func updatePriceProvider(
-        for priceIdSet: Set<AssetModel.PriceId>,
-        currency: Currency
-    ) {
-        priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            let mappedChanges = changes.reduce(
-                using: .init(),
-                availableTokenPrice: strongSelf.availableTokenPrice,
-                currency: currency
-            )
-
-            self?.handlePriceChanges(.success(mappedChanges))
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.handlePriceChanges(.failure(error))
-            return
-        }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        priceSubscription?.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        priceSubscription?.refresh()
+    private func updatePriceProvider(currency: Currency) {
+        clear(streamableProvider: &priceSubscription)
+        priceSubscription = subscribeAllPrices(currency: currency)
     }
 
     func updateExternalBalancesSubscription(from allChains: [ChainModel]) {
@@ -488,13 +441,30 @@ extension AssetListBaseInteractor: ExternalAssetBalanceSubscriptionHandler, Exte
     }
 }
 
+extension AssetListBaseInteractor: PriceLocalSubscriptionHandler, PriceLocalStorageSubscriber {
+    func handleAllPrices(result: Result<[Operation_iOS.DataProviderChange<PriceData>], any Error>) {
+        switch result {
+        case let .success(changes):
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: availableTokenPrice,
+                currency: selectedCurrency
+            )
+
+            handlePriceChanges(.success(mappedChanges))
+        case let .failure(error):
+            handlePriceChanges(.failure(error))
+        }
+    }
+}
+
 extension AssetListBaseInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard baseBuilder != nil else {
             return
         }
 
-        updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        updatePriceProvider(currency: selectedCurrency)
     }
 }
 

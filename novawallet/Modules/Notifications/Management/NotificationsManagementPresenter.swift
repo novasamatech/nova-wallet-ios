@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class NotificationsManagementPresenter {
     weak var view: NotificationsManagementViewProtocol?
@@ -7,6 +7,7 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
+    private var allWallets: [MetaAccountModel.Id: MetaAccountModel]?
     private var notificationStatus: PushNotificationsStatus?
 
     private var settings: Web3Alert.LocalSettings?
@@ -37,19 +38,53 @@ final class NotificationsManagementPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func getParameters() -> NotificationsManagementParameters? {
+    func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
+        guard let allWallets else { return }
+
+        let selectedMultisigs = wallets
+            .compactMap { allWallets[$0.metaId] }
+            .filter { $0.type == .multisig }
+
+        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+
+        if selectedMultisigs.isEmpty {
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = nil
+                $0.multisigApproval = nil
+                $0.multisigExecuted = nil
+                $0.multisigCancelled = nil
+            }
+        } else if modifiedSettings?.notifications.isMultisigOn == false {
+            modifiedSettings = modifiedSettings?.with {
+                $0.newMultisig = .all
+                $0.multisigApproval = .all
+                $0.multisigExecuted = .all
+                $0.multisigCancelled = .all
+            }
+        }
+
+        updateView()
+    }
+}
+
+// MARK: - Private
+
+private extension NotificationsManagementPresenter {
+    func getParameters() -> NotificationsManagementParameters? {
         guard
             let settings = modifiedSettings,
+            let topicSettings = modifiedTopicsSettings,
             let notificationsEnabled = modifiedNotificationsEnabled ?? notificationsEnabled else {
             return nil
         }
         return .init(
             isNotificationsOn: notificationsEnabled,
             wallets: settings.wallets.count,
-            isAnnouncementsOn: isAnnouncementsOn(),
+            isAnnouncementsOn: topicSettings.isAnnouncementsOn,
             isSentTokensOn: settings.notifications.tokenSent == .all,
             isReceiveTokensOn: settings.notifications.tokenReceived == .all,
-            isGovernanceOn: isGovernanceOn(),
+            isMultisigTransactionsOn: settings.notifications.isMultisigOn,
+            isGovernanceOn: topicSettings.isGovernanceOn,
             isStakingOn: settings.notifications.stakingReward?.notificationsEnabled ?? false
         )
     }
@@ -65,36 +100,6 @@ final class NotificationsManagementPresenter {
         view?.didReceive(sections: viewModel)
 
         view?.didReceive(isSaveActionAvailabe: isSaveAvailable)
-    }
-
-    func isGovernanceOn() -> Bool {
-        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
-            return false
-        }
-
-        return modifiedTopicsSettings.topics.contains {
-            switch $0 {
-            case .chainReferendums, .newChainReferendums:
-                return true
-            case .appCustom:
-                return false
-            }
-        }
-    }
-
-    func isAnnouncementsOn() -> Bool {
-        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
-            return false
-        }
-
-        return modifiedTopicsSettings.topics.contains {
-            switch $0 {
-            case .chainReferendums, .newChainReferendums:
-                return false
-            case .appCustom:
-                return true
-            }
-        }
     }
 
     func areAllNotificationsOff() -> Bool? {
@@ -145,7 +150,44 @@ final class NotificationsManagementPresenter {
 
         return false
     }
+
+    func changeGovSettings(settings: GovernanceNotificationsModel) {
+        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
+        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
+        disableNotificationIfNeeded()
+        updateView()
+    }
+
+    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
+        modifiedSettings = modifiedSettings?.with {
+            switch result {
+            case .all:
+                $0.stakingReward = .all
+            case let .concrete(selectedChains):
+                $0.stakingReward = !selectedChains.isEmpty ? .concrete(selectedChains) : nil
+            case nil:
+                $0.stakingReward = nil
+            }
+        }
+
+        disableNotificationIfNeeded()
+        updateView()
+    }
+
+    func changeMultisigSettings(result: MultisigNotificationsModel) {
+        modifiedSettings = modifiedSettings?.with {
+            $0.newMultisig = result.signatureRequested ? .all : nil
+            $0.multisigApproval = result.signedBySignatory ? .all : nil
+            $0.multisigExecuted = result.transactionExecuted ? .all : nil
+            $0.multisigCancelled = result.transactionRejected ? .all : nil
+        }
+
+        disableNotificationIfNeeded()
+        updateView()
+    }
 }
+
+// MARK: - NotificationsManagementPresenterProtocol
 
 extension NotificationsManagementPresenter: NotificationsManagementPresenterProtocol {
     func setup() {
@@ -202,6 +244,16 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 selectedChains: modifiedSettings?.notifications.stakingReward,
                 completion: changeStakingRewardsSettings
             )
+        case .multisig:
+            let settings = MultisigNotificationsModel(from: modifiedSettings)
+            let selectedMetaIds = Set(modifiedSettings?.wallets.map(\.metaId) ?? [])
+
+            wireframe.showMultisigSetup(
+                from: view,
+                settings: settings,
+                selectedMetaIds: selectedMetaIds,
+                completion: changeMultisigSettings
+            )
         }
     }
 
@@ -219,34 +271,6 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             topics: topics,
             notificationsEnabled: notificationsEnabled
         )
-    }
-
-    func changeGovSettings(settings: GovernanceNotificationsModel) {
-        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
-        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
-        disableNotificationIfNeeded()
-        updateView()
-    }
-
-    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
-        modifiedSettings = modifiedSettings?.with {
-            switch result {
-            case .all:
-                $0.stakingReward = .all
-            case let .concrete(selectedChains):
-                $0.stakingReward = !selectedChains.isEmpty ? .concrete(selectedChains) : nil
-            case nil:
-                $0.stakingReward = nil
-            }
-        }
-
-        disableNotificationIfNeeded()
-        updateView()
-    }
-
-    func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
-        modifiedSettings = modifiedSettings?.with(wallets: wallets)
-        updateView()
     }
 
     func back() {
@@ -275,7 +299,13 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 }
 
+// MARK: - NotificationsManagementInteractorOutputProtocol
+
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
+    func didReceive(wallets: [MetaAccountModel]) {
+        allWallets = wallets.reduceToDict()
+    }
+
     func didReceive(settings: Web3Alert.LocalSettings) {
         self.settings = settings
         if modifiedSettings == nil {
@@ -341,6 +371,8 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         wireframe.saved(on: view)
     }
 }
+
+// MARK: - Localizable
 
 extension NotificationsManagementPresenter: Localizable {
     func applyLocalization() {

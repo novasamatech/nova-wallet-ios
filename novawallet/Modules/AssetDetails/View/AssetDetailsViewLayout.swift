@@ -1,11 +1,26 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 import SnapKit
 
+protocol AssetDetailsViewLayoutDelegate: AnyObject {
+    func didUpdateHeight(_ height: CGFloat)
+}
+
 final class AssetDetailsViewLayout: UIView {
+    weak var delegate: AssetDetailsViewLayoutDelegate?
+
+    private let layoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.2,
+        options: [.curveEaseInOut]
+    )
+
+    let chartContainerView: UIView = .create { view in
+        view.backgroundColor = R.color.colorBlockBackground()
+        view.layer.cornerRadius = 12.0
+    }
+
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
-    let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
@@ -20,52 +35,36 @@ final class AssetDetailsViewLayout: UIView {
         textAlignment: .center
     )
 
-    let priceLabel = UILabel(style: .footnoteSecondary, textAlignment: .right)
-    let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 6, left: 16, bottom: 24, right: 16)
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: 6,
+            left: 16,
+            bottom: .zero,
+            right: 16
+        )
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let headerCell: StackTableHeaderCell = .create {
-        $0.titleLabel.apply(style: .regularSubhedlineSecondary)
-        $0.contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
-    }
-
-    let totalCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let transferrableCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let lockCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
+    lazy var balanceWidget: AssetDetailsBalanceWidget = .create { view in
+        view.delegate = self
     }
 
     let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
     let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
-    let buyButton: RoundedButton = createOperationButton(icon: R.image.iconBuy())
+    let buySellButton: RoundedButton = createOperationButton(icon: R.image.iconBuy(), enabled: true)
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
+
+    private var currentBalanceHeight = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
-        views: [sendButton, receiveButton, swapButton, buyButton]
+        views: [sendButton, receiveButton, swapButton, buySellButton]
     )
 
-    private let balanceTableView: StackTableView = .create {
-        $0.cellHeight = Constants.balanceCellHeight
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
-    }
+    private var chartViewHeight: CGFloat = .zero
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -78,42 +77,25 @@ final class AssetDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static func createOperationButton(icon: UIImage?) -> RoundedButton {
+    private static func createOperationButton(
+        icon: UIImage?,
+        enabled: Bool = false
+    ) -> RoundedButton {
         let button = RoundedButton()
         button.apply(style: .operation)
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
         button.contentOpacityWhenDisabled = 0.2
         button.changesContentOpacityWhenHighlighted = true
         button.imageWithTitleView?.layoutType = .verticalImageFirst
-        button.isEnabled = false
+        button.isEnabled = enabled
         button.imageWithTitleView?.iconImage = icon
         return button
     }
 
     private func setupLayout() {
-        setupBalanceTableViewLayout()
-
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
-        }
-        addSubview(topBackgroundView)
-
-        let priceStack = UIStackView(arrangedSubviews: [priceLabel, priceChangeLabel])
-        priceStack.spacing = 4
-
-        addSubview(priceStack)
-        priceStack.snp.makeConstraints {
-            $0.leading.greaterThanOrEqualToSuperview()
-            $0.trailing.lessThanOrEqualToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.height.equalTo(Constants.priceStackHeight)
-            $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
-        }
-
-        topBackgroundView.snp.makeConstraints {
-            $0.leading.trailing.top.equalToSuperview()
-            $0.bottom.equalTo(priceStack.snp.bottom).offset(Constants.priceBottomSpace)
         }
 
         let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
@@ -131,7 +113,7 @@ final class AssetDetailsViewLayout: UIView {
             $0.leading.greaterThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
             $0.height.equalTo(Constants.assetHeight)
-            $0.bottom.equalTo(priceStack.snp.top).offset(-7)
+            $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.top).offset(-7.0)
         }
 
         addSubview(chainView)
@@ -143,36 +125,28 @@ final class AssetDetailsViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalTo(priceStack.snp.bottom).offset(Constants.containerViewTopOffset)
+            $0.top.equalToSuperview().inset(Constants.containerViewTopOffset)
+        }
+
+        balanceWidget.snp.makeConstraints { make in
+            make.height.equalTo(balanceWidget.state.height)
         }
 
         containerView.stackView.spacing = Constants.sectionSpace
-        containerView.stackView.addArrangedSubview(balanceTableView)
+        containerView.stackView.addArrangedSubview(balanceWidget)
         containerView.stackView.addArrangedSubview(buttonsRow)
-    }
+        containerView.stackView.addArrangedSubview(chartContainerView)
 
-    private func setupBalanceTableViewLayout() {
-        balanceTableView.addArrangedSubview(headerCell)
-        balanceTableView.addArrangedSubview(totalCell)
-        balanceTableView.addArrangedSubview(transferrableCell)
-        balanceTableView.addArrangedSubview(lockCell)
+        chartContainerView.snp.makeConstraints { make in
+            make.height.equalTo(chartViewHeight)
+        }
     }
 
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
-        headerCell.titleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
-            preferredLanguages: languages
-        )
-        totalCell.titleLabel.text = R.string.localizable.walletTransferTotalTitle(
-            preferredLanguages: languages
-        )
-        transferrableCell.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
-        lockCell.titleLabel.text = R.string.localizable.walletBalanceLocked(
-            preferredLanguages: languages
-        )
+        balanceWidget.set(locale: locale)
+
         sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
             preferredLanguages: languages
         )
@@ -187,11 +161,6 @@ final class AssetDetailsViewLayout: UIView {
             preferredLanguages: languages
         )
         swapButton.invalidateLayout()
-
-        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
-            preferredLanguages: languages
-        )
-        buyButton.invalidateLayout()
     }
 
     func set(assetDetailsModel: AssetDetailsModel) {
@@ -206,43 +175,72 @@ final class AssetDetailsViewLayout: UIView {
         )
         assetLabel.text = assetDetailsModel.tokenName
         chainView.bind(viewModel: assetDetailsModel.network)
+    }
 
-        guard let priceModel = assetDetailsModel.price else {
-            priceChangeLabel.text = ""
-            priceLabel.text = ""
-            return
+    func setChartViewHeight(_ height: CGFloat) {
+        guard
+            chartContainerView.superview != nil,
+            height != chartViewHeight
+        else { return }
+
+        chartViewHeight = height
+
+        chartContainerView.snp.updateConstraints { make in
+            make.height.equalTo(height)
         }
 
-        priceLabel.text = priceModel.amount
+        chartContainerView.isHidden = !(height > 0)
 
-        switch priceModel.change {
-        case let .increase(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextPositive()
-        case let .decrease(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextNegative()
-        }
+        layoutIfNeeded()
+    }
+
+    func setBottomInset(_ inset: CGFloat) {
+        containerView.stackView.layoutMargins.bottom = inset + Constants.bottomOffset
     }
 
     var prefferedHeight: CGFloat {
-        let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
+        let balanceSectionHeight = Constants.containerViewTopOffset
+            + currentBalanceHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
-        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace +
-            buttonsRowHeight + Constants.bottomOffset
+
+        return Constants.containerViewTopOffset
+            + containerView.stackView.layoutMargins.top
+            + balanceSectionHeight
+            + Constants.sectionSpace * 2
+            + buttonsRowHeight
+            + Constants.chartWidgetInset * 2
+            + chartViewHeight
+            + Constants.bottomOffset
+    }
+}
+
+extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
+    func didChangeState(to state: AssetDetailsBalanceWidget.State) {
+        currentBalanceHeight = state.height
+
+        balanceWidget.snp.updateConstraints { make in
+            make.height.equalTo(state.height)
+        }
+
+        layoutChangesAnimator.animate(
+            block: { [weak self] in self?.containerView.layoutIfNeeded() },
+            completionBlock: nil
+        )
+
+        delegate?.didUpdateHeight(prefferedHeight)
     }
 }
 
 extension AssetDetailsViewLayout {
-    private enum Constants {
-        static let balanceCellHeight: CGFloat = 48
+    enum Constants {
         static let priceStackHeight: CGFloat = 26
         static let assetHeight: CGFloat = 28
         static let containerViewTopOffset: CGFloat = 12
         static let sectionSpace: CGFloat = 8
-        static let bottomOffset: CGFloat = 46
+        static let bottomOffset: CGFloat = 24
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
+        static let chartWidgetInset: CGFloat = 16
     }
 }

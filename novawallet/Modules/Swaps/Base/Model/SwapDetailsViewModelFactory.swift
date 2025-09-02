@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol SwapDetailsViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
@@ -25,17 +25,17 @@ final class SwapDetailsViewModelFactory: SwapBaseViewModelFactory {
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>,
-        priceDifferenceConfig: SwapPriceDifferenceConfig
+        priceDifferenceModelFactory: SwapPriceDifferenceModelFactoryProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.networkViewModelFactory = networkViewModelFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceDifferenceModelFactory: priceDifferenceModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
-            percentForamatter: percentForamatter,
-            priceDifferenceConfig: priceDifferenceConfig
+            percentFormatter: percentFormatter
         )
     }
 }
@@ -69,7 +69,7 @@ extension SwapDetailsViewModelFactory: SwapDetailsViewModelFactoryProtocol {
     }
 
     func slippageViewModel(slippage: BigRational, locale: Locale) -> String {
-        slippage.decimalValue.map { percentForamatter.value(for: locale).stringFromDecimal($0) ?? "" } ?? ""
+        slippage.decimalValue.map { percentFormatter.value(for: locale).stringFromDecimal($0) ?? "" } ?? ""
     }
 
     func walletViewModel(metaAccountResponse: MetaChainAccountResponse) -> WalletAccountViewModel? {

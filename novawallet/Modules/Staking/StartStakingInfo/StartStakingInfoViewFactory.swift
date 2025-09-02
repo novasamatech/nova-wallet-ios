@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct StartStakingInfoViewFactory {
@@ -39,6 +39,13 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
+        case .mythos:
+            return createMythosView(
+                for: .init(
+                    chainAsset: chainAsset,
+                    type: selectedStakingType ?? mainStakingType
+                )
+            )
         case .unsupported, .nominationPools:
             return nil
         }
@@ -54,7 +61,7 @@ struct StartStakingInfoViewFactory {
         let stateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            proxySyncService: nil,
+            delegatedAccountSyncService: nil,
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,
@@ -155,7 +162,7 @@ struct StartStakingInfoViewFactory {
         let stateFactory = StakingSharedStateFactory(
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            proxySyncService: nil,
+            delegatedAccountSyncService: nil,
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,

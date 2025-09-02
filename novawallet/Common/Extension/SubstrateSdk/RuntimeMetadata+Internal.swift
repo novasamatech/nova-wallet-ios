@@ -1,6 +1,10 @@
 import Foundation
 import SubstrateSdk
 
+enum RuntimeMetadataInternalError: Error {
+    case runtimeApiNotFound(moduleName: String, methodName: String)
+}
+
 extension RuntimeMetadataProtocol {
     func getStorageMetadata(for codingPath: StorageCodingPath) -> StorageEntryMetadata? {
         getStorageMetadata(in: codingPath.moduleName, storageName: codingPath.itemName)
@@ -32,5 +36,19 @@ extension RuntimeMetadataProtocol {
 
     func eventMatches(_ event: Event, path: EventCodingPath) -> Bool {
         eventMatches(event, oneOf: [path])
+    }
+
+    func getRuntimeApiMethodOrError(
+        for moduleName: String,
+        methodName: String
+    ) throws -> RuntimeApiQueryResult {
+        guard let result = getRuntimeApiMethod(for: moduleName, methodName: methodName) else {
+            throw RuntimeMetadataInternalError.runtimeApiNotFound(
+                moduleName: moduleName,
+                methodName: methodName
+            )
+        }
+
+        return result
     }
 }

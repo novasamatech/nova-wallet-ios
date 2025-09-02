@@ -1,7 +1,7 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 protocol CloudBackupSecretsExporting {
     func backup(
@@ -74,7 +74,7 @@ final class CloudBackupSecretsExporter {
         isEthereumBased: Bool
     ) throws -> String? {
         switch wallet.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
             return try fetchRegularDerivationPath(
                 for: wallet,
                 chainAccount: chainAccount,
@@ -288,21 +288,41 @@ final class CloudBackupSecretsExporter {
     private func createPrivateInfoFromGenericWalletType(
         _ wallet: MetaAccountModel
     ) throws -> CloudBackup.DecryptedFileModel.WalletPrivateInfo {
-        let derivationPath = try fetchDerivationPath(
+        let substrateDerivationPath = try fetchDerivationPath(
             for: wallet,
             chainAccount: nil,
             isEthereumBased: false
         )
 
+        let substrateSecrets = CloudBackup.DecryptedFileModel.SubstrateSecrets(
+            seed: nil,
+            keypair: nil,
+            derivationPath: substrateDerivationPath
+        )
+
+        let ethereumSecrets: CloudBackup.DecryptedFileModel.EthereumSecrets?
+
+        if wallet.ethereumAddress != nil {
+            let evmDerivationPath = try fetchDerivationPath(
+                for: wallet,
+                chainAccount: nil,
+                isEthereumBased: true
+            )
+
+            ethereumSecrets = CloudBackup.DecryptedFileModel.EthereumSecrets(
+                seed: nil,
+                keypair: nil,
+                derivationPath: evmDerivationPath
+            )
+        } else {
+            ethereumSecrets = nil
+        }
+
         return .init(
             walletId: wallet.metaId,
             entropy: nil,
-            substrate: .init(
-                seed: nil,
-                keypair: nil,
-                derivationPath: derivationPath
-            ),
-            ethereum: nil,
+            substrate: substrateSecrets,
+            ethereum: ethereumSecrets,
             chainAccounts: []
         )
     }
@@ -319,7 +339,7 @@ final class CloudBackupSecretsExporter {
             return try createPrivateInfoFromLedgerWalletType(wallet)
         case .watchOnly, .polkadotVault, .paritySigner:
             return nil
-        case .proxied:
+        case .proxied, .multisig:
             // add backup for generic ledger
             throw CloudBackupSecretsExporterError.unsupportedWallet(wallet.type)
         }

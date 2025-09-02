@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class DAppBrowserInteractor {
     struct QueueMessage {
@@ -23,6 +23,7 @@ final class DAppBrowserInteractor {
     let securedLayer: SecurityLayerServiceProtocol
     let tabManager: DAppBrowserTabManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
+    let attestHandler: DAppAttestHandlerProtocol
 
     let operationQueue: OperationQueue
 
@@ -45,6 +46,7 @@ final class DAppBrowserInteractor {
         sequentialPhishingVerifier: PhishingSiteVerifing,
         tabManager: DAppBrowserTabManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        attestHandler: DAppAttestHandlerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
@@ -57,6 +59,7 @@ final class DAppBrowserInteractor {
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
         self.tabManager = tabManager
         self.applicationHandler = applicationHandler
+        self.attestHandler = attestHandler
         self.securedLayer = securedLayer
 
         if let existingDataSource = currentTab.transportStates?.first?.dataSource {
@@ -121,33 +124,6 @@ private extension DAppBrowserInteractor {
             }
 
             provideModel()
-        }
-    }
-
-    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
-        transports.map { transport in
-            let bridgeOperation = transport.createBridgeScriptOperation()
-            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
-            let transportName = transport.name
-
-            let mapOperation = ClosureOperation<DAppTransportModel> {
-                guard let subscriptionScript = maybeSubscriptionScript else {
-                    throw DAppBrowserStateError.unexpected(
-                        reason: "Selected wallet doesn't have an address for this network"
-                    )
-                }
-
-                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
-
-                return DAppTransportModel(
-                    name: transportName,
-                    scripts: [bridgeScript, subscriptionScript]
-                )
-            }
-
-            mapOperation.addDependency(bridgeOperation)
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
     }
 
@@ -263,7 +239,6 @@ private extension DAppBrowserInteractor {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
                     bringPhishingDetectedStateAndNotify(for: host)
-                    tabManager.removeTab(with: currentTab.uuid)
                 }
 
                 completion?(isNotPhishing)
@@ -376,6 +351,12 @@ private extension DAppBrowserInteractor {
             }
         }
     }
+
+    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
+        let transportStates = transports.compactMap { $0.makeOpaqueState() }
+
+        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    }
 }
 
 // MARK: DAppBrowserInteractorInputProtocol
@@ -383,7 +364,9 @@ private extension DAppBrowserInteractor {
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
         storeTab(currentTab)
+
         applicationHandler.delegate = self
+        attestHandler.delegate = self
 
         setupState()
         provideTabs()
@@ -399,29 +382,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func process(
-        message: Any,
-        host: String,
-        transport name: String
-    ) {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
-
-            self?.verifyPhishing(for: host) { isNotPhishing in
-                if isNotPhishing {
-                    let queueMessage = QueueMessage(
-                        host: host,
-                        transportName: name,
-                        underliningMessage: message
-                    )
-                    self?.messageQueue.append(queueMessage)
-
-                    self?.processMessageIfNeeded()
-                }
-            }
-        }
-    }
-
     func processConfirmation(
         response: DAppOperationResponse,
         forTransport name: String
@@ -430,13 +390,19 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(stateRender: DAppBrowserTabRenderProtocol) {
+        let transportSaveWrapper = createTransportSaveWrapper()
+
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
             render: stateRender
         )
 
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
+
+        let totalWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
+
         operationQueue.addOperations(
-            renderUpdateWrapper.allOperations,
+            totalWrapper.allOperations,
             waitUntilFinished: false
         )
     }
@@ -449,6 +415,71 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         } else {
             proceedWithTabUpdate(with: newQuery)
         }
+    }
+
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
+        // MARK: Integrity check
+
+        guard !attestHandler.canHandle(transportName: name) else {
+            attestHandler.handle(message: message)
+            return
+        }
+
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
+
+            self?.verifyPhishing(for: host) { isNotPhishing in
+                guard isNotPhishing else { return }
+
+                let queueMessage = QueueMessage(
+                    host: host,
+                    transportName: name,
+                    underliningMessage: message
+                )
+                self?.messageQueue.append(queueMessage)
+
+                self?.processMessageIfNeeded()
+            }
+        }
+    }
+
+    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
+        var wrappers = transports.map { transport in
+            let bridgeOperation = transport.createBridgeScriptOperation()
+            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
+            let transportName = transport.name
+
+            let mapOperation = ClosureOperation<DAppTransportModel> {
+                guard let subscriptionScript = maybeSubscriptionScript else {
+                    throw DAppBrowserStateError.unexpected(
+                        reason: "Selected wallet doesn't have an address for this network"
+                    )
+                }
+
+                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
+
+                return DAppTransportModel(
+                    name: transportName,
+                    handlerNames: [transportName],
+                    scripts: [bridgeScript, subscriptionScript]
+                )
+            }
+
+            mapOperation.addDependency(bridgeOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
+        }
+
+        // MARK: Integrity check
+
+        let attestModel = attestHandler.createTransportModel()
+        wrappers.append(.createWithResult(attestModel))
+
+        return wrappers
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
@@ -512,10 +543,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
-        let transportStates = transports.compactMap { $0.makeOpaqueState() }
-
-        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    func close() {
+        tabManager.removeTab(with: currentTab.uuid)
     }
 }
 
@@ -523,10 +552,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     func dAppTransport(
-        _ transport: DAppBrowserTransportProtocol,
+        _: DAppBrowserTransportProtocol,
         didReceiveResponse response: DAppScriptResponse
     ) {
-        presenter?.didReceive(response: response, forTransport: transport.name)
+        presenter?.didReceive(response: response)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest) {
@@ -582,5 +611,13 @@ extension DAppBrowserInteractor: ApplicationHandlerDelegate {
             transportSaveWrapper.allOperations,
             waitUntilFinished: false
         )
+    }
+}
+
+// MARK: - DAppAttestHandlerDelegate
+
+extension DAppBrowserInteractor: DAppAttestHandlerDelegate {
+    func handleResponse(_ response: DAppScriptResponse) {
+        presenter?.didReceive(response: response)
     }
 }

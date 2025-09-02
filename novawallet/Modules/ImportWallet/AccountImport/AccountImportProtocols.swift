@@ -1,5 +1,5 @@
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 
 protocol AccountImportViewProtocol: ControllerBackedProtocol {
     func setSource(type: SecretSource)
@@ -19,7 +19,12 @@ protocol AccountImportPresenterProtocol: AnyObject {
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
     func setup()
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)
+
+    func importAccountWithMnemonic(
+        request: MetaAccountImportMnemonicRequest,
+        from origin: SecretSource.Origin
+    )
+
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
 
@@ -45,10 +50,9 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
 }
 
 protocol AccountImportInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountImport(metadata: MetaAccountImportMetadata)
     func didCompleteAccountImport()
     func didReceiveAccountImport(error: Error)
-    func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)
+    func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)
 }
 
 protocol BaseAccountImportWireframeProtocol {

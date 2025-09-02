@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct StakingRebagConfirmViewFactory {
     static func createView(with state: RelaychainStakingSharedStateProtocol) -> StakingRebagConfirmViewProtocol? {

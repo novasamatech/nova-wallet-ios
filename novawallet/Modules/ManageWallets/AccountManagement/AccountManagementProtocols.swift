@@ -1,13 +1,11 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
-    func set(nameViewModel: InputViewModelProtocol)
-    func set(walletType: WalletsListSectionViewModel.SectionType)
-    func setProxy(viewModel: AccountProxyViewModel)
-    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)
+    func didReceive(walletViewModel: AccountManageWalletViewModel)
+    func didReceive(nameViewModel: InputViewModelProtocol)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
@@ -17,8 +15,10 @@ protocol AccountManagementPresenterProtocol: AnyObject {
     func numberOfItems(in section: Int) -> Int
     func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
     func titleForSection(_ section: Int) -> LocalizableResource<String>?
+    func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>?
     func activateDetails(at indexPath: IndexPath)
     func selectItem(at indexPath: IndexPath)
+    func activateActionInSection(_ section: Int)
     func finalizeName()
 }
 
@@ -39,13 +39,22 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
         metaAccount: MetaAccountModel,
         chain: ChainModel
     )
-    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)
+    func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)
     func didReceiveCloudBackup(state: CloudBackupSyncState)
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)
 }
 
-protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,
-    ChainAddressDetailsPresentable, ActionsManagePresentable, CloudBackupRemindPresentable {
+protocol AccountManagementWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    WebPresentable,
+    ModalAlertPresenting,
+    ChainAddressDetailsPresentable,
+    ActionsManagePresentable,
+    CloudBackupRemindPresentable,
+    CopyAddressPresentable,
+    UnifiedAddressPopupPresentable,
+    AddressOptionsPresentable
+{
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
@@ -77,6 +86,11 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         from view: AccountManagementViewProtocol?,
         wallet: MetaAccountModel,
         chain: ChainModel
+    )
+
+    func showAddGenericLedgerEvmAccounts(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
     )
 }
 

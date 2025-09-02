@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ChainAddressDetailsViewLayout
@@ -8,6 +8,7 @@ final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
 
     private var actions: [ChainAddressDetailsViewModel.Action] = []
     private var cells: [StackActionCell] = []
+    private var titleViewModel: ChainAddressDetailsViewModel.Title?
 
     init(presenter: ChainAddressDetailsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -63,6 +64,10 @@ final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
+        if let titleViewModel {
+            rootView.updateTitle(with: titleViewModel, locale: selectedLocale)
+        }
+
         updateCells()
     }
 
@@ -79,7 +84,9 @@ final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
 
 extension ChainAddressDetailsViewController: ChainAddressDetailsViewProtocol {
     func didReceive(viewModel: ChainAddressDetailsViewModel) {
-        rootView.networkView.bind(viewModel: viewModel.network)
+        titleViewModel = viewModel.title
+
+        rootView.updateTitle(with: viewModel.title, locale: selectedLocale)
 
         if let addressViewModel = viewModel.address {
             rootView.addressIconView.bind(

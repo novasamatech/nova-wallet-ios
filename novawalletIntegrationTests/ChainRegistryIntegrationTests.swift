@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class ChainRegistryIntegrationTests: XCTestCase {
     func testNetworkConnection() {

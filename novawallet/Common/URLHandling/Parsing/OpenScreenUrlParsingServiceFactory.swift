@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 protocol OpenScreenUrlParsingServiceFactoryProtocol {
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol?
@@ -8,12 +8,6 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
     private let chainRegistryClosure: ChainRegistryLazyClosure
     private let applicationConfig: ApplicationConfigProtocol
     private let settings: SettingsManagerProtocol
-
-    enum Screen: String {
-        case staking
-        case governance = "gov"
-        case dApp = "dapp"
-    }
 
     init(
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
@@ -26,7 +20,7 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
     }
 
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol? {
-        switch Screen(rawValue: screen.lowercased()) {
+        switch UniversalLink.Screen(rawValue: screen.lowercased()) {
         case .staking:
             return OpenStakingUrlParsingService()
         case .governance:
@@ -34,6 +28,8 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry, settings: settings)
         case .dApp:
             return OpenDAppUrlParsingService()
+        case .card:
+            return OpenCardUrlParsingService()
         default:
             return nil
         }

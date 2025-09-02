@@ -1,9 +1,9 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct ParaStkRedeemViewFactory {
-    static func createView(for state: ParachainStakingSharedStateProtocol) -> ParaStkRedeemViewProtocol? {
+    static func createView(for state: ParachainStakingSharedStateProtocol) -> CollatorStakingRedeemViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -44,7 +44,10 @@ struct ParaStkRedeemViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkRedeemViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = CollatorStakingRedeemViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

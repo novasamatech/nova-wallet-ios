@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 extension StakingMainPresenterFactory {
@@ -26,7 +26,7 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(
+        let networkInfoViewModelFactory = CollatorStkNetworkInfoViewModelFactory(
             priceAssetInfoFactory: priceAssetInfoFactory
         )
         let stateViewModelFactory = ParaStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
@@ -87,7 +87,7 @@ extension StakingMainPresenterFactory {
             requestFactory: storageRequestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

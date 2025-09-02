@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 struct MnemonicImportSecrets {
     let entropy: Data
@@ -31,7 +31,7 @@ class EthereumAccountImportWrapper: AccountImporting {
             password: junctionResult?.password ?? ""
         )
 
-        let keypair = try BIP32KeypairFactory().createKeypairFromSeed(
+        let keypair = try BIP32Secp256KeypairFactory().createKeypairFromSeed(
             seedResult.seed,
             chaincodeList: junctionResult?.chaincodes ?? []
         )

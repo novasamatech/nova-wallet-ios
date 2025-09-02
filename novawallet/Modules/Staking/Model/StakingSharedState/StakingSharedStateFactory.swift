@@ -21,6 +21,10 @@ protocol StakingSharedStateFactoryProtocol {
         consensus: ConsensusType,
         selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol
+
+    func createMythosStaking(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> MythosStakingSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {
@@ -57,7 +61,7 @@ final class StakingSharedStateFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
     let eventCenter: EventCenterProtocol
-    let proxySyncService: ProxySyncServiceProtocol?
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol?
     let syncOperationQueue: OperationQueue
     let repositoryOperationQueue: OperationQueue
     let applicationConfig: ApplicationConfigProtocol
@@ -66,7 +70,7 @@ final class StakingSharedStateFactory {
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol?,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol?,
         eventCenter: EventCenterProtocol,
         syncOperationQueue: OperationQueue,
         repositoryOperationQueue: OperationQueue,
@@ -74,7 +78,7 @@ final class StakingSharedStateFactory {
         logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.chainRegistry = chainRegistry
         self.eventCenter = eventCenter
         self.syncOperationQueue = syncOperationQueue
@@ -172,10 +176,10 @@ final class StakingSharedStateFactory {
             operationQueue: syncOperationQueue
         )
 
-        let proxyRemoteSubscriptionService = proxySyncService.map {
+        let proxyRemoteSubscriptionService = delegatedAccountSyncService.map {
             ProxyAccountUpdatingService(
                 chainRegistry: chainRegistry,
-                proxySyncService: $0,
+                delegatedAccountSyncService: $0,
                 storageFacade: storageFacade,
                 operationQueue: syncOperationQueue,
                 logger: logger
@@ -206,7 +210,7 @@ final class StakingSharedStateFactory {
             logger: logger
         )
 
-        guard chainAsset.asset.supportsNominationPoolsStaking else {
+        guard chainAsset.asset.hasPoolStaking else {
             return NominationPoolsServices(
                 remoteSubscriptionService: nil,
                 accountSubscriptionServiceFactory: nil,
@@ -282,6 +286,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             remoteUrl: applicationConfig.preferredValidatorsURL
         )
 
+        let rewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
         return RelaychainStakingSharedState(
             consensus: consensus,
             stakingOption: stakingOption,
@@ -289,6 +300,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             accountRemoteSubscriptionService: services.accountRemoteSubscriptionService,
             proxyRemoteSubscriptionService: services.proxyRemoteSubscriptionService,
             localSubscriptionFactory: services.localSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: rewardsSubscriptionFactory,
             proxyLocalSubscriptionFactory: services.proxySubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
@@ -360,6 +372,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
+        let rewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
         let serviceFactory = ParachainStakingServiceFactory(
             stakingProviderFactory: localSubscriptionFactory,
             chainRegisty: chainRegistry,
@@ -400,6 +419,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             rewardCalculationService: rewardService,
             blockTimeService: blockTimeService,
             stakingLocalSubscriptionFactory: localSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: rewardsSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             preferredCollatorsProvider: preferredValidatorsProvider,
             logger: logger
@@ -437,6 +457,88 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             npLocalSubscriptionFactory: nominationPoolsService.localSubscriptionFactory,
             activePoolsService: nominationPoolsService.activePoolsService,
             preferredValidatorsProvider: preferredValidatorsProvider,
+            logger: logger
+        )
+    }
+
+    // swiftlint:disable:next function_body_length
+    func createMythosStaking(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> MythosStakingSharedStateProtocol {
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        let serviceFactory = MythosStakingServiceFactory(
+            chainRegisty: chainRegistry,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
+        let blockTimeService = try serviceFactory.createBlockTimeService(
+            for: stakingOption.chainAsset.chain.chainId
+        )
+
+        let collatorService = try serviceFactory.createSelectedCollatorsService(
+            for: stakingOption.chainAsset.chain.chainId
+        )
+
+        let stakingLocalSubscriptionFactory = MythosStakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let stakingRewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let rewardCalculatorService = try serviceFactory.createRewardCalculatorService(
+            for: stakingOption.chainAsset.chainAssetId,
+            collatorService: collatorService,
+            blockTimeService: blockTimeService,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
+        )
+
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
+        return MythosStakingSharedState(
+            stakingOption: stakingOption,
+            chainRegistry: chainRegistry,
+            collatorService: collatorService,
+            rewardCalculatorService: rewardCalculatorService,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: stakingRewardsSubscriptionFactory,
+            globalRemoteSubscriptionService: MythosStakingRemoteSubscriptionService(
+                chainRegistry: chainRegistry,
+                repository: repository,
+                syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+                repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
+            accountRemoteSubscriptionService: MythosStakingAccountSubscriptionService(
+                chainRegistry: chainRegistry,
+                repository: repository,
+                syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+                repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
+            blockTimeService: blockTimeService,
+            generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: storageFacade,
+                operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
+            preferredCollatorsProvider: preferredValidatorsProvider,
+            operationQueue: syncOperationQueue,
             logger: logger
         )
     }

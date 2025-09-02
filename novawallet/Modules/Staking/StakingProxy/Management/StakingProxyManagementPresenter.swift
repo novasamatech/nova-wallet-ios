@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingProxyManagementPresenter {
     weak var view: StakingProxyManagementViewProtocol?
@@ -62,13 +62,13 @@ final class StakingProxyManagementPresenter {
                 )
             }
 
-            let proxyInfo = WalletView.ViewModel.ProxyInfo(
+            let proxyInfo = WalletView.ViewModel.DelegatedAccountInfo(
                 networkIcon: ImageViewModelFactory.createIdentifiableChainIcon(
                     from: self.chainAsset.chain.icon
                 ),
-                proxyType: "",
-                proxyIcon: nil,
-                proxyName: nil,
+                type: "",
+                pairedAccountIcon: nil,
+                pairedAccountName: nil,
                 isNew: false
             )
 

@@ -38,6 +38,12 @@ protocol NativeTokenSubscriptionFactoryProtocol {
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
+
+    func createBalanceFreezesSubscription(
+        remoteStorageKey: Data,
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
+    ) -> StorageChildSubscribing
 }
 
 // MARK: - OrmlTokenSubscriptionFactoryProtocol
@@ -71,7 +77,17 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
     }
 
     private func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock> {
-        repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
+        repositoryFactory.createAssetStorageLocksRepository(
+            for: accountId,
+            chainAssetId: chainAssetId
+        )
+    }
+
+    private func createAssetFreezesRepository() -> AnyDataProviderRepository<AssetLock> {
+        repositoryFactory.createAssetStorageFreezesRepository(
+            for: accountId,
+            chainAssetId: chainAssetId
+        )
     }
 
     private func createAssetHoldsRepository() -> AnyDataProviderRepository<AssetHold> {
@@ -166,6 +182,23 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: createAssetHoldsRepository(),
+            operationManager: operationManager,
+            logger: logger
+        )
+    }
+
+    func createBalanceFreezesSubscription(
+        remoteStorageKey: Data,
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
+    ) -> StorageChildSubscribing {
+        FreezesSubscription(
+            storageCodingPath: BalancesPallet.freezesPath,
+            remoteStorageKey: remoteStorageKey,
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            repository: createAssetFreezesRepository(),
             operationManager: operationManager,
             logger: logger
         )

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWireframeProtocol {
     func close(view: WalletsListViewProtocol?) {
@@ -29,11 +29,11 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         navigationController?.pushViewController(manageView.controller, animated: true)
     }
 
-    func showProxiedsUpdates(
+    func showDelegatesUpdates(
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel]
     ) {
-        guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
+        guard let proxiedsUpdatesView = DelegatedAccountsUpdateViewFactory.createView(
             initWallets: initWallets
         ) else {
             return
@@ -44,5 +44,19 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         proxiedsUpdatesView.controller.modalPresentationStyle = .custom
 
         view?.controller.present(proxiedsUpdatesView.controller, animated: true)
+    }
+
+    func showMultisigUnavailable(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+
+        present(
+            message: R.string.localizable.multisigSelectionUnavailableMessage(preferredLanguages: languages),
+            title: R.string.localizable.multisigSelectionUnavailableTitle(preferredLanguages: languages),
+            closeAction: R.string.localizable.commonGotIt(preferredLanguages: languages),
+            from: view
+        )
     }
 }

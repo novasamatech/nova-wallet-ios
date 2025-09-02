@@ -6,4 +6,5 @@ enum AssetConversionOperationError: Error {
     case runtimeError(String)
     case quoteCalcFailed
     case tradeDisabled
+    case noRoutesAvailable
 }

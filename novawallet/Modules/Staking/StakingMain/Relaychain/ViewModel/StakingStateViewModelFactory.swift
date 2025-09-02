@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 
 protocol StakingStateViewModelFactoryProtocol {
     func createViewModel(from state: StakingStateProtocol) -> StakingViewState
@@ -179,7 +179,11 @@ final class StakingStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: eraCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: eraCountdown,
+            items: viewModels,
+            canCancelUnbonding: true
+        )
     }
 }
 

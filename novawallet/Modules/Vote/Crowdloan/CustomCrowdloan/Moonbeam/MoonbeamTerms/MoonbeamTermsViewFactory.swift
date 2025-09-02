@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct MoonbeamTermsViewFactory {
     static func createView(

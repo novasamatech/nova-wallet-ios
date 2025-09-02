@@ -3,7 +3,12 @@ import UIKit
 final class WalletHistoryBackgroundView: UIView {
     let minimizedSideLength: CGFloat = 12.0
 
-    let minimizedBackgroundView = BlockBackgroundView()
+    let minimizedBackgroundView: OverlayBlurBackgroundView = .create { view in
+        view.borderType = .none
+        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
+        view.overlayView.strokeWidth = 1
+    }
+
     let fullBackgroundView: BlurBackgroundView = .create {
         $0.borderType = []
     }

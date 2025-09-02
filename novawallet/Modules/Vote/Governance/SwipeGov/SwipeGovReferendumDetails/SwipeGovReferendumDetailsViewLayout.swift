@@ -14,6 +14,20 @@ final class SwipeGovReferendumDetailsViewLayout: UIView {
         return CGSize(width: size, height: size)
     }
 
+    let timeView: IconDetailsView = .create {
+        $0.mode = .detailsIcon
+        $0.detailsLabel.numberOfLines = 1
+        $0.spacing = 5
+        $0.apply(style: .timeView)
+    }
+
+    let shareButton = UIBarButtonItem(
+        image: R.image.iconShare(),
+        style: .plain,
+        target: nil,
+        action: nil
+    )
+
     var accountLabel: UILabel { accountContainerView.rowContentView.detailsView.detailsLabel }
     var accountImageView: UIImageView { accountContainerView.rowContentView.detailsView.imageView }
 

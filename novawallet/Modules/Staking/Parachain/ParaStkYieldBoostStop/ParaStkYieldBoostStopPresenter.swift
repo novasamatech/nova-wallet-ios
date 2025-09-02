@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkYieldBoostStopPresenter {
     weak var view: ParaStkYieldBoostStopViewProtocol?
@@ -169,10 +169,15 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopPresenterProtocol
 }
 
 extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputProtocol {
-    func didStopAutocompound(with _: String) {
+    func didStopAutocompound(with model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: model.sender,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 
     func didReceiveStopAutocompound(error: ParaStkYieldBoostStopError) {

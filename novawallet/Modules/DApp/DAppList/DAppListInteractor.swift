@@ -10,7 +10,6 @@ final class DAppListInteractor {
     let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
     let phishingSyncService: ApplicationServiceProtocol
-    let operationQueue: OperationQueue
     let logger: LoggerProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
 
@@ -24,7 +23,6 @@ final class DAppListInteractor {
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         walletNotificationService: WalletNotificationServiceProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.walletSettings = walletSettings
@@ -34,7 +32,6 @@ final class DAppListInteractor {
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.walletNotificationService = walletNotificationService
-        self.operationQueue = operationQueue
         self.logger = logger
     }
 

@@ -1,6 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
+import Kingfisher
 
 struct AssetReceiveViewFactory {
     static func createView(
@@ -15,7 +16,13 @@ struct AssetReceiveViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let imageRetreiveOperationFactory = KingfisherIconRetrieveOperationFactory(operationQueue: operationQueue)
+        let imageManager = KingfisherManager.shared
+        let remoteImageProvider = ChainLogoRemoteImageProvider(imageManager: imageManager)
+
+        let imageRetreiveOperationFactory = ImageRetrieveOperationFactory(
+            imageManager: imageManager,
+            remoteProvider: remoteImageProvider
+        )
 
         let qrCodeFactory = QRCodeWithLogoFactory(
             iconRetrievingFactory: imageRetreiveOperationFactory,

@@ -1,6 +1,6 @@
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -541,7 +541,7 @@ public class SecretStoreManagerProtocolStub: SecretStoreManagerProtocol {
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -1227,14 +1227,14 @@ public class JSONRPCEngineStub: JSONRPCEngine {
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -1490,10 +1490,10 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 
@@ -1597,16 +1597,16 @@ import Operation_iOS
     
     
     
-     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
+     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings> {
         
-    return cuckoo_manager.call("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>",
+    return cuckoo_manager.call("createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createProxiedSettingsRepository())
+            defaultCall: __defaultImplStub!.createDelegatedAccountSettingsRepository())
         
     }
     
@@ -1644,9 +1644,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", parameterMatchers: matchers))
 	    }
 	    
-	    func createProxiedSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ProxiedSettings>> {
+	    func createDelegatedAccountSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DelegatedAccountSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1696,9 +1696,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func createProxiedSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ProxiedSettings>> {
+	    func createDelegatedAccountSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<DelegatedAccountSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -1742,8 +1742,8 @@ import Operation_iOS
     
     
     
-     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ProxiedSettings>).self)
+     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DelegatedAccountSettings>).self)
     }
     
 }
@@ -1751,7 +1751,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -2008,7 +2008,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import LocalAuthentication
@@ -2334,7 +2334,7 @@ import UIKit.UIImage
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -2466,7 +2466,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -2567,7 +2567,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -2667,7 +2667,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -3089,10 +3089,10 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 
@@ -3318,10 +3318,10 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 
@@ -3864,7 +3864,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4060,7 +4060,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4288,7 +4288,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4388,7 +4388,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4651,7 +4651,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4751,7 +4751,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -4914,7 +4914,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -5143,7 +5143,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -5275,7 +5275,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -5375,7 +5375,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -5631,7 +5631,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -5888,139 +5888,14 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
 
-
- class MockStakingRemoteSubscriptionServiceProtocol: StakingRemoteSubscriptionServiceProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StakingRemoteSubscriptionServiceProtocol
-    
-     typealias Stubbing = __StubbingProxy_StakingRemoteSubscriptionServiceProtocol
-     typealias Verification = __VerificationProxy_StakingRemoteSubscriptionServiceProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StakingRemoteSubscriptionServiceProtocol?
-
-     func enableDefaultImplementation(_ stub: StakingRemoteSubscriptionServiceProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func attachToGlobalData(for chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID? {
-        
-    return cuckoo_manager.call("attachToGlobalData(for: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?",
-            parameters: (chainId, queue, closure),
-            escapingParameters: (chainId, queue, closure),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.attachToGlobalData(for: chainId, queue: queue, closure: closure))
-        
-    }
-    
-    
-    
-     func detachFromGlobalData(for subscriptionId: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)  {
-        
-    return cuckoo_manager.call("detachFromGlobalData(for: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)",
-            parameters: (subscriptionId, chainId, queue, closure),
-            escapingParameters: (subscriptionId, chainId, queue, closure),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.detachFromGlobalData(for: subscriptionId, chainId: chainId, queue: queue, closure: closure))
-        
-    }
-    
-
-	 struct __StubbingProxy_StakingRemoteSubscriptionServiceProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func attachToGlobalData<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(for chainId: M1, queue: M2, closure: M3) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == DispatchQueue, M3.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRemoteSubscriptionServiceProtocol.self, method: "attachToGlobalData(for: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", parameterMatchers: matchers))
-	    }
-	    
-	    func detachFromGlobalData<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(for subscriptionId: M1, chainId: M2, queue: M3, closure: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == ChainModel.Id, M3.OptionalMatchedType == DispatchQueue, M4.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(UUID, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: queue) { $0.2 }, wrap(matchable: closure) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRemoteSubscriptionServiceProtocol.self, method: "detachFromGlobalData(for: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StakingRemoteSubscriptionServiceProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func attachToGlobalData<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(for chainId: M1, queue: M2, closure: M3) -> Cuckoo.__DoNotUse<(ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == DispatchQueue, M3.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return cuckoo_manager.verify("attachToGlobalData(for: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func detachFromGlobalData<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(for subscriptionId: M1, chainId: M2, queue: M3, closure: M4) -> Cuckoo.__DoNotUse<(UUID, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?), Void> where M1.MatchedType == UUID, M2.MatchedType == ChainModel.Id, M3.OptionalMatchedType == DispatchQueue, M4.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(UUID, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: queue) { $0.2 }, wrap(matchable: closure) { $0.3 }]
-	        return cuckoo_manager.verify("detachFromGlobalData(for: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StakingRemoteSubscriptionServiceProtocolStub: StakingRemoteSubscriptionServiceProtocol {
-    
-
-    
-
-    
-    
-    
-     func attachToGlobalData(for chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
-        return DefaultValueRegistry.defaultValue(for: (UUID?).self)
-    }
-    
-    
-    
-     func detachFromGlobalData(for subscriptionId: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS

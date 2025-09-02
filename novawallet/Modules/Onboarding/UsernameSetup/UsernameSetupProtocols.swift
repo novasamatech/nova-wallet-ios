@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol UsernameSetupViewProtocol: ControllerBackedProtocol {
     func setInput(viewModel: InputViewModelProtocol)

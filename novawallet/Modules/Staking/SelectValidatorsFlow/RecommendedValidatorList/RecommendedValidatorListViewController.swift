@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class RecommendedValidatorListViewController: UIViewController, ViewHolder {
     typealias RootViewType = SelectedValidatorListViewLayout

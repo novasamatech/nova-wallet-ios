@@ -1,12 +1,20 @@
 import Foundation
 
 extension AssetModel {
-    var supportsNominationPoolsStaking: Bool {
-        guard let stakings = stakings else {
-            return false
-        }
+    var hasStaking: Bool {
+        stakings?.contains { $0 != .unsupported } ?? false
+    }
 
-        return stakings.contains(.nominationPools)
+    var hasPoolStaking: Bool {
+        stakings?.contains(.nominationPools) ?? false
+    }
+
+    var hasMythosStaking: Bool {
+        stakings?.contains(.mythos) ?? false
+    }
+
+    var supportedStakings: [StakingType]? {
+        stakings?.filter { $0 != .unsupported }
     }
 
     var hasMultipleStakingOptions: Bool {

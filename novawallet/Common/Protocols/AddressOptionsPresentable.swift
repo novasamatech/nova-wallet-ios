@@ -1,6 +1,6 @@
 import UIKit
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AccountAdditionalOption {
     let title: LocalizableResource<String>
@@ -9,7 +9,7 @@ struct AccountAdditionalOption {
     let onSelection: () -> Void
 }
 
-protocol AddressOptionsPresentable {
+protocol AddressOptionsPresentable: ModalAlertPresenting, CopyAddressPresentable, UnifiedAddressPopupPresentable {
     func presentAccountOptions(
         from view: ControllerBackedProtocol,
         address: String,
@@ -24,26 +24,16 @@ protocol AddressOptionsPresentable {
         option: AccountAdditionalOption,
         locale: Locale
     )
+
+    func presentHardwareAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        scheme: HardwareWalletAddressScheme,
+        locale: Locale
+    )
 }
 
 extension AddressOptionsPresentable {
-    private func copyAddress(
-        from view: ControllerBackedProtocol,
-        address: String,
-        locale: Locale
-    ) {
-        UIPasteboard.general.string = address
-
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
-        let controller = ModalAlertFactory.createSuccessAlert(title)
-
-        view.controller.present(
-            controller,
-            animated: true,
-            completion: nil
-        )
-    }
-
     private func present(
         from view: ControllerBackedProtocol,
         url: URL
@@ -62,13 +52,20 @@ extension AddressOptionsPresentable {
         chain: ChainModel,
         locale: Locale
     ) {
-        let copyClosure = { copyAddress(from: view, address: address, locale: locale) }
+        let copyClosure = {
+            copyAddressCheckingFormat(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: locale
+            )
+        }
 
         let urlClosure = { (url: URL) in
             present(from: view, url: url)
         }
 
-        guard let controller = AddressOptionsPresentableFactory.createAccountOptionsController(
+        guard let controller = AddressOptionsPresentableFactory.createAccountWithNetworkOptionsController(
             address: address,
             chain: chain,
             copyClosure: copyClosure,
@@ -91,13 +88,20 @@ extension AddressOptionsPresentable {
         option: AccountAdditionalOption,
         locale: Locale
     ) {
-        let copyClosure = { copyAddress(from: view, address: address, locale: locale) }
+        let copyClosure = {
+            copyAddressCheckingFormat(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: locale
+            )
+        }
 
         let urlClosure = { (url: URL) in
             present(from: view, url: url)
         }
 
-        guard let controller = AddressOptionsPresentableFactory.createAccountOptionsController(
+        guard let controller = AddressOptionsPresentableFactory.createAccountWithNetworkOptionsController(
             address: address,
             chain: chain,
             copyClosure: copyClosure,
@@ -113,16 +117,89 @@ extension AddressOptionsPresentable {
             completion: nil
         )
     }
+
+    func presentHardwareAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        scheme: HardwareWalletAddressScheme,
+        locale: Locale
+    ) {
+        let copyClosure = {
+            copyAddress(
+                from: view,
+                address: address,
+                locale: locale
+            )
+        }
+
+        guard let controller = AddressOptionsPresentableFactory.createAccountWithTitleOptionsController(
+            address: address,
+            title: LocalizableResource(closure: { scheme.createTitle(for: $0).uppercased() }),
+            copyClosure: copyClosure
+        ) else {
+            return
+        }
+
+        view.controller.present(
+            controller,
+            animated: true,
+            completion: nil
+        )
+    }
+
+    func presentSubstrateAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        locale: Locale
+    ) {
+        presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: .substrate,
+            locale: locale
+        )
+    }
+
+    func presentEvmAddressOptions(
+        from view: ControllerBackedProtocol,
+        address: String,
+        locale: Locale
+    ) {
+        presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: .evm,
+            locale: locale
+        )
+    }
 }
 
 enum AddressOptionsPresentableFactory {
-    static func createAccountOptionsController(
+    static func createAccountWithTitleOptionsController(
+        address: String,
+        title: LocalizableResource<String>,
+        copyClosure: @escaping () -> Void
+    ) -> UIViewController? {
+        let builder = createTitleTextOptionsBuilder(
+            address: address,
+            title: title,
+            copyClosure: copyClosure
+        )
+
+        let model = builder.build()
+
+        return ChainAddressDetailsPresentableFactory.createChainAddressDetails(
+            for: model
+        )?.controller
+    }
+
+    static func createAccountWithNetworkOptionsController(
         address: String,
         chain: ChainModel,
         copyClosure: @escaping () -> Void,
         urlClosure: @escaping (URL) -> Void
     ) -> UIViewController? {
-        let builder = createAccountOptionsBuilder(
+        let builder = createAccountWithNetworkOptionsBuilder(
             address: address,
             chain: chain,
             copyClosure: copyClosure,
@@ -134,14 +211,14 @@ enum AddressOptionsPresentableFactory {
         )?.controller
     }
 
-    static func createAccountOptionsController(
+    static func createAccountWithNetworkOptionsController(
         address: String,
         chain: ChainModel,
         copyClosure: @escaping () -> Void,
         urlClosure: @escaping (URL) -> Void,
         option: AccountAdditionalOption
     ) -> UIViewController? {
-        let builder = createAccountOptionsBuilder(
+        let builder = createAccountWithNetworkOptionsBuilder(
             address: address,
             chain: chain,
             copyClosure: copyClosure,
@@ -158,7 +235,29 @@ enum AddressOptionsPresentableFactory {
         )?.controller
     }
 
-    static func createAccountOptionsBuilder(
+    static func createTitleTextOptionsBuilder(
+        address: String,
+        title: LocalizableResource<String>,
+        copyClosure: @escaping () -> Void
+    ) -> ChainAddressDetailsModelBuilder {
+        let copyTitle = LocalizableResource { locale in
+            R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
+        }
+
+        let builder = ChainAddressDetailsModelBuilder(
+            address: address,
+            titleText: title
+        ).addAction(
+            for: copyTitle,
+            icon: R.image.iconActionCopy(),
+            indicator: .none,
+            onSelection: copyClosure
+        )
+
+        return builder
+    }
+
+    static func createAccountWithNetworkOptionsBuilder(
         address: String,
         chain: ChainModel,
         copyClosure: @escaping () -> Void,

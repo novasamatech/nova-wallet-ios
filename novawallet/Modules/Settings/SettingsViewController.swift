@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 final class SettingsViewController: UIViewController, ViewHolder {
@@ -120,6 +120,7 @@ extension SettingsViewController: SettingsViewProtocol {
         rootView.headerView.accountDetailsView.title = userViewModel.name
 
         let walletSwitchViewModel = WalletSwitchViewModel(
+            identifier: userViewModel.identifier,
             type: userViewModel.walletType,
             iconViewModel: userViewModel.icon.map { StaticImageViewModel(image: $0) },
             hasNotification: userViewModel.hasWalletNotification

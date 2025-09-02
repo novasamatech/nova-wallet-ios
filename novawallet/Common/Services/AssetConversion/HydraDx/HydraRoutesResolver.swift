@@ -127,12 +127,8 @@ enum HydraRoutesResolver {
     }
 }
 
-extension HydraDx.SwapRoute.Component: GraphWeightableEdgeProtocol where Asset: Hashable {
+extension HydraDx.SwapRoute.Component: GraphEdgeProtocol where Asset: Hashable {
     typealias Node = Asset
-
-    var weight: Int {
-        1
-    }
 
     var origin: Asset {
         assetIn
@@ -140,5 +136,11 @@ extension HydraDx.SwapRoute.Component: GraphWeightableEdgeProtocol where Asset: 
 
     var destination: Asset {
         assetOut
+    }
+}
+
+extension HydraDx.SwapRoute.Component: GraphWeightableEdgeProtocol where Asset: Hashable {
+    func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
+        currentWeight + 1
     }
 }

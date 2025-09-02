@@ -3,71 +3,64 @@ import BigInt
 import Operation_iOS
 import SubstrateSdk
 
-enum XcmTransferServiceError: Error {
-    case reserveFeeNotAvailable
-    case noXcmPalletFound([String])
-    case noArgumentFound(String)
-    case deliveryFeeNotAvailable
-}
-
 final class XcmTransferService {
-    static let weightPerSecond = BigUInt(1_000_000_000_000)
-
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
-    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
+    let submissionVerifier: XcmTransferVerifying
 
-    private(set) lazy var xcmFactory = XcmTransferFactory()
-    private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
-    private(set) lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
+    let callDerivator: XcmCallDerivating
+    let crosschainFeeCalculator: XcmCrosschainFeeCalculating
 
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
-        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol? = nil
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol? = nil,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
-        self.metadataHashOperationFactory = metadataHashOperationFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
         self.customFeeEstimatingFactory = customFeeEstimatingFactory
-    }
 
-    func createModuleResolutionWrapper(
-        for transferType: XcmAssetTransfer.TransferType,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<String> {
-        switch transferType {
-        case .xtokens:
-            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
-            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .unknown:
-            return CompoundOperationWrapper.createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
-        }
+        callDerivator = XcmOneOfCallDerivator(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
+        crosschainFeeCalculator = XcmCrosschainFeeCalculator(
+            chainRegistry: chainRegistry,
+            callDerivator: callDerivator,
+            operationQueue: operationQueue,
+            wallet: wallet,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
+            customFeeEstimatingFactory: customFeeEstimatingFactory,
+            logger: logger
+        )
+
+        submissionVerifier = XcmTransferVerifier(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 
     func createExtrinsicOperationFactory(
         for chain: ChainModel,
         chainAccount: ChainAccountResponse
     ) throws -> ExtrinsicOperationFactoryProtocol {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
 
         if let customFeeEstimatingFactory {
             return ExtrinsicServiceFactory(

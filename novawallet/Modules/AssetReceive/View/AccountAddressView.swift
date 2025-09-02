@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class AccountAddressView: UIView {
     let titleLabel: UILabel = .create { view in

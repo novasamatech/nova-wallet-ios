@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class SwipeGovReferendumDetailsPresenter {
     weak var view: SwipeGovReferendumDetailsViewProtocol?
@@ -7,12 +7,14 @@ final class SwipeGovReferendumDetailsPresenter {
     let interactor: SwipeGovReferendumDetailsInteractorInputProtocol
 
     let chain: ChainModel
+    let governanceType: GovernanceType
     let logger: LoggerProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let universalLinkFactory: UniversalLinkFactoryProtocol
 
     private var referendum: ReferendumLocal
     private var referendumMetadata: ReferendumMetadataLocal?
@@ -27,6 +29,7 @@ final class SwipeGovReferendumDetailsPresenter {
 
     init(
         chain: ChainModel,
+        governanceType: GovernanceType,
         interactor: SwipeGovReferendumDetailsInteractorInputProtocol,
         wireframe: SwipeGovReferendumDetailsWireframeProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
@@ -34,11 +37,13 @@ final class SwipeGovReferendumDetailsPresenter {
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        universalLinkFactory: UniversalLinkFactoryProtocol,
         initData: ReferendumDetailsInitData,
         logger: LoggerProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.chain = chain
+        self.governanceType = governanceType
         self.interactor = interactor
         self.wireframe = wireframe
         self.referendumFormatter = referendumFormatter
@@ -46,6 +51,7 @@ final class SwipeGovReferendumDetailsPresenter {
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.universalLinkFactory = universalLinkFactory
         self.logger = logger
 
         referendum = initData.referendum
@@ -90,6 +96,18 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsPresenter
         }
 
         wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
+
+    func share() {
+        guard let url = universalLinkFactory.createUrl(
+            for: chain,
+            referendumId: referendum.index,
+            type: governanceType
+        ) else {
+            return
+        }
+
+        wireframe.share(items: [url.absoluteString], from: view, with: nil)
     }
 }
 

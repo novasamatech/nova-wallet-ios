@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 final class StakingSetupProxyPresenter: StakingProxyBasePresenter {

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 struct ParaStkStakeSetupViewFactory {
@@ -8,7 +8,7 @@ struct ParaStkStakeSetupViewFactory {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
-    ) -> ParaStkStakeSetupViewProtocol? {
+    ) -> CollatorStakingSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -28,13 +28,7 @@ struct ParaStkStakeSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
-
-        let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            formatter: assetFormatter,
-            chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision
-        )
+        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
 
         let localizationManager = LocalizationManager.shared
 
@@ -57,11 +51,14 @@ struct ParaStkStakeSetupViewFactory {
             logger: Logger.shared
         )
 
-        let localizableTitle = createTitle(for: initialDelegator, chainAsset: chainAsset)
+        let localizableTitle = CollatorStakingStakeScreenTitle.setup(
+            hasStake: initialDelegator != nil,
+            assetSymbol: chainAsset.asset.symbol
+        )
 
-        let view = ParaStkStakeSetupViewController(
+        let view = CollatorStakingSetupViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle,
+            localizableTitle: localizableTitle(),
             localizationManager: localizationManager
         )
 
@@ -70,21 +67,6 @@ struct ParaStkStakeSetupViewFactory {
         interactor.presenter = presenter
 
         return view
-    }
-
-    private static func createTitle(
-        for delegator: ParachainStaking.Delegator?,
-        chainAsset: ChainAsset
-    ) -> LocalizableResource<String> {
-        if delegator != nil {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
-            }
-        } else {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
-            }
-        }
     }
 
     private static func createInteractor(
@@ -132,12 +114,10 @@ struct ParaStkStakeSetupViewFactory {
             identityOperationFactory: identityOperationFactory
         )
 
-        let preferredCollatorFactory: ParaStkPreferredCollatorFactory?
-
-        if initialDelegator == nil {
+        let preferredCollatorFactory: PreferredStakingCollatorFactory? = if initialDelegator == nil {
             // add pref collators only for first staking
 
-            preferredCollatorFactory = ParaStkPreferredCollatorFactory(
+            PreferredStakingCollatorFactory(
                 chain: chainAsset.chain,
                 connection: connection,
                 runtimeService: runtimeProvider,
@@ -148,7 +128,7 @@ struct ParaStkStakeSetupViewFactory {
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
         } else {
-            preferredCollatorFactory = nil
+            nil
         }
 
         return ParaStkStakeSetupInteractor(

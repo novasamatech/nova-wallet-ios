@@ -1,4 +1,5 @@
 "NSCameraUsageDescription" = "Camera is used to scan QR codes with addresses, Polkadot Vault transactions, or connect via WalletConnect";
+"NSMicrophoneUsageDescription" = "Microphone is used for KYC media session";
 "NSFaceIDUsageDescription" = "Face ID is used to authorize in Nova Wallet";
 "NSPhotoLibraryUsageDescription" = "Photo library access is used to allow selection of QR code with addresses, Polkadot Vault transactions, or connect via WalletConnect";
 "NSPhotoLibraryAddUsageDescription" = "Save transfer request as a qr code";

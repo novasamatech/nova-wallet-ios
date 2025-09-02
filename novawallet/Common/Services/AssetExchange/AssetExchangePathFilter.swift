@@ -7,17 +7,20 @@ final class AssetExchangePathFilter {
     let chainRegistry: ChainRegistryProtocol
     let sufficiencyProvider: AssetExchangeSufficiencyProviding
     let feeSupport: AssetExchangeFeeSupporting
+    let delayedCallExecVerifier: WalletDelayedExecVerifing
 
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         sufficiencyProvider: AssetExchangeSufficiencyProviding,
-        feeSupport: AssetExchangeFeeSupporting
+        feeSupport: AssetExchangeFeeSupporting,
+        delayedCallExecVerifier: WalletDelayedExecVerifing
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
         self.sufficiencyProvider = sufficiencyProvider
         self.feeSupport = feeSupport
+        self.delayedCallExecVerifier = delayedCallExecVerifier
     }
 }
 
@@ -25,9 +28,9 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
     func shouldVisit(edge: Edge, predecessor: Edge?) -> Bool {
         guard
             let chainIn = chainRegistry.getChain(for: edge.origin.chainId),
-            let chainAssetIn = chainIn.chainAsset(for: edge.origin.assetId),
+            let assetIn = chainIn.asset(for: edge.origin.assetId),
             let chainOut = chainRegistry.getChain(for: edge.destination.chainId),
-            let chainAssetOut = chainOut.chainAsset(for: edge.destination.assetId) else {
+            let assetOut = chainOut.asset(for: edge.destination.assetId) else {
             return false
         }
 
@@ -41,7 +44,23 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
-        if !sufficiencyProvider.isSufficient(chainAsset: chainAssetOut) {
+        let delayedCallExec = delayedCallExecVerifier.executesCallWithDelay(
+            selectedWallet,
+            chain: chainIn
+        )
+
+        // if call execution is delayed then allow only one segmented paths
+        guard !delayedCallExec || edge.shouldIgnoreDelayedCallRequirement(after: predecessor) else {
+            return false
+        }
+
+        let isAssetInSufficient = sufficiencyProvider.isSufficient(asset: assetIn)
+        let isAssetOutSufficient = sufficiencyProvider.isSufficient(asset: assetOut)
+
+        let anyInsufficientAsset = !isAssetInSufficient || !isAssetOutSufficient
+
+        // reject any path with len > 1 that includes insufficient asset
+        if anyInsufficientAsset {
             return false
         }
 
@@ -53,7 +72,7 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return false
         }
 
-        let canPayFees = (chainAssetIn.isUtilityAsset || feeSupport.canPayFee(inNonNative: chainAssetIn)) &&
+        let canPayFees = (assetIn.isUtility || feeSupport.canPayFee(inNonNative: edge.origin)) &&
             edge.canPayNonNativeFeesInIntermediatePosition()
 
         return canPayFees

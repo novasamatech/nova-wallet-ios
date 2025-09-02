@@ -1,7 +1,7 @@
 import Foundation
-import SoraKeystore
-import SoraFoundation
-import SoraUI
+import Keystore_iOS
+import Foundation_iOS
+import UIKit_iOS
 
 struct BackupMnemonicCardViewFactory {
     static func createView(

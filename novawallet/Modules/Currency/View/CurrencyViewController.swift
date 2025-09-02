@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 final class CurrencyViewController: UIViewController, ViewHolder {
     typealias RootViewType = CurrencyViewLayout
@@ -62,6 +62,7 @@ final class CurrencyViewController: UIViewController, ViewHolder {
             )
             let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
             header?.bind(title: section.title)
+            header?.titleLabel.apply(style: .footnoteSecondary)
             header?.contentInsets = .zero
             return header
         }

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 import Cuckoo
 
 class AccountCreateTests: XCTestCase {

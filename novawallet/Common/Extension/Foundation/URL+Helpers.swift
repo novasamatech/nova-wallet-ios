@@ -16,4 +16,12 @@ extension URL {
 
         return host.caseInsensitiveCompare(otherHost) == .orderedSame
     }
+
+    static func hasSameOrigin(_ lhs: URL, _ rhs: URL) -> Bool {
+        lhs.scheme == rhs.scheme && lhs.host == rhs.host && lhs.port == rhs.port
+    }
+
+    func isSameUniversalLinkDomain(_ other: URL) -> Bool {
+        scheme == other.scheme && host == other.host
+    }
 }

@@ -103,36 +103,27 @@ struct Event: Decodable {
     }
 }
 
-struct ExtrinsicFailedEventParams: Decodable {
-    let dispatchError: DispatchExtrinsicError
-
-    init(from decoder: Decoder) throws {
-        var unkeyedContainer = try decoder.unkeyedContainer()
-
-        dispatchError = try unkeyedContainer.decode(DispatchExtrinsicError.self)
+enum DispatchCallError: Error {
+    struct ModuleRawError {
+        let moduleIndex: UInt8
+        let error: Data
     }
-}
 
-enum DispatchExtrinsicError: Decodable, Error {
-    struct ModuleError: Decodable {
-        @StringCodable var index: UInt8
-        @BytesCodable var error: Data
+    struct ModuleDisplayError {
+        let moduleName: String
+        let errorName: String
+    }
+
+    struct ModuleError {
+        let raw: ModuleRawError
+        let display: ModuleDisplayError
+    }
+
+    struct Other {
+        let module: String
+        let reason: String?
     }
 
     case module(ModuleError)
-    case other(String)
-
-    init(from decoder: Decoder) throws {
-        var unkeyedContainer = try decoder.unkeyedContainer()
-
-        let module = try unkeyedContainer.decode(String.self)
-
-        switch module {
-        case "Module":
-            let moduleError = try unkeyedContainer.decode(ModuleError.self)
-            self = .module(moduleError)
-        default:
-            self = .other(module)
-        }
-    }
+    case other(Other)
 }

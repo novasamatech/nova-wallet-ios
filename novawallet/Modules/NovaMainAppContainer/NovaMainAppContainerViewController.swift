@@ -1,4 +1,5 @@
 import UIKit
+import UIKit_iOS
 import SnapKit
 
 final class NovaMainAppContainerViewController: UIViewController,
@@ -9,6 +10,7 @@ final class NovaMainAppContainerViewController: UIViewController,
     let presenter: NovaMainAppContainerPresenterProtocol
     let logger: LoggerProtocol
 
+    var browserNavigation: BrowserNavigationProtocol?
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
     var topContainerBottomConstraint: NSLayoutConstraint?
@@ -90,7 +92,8 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
-                self?.updateModalsLayoutIfNeeded()
+                self?.updateCardModalsLayoutIfNeeded()
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -117,6 +120,7 @@ private extension NovaMainAppContainerViewController {
                     .layerMinXMaxYCorner,
                     .layerMaxXMaxYCorner
                 ]
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -133,11 +137,44 @@ private extension NovaMainAppContainerViewController {
                 self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
                 return self?.rootView
+            },
+            animatableClosure: { [weak self] in
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
 
-    func updateModalsLayoutIfNeeded() {
+    func updateDefaultModalsLayoutIfNeeded() {
+        guard let tabBar else { return }
+
+        var presentedViewController = tabBar.presentedController()
+
+        while presentedViewController != nil {
+            let presentationController = presentedViewController?.presentationController
+
+            let ignoredControllerMatchers = Self.layoutUpdateIgnoringControllers
+
+            let shouldIgnorePresentationController = ignoredControllerMatchers.contains { typeMatcher in
+                typeMatcher.match(value: presentationController as Any)
+            }
+
+            guard !shouldIgnorePresentationController else {
+                presentedViewController = presentedViewController?.presentedViewController
+                continue
+            }
+
+            presentationController?.presentedViewController.view.frame = CGRect(
+                x: tabBar.view.frame.origin.x,
+                y: tabBar.view.frame.origin.y,
+                width: tabBar.view.frame.width,
+                height: tabBar.view.frame.height
+            )
+
+            presentedViewController = presentedViewController?.presentedViewController
+        }
+    }
+
+    func updateCardModalsLayoutIfNeeded() {
         var presentedViewController = tabBar?.presentedController()
 
         while presentedViewController != nil {
@@ -250,4 +287,21 @@ private extension NovaMainAppContainerViewController {
             return minimizedWidgetHeight + childSpacing
         }
     }
+}
+
+private extension NovaMainAppContainerViewController {
+    protocol TypeMatching {
+        func match(value: Any) -> Bool
+    }
+
+    struct TypeMatcher<T>: TypeMatching {
+        func match(value: Any) -> Bool {
+            value is T
+        }
+    }
+
+    static var layoutUpdateIgnoringControllers: [TypeMatching] = [
+        TypeMatcher<ModalCardPresentationController>(),
+        TypeMatcher<ModalPresenterProtocol>()
+    ]
 }

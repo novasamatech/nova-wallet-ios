@@ -35,6 +35,18 @@ final class CancellableCallStore {
     func matches(call: CancellableCall) -> Bool {
         operatingCall === call
     }
+
+    func addDependency(to newCall: OperatingCall) {
+        guard let pendingCall = operatingCall else {
+            return
+        }
+
+        newCall.allOperations.forEach { op1 in
+            pendingCall.allOperations.forEach { op2 in
+                op1.addDependency(op2)
+            }
+        }
+    }
 }
 
 func execute<T>(

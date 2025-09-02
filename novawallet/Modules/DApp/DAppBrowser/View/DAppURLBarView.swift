@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppURLBarView: BackgroundedContentControl {
     let preferredHeight: CGFloat

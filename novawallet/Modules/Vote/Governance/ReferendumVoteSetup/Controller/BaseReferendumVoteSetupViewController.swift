@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = BaseReferendumVoteSetupViewLayout

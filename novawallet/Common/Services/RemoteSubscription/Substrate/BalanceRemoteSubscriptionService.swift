@@ -65,14 +65,75 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         )
     }
 
-    private func prepareNativeAssetSubscriptionRequests(
+    func prepareSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
         transactionSubscription: TransactionSubscribing?
-    ) throws -> [SubscriptionSettings] {
-        let storageKeyFactory = LocalStorageKeyFactory()
-        let chainId = chainAsset.chain.chainId
+    ) -> [SubscriptionSettings] {
+        do {
+            if let assetRawType = chainAsset.asset.type {
+                guard let customAssetType = AssetType(rawValue: assetRawType) else {
+                    return []
+                }
 
+                switch customAssetType {
+                case .statemine:
+                    return try prepareAssetsPalletSubscriptionRequests(
+                        from: accountId,
+                        chainAsset: chainAsset,
+                        transactionSubscription: transactionSubscription
+                    )
+                case .orml:
+                    return try prepareOrmlSubscriptionRequests(
+                        from: accountId,
+                        chainAsset: chainAsset,
+                        transactionSubscription: transactionSubscription
+                    )
+                case .evmAsset, .evmNative, .equilibrium, .ormlHydrationEvm:
+                    logger.error("Unsupported asset type: \(customAssetType)")
+                    return []
+                }
+            } else {
+                return try prepareNativeAssetSubscriptionRequests(
+                    from: accountId,
+                    chainAsset: chainAsset,
+                    transactionSubscription: transactionSubscription
+                )
+            }
+        } catch {
+            logger.error("Can't create request: \(error)")
+            return []
+        }
+    }
+
+    func prepareSubscriptionRequests(
+        from accountId: AccountId,
+        chain: ChainModel,
+        onlyFor assetIds: Set<AssetModel.Id>?,
+        transactionSubscription: TransactionSubscribing?
+    ) -> [SubscriptionSettings] {
+        let chainAssets = if let assetIds {
+            chain.chainAssets().filter { assetIds.contains($0.asset.assetId) }
+        } else {
+            chain.chainAssets()
+        }
+
+        return chainAssets.flatMap { chainAsset in
+            prepareSubscriptionRequests(
+                from: accountId,
+                chainAsset: chainAsset,
+                transactionSubscription: transactionSubscription
+            )
+        }
+    }
+}
+
+private extension BalanceRemoteSubscriptionService {
+    func getAccountInfoRequest(
+        from accountId: AccountId,
+        chainId: ChainModel.Id,
+        storageKeyFactory: LocalStorageKeyFactoryProtocol
+    ) throws -> MapSubscriptionRequest<BytesCodable> {
         let accountStoragePath = SystemPallet.accountPath
         let accountLocalKey = try storageKeyFactory.createFromStoragePath(
             accountStoragePath,
@@ -80,6 +141,16 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             chainId: chainId
         )
 
+        return MapSubscriptionRequest(storagePath: accountStoragePath, localKey: accountLocalKey) {
+            BytesCodable(wrappedValue: accountId)
+        }
+    }
+
+    func getLocksRequest(
+        from accountId: AccountId,
+        chainId: ChainModel.Id,
+        storageKeyFactory: LocalStorageKeyFactoryProtocol
+    ) throws -> MapSubscriptionRequest<BytesCodable> {
         let locksStoragePath = StorageCodingPath.balanceLocks
         let locksLocalKey = try storageKeyFactory.createFromStoragePath(
             locksStoragePath,
@@ -87,6 +158,17 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             chainId: chainId
         )
 
+        return MapSubscriptionRequest(
+            storagePath: locksStoragePath,
+            localKey: locksLocalKey
+        ) { BytesCodable(wrappedValue: accountId) }
+    }
+
+    func getHoldsRequest(
+        from accountId: AccountId,
+        chainId: ChainModel.Id,
+        storageKeyFactory: LocalStorageKeyFactoryProtocol
+    ) throws -> MapSubscriptionRequest<BytesCodable> {
         let holdsStoragePath = BalancesPallet.holdsPath
         let holdsLocalKey = try storageKeyFactory.createFromStoragePath(
             holdsStoragePath,
@@ -94,27 +176,70 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             chainId: chainId
         )
 
-        let accountRequest = MapSubscriptionRequest(storagePath: accountStoragePath, localKey: accountLocalKey) {
-            BytesCodable(wrappedValue: accountId)
-        }
-
-        let locksRequest = MapSubscriptionRequest(
-            storagePath: locksStoragePath,
-            localKey: locksLocalKey
-        ) { BytesCodable(wrappedValue: accountId) }
-
-        let holdsRequest = MapSubscriptionRequest(
+        return MapSubscriptionRequest(
             storagePath: holdsStoragePath,
             localKey: holdsLocalKey
         ) { BytesCodable(wrappedValue: accountId) }
+    }
+
+    func getFreezesRequest(
+        from accountId: AccountId,
+        chainId: ChainModel.Id,
+        storageKeyFactory: LocalStorageKeyFactoryProtocol
+    ) throws -> MapSubscriptionRequest<BytesCodable> {
+        let freezesStoragePath = BalancesPallet.freezesPath
+        let freezesLocalKey = try storageKeyFactory.createFromStoragePath(
+            freezesStoragePath,
+            encodableElement: accountId,
+            chainId: chainId
+        )
+
+        return MapSubscriptionRequest(
+            storagePath: freezesStoragePath,
+            localKey: freezesLocalKey
+        ) { BytesCodable(wrappedValue: accountId) }
+    }
+
+    func prepareNativeAssetSubscriptionRequests(
+        from accountId: AccountId,
+        chainAsset: ChainAsset,
+        transactionSubscription: TransactionSubscribing?
+    ) throws -> [SubscriptionSettings] {
+        let storageKeyFactory = LocalStorageKeyFactory()
+        let chainId = chainAsset.chain.chainId
+
+        let accountRequest = try getAccountInfoRequest(
+            from: accountId,
+            chainId: chainId,
+            storageKeyFactory: storageKeyFactory
+        )
+
+        let locksRequest = try getLocksRequest(
+            from: accountId,
+            chainId: chainId,
+            storageKeyFactory: storageKeyFactory
+        )
+
+        let holdsRequest = try getHoldsRequest(
+            from: accountId,
+            chainId: chainId,
+            storageKeyFactory: storageKeyFactory
+        )
+
+        let freezesRequest = try getFreezesRequest(
+            from: accountId,
+            chainId: chainId,
+            storageKeyFactory: storageKeyFactory
+        )
 
         let handlerFactory = subscriptionHandlingFactory.createNative(
             for: accountId,
             chainAssetId: chainAsset.chainAssetId,
             params: .init(
-                accountLocalStorageKey: accountLocalKey,
-                locksLocalStorageKey: locksLocalKey,
-                holdsLocalStorageKey: holdsLocalKey
+                accountLocalStorageKey: accountRequest.localKey,
+                locksLocalStorageKey: locksRequest.localKey,
+                holdsLocalStorageKey: holdsRequest.localKey,
+                freezesLocalStorageKey: freezesRequest.localKey
             ),
             transactionSubscription: transactionSubscription
         )
@@ -122,11 +247,12 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         return [
             SubscriptionSettings(request: accountRequest, handlingFactory: handlerFactory),
             SubscriptionSettings(request: locksRequest, handlingFactory: handlerFactory),
-            SubscriptionSettings(request: holdsRequest, handlingFactory: handlerFactory)
+            SubscriptionSettings(request: holdsRequest, handlingFactory: handlerFactory),
+            SubscriptionSettings(request: freezesRequest, handlingFactory: handlerFactory)
         ]
     }
 
-    private func prepareAssetsPalletSubscriptionRequests(
+    func prepareAssetsPalletSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
         transactionSubscription: TransactionSubscribing?
@@ -182,7 +308,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         ]
     }
 
-    private func prepareOrmlSubscriptionRequests(
+    func prepareOrmlSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
         transactionSubscription: TransactionSubscribing?
@@ -234,67 +360,5 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             SubscriptionSettings(request: accountRequest, handlingFactory: handlerFactory),
             SubscriptionSettings(request: locksRequest, handlingFactory: handlerFactory)
         ]
-    }
-
-    func prepareSubscriptionRequests(
-        from accountId: AccountId,
-        chainAsset: ChainAsset,
-        transactionSubscription: TransactionSubscribing?
-    ) -> [SubscriptionSettings] {
-        do {
-            if let assetRawType = chainAsset.asset.type {
-                guard let customAssetType = AssetType(rawValue: assetRawType) else {
-                    return []
-                }
-
-                switch customAssetType {
-                case .statemine:
-                    return try prepareAssetsPalletSubscriptionRequests(
-                        from: accountId,
-                        chainAsset: chainAsset,
-                        transactionSubscription: transactionSubscription
-                    )
-                case .orml:
-                    return try prepareOrmlSubscriptionRequests(
-                        from: accountId,
-                        chainAsset: chainAsset,
-                        transactionSubscription: transactionSubscription
-                    )
-                case .evmAsset, .evmNative, .equilibrium:
-                    logger.error("Unsupported asset type: \(customAssetType)")
-                    return []
-                }
-            } else {
-                return try prepareNativeAssetSubscriptionRequests(
-                    from: accountId,
-                    chainAsset: chainAsset,
-                    transactionSubscription: transactionSubscription
-                )
-            }
-        } catch {
-            logger.error("Can't create request: \(error)")
-            return []
-        }
-    }
-
-    func prepareSubscriptionRequests(
-        from accountId: AccountId,
-        chain: ChainModel,
-        onlyFor assetIds: Set<AssetModel.Id>?,
-        transactionSubscription: TransactionSubscribing?
-    ) -> [SubscriptionSettings] {
-        let chainAssets = if let assetIds {
-            chain.chainAssets().filter { assetIds.contains($0.asset.assetId) }
-        } else {
-            chain.chainAssets()
-        }
-
-        return chainAssets.flatMap { chainAsset in
-            prepareSubscriptionRequests(
-                from: accountId,
-                chainAsset: chainAsset,
-                transactionSubscription: transactionSubscription
-            )
-        }
     }
 }

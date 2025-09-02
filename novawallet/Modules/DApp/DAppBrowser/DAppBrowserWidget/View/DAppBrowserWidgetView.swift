@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class DAppBrowserWidgetView: UIView {
     let backgroundView: BlurBackgroundView = .create { view in
@@ -100,7 +100,7 @@ private extension DAppBrowserWidgetView {
         static let closeButtonLeadingInset: CGFloat = 8.0
         static let titleHeight: CGFloat = 22.0
         static let titleTopInset: CGFloat = 9.0
-        static let iconSize = CGSize(width: 16.0, height: 16.0)
-        static let titleIconSpacing = 7.0
+        static let iconSize = CGSize(width: 20.0, height: 20.0)
+        static let titleIconSpacing = 4.0
     }
 }

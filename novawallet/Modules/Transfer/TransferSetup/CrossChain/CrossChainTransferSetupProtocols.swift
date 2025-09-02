@@ -3,7 +3,7 @@ import BigInt
 
 protocol CrossChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?)
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?)
     func estimateCrossChainFee(for amount: BigUInt, recepient: AccountId?)
     func change(recepient: AccountId?)
 }

@@ -1,9 +1,9 @@
 import XCTest
 @testable import novawallet
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import Cuckoo
 import BigInt
 
@@ -20,6 +20,7 @@ class DAppOperationConfirmTests: XCTestCase {
         tip: "0x00000000000000000000000000000000",
         transactionVersion: "0x00000003",
         metadataHash: nil,
+        assetId: nil,
         withSignedTransaction: nil,
         signedExtensions: [
             "CheckNonZeroSender",
@@ -57,7 +58,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chainId = try Data(hexString: extrinsicRequest.genesisHash).toHex()
@@ -98,7 +100,7 @@ class DAppOperationConfirmTests: XCTestCase {
             when(stub).callMethod(any(), params: any(), options: any(), completion: any())
                 .then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
 
-                    let fee = RuntimeDispatchInfo(fee: "1", weight: 32)
+                    let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
 
                     DispatchQueue.global().async {
                         completion?(.success(fee))
@@ -131,9 +133,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         let metadataHashFactory = MetadataHashOperationFactory(
@@ -151,6 +151,7 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory, 
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
@@ -158,8 +159,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let delegate = MockDAppOperationConfirmDelegate()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo,
+        let balanceViewModelFactory = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
@@ -167,8 +167,8 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
-            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: .left(chain)),
+            balanceViewModelFacade: balanceViewModelFactory,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
@@ -244,7 +244,8 @@ class DAppOperationConfirmTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let chain = ChainModelGenerator.generateChain(
@@ -281,8 +282,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let delegate = MockDAppOperationConfirmDelegate()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo,
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
@@ -290,8 +290,8 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
-            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: DAppOperationBytesConfirmViewModelFactory(chain: .left(chain)),
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )

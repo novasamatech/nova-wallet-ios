@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import Operation_iOS
 import BigInt
@@ -39,6 +39,7 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         logger: LoggerProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.votingItems = votingItems
@@ -62,6 +63,7 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             lockStateFactory: lockStateFactory,
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
     }
@@ -115,6 +117,13 @@ extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputP
             let errors = result.errors()
 
             guard let error = errors.first else {
+                if
+                    let delayedCallSender = result.senders().first(
+                        where: { $0.delayedCallExecution() }
+                    ) {
+                    self?.presenter?.didReceiveSuccessBatchVoting(delayedCallSender)
+                }
+
                 return
             }
 
@@ -182,7 +191,7 @@ private extension SwipeGovVotingConfirmInteractor {
             items.forEach { self?.clearedItems[$0.referendumId] = $0 }
 
             if self?.clearedItems.keys == self?.votingItems.keys {
-                self?.presenter?.didReceiveSuccessBatchVoting()
+                self?.presenter?.didReceiveSuccessBatchVoting(nil)
             }
         }
     }

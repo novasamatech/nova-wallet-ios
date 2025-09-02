@@ -1,12 +1,16 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: StakingParachainInteractorOutputProtocol?
 
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol {
         sharedState.stakingLocalSubscriptionFactory
+    }
+
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol {
+        sharedState.stakingRewardsLocalSubscriptionFactory
     }
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
@@ -48,7 +52,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var yieldBoostTasksProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 
     var selectedAccount: MetaChainAccountResponse?
-    var totalRewardInterval: (startTimestamp: Int64?, endTimestamp: Int64?)?
+    var totalRewardInterval: StakingRewardFiltersInterval?
     var selectedChainAsset: ChainAsset { sharedState.stakingOption.chainAsset }
 
     init(

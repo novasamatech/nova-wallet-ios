@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 @IBDesignable
 final class ExpandableActionControl: BaseActionControl {

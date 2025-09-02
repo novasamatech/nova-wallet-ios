@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class ImportCloudPasswordViewLayout: SCLoadableActionLayoutView {
     let titleLabel: UILabel = .create { label in

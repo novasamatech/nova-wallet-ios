@@ -113,7 +113,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                switch submittionResult {
+                switch submittionResult.status {
                 case let .success(executionResult):
                     let eventParser = AssetsHydraExchangeDepositParser(logger: self.host.logger)
 
@@ -140,6 +140,41 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
             return submittionWrapper
                 .insertingHead(operations: [codingFactoryOperation])
                 .insertingTail(operation: monitorOperation)
+        }
+
+        executionWrapper.addDependency(wrapper: paramsWrapper)
+
+        return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
+    }
+
+    func submitWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
+
+        let executionWrapper = OperationCombiningService<ExtrinsicSubmittedModel>.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: { builder in
+                    try HydraExchangeExtrinsicConverter.addingOperation(
+                        from: params,
+                        builder: builder
+                    )
+                },
+                payingIn: self.operationArgs.feeAsset,
+                signer: self.host.signingWrapper,
+                matchingEvents: nil
+            )
+
+            let mappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+                let model = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+                return model.extrinsicSubmittedModel
+            }
+
+            mappingOperation.addDependency(submittionWrapper.targetOperation)
+
+            return submittionWrapper.insertingTail(operation: mappingOperation)
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)

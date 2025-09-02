@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class AssetReceiveViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetReceiveViewLayout
@@ -43,8 +43,12 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
         cachedBoundsWidth = view.bounds.width
         presenter.set(qrCodeSize: qrCodeSize)
     }
+}
 
-    private func setupLocalization() {
+// MARK: Private
+
+private extension AssetReceiveViewController {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
         rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
@@ -53,22 +57,35 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
         rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string.localizable.commonCopyAddress(
             preferredLanguages: languages
         ).capitalized
+        rootView.legacyAddressMessageLabel.text = R.string.localizable.assetReceiveLookingForAddressMessage(
+            preferredLanguages: languages
+        )
+        rootView.viewAddressFormatsButton.setTitle(
+            R.string.localizable.assetReceiveViewAddressFormat(
+                preferredLanguages: languages
+            )
+        )
     }
 
-    private func setupHandlers() {
+    func setupHandlers() {
         rootView.shareButton.addTarget(
             self,
-            action: #selector(didTapShare),
+            action: #selector(actionShare),
             for: .touchUpInside
         )
         rootView.accountAddressView.copyButton.addTarget(
             self,
-            action: #selector(didTapCopyAddress),
+            action: #selector(actionCopyAddress),
+            for: .touchUpInside
+        )
+        rootView.viewAddressFormatsButton.addTarget(
+            self,
+            action: #selector(actionViewFormats),
             for: .touchUpInside
         )
     }
 
-    private func updateTitleDetails(
+    func updateTitleDetails(
         chainName: String,
         token: String
     ) {
@@ -86,23 +103,24 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func updateNavigationBar() {
+    func updateNavigationBar() {
         navigationItem.titleView = rootView.chainView
     }
 
-    @objc private func didTapShare() {
+    @objc func actionShare() {
         presenter.share()
     }
 
-    @objc private func didTapCopyAddress() {
+    @objc func actionCopyAddress() {
         presenter.copyAddress()
+    }
+
+    @objc func actionViewFormats() {
+        presenter.viewAddressFormats()
     }
 }
 
-struct AccountAddressViewModel {
-    let walletName: String?
-    let address: String?
-}
+// MARK: AssetReceiveViewProtocol
 
 extension AssetReceiveViewController: AssetReceiveViewProtocol {
     func didReceive(
@@ -117,6 +135,10 @@ extension AssetReceiveViewController: AssetReceiveViewProtocol {
 
         rootView.accountAddressView.titleLabel.text = addressViewModel.walletName
         rootView.accountAddressView.addressLabel.text = addressViewModel.address
+
+        if addressViewModel.hasLegacyAddress {
+            rootView.showLegacyAddressMessage()
+        }
     }
 
     func didReceive(qrResult: QRCodeWithLogoFactory.QRCreationResult) {
@@ -129,10 +151,18 @@ extension AssetReceiveViewController: AssetReceiveViewProtocol {
     }
 }
 
+// MARK: Localizable
+
 extension AssetReceiveViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
         }
     }
+}
+
+struct AccountAddressViewModel {
+    let walletName: String?
+    let address: String?
+    let hasLegacyAddress: Bool
 }

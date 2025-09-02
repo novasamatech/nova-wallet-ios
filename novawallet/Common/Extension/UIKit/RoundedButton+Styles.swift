@@ -1,7 +1,22 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 extension RoundedButton {
+    func applyAccessoryCaps2Style() {
+        roundedBackgroundView?.shadowOpacity = 0.0
+        roundedBackgroundView?.fillColor = .clear
+        roundedBackgroundView?.highlightedFillColor = .clear
+        roundedBackgroundView?.strokeColor = .clear
+        roundedBackgroundView?.highlightedStrokeColor = .clear
+
+        imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()!
+        imageWithTitleView?.titleFont = .semiBoldCaps2
+
+        imageWithTitleView?.spacingBetweenLabelAndIcon = 4
+
+        changesContentOpacityWhenHighlighted = true
+    }
+
     func applyAccessoryStyle() {
         roundedBackgroundView?.shadowOpacity = 0.0
         roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!

@@ -58,6 +58,14 @@ final class ChainModelMapper {
             buyProviders = nil
         }
 
+        let sellProviders: JSON?
+
+        if let data = entity.sellProviders {
+            sellProviders = try jsonDecoder.decode(JSON.self, from: data)
+        } else {
+            sellProviders = nil
+        }
+
         let source = AssetModel.Source(rawValue: entity.source!) ?? .remote
 
         let stakings = try createStakings(from: entity)
@@ -73,6 +81,7 @@ final class ChainModelMapper {
             type: entity.type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,
+            sellProviders: sellProviders,
             enabled: entity.enabled,
             source: source
         )
@@ -127,10 +136,16 @@ final class ChainModelMapper {
                 assetEntity.typeExtras = nil
             }
 
-            if let json = asset.buyProviders {
-                assetEntity.buyProviders = try jsonEncoder.encode(json)
+            if let buyProvidersJson = asset.buyProviders {
+                assetEntity.buyProviders = try jsonEncoder.encode(buyProvidersJson)
             } else {
                 assetEntity.buyProviders = nil
+            }
+
+            if let sellProvidersJson = asset.sellProviders {
+                assetEntity.sellProviders = try jsonEncoder.encode(sellProvidersJson)
+            } else {
+                assetEntity.sellProviders = nil
             }
 
             return assetEntity
@@ -345,6 +360,10 @@ final class ChainModelMapper {
             options.append(.pushNotifications)
         }
 
+        if entity.hasMultisig {
+            options.append(.multisig)
+        }
+
         return !options.isEmpty ? options : nil
     }
 }
@@ -411,6 +430,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             nodes: Set(nodes),
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: UInt64(bitPattern: entity.addressPrefix),
+            legacyAddressPrefix: entity.legacyAddressPrefix?.uint64Value,
             types: types,
             icon: entity.icon,
             options: options,
@@ -436,6 +456,13 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.typesOverrideCommon = model.types.map { NSNumber(value: $0.overridesCommon) }
 
         entity.addressPrefix = Int64(bitPattern: model.addressPrefix)
+
+        entity.legacyAddressPrefix = if let legacyAddressPrefix = model.legacyAddressPrefix {
+            NSNumber(value: legacyAddressPrefix)
+        } else {
+            nil
+        }
+
         entity.icon = model.icon
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
@@ -448,6 +475,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasAssetHubTransferFees = model.hasAssetHubFees
         entity.hasHydrationTransferFees = model.hasHydrationFees
         entity.hasProxy = model.hasProxy
+        entity.hasMultisig = model.hasMultisig
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue

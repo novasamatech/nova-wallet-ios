@@ -13,29 +13,88 @@ protocol ExtrinsicStatusServiceProtocol {
 enum ExtrinsicStatusServiceError: Error {
     case extrinsicNotFound(Data)
     case terminateEventNotFound(SubstrateExtrinsicEvents)
+    case errorDecodingFailed
 }
 
 final class ExtrinsicStatusService {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let eventsQueryFactory: BlockEventsQueryFactoryProtocol
+    let logger: LoggerProtocol
 
     init(
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        eventsQueryFactory: BlockEventsQueryFactoryProtocol
+        eventsQueryFactory: BlockEventsQueryFactoryProtocol,
+        logger: LoggerProtocol
     ) {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.eventsQueryFactory = eventsQueryFactory
+        self.logger = logger
+    }
+}
+
+private extension ExtrinsicStatusService {
+    func createSuccessStatus(
+        from events: SubstrateExtrinsicEvents,
+        input: ExtrinsicStatusServiceInput,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> SubstrateExtrinsicStatus {
+        let extString = input.extrinsicHash.toHex(includePrefix: true)
+
+        let events: [Event] = if let interstedEventsMatcher = input.matchingEvents {
+            events.eventRecords.filter {
+                interstedEventsMatcher.match(
+                    event: $0.event,
+                    using: codingFactory
+                )
+            }.map(\.event)
+        } else {
+            []
+        }
+
+        return .success(
+            .init(
+                extrinsicHash: extString,
+                blockHash: input.blockHash,
+                interestedEvents: events
+            )
+        )
     }
 
-    private func createMatchingWrapper(
+    func createFailureStatus(
+        from events: SubstrateExtrinsicEvents,
+        input: ExtrinsicStatusServiceInput,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> SubstrateExtrinsicStatus {
+        let failMatcher = ExtrinsicFailureEventMatcher()
+
+        guard let failureEvent = events.eventRecords.first(
+            where: { failMatcher.match(event: $0.event, using: codingFactory) }
+        )?.event else {
+            throw ExtrinsicStatusServiceError.terminateEventNotFound(events)
+        }
+
+        logger.error("Failed extrinsic \(input.extrinsicHash.toHexWithPrefix()) \(input.blockHash) \(failureEvent)")
+
+        let errorDecoder = CallDispatchErrorDecoder(logger: logger)
+
+        guard
+            let dispatchError = errorDecoder.decode(
+                errorParams: failureEvent.params,
+                using: codingFactory
+            ) else {
+            throw ExtrinsicStatusServiceError.errorDecodingFailed
+        }
+
+        let extString = input.extrinsicHash.toHex(includePrefix: true)
+        return .failure(.init(extrinsicHash: extString, blockHash: input.blockHash, error: dispatchError))
+    }
+
+    func createMatchingWrapper(
         dependingOn queryOperation: BaseOperation<SubstrateBlockDetails>,
-        runtimeProvider: RuntimeProviderProtocol,
-        extrinsicHash: Data,
-        blockHash: BlockHash,
-        interstedEventsMatcher: ExtrinsicEventsMatching?
+        input: ExtrinsicStatusServiceInput
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -44,52 +103,28 @@ final class ExtrinsicStatusService {
             let extrinsicEventsList = try queryOperation.extractNoCancellableResultData().extrinsicsWithEvents
 
             guard let extrinsicEvents = extrinsicEventsList
-                .first(where: { $0.extrinsicHash == extrinsicHash }) else {
-                throw ExtrinsicStatusServiceError.extrinsicNotFound(extrinsicHash)
+                .first(where: { $0.extrinsicHash == input.extrinsicHash }) else {
+                throw ExtrinsicStatusServiceError.extrinsicNotFound(input.extrinsicHash)
             }
 
             let successMatcher = ExtrinsicSuccessEventMatcher()
-
-            if extrinsicEvents.eventRecords.contains(
+            let isSuccess = extrinsicEvents.eventRecords.contains(
                 where: { successMatcher.match(event: $0.event, using: codingFactory) }
-            ) {
-                let extString = extrinsicHash.toHex(includePrefix: true)
+            )
 
-                let events: [Event] = if let interstedEventsMatcher {
-                    extrinsicEvents.eventRecords.filter {
-                        interstedEventsMatcher.match(
-                            event: $0.event,
-                            using: codingFactory
-                        )
-                    }.map(\.event)
-                } else {
-                    []
-                }
-
-                return .success(
-                    .init(
-                        extrinsicHash: extString,
-                        blockHash: blockHash,
-                        interestedEvents: events
-                    )
+            if isSuccess {
+                return self.createSuccessStatus(
+                    from: extrinsicEvents,
+                    input: input,
+                    codingFactory: codingFactory
+                )
+            } else {
+                return try self.createFailureStatus(
+                    from: extrinsicEvents,
+                    input: input,
+                    codingFactory: codingFactory
                 )
             }
-
-            let failMatcher = ExtrinsicFailureEventMatcher()
-
-            if let failureEvent = extrinsicEvents.eventRecords.first(
-                where: { failMatcher.match(event: $0.event, using: codingFactory) }
-            )?.event {
-                let dispatchError = try failureEvent.params.map(
-                    to: ExtrinsicFailedEventParams.self,
-                    with: codingFactory.createRuntimeJsonContext().toRawContext()
-                ).dispatchError
-
-                let extString = extrinsicHash.toHex(includePrefix: true)
-                return .failure(.init(extrinsicHash: extString, blockHash: blockHash, error: dispatchError))
-            }
-
-            throw ExtrinsicStatusServiceError.terminateEventNotFound(extrinsicEvents)
         }
 
         mappingOperation.addDependency(codingFactoryOperation)
@@ -117,12 +152,15 @@ extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
                 blockHash: blockHashData
             )
 
-            let statusWrapper = createMatchingWrapper(
-                dependingOn: eventsQueryWrapper.targetOperation,
-                runtimeProvider: runtimeProvider,
+            let input = ExtrinsicStatusServiceInput(
                 extrinsicHash: extHashData,
                 blockHash: blockHash,
-                interstedEventsMatcher: matchingEvents
+                matchingEvents: matchingEvents
+            )
+
+            let statusWrapper = createMatchingWrapper(
+                dependingOn: eventsQueryWrapper.targetOperation,
+                input: input
             )
 
             statusWrapper.addDependency(wrapper: eventsQueryWrapper)

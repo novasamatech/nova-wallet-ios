@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 /**
     Subclass of ShadowShapeView designed to provided view with rounded corners.

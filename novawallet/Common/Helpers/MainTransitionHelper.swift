@@ -1,10 +1,37 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
-struct MainTransitionHelper {
+enum MainTransitionPostProcessing {
+    case flowStatus(FlowStatusPresentingClosure)
+    case postTransition((MainTabBarViewController) -> Void)
+    case nothing
+}
+
+enum MainTransitionHelper {
     static func transitToMainTabBarController(
         selectingIndex: Int = MainTabBarViewFactory.walletIndex,
         closing controller: UIViewController,
+        flowStatusClosure: FlowStatusPresentingClosure? = nil,
+        animated: Bool
+    ) {
+        let postProcessing = if let flowStatusClosure {
+            MainTransitionPostProcessing.flowStatus(flowStatusClosure)
+        } else {
+            MainTransitionPostProcessing.nothing
+        }
+
+        transitToMainTabBarController(
+            selectingIndex: selectingIndex,
+            closing: controller,
+            postProcessing: postProcessing,
+            animated: animated
+        )
+    }
+
+    static func transitToMainTabBarController(
+        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
+        closing controller: UIViewController,
+        postProcessing: MainTransitionPostProcessing,
         animated: Bool
     ) {
         if let presentingController = controller.presentingViewController {
@@ -15,10 +42,23 @@ struct MainTransitionHelper {
             return
         }
 
+        let postProcessingClosure = {
+            switch postProcessing {
+            case let .flowStatus(closure):
+                tabBarController.presentStatusAlert(closure)
+            case let .postTransition(closure):
+                closure(tabBarController)
+            case .nothing:
+                break
+            }
+        }
+
         let navigationController = tabBarController.selectedViewController as? UINavigationController
 
         guard tabBarController.selectedIndex != selectingIndex else {
             navigationController?.popToRootViewController(animated: animated)
+            postProcessingClosure()
+
             return
         }
 
@@ -29,6 +69,8 @@ struct MainTransitionHelper {
         if animated {
             TransitionAnimator(type: .reveal).animate(view: tabBarController.view, completionBlock: nil)
         }
+
+        postProcessingClosure()
     }
 
     static func dismissAndPopBack(

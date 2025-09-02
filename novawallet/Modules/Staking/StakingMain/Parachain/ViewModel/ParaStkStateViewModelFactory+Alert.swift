@@ -1,10 +1,10 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 extension ParaStkStateViewModelFactory {
     func createAlerts(
-        for collatorStatuses: [ParaStkDelegationStatus]?,
+        for collatorStatuses: [CollatorStakingDelegationStatus]?,
         scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         commonData: ParachainStaking.CommonData
     ) -> [StakingAlert] {
@@ -61,7 +61,7 @@ extension ParaStkStateViewModelFactory {
     }
 
     private func findStakeMoreAlert(
-        for collatorStatuses: [ParaStkDelegationStatus]?
+        for collatorStatuses: [CollatorStakingDelegationStatus]?
     ) -> StakingAlert? {
         if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notRewarded }) {
             let description = LocalizableResource { locale in
@@ -77,7 +77,7 @@ extension ParaStkStateViewModelFactory {
     }
 
     private func findChangeCollatorAlert(
-        for collatorStatuses: [ParaStkDelegationStatus]?
+        for collatorStatuses: [CollatorStakingDelegationStatus]?
     ) -> StakingAlert? {
         if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notElected }) {
             let description = LocalizableResource { locale in

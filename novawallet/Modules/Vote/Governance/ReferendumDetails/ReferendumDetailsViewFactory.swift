@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 // swiftlint:disable function_body_length
 struct ReferendumDetailsViewFactory {
@@ -96,6 +96,8 @@ struct ReferendumDetailsViewFactory {
             stringFactory: referendumDisplayStringFactory
         )
 
+        let linkFactory = ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL)
+
         return ReferendumDetailsPresenter(
             chain: chain,
             governanceType: stateOption.type,
@@ -113,6 +115,7 @@ struct ReferendumDetailsViewFactory {
             endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            universalLinkFactory: linkFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

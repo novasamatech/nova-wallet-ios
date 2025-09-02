@@ -210,9 +210,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         extrinsicService = ExtrinsicService(
@@ -223,6 +221,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
@@ -311,9 +310,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         extrinsicService = ExtrinsicService(
@@ -324,6 +321,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,

@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 enum TokenManageSingleMeasurement {
     static let cellHeight: CGFloat = 52

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct GovernanceDelegateSetupViewFactory {
@@ -89,7 +89,7 @@ struct GovernanceDelegateSetupViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovernanceDelegateSetupPresenter(
             interactor: interactor,
@@ -100,6 +100,7 @@ struct GovernanceDelegateSetupViewFactory {
             tracks: delegateDisplayInfo.additions,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,

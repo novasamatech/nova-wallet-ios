@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 final class UsernameSetupViewLayout: UIView {
     let titleLabel: UILabel = .create { label in

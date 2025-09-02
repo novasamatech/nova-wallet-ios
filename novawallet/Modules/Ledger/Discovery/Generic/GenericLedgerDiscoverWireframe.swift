@@ -1,10 +1,10 @@
 import Foundation
 
 final class GenericLedgerDiscoverWireframe: LedgerDiscoverWireframeProtocol {
-    let application: GenericLedgerSubstrateApplicationProtocol
+    let application: GenericLedgerPolkadotApplicationProtocol
     let flow: WalletCreationFlow
 
-    init(application: GenericLedgerSubstrateApplicationProtocol, flow: WalletCreationFlow) {
+    init(application: GenericLedgerPolkadotApplicationProtocol, flow: WalletCreationFlow) {
         self.application = application
         self.flow = flow
     }

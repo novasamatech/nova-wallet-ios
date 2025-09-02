@@ -1,18 +1,22 @@
-import SoraFoundation
+import Foundation_iOS
 
 final class NotificationsManagementViewController: UIViewController, ViewHolder {
     typealias DataSource = SettingsTableDataSource<NotificationsManagementRow, NotificationsManagementSection>
     typealias RootViewType = NotificationsManagementViewLayout
 
     let presenter: NotificationsManagementPresenterProtocol
+    let externalCallbacks: NotificationsManagementExternalCallbacks
+
     lazy var tableDataSource: DataSource = .init()
     private var saveButtonEnabled: Bool = false
 
     init(
         presenter: NotificationsManagementPresenterProtocol,
+        externalCallbacks: NotificationsManagementExternalCallbacks,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.externalCallbacks = externalCallbacks
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -107,6 +111,10 @@ extension NotificationsManagementViewController: NotificationsManagementViewProt
 
     func stopLoading() {
         setupNavigationItem()
+    }
+
+    func getExternalCallbacks() -> NotificationsManagementExternalCallbacks {
+        externalCallbacks
     }
 }
 

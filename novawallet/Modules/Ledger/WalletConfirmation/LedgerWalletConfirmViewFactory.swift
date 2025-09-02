@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct LedgerWalletConfirmViewFactory {
     static func createLegacyView(
@@ -20,7 +20,7 @@ struct LedgerWalletConfirmViewFactory {
     }
 
     static func createGenericView(
-        for model: SubstrateLedgerWalletModel,
+        for model: PolkadotLedgerWalletModel,
         flow: WalletCreationFlow
     ) -> ControllerBackedProtocol? {
         let interactor = GenericLedgerWalletConfirmInteractor(

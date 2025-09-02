@@ -1,8 +1,8 @@
 import XCTest
 @testable import novawallet
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import Cuckoo
 
 final class SettingsTests: XCTestCase {
@@ -60,8 +60,14 @@ final class SettingsTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
+        let multisigListLocalSubscriptionFactory = MultisigListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
         let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
+            multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
         

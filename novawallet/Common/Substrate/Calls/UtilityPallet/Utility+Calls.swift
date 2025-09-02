@@ -19,6 +19,24 @@ extension UtilityPallet {
     }
 
     struct Call: Codable {
-        let calls: [RuntimeCall<JSON>]
+        let calls: [AnyRuntimeCall]
+    }
+
+    struct DispatchAs<T: Codable>: Codable {
+        enum CodingKeys: String, CodingKey {
+            case asOrigin = "as_origin"
+            case call
+        }
+
+        let asOrigin: RuntimeCallOrigin
+        let call: RuntimeCall<T>
+
+        func runtimeCall() -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: UtilityPallet.name,
+                callName: "dispatch_as",
+                args: self
+            )
+        }
     }
 }

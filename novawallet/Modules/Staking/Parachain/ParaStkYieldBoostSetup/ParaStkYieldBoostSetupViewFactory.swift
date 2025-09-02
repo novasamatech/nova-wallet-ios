@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct ParaStkYieldBoostSetupViewFactory {
@@ -23,7 +23,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
+        let accountDetailsViewModelFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
         let yieldBoostCollatorViewModelFactory = YieldBoostCollatorSelectionFactory(
             chainFormat: chainAsset.chain.chainFormat
         )

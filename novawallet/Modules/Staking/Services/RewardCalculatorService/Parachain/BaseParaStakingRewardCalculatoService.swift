@@ -3,29 +3,14 @@ import BigInt
 import SubstrateSdk
 import Operation_iOS
 
-class BaseParaStakingRewardCalculatoService {
-    static let queueLabelPrefix = "com.novawallet.parastk.rewcalculator"
+struct ParaStkRewardParamsSnapshot {
+    let totalStaked: BigUInt
+    let totalIssuance: BigUInt
+    let inflation: ParachainStaking.InflationConfig
+    let inflationDistribution: ParachainStaking.InflationDistributionPercent
+}
 
-    struct PendingRequest {
-        let resultClosure: (ParaStakingRewardCalculatorEngineProtocol) -> Void
-        let queue: DispatchQueue?
-    }
-
-    struct Snapshot {
-        let totalStaked: BigUInt
-        let totalIssuance: BigUInt
-        let inflation: ParachainStaking.InflationConfig
-        let inflationDistribution: ParachainStaking.InflationDistributionPercent
-    }
-
-    let syncQueue = DispatchQueue(
-        label: "\(queueLabelPrefix).\(UUID().uuidString)",
-        qos: .userInitiated
-    )
-
-    private var isActive: Bool = false
-    private var snapshot: Snapshot?
-
+class BaseParaStakingRewardCalculatoService: CollatorStakingRewardService<ParaStkRewardParamsSnapshot> {
     private(set) var totalIssuance: BigUInt?
     private(set) var totalStaked: BigUInt?
     private(set) var inflationConfig: ParachainStaking.InflationConfig?
@@ -46,7 +31,6 @@ class BaseParaStakingRewardCalculatoService {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeCodingService: RuntimeProviderProtocol
-    let logger: LoggerProtocol
     let assetPrecision: Int16
 
     init(
@@ -58,6 +42,7 @@ class BaseParaStakingRewardCalculatoService {
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.chainId = chainId
@@ -68,7 +53,11 @@ class BaseParaStakingRewardCalculatoService {
         self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
         self.assetPrecision = assetPrecision
-        self.logger = logger
+
+        let syncQueue = DispatchQueue(
+            label: "com.novawallet.parastk.rewcalculator.\(UUID().uuidString)",
+            qos: .userInitiated
+        )
 
         inflationDistributionProvider = ParaStakingInflationDistrProvider(
             chainId: chainId,
@@ -77,9 +66,9 @@ class BaseParaStakingRewardCalculatoService {
             operationQueue: operationQueue,
             syncQueue: syncQueue
         )
-    }
 
-    // MARK: - Private
+        super.init(eventCenter: eventCenter, logger: logger, syncQueue: syncQueue)
+    }
 
     func didUpdateTotalStaked(_ totalStaked: BigUInt) {
         self.totalStaked = totalStaked
@@ -92,49 +81,56 @@ class BaseParaStakingRewardCalculatoService {
             let totalStaked,
             let inflationConfig,
             let inflationDistribution {
-            let snapshot = Snapshot(
+            let snapshot = ParaStkRewardParamsSnapshot(
                 totalStaked: totalStaked,
                 totalIssuance: totalIssuance,
                 inflation: inflationConfig,
                 inflationDistribution: inflationDistribution
             )
 
-            updateSnapshotAndNotify(snapshot)
+            updateSnapshotAndNotify(snapshot, chainId: chainId)
         }
     }
 
-    func updateSnapshotAndNotify(_ snapshot: Snapshot) {
-        self.snapshot = snapshot
+    // MARK: Subsclass
 
-        notifyPendingClosures(with: snapshot)
-    }
-
-    private func fetchInfoFactory(
-        assigning requestId: UUID,
-        runCompletionIn queue: DispatchQueue?,
-        executing closure: @escaping (ParaStakingRewardCalculatorEngineProtocol) -> Void
-    ) {
-        let request = PendingRequest(resultClosure: closure, queue: queue)
-
-        if let snapshot = snapshot {
-            deliver(snapshot: snapshot, to: request, assetPrecision: assetPrecision)
-        } else {
-            pendingRequests[requestId] = request
+    override func start() {
+        do {
+            try subscribeTotalIssuance()
+            try subscribeInflationConfig()
+            try subscribeInflationDistribution()
+            updateTotalStaked()
+        } catch {
+            logger.error("Can't make subscription")
         }
     }
 
-    private func cancel(for requestId: UUID) {
-        pendingRequests[requestId] = nil
+    override func stop() {
+        totalIssuanceProvider?.removeObserver(self)
+        totalIssuanceProvider = nil
+
+        inflationProvider?.removeObserver(self)
+        inflationProvider = nil
+
+        inflationDistributionProvider.throttle()
+
+        totalStakeCancellable.cancel()
     }
 
-    private func deliver(
-        snapshot: Snapshot,
+    override func deliver(snapshot: ParaStkRewardParamsSnapshot, to pendingRequest: PendingRequest) {
+        deliver(snapshot: snapshot, to: pendingRequest, assetPrecision: assetPrecision)
+    }
+}
+
+private extension BaseParaStakingRewardCalculatoService {
+    func deliver(
+        snapshot: ParaStkRewardParamsSnapshot,
         to request: PendingRequest,
         assetPrecision: Int16
     ) {
         let collatorsOperation = collatorsService.fetchInfoOperation()
 
-        let mapOperation = ClosureOperation<ParaStakingRewardCalculatorEngineProtocol> {
+        let mapOperation = ClosureOperation<CollatorStakingRewardCalculatorEngineProtocol> {
             let selectedCollators = try collatorsOperation.extractNoCancellableResultData()
 
             return ParaStakingRewardCalculatorEngine(
@@ -167,49 +163,7 @@ class BaseParaStakingRewardCalculatoService {
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
-    private func notifyPendingClosures(with snapshot: Snapshot) {
-        logger.debug("Attempt fulfill pendings \(pendingRequests.count)")
-
-        guard !pendingRequests.isEmpty else {
-            return
-        }
-
-        let requests = pendingRequests
-        pendingRequests = [:]
-
-        requests.values.forEach {
-            deliver(snapshot: snapshot, to: $0, assetPrecision: assetPrecision)
-        }
-
-        logger.debug("Fulfilled pendings")
-    }
-
-    func subscribe() {
-        do {
-            try subscribeTotalIssuance()
-            try subscribeInflationConfig()
-            try subscribeInflationDistribution()
-            updateTotalStaked()
-        } catch {
-            logger.error("Can't make subscription")
-        }
-    }
-
-    func unsubscribe() {
-        totalIssuanceProvider?.removeObserver(self)
-        totalIssuanceProvider = nil
-
-        inflationProvider?.removeObserver(self)
-        inflationProvider = nil
-
-        inflationDistributionProvider.throttle()
-
-        totalStakeCancellable.cancel()
-    }
-}
-
-extension BaseParaStakingRewardCalculatoService {
-    private func subscribeTotalIssuance() throws {
+    func subscribeTotalIssuance() throws {
         guard totalIssuanceProvider == nil else {
             return
         }
@@ -239,7 +193,7 @@ extension BaseParaStakingRewardCalculatoService {
         )
     }
 
-    private func subscribeInflationConfig() throws {
+    func subscribeInflationConfig() throws {
         guard inflationProvider == nil else {
             return
         }
@@ -271,7 +225,7 @@ extension BaseParaStakingRewardCalculatoService {
         )
     }
 
-    private func subscribeInflationDistribution() throws {
+    func subscribeInflationDistribution() throws {
         inflationDistributionProvider.setup { [weak self] result in
             switch result {
             case let .success(inflationDistribution):
@@ -280,50 +234,5 @@ extension BaseParaStakingRewardCalculatoService {
                 self?.logger.error("Did receive error: \(error)")
             }
         }
-    }
-}
-
-extension BaseParaStakingRewardCalculatoService: ParaStakingRewardCalculatorServiceProtocol {
-    func setup() {
-        syncQueue.async {
-            guard !self.isActive else {
-                return
-            }
-
-            self.isActive = true
-
-            self.subscribe()
-        }
-    }
-
-    func throttle() {
-        syncQueue.async {
-            guard self.isActive else {
-                return
-            }
-
-            self.isActive = false
-
-            self.unsubscribe()
-        }
-    }
-
-    func fetchCalculatorOperation() -> BaseOperation<ParaStakingRewardCalculatorEngineProtocol> {
-        let requestId = UUID()
-
-        return AsyncClosureOperation(
-            operationClosure: { closure in
-                self.syncQueue.async {
-                    self.fetchInfoFactory(assigning: requestId, runCompletionIn: nil) { info in
-                        closure(.success(info))
-                    }
-                }
-            },
-            cancelationClosure: {
-                self.syncQueue.async {
-                    self.cancel(for: requestId)
-                }
-            }
-        )
     }
 }

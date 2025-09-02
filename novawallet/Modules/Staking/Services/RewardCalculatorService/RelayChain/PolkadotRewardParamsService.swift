@@ -3,10 +3,6 @@ import SubstrateSdk
 import BigInt
 import Operation_iOS
 
-enum PolkadotRewardParamsServiceError: Error {
-    case runtimeApiNotFound
-}
-
 struct RuntimeApiInflationPrediction: Decodable, Equatable {
     struct NextMint: Decodable, Equatable {
         let items: [BigUInt]
@@ -25,7 +21,7 @@ struct RuntimeApiInflationPrediction: Decodable, Equatable {
 final class PolkadotRewardParamsService: BaseSyncService {
     let connection: JSONRPCEngine
     let runtimeCodingService: RuntimeCodingServiceProtocol
-    let stateCallFactory: StateCallRequestFactoryProtocol
+    let inflationFetchFactory: PolkadotInflationPredictionFactoryProtocol
     let operationQueue: OperationQueue
 
     private var cancellableStore = CancellableCallStore()
@@ -40,40 +36,23 @@ final class PolkadotRewardParamsService: BaseSyncService {
     ) {
         self.connection = connection
         self.runtimeCodingService = runtimeCodingService
-        self.stateCallFactory = stateCallFactory
+        inflationFetchFactory = PolkadotInflationPredictionFactory(
+            stateCallFactory: stateCallFactory,
+            operationQueue: operationQueue
+        )
         self.operationQueue = operationQueue
     }
 
     override func performSyncUp() {
-        let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
+        cancellableStore.cancel()
 
-        let fetchWrapper = OperationCombiningService<RuntimeApiInflationPrediction>.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-            guard let runtimeApi = codingFactory.metadata.getRuntimeApiMethod(
-                for: "Inflation",
-                methodName: "experimental_inflation_prediction_info"
-            ) else {
-                throw PolkadotRewardParamsServiceError.runtimeApiNotFound
-            }
-
-            return self.stateCallFactory.createWrapper(
-                for: runtimeApi.callName,
-                paramsClosure: nil,
-                codingFactoryClosure: { codingFactory },
-                connection: self.connection,
-                queryType: String(runtimeApi.method.output)
-            )
-        }
-
-        fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-        let totalWrapper = fetchWrapper.insertingHead(operations: [codingFactoryOperation])
+        let wrapper = inflationFetchFactory.createPredictionWrapper(
+            for: connection,
+            runtimeProvider: runtimeCodingService
+        )
 
         executeCancellable(
-            wrapper: totalWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: cancellableStore,
             runningCallbackIn: nil,

@@ -12,8 +12,8 @@ extension XTokens {
             case destinationWeight = "dest_weight"
         }
 
-        let asset: Xcm.VersionedMultiasset
-        let destination: Xcm.VersionedMultilocation
+        let asset: XcmUni.VersionedAsset
+        let destination: XcmUni.VersionedLocation
 
         // must be set as maximum between reserve and destination
         @StringCodable var destinationWeight: BigUInt
@@ -36,8 +36,8 @@ extension XTokens {
 
         static let callName = "transfer_multiasset"
 
-        let asset: Xcm.VersionedMultiasset
-        let destination: Xcm.VersionedMultilocation
+        let asset: XcmUni.VersionedAsset
+        let destination: XcmUni.VersionedLocation
 
         // must be set as maximum between reserve and destination
         let destinationWeightLimit: Xcm.WeightLimit<JSON>
@@ -51,17 +51,22 @@ extension XTokens {
         }
     }
 
+    enum TransferDerivationError: Error {
+        case callNotFound(CallCodingPath)
+        case destinationWeightRequired
+    }
+
     static func appendTransferCall(
-        asset: Xcm.VersionedMultiasset,
-        destination: Xcm.VersionedMultilocation,
-        weight: BigUInt,
+        asset: XcmUni.VersionedAsset,
+        destination: XcmUni.VersionedLocation,
         module: String,
+        weightOption: XcmTransferMetadata.Fee,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> (ExtrinsicBuilderClosure, CallCodingPath) {
+    ) throws -> RuntimeCallCollecting {
         let path = CallCodingPath(moduleName: module, callName: XTokens.transferCallName)
 
         guard let callType = codingFactory.getCall(for: path) else {
-            return ({ $0 }, path)
+            throw TransferDerivationError.callNotFound(path)
         }
 
         let paramNameV1 = TransferCallV1.CodingKeys.destinationWeight.rawValue
@@ -72,17 +77,25 @@ extension XTokens {
         }
 
         if isV1 {
-            let call = TransferCallV1(asset: asset, destination: destination, destinationWeight: weight)
+            guard case let .legacy(legacyFee) = weightOption else {
+                throw TransferDerivationError.destinationWeightRequired
+            }
 
-            return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
+            let args = TransferCallV1(
+                asset: asset,
+                destination: destination,
+                destinationWeight: legacyFee.maxWeight
+            )
+
+            return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         } else {
-            let call = TransferCallV2(
+            let args = TransferCallV2(
                 asset: asset,
                 destination: destination,
                 destinationWeightLimit: .unlimited
             )
 
-            return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
+            return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         }
     }
 }

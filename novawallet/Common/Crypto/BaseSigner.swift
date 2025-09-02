@@ -1,6 +1,6 @@
 import Foundation
-import IrohaCrypto
-import SoraKeystore
+import NovaCrypto
+import Keystore_iOS
 
 class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
     let settingsManager: SettingsManagerProtocol

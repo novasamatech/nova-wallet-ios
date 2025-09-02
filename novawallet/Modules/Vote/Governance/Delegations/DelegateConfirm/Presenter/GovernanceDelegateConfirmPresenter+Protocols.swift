@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmPresenterProtocol {
@@ -96,7 +96,11 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
                     return
                 }
 
-                strongSelf.wireframe.complete(on: strongSelf.view, locale: strongSelf.selectedLocale)
+                strongSelf.wireframe.complete(
+                    on: strongSelf.view,
+                    sender: result.senders().first,
+                    locale: strongSelf.selectedLocale
+                )
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
 

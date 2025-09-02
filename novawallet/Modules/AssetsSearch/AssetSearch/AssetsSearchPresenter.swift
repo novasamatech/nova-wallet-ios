@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 typealias ChainAssetsFilter = (ChainAsset) -> Bool
 

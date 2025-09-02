@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     weak var baseView: StakingSetupProxyBaseViewProtocol?
@@ -118,12 +118,12 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
             dataValidatingFactory.hasSufficientBalance(
                 available: (assetBalance?.regularTransferrableBalance() ?? 0) + (proxyDeposit?.current ?? 0),
                 deposit: proxyDeposit?.new,
-                fee: fee?.amountForCurrentAccount,
+                fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
             dataValidatingFactory.exsitentialDepositIsNotViolated(
-                spendingAmount: fee?.amountForCurrentAccount,
+                spendingAmount: fee?.amountForCurrentAccount ?? 0,
                 totalAmount: assetBalance?.freeInPlank,
                 minimumBalance: existensialDeposit,
                 locale: selectedLocale

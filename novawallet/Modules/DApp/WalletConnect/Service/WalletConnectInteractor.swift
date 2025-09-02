@@ -24,7 +24,7 @@ final class WalletConnectInteractor {
     }
 
     private func subscribeUrlHandling() {
-        guard let wcUrlHandler: WalletConnectUrlParsingService = urlHandlingFacade.findService() else {
+        guard let wcUrlHandler: WalletConnectUrlParsingService = urlHandlingFacade.findInternalService() else {
             return
         }
 

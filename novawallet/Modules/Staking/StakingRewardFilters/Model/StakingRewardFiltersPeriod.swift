@@ -99,8 +99,10 @@ extension StakingRewardFiltersPeriod {
     }
 }
 
+typealias StakingRewardFiltersInterval = (startTimestamp: Int64?, endTimestamp: Int64?)
+
 extension StakingRewardFiltersPeriod {
-    var interval: (startTimestamp: Int64?, endTimestamp: Int64?) {
+    var interval: StakingRewardFiltersInterval {
         let calendar = Calendar.current
         let endToday = calendar.dateInterval(of: .day, for: Date())?.end ?? Date()
 

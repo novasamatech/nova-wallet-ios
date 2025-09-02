@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 private typealias ModalActionsContext = (
     actions: [LocalizableResource<ActionManageViewModel>],
@@ -331,7 +331,7 @@ private extension NetworkDetailsPresenter {
                 ActionManageViewModel(
                     icon: R.image.iconDelete(),
                     title: R.string.localizable.networkManageDelete(preferredLanguages: locale.rLanguages),
-                    isDestructive: true
+                    style: .destructive
                 )
             }
         ]

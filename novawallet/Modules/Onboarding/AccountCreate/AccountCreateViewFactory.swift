@@ -1,8 +1,8 @@
 import Foundation
-import IrohaCrypto
-import SoraUI
-import SoraFoundation
-import SoraKeystore
+import NovaCrypto
+import UIKit_iOS
+import Foundation_iOS
+import Keystore_iOS
 
 final class AccountCreateViewFactory {
     private static func createViewForWallet(

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol DAppCategoriesViewDelegate: AnyObject {
     func dAppCategories(
@@ -190,7 +190,12 @@ final class DAppCategoriesView: UIView {
 
 private extension DAppCategoriesView {
     enum Constants {
-        static let layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        static let layoutMargins = UIEdgeInsets(
+            top: .zero,
+            left: 16.0,
+            bottom: .zero,
+            right: 16.0
+        )
         static let buttonHeight: CGFloat = 32
     }
 }
@@ -199,6 +204,6 @@ private extension DAppCategoriesView {
 
 extension DAppCategoriesView {
     static var preferredHeight: CGFloat {
-        Constants.layoutMargins.top + Constants.layoutMargins.bottom + Constants.buttonHeight
+        Constants.buttonHeight
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class SwapExecutionPresenter {
     weak var view: SwapExecutionViewProtocol?
@@ -75,11 +75,10 @@ final class SwapExecutionPresenter {
                 for: date,
                 locale: selectedLocale
             )
-        case let .failed(operationIndex, date):
+        case let .failed(failure):
             executionViewModelFactory.createFailedViewModel(
                 quote: quote,
-                currentOperationIndex: operationIndex,
-                for: date,
+                failure: failure,
                 locale: selectedLocale
             )
         case nil:
@@ -226,12 +225,18 @@ final class SwapExecutionPresenter {
         provideExecutionViewModel()
     }
 
-    private func updateFailedStateIfNeeded() {
+    private func updateFailedStateIfNeeded(with error: Error) {
         guard case let .inProgress(operationIndex) = state else { return }
 
         clearTimer()
 
-        state = .failed(operationIndex, Date())
+        let model = SwapExecutionState.Failure(
+            operationIndex: operationIndex,
+            date: Date(),
+            error: error
+        )
+
+        state = .failed(model)
 
         provideExecutionViewModel()
     }
@@ -307,11 +312,11 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
     }
 
     func activateTryAgain() {
-        guard case let .failed(operationIndex, _) = state else {
+        guard case let .failed(model) = state else {
             return
         }
 
-        let payChainAsset = quote.metaOperations[operationIndex].assetIn
+        let payChainAsset = quote.metaOperations[model.operationIndex].assetIn
         let receiveChainAsset = chainAssetOut
 
         wireframe.showSwapSetup(
@@ -332,7 +337,7 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
     }
 
     func didFailExecution(with error: Error) {
-        updateFailedStateIfNeeded()
+        updateFailedStateIfNeeded(with: error)
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(
             error,

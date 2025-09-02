@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AssetDetailsViewFactory {
     static func createView(
@@ -20,7 +20,7 @@ struct AssetDetailsViewFactory {
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
-            purchaseProvider: PurchaseAggregator.defaultAggregator(),
+            rampProvider: RampAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
@@ -40,9 +40,11 @@ struct AssetDetailsViewFactory {
             priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource()
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = AssetDetailsPresenter(
             interactor: interactor,
-            localizableManager: LocalizationManager.shared,
+            localizableManager: localizationManager,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             viewModelFactory: viewModelFactory,
@@ -50,14 +52,52 @@ struct AssetDetailsViewFactory {
             logger: Logger.shared
         )
 
+        guard let chartView = createChartView(
+            asset: asset,
+            locale: localizationManager.selectedLocale,
+            currency: currencyManager.selectedCurrency,
+            output: presenter,
+            inputOwner: presenter
+        ) else { return nil }
+
         let view = AssetDetailsViewController(
+            chartViewProvider: chartView,
             presenter: presenter,
-            localizableManager: LocalizationManager.shared
+            localizableManager: localizationManager
         )
 
         presenter.view = view
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createChartView(
+        asset: AssetModel,
+        locale: Locale,
+        currency: Currency,
+        output: AssetPriceChartModuleOutputProtocol,
+        inputOwner: AssetPriceChartInputOwnerProtocol
+    ) -> AssetPriceChartModule? {
+        let chartPeriods: [PriceHistoryPeriod] = [
+            .day,
+            .week,
+            .month,
+            .year,
+            .allTime
+        ]
+
+        let chartParams = AssetPriceChartViewFactory.Params(
+            asset: asset,
+            periods: chartPeriods,
+            locale: locale,
+            currency: currency
+        )
+
+        return AssetPriceChartViewFactory.createView(
+            output: output,
+            inputOwner: inputOwner,
+            params: chartParams
+        )
     }
 }

@@ -1,7 +1,7 @@
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class StakingBondMoreInteractor: AccountFetching {
     weak var presenter: StakingBondMoreInteractorOutputProtocol!
@@ -14,7 +14,8 @@ final class StakingBondMoreInteractor: AccountFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let runtimeProvider: RuntimeProviderProtocol
+    let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -33,7 +34,8 @@ final class StakingBondMoreInteractor: AccountFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        runtimeProvider: RuntimeProviderProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManager
     ) {
         self.selectedAccount = selectedAccount
@@ -43,11 +45,14 @@ final class StakingBondMoreInteractor: AccountFetching {
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.runtimeProvider = runtimeProvider
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
+}
 
+private extension StakingBondMoreInteractor {
     func handleStashMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
@@ -57,6 +62,19 @@ final class StakingBondMoreInteractor: AccountFetching {
         )
 
         estimateFee()
+    }
+
+    func provideIsStakingMigrated() {
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] coderFactory in
+                let isStakingMigrated = coderFactory.hasBalancesHold(with: Staking.holdId)
+                self?.presenter.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter.didReceiveStakingMigratedToHold(result: .failure(error))
+            }
+        )
     }
 }
 
@@ -73,6 +91,8 @@ extension StakingBondMoreInteractor: StakingBondMoreInteractorInputProtocol {
         }
 
         feeProxy.delegate = self
+
+        provideIsStakingMigrated()
     }
 
     func estimateFee() {
@@ -126,7 +146,7 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
                 for: stashAccountId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
+                operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] result in
                 if case let .success(maybeStash) = result, let stash = maybeStash {
                     self?.handleStashMetaAccount(response: stash)

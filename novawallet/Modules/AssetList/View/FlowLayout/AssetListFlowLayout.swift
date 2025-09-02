@@ -9,10 +9,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private var sectionsExpandableState: [Int: Bool] = [:]
 
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
+    private var totalBalanceInsets: UIEdgeInsets = AssetListMeasurement.summaryInsets
 
-    private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private var promotionInsets: UIEdgeInsets = .zero
-    private var nftsInsets: UIEdgeInsets = .zero
+    private var bannersHeight: CGFloat = AssetListMeasurement.bannerHeight
+    private var bannersInsets: UIEdgeInsets = .zero
+    private var organizerInsets: UIEdgeInsets = .zero
 
     private let attributesFactory = AssetDecorationAttributesFactory()
 
@@ -35,14 +36,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         guard
-            elementKind == assetGroupDecorationIdentifier(),
-            indexPath.section > SectionType.assetsStartingSection,
-            indexPath.section < itemsDecorationAttributes.count
+            elementKind == assetGroupDecorationIdentifier() || elementKind == AssetListFlowLayout.DecorationIdentifiers.organizer,
+            let attributes = itemsDecorationAttributes[indexPath]
         else {
             return nil
         }
 
-        return itemsDecorationAttributes[indexPath]
+        return attributes
     }
 
     override func prepare() {
@@ -164,22 +164,20 @@ private extension AssetListFlowLayout {
                 totalBalanceHeight
         }
 
-        initialY += AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
+        initialY += totalBalanceInsets.top + totalBalanceInsets.bottom
 
-        initialY += nftsInsets.top + nftsInsets.bottom
+        initialY += organizerInsets.top + organizerInsets.bottom
 
-        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+        let numberOfOrganizerItems = collectionView.numberOfItems(inSection: SectionType.organizer.index)
 
-        if hasNfts {
-            initialY += AssetListMeasurement.nftsHeight
-        }
+        initialY += CGFloat(numberOfOrganizerItems) * AssetListMeasurement.organizerItemHeight
 
-        initialY += promotionInsets.top + promotionInsets.bottom
+        initialY += bannersInsets.top + bannersInsets.bottom
 
-        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.banners.index) > 0
 
         if hasPromotion {
-            initialY += promotionHeight
+            initialY += bannersHeight
         }
 
         initialY += AssetListMeasurement.settingsInsets.top
@@ -245,45 +243,53 @@ extension AssetListFlowLayout {
     }
 
     func updateTotalBalanceHeight(_ height: CGFloat) {
-        guard height != totalBalanceHeight else {
+        var newInsets = AssetListMeasurement.summaryInsets
+
+        if organizerInsets == .zero {
+            newInsets.bottom = AssetListMeasurement.organizerInsets.bottom
+        }
+
+        guard height != totalBalanceHeight || totalBalanceInsets != newInsets else {
             return
         }
+
         totalBalanceHeight = height
+        totalBalanceInsets = newInsets
         invalidateLayout()
     }
 
     func activatePromotionWithHeight(_ height: CGFloat) {
         let newInsets = AssetListMeasurement.promotionInsets
 
-        guard height != promotionHeight || promotionInsets != newInsets else {
+        guard height != bannersHeight || bannersInsets != newInsets else {
             return
         }
 
-        promotionHeight = height
-        promotionInsets = newInsets
+        bannersHeight = height
+        bannersInsets = newInsets
         invalidateLayout()
     }
 
     func deactivatePromotion() {
         let newInsets = UIEdgeInsets.zero
 
-        guard promotionInsets != newInsets else {
+        guard bannersInsets != newInsets else {
             return
         }
 
-        promotionInsets = newInsets
-        invalidateLayout()
+        bannersHeight = .zero
+        bannersInsets = newInsets
     }
 
-    func setNftsActive(_ isActive: Bool) {
-        let newInsets = isActive ? AssetListMeasurement.nftsInsets : .zero
+    func setOrganizerActive(_ isActive: Bool) {
+        let newInsets = isActive ? AssetListMeasurement.organizerInsets : .zero
 
-        guard nftsInsets != newInsets else {
+        guard organizerInsets != newInsets else {
             return
         }
 
-        nftsInsets = newInsets
-        invalidateLayout()
+        organizerInsets = newInsets
+        updateTotalBalanceHeight(totalBalanceHeight)
     }
 
     func cellHeight(
@@ -292,19 +298,19 @@ extension AssetListFlowLayout {
     ) -> CGFloat {
         switch type {
         case .account:
-            return AssetListMeasurement.accountHeight
+            AssetListMeasurement.accountHeight
         case .totalBalance:
-            return totalBalanceHeight
-        case .yourNfts:
-            return AssetListMeasurement.nftsHeight
+            totalBalanceHeight
+        case .organizerItem:
+            AssetListMeasurement.organizerItemHeight
         case .banner:
-            return promotionHeight
+            bannersHeight
         case .settings:
-            return AssetListMeasurement.settingsHeight
+            AssetListMeasurement.settingsHeight
         case .emptyState:
-            return AssetListMeasurement.emptyStateCellHeight
+            AssetListMeasurement.emptyStateCellHeight
         case .asset:
-            return assetCellHeight(for: indexPath)
+            assetCellHeight(for: indexPath)
         }
     }
 
@@ -314,15 +320,15 @@ extension AssetListFlowLayout {
     ) -> UIEdgeInsets {
         switch type {
         case .summary:
-            return AssetListMeasurement.summaryInsets
-        case .nfts:
-            return nftsInsets
-        case .promotion:
-            return promotionInsets
+            totalBalanceInsets
+        case .organizer:
+            organizerInsets
+        case .banners:
+            bannersInsets
         case .settings:
-            return AssetListMeasurement.settingsInsets
+            AssetListMeasurement.settingsInsets
         case .assetGroup:
-            return assetGroupInset(for: section)
+            assetGroupInset(for: section)
         }
     }
 

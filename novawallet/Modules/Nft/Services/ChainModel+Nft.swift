@@ -13,6 +13,8 @@ extension ChainModel {
             return [NftSource(chainId: chainId, type: .pdc20)]
         case KnowChainId.polkadotAssetHub:
             return [NftSource(chainId: chainId, type: .kodadot)]
+        case KnowChainId.unique:
+            return [NftSource(chainId: chainId, type: .unique)]
         default:
             return []
         }

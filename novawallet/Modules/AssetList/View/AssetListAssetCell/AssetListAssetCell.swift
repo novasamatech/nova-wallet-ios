@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class AssetListAssetCell: UICollectionViewCell {
     private static let iconViewSize: CGFloat = 40.0

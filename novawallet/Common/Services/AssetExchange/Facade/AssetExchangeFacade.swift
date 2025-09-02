@@ -5,7 +5,8 @@ final class AssetExchangeFacade {
         for params: AssetExchangeGraphProvidingParams,
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateMediating,
-        pathCostEstimator: AssetsExchangePathCostEstimating
+        pathCostEstimator: AssetsExchangePathCostEstimating,
+        delayedCallExecProvider: WalletDelayedExecutionProviding
     ) -> AssetsExchangeGraphProviding {
         let suffiencyProvider = AssetExchangeSufficiencyProvider()
 
@@ -16,7 +17,7 @@ final class AssetExchangeFacade {
                 CrosschainAssetsExchangeProvider(
                     wallet: params.wallet,
                     syncService: XcmTransfersSyncService(
-                        remoteUrl: params.config.xcmTransfersURL,
+                        config: params.config,
                         operationQueue: params.operationQueue,
                         logger: params.logger
                     ),
@@ -55,6 +56,7 @@ final class AssetExchangeFacade {
             ],
             feeSupportProvider: feeSupportProvider,
             suffiencyProvider: suffiencyProvider,
+            delayedCallExecProvider: delayedCallExecProvider,
             operationQueue: params.operationQueue,
             logger: params.logger
         )

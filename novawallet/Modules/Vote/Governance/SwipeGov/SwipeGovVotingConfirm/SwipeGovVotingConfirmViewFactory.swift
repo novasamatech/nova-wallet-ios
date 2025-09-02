@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct SwipeGovVotingConfirmViewFactory {
     static func createView(
@@ -45,11 +45,7 @@ struct SwipeGovVotingConfirmViewFactory {
 
         let wireframe = SwipeGovVotingConfirmWireframe()
 
-        let dataValidatingFactory = GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = SwipeGovVotingConfirmPresenter(
             initData: initData,
@@ -154,6 +150,7 @@ struct SwipeGovVotingConfirmViewFactory {
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             logger: Logger.shared,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class ChainAssetSelectionPresenter: ChainAssetSelectionBasePresenter {
@@ -10,16 +10,19 @@ final class ChainAssetSelectionPresenter: ChainAssetSelectionBasePresenter {
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     let selectedChainAssetId: ChainAssetId?
+    let balanceMapper: AvailableBalanceMapping
 
     init(
         interactor: ChainAssetSelectionInteractorInputProtocol,
         wireframe: ChainAssetSelectionWireframeProtocol,
         selectedChainAssetId: ChainAssetId?,
+        balanceMapper: AvailableBalanceMapping,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedChainAssetId = selectedChainAssetId
+        self.balanceMapper = balanceMapper
         self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
@@ -43,7 +46,7 @@ final class ChainAssetSelectionPresenter: ChainAssetSelectionBasePresenter {
             let title = asset.name ?? chain.name
             let isSelected = selectedChainAssetId?.assetId == asset.assetId &&
                 selectedChainAssetId?.chainId == chain.chainId
-            let balance = extractFormattedBalance(for: chainAsset) ?? ""
+            let balance = extractFormattedBalance(for: chainAsset, balanceMapper: balanceMapper) ?? ""
 
             return SelectableIconDetailsListViewModel(
                 title: title,
@@ -64,5 +67,9 @@ final class ChainAssetSelectionPresenter: ChainAssetSelectionBasePresenter {
         }
 
         wireframe?.complete(on: view, selecting: assets[index])
+    }
+
+    override func updateAvailableOptions() {
+        assets?.sort { orderAssets($0, chainAsset2: $1, balanceMapper: balanceMapper) }
     }
 }

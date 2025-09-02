@@ -1,7 +1,8 @@
 import Foundation
 
 final class MessageSheetTimerWithBannerView: GenericPairValueView<
-    MessageSheetMigrationBannerView, MessageSheetTimerLabel
+    MessageSheetMigrationBannerView,
+    TxExpirationMessageSheetTimerLabel
 >, MessageSheetContentProtocol {
     typealias ContentViewModel = MessageSheetTimerWithBannerView.ViewModel
 
@@ -25,7 +26,7 @@ final class MessageSheetTimerWithBannerView: GenericPairValueView<
 
 extension MessageSheetTimerWithBannerView {
     struct ViewModel {
-        let timerViewModel: MessageSheetTimerLabel.ContentViewModel
+        let timerViewModel: TxExpirationMessageSheetTimerLabel.ContentViewModel
         let bannerViewModel: MessageSheetMigrationBannerView.ContentViewModel
     }
 }

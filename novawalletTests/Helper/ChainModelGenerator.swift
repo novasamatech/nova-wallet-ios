@@ -25,6 +25,7 @@ enum ChainModelGenerator {
                 type: nil,
                 typeExtras: nil,
                 buyProviders: nil,
+                sellProviders: nil,
                 enabled: true,
                 source: .remote
             )
@@ -79,6 +80,7 @@ enum ChainModelGenerator {
                 nodes: [node],
                 nodeSwitchStrategy: .roundRobin,
                 addressPrefix: ChainModel.AddressPrefix(index),
+                legacyAddressPrefix: nil,
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
@@ -114,7 +116,8 @@ enum ChainModelGenerator {
                 staking: hasStaking ? ["relaychain"] : nil,
                 type: nil,
                 typeExtras: nil,
-                buyProviders: nil
+                buyProviders: nil,
+                sellProviders: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -165,6 +168,7 @@ enum ChainModelGenerator {
                 nodes: [node],
                 nodeSelectionStrategy: nil,
                 addressPrefix: ChainModel.AddressPrefix(index),
+                legacyAddressPrefix: nil,
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
@@ -184,6 +188,7 @@ enum ChainModelGenerator {
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
         hasProxy: Bool = true,
+        hasMultisig: Bool = true,
         enabled: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
@@ -203,6 +208,7 @@ enum ChainModelGenerator {
             hasCrowdloans: hasCrowdloans,
             hasSubstrateRuntime: hasSubstrateRuntime,
             hasProxy: hasProxy,
+            hasMultisig: hasMultisig,
             enabled: enabled
         )
     }
@@ -216,6 +222,7 @@ enum ChainModelGenerator {
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
         hasProxy: Bool = true,
+        hasMultisig: Bool = true,
         enabled: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
@@ -243,6 +250,10 @@ enum ChainModelGenerator {
         if hasProxy {
             options.append(.proxy)
         }
+        
+        if hasMultisig {
+            options.append(.multisig)
+        }
 
         let externalApis = generateExternaApis(
             for: chainId,
@@ -267,6 +278,7 @@ enum ChainModelGenerator {
             nodes: [node],
             nodeSwitchStrategy: .roundRobin,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: nil,
             types: nil,
             icon: Constants.dummyURL,
             options: options.isEmpty ? nil : options,
@@ -286,6 +298,7 @@ enum ChainModelGenerator {
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         buyProviders: JSON? = nil,
+        sellProviders: JSON? = nil,
         enabled: Bool = true,
         source: AssetModel.Source = .remote
     ) -> AssetModel {
@@ -303,6 +316,7 @@ enum ChainModelGenerator {
             type: nil,
             typeExtras: nil,
             buyProviders: buyProviders,
+            sellProviders: sellProviders,
             enabled: enabled,
             source: source
         )
@@ -327,7 +341,8 @@ enum ChainModelGenerator {
             crowdloans: externalApis.crowdloans()?.map(generateRemoteExternal(from:)),
             governance: externalApis.governance()?.map(generateRemoteExternal(from:)),
             goverananceDelegations: externalApis.governanceDelegations()?.map(generateRemoteExternal(from:)),
-            referendumSummary: externalApis.referendumSummary()?.map(generateRemoteExternal(from:))
+            referendumSummary: externalApis.referendumSummary()?.map(generateRemoteExternal(from:)),
+            multisig: externalApis.multisig()?.map(generateRemoteExternal(from:))
         )
     }
 
@@ -384,10 +399,12 @@ enum ChainModelGenerator {
                        instances: [
                         .init(chainId: chainId1,
                               contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
-                              buyProviders: nil),
+                              buyProviders: nil,
+                              sellProviders: nil),
                         .init(chainId: chainId2,
                               contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
-                              buyProviders: nil)
+                              buyProviders: nil,
+                              sellProviders: nil)
                        ])
     }
 }

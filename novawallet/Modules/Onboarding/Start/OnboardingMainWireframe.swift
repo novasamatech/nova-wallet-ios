@@ -1,4 +1,6 @@
-import Foundation
+import UIKit
+import Foundation_iOS
+import UIKit_iOS
 
 final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
     func showSignup(from view: OnboardingMainViewProtocol?) {
@@ -22,12 +24,38 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource) {
-        if
+        guard
             let navigationController = view?.controller.navigationController,
-            navigationController.viewControllers.count == 1,
-            navigationController.presentedViewController == nil {
-            presentAccountRestore(from: view, secretSource: source)
+            !hasPendingFlow(in: navigationController) else {
+            return
         }
+
+        presentAccountRestore(from: view, secretSource: source)
+    }
+
+    func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start) {
+        guard
+            let navigationController = view?.controller.navigationController,
+            !hasPendingFlow(in: navigationController) else {
+            return
+        }
+
+        guard let migrateView = WalletMigrateAcceptViewFactory.createViewForOnboarding(from: message) else {
+            return
+        }
+
+        let nextNavigationController = NovaNavigationController(rootViewController: migrateView.controller)
+        nextNavigationController.barSettings = nextNavigationController.barSettings.bySettingCloseButton(false)
+
+        nextNavigationController.modalPresentationStyle = .fullScreen
+        nextNavigationController.modalTransitionStyle = .crossDissolve
+
+        view?.controller.present(nextNavigationController, animated: false)
+    }
+
+    private func hasPendingFlow(in navigationController: UINavigationController) -> Bool {
+        navigationController.viewControllers.count > 1 ||
+            navigationController.presentedViewController != nil
     }
 
     private func presentAccountRestore(from view: OnboardingMainViewProtocol?, secretSource: SecretSource) {

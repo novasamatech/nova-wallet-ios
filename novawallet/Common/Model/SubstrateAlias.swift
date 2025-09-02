@@ -20,6 +20,8 @@ typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
+typealias BlockHashData = Data
+typealias Percent = UInt8
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {
@@ -82,15 +84,43 @@ extension Moment {
     }
 }
 
-extension AccountAddress {
-    var truncated: String {
-        guard count > 9 else {
-            return self
+extension Percent {
+    func percentToFraction() -> Decimal? {
+        Decimal.fromSubstratePercent(value: self)
+    }
+}
+
+extension Optional where Wrapped == ParaId {
+    var isSystemParachain: Bool {
+        switch self {
+        case .none:
+            return false
+        case let .some(paraId):
+            return paraId.isSystemParachain
         }
+    }
 
-        let prefix = self.prefix(4)
-        let suffix = self.suffix(5)
+    var isRelay: Bool {
+        switch self {
+        case .none:
+            true
+        case .some:
+            false
+        }
+    }
 
-        return "\(prefix)...\(suffix)"
+    var isRelayOrSystemParachain: Bool {
+        switch self {
+        case .none:
+            return true
+        case let .some(paraId):
+            return paraId.isSystemParachain
+        }
+    }
+}
+
+extension ParaId {
+    var isSystemParachain: Bool {
+        self >= 1000 && self < 2000
     }
 }

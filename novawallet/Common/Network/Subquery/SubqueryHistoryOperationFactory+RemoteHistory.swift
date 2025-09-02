@@ -7,7 +7,7 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
     }
 
     func createOperationWrapper(
-        for address: String,
+        for accountId: AccountId,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard !isComplete(pagination: pagination) else {
@@ -18,7 +18,7 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
         let subqueryContext = SubqueryHistoryContext(context: pagination.context ?? [:])
 
         let fetchOperation = createOperation(
-            address: address,
+            accountId: accountId,
             count: pagination.count,
             cursor: subqueryContext.cursor
         )
@@ -37,6 +37,9 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
 
         mapOperation.addDependency(fetchOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
     }
 }

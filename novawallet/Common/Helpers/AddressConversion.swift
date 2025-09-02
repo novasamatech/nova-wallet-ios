@@ -1,9 +1,19 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 enum ChainFormat {
     case ethereum
-    case substrate(_ prefix: UInt16)
+    case substrate(_ prefix: UInt16, legacyPrefix: UInt16? = nil)
+}
+
+extension ChainFormat {
+    static var defaultSubstrateFormat: ChainFormat {
+        .substrate(SubstrateConstants.genericAddressPrefix, legacyPrefix: nil)
+    }
+
+    static var multichainDisplayFormat: ChainFormat {
+        .substrate(SubstrateConstants.multichainDisplayPrefix, legacyPrefix: nil)
+    }
 }
 
 extension AccountId {
@@ -11,12 +21,24 @@ extension AccountId {
         switch conversion {
         case .ethereum:
             toHex(includePrefix: true)
-        case let .substrate(prefix):
+        case let .substrate(prefix, _):
             try SS58AddressFactory().address(
                 fromAccountId: self,
                 type: prefix
             )
         }
+    }
+
+    func toAddressWithDefaultConversion() throws -> AccountAddress {
+        let conversion: ChainFormat = if count == SubstrateConstants.ethereumAddressLength {
+            .ethereum
+        } else if count == SubstrateConstants.accountIdLength {
+            .multichainDisplayFormat
+        } else {
+            throw AccountAddressConversionError.invalidChainAddress
+        }
+
+        return try toAddress(using: conversion)
     }
 }
 
@@ -39,11 +61,20 @@ extension AccountAddress {
     func toAccountId(using conversion: ChainFormat) throws -> AccountId {
         switch conversion {
         case .ethereum:
-            try extractEthereumAccountId()
-        case let .substrate(prefix):
-            try SS58AddressFactory().accountId(
+            return try extractEthereumAccountId()
+        case let .substrate(prefix, legacyPrefix):
+            let factory = SS58AddressFactory()
+            let type = try factory.type(fromAddress: self).uint16Value
+
+            let correspondingPrefix = if let legacyPrefix, legacyPrefix == type {
+                legacyPrefix
+            } else {
+                prefix
+            }
+
+            return try factory.accountId(
                 fromAddress: self,
-                type: prefix
+                type: correspondingPrefix
             )
         }
     }
@@ -53,8 +84,8 @@ extension AccountAddress {
             return try extractEthereumAccountId()
         } else {
             let addressFactory = SS58AddressFactory()
-            let type = try addressFactory.type(fromAddress: self)
-            return try addressFactory.accountId(fromAddress: self, type: type.uint16Value)
+            let type = try addressFactory.type(fromAddress: self).uint16Value
+            return try addressFactory.accountId(fromAddress: self, type: type)
         }
     }
 
@@ -64,11 +95,15 @@ extension AccountAddress {
         switch conversion {
         case .ethereum:
             return try extractEthereumAccountId()
-        case let .substrate(prefix):
+        case let .substrate(prefix, legacyPrefix):
             let addressFactory = SS58AddressFactory()
             let type = try addressFactory.type(fromAddress: self).uint16Value
 
-            guard type == prefix || type == SNAddressType.genericSubstrate.rawValue else {
+            guard
+                type == legacyPrefix
+                || type == prefix
+                || type == SNAddressType.genericSubstrate.rawValue
+            else {
                 throw AccountAddressConversionError.invalidChainAddress
             }
 
@@ -97,14 +132,30 @@ extension AccountAddress {
     func normalize(for chainFormat: ChainFormat) -> AccountAddress? {
         try? toAccountId(using: chainFormat).toAddress(using: chainFormat)
     }
+
+    func toLegacySubstrateAddress(for chainFormat: ChainFormat) throws -> AccountAddress? {
+        guard
+            case let .substrate(_, legacyPrefix) = chainFormat,
+            let legacyPrefix
+        else { return nil }
+
+        let factory = SS58AddressFactory()
+        let accountId = try toAccountId(using: chainFormat)
+        let legacyAddress = try factory.address(fromAccountId: accountId, type: legacyPrefix)
+
+        return legacyAddress
+    }
 }
 
 extension ChainModel {
     var chainFormat: ChainFormat {
         if isEthereumBased {
-            return .ethereum
+            .ethereum
         } else {
-            return .substrate(addressPrefix.toSubstrateFormat())
+            .substrate(
+                addressPrefix.toSubstrateFormat(),
+                legacyPrefix: legacyAddressPrefix?.toSubstrateFormat()
+            )
         }
     }
 }

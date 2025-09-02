@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "フォトライブラリへのアクセスは、アドレスのQRコードを選択するため、Polkadot VaultトランザクションやWalletConnect経由で接続するために使用されます";
 "NSPhotoLibraryAddUsageDescription" = "転送リクエストをQRコードとして保存";
 "NSBluetoothAlwaysUsageDescription" = "BluetoothはLedger Nano Xデバイスとの通信に使用されます";
+"NSMicrophoneUsageDescription" = "マイクはKYCメディアセッションで使用されます";

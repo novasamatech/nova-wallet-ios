@@ -1,7 +1,7 @@
 import UIKit
-import SoraFoundation
-import SoraKeystore
-import IrohaCrypto
+import Foundation_iOS
+import Keystore_iOS
+import NovaCrypto
 import SubstrateSdk
 
 struct SettingsViewFactory {

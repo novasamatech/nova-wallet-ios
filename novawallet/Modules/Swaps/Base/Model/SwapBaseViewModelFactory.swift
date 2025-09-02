@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 struct RateParams {
     let assetDisplayInfoIn: AssetBalanceDisplayInfo
@@ -33,24 +33,24 @@ protocol SwapBaseViewModelFactoryProtocol {
 
 class SwapBaseViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
-    let percentForamatter: LocalizableResource<NumberFormatter>
-    let priceDifferenceConfig: SwapPriceDifferenceConfig
+    let priceDifferenceModelFactory: SwapPriceDifferenceModelFactoryProtocol
+    let percentFormatter: LocalizableResource<NumberFormatter>
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceDifferenceModelFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>,
-        priceDifferenceConfig: SwapPriceDifferenceConfig
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.priceDifferenceModelFactory = priceDifferenceModelFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
-        self.percentForamatter = percentForamatter
-        self.priceDifferenceConfig = priceDifferenceConfig
+        self.percentFormatter = percentFormatter
     }
 
     func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
-        percentForamatter.value(for: locale).stringFromDecimal(amount) ?? ""
+        percentFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 }
 
@@ -84,42 +84,18 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         priceOut: PriceData?,
         locale: Locale
     ) -> DifferenceViewModel? {
-        guard let priceIn = priceIn?.decimalRate, let priceOut = priceOut?.decimalRate else {
-            return nil
-        }
-
         guard
-            let amountOutDecimal = Decimal.fromSubstrateAmount(
-                params.amountOut,
-                precision: params.assetDisplayInfoOut.assetPrecision
-            ),
-            let amountInDecimal = Decimal.fromSubstrateAmount(
-                params.amountIn,
-                precision: params.assetDisplayInfoIn.assetPrecision
+            let model = priceDifferenceModelFactory.createModel(
+                params: params,
+                priceIn: priceIn,
+                priceOut: priceOut
             ) else {
             return nil
         }
 
-        let amountPriceIn = amountInDecimal * priceIn
-        let amountPriceOut = amountOutDecimal * priceOut
+        let diffString = formatPriceDifference(amount: model.diff, locale: locale)
 
-        guard amountPriceIn > 0, amountPriceOut > 0, amountPriceIn > amountPriceOut else {
-            return nil
-        }
-
-        let diff = abs(amountPriceIn - amountPriceOut) / amountPriceIn
-        let diffString = formatPriceDifference(amount: diff, locale: locale)
-
-        switch diff {
-        case _ where diff >= priceDifferenceConfig.high:
-            return .init(details: diffString, attention: .high)
-        case priceDifferenceConfig.medium ... priceDifferenceConfig.high:
-            return .init(details: diffString, attention: .medium)
-        case priceDifferenceConfig.low ... priceDifferenceConfig.medium:
-            return .init(details: diffString, attention: .low)
-        default:
-            return nil
-        }
+        return DifferenceViewModel(details: diffString, attention: model.attention)
     }
 
     func routeViewModel(from metaOperations: [AssetExchangeMetaOperationProtocol]) -> [SwapRouteItemView.ViewModel] {

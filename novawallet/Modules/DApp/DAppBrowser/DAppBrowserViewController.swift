@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout
@@ -76,10 +76,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.enableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
-        }
+        deviceOrientationManager.enableLandscape()
+        setNeedsUpdateOfSupportedInterfaceOrientations()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -144,11 +142,19 @@ private extension DAppBrowserViewController {
 
     func configureObservers() {
         urlObservation = rootView.webView?.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
-            guard let newValue = change.newValue, let url = newValue else {
+            // allow to change url here only for the same origin to prevent spoofing
+            // https://github.com/mozilla-mobile/firefox-ios/wiki/WKWebView-navigation-and-security-considerations
+            guard
+                let oldValue = change.oldValue,
+                let newValue = change.newValue,
+                let oldUrl = oldValue,
+                let newUrl = newValue,
+                URL.hasSameOrigin(oldUrl, newUrl) else {
+                // didCommit delegate should catch origin change
                 return
             }
 
-            self?.didChangeUrl(url)
+            self?.didChangeUrl(newUrl)
         }
 
         goBackObservation = rootView.webView?.observe(
@@ -171,17 +177,6 @@ private extension DAppBrowserViewController {
             }
 
             self?.didChangeGoForward(newValue)
-        }
-
-        titleObservation = rootView.webView?.observe(
-            \.title,
-            options: [.initial, .new]
-        ) { [weak self] _, change in
-            guard let newValue = change.newValue, let title = newValue else {
-                return
-            }
-
-            self?.didChangeTitle(title)
         }
     }
 
@@ -215,15 +210,6 @@ private extension DAppBrowserViewController {
         rootView.settingsBarButton.action = #selector(actionSettings)
 
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
-    }
-
-    func didChangeTitle(_ title: String) {
-        guard let url = rootView.webView?.url else {
-            return
-        }
-
-        let page = DAppBrowserPage(url: url, title: title)
-        presenter.process(page: page)
     }
 
     func didChangeUrl(_ newUrl: URL) {
@@ -403,18 +389,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionFavorite() {
-        guard let url = rootView.webView?.url else {
-            return
-        }
-
-        let title = rootView.webView?.title ?? ""
-
-        let page = DAppBrowserPage(
-            url: url,
-            title: title
-        )
-
-        presenter.actionFavorite(page: page)
+        presenter.actionFavorite()
     }
 
     @objc private func actionRefresh() {
@@ -426,7 +401,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionSearch() {
-        presenter.activateSearch(with: rootView.webView?.url?.absoluteString)
+        presenter.activateSearch()
     }
 
     @objc private func actionClose() {
@@ -448,9 +423,7 @@ private extension DAppBrowserViewController {
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
-        let host = rootView.webView?.url?.host ?? ""
-
-        presenter.process(message: message.body, host: host, transport: message.name)
+        presenter.process(message: message.body, transport: message.name)
     }
 }
 
@@ -471,6 +444,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
             reload = !webViewPool.webViewExists(for: viewModel.selectedTab.uuid)
             setupWebView(with: viewModel)
+        }
+
+        if !reload {
+            let page = DAppBrowserPage(
+                url: viewModel.selectedTab.url,
+                title: rootView.webView?.title ?? ""
+            )
+
+            presenter.process(page: page)
         }
 
         self.viewModel = viewModel
@@ -498,7 +480,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         }
     }
 
-    func didReceive(response: DAppScriptResponse, forTransport _: String) {
+    func didReceive(response: DAppScriptResponse) {
         rootView.webView?.evaluateJavaScript(response.content)
     }
 
@@ -533,10 +515,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 
     func didDecideClose() {
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.disableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
-        }
+        deviceOrientationManager.disableLandscape()
+        setNeedsUpdateOfSupportedInterfaceOrientations()
     }
 }
 
@@ -592,10 +572,15 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         }
     }
 
-    func webView(
-        _: WKWebView,
-        didFinish _: WKNavigation!
-    ) {
+    func webView(_ webView: WKWebView, didCommit _: WKNavigation) {
+        guard let url = webView.url else {
+            return
+        }
+
+        didChangeUrl(url)
+    }
+
+    func webView(_: WKWebView, didFinish _: WKNavigation!) {
         presenter.didLoadPage()
     }
 
@@ -614,9 +599,9 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
 
     func webView(
         _: WKWebView,
-        runJavaScriptAlertPanelWithMessage message: String,
+        runJavaScriptConfirmPanelWithMessage message: String,
         initiatedByFrame _: WKFrameInfo,
-        completionHandler: @escaping () -> Void
+        completionHandler: @escaping @MainActor(Bool) -> Void
     ) {
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
@@ -626,14 +611,36 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         )
 
         alertController.addAction(UIAlertAction(title: confirmTitle, style: .default, handler: { _ in
-            completionHandler()
+            completionHandler(true)
         }))
 
         let cancelTitle = R.string.localizable.commonCancel(
             preferredLanguages: languages
         )
 
-        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { _ in
+            completionHandler(false)
+        }))
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    func webView(
+        _: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame _: WKFrameInfo,
+        completionHandler: @escaping () -> Void
+    ) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+
+        let languages = selectedLocale.rLanguages
+        let okTitle = R.string.localizable.commonOk(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: okTitle, style: .default, handler: { _ in
+            completionHandler()
+        }))
 
         present(alertController, animated: true, completion: nil)
     }

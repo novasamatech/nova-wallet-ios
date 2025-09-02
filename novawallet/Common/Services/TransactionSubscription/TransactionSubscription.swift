@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 import BigInt
 

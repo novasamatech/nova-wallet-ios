@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class NetworkDetailsViewLayout: UIView {
     let headerView: StackNetworkCell = .create { view in

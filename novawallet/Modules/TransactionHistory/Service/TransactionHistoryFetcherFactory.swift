@@ -66,13 +66,12 @@ final class TransactionHistoryFetcherFactory {
 
     private func createRemoteFetcher(
         from remoteFactory: WalletRemoteHistoryFactoryProtocol,
-        address: AccountAddress,
+        accountId: AccountId,
         chainAsset: ChainAsset,
-        pageSize: Int,
-        filter _: WalletHistoryFilter
+        pageSize: Int
     ) -> TransactionHistoryRemoteFetcher {
         TransactionHistoryRemoteFetcher(
-            address: address,
+            accountId: accountId,
             chainAsset: chainAsset,
             operationFactory: remoteFactory,
             operationQueue: operationQueue,
@@ -82,12 +81,17 @@ final class TransactionHistoryFetcherFactory {
 
     private func createHybridFetch(
         from remoteFactory: WalletRemoteHistoryFactoryProtocol,
-        address: AccountAddress,
+        accountId: AccountId,
         chainAsset: ChainAsset,
         pageSize: Int
-    ) -> TransactionHistoryHybridFetcher {
-        let localProvider = createLocalProvider(from: address, chainAsset: chainAsset, filter: .all)
+    ) throws -> TransactionHistoryHybridFetcher {
+        let address = try accountId.toAddress(using: chainAsset.chain.chainFormat)
 
+        let localProvider = createLocalProvider(
+            from: address,
+            chainAsset: chainAsset,
+            filter: .all
+        )
         let source = TransactionHistoryItemSource(assetTypeString: chainAsset.asset.type)
 
         let repository: AnyDataProviderRepository<TransactionHistoryItem>
@@ -109,7 +113,7 @@ final class TransactionHistoryFetcherFactory {
         }
 
         return .init(
-            address: address,
+            accountId: accountId,
             chainAsset: chainAsset,
             remoteOperationFactory: remoteFactory,
             repository: repository,
@@ -133,9 +137,9 @@ extension TransactionHistoryFetcherFactory: TransactionHistoryFetcherFactoryProt
 
         if filter == .all {
             if let remoteFactory = optRemoteFactory {
-                return createHybridFetch(
+                return try createHybridFetch(
                     from: remoteFactory,
-                    address: address,
+                    accountId: accountId,
                     chainAsset: chainAsset,
                     pageSize: pageSize
                 )
@@ -146,10 +150,9 @@ extension TransactionHistoryFetcherFactory: TransactionHistoryFetcherFactoryProt
             if let remoteFactory = optRemoteFactory {
                 return createRemoteFetcher(
                     from: remoteFactory,
-                    address: address,
+                    accountId: accountId,
                     chainAsset: chainAsset,
-                    pageSize: pageSize,
-                    filter: filter
+                    pageSize: pageSize
                 )
             } else {
                 return createLocalFetcher(from: address, chainAsset: chainAsset, filter: filter)

@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class GradientIconView: UIView {
     let backgroundView: MultigradientView = {

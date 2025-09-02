@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 extension StakingMainPresenterFactory {
     func createRelaychainPresenter(

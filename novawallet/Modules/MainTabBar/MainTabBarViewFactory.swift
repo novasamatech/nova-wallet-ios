@@ -1,6 +1,7 @@
 import UIKit
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Operation_iOS
+import Keystore_iOS
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static let walletIndex: Int = 0
@@ -8,7 +9,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createView() -> MainTabBarViewProtocol? {
         let localizationManager = LocalizationManager.shared
-        let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingService.shared)
+        let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingServiceFacade.shared)
 
         guard
             let interactor = createInteractor(serviceCoordinator: serviceCoordinator),
@@ -27,7 +28,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         view.viewControllers = indexedControllers.map(\.1)
 
-        let wireframe = MainTabBarWireframe()
+        let wireframe = MainTabBarWireframe(cardScreenNavigationFactory: CardScreenNavigationFactory())
 
         presenter.view = view
         presenter.interactor = interactor
@@ -42,31 +43,53 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
 private extension MainTabBarViewFactory {
     static func createInteractor(serviceCoordinator: ServiceCoordinatorProtocol) -> MainTabBarInteractor? {
+        let urlServiceFacade: URLHandlingServiceFacadeProtocol = URLHandlingServiceFacade.shared
+
         guard
-            let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
-            .findService(),
-            let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService(),
-            let pushScreenOpenService = PushNotificationHandlingService.shared.service
-        else {
-            Logger.shared.error("Can't find required keystore import service")
+            let secretImportService: SecretImportServiceProtocol = urlServiceFacade.findInternalService(),
+            let screenOpenService: ScreenOpenServiceProtocol = urlServiceFacade.findInternalService(),
+            let walletMigrateService: WalletMigrationServiceProtocol = urlServiceFacade.findInternalService(),
+            let pushScreenOpenService = PushNotificationHandlingService.shared.service else {
+            Logger.shared.error("Can't find required service")
             return nil
         }
 
+        let logger = Logger.shared
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let settingsManager = SettingsManager.shared
         let securedLayer = SecurityLayerService.shared
         let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
+
+        let notificationsSettingsRepository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
+            UserDataStorageFacade.shared.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+            )
+
+        let notificationsPromoService = MultisigNotificationsPromoService(
+            settingsManager: settingsManager,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            notificationsSettingsrepository: AnyDataProviderRepository(notificationsSettingsRepository),
+            operationQueue: operationQueue,
+            workingQueue: .main,
+            logger: logger
+        )
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
+            walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
+            notificationsPromoService: notificationsPromoService,
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService,
-            settingsManager: SettingsManager.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            settingsManager: settingsManager,
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         return interactor
@@ -77,29 +100,29 @@ private extension MainTabBarViewFactory {
         serviceCoordinator: ServiceCoordinatorProtocol
     ) -> [(Int, UIViewController)]? {
         let walletNotificationService = serviceCoordinator.walletNotificationService
-        let proxySyncService = serviceCoordinator.proxySyncService
+        let delegatedAccountSyncService = serviceCoordinator.delegatedAccountSyncService
 
         guard
             let walletController = createWalletController(
                 for: localizationManager,
                 dappMediator: serviceCoordinator.dappMediator,
                 walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                delegatedAccountSyncService: delegatedAccountSyncService
             ),
             let stakingController = createStakingController(
                 for: localizationManager,
                 walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                delegatedAccountSyncService: delegatedAccountSyncService
             ),
             let voteController = createVoteController(
                 for: localizationManager,
                 walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                delegatedAccountSyncService: delegatedAccountSyncService
             ),
             let dappsController = createDappsController(
                 for: localizationManager,
                 walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                delegatedAccountSyncService: delegatedAccountSyncService
             ),
             let settingsController = createProfileController(
                 for: localizationManager,
@@ -124,12 +147,12 @@ private extension MainTabBarViewFactory {
         for localizationManager: LocalizationManagerProtocol,
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> UIViewController? {
         guard let viewController = AssetListViewFactory.createView(
             with: dappMediator,
             walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )?.controller else {
             return nil
         }
@@ -167,11 +190,11 @@ private extension MainTabBarViewFactory {
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> UIViewController? {
         let viewController = StakingDashboardViewFactory.createView(
             walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
@@ -246,11 +269,11 @@ private extension MainTabBarViewFactory {
     static func createVoteController(
         for localizationManager: LocalizationManagerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> UIViewController? {
         guard let view = VoteViewFactory.createView(
             walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         ) else {
             return nil
         }
@@ -287,11 +310,11 @@ private extension MainTabBarViewFactory {
     static func createDappsController(
         for localizationManager: LocalizationManagerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> UIViewController? {
         guard let dappsView = DAppListViewFactory.createView(
             walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         ) else {
             return nil
         }

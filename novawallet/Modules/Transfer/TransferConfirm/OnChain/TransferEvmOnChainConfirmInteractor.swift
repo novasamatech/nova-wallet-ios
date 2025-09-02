@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
 
     var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
@@ -22,12 +23,14 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
 
         super.init(
@@ -61,7 +64,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             switch result {
             case .success:
                 self.eventCenter.notify(with: WalletTransactionListUpdated())
-                self.submitionPresenter?.didCompleteSubmition()
+                self.submitionPresenter?.didCompleteSubmition(by: nil)
             case let .failure(error):
                 self.presenter?.didReceiveError(error)
             }
@@ -104,8 +107,15 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in
+                guard let self else { return }
+
                 switch result {
                 case let .success(txHash):
+                    guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                        submitionPresenter?.didCompleteSubmition(by: nil)
+                        return
+                    }
+
                     if
                         let callCodingPath = callCodingPath,
                         let txHashData = try? Data(hexString: txHash) {
@@ -119,13 +129,13 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                             feeAssetId: nil
                         )
 
-                        self?.persistExtrinsicAndComplete(details: details, type: transferType)
+                        persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
-                        self?.presenter?.didCompleteSetup()
+                        submitionPresenter?.didCompleteSubmition(by: nil)
                     }
 
                 case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
+                    presenter?.didReceiveError(error)
                 }
             }
         } catch {

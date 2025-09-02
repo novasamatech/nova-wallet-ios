@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 enum CloudBackupMessageSheetViewFactory {
     static func createBackupMessageSheet() -> MessageSheetViewProtocol? {
@@ -220,7 +220,7 @@ enum CloudBackupMessageSheetViewFactory {
         }
 
         let text = LocalizableResource { locale in
-            R.string.localizable.proxySigningCheckmarkTitle(
+            R.string.localizable.delegatedSigningCheckmarkTitle(
                 preferredLanguages: locale.rLanguages
             )
         }

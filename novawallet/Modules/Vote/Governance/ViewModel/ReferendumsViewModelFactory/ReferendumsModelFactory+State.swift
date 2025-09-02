@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 extension ReferendumsModelFactory {
     func provideCommonReferendumCellViewModel(

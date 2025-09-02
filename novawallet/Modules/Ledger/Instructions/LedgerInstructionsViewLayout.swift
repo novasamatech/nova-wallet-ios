@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     let containerView: ScrollableContainerView = {

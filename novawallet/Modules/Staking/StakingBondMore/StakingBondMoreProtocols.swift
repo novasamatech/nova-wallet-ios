@@ -1,5 +1,5 @@
-import SoraFoundation
-
+import Foundation_iOS
+import Operation_iOS
 import BigInt
 
 protocol StakingBondMoreViewProtocol: ControllerBackedProtocol, Localizable {
@@ -27,6 +27,7 @@ protocol StakingBondMoreInteractorOutputProtocol: AnyObject {
     func didReceiveStash(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)
 }
 
 protocol StakingBondMoreWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {

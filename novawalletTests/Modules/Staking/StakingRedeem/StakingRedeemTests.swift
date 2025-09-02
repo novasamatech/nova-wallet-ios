@@ -3,8 +3,8 @@ import XCTest
 import Cuckoo
 import Operation_iOS
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import BigInt
 
 class StakingRedeemTests: XCTestCase {
@@ -36,7 +36,10 @@ class StakingRedeemTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub).complete(from: any()).then { _ in
+            when(stub).presentExtrinsicSubmission(
+                from: any(),
+                params: any()
+            ).then { _ in
                 completionExpectation.fulfill()
             }
         }

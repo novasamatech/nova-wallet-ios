@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension ImportChainAccount {
     final class AccountImportPresenter: BaseAccountImportPresenter {
@@ -11,13 +11,14 @@ extension ImportChainAccount {
             secretSource: SecretSource,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
-            isEthereumBased: Bool
+            isEthereumBased: Bool,
+            metadataFactory: AccountImportMetadataFactoryProtocol
         ) {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
 
-            super.init(secretSource: secretSource)
+            super.init(secretSource: secretSource, metadataFactory: metadataFactory)
         }
 
         private func proceedWithSubstrate() {
@@ -210,9 +211,7 @@ extension ImportChainAccount {
             if isEthereumBased {
                 return .ethereum(derivationPath: ethereumDerivationPath)
             } else {
-                guard let metadata = metadata else {
-                    return nil
-                }
+                let metadata = metadataFactory.deriveMetadata(for: selectedSourceType)
 
                 let substrateSettings = AdvancedNetworkTypeSettings(
                     availableCryptoTypes: metadata.availableCryptoTypes,

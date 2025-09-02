@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct GovernanceRemoveVotesConfirmViewFactory {
@@ -9,15 +9,18 @@ struct GovernanceRemoveVotesConfirmViewFactory {
     ) -> GovernanceRemoveVotesConfirmViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let chain = state.settings.value?.chain,
-            let assetDisplayInfo = chain.utilityAssetDisplayInfo(),
+            let option = state.settings.value,
+            let assetDisplayInfo = option.chain.utilityAssetDisplayInfo(),
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
-                for: chain.accountRequest()
+                for: option.chain.accountRequest()
             ),
             let interactor = createInteractor(for: state, currencyManager: currencyManager)
         else {
             return nil
         }
+
+        let chain = option.chain
+
         let wireframe = GovRemoveVotesConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
@@ -27,11 +30,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let dataValidatingFactory = GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovernanceRemoveVotesConfirmPresenter(
             interactor: interactor,
@@ -111,6 +110,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             extrinsicService: extrinsicService,
             extrinsicFactory: extrinsicFactory,
             signer: signer,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

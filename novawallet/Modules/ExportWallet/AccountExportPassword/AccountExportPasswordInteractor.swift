@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 enum AccountExportPasswordInteractorError: Error {
     case missingAccount

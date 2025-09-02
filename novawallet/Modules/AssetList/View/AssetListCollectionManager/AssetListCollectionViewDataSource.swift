@@ -1,10 +1,13 @@
 import UIKit
 
 final class AssetListCollectionViewDataSource: NSObject {
+    weak var view: ControllerBackedProtocol?
+    let bannersViewProvider: BannersViewProviderProtocol
+
     var groupsViewModel: AssetListViewModel
     var headerViewModel: AssetListHeaderViewModel?
-    var nftViewModel: AssetListNftsViewModel?
-    var promotionBannerViewModel: PromotionBannerView.ViewModel?
+    var organizerViewModel: AssetListOrganizerViewModel?
+    var bannersAvailable: Bool?
 
     var selectedLocale: Locale
 
@@ -12,11 +15,15 @@ final class AssetListCollectionViewDataSource: NSObject {
     weak var groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate?
 
     init(
+        view: ControllerBackedProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
         selectedLocale: Locale,
         actionsDelegate: AssetListCollectionViewActionsDelegate? = nil,
         groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate? = nil
     ) {
+        self.view = view
+        self.bannersViewProvider = bannersViewProvider
         self.groupsViewModel = groupsViewModel
         self.selectedLocale = selectedLocale
         self.actionsDelegate = actionsDelegate
@@ -64,30 +71,41 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         totalBalanceCell.locale = selectedLocale
-        totalBalanceCell.locksView.addGestureRecognizer(UITapGestureRecognizer(
+
+        let totalBalanceView = totalBalanceCell.totalView
+        totalBalanceView.locksView.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
             action: #selector(actionLocks)
         ))
-        totalBalanceCell.sendButton.addTarget(
+        totalBalanceView.sendButton.addTarget(
             self,
             action: #selector(actionSend),
             for: .touchUpInside
         )
-        totalBalanceCell.receiveButton.addTarget(
+        totalBalanceView.receiveButton.addTarget(
             self,
             action: #selector(actionReceive),
             for: .touchUpInside
         )
-        totalBalanceCell.buyButton.addTarget(
+        totalBalanceView.buySellButton.addTarget(
             self,
-            action: #selector(actionBuy),
+            action: #selector(actionBuySell),
             for: .touchUpInside
         )
-        totalBalanceCell.swapButton.addTarget(
+        totalBalanceView.swapButton.addTarget(
             self,
             action: #selector(actionSwap),
             for: .touchUpInside
         )
+
+        let cardView = totalBalanceCell.cardView
+
+        cardView.addTarget(
+            self,
+            action: #selector(actionCardOpen),
+            for: .touchUpInside
+        )
+
         if let viewModel = headerViewModel {
             totalBalanceCell.bind(viewModel: viewModel)
         }
@@ -223,14 +241,49 @@ private extension AssetListCollectionViewDataSource {
         )
 
         cell.bind(text: text, actionTitle: actionTitle)
-        cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
+        cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
 
         return cell
     }
 
-    func provideYourNftsCell(
+    func provideOrganizerCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let itemIndex = indexPath.item
+
+        guard let organizerViewModel, organizerViewModel.items.count > itemIndex else {
+            return UICollectionViewCell()
+        }
+
+        let addsSeparator = organizerViewModel.items.count > 1 &&
+            itemIndex < organizerViewModel.items.endIndex - 1
+
+        let organizerItemModel = organizerViewModel.items[itemIndex]
+
+        return switch organizerItemModel {
+        case let .nfts(nftsModel):
+            provideYourNftsCell(
+                collectionView,
+                indexPath: indexPath,
+                model: nftsModel,
+                addsSeparator: addsSeparator
+            )
+        case let .pendingTransactions(transactionsModel):
+            provideTransactionsToSignCell(
+                collectionView,
+                indexPath: indexPath,
+                model: transactionsModel,
+                addsSeparator: addsSeparator
+            )
+        }
+    }
+
+    func provideYourNftsCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        model: AssetListNftsViewModel,
+        addsSeparator: Bool
     ) -> AssetListNftsCell {
         let cell = collectionView.dequeueReusableCellWithType(
             AssetListNftsCell.self,
@@ -238,28 +291,52 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         cell.locale = selectedLocale
+        cell.bind(viewModel: model)
 
-        if let viewModel = nftViewModel {
-            cell.bind(viewModel: viewModel)
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
         }
 
         return cell
     }
 
-    func providePromotionBannerCell(
+    func provideTransactionsToSignCell(
         _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListBannerCell {
+        indexPath: IndexPath,
+        model: AssetListMultisigOperationsViewModel,
+        addsSeparator: Bool
+    ) -> AssetListMultisigOperationsCell {
         let cell = collectionView.dequeueReusableCellWithType(
-            AssetListBannerCell.self,
+            AssetListMultisigOperationsCell.self,
             for: indexPath
         )!
 
-        if let viewModel = promotionBannerViewModel {
-            cell.bind(viewModel: viewModel)
+        cell.locale = selectedLocale
+        cell.bind(viewModel: model)
+
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
         }
 
-        cell.bannerView.delegate = actionsDelegate
+        return cell
+    }
+
+    func provideBannersCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> BannersContainerCollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            BannersContainerCollectionViewCell.self,
+            for: indexPath
+        )!
+
+        bannersViewProvider.setupBanners(
+            on: view,
+            view: cell.view
+        )
+
+        cell.contentInsets.left = UIConstants.horizontalInset
+        cell.contentInsets.right = UIConstants.horizontalInset
 
         return cell
     }
@@ -311,8 +388,8 @@ private extension AssetListCollectionViewDataSource {
         actionsDelegate?.actionReceive()
     }
 
-    @objc func actionBuy() {
-        actionsDelegate?.actionBuy()
+    @objc func actionBuySell() {
+        actionsDelegate?.actionBuySell()
     }
 
     @objc func actionSwap() {
@@ -321,6 +398,14 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwitchStyle() {
         actionsDelegate?.actionChangeAssetListStyle()
+    }
+
+    @objc func actionCardOpen() {
+        actionsDelegate?.actionCardOpen()
+    }
+
+    @objc func actionRefresh() {
+        actionsDelegate?.actionRefresh()
     }
 }
 
@@ -338,10 +423,10 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             headerViewModel != nil ? 2 : 0
-        case .nfts:
-            nftViewModel != nil ? 1 : 0
-        case .promotion:
-            promotionBannerViewModel != nil ? 1 : 0
+        case .organizer:
+            organizerViewModel?.items.count ?? 0
+        case .banners:
+            bannersAvailable == true ? 1 : 0
         case .settings:
             groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
@@ -355,19 +440,19 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         switch AssetListFlowLayout.CellType(indexPath: indexPath) {
         case .account:
-            return provideAccountCell(collectionView, indexPath: indexPath)
+            provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
-            return provideTotalBalanceCell(collectionView, indexPath: indexPath)
-        case .yourNfts:
-            return provideYourNftsCell(collectionView, indexPath: indexPath)
+            provideTotalBalanceCell(collectionView, indexPath: indexPath)
+        case .organizerItem:
+            provideOrganizerCell(collectionView, indexPath: indexPath)
         case .banner:
-            return providePromotionBannerCell(collectionView, indexPath: indexPath)
+            provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
-            return provideSettingsCell(collectionView, indexPath: indexPath)
+            provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
-            return provideEmptyStateCell(collectionView, indexPath: indexPath)
+            provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
-            return provideAssetCell(collectionView, indexPath: indexPath)
+            provideAssetCell(collectionView, indexPath: indexPath)
         }
     }
 

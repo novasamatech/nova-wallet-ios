@@ -1,9 +1,9 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import BigInt
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingRebondConfirmationInteractorOutputProtocol!
@@ -99,10 +99,12 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
 
         let rebondCall = callFactory.rebond(amount: amountValue)
 
+        let builderClosure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: rebondCall)
+        }
+
         extrinsicService.submit(
-            { builder in
-                try builder.adding(call: rebondCall)
-            },
+            builderClosure,
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in

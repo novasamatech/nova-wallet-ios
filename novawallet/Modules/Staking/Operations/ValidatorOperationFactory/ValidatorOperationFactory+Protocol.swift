@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
     // swiftlint:disable function_body_length

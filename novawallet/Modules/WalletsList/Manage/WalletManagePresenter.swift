@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class WalletManagePresenter: WalletsListPresenter {
     enum AddWalletOptions: Int {
@@ -106,7 +106,12 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
             return false
         }
 
-        return viewModels[section].type != .proxied
+        let nonRemovableTypes: [WalletsListSectionViewModel.SectionType] = [
+            .proxied,
+            .multisig
+        ]
+
+        return nonRemovableTypes.allSatisfy { $0 != viewModels[section].type }
     }
 
     func selectItem(at index: Int, section: Int) {

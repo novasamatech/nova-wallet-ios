@@ -40,6 +40,19 @@ enum UncertainStorage<T> {
             return defaultValue
         }
     }
+
+    func valueWhenDefinedElseThrow(_ message: String) throws -> T {
+        switch self {
+        case let .defined(value):
+            return value
+        case .undefined:
+            throw UncertainStorageError.undefined(message)
+        }
+    }
+}
+
+enum UncertainStorageError: Error {
+    case undefined(String)
 }
 
 extension UncertainStorage where T: Decodable {

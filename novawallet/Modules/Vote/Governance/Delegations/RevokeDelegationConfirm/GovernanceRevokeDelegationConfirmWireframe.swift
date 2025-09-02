@@ -1,8 +1,7 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
-final class GovRevokeDelegationConfirmWireframe: GovernanceRevokeDelegationConfirmWireframeProtocol,
-    ModalAlertPresenting {
+final class GovRevokeDelegationConfirmWireframe: GovernanceRevokeDelegationConfirmWireframeProtocol {
     let state: GovernanceSharedState
 
     init(state: GovernanceSharedState) {
@@ -33,18 +32,29 @@ final class GovRevokeDelegationConfirmWireframe: GovernanceRevokeDelegationConfi
 
     func complete(
         on view: GovernanceRevokeDelegationConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution?,
         allRemoved: Bool,
         locale: Locale
     ) {
         let presenter = view?.controller.navigationController
 
         if allRemoved {
-            presenter?.popToRootViewController(animated: true)
+            presentExtrinsicSubmission(
+                from: view,
+                sender: sender,
+                completionAction: .pop,
+                locale: locale
+            )
         } else if
             let yourDelegations = presenter?.viewControllers.first(
                 where: { $0 is GovernanceYourDelegationsViewProtocol }
             ) {
-            presenter?.popToViewController(yourDelegations, animated: true)
+            presentExtrinsicSubmission(
+                from: view,
+                sender: sender,
+                completionAction: .popToViewController(yourDelegations),
+                locale: locale
+            )
         } else {
             guard let yourDelegations = GovernanceYourDelegationsViewFactory.createView(for: state) else {
                 return
@@ -52,15 +62,13 @@ final class GovRevokeDelegationConfirmWireframe: GovernanceRevokeDelegationConfi
 
             yourDelegations.controller.hidesBottomBarWhenPushed = true
 
-            presenter?.popToRootViewController(animated: false)
-
-            presenter?.pushViewController(yourDelegations.controller, animated: true)
+            presentExtrinsicSubmission(
+                from: view,
+                sender: sender,
+                completionAction: .popToViewController(yourDelegations.controller),
+                locale: locale
+            )
         }
-
-        let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
-
-        presentSuccessNotification(title, from: presenter, completion: nil)
     }
 
     func skip(on view: GovernanceRevokeDelegationConfirmViewProtocol?) {

@@ -21,7 +21,8 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
 
         connections[nodeStart]?.forEach { edge in
             if filter.shouldVisit(edge: edge, predecessor: nil) {
-                queue.push((cost: edge.weight, path: [edge]))
+                let cost = edge.addingWeight(to: 0, predecessor: nil)
+                queue.push((cost: cost, path: [edge]))
             }
         }
 
@@ -45,7 +46,8 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
                         var newPath = path
                         newPath.append(neighbor)
 
-                        queue.push((cost: cost + neighbor.weight, path: newPath))
+                        let newCost = neighbor.addingWeight(to: cost, predecessor: currentEdge)
+                        queue.push((cost: newCost, path: newPath))
                     }
                 }
             }
@@ -66,8 +68,10 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
         connections[nodeStart]?.forEach { edge in
             if filter.shouldVisit(edge: edge, predecessor: nil) {
                 prev[edge.destination] = edge
-                dist[edge.destination] = edge.weight
-                queue.push((cost: edge.weight, edge: edge))
+
+                let cost = edge.addingWeight(to: 0, predecessor: nil)
+                dist[edge.destination] = cost
+                queue.push((cost: cost, edge: edge))
             }
         }
 
@@ -78,7 +82,7 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
 
             for neighbor in neighbors {
                 let neighborDist = dist[neighbor.destination] ?? Int.max
-                let newCost = cost + neighbor.weight
+                let newCost = edge.addingWeight(to: cost, predecessor: edge)
 
                 if newCost < neighborDist, filter.shouldVisit(edge: neighbor, predecessor: edge) {
                     dist[neighbor.destination] = newCost

@@ -9,6 +9,7 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
     var accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
     var proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol { get }
     var localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var rewardCalculatorService: RewardCalculatorServiceProtocol { get }
     var preferredValidatorsProvider: PreferredValidatorsProviding { get }
@@ -31,6 +32,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol
     let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol
     let proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
@@ -51,6 +53,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
         proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol,
         proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardCalculatorService: RewardCalculatorServiceProtocol,
@@ -64,6 +67,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService
         self.proxyRemoteSubscriptionService = proxyRemoteSubscriptionService
         self.localSubscriptionFactory = localSubscriptionFactory
+        self.stakingRewardsLocalSubscriptionFactory = stakingRewardsLocalSubscriptionFactory
         self.proxyLocalSubscriptionFactory = proxyLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.rewardCalculatorService = rewardCalculatorService

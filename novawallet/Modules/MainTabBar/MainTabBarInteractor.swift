@@ -1,17 +1,19 @@
 import Foundation
-import SoraKeystore
-
+import Keystore_iOS
 import SubstrateSdk
+import Foundation_iOS
 
-final class MainTabBarInteractor {
+final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?
 
     let eventCenter: EventCenterProtocol
-    let keystoreImportService: KeystoreImportServiceProtocol
+    let secretImportService: SecretImportServiceProtocol
+    let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
+    let notificationsPromoService: MultisigNotificationsPromoServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
@@ -20,7 +22,8 @@ final class MainTabBarInteractor {
 
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
-            OnLaunchAction.PushNotificationsSetup()
+            OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.MultisigNotificationsPromo()
         ]
     )
 
@@ -31,8 +34,10 @@ final class MainTabBarInteractor {
     init(
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
+        walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
+        notificationsPromoService: MultisigNotificationsPromoServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
         securedLayer: SecurityLayerServiceProtocol,
@@ -42,8 +47,10 @@ final class MainTabBarInteractor {
         logger: LoggerProtocol
     ) {
         self.eventCenter = eventCenter
-        self.keystoreImportService = keystoreImportService
+        self.secretImportService = secretImportService
+        self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
+        self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
         self.serviceCoordinator = serviceCoordinator
@@ -57,19 +64,23 @@ final class MainTabBarInteractor {
 
         startServices()
     }
+}
 
-    private func startServices() {
+// MARK: - Private
+
+private extension MainTabBarInteractor {
+    func startServices() {
         serviceCoordinator.setup()
         inAppUpdatesService.syncUp()
     }
 
-    private func stopServices() {
+    func stopServices() {
         serviceCoordinator.throttle()
         inAppUpdatesService.stopSyncUp()
     }
 
-    private func suggestSecretImportIfNeeded() {
-        guard let definition = keystoreImportService.definition else {
+    func suggestSecretImportIfNeeded() {
+        guard let definition = secretImportService.definition else {
             return
         }
 
@@ -77,11 +88,11 @@ final class MainTabBarInteractor {
         case .keystore:
             presenter?.didRequestImportAccount(source: .keystore)
         case .mnemonic:
-            presenter?.didRequestImportAccount(source: .mnemonic)
+            presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
         }
     }
 
-    private func showPushNotificationsSetupOrNextAction() {
+    func showPushNotificationsSetupOrNextAction() {
         if !settingsManager.notificationsSetupSeen {
             securedLayer.scheduleExecutionIfAuthorized { [weak self] in
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
@@ -91,7 +102,26 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func subscribeCloudSyncMonitor() {
+    func setupMultisigNotificationPromoOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            guard let self else { return }
+
+            notificationsPromoService.add(
+                observer: self,
+                sendStateOnSubscription: true,
+                queue: .main
+            ) { _, newState in
+                guard let newState, case let .requestingShow(params) = newState else {
+                    return
+                }
+
+                self.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
+            }
+            onLaunchQueue.runNext()
+        }
+    }
+
+    func subscribeCloudSyncMonitor() {
         cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] oldStatus, newStatus in
             self?.securedLayer.scheduleExecutionIfAuthorized {
                 self?.presenter?.didReceiveCloudSync(status: newStatus)
@@ -100,7 +130,7 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func checkNeededSync(
+    func checkNeededSync(
         for oldStatus: CloudBackupSyncMonitorStatus?,
         newStatus: CloudBackupSyncMonitorStatus?
     ) {
@@ -112,12 +142,24 @@ final class MainTabBarInteractor {
             cloudBackupMediator.sync(for: .unknown)
         }
     }
+
+    func handleWalletMigration(message: WalletMigrationMessage) {
+        switch message {
+        case let .start(content):
+            presenter?.didRequestWalletMigration(with: content)
+        default:
+            break
+        }
+    }
 }
+
+// MARK: - MainTabBarInteractorInputProtocol
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
-        keystoreImportService.add(observer: self)
+        secretImportService.add(observer: self)
+        walletMigrationService.addObserver(self)
 
         suggestSecretImportIfNeeded()
 
@@ -130,7 +172,11 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         onLaunchQueue.delegate = self
 
-        if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
+        if
+            let message = walletMigrationService.consumePendingMessage(),
+            case let .start(content) = message {
+            presenter?.didRequestWalletMigration(with: content)
+        } else if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
@@ -147,6 +193,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         onLaunchQueue.runNext()
     }
 }
+
+// MARK: - EventVisitorProtocol
 
 extension MainTabBarInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
@@ -174,7 +222,9 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     }
 }
 
-extension MainTabBarInteractor: KeystoreImportObserver {
+// MARK: - SecretImportObserver
+
+extension MainTabBarInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.suggestSecretImportIfNeeded()
@@ -188,6 +238,18 @@ extension MainTabBarInteractor: KeystoreImportObserver {
     }
 }
 
+// MARK: - WalletMigrationObserver
+
+extension MainTabBarInteractor: WalletMigrationObserver {
+    func didReceiveMigration(message: WalletMigrationMessage) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.handleWalletMigration(message: message)
+        }
+    }
+}
+
+// MARK: - ScreenOpenDelegate
+
 extension MainTabBarInteractor: ScreenOpenDelegate {
     func didAskScreenOpen(_ screen: UrlHandlingScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
@@ -196,6 +258,8 @@ extension MainTabBarInteractor: ScreenOpenDelegate {
     }
 }
 
+// MARK: - PushNotificationOpenDelegate
+
 extension MainTabBarInteractor: PushNotificationOpenDelegate {
     func didAskScreenOpen(_ screen: PushNotification.OpenScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
@@ -203,6 +267,8 @@ extension MainTabBarInteractor: PushNotificationOpenDelegate {
         }
     }
 }
+
+// MARK: - CloudBackupSynсUIPresenting
 
 extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     func cloudBackup(
@@ -225,8 +291,14 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     }
 }
 
+// MARK: - OnLaunchActionsQueueDelegate
+
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
+    }
+
+    func onLaunchProcessMultisigNotificationPromo(_: OnLaunchAction.MultisigNotificationsPromo) {
+        setupMultisigNotificationPromoOrNextAction()
     }
 }

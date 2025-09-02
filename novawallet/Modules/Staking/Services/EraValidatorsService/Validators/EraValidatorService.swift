@@ -74,7 +74,7 @@ final class EraValidatorService {
         }
 
         DispatchQueue.main.async {
-            let event = EraStakersInfoChanged()
+            let event = EraStakersInfoChanged(chainId: self.chainId)
             self.eventCenter.notify(with: event)
         }
     }

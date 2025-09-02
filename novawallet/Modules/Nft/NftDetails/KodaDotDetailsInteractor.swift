@@ -30,13 +30,12 @@ final class KodaDotDetailsInteractor: NftDetailsInteractor {
     }
 
     private func provideMedia(from reference: String?) {
-        if let reference = reference, let imageUrl = nftMetadataService.imageUrl(from: reference) {
-            let mediaViewModel = NftImageViewModel(url: imageUrl)
+        let mediaViewModel = KodadotMediaViewModelFactory.createMediaViewModel(
+            from: reference,
+            using: nftMetadataService
+        )
 
-            presenter?.didReceive(media: mediaViewModel)
-        } else {
-            presenter?.didReceive(media: nil)
-        }
+        presenter?.didReceive(media: mediaViewModel)
     }
 
     private func provideDefaultInstanceDetails() {

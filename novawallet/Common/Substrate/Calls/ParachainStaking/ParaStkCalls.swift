@@ -2,7 +2,6 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-// swiftlint:disable nesting
 extension ParachainStaking {
     struct DelegateCall: Codable {
         enum CodingKeys: String, CodingKey {
@@ -15,6 +14,24 @@ extension ParachainStaking {
         @BytesCodable var candidate: AccountId
         @StringCodable var amount: BigUInt
         @StringCodable var candidateDelegationCount: UInt32
+        @StringCodable var delegationCount: UInt32
+    }
+
+    struct DelegateWithAutocompoundCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case candidate
+            case amount
+            case autoCompound = "auto_compound"
+            case candidateDelegationCount = "candidate_delegation_count"
+            case candidateAutoCompoundingDelegationCount = "candidate_auto_compounding_delegation_count"
+            case delegationCount = "delegation_count"
+        }
+
+        @BytesCodable var candidate: AccountId
+        @StringCodable var amount: BigUInt
+        @StringCodable var autoCompound: BigUInt
+        @StringCodable var candidateDelegationCount: UInt32
+        @StringCodable var candidateAutoCompoundingDelegationCount: UInt32
         @StringCodable var delegationCount: UInt32
     }
 
@@ -81,18 +98,31 @@ extension ParachainStaking {
     }
 }
 
-// swiftlint:enable nesting
-
 extension ParachainStaking.DelegateCall {
-    var extrinsicIdentifier: String {
-        candidate.toHex() + "-"
-            + String(amount) + "-"
-            + String(candidateDelegationCount) + "-"
-            + String(delegationCount)
+    static var callCodingPath: CallCodingPath {
+        CallCodingPath(moduleName: "ParachainStaking", callName: "delegate")
     }
 
-    var runtimeCall: RuntimeCall<ParachainStaking.DelegateCall> {
-        RuntimeCall(moduleName: "ParachainStaking", callName: "delegate", args: self)
+    var runtimeCall: RuntimeCall<Self> {
+        RuntimeCall(
+            moduleName: Self.callCodingPath.moduleName,
+            callName: Self.callCodingPath.callName,
+            args: self
+        )
+    }
+}
+
+extension ParachainStaking.DelegateWithAutocompoundCall {
+    static var callCodingPath: CallCodingPath {
+        CallCodingPath(moduleName: "ParachainStaking", callName: "delegate_with_auto_compound")
+    }
+
+    var runtimeCall: RuntimeCall<Self> {
+        RuntimeCall(
+            moduleName: Self.callCodingPath.moduleName,
+            callName: Self.callCodingPath.callName,
+            args: self
+        )
     }
 }
 

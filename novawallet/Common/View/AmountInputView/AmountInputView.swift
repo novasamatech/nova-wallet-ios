@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 class AmountInputView: BackgroundedContentControl {
     private(set) var titleLabel: UILabel!

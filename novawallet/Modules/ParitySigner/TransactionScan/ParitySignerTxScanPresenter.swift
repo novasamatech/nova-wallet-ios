@@ -1,11 +1,11 @@
 import Foundation
-import SoraFoundation
-import IrohaCrypto
+import Foundation_iOS
+import NovaCrypto
 
 final class ParitySignerTxScanPresenter: QRScannerPresenter {
     let interactor: ParitySignerTxScanInteractorInputProtocol
 
-    let timer: CountdownTimerMediating
+    let timer: CountdownTimerMediating?
     let expirationViewModelFactory: ExpirationViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
     let completion: TransactionSigningClosure
@@ -21,7 +21,7 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
         baseWireframe: QRScannerWireframeProtocol,
         scanWireframe: ParitySignerTxScanWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
-        timer: CountdownTimerMediating,
+        timer: CountdownTimerMediating?,
         expirationViewModelFactory: ExpirationViewModelFactoryProtocol,
         qrScanService: QRCaptureServiceProtocol,
         qrExtractionService: QRExtractionServiceProtocol,
@@ -69,6 +69,11 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
     }
 
     private func updateTimerViewModel() {
+        guard let timer else {
+            scanView?.didReceiveExpiration(viewModel: nil)
+            return
+        }
+
         do {
             let viewModel = try expirationViewModelFactory.createViewModel(from: timer.remainedInterval)
             scanView?.didReceiveExpiration(viewModel: viewModel)
@@ -78,7 +83,7 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
     }
 
     private func subscribeTimer() {
-        timer.addObserver(self)
+        timer?.addObserver(self)
     }
 
     override func setup() {

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreBasePresenter {
@@ -161,8 +161,13 @@ extension NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreConfirmI
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
-            wireframe?.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        case let .success(model):
+            wireframe?.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
         case let .failure(error):
             wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

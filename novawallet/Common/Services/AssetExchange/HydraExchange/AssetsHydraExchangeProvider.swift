@@ -45,7 +45,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             connection: host.connection,
             runtimeProvider: host.runtimeService,
             notificationsRegistrar: exchangeStateRegistrar,
-            operationQueue: host.operationQueue
+            operationQueue: host.operationQueue,
+            logger: host.logger
         )
 
         stateProviderRegistrar.addStateProvider(flowState)
@@ -101,7 +102,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             connection: host.connection,
             runtimeProvider: host.runtimeService,
             notificationsRegistrar: exchangeStateRegistrar,
-            operationQueue: host.operationQueue
+            operationQueue: host.operationQueue,
+            logger: host.logger
         )
 
         stateProviderRegistrar.addStateProvider(flowState)
@@ -116,6 +118,31 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             ),
             quoteFactory: .init(flowState: flowState),
             logger: logger
+        )
+    }
+
+    private func createAaveExchange(
+        from host: HydraExchangeHostProtocol,
+        registeringStateIn stateProviderRegistrar: AssetsExchangeStateRegistring
+    ) -> AssetsHydraAaveExchange {
+        let flowState = HydraAaveFlowState(
+            account: host.selectedAccount,
+            connection: host.connection,
+            runtimeProvider: host.runtimeService,
+            notificationsRegistrar: exchangeStateRegistrar,
+            operationQueue: operationQueue
+        )
+
+        stateProviderRegistrar.addStateProvider(flowState)
+
+        return AssetsHydraAaveExchange(
+            host: host,
+            apiOperationFactory: HydraAaveTradeExecutorFactory(
+                connection: host.connection,
+                runtimeProvider: host.runtimeService,
+                operationQueue: host.operationQueue
+            ),
+            quoteFactory: HydraAaveSwapQuoteFactory(flowState: flowState)
         )
     }
 
@@ -140,7 +167,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
         let customFeeEstimatingFactory = AssetExchangeFeeEstimatingFactory(
             graphProxy: graphProxy,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            feeBufferInPercentage: AssetExchangeFeeConstants.feeBufferInPercentage
         )
 
         let extrinsicOperationFactory = serviceFactory.createOperationFactory(
@@ -160,7 +188,11 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             statusService: ExtrinsicStatusService(
                 connection: connection,
                 runtimeProvider: runtimeService,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
+                eventsQueryFactory: BlockEventsQueryFactory(
+                    operationQueue: operationQueue,
+                    logger: logger
+                ),
+                logger: logger
             ),
             operationQueue: operationQueue
         )
@@ -234,7 +266,9 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
             let xykExchange = createXYKExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
-            return [omnipoolExchange, stableswapExchange, xykExchange]
+            let aaveExchange = createAaveExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
+
+            return [omnipoolExchange, stableswapExchange, xykExchange, aaveExchange]
         }
 
         updateState(with: exchanges)

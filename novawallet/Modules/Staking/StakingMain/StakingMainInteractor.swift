@@ -1,8 +1,8 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingMainInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol?

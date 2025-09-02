@@ -1,8 +1,8 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 extension AddAccount {
     final class AccountImportInteractor: BaseAccountImportInteractor {
@@ -10,23 +10,21 @@ extension AddAccount {
         let eventCenter: EventCenterProtocol
 
         init(
-            accountOperationFactory: MetaAccountOperationFactoryProtocol,
+            metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
             accountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
-            keystoreImportService: KeystoreImportServiceProtocol,
+            secretImportService: SecretImportServiceProtocol,
             eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
             self.eventCenter = eventCenter
 
             super.init(
-                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: accountRepository,
                 operationManager: operationManager,
-                keystoreImportService: keystoreImportService,
-                availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
-                defaultCryptoType: .sr25519
+                secretImportService: secretImportService
             )
         }
 

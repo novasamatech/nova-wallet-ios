@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
     let interactor: OnboardingImportOptionsInteractorInputProtocol
@@ -42,7 +42,9 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 self?.interactor.checkExistingBackup()
                             }
                         )
-                    ),
+                    )
+                ],
+                [
                     WalletImportOptionViewModel.RowItem.primary(
                         .init(
                             backgroundImage: R.image.bgMnemonicImport()!.resizableCenterImage(),
@@ -58,9 +60,7 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 self?.wireframe.showPassphraseImport(from: self?.view)
                             }
                         )
-                    )
-                ],
-                [
+                    ),
                     WalletImportOptionViewModel.RowItem.primary(
                         .init(
                             backgroundImage: R.image.bgHardwareWalletImport()!.resizableCenterImage(),
@@ -78,6 +78,24 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 }
 
                                 self.wireframe.showHardwareImport(from: self.view, locale: self.selectedLocale)
+                            }
+                        )
+                    )
+                ],
+                [
+                    WalletImportOptionViewModel.RowItem.primary(
+                        .init(
+                            backgroundImage: R.image.bgTrustWalletImport()!.resizableCenterImage(),
+                            mainImage: R.image.iconTrustWalletImport()!,
+                            mainImagePosition: .center,
+                            title: R.string.localizable.commonTrustWallet(
+                                preferredLanguages: selectedLocale.rLanguages
+                            ),
+                            subtitle: R.string.localizable.trustWalletImportDescription(
+                                preferredLanguages: selectedLocale.rLanguages
+                            ),
+                            onAction: { [weak self] in
+                                self?.wireframe.showTrustWalletImport(from: self?.view)
                             }
                         )
                     ),

@@ -1,20 +1,20 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         dappMediator: DAppInteractionMediating,
         assetListModelObservable: AssetListModelObservable,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -67,7 +67,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         assetsSearchView.controller.modalTransitionStyle = .crossDissolve
-        assetsSearchView.controller.modalPresentationStyle = .fullScreen
+        assetsSearchView.controller.modalPresentationStyle = .overCurrentContext
 
         view?.controller.present(
             assetsSearchView.controller,
@@ -80,7 +80,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     ) {
-        guard let assetsSearchView = AssetOperationViewFactory.createSendView(
+        guard let assetOperationView = AssetOperationViewFactory.createSendView(
             for: assetListModelObservable,
             transferCompletion: transferCompletion,
             buyTokensClosure: buyTokensClosure
@@ -89,7 +89,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
         view?.controller.presentWithCardLayout(
@@ -99,12 +99,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showRecieveTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createReceiveView(for: assetListModelObservable) else {
+        guard let assetOperationView = AssetOperationViewFactory.createReceiveView(for: assetListModelObservable) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
         view?.controller.presentWithCardLayout(
@@ -113,19 +113,34 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showBuyTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
+    ) {
+        guard let assetOperationView = AssetOperationViewFactory.createRampView(
+            for: assetListModelObservable,
+            action: action,
+            delegate: delegate
+        ) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
-        view?.controller.presentWithCardLayout(
-            navigationController,
-            animated: true
-        )
+        if action == .offRamp {
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        } else {
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        }
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
@@ -165,7 +180,22 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         nftListView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
+        view?.controller.navigationController?.pushViewController(
+            nftListView.controller,
+            animated: true
+        )
+    }
+
+    func showMultisigOperations(from view: AssetListViewProtocol?) {
+        guard let operationsView = MultisigOperationsViewFactory.createView() else {
+            return
+        }
+
+        operationsView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            operationsView.controller,
+            animated: true
+        )
     }
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput) {
@@ -222,6 +252,34 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.presentWithCardLayout(
             navigationController,
             animated: true
+        )
+    }
+
+    func showCard(
+        from view: AssetListViewProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        checkingSupport(
+            of: .card,
+            for: wallet,
+            sheetPresentingView: view
+        ) {
+            guard let payCardView = PayCardViewFactory.createView() else {
+                return
+            }
+
+            payCardView.controller.hidesBottomBarWhenPushed = true
+            view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+        }
+    }
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
         )
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct LedgerNetworkSelectionViewFactory {
     static func createView(for flow: WalletCreationFlow) -> LedgerNetworkSelectionViewProtocol? {

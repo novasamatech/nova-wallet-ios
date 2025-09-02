@@ -37,7 +37,9 @@ protocol PinSetupWireframeProtocol: AnyObject {
 }
 
 protocol PinViewFactoryProtocol: AnyObject {
-    static func createPinSetupView() -> PinSetupViewProtocol?
+    static func createPinSetupView(
+        initialFlowStatusPresentingClosure: FlowStatusPresentingClosure?
+    ) -> PinSetupViewProtocol?
     static func createPinChangeView() -> PinSetupViewProtocol?
     static func createSecuredPinView() -> PinSetupViewProtocol?
     static func createScreenAuthorizationView(
@@ -45,6 +47,12 @@ protocol PinViewFactoryProtocol: AnyObject {
         usingBiometry: Bool,
         cancellable: Bool
     ) -> PinSetupViewProtocol?
+}
+
+extension PinViewFactoryProtocol {
+    static func createPinSetupView() -> PinSetupViewProtocol? {
+        createPinSetupView(initialFlowStatusPresentingClosure: nil)
+    }
 }
 
 enum PinAppearanceAnimationConstants {

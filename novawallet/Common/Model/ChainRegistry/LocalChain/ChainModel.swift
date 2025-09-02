@@ -71,6 +71,7 @@ struct ChainModel: Equatable, Hashable {
     let assets: Set<AssetModel>
     let nodes: Set<ChainNodeModel>
     let addressPrefix: AddressPrefix
+    let legacyAddressPrefix: AddressPrefix?
     let types: TypesSettings?
     let icon: URL?
     let options: [LocalChainOptions]?
@@ -91,6 +92,7 @@ struct ChainModel: Equatable, Hashable {
         nodes: Set<ChainNodeModel>,
         nodeSwitchStrategy: NodeSwitchStrategy,
         addressPrefix: AddressPrefix,
+        legacyAddressPrefix: AddressPrefix?,
         types: TypesSettings?,
         icon: URL?,
         options: [LocalChainOptions]?,
@@ -109,6 +111,7 @@ struct ChainModel: Equatable, Hashable {
         self.nodes = nodes
         self.nodeSwitchStrategy = nodeSwitchStrategy
         self.addressPrefix = addressPrefix
+        self.legacyAddressPrefix = legacyAddressPrefix
         self.types = types
         self.icon = icon
         self.options = options
@@ -143,6 +146,10 @@ struct ChainModel: Equatable, Hashable {
 
     func hasEnabledAsset() -> Bool {
         assets.contains { $0.enabled }
+    }
+
+    var hasUnifiedAddressPrefix: Bool {
+        legacyAddressPrefix != nil
     }
 
     var isEthereumBased: Bool {
@@ -195,6 +202,10 @@ struct ChainModel: Equatable, Hashable {
 
     var hasProxy: Bool {
         options?.contains(where: { $0 == .proxy }) ?? false
+    }
+
+    var hasMultisig: Bool {
+        options?.contains(where: { $0 == .multisig }) ?? false
     }
 
     var noSubstrateRuntime: Bool {
@@ -265,6 +276,14 @@ struct ChainModel: Equatable, Hashable {
         }
 
         return .init(chain: self, asset: asset)
+    }
+
+    func chainAssetForSymbolOrError(_ symbol: String) throws -> ChainAsset {
+        guard let asset = chainAssetForSymbol(symbol) else {
+            throw ChainModelFetchError.noAssetForSymbol(symbol)
+        }
+
+        return asset
     }
 
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
@@ -360,7 +379,7 @@ extension ChainModel: Identifiable {
     var identifier: String { chainId }
 }
 
-enum LocalChainOptions: String, Codable {
+enum LocalChainOptions: String, Codable, Equatable {
     case ethereumBased
     case testnet
     case crowdloans
@@ -370,6 +389,7 @@ enum LocalChainOptions: String, Codable {
     case swapHub = "swap-hub"
     case swapHydra = "hydradx-swaps"
     case proxy
+    case multisig
     case pushNotifications = "pushSupport"
     case assetHubFees = "assethub-fees"
     case hydrationFees = "hydration-fees"
@@ -385,6 +405,7 @@ extension ChainModel {
             nodes: nodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -410,6 +431,7 @@ extension ChainModel {
             nodes: nodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -436,6 +458,7 @@ extension ChainModel {
             nodes: mutNodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -458,6 +481,7 @@ extension ChainModel {
             nodes: self.nodes.union(nodes),
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -484,6 +508,7 @@ extension ChainModel {
             nodes: mutNodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -514,6 +539,7 @@ extension ChainModel {
             nodes: mutNodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -543,6 +569,7 @@ extension ChainModel {
             nodes: nodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -565,6 +592,7 @@ extension ChainModel {
             nodes: nodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -587,6 +615,7 @@ extension ChainModel {
             nodes: nodes,
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,
@@ -605,6 +634,14 @@ extension ChainModel {
     func getAllAssetPriceIds() -> Set<AssetModel.PriceId> {
         let priceIds = assets.compactMap(\.priceId)
         return Set(priceIds)
+    }
+
+    var genesisHash: Data? {
+        guard !isPureEvm else {
+            return nil
+        }
+
+        return try? Data(hexString: chainId)
     }
 }
 
@@ -639,6 +676,10 @@ extension ChainNodeConnectable {
 
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
+    }
+
+    var isPureEvm: Bool {
+        isEthereumBased && !hasSubstrateRuntime
     }
 }
 

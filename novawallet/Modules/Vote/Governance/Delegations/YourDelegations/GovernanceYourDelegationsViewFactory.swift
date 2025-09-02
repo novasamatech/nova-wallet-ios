@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct GovernanceYourDelegationsViewFactory {
     static func createView(for state: GovernanceSharedState) -> GovernanceYourDelegationsViewProtocol? {

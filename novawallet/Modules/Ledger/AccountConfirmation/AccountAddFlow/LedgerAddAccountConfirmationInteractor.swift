@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmationInteractor,
     LedgerAccountConfirmationInteractorInputProtocol {
@@ -53,7 +53,8 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
             accountId: info.accountId,
             publicKey: info.publicKey,
             cryptoType: info.cryptoType.rawValue,
-            proxy: nil
+            proxy: nil,
+            multisig: nil
         )
 
         let newAccountItem = wallet.replacingChainAccount(chainAccount)
@@ -82,8 +83,9 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
                savedAccountItem.identifier == newAccountItem.identifier {
                 self.settings.save(value: newAccountItem)
                 self.eventCenter.notify(with: SelectedWalletSwitched())
-                self.eventCenter.notify(with: ChainAccountChanged())
             }
+
+            self.eventCenter.notify(with: ChainAccountChanged())
         }
 
         settingsSaveOperation.addDependency(persistentOperation)

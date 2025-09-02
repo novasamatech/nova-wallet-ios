@@ -1,5 +1,5 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 
 final class AssetsSearchInteractor {
     static let workingQueueLabel: String = "com.nova.wallet.assets.search.builder"

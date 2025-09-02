@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
@@ -7,26 +7,53 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     let interactor: GenericLedgerWalletInteractorInputProtocol
     let logger: LoggerProtocol
     let deviceName: String
+    let deviceModel: LedgerDeviceModel
     let appName: String
 
-    private var account: LedgerAccount?
+    private var model: PolkadotLedgerWalletModel?
 
     init(
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         appName: String,
         interactor: GenericLedgerWalletInteractorInputProtocol,
         wireframe: GenericLedgerWalletWireframeProtocol,
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
-        localizationManager _: LocalizationManagerProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.deviceName = deviceName
+        self.deviceModel = deviceModel
         self.appName = appName
         self.interactor = interactor
         self.wireframe = wireframe
         self.logger = logger
 
         super.init(viewModelFactory: viewModelFactory)
+
+        self.localizationManager = localizationManager
+    }
+
+    func getAddressesToConfirm() -> [HardwareWalletAddressScheme: AccountAddress]? {
+        guard let model else {
+            return nil
+        }
+
+        var result: [HardwareWalletAddressScheme: AccountAddress] = [:]
+
+        if let address = try? model.substrate.accountId.toAddressForHWScheme(.substrate) {
+            result[.substrate] = address
+        }
+
+        if let evm = model.evm, let address = try? evm.address.toAddressForHWScheme(.evm) {
+            result[.evm] = address
+        }
+
+        guard !result.isEmpty else {
+            return nil
+        }
+
+        return result
     }
 
     private func provideDescriptionViewModel() {
@@ -37,6 +64,23 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
         )
 
         view?.didReceive(descriptionViewModel: viewModel)
+    }
+
+    private func confirmAccount() {
+        guard let addresses = getAddressesToConfirm() else {
+            return
+        }
+
+        interactor.confirmAccount()
+
+        wireframe.showAddressVerification(
+            on: view,
+            deviceName: deviceName,
+            deviceModel: deviceModel,
+            addresses: addresses
+        ) { [weak self] in
+            self?.interactor.cancelRequest()
+        }
     }
 }
 
@@ -51,28 +95,36 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
     }
 
     func proceed() {
-        guard let address = account?.address else {
-            return
-        }
-
-        interactor.confirmAccount()
-
-        wireframe.showAddressVerification(on: view, deviceName: deviceName, address: address) { [weak self] in
-            self?.interactor.cancelRequest()
-        }
+        confirmAccount()
     }
 }
 
 extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProtocol {
-    func didReceive(account: LedgerAccount) {
-        self.account = account
-        accountId = try? account.address.toAccountId()
+    func didReceive(model: PolkadotLedgerWalletModel) {
+        var newAddresses: [HardwareWalletAddressModel] = [
+            HardwareWalletAddressModel(
+                accountId: model.substrate.accountId,
+                scheme: .substrate
+            )
+        ]
+
+        if let evm = model.evm {
+            newAddresses.append(
+                HardwareWalletAddressModel(
+                    accountId: evm.address,
+                    scheme: .evm
+                )
+            )
+        }
+
+        self.model = model
+        addresses = newAddresses
 
         provideViewModel()
     }
 
-    func didReceiveAccountConfirmation(with model: SubstrateLedgerWalletModel) {
-        guard let view else {
+    func didReceiveAccountConfirmation() {
+        guard let view, let model else {
             return
         }
 
@@ -97,7 +149,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
         let internalError: Error
 
         switch error {
-        case let .fetAccount(fetchError):
+        case let .fetchAccount(fetchError):
             internalError = fetchError
 
             retryClosure = { [weak self] in
@@ -107,7 +159,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             internalError = confirmError
 
             retryClosure = { [weak self] in
-                self?.interactor.confirmAccount()
+                self?.confirmAccount()
             }
         }
 
@@ -115,9 +167,15 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                cancelClosure: {},
-                retryClosure: retryClosure
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
             )
         } else {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale, retryAction: retryClosure)

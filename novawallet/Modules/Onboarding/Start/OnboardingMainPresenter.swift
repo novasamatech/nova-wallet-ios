@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class OnboardingMainPresenter {
     weak var view: OnboardingMainViewProtocol?
@@ -60,6 +60,10 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
     func didSuggestSecretImport(source: SecretSource) {
         wireframe.showAccountSecretImport(from: view, source: source)
+    }
+
+    func didSuggestWalletMigration(with message: WalletMigrationMessage.Start) {
+        wireframe.showWalletMigration(from: view, message: message)
     }
 
     func didReceiveError(_ error: Error) {

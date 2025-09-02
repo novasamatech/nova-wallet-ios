@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class TitleAmountView: UIView {
     struct ViewStyle {
@@ -11,7 +11,17 @@ class TitleAmountView: UIView {
         let fiatFont: UIFont
     }
 
-    let titleLabel = UILabel()
+    let titleView: IconDetailsGenericView<IconDetailsView> = .create { view in
+        view.spacing = 8.0
+        view.detailsView.spacing = 8.0
+
+        view.mode = .iconDetails
+        view.detailsView.mode = .detailsIcon
+    }
+
+    var titleLabel: UILabel {
+        titleView.detailsView.detailsLabel
+    }
 
     let tokenLabel = UILabel()
 
@@ -33,7 +43,7 @@ class TitleAmountView: UIView {
 
     var verticalOffset: CGFloat = 16 {
         didSet {
-            titleLabel.snp.updateConstraints { make in
+            titleView.snp.updateConstraints { make in
                 make.top.bottom.equalToSuperview().inset(verticalOffset)
             }
         }
@@ -77,7 +87,7 @@ class TitleAmountView: UIView {
     }
 
     func requiresFlexibleHeight() {
-        titleLabel.snp.remakeConstraints { make in
+        titleView.snp.remakeConstraints { make in
             make.leading.equalToSuperview()
             make.centerY.equalToSuperview()
         }
@@ -100,8 +110,8 @@ class TitleAmountView: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        addSubview(titleView)
+        titleView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.top.bottom.equalToSuperview().inset(verticalOffset)
         }
@@ -109,7 +119,7 @@ class TitleAmountView: UIView {
         addSubview(tokenLabel)
         tokenLabel.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
         }
 
         addSubview(activityIndicator)
@@ -131,13 +141,13 @@ class TitleAmountView: UIView {
         fiatLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.top.equalTo(self.snp.centerY)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
         }
 
         tokenLabel.snp.remakeConstraints { make in
             make.trailing.equalToSuperview()
             make.bottom.equalTo(self.snp.centerY)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
         }
 
         self.fiatLabel = fiatLabel
@@ -153,7 +163,7 @@ class TitleAmountView: UIView {
 
         tokenLabel.snp.remakeConstraints { make in
             make.trailing.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
         }
     }
 

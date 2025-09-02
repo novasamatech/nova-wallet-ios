@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 class WalletsListPresenter {
     weak var baseView: WalletsListViewProtocol?
@@ -39,6 +39,10 @@ class WalletsListPresenter {
         self.localizationManager = localizationManager
     }
 
+    func setup() {
+        baseInteractor.setup()
+    }
+
     func replaceViewModels(_ items: [WalletsListViewModel], section: Int) {
         let type = viewModels[section].type
         viewModels[section] = WalletsListSectionViewModel(type: type, items: items)
@@ -47,12 +51,12 @@ class WalletsListPresenter {
     func filterIgnoredWallet(
         changes: [DataProviderChange<ManagedMetaAccountModel>]
     ) -> [DataProviderChange<ManagedMetaAccountModel>] {
-        // we don't want display revoked proxied wallets
+        // we don't want display revoked delegated wallets
 
         changes.map { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                if newItem.info.type == .proxied, newItem.info.proxy()?.status == .revoked {
+                if newItem.info.delegatedAccountStatus() == .revoked {
                     return DataProviderChange<ManagedMetaAccountModel>.delete(
                         deletedIdentifier: newItem.identifier
                     )
@@ -88,10 +92,6 @@ class WalletsListPresenter {
 }
 
 extension WalletsListPresenter: WalletsListPresenterProtocol {
-    func setup() {
-        baseInteractor.setup()
-    }
-
     func numberOfSections() -> Int {
         viewModels.count
     }

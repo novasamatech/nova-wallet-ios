@@ -1,15 +1,15 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct ParitySignerTxScanViewFactory {
     static func createView(
         from signingData: Data,
         accountId: AccountId,
-        type: ParitySignerType,
-        expirationTimer: CountdownTimerMediating,
+        params: ParitySignerConfirmationParams,
+        expirationTimer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxScanViewProtocol? {
-        let interactor = ParitySignerTxScanInteractor(signingData: signingData, accountId: accountId)
+        let interactor = ParitySignerTxScanInteractor(signingData: signingData, params: params, accountId: accountId)
 
         let wireframe = ParitySignerTxScanWireframe()
 
@@ -32,14 +32,14 @@ struct ParitySignerTxScanViewFactory {
 
         let title = LocalizableResource { locale in
             R.string.localizable.paritySignerTxTitle(
-                type.getName(for: locale),
+                params.type.getName(for: locale),
                 preferredLanguages: locale.rLanguages
             )
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle(
-                type.getName(for: locale),
+            R.string.localizable.paritySignerScanTitle_9_7_0(
+                params.type.getName(for: locale),
                 preferredLanguages: locale.rLanguages
             )
         }

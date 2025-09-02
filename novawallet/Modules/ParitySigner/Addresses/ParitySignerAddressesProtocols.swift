@@ -1,5 +1,5 @@
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 protocol ParitySignerAddressesInteractorInputProtocol: AnyObject {
     func setup()

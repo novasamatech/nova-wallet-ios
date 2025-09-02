@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
 
     var submitionPresenter: TransferConfirmCrossChainInteractorOutputProtocol? {
@@ -27,11 +28,13 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
 
         super.init(
@@ -54,10 +57,11 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistExtrinsicDetails
+        details: PersistExtrinsicDetails,
+        sender: ExtrinsicSenderResolution
     ) {
         guard let utilityAsset = originChainAsset.chain.utilityAssets().first else {
-            submitionPresenter?.didCompleteSubmition()
+            submitionPresenter?.didCompleteSubmition(by: sender)
             return
         }
 
@@ -72,7 +76,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self?.submitionPresenter?.didCompleteSubmition(by: sender)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -81,7 +85,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
 }
 
 extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: ExtrinsicFeeProtocol?) {
+    func submit(amount: BigUInt, recepient: AccountAddress, originFee: ExtrinsicFeeProtocol?) {
         do {
             guard let transferParties = transferParties else {
                 throw CommonError.dataCorruption
@@ -91,25 +95,33 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
             let destination = transferParties.destination.replacing(accountId: recepientAccountId)
             let unweightedRequest = XcmUnweightedTransferRequest(
-                origin: originChainAsset,
+                origin: transferParties.origin,
                 destination: destination,
                 reserve: transferParties.reserve,
+                metadata: transferParties.metadata,
                 amount: amount
             )
 
-            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit)
+            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest)
 
             let sender = try selectedAccount.accountId.toAddress(using: originChainAsset.chain.chainFormat)
 
             extrinsicService.submit(
                 request: transferRequest,
-                xcmTransfers: xcmTransfers,
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in
+                guard let self else { return }
+
                 switch result {
                 case let .success(result):
-                    if let txHashData = try? Data(hexString: result.txHash) {
+                    guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
+                        return
+                    }
+
+                    if
+                        let txHashData = try? Data(hexString: result.submittedModel.txHash) {
                         let details = PersistExtrinsicDetails(
                             sender: sender,
                             txHash: txHashData,
@@ -117,13 +129,13 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                             fee: originFee?.amount
                         )
 
-                        self?.persistExtrinsicAndComplete(details: details)
+                        persistExtrinsicAndComplete(details: details, sender: result.submittedModel.sender)
                     } else {
-                        self?.submitionPresenter?.didReceiveError(CommonError.dataCorruption)
+                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
                     }
 
                 case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
+                    presenter?.didReceiveError(error)
                 }
             }
         } catch {

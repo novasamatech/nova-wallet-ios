@@ -20,8 +20,10 @@ extension AssetLockMapper: CoreDataMapperProtocol {
         entity.chainAccountId = model.accountId.toHex()
         entity.chainId = model.chainAssetId.chainId
         entity.assetId = Int32(bitPattern: model.chainAssetId.assetId)
+        entity.storage = model.storage
         entity.amount = String(model.amount)
         entity.type = model.type.toUTF8String()!
+        entity.module = model.module
     }
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
@@ -35,7 +37,9 @@ extension AssetLockMapper: CoreDataMapperProtocol {
             chainAssetId: chainAssetId,
             accountId: accountId,
             type: entity.type!.data(using: .utf8)!,
-            amount: amount
+            amount: amount,
+            storage: entity.storage!,
+            module: entity.module
         )
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, StartStakingInfoPresenterProtocol {
@@ -85,9 +85,9 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.state = state
 
         guard
-            let eraDuration = state.eraDuration,
+            let rewardTime = state.rewardTime,
             let unstakingTime = state.unstakingTime,
-            let nextEraStartTime = state.nextEraStartTime,
+            let rewardDelay = state.rewardDelay,
             let minStake = state.minStake,
             let maxApy = state.maxApy else {
             return
@@ -122,7 +122,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             testnetModel,
             startStakingViewModelFactory.stakeModel(
                 minStake: minStake,
-                nextEra: nextEraStartTime,
+                rewardStartDelay: rewardDelay,
                 chainAsset: chainAsset,
                 locale: selectedLocale
             ),
@@ -130,7 +130,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             startStakingViewModelFactory.rewardModel(
                 amount: state.rewardsAutoPayoutThresholdAmount,
                 chainAsset: chainAsset,
-                eraDuration: eraDuration,
+                rewardTimeInterval: rewardTime,
                 destination: state.rewardsDestination,
                 locale: selectedLocale
             ),

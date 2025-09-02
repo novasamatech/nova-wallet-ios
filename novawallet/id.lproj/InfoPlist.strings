@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "Akses galeri foto digunakan untuk memilih kode QR dengan alamat, transaksi Polkadot Vault, atau terhubung melalui WalletConnect";
 "NSPhotoLibraryAddUsageDescription" = "Simpan permintaan transfer sebagai kode QR";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth digunakan untuk berkomunikasi dengan perangkat Ledger Nano X";
+"NSMicrophoneUsageDescription" = "Mikrofon digunakan untuk sesi media KYC";

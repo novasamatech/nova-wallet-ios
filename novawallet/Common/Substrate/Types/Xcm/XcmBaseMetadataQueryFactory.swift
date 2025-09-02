@@ -2,17 +2,24 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+enum XcmMetadataQueryError: Error {
+    case noXcmPalletFound([String])
+    case noXcmTypeFound
+    case noXcmVersionFound
+}
+
 class XcmBaseMetadataQueryFactory {
     func createXcmTypeVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol,
-        typeName: String
+        for runtimeProvider: RuntimeCodingServiceProtocol,
+        oneOfTypes: [String]
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let searchOperation = ClosureOperation<Xcm.Version?> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
             guard
-                let node = try codingFactoryOperation.extractNoCancellableResultData().getTypeNode(
-                    for: typeName
-                ) else {
+                let typeName = oneOfTypes.first(where: { codingFactory.hasType(for: $0) }),
+                let node = codingFactory.getTypeNode(for: typeName) else {
                 return nil
             }
 
@@ -31,7 +38,7 @@ class XcmBaseMetadataQueryFactory {
     }
 
     func createModuleNameResolutionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol,
+        for runtimeProvider: RuntimeCodingServiceProtocol,
         possibleNames: [String]
     ) -> CompoundOperationWrapper<String> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -41,7 +48,7 @@ class XcmBaseMetadataQueryFactory {
             guard let moduleName = possibleNames.first(
                 where: { metadata.getModuleIndex($0) != nil }
             ) else {
-                throw XcmTransferServiceError.noXcmPalletFound(possibleNames)
+                throw XcmMetadataQueryError.noXcmPalletFound(possibleNames)
             }
 
             return moduleName

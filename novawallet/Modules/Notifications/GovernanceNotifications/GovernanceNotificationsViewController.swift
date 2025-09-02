@@ -1,7 +1,7 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
-final class GovernanceNotificationsViewController: ChainNotificationSettingsViewController {
+final class GovernanceNotificationsViewController: BaseNotificationSettingsViewController {
     let presenter: GovernanceNotificationsPresenterProtocol
     lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
 
@@ -33,7 +33,7 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
 
     private func createSections(
         from viewModels: [GovernanceNotificationsViewModel]
-    ) -> [ChainNotificationSettingsViewController.Section] {
+    ) -> [BaseNotificationSettingsViewController.Section] {
         viewModels.map(createSection)
     }
 

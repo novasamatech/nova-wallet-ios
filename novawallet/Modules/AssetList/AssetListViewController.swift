@@ -1,10 +1,11 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class AssetListViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetListViewLayout
 
     let presenter: AssetListPresenterProtocol
+    let bannersViewProvider: BannersViewProviderProtocol
 
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
@@ -12,7 +13,8 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     private lazy var collectionViewManager: AssetListCollectionManagerProtocol = {
         AssetListCollectionManager(
-            view: rootView,
+            viewController: self,
+            bannersViewProvider: bannersViewProvider,
             groupsViewModel: groupsViewModel,
             delegate: self,
             selectedLocale: selectedLocale
@@ -27,9 +29,11 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: AssetListPresenterProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.bannersViewProvider = bannersViewProvider
 
         super.init(nibName: nil, bundle: nil)
 
@@ -74,14 +78,36 @@ final class AssetListViewController: UIViewController, ViewHolder {
         rootView.collectionViewLayout.deactivatePromotion()
     }
 
-    private func setNftsActive(_ isActive: Bool) {
-        rootView.collectionViewLayout.setNftsActive(isActive)
+    private func setOrganizerActive(_ isActive: Bool) {
+        rootView.collectionViewLayout.setOrganizerActive(isActive)
+    }
+
+    private func refreshOrganizerItems() {
+        let numberOfOrganizerItems = rootView.collectionView.numberOfItems(
+            inSection: AssetListFlowLayout.SectionType.organizer.index
+        )
+        (0 ..< numberOfOrganizerItems).forEach { index in
+            let itemIndexPath = AssetListFlowLayout.CellType.organizerItem(itemIndex: index).indexPath
+
+            if let organizerCell = rootView.collectionView.cellForItem(at: itemIndexPath) as? AssetListNftsCell {
+                organizerCell.refresh()
+            }
+        }
     }
 }
 
 // MARK: AssetListViewProtocol
 
 extension AssetListViewController: AssetListViewProtocol {
+    func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?) {
+        collectionViewManager.updateOrganizerViewModel(with: viewModel)
+
+        let isOrganizerActive = viewModel != nil
+        setOrganizerActive(isOrganizerActive)
+
+        rootView.collectionView.reloadData()
+    }
+
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
         collectionViewManager.updateHeaderViewModel(with: viewModel)
 
@@ -112,41 +138,26 @@ extension AssetListViewController: AssetListViewProtocol {
         }
     }
 
-    func didReceiveNft(viewModel: AssetListNftsViewModel?) {
-        collectionViewManager.updateNftViewModel(with: viewModel)
-
-        rootView.collectionView.reloadData()
-
-        let isNftActive = viewModel != nil
-        setNftsActive(isNftActive)
-    }
-
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
     }
 
-    func didReceivePromotion(viewModel: PromotionBannerView.ViewModel) {
-        collectionViewManager.updatePromotionBannerViewModel(with: viewModel)
+    func didReceiveBanners(available: Bool) {
+        collectionViewManager.updateBanners(available: available)
 
-        rootView.collectionView.reloadData()
+        let height = bannersViewProvider.getMaxBannerHeight()
 
-        let height = AssetListBannerCell.estimateHeight(for: viewModel)
-        activatePromotionWithHeight(height)
-    }
-
-    func didClosePromotion() {
-        guard collectionViewManager.ableToClosePromotion else {
-            return
+        if available {
+            activatePromotionWithHeight(height)
+        } else {
+            deactivatePromotion()
         }
 
-        rootView.collectionView.performBatchUpdates { [weak self] in
-            self?.collectionViewManager.updatePromotionBannerViewModel(with: nil)
-
-            let indexPath = AssetListFlowLayout.CellType.banner.indexPath
-            self?.rootView.collectionView.deleteItems(at: [indexPath])
+        rootView.collectionView.performBatchUpdates {
+            self.rootView.collectionView.reloadSections(
+                [AssetListFlowLayout.SectionType.banners.index]
+            )
         }
-
-        deactivatePromotion()
     }
 
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {
@@ -157,16 +168,12 @@ extension AssetListViewController: AssetListViewProtocol {
 // MARK: AssetListCollectionManagerDelegate
 
 extension AssetListViewController: AssetListCollectionManagerDelegate {
+    func selectOrganizerItem(at index: Int) {
+        presenter.selectOrganizerItem(at: index)
+    }
+
     func selectAsset(for chainAssetId: ChainAssetId) {
         presenter.selectAsset(for: chainAssetId)
-    }
-
-    func selectNfts() {
-        presenter.selectNfts()
-    }
-
-    func selectPromotion() {
-        presenter.selectPromotion()
     }
 
     func actionSelectAccount() {
@@ -178,11 +185,7 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
     }
 
     func actionRefresh() {
-        let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
-        if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
-            nftCell.refresh()
-        }
-
+        refreshOrganizerItems()
         presenter.refresh()
     }
 
@@ -206,20 +209,20 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.receive()
     }
 
-    func actionBuy() {
-        presenter.buy()
+    func actionBuySell() {
+        presenter.buySell()
     }
 
     func actionSwap() {
         presenter.swap()
     }
 
-    func actionChangeAssetListStyle() {
-        presenter.toggleAssetListStyle()
+    func actionCardOpen() {
+        presenter.presentCard()
     }
 
-    func promotionBannerDidRequestClose(view _: PromotionBannerView) {
-        presenter.closePromotion()
+    func actionChangeAssetListStyle() {
+        presenter.toggleAssetListStyle()
     }
 }
 

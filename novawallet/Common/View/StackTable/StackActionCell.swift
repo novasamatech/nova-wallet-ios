@@ -1,7 +1,7 @@
 import UIKit
 
 final class StackActionCell: RowView<StackActionView>, StackTableViewCellProtocol {
-    var titleLabel: UILabel { rowContentView.titleLabel }
+    var titleLabel: UILabel { rowContentView.titleValueView.valueTop }
     var imageView: UIImageView { rowContentView.iconImageView }
     var detailsView: BorderedLabelView { rowContentView.detailsView }
 

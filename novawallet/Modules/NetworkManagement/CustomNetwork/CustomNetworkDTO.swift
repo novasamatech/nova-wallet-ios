@@ -11,7 +11,7 @@ protocol CustomNetworkSetupRequestConvertible {
 
 enum CustomNetwork {
     struct AddRequest: CustomNetworkSetupRequestConvertible {
-        let networkType: ChainType
+        let networkType: CustomNetworkType
         let url: String
         let name: String
         let currencySymbol: String
@@ -41,7 +41,7 @@ enum CustomNetwork {
     }
 
     struct SetupRequest {
-        let networkType: ChainType
+        let networkType: CustomNetworkType
         let url: String
         let name: String
         let iconUrl: URL?
@@ -54,7 +54,7 @@ enum CustomNetwork {
 
         init(
             from request: CustomNetworkSetupRequestConvertible,
-            networkType: ChainType,
+            networkType: CustomNetworkType,
             iconUrl: URL? = nil,
             replacingNode: ChainNodeModel? = nil,
             networkSetupType: CustomNetworkSetupOperationType
@@ -72,7 +72,7 @@ enum CustomNetwork {
         }
 
         init(
-            networkType: ChainType,
+            networkType: CustomNetworkType,
             url: String,
             name: String,
             iconUrl: URL?,

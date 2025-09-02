@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 
 enum AccountManagementError: Error {
     case missingAccount
@@ -95,7 +95,7 @@ final class AccountManagementInteractor {
 
                 if let wallet = optWallet {
                     self?.fetchChains(for: wallet)
-                    self?.fetchProxyWalletIfNeeded(for: wallet)
+                    self?.fetchDelegateWalletIfneeded(for: wallet)
                 } else {
                     self?.presenter?.didReceiveChains(.success([:]))
                 }
@@ -108,12 +108,8 @@ final class AccountManagementInteractor {
         }
     }
 
-    private func fetchProxyWalletIfNeeded(for wallet: MetaAccountModel) {
-        guard wallet.type == .proxied,
-              let chainAccount = wallet.chainAccounts.first(where: { $0.proxy != nil }),
-              let proxy = chainAccount.proxy else {
-            return
-        }
+    func fetchDelegateWalletIfneeded(for wallet: MetaAccountModel) {
+        guard let delegationId = wallet.delegationId else { return }
 
         let operation = walletRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
@@ -124,13 +120,19 @@ final class AccountManagementInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(wallets):
-                let proxyWallet = wallets.first(where: { $0.info.has(
-                    accountId: proxy.accountId,
-                    chainId: chainAccount.chainId
-                ) })?.info
-                self?.presenter?.didReceiveProxyWallet(.success(proxyWallet))
+                let delegateWallet = if let chainId = delegationId.chainId {
+                    wallets.first(where: { $0.info.has(
+                        accountId: delegationId.delegateAccountId,
+                        chainId: chainId
+                    ) })?.info
+                } else {
+                    wallets.first(where: { $0.info.contains(
+                        accountId: delegationId.delegateAccountId
+                    ) })?.info
+                }
+                self?.presenter?.didReceiveDelegateWallet(.success(delegateWallet))
             case let .failure(error):
-                self?.presenter?.didReceiveProxyWallet(.failure(error))
+                self?.presenter?.didReceiveDelegateWallet(.failure(error))
             }
         }
     }
@@ -276,7 +278,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
                 accountId: accountId
             )
             if try keystore.checkKey(for: entropyTag) {
-                options.append(.mnemonic)
+                options.append(.mnemonic(.appDefault))
             }
 
             // use private key for ethereum and seed for substrate

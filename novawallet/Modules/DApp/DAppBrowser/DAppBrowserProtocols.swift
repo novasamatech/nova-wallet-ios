@@ -8,7 +8,7 @@ protocol DAppBrowserTransitionProtocol {
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitionProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)
-    func didReceive(response: DAppScriptResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
@@ -27,17 +27,13 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
     func process(page: DAppBrowserPage)
 
-    func process(
-        message: Any,
-        host: String,
-        transport name: String
-    )
+    func process(message: Any, transport name: String)
 
     func process(stateRender: DAppBrowserTabRenderProtocol)
 
-    func actionFavorite(page: DAppBrowserPage)
+    func actionFavorite()
 
-    func activateSearch(with query: String?)
+    func activateSearch()
     func showSettings(using isDesktop: Bool)
     func close(stateRender: DAppBrowserTabRenderProtocol)
     func showTabs(stateRender: DAppBrowserTabRenderProtocol)
@@ -65,6 +61,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func save(settings: DAppGlobalSettings)
     func saveTabIfNeeded()
     func saveLastTabState(render: DAppBrowserTabRenderProtocol)
+    func close()
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
@@ -75,7 +72,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     )
-    func didReceive(response: DAppScriptResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse)
     func didReceiveConfirmation(
         request: DAppOperationRequest,
         type: DAppSigningType

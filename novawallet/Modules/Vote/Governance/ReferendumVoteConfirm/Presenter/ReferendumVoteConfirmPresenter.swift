@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     weak var view: ReferendumVoteConfirmViewProtocol? {
@@ -184,9 +184,14 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 // MARK: ReferendumVoteConfirmInteractorOutputProtocol
 
 extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
-    func didReceiveVotingHash(_: String) {
+    func didReceiveVotingCompletion(_ sender: ExtrinsicSenderResolution) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: baseView,
+            sender: sender,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 }

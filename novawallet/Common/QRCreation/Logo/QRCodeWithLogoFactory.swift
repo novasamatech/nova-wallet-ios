@@ -5,7 +5,7 @@ import Operation_iOS
 protocol QRCodeWithLogoFactoryProtocol {
     func createQRCode(
         with payload: Data,
-        logoInfo: IconInfo?,
+        logoInfo: ChainLogoImageInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void
@@ -25,13 +25,13 @@ final class QRCodeWithLogoFactory {
         }
     }
 
-    let iconRetrievingFactory: IconRetrieveOperationFactoryProtocol
+    let iconRetrievingFactory: ImageRetrieveOperationFactory<ChainLogoImageInfo>
     let operationQueue: OperationQueue
     let callbackQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
-        iconRetrievingFactory: IconRetrieveOperationFactoryProtocol,
+        iconRetrievingFactory: ImageRetrieveOperationFactory<ChainLogoImageInfo>,
         operationQueue: OperationQueue,
         callbackQueue: DispatchQueue,
         logger: LoggerProtocol
@@ -48,7 +48,7 @@ final class QRCodeWithLogoFactory {
 extension QRCodeWithLogoFactory: QRCodeWithLogoFactoryProtocol {
     func createQRCode(
         with payload: Data,
-        logoInfo: IconInfo?,
+        logoInfo: ChainLogoImageInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCreationResult, Error>) -> Void
@@ -77,7 +77,7 @@ private extension QRCodeWithLogoFactory {
         let remoteLogo: Bool
     }
 
-    func checkCacheOperation(using logoInfo: IconInfo?) -> BaseOperation<Bool> {
+    func checkCacheOperation(using logoInfo: ChainLogoImageInfo?) -> BaseOperation<Bool> {
         if let cacheKey = logoInfo?.type?.cacheKey {
             iconRetrievingFactory.checkCacheOperation(using: cacheKey)
         } else {
@@ -87,7 +87,7 @@ private extension QRCodeWithLogoFactory {
 
     func createQRWrapper(
         with payload: Data,
-        logoInfo: IconInfo?,
+        logoInfo: ChainLogoImageInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
@@ -143,7 +143,7 @@ private extension QRCodeWithLogoFactory {
 
     func createDownloadLogoQRWrapper(
         payload: Data,
-        logoInfo: IconInfo,
+        logoInfo: ChainLogoImageInfo,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
@@ -184,7 +184,7 @@ private extension QRCodeWithLogoFactory {
     func createCachedLogoQRWrapper(
         cacheKey: String,
         payload: Data,
-        logoInfo: IconInfo,
+        logoInfo: ChainLogoImageInfo,
         qrSize: CGSize
     ) -> CompoundOperationWrapper<QRCreationResult> {
         let logoOperation = iconRetrievingFactory.retrieveImageOperation(using: cacheKey)
@@ -200,7 +200,7 @@ private extension QRCodeWithLogoFactory {
     func createQRResultWrapper(
         using logoOperation: BaseOperation<UIImage>?,
         payload: Data,
-        logoInfo: IconInfo,
+        logoInfo: ChainLogoImageInfo,
         qrSize: CGSize
     ) -> CompoundOperationWrapper<QRCreationResult> {
         var qrImageWrapper: CompoundOperationWrapper<UIImage>
@@ -211,7 +211,7 @@ private extension QRCodeWithLogoFactory {
                 return .createWithError(BaseOperationError.parentOperationCancelled)
             }
 
-            var updatedLogoInfo: IconInfo? = logoInfo
+            var updatedLogoInfo: ChainLogoImageInfo? = logoInfo
 
             if let logoOperation {
                 do {

@@ -60,6 +60,18 @@ final class HydraQuoteFactory {
                         direction: direction
                     )
                 )
+            case .aave:
+                let aaveState = flowState.getAaveSwapFlowState()
+                let quoteFactory = HydraAaveSwapQuoteFactory(flowState: aaveState)
+
+                return quoteFactory.quote(
+                    for: .init(
+                        assetIn: component.assetIn,
+                        assetOut: component.assetOut,
+                        amount: amount,
+                        direction: direction
+                    )
+                )
             }
         }
     }
@@ -144,13 +156,13 @@ final class HydraQuoteFactory {
             switch args.direction {
             case .sell:
                 guard let maxSellQuote = quotes.max(by: { $0.amountOut < $1.amountOut }) else {
-                    throw AssetConversionOperationError.quoteCalcFailed
+                    throw AssetConversionOperationError.noRoutesAvailable
                 }
 
                 return maxSellQuote
             case .buy:
                 guard let minBuyQuote = quotes.min(by: { $0.amountIn < $1.amountIn }) else {
-                    throw AssetConversionOperationError.quoteCalcFailed
+                    throw AssetConversionOperationError.noRoutesAvailable
                 }
 
                 return minBuyQuote

@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 import BigInt
 
 struct ModalInfoFactory {
@@ -229,7 +229,7 @@ struct ModalInfoFactory {
 
                 let title: String = {
                     guard let mainTitle = lock.lockType?.displayType.value(for: locale) else {
-                        return lock.displayId?.capitalized ?? ""
+                        return lock.displayModuleAndIdTitle ?? ""
                     }
                     return mainTitle
                 }()

@@ -1,138 +1,321 @@
 import Foundation
-import SubstrateSdk
 import BigInt
 
-struct XcmTransfers: Decodable {
-    let assetsLocation: [String: JSON]
-    let instructions: [String: [String]]
-    let networkDeliveryFee: [String: JSON]?
-    let networkBaseWeight: [String: String]
-    let chains: [XcmChain]
+struct XcmTransfers {
+    let legacyTransfers: XcmLegacyTransfers
+    let dynamicTransfers: XcmDynamicTransfers
 
-    func assetLocation(for key: String) -> JSON? {
-        assetsLocation[key]
-    }
+    let indexedByOrigins: [ChainAssetId: Set<ChainAssetId>]
+    let indexedByDestinations: [ChainAssetId: Set<ChainAssetId>]
 
-    func instructions(for key: String) -> [String]? {
-        instructions[key]
-    }
+    init(
+        legacyTransfers: XcmLegacyTransfers,
+        dynamicTransfers: XcmDynamicTransfers
+    ) {
+        self.legacyTransfers = legacyTransfers
+        self.dynamicTransfers = dynamicTransfers
 
-    func baseWeight(for chainId: String) -> BigUInt? {
-        guard let baseWeight = networkBaseWeight[chainId] else {
-            return nil
+        var indexedByOrigins: [ChainAssetId: Set<ChainAssetId>] = [:]
+        var indexedByDestinations: [ChainAssetId: Set<ChainAssetId>] = [:]
+
+        let allChains: [XcmTransferChainProtocol] = legacyTransfers.getChains() + dynamicTransfers.getChains()
+
+        for chain in allChains {
+            for asset in chain.getAssets() {
+                let origin = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+                for transfer in asset.getDestinations() {
+                    let destination = ChainAssetId(chainId: transfer.chainId, assetId: transfer.assetId)
+
+                    if indexedByOrigins[origin] == nil {
+                        indexedByOrigins[origin] = [destination]
+                    } else {
+                        indexedByOrigins[origin]?.insert(destination)
+                    }
+
+                    if indexedByDestinations[destination] == nil {
+                        indexedByDestinations[destination] = [origin]
+                    } else {
+                        indexedByDestinations[destination]?.insert(origin)
+                    }
+                }
+            }
         }
 
-        return BigUInt(baseWeight)
+        self.indexedByOrigins = indexedByOrigins
+        self.indexedByDestinations = indexedByDestinations
     }
+}
 
-    func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath? {
-        guard let asset = asset(from: chainAssetId) else {
-            return nil
-        }
+enum XcmTransfersError: Error {
+    case noTransfer(ChainAssetId, ChainModel.Id)
+    case noReserve(ChainAssetId)
+    case noInstructions(String)
+    case deliveryFeeNotAvailable
+    case noDestinationFee(origin: ChainAssetId, destination: ChainModel.Id)
+    case noBaseWeight(ChainModel.Id)
+}
 
-        guard let assetLocation = assetLocation(for: asset.assetLocation)?.multiLocation else {
-            return nil
-        }
+private extension XcmTransfers {
+    func checkLegacyDeliveryFee(
+        from originChain: ChainModel,
+        destinationChain: ChainModel
+    ) -> Bool {
+        do {
+            let deliveryFee = try legacyTransfers.deliveryFee(from: originChain.chainId)
 
-        switch asset.assetLocationPath.type {
-        case .absolute, .relative:
-            return XcmAsset.ReservePath(type: asset.assetLocationPath.type, path: assetLocation)
-        case .concrete:
-            if let concretePath = asset.assetLocationPath.path {
-                return XcmAsset.ReservePath(type: .concrete, path: concretePath)
+            if !destinationChain.isRelaychain {
+                return deliveryFee?.toParachain?.alwaysHoldingPays ?? false
+            } else if !originChain.isRelaychain {
+                return deliveryFee?.toParent?.alwaysHoldingPays ?? false
             } else {
-                return nil
+                return false
             }
+        } catch {
+            return true
         }
     }
 
-    func transferableAssetIds(from chainId: ChainModel.Id) -> Set<AssetModel.Id> {
-        guard let chain = chains.first(where: { $0.chainId == chainId }) else {
-            return Set()
+    func getLegacyDestinationFeeParams(
+        for chainAsset: ChainAsset,
+        destinationChain: ChainModel
+    ) throws -> XcmTransferMetadata.LegacyFeeDetails {
+        guard let destinationFee = legacyTransfers.transfer(
+            from: chainAsset.chainAssetId,
+            destinationChainId: destinationChain.chainId
+        )?.destination.fee else {
+            throw XcmTransfersError.noTransfer(
+                chainAsset.chainAssetId,
+                destinationChain.chainId
+            )
         }
 
-        let assetIds = chain.assets.map(\.assetId)
-        return Set(assetIds)
-    }
-
-    func getReserveTransfering(from chainId: ChainModel.Id, assetId: AssetModel.Id) -> ChainModel.Id? {
         guard
-            let chain = chains.first(where: { $0.chainId == chainId }),
-            let asset = chain.assets.first(where: { $0.assetId == assetId }),
-            let assetLocation = assetsLocation[asset.assetLocation] else {
+            let destinationInstructions = legacyTransfers.instructions(
+                for: destinationFee.instructions
+            ) else {
+            throw XcmTransfersError.noInstructions(destinationFee.instructions)
+        }
+
+        guard let destinationBaseWeight = legacyTransfers.baseWeight(for: destinationChain.chainId) else {
+            throw XcmTransfersError.noBaseWeight(destinationChain.chainId)
+        }
+
+        return XcmTransferMetadata.LegacyFeeDetails(
+            instructions: destinationInstructions,
+            mode: destinationFee,
+            baseWeight: destinationBaseWeight
+        )
+    }
+
+    func getLegacyReserveFeeParams(
+        for originChainAsset: ChainAsset
+    ) throws -> XcmTransferMetadata.LegacyFeeDetails? {
+        guard let reserveFee = legacyTransfers.reserveFee(from: originChainAsset.chainAssetId) else {
             return nil
         }
 
-        return assetLocation.chainId?.stringValue
-    }
-
-    func asset(from chainAssetId: ChainAssetId) -> XcmAsset? {
-        guard let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }) else {
-            return nil
+        guard let reserveFeeInstructions = legacyTransfers.instructions(
+            for: reserveFee.instructions
+        ) else {
+            throw XcmTransfersError.noInstructions(reserveFee.instructions)
         }
 
-        return chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
+        guard let reserveId = legacyTransfers.getReserveChainId(for: originChainAsset.chainAssetId) else {
+            throw XcmTransfersError.noReserve(originChainAsset.chainAssetId)
+        }
+
+        guard let reserveBaseWeight = legacyTransfers.baseWeight(for: reserveId) else {
+            throw XcmTransfersError.noBaseWeight(reserveId)
+        }
+
+        return XcmTransferMetadata.LegacyFeeDetails(
+            instructions: reserveFeeInstructions,
+            mode: reserveFee,
+            baseWeight: reserveBaseWeight
+        )
     }
 
-    func transfers(from chainAssetId: ChainAssetId) -> [XcmAssetTransfer] {
+    func getLegacyFeeParams(
+        for chainAsset: ChainAsset,
+        destinationChain: ChainModel
+    ) throws -> XcmTransferMetadata.LegacyFee {
+        let destinationDetails = try getLegacyDestinationFeeParams(
+            for: chainAsset,
+            destinationChain: destinationChain
+        )
+
+        let reserveDetails = try getLegacyReserveFeeParams(for: chainAsset)
+        let originDelivery = try legacyTransfers.deliveryFee(from: chainAsset.chain.chainId)
+
+        guard let reserveId = legacyTransfers.getReserveChainId(for: chainAsset.chainAssetId) else {
+            throw XcmTransfersError.noReserve(chainAsset.chainAssetId)
+        }
+
+        let reserveDeliveryFee = try legacyTransfers.deliveryFee(from: reserveId)
+
+        return XcmTransferMetadata.LegacyFee(
+            destinationExecution: destinationDetails,
+            reserveExecution: reserveDetails,
+            originDelivery: originDelivery,
+            reserveDelivery: reserveDeliveryFee
+        )
+    }
+
+    func getLegacyTransferMetadata(
+        for chainAsset: ChainAsset,
+        destinationChain: ChainModel
+    ) throws -> XcmTransferMetadata? {
         guard
-            let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }),
-            let xcmTransfers = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })?.xcmTransfers else {
-            return []
+            let transfer = legacyTransfers.transfer(
+                from: chainAsset.chainAssetId,
+                destinationChainId: destinationChain.chainId
+            ) else {
+            return nil
         }
 
-        return xcmTransfers
-    }
-
-    func transferChainAssets(to chainAssetId: ChainAssetId) -> [ChainAssetId] {
-        chains.flatMap { chain in
-            chain.assets.filter { asset in
-                asset.xcmTransfers.contains(where: { transfer in
-                    transfer.destination.chainId == chainAssetId.chainId &&
-                        transfer.destination.assetId == chainAssetId.assetId
-                })
-            }.map {
-                ChainAssetId(chainId: chain.chainId, assetId: $0.assetId)
-            }
-        }
-    }
-
-    func transfer(
-        from chainAssetId: ChainAssetId,
-        destinationChainId: ChainModel.Id
-    ) -> XcmAssetTransfer? {
         guard
-            let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }),
-            let xcmTransfers = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })?.xcmTransfers else {
-            return nil
+            let reservePath = legacyTransfers.getReservePath(for: chainAsset.chainAssetId),
+            let reserveId = legacyTransfers.getReserveChainId(for: chainAsset.chainAssetId) else {
+            throw XcmTransfersError.noReserve(chainAsset.chainAssetId)
         }
 
-        return xcmTransfers.first { $0.destination.chainId == destinationChainId }
+        let paysDeliveryFee = checkLegacyDeliveryFee(
+            from: chainAsset.chain,
+            destinationChain: destinationChain
+        )
+
+        let feeParams = try getLegacyFeeParams(
+            for: chainAsset,
+            destinationChain: destinationChain
+        )
+
+        return XcmTransferMetadata(
+            callType: transfer.type,
+            reserve: XcmTransferMetadata.Reserve(
+                reserveId: reserveId,
+                path: reservePath
+            ),
+            fee: .legacy(feeParams),
+            paysDeliveryFee: paysDeliveryFee,
+            supportsXcmExecute: false,
+            usesTeleport: false
+        )
     }
 
-    func destinationFee(
-        from chainAssetId: ChainAssetId,
-        to destinationChainId: ChainModel.Id
-    ) -> XcmAssetTransferFee? {
-        let transfer = transfer(from: chainAssetId, destinationChainId: destinationChainId)
-        return transfer?.destination.fee
-    }
-
-    func reserveFee(from chainAssetId: ChainAssetId) -> XcmAssetTransferFee? {
+    func getDynamicTransferMetadata(
+        for chainAsset: ChainAsset,
+        destinationChain: ChainModel
+    ) throws -> XcmTransferMetadata? {
         guard
-            let assetLocationId = asset(from: chainAssetId)?.assetLocation,
-            let assetLocation = assetLocation(for: assetLocationId) else {
+            let transfer = dynamicTransfers.transfer(
+                from: chainAsset.chainAssetId,
+                destinationChainId: destinationChain.chainId
+            ) else {
             return nil
         }
 
-        return try? assetLocation.reserveFee?.map(to: XcmAssetTransferFee.self, with: nil)
+        guard
+            let reservePath = dynamicTransfers.getReservePath(for: chainAsset),
+            let reserveId = dynamicTransfers.getReserveChainId(for: chainAsset) else {
+            throw XcmTransfersError.noReserve(chainAsset.chainAssetId)
+        }
+
+        return XcmTransferMetadata(
+            callType: transfer.type,
+            reserve: XcmTransferMetadata.Reserve(
+                reserveId: reserveId,
+                path: reservePath
+            ),
+            fee: .dynamic,
+            paysDeliveryFee: transfer.hasDeliveryFee ?? false,
+            supportsXcmExecute: transfer.supportsXcmExecute ?? false,
+            usesTeleport: transfer.usesTeleport ?? false
+        )
+    }
+}
+
+extension XcmTransfers {
+    func getTransferMetadata(
+        for chainAsset: ChainAsset,
+        destinationChain: ChainModel
+    ) throws -> XcmTransferMetadata {
+        if let dynamicMetadata = try getDynamicTransferMetadata(
+            for: chainAsset,
+            destinationChain: destinationChain
+        ) {
+            return dynamicMetadata
+        }
+
+        if let legacyMetadata = try getLegacyTransferMetadata(
+            for: chainAsset,
+            destinationChain: destinationChain
+        ) {
+            return legacyMetadata
+        }
+
+        throw XcmTransfersError.noTransfer(chainAsset.chainAssetId, destinationChain.chainId)
     }
 
-    func deliveryFee(from chainId: ChainModel.Id) throws -> XcmDeliveryFee? {
-        guard let deliveryFee = networkDeliveryFee?[chainId] else {
-            return nil
-        }
+    func getAllTransfers() -> [ChainAssetId: Set<ChainAssetId>] {
+        indexedByOrigins
+    }
 
-        return try deliveryFee.map(to: XcmDeliveryFee.self, with: nil)
+    func getOrigins(for chainAssetId: ChainAssetId) -> Set<ChainAssetId> {
+        indexedByDestinations[chainAssetId] ?? []
+    }
+
+    func getDestinations(for chainAssetId: ChainAssetId) -> Set<ChainAssetId> {
+        indexedByOrigins[chainAssetId] ?? []
+    }
+}
+
+struct XcmTransferMetadata {
+    struct Reserve {
+        let reserveId: ChainModel.Id
+        let path: XcmAsset.ReservePath
+    }
+
+    enum Fee {
+        case legacy(LegacyFee)
+        case dynamic
+    }
+
+    struct LegacyFeeDetails {
+        let instructions: [String]
+        let mode: XcmAssetTransferFee
+        let baseWeight: BigUInt
+
+        var maxWeight: BigUInt {
+            baseWeight * BigUInt(instructions.count)
+        }
+    }
+
+    struct LegacyFee {
+        let destinationExecution: LegacyFeeDetails
+        let reserveExecution: LegacyFeeDetails?
+        let originDelivery: XcmDeliveryFee?
+        let reserveDelivery: XcmDeliveryFee?
+
+        var maxWeight: BigUInt {
+            let reserveMaxWeight = reserveExecution?.maxWeight ?? 0
+
+            return destinationExecution.maxWeight + reserveMaxWeight
+        }
+    }
+
+    let callType: XcmTransferType
+    let reserve: Reserve
+    let fee: Fee
+    let paysDeliveryFee: Bool
+    let supportsXcmExecute: Bool
+    let usesTeleport: Bool
+
+    var isDynamicConfig: Bool {
+        switch fee {
+        case .dynamic:
+            return true
+        default:
+            return false
+        }
     }
 }

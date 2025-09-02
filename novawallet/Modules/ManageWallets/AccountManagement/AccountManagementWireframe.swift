@@ -46,7 +46,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     ) {
-        let options = SecretSource.displayOptions
+        let options = SecretSource.chainAccountImportOptions
 
         let handler: (Int) -> Void = { [weak self] selectedIndex in
             self?.presentImport(
@@ -96,6 +96,17 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
             chain: chain,
             wallet: wallet
         ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(ledgerView.controller, animated: true)
+    }
+
+    func showAddGenericLedgerEvmAccounts(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        guard let ledgerView = LedgerDiscoverViewFactory.createAddEvmGenericLedgerView(to: wallet) else {
             return
         }
 

@@ -1,6 +1,6 @@
 import Operation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 
 final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
     let storageRequestFactory: StorageRequestFactoryProtocol

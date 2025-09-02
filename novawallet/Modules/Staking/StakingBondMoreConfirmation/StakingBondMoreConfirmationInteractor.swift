@@ -1,7 +1,7 @@
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class StakingBondMoreConfirmationInteractor: AccountFetching {
     weak var presenter: StakingBondMoreConfirmationOutputProtocol?
@@ -14,8 +14,9 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let runtimeProvider: RuntimeProviderProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -36,7 +37,8 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        runtimeProvider: RuntimeProviderProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -47,11 +49,14 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.runtimeProvider = runtimeProvider
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
+}
 
+private extension StakingBondMoreConfirmationInteractor {
     func handleStashMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
@@ -63,6 +68,19 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
         signingWrapper = signingWrapperFactory.createSigningWrapper(
             for: response.metaId,
             accountResponse: response.chainAccount
+        )
+    }
+
+    func provideIsStakingMigrated() {
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] coderFactory in
+                let isStakingMigrated = coderFactory.hasBalancesHold(with: Staking.holdId)
+                self?.presenter?.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didReceiveStakingMigratedToHold(result: .failure(error))
+            }
         )
     }
 }
@@ -80,6 +98,8 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
         }
 
         feeProxy.delegate = self
+
+        provideIsStakingMigrated()
     }
 
     func estimateFee(for amount: Decimal) {
@@ -113,10 +133,12 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
 
         let bondExtra = callFactory.bondExtra(amount: amountValue)
 
+        let extrinsicClosure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: bondExtra)
+        }
+
         extrinsicService.submit(
-            { builder in
-                try builder.adding(call: bondExtra)
-            },
+            extrinsicClosure,
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in
@@ -160,7 +182,7 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
                 for: stashAccountId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
+                operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] result in
                 if case let .success(maybeStash) = result, let stash = maybeStash {
                     self?.handleStashMetaAccount(response: stash)

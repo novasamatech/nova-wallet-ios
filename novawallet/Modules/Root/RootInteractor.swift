@@ -1,30 +1,34 @@
 import Foundation
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 import Operation_iOS
+import Foundation_iOS
 
 final class RootInteractor {
     weak var presenter: RootInteractorOutputProtocol?
 
-    let settings: SelectedWalletSettings
+    let walletSettings: SelectedWalletSettings
+    let settings: SettingsManagerProtocol
     let keystore: KeystoreProtocol
     let applicationConfig: ApplicationConfigProtocol
     let chainRegistryClosure: ChainRegistryLazyClosure
     let securityLayerInteractor: SecurityLayerInteractorInputProtocol
     let eventCenter: EventCenterProtocol
     let migrators: [Migrating]
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
-        settings: SelectedWalletSettings,
+        walletSettings: SelectedWalletSettings,
+        settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         applicationConfig: ApplicationConfigProtocol,
         securityLayerInteractor: SecurityLayerInteractorInputProtocol,
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
         migrators: [Migrating],
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol = Logger.shared
     ) {
+        self.walletSettings = walletSettings
         self.settings = settings
         self.keystore = keystore
         self.applicationConfig = applicationConfig
@@ -40,13 +44,19 @@ final class RootInteractor {
         let screenOpenURLActivityValidators: [URLActivityValidator] = [ScreenOpenService.ActivityValidator()]
         let screenOpenService = ScreenOpenService(
             parsingFactory: parsingFactory,
-            logger: Logger.shared,
+            pendingLinkStore: URLHandlingPersistentStore(settings: settings),
+            logger: logger,
             validators: screenOpenURLActivityValidators
         )
 
-        let keystoreImportService = KeystoreImportService(
+        let secretImportService = SecretImportService(
             validators: screenOpenURLActivityValidators,
-            logger: Logger.shared
+            logger: logger
+        )
+
+        let walletMigrationService = WalletMigrationService(
+            localDeepLinkScheme: applicationConfig.deepLinkScheme,
+            queryFactory: WalletMigrationQueryFactory()
         )
 
         let callbackUrl = applicationConfig.purchaseRedirect
@@ -59,23 +69,27 @@ final class RootInteractor {
             WalletConnectUrlParsingService.WCActivityValidator(),
             WalletConnectUrlParsingService.OldWCActivityValidator()
         ]
+
         let wcHandlingService = WalletConnectUrlParsingService(validators: wcURLActivityValidators)
 
-        URLHandlingService.shared.setup(
+        let urlHandlingService = URLHandlingService(
             children: [
                 screenOpenService,
+                walletMigrationService,
                 purchaseHandler,
                 wcHandlingService,
-                keystoreImportService
+                secretImportService
             ]
         )
+
+        URLHandlingServiceFacade.setup(with: urlHandlingService)
     }
 
     private func setupPushHandlingService() {
         let handlingFactory = PushNotificationsHandlerFactory(chainRegistryClosure: chainRegistryClosure)
         let screenOpenService = PushNotificationOpenScreenFacade(
             handlingFactory: handlingFactory,
-            logger: Logger.shared
+            logger: logger
         )
 
         PushNotificationHandlingService.shared.setup(service: screenOpenService)
@@ -86,15 +100,13 @@ final class RootInteractor {
             do {
                 try migrator.migrate()
             } catch {
-                logger?.error(error.localizedDescription)
+                logger.error(error.localizedDescription)
             }
         }
     }
 
     private func setupTableViewsAppearance() {
-        if #available(iOS 15, *) {
-            UITableView.appearance().sectionHeaderTopPadding = 0
-        }
+        UITableView.appearance().sectionHeaderTopPadding = 0
     }
 
     private func setupSecurityLayer() {
@@ -105,7 +117,7 @@ final class RootInteractor {
 extension RootInteractor: RootInteractorInputProtocol {
     func decideModuleSynchroniously() {
         do {
-            if !settings.hasValue {
+            if !walletSettings.hasValue {
                 try keystore.deleteKeyIfExists(for: KeystoreTag.pincode.rawValue)
 
                 presenter?.didDecideOnboarding()
@@ -133,16 +145,16 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupPushHandlingService()
         runMigrators()
 
-        settings.setup(runningCompletionIn: .main) { result in
+        walletSettings.setup(runningCompletionIn: .main) { result in
             switch result {
             case let .success(maybeMetaAccount):
                 if let metaAccount = maybeMetaAccount {
-                    self.logger?.debug("Selected account: \(metaAccount.metaId)")
+                    self.logger.debug("Selected account: \(metaAccount.metaId)")
                 } else {
-                    self.logger?.debug("No selected account")
+                    self.logger.debug("No selected account")
                 }
             case let .failure(error):
-                self.logger?.error("Selected account setup failed: \(error)")
+                self.logger.error("Selected account setup failed: \(error)")
             }
         }
 

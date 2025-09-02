@@ -1,78 +1,72 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class GenericLedgerAccountSelectionPresenter {
     weak var view: GenericLedgerAccountSelectionViewProtocol?
     let wireframe: GenericLedgerAccountSelectionWireframeProtocol
     let interactor: GenericLedgerAccountSelectionInteractorInputProtocol
-    let assetTokenFormatter: AssetBalanceFormatterFactoryProtocol
+    let viewModelFactory: GenericLedgerAccountVMFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
-    private var availableChainAssets: [ChainAsset] = []
+    private var availableSchemes: Set<HardwareWalletAddressScheme> = []
     private var chains: [ChainModel.Id: ChainModel] = [:]
-    private var selectedChainAsset: ChainAsset?
-    private var accounts: [LedgerAccountAmount] = []
-
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    private var accounts: [GenericLedgerAccountModel] = []
 
     init(
         interactor: GenericLedgerAccountSelectionInteractorInputProtocol,
         wireframe: GenericLedgerAccountSelectionWireframeProtocol,
-        assetTokenFormatter: AssetBalanceFormatterFactoryProtocol,
+        viewModelFactory: GenericLedgerAccountVMFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.assetTokenFormatter = assetTokenFormatter
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
         self.logger = logger
+    }
+}
+
+private extension GenericLedgerAccountSelectionPresenter {
+    private func provideWarningIfNeeded(for account: GenericLedgerAccountModel) {
+        let hasMissingEvm = account.addresses.contains(where: { $0.scheme == .evm && $0.accountId == nil })
+
+        if hasMissingEvm {
+            let viewModel = TitleWithSubtitleViewModel(
+                title: R.string.localizable.genericLedgerUpdateTitle(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                subtitle: R.string.localizable.genericLedgerNoEvmMessage(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                )
+            )
+
+            view?.didReceive(warningViewModel: viewModel, canLoadMore: true)
+        }
     }
 
     private func performLoadNext() {
         let index = accounts.count
 
-        guard index <= UInt32.max, let selectedChainAsset else {
+        guard index <= UInt32.max else {
             return
         }
 
         view?.didStartLoading()
 
-        interactor.loadBalance(for: selectedChainAsset, at: UInt32(index))
+        interactor.loadAccounts(at: UInt32(index), schemes: availableSchemes)
     }
 
-    private func addAccountViewModel(for account: LedgerAccountAmount) {
-        guard let selectedChainAsset else {
-            return
-        }
-
-        let icon = try? iconGenerator.generateFromAddress(account.address)
-        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
-
-        let assetDisplayInfo = selectedChainAsset.assetDisplayInfo
-        let decimalAmount = account.amount?.decimal(assetInfo: assetDisplayInfo) ?? 0
-
-        let tokenFormatter = assetTokenFormatter.createTokenFormatter(for: assetDisplayInfo)
-        let amount = tokenFormatter.value(for: localizationManager.selectedLocale).stringFromDecimal(decimalAmount)
-
-        let viewModel = LedgerAccountViewModel(
-            address: account.address,
-            icon: iconViewModel,
-            amount: amount ?? ""
+    private func addAccountViewModel(for account: GenericLedgerAccountModel) {
+        let viewModel = viewModelFactory.createViewModel(
+            for: account,
+            locale: localizationManager.selectedLocale
         )
 
         view?.didAddAccount(viewModel: viewModel)
-    }
-
-    private func shouldSwitchSelectedAsset() -> Bool {
-        guard let selectedChainAsset, let chain = chains[selectedChainAsset.chain.chainId] else {
-            return true
-        }
-
-        return selectedChainAsset.asset != chain.utilityAsset()
     }
 }
 
@@ -81,12 +75,36 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
         interactor.setup()
     }
 
-    func selectAccount(at index: Int) {
-        guard index < accounts.count else {
+    func selectAccount(in section: Int) {
+        let account = accounts[section]
+
+        let schemes = account.addresses.compactMap { address in
+            address.accountId != nil ? address.scheme : nil
+        }
+
+        let model = GenericLedgerWalletConfirmModel(
+            index: account.index,
+            schemes: schemes
+        )
+
+        wireframe.showWalletCreate(from: view, model: model)
+    }
+
+    func selectAddress(in section: Int, at index: Int) {
+        let model = accounts[section].addresses[index]
+
+        guard
+            let view,
+            let address = model.address else {
             return
         }
 
-        wireframe.showWalletCreate(from: view, index: UInt32(index))
+        wireframe.presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: model.scheme,
+            locale: localizationManager.selectedLocale
+        )
     }
 
     func loadNext() {
@@ -97,24 +115,38 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
 extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionInteractorOutputProtocol {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
-        availableChainAssets = Array(chains.values).sortedUsingDefaultComparator().compactMap { $0.utilityChainAsset() }
 
-        if shouldSwitchSelectedAsset() {
+        let newSchemes: Set<HardwareWalletAddressScheme> = chains.values.reduce(into: []) { accum, model in
+            if model.isEthereumBased {
+                accum.insert(.evm)
+            } else {
+                accum.insert(.substrate)
+            }
+        }
+
+        if availableSchemes != newSchemes {
             view?.didClearAccounts()
 
-            selectedChainAsset = availableChainAssets.first
+            availableSchemes = newSchemes
             accounts = []
 
             performLoadNext()
         }
     }
 
-    func didReceive(accountBalance: LedgerAccountAmount, at index: UInt32) {
-        if index == accounts.count {
+    func didReceive(account: GenericLedgerAccountModel) {
+        logger.debug("Did receive account: \(account)")
+
+        if account.index == accounts.count {
             view?.didStopLoading()
 
-            accounts.append(accountBalance)
-            addAccountViewModel(for: accountBalance)
+            if accounts.isEmpty {
+                provideWarningIfNeeded(for: account)
+            }
+
+            accounts.append(account)
+
+            addAccountViewModel(for: account)
         }
     }
 
@@ -122,7 +154,7 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
         logger.error("Error: \(error)")
 
         switch error {
-        case .accountBalanceFetch:
+        case .accountFetchFailed:
             wireframe.presentRequestStatus(
                 on: view,
                 locale: localizationManager.selectedLocale

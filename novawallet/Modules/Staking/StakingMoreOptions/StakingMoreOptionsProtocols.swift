@@ -22,7 +22,7 @@ protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {
 protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable,
     AlertPresentable,
     CommonRetryable,
-    DAppBrowserOpening {
+    BrowserOpening {
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
         chainAsset: ChainAsset,

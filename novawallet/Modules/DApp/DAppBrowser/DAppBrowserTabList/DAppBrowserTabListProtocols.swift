@@ -75,7 +75,7 @@ extension DAppBrowserSearchPresentable {
         navigationController.barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
 
         navigationController.modalTransitionStyle = .crossDissolve
-        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalPresentationStyle = .overCurrentContext
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

@@ -328,6 +328,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
         }
 
         self.state = metamaskTransportState.state
+        self.state?.stateMachine = self
         dataSource = metamaskTransportState.dataSource
 
         logger.info("\(String(describing: self)) did restore \(metamaskTransportState.name) transport state")

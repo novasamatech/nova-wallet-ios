@@ -1,11 +1,11 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
     let interactor: CustomNetworkEditInteractorInputProtocol
 
     init(
-        chainType: ChainType,
+        chainType: CustomNetworkType,
         interactor: CustomNetworkEditInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol

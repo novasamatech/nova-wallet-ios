@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
+import Foundation_iOS
 import BigInt
-import SoraFoundation
 
 final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
     let chainId: ChainModel.Id
@@ -55,34 +55,34 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                 preferredLanguages: locale.rLanguages
             )
 
-            let subtitle = R.string.localizable.pushNotificationReferendumApprovedSubtitle(
+            let body = R.string.localizable.pushNotificationReferendumApprovedSubtitle(
                 chain.name,
                 payload.referendumNumber,
                 preferredLanguages: locale.rLanguages
             )
 
-            return .init(title: title, subtitle: subtitle)
+            return .init(title: title, body: body)
         case .rejected:
             let title = R.string.localizable.pushNotificationReferendumRejectedTitle(
                 preferredLanguages: locale.rLanguages
             )
 
-            let subtitle = R.string.localizable.pushNotificationReferendumRejectedSubtitle(
+            let body = R.string.localizable.pushNotificationReferendumRejectedSubtitle(
                 chain.name,
                 payload.referendumNumber,
                 preferredLanguages: locale.rLanguages
             )
 
-            return .init(title: title, subtitle: subtitle)
+            return .init(title: title, body: body)
         default:
             let title = R.string.localizable.pushNotificationReferendumStatusUpdatedTitle(
                 preferredLanguages: locale.rLanguages
             )
 
-            let subtitle: String
+            let body: String
 
             if let oldStatus = payload.fromStatus {
-                subtitle = R.string.localizable.pushNotificationReferendumStatusUpdatedSubtitle(
+                body = R.string.localizable.pushNotificationReferendumStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     oldStatus.description(for: locale),
@@ -90,7 +90,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                     preferredLanguages: locale.rLanguages
                 )
             } else {
-                subtitle = R.string.localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
+                body = R.string.localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     payload.toStatus.description(for: locale),
@@ -98,7 +98,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                 )
             }
 
-            return .init(title: title, subtitle: subtitle)
+            return .init(title: title, body: body)
         }
     }
 }

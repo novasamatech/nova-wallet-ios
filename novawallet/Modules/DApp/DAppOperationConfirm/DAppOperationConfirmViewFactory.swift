@@ -1,6 +1,6 @@
 import Foundation
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import SubstrateSdk
 import BigInt
 
@@ -12,32 +12,46 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppOperationConfirmViewProtocol? {
         switch type {
         case let .extrinsic(chain):
-            let interactor = createExtrinsicInteractor(for: request, chain: chain)
-            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
+            createGenericView(
+                for: createExtrinsicInteractor(for: request, chain: chain),
+                chain: .left(chain),
+                delegate: delegate,
+                showsNetwork: true
+            )
         case let .bytes(chain):
-            let interactor = createSignBytesInteractor(for: request, chain: chain)
-            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
+            createGenericView(
+                for: createSignBytesInteractor(for: request, chain: chain),
+                chain: .left(chain),
+                delegate: delegate,
+                showsNetwork: false
+            )
         case let .ethereumSendTransaction(chain):
-            return createEvmTransactionView(
+            createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
                 shouldSendTransaction: true
             )
         case let .ethereumSignTransaction(chain):
-            return createEvmTransactionView(
+            createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
                 shouldSendTransaction: false
             )
         case let .ethereumBytes(chain):
-            let interactor = createEthereumPersonalSignInteractor(for: request)
-            return createGenericView(for: interactor, chain: chain, delegate: delegate)
+            createGenericView(
+                for: createEthereumPersonalSignInteractor(for: request),
+                chain: chain,
+                delegate: delegate,
+                showsNetwork: false
+            )
         }
     }
+}
 
-    private static func createEvmTransactionView(
+private extension DAppOperationConfirmViewFactory {
+    static func createEvmTransactionView(
         for chain: DAppEitherChain,
         request: DAppOperationRequest,
         delegate: DAppOperationConfirmDelegate,
@@ -51,14 +65,19 @@ struct DAppOperationConfirmViewFactory {
 
         let wireframe = DAppOperationEvmConfirmWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
+
+        let utilityBalanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let validationProviderFactory = EvmValidationProviderFactory(
             presentable: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFactory: utilityBalanceViewModelFactory,
             assetInfo: assetInfo
         )
 
@@ -76,8 +95,8 @@ struct DAppOperationConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
-            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: chain),
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -94,31 +113,34 @@ struct DAppOperationConfirmViewFactory {
         return view
     }
 
-    private static func createGenericView(
+    static func createGenericView(
         for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
         chain: DAppEitherChain,
-        delegate: DAppOperationConfirmDelegate
+        delegate: DAppOperationConfirmDelegate,
+        showsNetwork: Bool
     ) -> DAppOperationConfirmViewProtocol? {
         guard
             let interactor = interactor,
-            let assetInfo = chain.utilityAssetBalanceInfo,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = DAppOperationConfirmWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
+
+        let viewModelFactory = if showsNetwork {
+            DAppOperationGenericConfirmViewModelFactory(chain: chain)
+        } else {
+            DAppOperationBytesConfirmViewModelFactory(chain: chain)
+        }
 
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
-            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: viewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -135,7 +157,7 @@ struct DAppOperationConfirmViewFactory {
         return view
     }
 
-    private static func createExtrinsicInteractor(
+    static func createExtrinsicInteractor(
         for request: DAppOperationRequest,
         chain: ChainModel
     ) -> DAppOperationConfirmInteractor? {
@@ -169,9 +191,7 @@ struct DAppOperationConfirmViewFactory {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         let metadataHashFactory = MetadataHashOperationFactory(
@@ -187,13 +207,14 @@ struct DAppOperationConfirmViewFactory {
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageFacade.shared,
             priceProviderFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }
 
-    private static func createSignBytesInteractor(
+    static func createSignBytesInteractor(
         for request: DAppOperationRequest,
         chain: ChainModel
     ) -> DAppSignBytesConfirmInteractor {
@@ -206,7 +227,7 @@ struct DAppOperationConfirmViewFactory {
         )
     }
 
-    private static func createEthereumInteractor(
+    static func createEthereumInteractor(
         for request: DAppOperationRequest,
         chain: Either<ChainModel, DAppUnknownChain>,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
@@ -249,7 +270,7 @@ struct DAppOperationConfirmViewFactory {
         )
     }
 
-    private static func createEthereumPersonalSignInteractor(
+    static func createEthereumPersonalSignInteractor(
         for request: DAppOperationRequest
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(

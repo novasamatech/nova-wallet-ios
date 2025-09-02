@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 extension RoundedView {
     struct Style: Equatable {
@@ -218,6 +218,16 @@ extension RoundedView.Style {
         strokeWidth: 0,
         strokeColor: R.color.colorActiveBorder(),
         highlightedStrokeColor: R.color.colorActiveBorder(),
+        fillColor: R.color.colorInputBackground()!,
+        highlightedFillColor: R.color.colorInputBackground()!,
+        rounding: .init(radius: 12, corners: .allCorners)
+    )
+
+    static let inputDisabled = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 1,
+        strokeColor: R.color.colorContainerBorder(),
+        highlightedStrokeColor: R.color.colorContainerBorder(),
         fillColor: R.color.colorInputBackground()!,
         highlightedFillColor: R.color.colorInputBackground()!,
         rounding: .init(radius: 12, corners: .allCorners)

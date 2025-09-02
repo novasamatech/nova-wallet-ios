@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
@@ -119,7 +119,7 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
         guard let view = view else {
             return
         }
-        guard let address = try? wallet.address(for: chainAsset) else {
+        guard let address = try? wallet.address(for: chainAsset.chain) else {
             return
         }
         wireframe.presentAccountOptions(
@@ -153,11 +153,12 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 }
 
 extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProtocol {
-    func didSubmit() {
+    func didSubmit(model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(
             from: view,
+            sender: model.sender,
             completionAction: .dismiss,
             locale: selectedLocale
         )

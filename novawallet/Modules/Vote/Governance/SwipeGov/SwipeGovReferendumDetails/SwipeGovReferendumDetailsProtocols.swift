@@ -10,6 +10,7 @@ protocol SwipeGovReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
     func showProposerDetails()
     func openURL(_ url: URL)
+    func share()
 }
 
 protocol SwipeGovReferendumDetailsInteractorInputProtocol: AnyObject {
@@ -31,4 +32,5 @@ protocol SwipeGovReferendumDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol SwipeGovReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {}
+    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable,
+    SharingPresentable {}

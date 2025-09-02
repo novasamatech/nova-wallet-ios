@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import Cuckoo
 import Operation_iOS
 
@@ -53,8 +53,14 @@ class DAppListTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
+        let multisigListLocalSubscriptionFactory = MultisigListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
         let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
+            multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
         
@@ -66,7 +72,6 @@ class DAppListTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
             dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
             walletNotificationService: walletNotificationService,
-            operationQueue: operationQueue,
             logger: Logger.shared
         )
         
@@ -74,13 +79,10 @@ class DAppListTests: XCTestCase {
             dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
-        
-        let dAppListNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserNavigationTaskFactory: dAppListNavigationTaskFactory,
             initialWallet: walletSettings.value,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared

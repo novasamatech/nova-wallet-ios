@@ -3,8 +3,8 @@ import UserNotifications
 import UIKit
 import FirebaseMessaging
 import Operation_iOS
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 enum PushNotificationsStatus {
     case authorized

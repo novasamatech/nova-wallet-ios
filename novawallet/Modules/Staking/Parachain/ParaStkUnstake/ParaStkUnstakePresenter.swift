@@ -1,17 +1,17 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkUnstakePresenter {
-    weak var view: ParaStkUnstakeViewProtocol?
+    weak var view: CollatorStkPartialUnstakeSetupViewProtocol?
     let wireframe: ParaStkUnstakeWireframeProtocol
     let interactor: ParaStkUnstakeInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
-    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
-    let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
+    let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -36,8 +36,8 @@ final class ParaStkUnstakePresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
-        hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
+        hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
@@ -124,7 +124,11 @@ final class ParaStkUnstakePresenter {
             ).value(for: selectedLocale)
         }
 
-        view?.didReceiveMinStake(viewModel: viewModel)
+        let loadableViewModel: LoadableViewModelState<BalanceViewModelProtocol> = viewModel.map {
+            .loaded(value: $0)
+        } ?? .loading
+
+        view?.didReceiveMinStake(viewModel: loadableViewModel)
     }
 
     func provideTransferableViewModel() {
@@ -183,7 +187,12 @@ final class ParaStkUnstakePresenter {
         var hints: [String] = []
 
         if let stakingDuration = stakingDuration {
-            hints.append(hintViewModelFactory.unstakeHint(for: stakingDuration, locale: selectedLocale))
+            let durationHint = hintViewModelFactory.unstakeHintForParachainDuration(
+                stakingDuration,
+                locale: selectedLocale
+            )
+
+            hints.append(durationHint)
         }
 
         hints.append(hintViewModelFactory.unstakingRewards(for: selectedLocale))

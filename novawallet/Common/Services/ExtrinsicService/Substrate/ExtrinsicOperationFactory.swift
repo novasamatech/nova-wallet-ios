@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 
 protocol ExtrinsicOperationFactoryProtocol {
@@ -24,7 +24,7 @@ protocol ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingFeeIn chainAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<String>
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel>
 }
 
 extension ExtrinsicOperationFactoryProtocol {
@@ -123,7 +123,7 @@ extension ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingIn chainAssetId: ChainAssetId? = nil
-    ) -> CompoundOperationWrapper<String> {
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
         }
@@ -135,7 +135,7 @@ extension ExtrinsicOperationFactoryProtocol {
             payingIn: chainAssetId
         )
 
-        let resultMappingOperation = ClosureOperation<String> {
+        let resultMappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
             guard let result = try submitOperation.targetOperation.extractNoCancellableResultData()
                 .results.first?.result else {
                 throw BaseOperationError.unexpectedDependentResult
@@ -155,19 +155,21 @@ extension ExtrinsicOperationFactoryProtocol {
 
 final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let chain: ChainModel
-    let customExtensions: [ExtrinsicSignedExtending]
+    let customExtensions: [TransactionExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    let nonceOperationFactory: TransactionNonceOperationFactoryProtocol
 
     init(
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
-        customExtensions: [ExtrinsicSignedExtending],
+        customExtensions: [TransactionExtending],
         engine: JSONRPCEngine,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
@@ -177,6 +179,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
         self.metadataHashOperationFactory = metadataHashOperationFactory
+        self.nonceOperationFactory = nonceOperationFactory
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
         self.blockHashOperationFactory = blockHashOperationFactory
 
@@ -189,33 +192,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         )
     }
 
-    private func createNonceOperation(
-        in chain: ChainModel,
-        accountIdClosure: @escaping () throws -> AccountId
-    ) -> BaseOperation<UInt32> {
-        let operation = JSONRPCListOperation<UInt32>(
-            engine: engine,
-            method: RPCMethod.getExtrinsicNonce
-        )
-
-        operation.configurationBlock = {
-            do {
-                let accountId = try accountIdClosure()
-                let address = try accountId.toAddress(using: chain.chainFormat)
-                operation.parameters = [address]
-            } catch {
-                operation.result = .failure(error)
-            }
-        }
-
-        return operation
-    }
-
     private func createPartialBuildersWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         chain: ChainModel,
-        customExtensions: [ExtrinsicSignedExtending],
+        customExtensions: [TransactionExtending],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
         let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine, for: { 0 })
@@ -261,7 +242,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 }
 
                 for customExtension in customExtensions {
-                    builder = builder.adding(extrinsicSignedExtension: customExtension)
+                    builder = builder.adding(transactionExtension: customExtension)
                 }
 
                 return try customClosure(builder, index)
@@ -313,7 +294,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                     codingFactory: codingFactory
                 )
 
-                return try builder.build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+                return try builder.build(using: codingFactory, metadata: codingFactory.metadata)
             }
 
             return (extrinsics, senderResolution)
@@ -351,12 +332,13 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
         senderResolutionOperation.addDependency(codingFactoryOperation)
 
-        let nonceOperation = createNonceOperation(in: chain) {
+        let nonceWrapper = nonceOperationFactory.createWrapper(for: chain, connection: engine) {
             let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
+
             return senderResolution.account.accountId
         }
 
-        nonceOperation.addDependency(senderResolutionOperation)
+        nonceWrapper.addDependency(operations: [senderResolutionOperation])
 
         let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(payingIn: chainAssetId) {
             try senderResolutionOperation.extractNoCancellableResultData().sender.account
@@ -365,25 +347,25 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         feeInstallerWrapper.addDependency(operations: [senderResolutionOperation])
 
         let extrinsicsOperation = createExtrinsicsOperation(
-            dependingOn: nonceOperation,
+            dependingOn: nonceWrapper.targetOperation,
             senderResolutionOperation: senderResolutionOperation,
             codingFactoryOperation: codingFactoryOperation,
             feeInstallerOperation: feeInstallerWrapper.targetOperation,
             signingClosure: signingClosure
         )
 
-        extrinsicsOperation.addDependency(nonceOperation)
+        extrinsicsOperation.addDependency(nonceWrapper.targetOperation)
         extrinsicsOperation.addDependency(senderResolutionOperation)
         extrinsicsOperation.addDependency(codingFactoryOperation)
         extrinsicsOperation.addDependency(feeInstallerWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation]
-            + partialBuildersWrapper.allOperations
-            + senderResolverWrapper.allOperations
-            + [senderResolutionOperation, nonceOperation]
-            + feeInstallerWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
+        return feeInstallerWrapper
+            .insertingHead(operations: nonceWrapper.allOperations)
+            .insertingHead(operations: [senderResolutionOperation])
+            .insertingHead(operations: senderResolverWrapper.allOperations)
+            .insertingHead(operations: partialBuildersWrapper.allOperations)
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: extrinsicsOperation)
     }
 
     override func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {

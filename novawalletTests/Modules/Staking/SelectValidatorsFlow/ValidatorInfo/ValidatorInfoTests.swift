@@ -1,10 +1,10 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 class ValidatorInfoTests: XCTestCase {
     let validator = SelectedValidatorInfo(address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6")

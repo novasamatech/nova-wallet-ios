@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class AssetAmountRouteItemView: AssetAmountView {
     typealias ViewModel = AssetAmountRouteItemView.ItemViewModel

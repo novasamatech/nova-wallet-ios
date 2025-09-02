@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 struct WalletWithMnemonicCreationRequest {
     let mnemonic: IRMnemonicProtocol
@@ -26,7 +26,7 @@ extension WalletCreationRequestFactory: WalletCreationRequestFactoryProtocol {
         let walletRequest = MetaAccountCreationRequest(
             username: walletName,
             derivationPath: "",
-            ethereumDerivationPath: "",
+            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
             cryptoType: .sr25519
         )
 

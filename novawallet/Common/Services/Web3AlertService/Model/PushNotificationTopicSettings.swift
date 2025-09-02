@@ -6,6 +6,28 @@ extension PushNotification {
         var identifier: String { Self.getIdentifier() }
         let topics: Set<PushNotification.Topic>
 
+        var isGovernanceOn: Bool {
+            topics.contains {
+                switch $0 {
+                case .chainReferendums, .newChainReferendums:
+                    return true
+                case .appCustom:
+                    return false
+                }
+            }
+        }
+
+        var isAnnouncementsOn: Bool {
+            topics.contains {
+                switch $0 {
+                case .chainReferendums, .newChainReferendums:
+                    return false
+                case .appCustom:
+                    return true
+                }
+            }
+        }
+
         init(topics: Set<PushNotification.Topic>) {
             self.topics = topics
         }

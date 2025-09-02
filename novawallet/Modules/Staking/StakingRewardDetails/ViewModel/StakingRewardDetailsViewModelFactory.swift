@@ -1,6 +1,6 @@
 import Foundation
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 import SubstrateSdk
 
 protocol StakingRewardDetailsViewModelFactoryProtocol {

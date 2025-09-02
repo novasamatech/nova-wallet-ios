@@ -23,7 +23,7 @@ protocol ChainAssetSelectionInteractorInputProtocol: AnyObject {
 
 protocol ChainAssetSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveChainAssets(result: Result<[ChainAsset], Error>)
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])
+    func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)
     func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])
     func didReceivePrice(error: Error)
 }

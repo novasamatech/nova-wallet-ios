@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 enum WalletRemoteHistorySourceLabel: Int, CaseIterable {
@@ -31,6 +31,12 @@ struct WalletRemoteHistoryData {
 protocol WalletRemoteHistoryFactoryProtocol {
     func isComplete(pagination: Pagination) -> Bool
 
-    func createOperationWrapper(for address: String, pagination: Pagination)
-        -> CompoundOperationWrapper<WalletRemoteHistoryData>
+    func createOperationWrapper(
+        for accountId: AccountId,
+        pagination: Pagination
+    ) -> CompoundOperationWrapper<WalletRemoteHistoryData>
+}
+
+enum WalletRemoteHistoryError: Error {
+    case fetchParamsCreation
 }

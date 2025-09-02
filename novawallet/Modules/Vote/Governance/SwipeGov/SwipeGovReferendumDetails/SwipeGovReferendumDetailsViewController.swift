@@ -1,18 +1,11 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class SwipeGovReferendumDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwipeGovReferendumDetailsViewLayout
 
     let presenter: SwipeGovReferendumDetailsPresenterProtocol
     let localizationManager: LocalizationManagerProtocol
-
-    let timeView: IconDetailsView = .create {
-        $0.mode = .detailsIcon
-        $0.detailsLabel.numberOfLines = 1
-        $0.spacing = 5
-        $0.apply(style: .timeView)
-    }
 
     init(
         presenter: SwipeGovReferendumDetailsPresenterProtocol,
@@ -36,9 +29,17 @@ final class SwipeGovReferendumDetailsViewController: UIViewController, ViewHolde
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigationItem()
         setupHandlers()
 
         presenter.setup()
+    }
+
+    private func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = rootView.shareButton
+
+        rootView.shareButton.target = self
+        rootView.shareButton.action = #selector(actionShare)
     }
 
     private func setupHandlers() {
@@ -53,6 +54,10 @@ final class SwipeGovReferendumDetailsViewController: UIViewController, ViewHolde
 
     @objc private func actionProposer() {
         presenter.showProposerDetails()
+    }
+
+    @objc private func actionShare() {
+        presenter.share()
     }
 }
 
@@ -77,12 +82,11 @@ extension SwipeGovReferendumDetailsViewController: SwipeGovReferendumDetailsView
             return
         }
 
-        timeView.bind(viewModel: activeTimeViewModel.titleIcon)
-        timeView.apply(style: activeTimeViewModel.isUrgent ? .activeTimeView : .timeView)
+        rootView.timeView.bind(viewModel: activeTimeViewModel.titleIcon)
+        rootView.timeView.apply(style: activeTimeViewModel.isUrgent ? .activeTimeView : .timeView)
 
-        if timeView.superview == nil {
-            let barButtonItem: UIBarButtonItem? = .init(customView: timeView)
-            navigationItem.setRightBarButton(barButtonItem, animated: true)
+        if rootView.timeView.superview == nil {
+            navigationItem.titleView = rootView.timeView
         }
     }
 }

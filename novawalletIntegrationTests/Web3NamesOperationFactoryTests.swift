@@ -2,11 +2,11 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 import xxHash_Swift
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 final class Web3NamesOperationFactoryTests: XCTestCase {
     

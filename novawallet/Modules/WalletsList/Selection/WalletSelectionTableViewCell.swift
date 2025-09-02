@@ -7,6 +7,7 @@ final class WalletSelectionTableViewCell: WalletsListTableViewCell<WalletView, R
         super.bind(viewModel: viewModel)
 
         selectorView.selected = viewModel.isSelected
+        selectorView.isHidden = !viewModel.isSelectable
     }
 
     override func setupLayout() {

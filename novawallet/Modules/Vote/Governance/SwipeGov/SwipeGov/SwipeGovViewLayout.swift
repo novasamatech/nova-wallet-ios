@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 final class SwipeGovViewLayout: UIView {
     let gradientBackgroundView: MultigradientView = .create { view in

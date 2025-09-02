@@ -1,5 +1,5 @@
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 protocol AddDelegationViewProtocol: ControllerBackedProtocol {
     func didReceive(delegateViewModels: [AddDelegationViewModel])

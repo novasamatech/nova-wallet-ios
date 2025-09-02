@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
 
     var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
@@ -27,11 +28,13 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
 
         super.init(
@@ -53,7 +56,8 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistTransferDetails
+        details: PersistTransferDetails,
+        sender: ExtrinsicSenderResolution
     ) {
         persistExtrinsicService.saveTransfer(
             source: .substrate,
@@ -64,7 +68,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self?.submitionPresenter?.didCompleteSubmition(by: sender)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -103,11 +107,18 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { [weak self] result in
+                    guard let self else { return }
+
                     switch result {
-                    case let .success(txHash):
+                    case let .success(submittedModel):
+                        guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
+                            return
+                        }
+
                         if
                             let callCodingPath = callCodingPath,
-                            let txHashData = try? Data(hexString: txHash) {
+                            let txHashData = try? Data(hexString: submittedModel.txHash) {
                             let details = PersistTransferDetails(
                                 sender: sender,
                                 receiver: recepient,
@@ -115,16 +126,16 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                                 txHash: txHashData,
                                 callPath: callCodingPath,
                                 fee: lastFee,
-                                feeAssetId: self?.feeAsset?.asset.assetId
+                                feeAssetId: feeAsset?.asset.assetId
                             )
 
-                            self?.persistExtrinsicAndComplete(details: details)
+                            persistExtrinsicAndComplete(details: details, sender: submittedModel.sender)
                         } else {
-                            self?.presenter?.didCompleteSetup()
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
                         }
 
                     case let .failure(error):
-                        self?.presenter?.didReceiveError(error)
+                        presenter?.didReceiveError(error)
                     }
                 }
             )

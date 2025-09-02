@@ -1,13 +1,13 @@
 import Foundation
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 final class ProxyAccountSubscription: WebSocketSubscribing {
     let accountId: AccountId
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
@@ -27,7 +27,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
         accountId: AccountId,
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -36,7 +36,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
         self.accountId = accountId
         self.chainId = chainId
         self.chainRegistry = chainRegistry
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
@@ -104,7 +104,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
         switch result {
         case let .success(handler):
             if let blockHash = handler.blockHash {
-                proxySyncService.syncUp(chainId: chainId, blockHash: blockHash)
+                delegatedAccountSyncService.syncUp(chainId: chainId, at: blockHash)
             }
         case let .failure(error):
             logger?.error(error.localizedDescription)

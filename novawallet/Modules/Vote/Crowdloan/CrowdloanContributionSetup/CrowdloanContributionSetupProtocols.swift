@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceiveAsset(viewModel: AssetBalanceViewModelProtocol)

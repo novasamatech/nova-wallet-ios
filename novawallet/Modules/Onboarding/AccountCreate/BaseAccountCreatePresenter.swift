@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
     weak var view: AccountCreateViewProtocol?
@@ -116,7 +116,7 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 
         wireframe.showAdvancedSettings(
             from: view,
-            secretSource: .mnemonic,
+            secretSource: .mnemonic(.appDefault),
             settings: settings,
             delegate: self
         )

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class AssetListStyleSwitcher: ControlView<UIView, AssetListStyleSwitcherView> {
     convenience init() {

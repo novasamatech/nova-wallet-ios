@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
+import Foundation_iOS
 import BigInt
-import SoraFoundation
 
 final class TransferHandler: CommonHandler, PushNotificationHandler {
     let operationQueue: OperationQueue
@@ -64,7 +64,6 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                     let price = try priceOperation.extractNoCancellableResultData().first
                     let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
                     return self.updatingContent(
-                        wallets: settings?.wallets ?? [],
                         metaAccounts: metaAccounts,
                         chainAsset: .init(chain: chain, asset: asset),
                         price: price,
@@ -107,13 +106,15 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
     }
 
     private func updatingContent(
-        wallets: [Web3Alert.LocalWallet],
         metaAccounts: [MetaAccountModel],
         chainAsset: ChainAsset,
         price: PriceData?,
         payload: NotificationTransferPayload
     ) -> NotificationContentResult {
-        let walletName = targetWalletName(wallets: wallets, metaAccounts: metaAccounts)
+        let walletName = targetWalletName(
+            chain: chainAsset.chain,
+            metaAccounts: metaAccounts
+        )
         let title = type.title(locale: locale, walletName: walletName)
 
         let balance = balanceViewModel(
@@ -123,14 +124,13 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             workingQueue: operationQueue
         )
         let address = type.address(from: payload)
-        let addressOrName = targetWalletName(
+        let addressOrName = targetWallet(
             for: address,
-            chainId: chainId,
-            wallets: wallets,
+            chain: chainAsset.chain,
             metaAccounts: metaAccounts
-        ) ?? address?.truncated
+        )?.name ?? address?.truncated
 
-        let subtitle = type.subtitle(
+        let body = type.subtitle(
             amount: balance?.amount ?? "",
             price: balance?.price ?? "",
             chainName: chainAsset.chain.name,
@@ -138,28 +138,22 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             locale: locale
         )
 
-        return .init(title: title, subtitle: subtitle)
+        return .init(title: title, body: body)
     }
 
     private func targetWalletName(
-        wallets: [Web3Alert.LocalWallet],
+        chain: ChainModel,
         metaAccounts: [MetaAccountModel]
     ) -> String? {
-        switch type {
-        case .income:
-            return targetWalletName(
-                for: payload.recipient,
-                chainId: chainId,
-                wallets: wallets,
-                metaAccounts: metaAccounts
-            )
-        case .outcome:
-            return targetWalletName(
-                for: payload.sender,
-                chainId: chainId,
-                wallets: wallets,
-                metaAccounts: metaAccounts
-            )
+        let address = switch type {
+        case .income: payload.recipient
+        case .outcome: payload.sender
         }
+
+        return targetWallet(
+            for: address,
+            chain: chain,
+            metaAccounts: metaAccounts
+        )?.name
     }
 }

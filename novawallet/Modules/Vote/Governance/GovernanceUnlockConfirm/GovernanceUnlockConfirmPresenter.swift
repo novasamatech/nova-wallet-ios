@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceUnlockConfirmPresenter {
     weak var view: GovernanceUnlockConfirmViewProtocol?
@@ -166,7 +166,7 @@ final class GovernanceUnlockConfirmPresenter {
         let actions = unlockSchedule.availableUnlock(at: blockNumber).actions
 
         guard !actions.isEmpty else {
-            fee = ExtrinsicFee(amount: 0, payer: nil, weight: 0)
+            fee = ExtrinsicFee(amount: 0, payer: nil, weight: .zero)
 
             provideFeeViewModel()
 
@@ -262,7 +262,12 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
                     return
                 }
 
-                strongSelf.wireframe.complete(on: strongSelf.view, locale: strongSelf.selectedLocale)
+                strongSelf.wireframe.presentExtrinsicSubmission(
+                    from: strongSelf.view,
+                    sender: result.senders().first,
+                    completionAction: .dismiss,
+                    locale: strongSelf.selectedLocale
+                )
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
 

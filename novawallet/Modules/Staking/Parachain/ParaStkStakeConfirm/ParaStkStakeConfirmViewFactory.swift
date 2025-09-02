@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 
 struct ParaStkStakeConfirmViewFactory {
     static func createView(
@@ -9,7 +9,7 @@ struct ParaStkStakeConfirmViewFactory {
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?
-    ) -> ParaStkStakeConfirmViewProtocol? {
+    ) -> CollatorStakingConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -55,21 +55,11 @@ struct ParaStkStakeConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let localizableTitle: LocalizableResource<String>
+        let localizableTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: initialDelegator != nil)
 
-        if initialDelegator != nil {
-            localizableTitle = LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
-            }
-        } else {
-            localizableTitle = LocalizableResource { locale in
-                R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
-            }
-        }
-
-        let view = ParaStkStakeConfirmViewController(
+        let view = CollatorStakingConfirmViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle,
+            localizableTitle: localizableTitle(),
             localizationManager: localizationManager
         )
 

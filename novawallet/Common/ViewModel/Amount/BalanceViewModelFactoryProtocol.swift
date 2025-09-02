@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol BalanceViewModelFactoryProtocol: PrimitiveBalanceViewModelFactoryProtocol {
     func createBalanceInputViewModel(_ amount: Decimal?) -> LocalizableResource<AmountInputViewModelProtocol>

@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingDashboardPresenter {
     weak var view: StakingDashboardViewProtocol?
@@ -35,7 +35,8 @@ final class StakingDashboardPresenter {
         }
 
         let viewModel = walletViewModelFactory.createViewModel(
-            from: wallet.walletIdenticonData(),
+            from: wallet.identifier,
+            walletIdenticon: wallet.walletIdenticonData(),
             walletType: wallet.type,
             hasNotification: hasWalletsListUpdates
         )

@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 /**
  *  Subclass of `BackgroundedContentControl` designed to provide button that contains

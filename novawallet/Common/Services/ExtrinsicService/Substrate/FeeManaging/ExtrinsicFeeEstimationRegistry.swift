@@ -3,22 +3,47 @@ import Operation_iOS
 import SubstrateSdk
 
 enum ExtrinsicFeeEstimationRegistryError: Error {
-    case unexpectedChainAssetId(ChainAssetId)
+    case unexpectedChainAssetId(ChainAssetId?)
 }
 
 final class ExtrinsicFeeEstimationRegistry {
     let chain: ChainModel
     let estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
-    let feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactoryProtocol
+    let feeInstallingWrapperFactory: ExtrinsicFeeInstallingFactoryProtocol
 
     init(
         chain: ChainModel,
         estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol,
-        feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactoryProtocol
+        feeInstallingWrapperFactory: ExtrinsicFeeInstallingFactoryProtocol
     ) {
         self.chain = chain
         self.estimatingWrapperFactory = estimatingWrapperFactory
         self.feeInstallingWrapperFactory = feeInstallingWrapperFactory
+    }
+}
+
+private extension ExtrinsicFeeEstimationRegistry {
+    func createFeeEstimatingWrapper(
+        for asset: AssetModel,
+        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
+    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
+        guard !asset.isUtility else {
+            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
+                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+            )
+        }
+
+        switch AssetType(rawType: asset.type) {
+        case .none:
+            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
+                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+            )
+        case .equilibrium, .evmNative, .evmAsset, .orml, .ormlHydrationEvm, .statemine:
+            return estimatingWrapperFactory.createCustomFeeEstimatingWrapper(
+                asset: asset,
+                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+            )
+        }
     }
 }
 
@@ -48,67 +73,25 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         )
     }
 
-    func createFeeEstimatingWrapper(
-        for asset: AssetModel,
-        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
-    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        guard !asset.isUtility else {
-            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
-                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-            )
-        }
-
-        switch AssetType(rawType: asset.type) {
-        case .none:
-            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
-                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-            )
-        case .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
-            return estimatingWrapperFactory.createCustomFeeEstimatingWrapper(
-                asset: asset,
-                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-            )
-        }
-    }
-
     func createFeeInstallerWrapper(
         payingIn chainAssetId: ChainAssetId?,
         accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
-        guard let chainAssetId else {
-            return feeInstallingWrapperFactory.createNativeFeeInstallerWrapper(accountClosure: accountClosure)
-        }
+        let targetAssetId = chainAssetId ?? chain.utilityChainAssetId()
 
         guard
-            chainAssetId.chainId == chain.chainId,
-            let asset = chain.chainAsset(for: chainAssetId.assetId)
+            let targetAssetId,
+            targetAssetId.chainId == chain.chainId,
+            let asset = chain.chainAsset(for: targetAssetId.assetId)
         else {
             return .createWithError(
-                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
+                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(targetAssetId)
             )
         }
 
-        return createFeeInstallerWrapper(chainAsset: asset, accountClosure: accountClosure)
-    }
-
-    func createFeeInstallerWrapper(
-        chainAsset: ChainAsset,
-        accountClosure: @escaping () throws -> ChainAccountResponse
-    ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
-        guard !chainAsset.isUtilityAsset else {
-            return feeInstallingWrapperFactory.createNativeFeeInstallerWrapper(accountClosure: accountClosure)
-        }
-
-        switch AssetType(rawType: chainAsset.asset.type) {
-        case .none:
-            return feeInstallingWrapperFactory.createNativeFeeInstallerWrapper(
-                accountClosure: accountClosure
-            )
-        case .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
-            return feeInstallingWrapperFactory.createCustomFeeInstallerWrapper(
-                chainAsset: chainAsset,
-                accountClosure: accountClosure
-            )
-        }
+        return feeInstallingWrapperFactory.createFeeInstallerWrapper(
+            chainAsset: asset,
+            accountClosure: accountClosure
+        )
     }
 }

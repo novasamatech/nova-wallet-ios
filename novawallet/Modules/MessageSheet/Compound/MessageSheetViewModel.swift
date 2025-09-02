@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import UIKit
 
 struct MessageSheetAction {
@@ -103,6 +103,14 @@ extension MessageSheetAction {
     static func cancelAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
             R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+        }
+
+        return MessageSheetAction(title: title, handler: handler)
+    }
+
+    static func notNowAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
         }
 
         return MessageSheetAction(title: title, handler: handler)

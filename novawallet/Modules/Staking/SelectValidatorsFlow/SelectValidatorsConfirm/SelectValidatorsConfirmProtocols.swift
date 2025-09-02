@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol SelectValidatorsConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
@@ -32,7 +32,7 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
     func didStartNomination()
-    func didCompleteNomination(txHash: String)
+    func didCompleteNomination(submission: ExtrinsicSubmittedModel)
     func didFailNomination(error: Error)
 
     func didReceive(paymentInfo: ExtrinsicFeeProtocol)
@@ -40,6 +40,5 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol SelectValidatorsConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, StakingErrorPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(from view: SelectValidatorsConfirmViewProtocol?)
-}
+    AddressOptionsPresentable, StakingErrorPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

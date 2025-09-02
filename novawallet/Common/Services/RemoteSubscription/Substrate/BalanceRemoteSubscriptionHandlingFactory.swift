@@ -6,6 +6,7 @@ enum BalanceRemoteSubscriptionHandlingParams {
         let accountLocalStorageKey: String
         let locksLocalStorageKey: String
         let holdsLocalStorageKey: String
+        let freezesLocalStorageKey: String
     }
 
     struct OrmlPallet {
@@ -96,9 +97,12 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         )
 
         return AccountInfoSubscriptionHandlingFactory(
-            accountLocalStorageKey: params.accountLocalStorageKey,
-            locksLocalStorageKey: params.locksLocalStorageKey,
-            holdsLocalStorageKey: params.holdsLocalStorageKey,
+            localKeys: .init(
+                account: params.accountLocalStorageKey,
+                locks: params.locksLocalStorageKey,
+                holds: params.holdsLocalStorageKey,
+                freezes: params.freezesLocalStorageKey
+            ),
             factory: innerFactory
         )
     }

@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import SoraFoundation
+import Foundation_iOS
 import Cuckoo
 
 class AdvancedWalletTests: XCTestCase {
@@ -27,7 +27,7 @@ class AdvancedWalletTests: XCTestCase {
         let presenter = AdvancedWalletPresenter(
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
-            secretSource: .mnemonic,
+            secretSource: .mnemonic(.appDefault),
             settings: settings,
             delegate: delegate
         )

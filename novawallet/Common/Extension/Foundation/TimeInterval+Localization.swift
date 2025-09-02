@@ -1,7 +1,34 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension TimeInterval {
+    func localizedDaysHoursOrFallbackMinutes(
+        for locale: Locale,
+        preposition: String? = nil,
+        separator: String = " ",
+        shortcutHandler: PredefinedTimeShortcutProtocol? = nil,
+        roundsDown: Bool = true
+    ) -> String {
+        let (days, hours) = getDaysAndHours(roundingDown: roundsDown)
+
+        guard days > 0 || hours > 0 else {
+            return localizedDaysHoursMinutes(
+                for: locale,
+                preposition: preposition ?? "",
+                separator: separator,
+                atLeastMinutesToShow: 1
+            )
+        }
+
+        return localizedDaysHours(
+            for: locale,
+            preposition: preposition,
+            separator: separator,
+            shortcutHandler: shortcutHandler,
+            roundsDown: roundsDown
+        )
+    }
+
     func localizedDaysHours(
         for locale: Locale,
         preposition: String? = nil,
@@ -50,7 +77,8 @@ extension TimeInterval {
     func localizedDaysHoursMinutes(
         for locale: Locale,
         preposition: String = "",
-        separator: String = " "
+        separator: String = " ",
+        atLeastMinutesToShow: Int? = nil
     ) -> String {
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
@@ -83,10 +111,21 @@ extension TimeInterval {
             components.append(minutesString)
         }
 
-        return [
-            preposition,
-            components.joined(separator: separator)
-        ].joined(with: .space)
+        if components.isEmpty, let minutes = atLeastMinutesToShow {
+            let minutesString = R.string.localizable.commonMinutesFormat(
+                format: minutes, preferredLanguages: locale.rLanguages
+            )
+
+            components.append(minutesString)
+        }
+
+        let timeString = components.joined(separator: separator)
+
+        if !preposition.isEmpty {
+            return preposition + " " + timeString
+        } else {
+            return timeString
+        }
     }
 
     func localizedDaysHoursIncludingZero(for locale: Locale) -> String {

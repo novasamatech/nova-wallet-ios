@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class CustomNetworkBasePresenter {
     weak var view: CustomNetworkViewProtocol?
@@ -13,11 +13,11 @@ class CustomNetworkBasePresenter {
     var partialBlockExplorerURL: String?
     var partialCoingeckoURL: String?
 
-    var chainType: ChainType
+    var chainType: CustomNetworkType
     var knownChain: ChainModel?
 
     init(
-        chainType: ChainType,
+        chainType: CustomNetworkType,
         interactor: CustomNetworkBaseInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -163,7 +163,7 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
         interactor.setup()
     }
 
-    func select(segment: ChainType?) {
+    func select(segment: CustomNetworkType?) {
         guard let segment else { return }
 
         chainType = segment

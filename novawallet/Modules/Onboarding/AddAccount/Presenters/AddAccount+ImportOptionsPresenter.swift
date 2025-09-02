@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension AddAccount {
     final class ImportOptionsPresenter: WalletImportOptionsPresenter {
@@ -24,8 +24,8 @@ extension AddAccount {
                         WalletImportOptionViewModel.RowItem.primary(
                             .init(
                                 backgroundImage: R.image.bgMnemonicImport()!.resizableCenterImage(),
-                                mainImage: R.image.iconMnemonicImportBottom()!,
-                                mainImagePosition: .bottom,
+                                mainImage: R.image.iconMnemonicImportRight()!,
+                                mainImagePosition: .right,
                                 title: R.string.localizable.commonPassphrase(
                                     preferredLanguages: selectedLocale.rLanguages
                                 ),
@@ -36,9 +36,7 @@ extension AddAccount {
                                     self?.wireframe.showPassphraseImport(from: self?.view)
                                 }
                             )
-                        )
-                    ],
-                    [
+                        ),
                         WalletImportOptionViewModel.RowItem.primary(
                             .init(
                                 backgroundImage: R.image.bgHardwareWalletImport()!.resizableCenterImage(),
@@ -56,6 +54,24 @@ extension AddAccount {
                                     }
 
                                     self.wireframe.showHardwareImport(from: self.view, locale: self.selectedLocale)
+                                }
+                            )
+                        )
+                    ],
+                    [
+                        WalletImportOptionViewModel.RowItem.primary(
+                            .init(
+                                backgroundImage: R.image.bgTrustWalletImport()!.resizableCenterImage(),
+                                mainImage: R.image.iconTrustWalletImport()!,
+                                mainImagePosition: .center,
+                                title: R.string.localizable.commonTrustWallet(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                ),
+                                subtitle: R.string.localizable.trustWalletImportDescription(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                ),
+                                onAction: { [weak self] in
+                                    self?.wireframe.showTrustWalletImport(from: self?.view)
                                 }
                             )
                         ),

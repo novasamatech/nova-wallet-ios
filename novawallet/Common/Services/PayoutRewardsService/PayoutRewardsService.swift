@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 
 final class PayoutRewardsService: PayoutRewardsServiceProtocol {
     let selectedAccountAddress: String

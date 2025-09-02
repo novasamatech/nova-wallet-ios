@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "포토 라이브러리 접근 권한은 주소가 포함된 QR 코드, Polkadot Vault 트랜잭션 또는 WalletConnect를 통해 연결을 선택할 수 있게 합니다";
 "NSPhotoLibraryAddUsageDescription" = "전송 요청을 QR 코드로 저장합니다";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth는 Ledger Nano X 디바이스와 통신하는 데 사용됩니다";
+"NSMicrophoneUsageDescription" = "마이크는 KYC 미디어 세션에 사용됩니다";

@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 struct ExportMnemonicData {
     let metaAccount: MetaAccountModel

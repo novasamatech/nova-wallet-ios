@@ -15,11 +15,6 @@ protocol WalletUpdateMediating {
 }
 
 final class WalletUpdateMediator {
-    struct ProcessingResult {
-        let changes: SyncChanges<ManagedMetaAccountModel>
-        let selectedWallet: ManagedMetaAccountModel?
-    }
-
     let selectedWalletSettings: SelectedWalletSettings
     let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletsCleaner: WalletStorageCleaning
@@ -37,30 +32,39 @@ final class WalletUpdateMediator {
         self.walletsCleaner = walletsCleaner
         self.operationQueue = operationQueue
     }
+}
 
-    private static func nonProxiedWalletReachable(
-        from proxiedWallet: ManagedMetaAccountModel,
+// MARK: - Private
+
+private extension WalletUpdateMediator {
+    static func nonDelegatedWalletReachable(
+        from delegatedWallet: ManagedMetaAccountModel,
         wallets: [ManagedMetaAccountModel],
         removeIds: Set<MetaAccountModel.Id>
     ) -> Bool {
-        var currentProxieds: Set<MetaAccountModel.Id> = [proxiedWallet.info.metaId]
-        var prevProxieds = currentProxieds
-        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [proxiedWallet.info.metaId: proxiedWallet]
+        var currentDelegatedSet: Set<MetaAccountModel.Id> = [delegatedWallet.info.metaId]
+        var prevDelegated = currentDelegatedSet
+        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [delegatedWallet.info.metaId: delegatedWallet]
 
         repeat {
-            let newReachableWallets: [ManagedMetaAccountModel] = currentProxieds.flatMap { proxiedId in
+            let newReachableWallets: [ManagedMetaAccountModel] = currentDelegatedSet.flatMap { delegatedId in
                 guard
-                    let proxied = foundWallets[proxiedId],
-                    let chainAccount = proxied.info.chainAccounts.first(where: { $0.proxy != nil }),
-                    let proxy = chainAccount.proxy else {
+                    let delegated = foundWallets[delegatedId],
+                    let delegationId = delegated.info.delegationId else {
                     return [ManagedMetaAccountModel]()
                 }
 
-                return wallets.filter { $0.info.has(accountId: proxy.accountId, chainId: chainAccount.chainId) }
+                let filter: (ManagedMetaAccountModel) -> Bool = if let chainId = delegationId.chainId {
+                    { $0.info.has(accountId: delegationId.delegateAccountId, chainId: chainId) }
+                } else {
+                    { $0.info.contains(accountId: delegationId.delegateAccountId) }
+                }
+
+                return wallets.filter(filter)
             }
 
             if newReachableWallets.contains(
-                where: { $0.info.type != .proxied && !removeIds.contains($0.info.metaId) }
+                where: { !$0.info.isDelegated() && !removeIds.contains($0.info.metaId) }
             ) {
                 return true
             }
@@ -69,41 +73,41 @@ final class WalletUpdateMediator {
                 $0[$1.info.metaId] = $1
             }
 
-            prevProxieds = currentProxieds
-            currentProxieds = Set(foundWallets.keys)
-        } while prevProxieds != currentProxieds
+            prevDelegated = currentDelegatedSet
+            currentDelegatedSet = Set(foundWallets.keys)
+        } while prevDelegated != currentDelegatedSet
 
         return false
     }
 
-    private static func includeProxiedsToRemoveSet(
+    static func includeDelegatedAccountsToRemoveSet(
         starting removeIds: Set<MetaAccountModel.Id>,
         wallets: [ManagedMetaAccountModel]
     ) -> Set<MetaAccountModel.Id> {
         var oldRemovedIds = removeIds
         var newRemovedIds = removeIds
 
-        let allProxieds = wallets.filter { $0.info.type == .proxied }
+        let allDelegatedAccounts = wallets.filter { $0.info.isDelegated() }
 
-        // we can have nested proxieds so we make sure to remove them all
+        // we can have nested delegated accounts so we make sure to remove them all
 
         repeat {
-            let newProxiedIdsToRemove = allProxieds.filter { proxied in
-                !nonProxiedWalletReachable(
-                    from: proxied,
+            let newAccountIdsToRemove = allDelegatedAccounts.filter { delegatedAccount in
+                !nonDelegatedWalletReachable(
+                    from: delegatedAccount,
                     wallets: wallets,
                     removeIds: newRemovedIds
                 )
             }.map(\.identifier)
 
             oldRemovedIds = newRemovedIds
-            newRemovedIds = newRemovedIds.union(Set(newProxiedIdsToRemove))
+            newRemovedIds = newRemovedIds.union(Set(newAccountIdsToRemove))
         } while oldRemovedIds != newRemovedIds
 
         return newRemovedIds
     }
 
-    private func proxiedRemovalOperation(
+    func delegatedAccountRemovalOperation(
         dependingOn allWalletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
         changesClosure: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
     ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
@@ -113,7 +117,7 @@ final class WalletUpdateMediator {
             let changes = try changesClosure()
 
             let allRemovedIds = Set(changes.removedItems.map(\.identifier))
-            let newRemovedIds = Self.includeProxiedsToRemoveSet(starting: allRemovedIds, wallets: allWallets)
+            let newRemovedIds = Self.includeDelegatedAccountsToRemoveSet(starting: allRemovedIds, wallets: allWallets)
 
             let newRemovedWallets = allWallets.filter { newRemovedIds.contains($0.identifier) }
 
@@ -132,45 +136,61 @@ final class WalletUpdateMediator {
         ClosureOperation<ProcessingResult> {
             let changes = try changesOperation.extractNoCancellableResultData()
 
-            // we want to change selected wallet if current one is removed or revoked as proxied
-
-            let newUpdatedWallets = changes.newOrUpdatedItems.map { wallet in
-                if wallet.isSelected, wallet.info.proxy()?.status == .revoked {
-                    return ManagedMetaAccountModel(info: wallet.info, isSelected: false, order: wallet.order)
-                } else {
-                    return wallet
-                }
-            }
-
             let allWallets = try allWalletsOperation.extractNoCancellableResultData()
             var newState = allWallets.reduce(into: [MetaAccountModel.Id: ManagedMetaAccountModel]()) { accum, wallet in
                 accum[wallet.identifier] = wallet
             }
 
-            newState = newUpdatedWallets.reduce(into: newState) { accum, wallet in
-                accum[wallet.identifier] = wallet
+            // we want to change selected wallet if current one is removed or revoked as delegated account
+            newState = changes.newOrUpdatedItems.reduce(into: newState) { accum, wallet in
+                let selected = if wallet.info.delegatedAccountStatus() == .revoked {
+                    false
+                } else {
+                    accum[wallet.identifier]?.isSelected ?? wallet.isSelected
+                }
+                accum[wallet.identifier] = wallet.replacingSelection(selected)
             }
 
             newState = changes.removedItems.reduce(into: newState) { accum, wallet in
                 accum[wallet.identifier] = nil
             }
 
-            if let selectedWallet = newState.values.first(where: { $0.isSelected }) {
-                let newChanges = SyncChanges(newOrUpdatedItems: newUpdatedWallets, removedItems: changes.removedItems)
-                return ProcessingResult(changes: newChanges, selectedWallet: selectedWallet)
-            } else {
-                // if no selected wallets then select existing not proxied wallet
-                let newSelectedWallet = newState.values.first { $0.info.type != .proxied }.map {
-                    ManagedMetaAccountModel(info: $0.info, isSelected: true, order: $0.order)
+            // If we have multiple selected wallets by any reason, we will select only one that is non-delegated
+            let currentSelectedWallets = newState.values.filter { $0.isSelected }
+
+            if currentSelectedWallets.count > 1 {
+                let selectedKeyWallet = currentSelectedWallets.first(where: { !$0.info.isDelegated() })
+
+                newState = newState.mapValues { wallet in
+                    if let selectedKeyWallet, wallet.identifier == selectedKeyWallet.identifier {
+                        wallet.replacingSelection(true)
+                    } else {
+                        wallet.replacingSelection(false)
+                    }
                 }
-
-                let newChanges = SyncChanges(
-                    newOrUpdatedItems: newUpdatedWallets + (newSelectedWallet.map { [$0] } ?? []),
-                    removedItems: changes.removedItems
-                )
-
-                return ProcessingResult(changes: newChanges, selectedWallet: newSelectedWallet)
             }
+
+            // We want to keep persisted wallet selection state.
+            // Selected wallet update will be done using SelectedWalletSettings
+            let newUpdatedWallets = changes.newOrUpdatedItems.compactMap { wallet in
+                newState[wallet.identifier]
+            }
+
+            let newChanges = SyncChanges<ManagedMetaAccountModel>(
+                newOrUpdatedItems: newUpdatedWallets,
+                removedItems: changes.removedItems
+            )
+            let newSelectedWallet = if let selectedWallet = newState.values.first(where: { $0.isSelected }) {
+                selectedWallet
+            } else {
+                // if no selected wallets then select existing not delegated wallet
+                newState.values.first { !$0.info.isDelegated() }
+            }
+
+            return ProcessingResult(
+                changes: newChanges,
+                walletToSelect: newSelectedWallet?.replacingSelection(true)
+            )
         }
     }
 
@@ -181,8 +201,12 @@ final class WalletUpdateMediator {
         ClosureOperation<Bool> {
             let result = try processingOperation.extractNoCancellableResultData()
 
-            if settings.value == nil || result.selectedWallet?.info != settings.value {
-                settings.setup()
+            if settings.value == nil || result.walletToSelect?.info != settings.value {
+                if let selectedWallet = result.walletToSelect?.info {
+                    settings.save(value: selectedWallet)
+                } else {
+                    settings.setup()
+                }
 
                 return true
             } else {
@@ -192,6 +216,8 @@ final class WalletUpdateMediator {
     }
 }
 
+// MARK: - WalletUpdateMediating
+
 extension WalletUpdateMediator: WalletUpdateMediating {
     func saveChanges(
         _ changes: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
@@ -200,19 +226,19 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             with: .init(includesProperties: true, includesSubentities: true)
         )
 
-        let proxiedsRemovalOperation = proxiedRemovalOperation(
+        let delegatedAccountRemovalOperation = delegatedAccountRemovalOperation(
             dependingOn: allWalletsOperation,
             changesClosure: changes
         )
 
-        proxiedsRemovalOperation.addDependency(allWalletsOperation)
+        delegatedAccountRemovalOperation.addDependency(allWalletsOperation)
 
         let newSelectedWalletOperation = newSelectedWalletOperation(
-            dependingOn: proxiedsRemovalOperation,
+            dependingOn: delegatedAccountRemovalOperation,
             allWalletsOperation: allWalletsOperation
         )
 
-        newSelectedWalletOperation.addDependency(proxiedsRemovalOperation)
+        newSelectedWalletOperation.addDependency(delegatedAccountRemovalOperation)
 
         let saveOperation = repository.saveOperation({
             let changesResult = try newSelectedWalletOperation.extractNoCancellableResultData()
@@ -236,7 +262,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
             try saveOperation.extractNoCancellableResultData()
             let isWalletSwitched = try selectedWalletUpdateOperation.extractNoCancellableResultData()
-            let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().selectedWallet
+            let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().walletToSelect
 
             return .init(selectedWallet: currentWallet, isWalletSwitched: isWalletSwitched)
         }
@@ -247,7 +273,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
 
         let dependencies = [
             allWalletsOperation,
-            proxiedsRemovalOperation,
+            delegatedAccountRemovalOperation,
             newSelectedWalletOperation,
             saveOperation,
             selectedWalletUpdateOperation
@@ -257,5 +283,14 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             targetOperation: resultOperation,
             dependencies: dependencies
         )
+    }
+}
+
+// MARK: - Private types
+
+private extension WalletUpdateMediator {
+    struct ProcessingResult {
+        let changes: SyncChanges<ManagedMetaAccountModel>
+        let walletToSelect: ManagedMetaAccountModel?
     }
 }

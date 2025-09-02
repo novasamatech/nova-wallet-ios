@@ -1,5 +1,5 @@
-import SoraFoundation
-
+import Foundation_iOS
+import Operation_iOS
 import BigInt
 
 final class StakingBondMorePresenter {
@@ -19,12 +19,14 @@ final class StakingBondMorePresenter {
     private var fee: ExtrinsicFeeProtocol?
     private var stashItem: StashItem?
     private var stashAccount: ChainAccountResponse?
+    private var isStakingMigratedToHolds: Bool?
 
     private var availableAmountToStake: Decimal? {
-        let free = freeBalance ?? 0
-        let bond = bondBalance ?? 0
-
-        return free >= bond ? free - bond : 0
+        Staking.getAvailableAmountToStake(
+            from: freeBalance ?? 0,
+            bonded: bondBalance ?? 0,
+            isStakingMigratedToHolds: isStakingMigratedToHolds ?? false
+        )
     }
 
     init(
@@ -175,6 +177,17 @@ extension StakingBondMorePresenter: StakingBondMoreInteractorOutputProtocol {
             provideAsset()
         case let .failure(error):
             logger?.error("Did receive account info error: \(error)")
+        }
+    }
+
+    func didReceiveStakingMigratedToHold(result: Result<Bool, Error>) {
+        switch result {
+        case let .success(isStakingMigratedToHold):
+            isStakingMigratedToHolds = isStakingMigratedToHold
+
+            provideAsset()
+        case let .failure(error):
+            logger?.error("Did receive staking migration error: \(error)")
         }
     }
 

@@ -20,8 +20,19 @@ final class ICloudBackupValidator {
         privateInfo.chainAccounts.contains { $0.derivationPath != nil }
     }
 
-    private func validateGenericLedger(privateInfo: CloudBackup.DecryptedFileModel.WalletPrivateInfo) -> Bool {
-        privateInfo.substrate?.derivationPath != nil
+    private func validateGenericLedger(
+        publicInfo: CloudBackup.WalletPublicInfo,
+        privateInfo: CloudBackup.DecryptedFileModel.WalletPrivateInfo
+    ) -> Bool {
+        let hasEthereumAddress = publicInfo.ethereumAddress != nil
+        let hasEthereumDerivationPath = privateInfo.ethereum?.derivationPath != nil
+
+        // if ethereum part exists then it must be corresponding derivation path
+        let isEthereumValid = hasEthereumAddress == hasEthereumDerivationPath
+
+        let isSubstrateValid = privateInfo.substrate?.derivationPath != nil
+
+        return isSubstrateValid && isEthereumValid
     }
 }
 
@@ -55,7 +66,10 @@ extension ICloudBackupValidator: CloudBackupValidating {
                     return false
                 }
 
-                return validateGenericLedger(privateInfo: privateInfo)
+                return validateGenericLedger(
+                    publicInfo: wallet,
+                    privateInfo: privateInfo
+                )
             case .watchOnly, .paritySigner, .polkadotVault:
                 return true
             }

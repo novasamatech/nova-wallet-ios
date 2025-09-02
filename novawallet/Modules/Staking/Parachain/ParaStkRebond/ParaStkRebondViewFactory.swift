@@ -1,7 +1,7 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 struct ParaStkRebondViewFactory {
     static func createView(
@@ -38,7 +38,7 @@ struct ParaStkRebondViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let hintViewModelFactory = ParaStkHintsViewModelFactory()
+        let hintViewModelFactory = CollatorStakingHintsViewModelFactory()
 
         let presenter = ParaStkRebondPresenter(
             interactor: interactor,

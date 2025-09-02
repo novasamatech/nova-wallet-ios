@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 typealias SwapRemoteValidatingClosure = (AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void
 
@@ -26,6 +26,8 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale
     ) -> DataValidating
 
+    func noHighPriceDifference(paramsClosure: @escaping () -> SwapDifferenceModel?, locale: Locale) -> DataValidating
+
     func passesRealtimeQuoteValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
@@ -47,13 +49,16 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
     let presentable: SwapErrorPresentable
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+    let percentFormatter: LocalizableResource<NumberFormatter>
 
     init(
         presentable: SwapErrorPresentable,
-        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.presentable = presentable
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.percentFormatter = percentFormatter
     }
 
     // swiftlint:disable:next function_body_length
@@ -112,7 +117,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                         value: model.available
                     ).value(for: locale),
                     fee: viewModelFactory.amountFromValue(
-                        targetAssetInfo: params.feeChainAsset.assetDisplayInfo,
+                        targetAssetInfo: params.payChainAsset.assetDisplayInfo,
                         value: model.feeInPayAsset
                     ).value(for: locale)
                 )
@@ -205,15 +210,14 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     locale: locale
                 )
             case let .noProvider(model):
-                let utilityChainAsset = params.utilityChainAsset ?? params.feeChainAsset
-
                 self?.presentable.presentNoProviderForNonSufficientToken(
                     from: view,
                     utilityMinBalance: viewModelFactory.amountFromValue(
-                        targetAssetInfo: utilityChainAsset.assetDisplayInfo,
+                        targetAssetInfo: model.utilityAsset.assetDisplayInfo,
                         value: model.minBalance
                     ).value(for: locale),
                     token: params.receiveChainAsset.asset.symbol,
+                    network: params.receiveChainAsset.chain.name,
                     locale: locale
                 )
             }
@@ -221,6 +225,41 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         }, preservesCondition: {
             cantReceiveReason == nil
         })
+    }
+
+    func noHighPriceDifference(paramsClosure: @escaping () -> SwapDifferenceModel?, locale: Locale) -> DataValidating {
+        let params = paramsClosure()
+
+        return WarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard let self else {
+                    return
+                }
+
+                let difference = params.flatMap { self.percentFormatter.value(for: locale).stringFromDecimal($0.diff) }
+
+                presentable.presentHighPriceDifference(
+                    from: view,
+                    difference: difference ?? "",
+                    proceedAction: {
+                        delegate.didCompleteWarningHandling()
+                    },
+                    locale: locale
+                )
+            },
+            preservesCondition: {
+                guard let params else {
+                    return true
+                }
+
+                switch params.attention {
+                case .low:
+                    return true
+                case .medium, .high:
+                    return false
+                }
+            }
+        )
     }
 
     func noDustRemains(

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import UIKit
 
 enum ChainAddressDetailsIndicator {
@@ -15,23 +15,45 @@ struct ChainAddressDetailsAction {
 }
 
 struct ChainAddressDetailsModel {
+    struct Network {
+        let chainName: String
+        let chainIcon: URL?
+    }
+
+    enum Title {
+        case network(Network)
+        case text(LocalizableResource<String>)
+
+        init(chain: ChainModel) {
+            self = .network(.init(chainName: chain.name, chainIcon: chain.icon))
+        }
+    }
+
     let address: AccountAddress?
-    let chainName: String
-    let chainIcon: URL?
+    let title: Title
     let actions: [ChainAddressDetailsAction]
 }
 
 final class ChainAddressDetailsModelBuilder {
     let address: AccountAddress
-    let chainName: String
-    let chainIcon: URL?
+    let title: ChainAddressDetailsModel.Title
 
     private var actions: [ChainAddressDetailsAction] = []
 
-    init(address: AccountAddress, chainName: String, chainIcon: URL?) {
+    convenience init(address: AccountAddress, titleText: LocalizableResource<String>) {
+        self.init(address: address, title: .text(titleText))
+    }
+
+    convenience init(address: AccountAddress, chainName: String, chainIcon: URL?) {
+        self.init(
+            address: address,
+            title: .network(.init(chainName: chainName, chainIcon: chainIcon))
+        )
+    }
+
+    init(address: AccountAddress, title: ChainAddressDetailsModel.Title) {
         self.address = address
-        self.chainName = chainName
-        self.chainIcon = chainIcon
+        self.title = title
     }
 
     func addAction(
@@ -55,8 +77,7 @@ final class ChainAddressDetailsModelBuilder {
     func build() -> ChainAddressDetailsModel {
         ChainAddressDetailsModel(
             address: address,
-            chainName: chainName,
-            chainIcon: chainIcon,
+            title: title,
             actions: actions
         )
     }

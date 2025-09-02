@@ -1,19 +1,21 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
-import SoraKeystore
+import NovaCrypto
+import Keystore_iOS
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
     static func createView(for walletId: String) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
 
         let iconGenerator = PolkadotIconGenerator()
-        let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
+        let viewModelFactory = AccountManagementViewModelFactory()
+        let chainAccountViewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = AccountManagementPresenter(
             viewModelFactory: viewModelFactory,
+            chainAccountViewModelFactory: chainAccountViewModelFactory,
             walletId: walletId,
             applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 public final class ModalCardPresentationController: UIPresentationController {
     private weak var observedScrollView: UIScrollView?

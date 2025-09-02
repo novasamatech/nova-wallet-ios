@@ -1,13 +1,14 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
-final class DAppListPresenter {
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
-    let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
@@ -18,21 +19,17 @@ final class DAppListPresenter {
     private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
-    private var dAppNavigationTask: DAppListNavigationTask?
-
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
-        browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol,
         initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.browserNavigationTaskFactory = browserNavigationTaskFactory
         wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
@@ -49,6 +46,7 @@ final class DAppListPresenter {
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 params: params,
+                bannersState: bannersModule?.bannersState ?? .unavailable,
                 locale: selectedLocale
             )
 
@@ -65,10 +63,15 @@ final class DAppListPresenter {
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        if bannersModule?.locale != selectedLocale {
+            bannersModule?.updateLocale(selectedLocale)
+        }
     }
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -95,34 +98,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
-            id,
-            wallet: wallet,
-            favoritesProvider: { [weak self] in self?.favorites },
-            dAppResultProvider: { [weak self] in self?.dAppsResult }
-        )
-
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
-    }
-
-    func provideNavigation(for model: DAppNavigation) {
-        guard let wallet else {
-            return
-        }
-
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
-            model,
-            wallet: wallet,
-            dAppResultProvider: { [weak self] in self?.dAppsResult }
-        )
-
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
+        wireframe.openBrowser(with: id)
     }
 
     func seeAllFavorites() {
@@ -161,11 +137,6 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         self.dAppsResult = dAppsResult
         randomizationSeed = Int.random(in: 1 ..< 100)
 
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
-
         provideSections()
     }
 
@@ -185,25 +156,27 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let wallet else { return }
-
-        let navigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
-            result,
-            wallet: wallet
-        )
-
-        navigationTask(
-            cleaner: self,
-            view: view
-        )
+        wireframe.openBrowser(with: result)
     }
 }
 
-// MARK: DAppListNavigationTaskCleaning
+// MARK: BannersModuleOutputProtocol
 
-extension DAppListPresenter: DAppListNavigationTaskCleaning {
-    func cleanCompletedTask() {
-        dAppNavigationTask = nil
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(state _: BannersState) {
+        provideSections()
+    }
+
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+
+    func didUpdateContent(state _: BannersState) {
+        provideSections()
     }
 }
 
@@ -213,6 +186,7 @@ extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideSections()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

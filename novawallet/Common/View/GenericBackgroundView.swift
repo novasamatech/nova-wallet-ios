@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 /// Class to be used to wrap given `WrappedView` with a view that has defined background with either equal `spacing` or
 /// precisly set `contentInsets`

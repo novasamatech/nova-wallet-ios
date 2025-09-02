@@ -26,6 +26,8 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
         to builder: ExtrinsicBuilderProtocol,
         coderFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicBuilderProtocol {
+        var currentBuiler = builder
+
         let assetId = try HydraDxTokenConverter.convertToRemote(
             chainAsset: feeAsset,
             codingFactory: coderFactory
@@ -33,16 +35,20 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
 
         let calls = createFeeCalls(using: assetId)
 
-        guard
-            let setCurrencyCall = calls.setCurrencyCall,
-            let revertCurrencyCall = calls.revertCurrencyCall
-        else {
-            return builder
+        if let setCurrencyCall = calls.setCurrencyCall {
+            currentBuiler = try currentBuiler.adding(
+                call: setCurrencyCall.runtimeCall(),
+                at: 0
+            )
         }
 
-        return try builder
-            .adding(call: setCurrencyCall.runtimeCall(), at: 0)
-            .adding(call: revertCurrencyCall.runtimeCall())
+        if let revertCurrencyCall = calls.revertCurrencyCall {
+            currentBuiler = try currentBuiler.adding(
+                call: revertCurrencyCall.runtimeCall()
+            )
+        }
+
+        return currentBuiler
     }
 
     private func createFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> FeeInstallingCalls {

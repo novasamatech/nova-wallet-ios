@@ -1,13 +1,30 @@
 import Foundation
 
+struct LedgerErrorPresentableCallbacks {
+    let cancelClosure: MessageSheetCallback
+    let retryClosure: MessageSheetCallback
+
+    init(
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping MessageSheetCallback
+    ) {
+        self.cancelClosure = cancelClosure
+        self.retryClosure = retryClosure
+    }
+}
+
+struct LedgerErrorPresentableContext {
+    let networkName: String
+    let deviceModel: LedgerDeviceModel
+    let migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?
+}
+
 protocol LedgerErrorPresentable: MessageSheetPresentable {
     func presentLedgerError(
         on view: ControllerBackedProtocol,
         error: LedgerError,
-        networkName: String,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     )
 }
 
@@ -15,34 +32,15 @@ extension LedgerErrorPresentable {
     func presentLedgerError(
         on view: ControllerBackedProtocol,
         error: LedgerError,
-        networkName: String,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
-    ) {
-        presentLedgerError(
-            on: view,
-            error: error,
-            networkName: networkName,
-            migrationViewModel: nil,
-            cancelClosure: cancelClosure,
-            retryClosure: retryClosure
-        )
-    }
-
-    func presentLedgerError(
-        on view: ControllerBackedProtocol,
-        error: LedgerError,
-        networkName: String,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     ) {
         switch error {
         case .deviceNotFound, .deviceDisconnected:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createDeviceNotConnectedView(
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure,
-                migrationViewModel: migrationViewModel
+                cancelClosure: callbacks.cancelClosure,
+                retryClosure: callbacks.retryClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -52,17 +50,16 @@ extension LedgerErrorPresentable {
             presentLedger(
                 on: view,
                 response: ledgerResponseError,
-                networkName: networkName,
-                migrationViewModel: migrationViewModel,
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure
+                context: context,
+                callbacks: callbacks
             )
         case let .unexpectedData(message):
             guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
                 message: message,
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure,
-                migrationViewModel: migrationViewModel
+                deviceModel: context.deviceModel,
+                cancelClosure: callbacks.cancelClosure,
+                retryClosure: callbacks.retryClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -70,9 +67,9 @@ extension LedgerErrorPresentable {
             transitToMessageSheet(messageSheetView, on: view)
         case .internalTransport:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createUnknownErrorView(
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure,
-                migrationViewModel: migrationViewModel
+                cancelClosure: callbacks.cancelClosure,
+                retryClosure: callbacks.retryClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -84,20 +81,19 @@ extension LedgerErrorPresentable {
     private func presentLedger(
         on view: ControllerBackedProtocol,
         response: LedgerResponseError,
-        networkName: String,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping () -> Void
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     ) {
         switch response.code {
         case .noError:
             break
         case .appNotOpen, .wrongAppOpen:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createNetworkAppNotLaunchedView(
-                chainName: networkName,
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure,
-                migrationViewModel: migrationViewModel
+                chainName: context.networkName,
+                deviceModel: context.deviceModel,
+                cancelClosure: callbacks.cancelClosure,
+                retryClosure: callbacks.retryClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -105,9 +101,10 @@ extension LedgerErrorPresentable {
             transitToMessageSheet(messageSheetView, on: view)
         case .transactionRejected:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createOperationCancelledView(
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure,
-                migrationViewModel: migrationViewModel
+                deviceModel: context.deviceModel,
+                cancelClosure: callbacks.cancelClosure,
+                retryClosure: callbacks.retryClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -118,17 +115,14 @@ extension LedgerErrorPresentable {
                 presentInvalidDataReasonError(
                     on: view,
                     reason: LedgerInvaliDataPolkadotReason(rawReason: reason),
-                    networkName: networkName,
-                    migrationViewModel: migrationViewModel,
-                    cancelClosure: cancelClosure,
-                    retryClosure: retryClosure
+                    context: context,
+                    callbacks: callbacks
                 )
             } else {
                 presentUnknownLedgerError(
                     on: view,
-                    migrationViewModel: migrationViewModel,
-                    cancelClosure: cancelClosure,
-                    retryClosure: retryClosure
+                    context: context,
+                    callbacks: callbacks
                 )
             }
         default:
@@ -136,16 +130,14 @@ extension LedgerErrorPresentable {
                 presentMessageLedgerError(
                     on: view,
                     message: reason,
-                    migrationViewModel: migrationViewModel,
-                    cancelClosure: cancelClosure,
-                    retryClosure: retryClosure
+                    context: context,
+                    callbacks: callbacks
                 )
             } else {
                 presentUnknownLedgerError(
                     on: view,
-                    migrationViewModel: migrationViewModel,
-                    cancelClosure: cancelClosure,
-                    retryClosure: retryClosure
+                    context: context,
+                    callbacks: callbacks
                 )
             }
         }
@@ -154,24 +146,22 @@ extension LedgerErrorPresentable {
     private func presentInvalidDataReasonError(
         on view: ControllerBackedProtocol,
         reason: LedgerInvaliDataPolkadotReason,
-        networkName: String,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping () -> Void
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     ) {
         switch reason {
         case let .unknown(reason):
             presentMessageLedgerError(
                 on: view,
                 message: reason,
-                migrationViewModel: migrationViewModel,
-                cancelClosure: cancelClosure,
-                retryClosure: retryClosure
+                context: context,
+                callbacks: callbacks
             )
         case .unsupportedOperation:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createTransactionNotSupportedView(
-                completionClosure: cancelClosure,
-                migrationViewModel: migrationViewModel
+                deviceModel: context.deviceModel,
+                completionClosure: callbacks.cancelClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -179,9 +169,10 @@ extension LedgerErrorPresentable {
             transitToMessageSheet(messageSheetView, on: view)
         case .outdatedMetadata:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createMetadataOutdatedView(
-                chainName: networkName,
-                completionClosure: cancelClosure,
-                migrationViewModel: migrationViewModel
+                chainName: context.networkName,
+                deviceModel: context.deviceModel,
+                completionClosure: callbacks.cancelClosure,
+                migrationViewModel: context.migrationViewModel
             ) else {
                 return
             }
@@ -193,15 +184,15 @@ extension LedgerErrorPresentable {
     private func presentMessageLedgerError(
         on view: ControllerBackedProtocol,
         message: String,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping () -> Void
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     ) {
         guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
             message: message,
-            cancelClosure: cancelClosure,
-            retryClosure: retryClosure,
-            migrationViewModel: migrationViewModel
+            deviceModel: context.deviceModel,
+            cancelClosure: callbacks.cancelClosure,
+            retryClosure: callbacks.retryClosure,
+            migrationViewModel: context.migrationViewModel
         ) else {
             return
         }
@@ -211,14 +202,13 @@ extension LedgerErrorPresentable {
 
     private func presentUnknownLedgerError(
         on view: ControllerBackedProtocol,
-        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
-        cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping () -> Void
+        context: LedgerErrorPresentableContext,
+        callbacks: LedgerErrorPresentableCallbacks
     ) {
         guard let messageSheetView = LedgerMessageSheetViewFactory.createUnknownErrorView(
-            cancelClosure: cancelClosure,
-            retryClosure: retryClosure,
-            migrationViewModel: migrationViewModel
+            cancelClosure: callbacks.cancelClosure,
+            retryClosure: callbacks.retryClosure,
+            migrationViewModel: context.migrationViewModel
         ) else {
             return
         }

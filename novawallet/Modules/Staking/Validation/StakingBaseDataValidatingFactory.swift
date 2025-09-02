@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol StakingBaseDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func minStakeNotCrossed(
@@ -10,7 +10,7 @@ protocol StakingBaseDataValidatingFactoryProtocol: BaseDataValidatingFactoryProt
 }
 
 class StakingBaseDataValidatingFactory: StakingBaseDataValidatingFactoryProtocol {
-    var view: ControllerBackedProtocol?
+    weak var view: ControllerBackedProtocol?
     var basePresentable: BaseErrorPresentable { presentable }
     private let presentable: StakingBaseErrorPresentable
     let balanceFactory: BalanceViewModelFactoryProtocol?

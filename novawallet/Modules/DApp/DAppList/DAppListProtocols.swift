@@ -6,10 +6,6 @@ protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceive(_ sections: [DAppListSectionViewModel])
 }
 
-protocol DAppOpenViewProtocol {
-    func didReceiveDAppNavigation(model: DAppNavigation)
-}
-
 protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func refresh()
@@ -20,7 +16,6 @@ protocol DAppListPresenterProtocol: AnyObject {
 
     func selectCategory(with id: String)
     func selectDApp(with id: String)
-    func provideNavigation(for model: DAppNavigation)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
@@ -40,7 +35,7 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable,
     ErrorPresentable,
     WebPresentable,
     WalletSwitchPresentable,
-    DAppBrowserOpening {
+    BrowserOpening {
     func showSetting(from view: DAppListViewProtocol?)
     func showFavorites(from view: DAppListViewProtocol?)
 }

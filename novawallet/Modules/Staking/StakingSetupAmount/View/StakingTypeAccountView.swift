@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class StakingTypeAccountView: GenericStakingTypeAccountView<UIImageView>, BindableView {
     var iconImageView: UIImageView { rowContentView.titleView.fView }

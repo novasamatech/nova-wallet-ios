@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class MainTabBarViewController: UITabBarController {
     let presenter: MainTabBarPresenterProtocol
@@ -68,9 +68,7 @@ final class MainTabBarViewController: UITabBarController {
 
         tabBar.standardAppearance = appearance
 
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 
@@ -165,6 +163,14 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
 extension MainTabBarViewController: SharedStatusPresenterDelegate {
     func didTapSharedStatusView() {
         presenter.activateStatusAction()
+    }
+}
+
+// MARK: RootFlowStatusAlertPresenter
+
+extension MainTabBarViewController: RootFlowStatusAlertPresenter {
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
+        presenter.presentStatusAlert(closure)
     }
 }
 

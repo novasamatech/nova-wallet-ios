@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 public final class MockKeychain: KeystoreProtocol {
     private var keystore: [String: Data] = [:]

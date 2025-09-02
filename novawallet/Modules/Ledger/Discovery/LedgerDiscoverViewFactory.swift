@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct LedgerDiscoverViewFactory {
     static func createExistingPairingView(
@@ -62,7 +62,7 @@ struct LedgerDiscoverViewFactory {
     static func createGenericLedgerView(for flow: WalletCreationFlow) -> ControllerBackedProtocol? {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        let ledgerApplication = GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
 
         let interactor = GenericLedgerDiscoverInteractor(
             ledgerApplication: ledgerApplication,
@@ -72,6 +72,27 @@ struct LedgerDiscoverViewFactory {
         )
 
         let wireframe = GenericLedgerDiscoverWireframe(application: ledgerApplication, flow: flow)
+
+        return createView(
+            interactor: interactor,
+            wireframe: wireframe,
+            appName: LedgerSubstrateApp.generic.displayName(for: nil)
+        )
+    }
+
+    static func createAddEvmGenericLedgerView(to wallet: MetaAccountModel) -> ControllerBackedProtocol? {
+        let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
+
+        let ledgerApplication = GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
+
+        let interactor = GenericLedgerDiscoverInteractor(
+            ledgerApplication: ledgerApplication,
+            ledgerConnection: ledgerConnection,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let wireframe = GenericLedgerAddEvmDiscoverWireframe(application: ledgerApplication, wallet: wallet)
 
         return createView(
             interactor: interactor,
@@ -108,7 +129,7 @@ struct LedgerDiscoverViewFactory {
         connection: LedgerConnectionManagerProtocol
     ) -> LedgerAccountRetrievable {
         if chain.supportsGenericLedgerApp {
-            return MigrationLedgerSubstrateApplication(
+            return MigrationLedgerPolkadotApplication(
                 connectionManager: connection,
                 chainRegistry: ChainRegistryFacade.sharedRegistry,
                 supportedApps: SupportedLedgerApp.substrate()

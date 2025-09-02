@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class BorderedImageView: UIImageView {
     let borderView: RoundedView = .create { $0.applyBorderBackgroundStyle() }

@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppOperationConfirmViewLayout
@@ -50,7 +50,7 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: languages
         )
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccountAddress(
             preferredLanguages: languages
         )
         rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
@@ -107,13 +107,16 @@ extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
             imageViewModel: confirmationViewModel.addressIcon.map { DrawableIconViewModel(icon: $0) }
         ))
 
-        rootView.networkCell.bind(
-            viewModel: .init(
-                details: confirmationViewModel.networkName,
-                imageViewModel: confirmationViewModel.networkIconViewModel
-            ),
-            cornerRadius: nil
-        )
+        var networkCell: StackCellViewModel?
+
+        if let networkModel = confirmationViewModel.network {
+            networkCell = StackCellViewModel(
+                details: networkModel.name,
+                imageViewModel: networkModel.iconViewModel
+            )
+        }
+
+        rootView.setupNetworkCell(with: networkCell)
     }
 
     func didReceive(feeViewModel: DAppOperationFeeViewModel) {

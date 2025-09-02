@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class CrowdloanListInteractor: RuntimeConstantFetching {
     weak var presenter: CrowdloanListInteractorOutputProtocol?

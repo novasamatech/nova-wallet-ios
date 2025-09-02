@@ -1,9 +1,9 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import Cuckoo
 import BigInt
@@ -116,7 +116,10 @@ class CrowdloanContributionConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).complete(on: any()).then { _ in
+            when(stub).presentExtrinsicSubmission(
+                from: any(),
+                params: any()
+            ).then { _ in
                 completionExpectation.fulfill()
             }
 

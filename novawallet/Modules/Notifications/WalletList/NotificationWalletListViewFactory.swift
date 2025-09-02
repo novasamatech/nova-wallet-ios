@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
-struct NotificationWalletListViewFactory {
+enum NotificationWalletListViewFactory {
     static func createView(
         initState: [Web3Alert.LocalWallet]?,
         completion: @escaping ([Web3Alert.LocalWallet]) -> Void

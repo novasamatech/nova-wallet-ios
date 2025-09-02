@@ -1,16 +1,16 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class ParaStkStakeSetupPresenter {
-    weak var view: ParaStkStakeSetupViewProtocol?
+    weak var view: CollatorStakingSetupViewProtocol?
     let wireframe: ParaStkStakeSetupWireframeProtocol
     let interactor: ParaStkStakeSetupInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
-    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -19,7 +19,7 @@ final class ParaStkStakeSetupPresenter {
     private(set) var minDelegationAmount: BigUInt?
     private(set) var maxDelegations: UInt32?
     private(set) var price: PriceData?
-    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+    private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
 
     private(set) var collatorDisplayAddress: DisplayAddress?
     private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
@@ -37,7 +37,7 @@ final class ParaStkStakeSetupPresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
@@ -297,7 +297,7 @@ final class ParaStkStakeSetupPresenter {
     }
 }
 
-extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
+extension ParaStkStakeSetupPresenter: CollatorStakingSetupPresenterProtocol {
     func setup() {
         setupInitialCollator()
 
@@ -328,8 +328,8 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
                 return
             }
 
-            let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-                from: delegations,
+            let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModelsFromBonds(
+                delegations,
                 identities: delegationIdentities,
                 disabled: createDisabledCollators()
             )
@@ -385,7 +385,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideAssetViewModel()
     }
 
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         rewardCalculator = calculator
 
         provideRewardsViewModel()
@@ -474,8 +474,8 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
     }
 }
 
-extension ParaStkStakeSetupPresenter: ParaStkSelectCollatorsDelegate {
-    func didSelect(collator: CollatorSelectionInfo) {
+extension ParaStkStakeSetupPresenter: CollatorStakingSelectDelegate {
+    func didSelect(collator: CollatorStakingSelectionInfoProtocol) {
         changeCollator(with: collator.accountId, name: collator.identity?.displayName)
     }
 }
@@ -502,7 +502,20 @@ extension ParaStkStakeSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showCollatorSelection(from: view, delegate: self)
+        DataValidationRunner(validators: [
+            dataValidatingFactory.notExceedsMaxCollatorsForDelegator(
+                delegator,
+                selectedCollator: nil,
+                maxCollatorsAllowed: maxDelegations,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            guard let self else {
+                return
+            }
+
+            wireframe.showCollatorSelection(from: view, delegate: self)
+        }
     }
 }
 

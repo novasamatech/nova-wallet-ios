@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import IrohaCrypto
+import Foundation_iOS
+import NovaCrypto
 
 final class ExportMnemonicPresenter: CheckboxListPresenterTrait {
     weak var view: AccountCreateViewProtocol?
@@ -83,7 +83,7 @@ extension ExportMnemonicPresenter: AccountCreatePresenterProtocol {
             advancedSettings = AdvancedWalletSettings.substrate(settings: networkSettings)
         }
 
-        wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic, settings: advancedSettings)
+        wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic(.appDefault), settings: advancedSettings)
     }
 
     func provideMnemonic() {

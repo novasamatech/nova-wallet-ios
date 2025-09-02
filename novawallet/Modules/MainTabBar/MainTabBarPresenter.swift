@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class MainTabBarPresenter {
     weak var view: MainTabBarViewProtocol?
@@ -22,11 +22,30 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func activateStatusAction() {
         wireframe.presentCloudBackupSettings(from: view)
     }
+
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
+        closure(wireframe, view)
+    }
+
+    func presentDelayedOperationCreated() {
+        wireframe.presentDelayedOperationCreated(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
+    func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams) {
+        wireframe.presentMultisigNotificationsPromo(
+            from: view,
+            with: params
+        )
+    }
+
     func didRequestImportAccount(source: SecretSource) {
         wireframe.presentAccountImport(on: view, source: source)
+    }
+
+    func didRequestWalletMigration(with message: WalletMigrationMessage.Start) {
+        wireframe.presentWalletMigration(on: view, message: message)
     }
 
     func didRequestScreenOpen(_ screen: UrlHandlingScreen) {
@@ -40,7 +59,8 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen) {
         wireframe.presentScreenIfNeeded(
             on: view,
-            screen: screen
+            screen: screen,
+            locale: localizationManager.selectedLocale
         )
     }
 

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingBondMoreConfirmationVC: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = StakingBMConfirmationViewLayout

@@ -1,16 +1,20 @@
 import UIKit
 
 final class AssetListCollectionViewDelegate: NSObject {
+    let bannersViewProvider: BannersViewProviderProtocol
+
     var groupsViewModel: AssetListViewModel
 
     weak var selectionDelegate: AssetListCollectionSelectionDelegate?
     weak var groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate?
 
     init(
+        bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
         selectionDelegate: AssetListCollectionSelectionDelegate? = nil,
         groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate? = nil
     ) {
+        self.bannersViewProvider = bannersViewProvider
         self.groupsViewModel = groupsViewModel
         self.selectionDelegate = selectionDelegate
         self.groupsLayoutDelegate = groupsLayoutDelegate
@@ -102,7 +106,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
                 width: collectionView.frame.width,
                 height: AssetListMeasurement.assetHeaderHeight
             )
-        case .summary, .settings, .nfts, .promotion, .assetGroup:
+        case .summary, .settings, .organizer, .banners, .assetGroup:
             .zero
         }
     }
@@ -113,14 +117,12 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .settings, .emptyState, .totalBalance:
+        case .account, .settings, .emptyState, .totalBalance, .banner:
             break
+        case let .organizerItem(itemIndex: itemIndex):
+            selectionDelegate?.selectOrganizerItem(at: itemIndex)
         case .asset:
             processAssetSelect(collectionView, at: indexPath)
-        case .yourNfts:
-            selectionDelegate?.selectNfts()
-        case .banner:
-            selectionDelegate?.selectPromotion()
         }
     }
 

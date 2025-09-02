@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import CoreData
 
@@ -50,7 +50,7 @@ final class StorageLocationMigrationTests: XCTestCase {
             try migrator.migrate()
             
             let fetchedMetaIds = try fetchNewEntities(
-                for: .version15,
+                for: .version18,
                 persistentSettings: newSettings
             )
             

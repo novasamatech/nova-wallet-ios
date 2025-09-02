@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol StakingDashboardViewModelFactoryProtocol {
@@ -141,7 +141,7 @@ final class StakingDashboardViewModelFactory {
                 title: R.string.localizable.stakingPool(preferredLanguages: locale.rLanguages).uppercased(),
                 icon: R.image.iconStakingPool()
             )
-        case .parachain, .turing, .unsupported:
+        case .parachain, .turing, .mythos, .unsupported:
             return nil
         }
     }

@@ -3,6 +3,7 @@ protocol NotificationsManagementViewProtocol: ControllerBackedProtocol {
     func didReceive(isSaveActionAvailabe: Bool)
     func startLoading()
     func stopLoading()
+    func getExternalCallbacks() -> NotificationsManagementExternalCallbacks
 }
 
 protocol NotificationsManagementPresenterProtocol: AnyObject {
@@ -24,6 +25,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: Web3Alert.LocalSettings)
+    func didReceive(wallets: [MetaAccountModel])
     func didReceive(topicsSettings: PushNotification.TopicSettings)
     func didReceive(error: NotificationsManagementError)
     func didReceive(notificationStatus: PushNotificationsStatus)
@@ -48,6 +50,13 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
         from view: ControllerBackedProtocol?,
         settings: GovernanceNotificationsModel,
         completion: @escaping (GovernanceNotificationsModel) -> Void
+    )
+
+    func showMultisigSetup(
+        from view: (any ControllerBackedProtocol)?,
+        settings: MultisigNotificationsModel,
+        selectedMetaIds: Set<MetaAccountModel.Id>,
+        completion: @escaping (MultisigNotificationsModel) -> Void
     )
 
     func complete(from view: ControllerBackedProtocol?)

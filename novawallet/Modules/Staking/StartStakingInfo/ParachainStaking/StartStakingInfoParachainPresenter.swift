@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class StartStakingInfoParachainPresenter: StartStakingInfoBasePresenter {
@@ -81,7 +81,7 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
         state.roundInfo = roundInfo
     }
 
-    func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         state.maxApy = calculator.calculateMaxEarnings(amount: 1, period: .year)
     }
 
@@ -131,7 +131,7 @@ extension StartStakingInfoParachainPresenter {
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
 
-        var nextEraStartTime: TimeInterval? {
+        var rewardDelay: TimeInterval? {
             guard let roundCountdown = roundCountdown,
                   let roundInfo = roundInfo,
                   let rewardPaymentDelay = rewardPaymentDelay else {
@@ -163,7 +163,7 @@ extension StartStakingInfoParachainPresenter {
             return stakingDuration.unstaking
         }
 
-        var eraDuration: TimeInterval? {
+        var rewardTime: TimeInterval? {
             guard let stakingDuration = stakingDuration else {
                 return nil
             }
@@ -172,10 +172,6 @@ extension StartStakingInfoParachainPresenter {
         }
 
         mutating func update(blockNumber: BlockNumber?) {
-            guard let blockNumber = blockNumber, self.blockNumber == nil else {
-                return
-            }
-
             self.blockNumber = blockNumber
         }
     }

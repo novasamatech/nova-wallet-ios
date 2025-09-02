@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 struct AssetListAssetAccountPrice {
@@ -11,6 +11,7 @@ struct AssetListAssetAccountPrice {
 
 struct AssetListHeaderParams {
     struct Wallet {
+        let identifier: String
         let walletIdenticon: Data?
         let walletType: MetaAccountModelType
         let walletConnectSessionsCount: Int
@@ -27,7 +28,11 @@ struct AssetListHeaderParams {
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
     func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel
 
-    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel
+    func createOrganizerViewModel(
+        from nfts: [NftModel],
+        operations: [Multisig.PendingOperation],
+        locale: Locale
+    ) -> AssetListOrganizerViewModel?
 }
 
 final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
@@ -58,15 +63,19 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
+}
 
-    private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+// MARK: - Private
+
+private extension AssetListViewModelFactory {
+    func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
         let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 
-    private func calculateTotalPrice(from prices: [AssetListAssetAccountPrice]) -> Decimal {
+    func calculateTotalPrice(from prices: [AssetListAssetAccountPrice]) -> Decimal {
         prices.reduce(Decimal(0)) { result, item in
             let balance = Decimal.fromSubstrateAmount(
                 item.balance,
@@ -79,19 +88,23 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
         }
     }
 
-    private func createTotalPriceString(
+    func createTotalPriceString(
         from price: Decimal,
         priceData: PriceData?,
         locale: Locale
     ) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createTotalPriceFormatter(for: assetDisplayInfo)
+
+        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(
+            for: assetDisplayInfo,
+            useSuffixForBigNumbers: false
+        )
 
         return priceFormatter.value(for: locale).stringFromDecimal(price) ?? ""
     }
 
-    private func createTotalPrice(
+    func createTotalPrice(
         from prices: LoadableViewModelState<[AssetListAssetAccountPrice]>,
         locale: Locale
     ) -> LoadableViewModelState<AssetListTotalAmountViewModel> {
@@ -116,12 +129,56 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
             return .loaded(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
         }
     }
+
+    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel {
+        let numberOfNfts = NSNumber(value: nfts.count)
+        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
+
+        let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
+            nft.media != nil || nft.metadata != nil
+        }.prefix(3).compactMap { nft in
+            if
+                let media = nft.media,
+                let gatewayImageUrl = nftDownloadService.imageUrl(from: media) {
+                return NftImageViewModel(url: gatewayImageUrl)
+            }
+
+            if let media = nft.media, let url = URL(string: media) {
+                return NftImageViewModel(url: url)
+            }
+
+            if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
+                return NftMediaViewModel(
+                    metadataReference: metadataString,
+                    aliases: NftMediaAlias.list,
+                    downloadService: nftDownloadService
+                )
+            }
+
+            return nil
+        }
+
+        return AssetListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
+    }
+
+    func createMultisigOperationsViewModel(
+        from operations: [Multisig.PendingOperation],
+        locale: Locale
+    ) -> AssetListMultisigOperationsViewModel {
+        let numberOfOperations = NSNumber(value: operations.count)
+        let count = quantityFormatter.value(for: locale).string(from: numberOfOperations) ?? ""
+
+        return AssetListMultisigOperationsViewModel(totalCount: count)
+    }
 }
+
+// MARK: - AssetListViewModelFactoryProtocol
 
 extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
     func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel {
         let icon = params.wallet.walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
         let walletSwitch = WalletSwitchViewModel(
+            identifier: params.wallet.identifier,
             type: WalletsListSectionViewModel.SectionType(walletType: params.wallet.walletType),
             iconViewModel: icon.map { DrawableIconViewModel(icon: $0) },
             hasNotification: params.wallet.hasWalletsUpdates
@@ -160,34 +217,22 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         }
     }
 
-    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel {
-        let numberOfNfts = NSNumber(value: nfts.count)
-        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
+    func createOrganizerViewModel(
+        from nfts: [NftModel],
+        operations: [Multisig.PendingOperation],
+        locale: Locale
+    ) -> AssetListOrganizerViewModel? {
+        var items: [AssetListOrganizerItemViewModel] = []
 
-        let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
-            nft.media != nil || nft.metadata != nil
-        }.prefix(3).compactMap { nft in
-            if
-                let media = nft.media,
-                let gatewayImageUrl = nftDownloadService.imageUrl(from: media) {
-                return NftImageViewModel(url: gatewayImageUrl)
-            }
-
-            if let media = nft.media, let url = URL(string: media) {
-                return NftImageViewModel(url: url)
-            }
-
-            if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
-                return NftMediaViewModel(
-                    metadataReference: metadataString,
-                    aliases: NftMediaAlias.list,
-                    downloadService: nftDownloadService
-                )
-            }
-
-            return nil
+        if !nfts.isEmpty {
+            items.append(.nfts(createNftsViewModel(from: nfts, locale: locale)))
+        }
+        if !operations.isEmpty {
+            items.append(.pendingTransactions(createMultisigOperationsViewModel(from: operations, locale: locale)))
         }
 
-        return AssetListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
+        guard !items.isEmpty else { return nil }
+
+        return AssetListOrganizerViewModel(items: items)
     }
 }

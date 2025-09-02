@@ -1,9 +1,9 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkRedeemPresenter {
-    weak var view: ParaStkRedeemViewProtocol?
+    weak var view: CollatorStakingRedeemViewProtocol?
     let wireframe: ParaStkRedeemWireframeProtocol
     let interactor: ParaStkRedeemInteractorInputProtocol
 
@@ -165,7 +165,7 @@ final class ParaStkRedeemPresenter {
     }
 }
 
-extension ParaStkRedeemPresenter: ParaStkRedeemPresenterProtocol {
+extension ParaStkRedeemPresenter: CollatorStakingRedeemPresenterProtocol {
     func setup() {
         applyCurrentState()
 
@@ -261,20 +261,22 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
         }
     }
 
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
+        case let .success(model):
             if isRedeemAll() {
                 wireframe.presentExtrinsicSubmission(
                     from: view,
+                    sender: model.sender,
                     completionAction: .popBaseAndDismiss,
                     locale: selectedLocale
                 )
             } else {
                 wireframe.presentExtrinsicSubmission(
                     from: view,
+                    sender: model.sender,
                     completionAction: .dismiss,
                     locale: selectedLocale
                 )

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 final class ReferendumDetailsPresenter {
@@ -16,6 +16,7 @@ final class ReferendumDetailsPresenter {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let universalLinkFactory: UniversalLinkFactoryProtocol
     let wallet: MetaAccountModel
 
     let chain: ChainModel
@@ -58,6 +59,7 @@ final class ReferendumDetailsPresenter {
         endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        universalLinkFactory: UniversalLinkFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -75,6 +77,7 @@ final class ReferendumDetailsPresenter {
         self.endedReferendumProgressViewModelFactory = endedReferendumProgressViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.universalLinkFactory = universalLinkFactory
         referendum = initData.referendum
         accountVotes = initData.accountVotes
         offchainVoting = initData.offchainVoting
@@ -494,16 +497,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
-            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType),
-            let tab = DAppBrowserTab(from: url.absoluteString, metaId: wallet.metaId)
+            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType)
         else {
             return
         }
 
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 
     func readFullDescription() {
@@ -536,6 +535,18 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         }
 
         wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
+
+    func share() {
+        guard let url = universalLinkFactory.createUrl(
+            for: chain,
+            referendumId: referendum.index,
+            type: governanceType
+        ) else {
+            return
+        }
+
+        wireframe.share(items: [url.absoluteString], from: view, with: nil)
     }
 }
 

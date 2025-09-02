@@ -1,8 +1,13 @@
 import UIKit
+import Keystore_iOS
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+
+    var settings: SettingsManagerProtocol { SettingsManager.shared }
+
+    var urlHandlingFacade: URLHandlingServiceFacadeProtocol { URLHandlingServiceFacade.shared }
 
     var isUnitTesting: Bool {
         ProcessInfo.processInfo.arguments.contains("-UNITTEST")
@@ -10,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+        didFinishLaunchingWithOptions _: AppLaunchOptions?
     ) -> Bool {
         guard !isUnitTesting else { return true }
 
@@ -24,6 +29,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         presenter.loadOnLaunch()
 
         rootWindow.makeKeyAndVisible()
+
+        // setup the facade after dependencies are proper initialized by Root module
+        setupUrlHandling()
+
+        markAppFirstTimeLaunchIfNeeded()
+
         return true
     }
 
@@ -32,12 +43,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationCenter.delegate = self
     }
 
+    func setupUrlHandling() {
+        urlHandlingFacade.configure()
+    }
+
+    func markAppFirstTimeLaunchIfNeeded() {
+        guard settings.isAppFirstLaunch else { return }
+
+        settings.isAppFirstLaunch = false
+    }
+
     func application(
         _: UIApplication,
         open url: URL,
         options _: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-        URLHandlingService.shared.handle(url: url)
+        urlHandlingFacade.handle(url: url)
     }
 
     func application(_: UIApplication, supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask {
@@ -66,9 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
 
-        URLHandlingService.shared.handle(url: url)
-
-        return true
+        return urlHandlingFacade.handle(url: url)
     }
 }
 
@@ -78,11 +97,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         willPresent _: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .list, .badge, .sound])
-        } else {
-            completionHandler([.alert, .badge, .sound])
-        }
+        completionHandler([.banner, .list, .badge, .sound])
     }
 
     func userNotificationCenter(
@@ -96,3 +111,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
     }
 }
+
+typealias AppLaunchOptions = [UIApplication.LaunchOptionsKey: Any]

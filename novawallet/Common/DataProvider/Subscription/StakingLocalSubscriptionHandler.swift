@@ -2,12 +2,6 @@ import Foundation
 import BigInt
 
 protocol StakingLocalSubscriptionHandler {
-    func handleTotalReward(
-        result: Result<TotalRewardItem, Error>,
-        for address: AccountAddress,
-        api: LocalChainExternalApi
-    )
-
     func handleStashItem(result: Result<StashItem?, Error>, for address: AccountAddress)
 
     func handleNomination(result: Result<Nomination?, Error>, accountId: AccountId, chainId: ChainModel.Id)
@@ -52,12 +46,6 @@ protocol StakingLocalSubscriptionHandler {
 }
 
 extension StakingLocalSubscriptionHandler {
-    func handleTotalReward(
-        result _: Result<TotalRewardItem, Error>,
-        for _: AccountAddress,
-        api _: LocalChainExternalApi
-    ) {}
-
     func handleStashItem(result _: Result<StashItem?, Error>, for _: AccountAddress) {}
 
     func handleNomination(

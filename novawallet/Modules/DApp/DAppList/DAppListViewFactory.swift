@@ -1,18 +1,15 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct DAppListViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> DAppListViewProtocol? {
-        let interactor = createInteractor(
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        )
+        let interactor = createInteractor(walletNotificationService: walletNotificationService)
 
-        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
+        let wireframe = DAppListWireframe(delegatedAccountSyncService: delegatedAccountSyncService)
 
         let localizationManager = LocalizationManager.shared
 
@@ -21,19 +18,26 @@ struct DAppListViewFactory {
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
-        let dAppNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
-
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserNavigationTaskFactory: dAppNavigationTaskFactory,
             initialWallet: SelectedWalletSettings.shared.value,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
 
+        guard let bannersModule = BannersViewFactory.createView(
+            domain: .dApps,
+            output: presenter,
+            inputOwner: presenter,
+            locale: localizationManager.selectedLocale
+        ) else {
+            return nil
+        }
+
         let view = DAppListViewController(
             presenter: presenter,
+            bannersViewProvider: bannersModule,
             localizationManager: localizationManager
         )
 
@@ -44,8 +48,7 @@ struct DAppListViewFactory {
     }
 
     private static func createInteractor(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService _: ProxySyncServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol
     ) -> DAppListInteractor {
         let appConfig = ApplicationConfig.shared
         let dAppsUrl = appConfig.dAppsListURL
@@ -77,7 +80,6 @@ struct DAppListViewFactory {
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
             walletNotificationService: walletNotificationService,
-            operationQueue: sharedQueue,
             logger: logger
         )
 

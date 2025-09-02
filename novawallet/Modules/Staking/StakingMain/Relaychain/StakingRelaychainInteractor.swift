@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 import SubstrateSdk
 
@@ -8,6 +8,10 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
         sharedState.localSubscriptionFactory
+    }
+
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol {
+        sharedState.stakingRewardsLocalSubscriptionFactory
     }
 
     var proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {

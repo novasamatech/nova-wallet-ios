@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 enum AccountImportContext: String {
     case sourceType
@@ -17,9 +17,9 @@ class BaseAccountImportPresenter {
     var wireframe: AccountImportWireframeProtocol!
     var interactor: AccountImportInteractorInputProtocol!
 
-    private(set) var selectedSourceType: SecretSource
+    let metadataFactory: AccountImportMetadataFactoryProtocol
 
-    private(set) var metadata: MetaAccountImportMetadata?
+    private(set) var selectedSourceType: SecretSource
 
     private(set) var selectedCryptoType: MultiassetCryptoType?
 
@@ -27,10 +27,11 @@ class BaseAccountImportPresenter {
     private(set) var usernameViewModel: InputViewModelProtocol?
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
-    private(set) var ethereumDerivationPath: String? = DerivationPathConstants.defaultEthereum
+    private(set) var ethereumDerivationPath: String?
 
-    init(secretSource: SecretSource) {
+    init(secretSource: SecretSource, metadataFactory: AccountImportMetadataFactoryProtocol) {
         selectedSourceType = secretSource
+        self.metadataFactory = metadataFactory
     }
 
     private func applySourceType(
@@ -42,7 +43,11 @@ class BaseAccountImportPresenter {
             substrateDerivationPath = preferredInfo.substrateDeriviationPath
             ethereumDerivationPath = preferredInfo.evmDeriviationPath ?? DerivationPathConstants.defaultEthereum
         } else {
-            selectedCryptoType = selectedCryptoType ?? metadata?.defaultCryptoType
+            let metadata = metadataFactory.deriveMetadata(for: selectedSourceType)
+
+            selectedCryptoType = selectedCryptoType ?? metadata.defaultCryptoType
+            substrateDerivationPath = substrateDerivationPath ?? metadata.defaultSubstrateDerivationPath
+            ethereumDerivationPath = ethereumDerivationPath ?? metadata.defaultEthereumDerivationPath
         }
 
         view?.setSource(type: selectedSourceType)
@@ -58,7 +63,10 @@ class BaseAccountImportPresenter {
         }
 
         switch selectedSourceType {
-        case .mnemonic, .seed:
+        case let .mnemonic(origin):
+            let allowAdvanced = origin == .appDefault
+            view?.setShouldShowAdvancedSettings(allowAdvanced)
+        case .seed:
             view?.setShouldShowAdvancedSettings(true)
         case .keystore:
             let shouldShowReadonlySettings = preferredInfo != nil
@@ -210,6 +218,8 @@ class BaseAccountImportPresenter {
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
+        applySourceType()
+
         interactor.setup()
     }
 
@@ -264,12 +274,6 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
 }
 
 extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
-    func didReceiveAccountImport(metadata: MetaAccountImportMetadata) {
-        self.metadata = metadata
-
-        applySourceType()
-    }
-
     func didCompleteAccountImport() {
         wireframe.proceed(from: view)
     }
@@ -288,8 +292,8 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
         )
     }
 
-    func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
-        selectedSourceType = preferredInfo?.source ?? .keystore
+    func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo) {
+        selectedSourceType = preferredInfo.source
 
         applySourceType(text, preferredInfo: preferredInfo)
     }

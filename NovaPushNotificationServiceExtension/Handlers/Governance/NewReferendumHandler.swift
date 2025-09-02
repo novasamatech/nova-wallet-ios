@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
+import Foundation_iOS
 import BigInt
-import SoraFoundation
 
 final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
     let chainId: ChainModel.Id
@@ -52,7 +52,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     preferredLanguages: self.locale.rLanguages
                 )
 
-                let subtitle = R.string.localizable.pushNotificationNewReferendumSubtitle(
+                let body = R.string.localizable.pushNotificationNewReferendumSubtitle(
                     chain.name,
                     self.payload.referendumNumber,
                     preferredLanguages: self.locale.rLanguages
@@ -60,7 +60,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
 
                 let notificationContentResult: NotificationContentResult = .init(
                     title: title,
-                    subtitle: subtitle
+                    body: body
                 )
                 completion(.modified(notificationContentResult))
             case let .failure(error):

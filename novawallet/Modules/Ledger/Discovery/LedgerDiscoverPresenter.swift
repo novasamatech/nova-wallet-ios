@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class LedgerDiscoverPresenter: LedgerPerformOperationPresenter {
     var wireframe: LedgerDiscoverWireframeProtocol? {

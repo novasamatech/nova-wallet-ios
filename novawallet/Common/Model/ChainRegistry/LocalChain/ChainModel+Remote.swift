@@ -19,6 +19,7 @@ extension ChainModel {
         nodeSwitchStrategy = .init(rawStrategy: remoteModel.nodeSelectionStrategy)
 
         addressPrefix = remoteModel.addressPrefix
+        legacyAddressPrefix = remoteModel.legacyAddressPrefix
         types = remoteModel.types
         icon = remoteModel.icon
 

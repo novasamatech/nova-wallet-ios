@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingMoreOptionsPresenter {
     weak var view: StakingMoreOptionsViewProtocol?
@@ -74,12 +74,7 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
             return
         }
 
-        let tab = DAppBrowserTab(from: dApp, metaId: metaId)
-
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
+        wireframe.openBrowser(with: dApp.identifier)
     }
 }
 

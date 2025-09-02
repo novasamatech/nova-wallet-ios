@@ -1,21 +1,6 @@
 import Foundation
 import SubstrateSdk
 
-protocol StakingRemoteSubscriptionServiceProtocol {
-    func attachToGlobalData(
-        for chainId: ChainModel.Id,
-        queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
-    ) -> UUID?
-
-    func detachFromGlobalData(
-        for subscriptionId: UUID,
-        chainId: ChainModel.Id,
-        queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
-    )
-}
-
 final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
     StakingRemoteSubscriptionServiceProtocol {
     private static var globalDataStoragePaths: [StorageCodingPath] {

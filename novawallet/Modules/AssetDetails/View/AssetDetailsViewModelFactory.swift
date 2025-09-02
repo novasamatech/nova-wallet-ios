@@ -1,27 +1,34 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
-protocol AssetDetailsViewModelFactoryProtocol {
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter>
-
-    func createBalanceViewModel(
-        value: BigUInt,
-        assetDisplayInfo: AssetBalanceDisplayInfo,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> BalanceViewModelProtocol
-
-    func createAssetDetailsModel(
-        balance: AssetBalance,
-        priceData: PriceData?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> AssetDetailsModel
+struct AssetDetailsBalanceModelParams {
+    let total: BigUInt
+    let locked: BigUInt
+    let transferrable: BigUInt
+    let externalBalances: [ExternalAssetBalance]
+    let assetDisplayInfo: AssetBalanceDisplayInfo
+    let priceData: PriceData?
+    let locale: Locale
 }
 
-final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
+protocol AssetDetailsViewModelFactoryProtocol {
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter>
+
+    func priceFormatter(
+        priceId: Int?,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter>
+
+    func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
+
+    func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel
+}
+
+final class AssetDetailsViewModelFactory {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let priceChangePercentFormatter: LocalizableResource<NumberFormatter>
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
@@ -41,85 +48,110 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         self.networkViewModelFactory = networkViewModelFactory
         self.priceChangePercentFormatter = priceChangePercentFormatter
     }
+}
 
-    func createBalanceViewModel(
-        value: BigUInt,
+private extension AssetDetailsViewModelFactory {
+    func createBalanceModel(
+        for value: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
+        shouldDisplayFullInteger: Bool,
         locale: Locale
-    ) -> BalanceViewModelProtocol {
-        let formatter = amountFormatter(assetDisplayInfo: assetDisplayInfo).value(for: locale)
+    ) -> BalanceViewModel {
+        let formatter = amountFormatter(
+            assetDisplayInfo: assetDisplayInfo,
+            shouldDisplayFullInteger: shouldDisplayFullInteger
+        ).value(for: locale)
+
         let amount = value.decimal(precision: UInt16(assetDisplayInfo.assetPrecision))
         let amountString = formatter.stringFromDecimal(amount) ?? ""
-        guard let priceData = priceData, let price = Decimal(string: priceData.price) else {
+
+        guard
+            let priceData = priceData,
+            let price = Decimal(string: priceData.price)
+        else {
             return BalanceViewModel(
                 amount: amountString,
                 price: ""
             )
         }
-        let priceString = priceFormatter(priceId: priceData.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(price * amount) ?? ""
+
+        let priceString = priceFormatter(
+            priceId: priceData.currencyId,
+            shouldDisplayFullInteger: shouldDisplayFullInteger
+        )
+        .value(for: locale)
+        .stringFromDecimal(price * amount) ?? ""
+
         return BalanceViewModel(
             amount: amountString,
             price: priceString
         )
     }
+}
 
-    func createAssetDetailsModel(
-        balance: AssetBalance,
-        priceData: PriceData?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> AssetDetailsModel {
+extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
+    func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel {
+        let models = [
+            params.total,
+            params.locked,
+            params.transferrable
+        ].map { value in
+            createBalanceModel(
+                for: value,
+                assetDisplayInfo: params.assetDisplayInfo,
+                priceData: params.priceData,
+                shouldDisplayFullInteger: false,
+                locale: params.locale
+            )
+        }
+
+        let totalModel = AssetDetailsInteractiveBalanceModel(
+            balance: models[0],
+            interactive: params.total > 0
+        )
+        let lockedModel = AssetDetailsInteractiveBalanceModel(
+            balance: models[1],
+            interactive: params.locked > 0 || !params.externalBalances.isEmpty
+        )
+
+        return AssetDetailsBalanceModel(
+            total: totalModel,
+            locked: lockedModel,
+            transferrable: models[2]
+        )
+    }
+
+    func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
 
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,
             assetIcon: assetIcon,
-            price: createPriceState(
-                balance: balance,
-                precision: chainAsset.asset.precision,
-                priceData: priceData,
-                locale: locale
-            ),
             network: networkViewModel
         )
     }
 
-    private func createPriceState(
-        balance _: AssetBalance,
-        precision _: UInt16,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceViewModel {
-        let price: Decimal
-
-        if let priceData = priceData {
-            price = Decimal(string: priceData.price) ?? 0.0
-        } else {
-            price = 0.0
-        }
-
-        let priceChangeValue = (priceData?.dayChange ?? 0.0) / 100.0
-        let priceChangeString = priceChangePercentFormatter
-            .value(for: locale)
-            .stringFromDecimal(priceChangeValue) ?? ""
-        let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
-            ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-        let priceString = priceFormatter(priceId: priceData?.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(price) ?? ""
-        return AssetPriceViewModel(amount: priceString, change: priceChange)
-    }
-
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
+    func priceFormatter(
+        priceId: Int?,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter> {
         let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
-        return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
+
+        return assetBalanceFormatterFactory.createAssetPriceFormatter(
+            for: assetBalanceDisplayInfo,
+            useSuffixForBigNumbers: shouldDisplayFullInteger
+        )
     }
 
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
-        assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shouldDisplayFullInteger: Bool
+    ) -> LocalizableResource<TokenFormatter> {
+        assetBalanceFormatterFactory.createTokenFormatter(
+            for: assetDisplayInfo,
+            usesSuffixForBigNumbers: shouldDisplayFullInteger
+        )
     }
 }

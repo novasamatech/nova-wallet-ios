@@ -1,9 +1,9 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class NPoolsClaimRewardsPresenter {
-    weak var view: NPoolsClaimRewardsViewProtocol?
+    weak var view: StakingClaimRewardsViewProtocol?
     let wireframe: NPoolsClaimRewardsWireframeProtocol
     let interactor: NPoolsClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
@@ -13,7 +13,7 @@ final class NPoolsClaimRewardsPresenter {
     let selectedAccount: MetaChainAccountResponse
     let logger: LoggerProtocol
 
-    var claimRewardsStrategy: NominationPools.ClaimRewardsStrategy = .freeBalance
+    var claimRewardsStrategy: StakingClaimRewardsStrategy = .freeBalance
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -120,7 +120,7 @@ final class NPoolsClaimRewardsPresenter {
     }
 }
 
-extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
+extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
     func setup() {
         updateView()
 
@@ -244,13 +244,14 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         self.existentialDeposit = existentialDeposit
     }
 
-    func didReceive(submissionResult: Result<String, Error>) {
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
+        case let .success(model):
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: .dismiss,
                 locale: selectedLocale
             )

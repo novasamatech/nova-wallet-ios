@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class TokensManageSearchView: TopCustomSearchView {
     let zeroBalanceFilterView: GenericPairValueView<UILabel, UISwitch> = .create { view in

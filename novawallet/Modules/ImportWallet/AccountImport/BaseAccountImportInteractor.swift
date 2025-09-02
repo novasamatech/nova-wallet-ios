@@ -1,8 +1,8 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 class BaseAccountImportInteractor {
     weak var presenter: AccountImportInteractorOutputProtocol!
@@ -10,37 +10,31 @@ class BaseAccountImportInteractor {
     private(set) lazy var jsonDecoder = JSONDecoder()
     private(set) lazy var mnemonicCreator = IRMnemonicCreator()
 
-    let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
+    let metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding
     let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
-    let keystoreImportService: KeystoreImportServiceProtocol
-    let availableCryptoTypes: [MultiassetCryptoType]
-    let defaultCryptoType: MultiassetCryptoType
+    let secretImportService: SecretImportServiceProtocol
 
     init(
-        metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+        metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
         metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol,
-        availableCryptoTypes: [MultiassetCryptoType],
-        defaultCryptoType: MultiassetCryptoType
+        secretImportService: SecretImportServiceProtocol
     ) {
-        self.metaAccountOperationFactory = metaAccountOperationFactory
+        self.metaAccountOperationFactoryProvider = metaAccountOperationFactoryProvider
         self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
-        self.keystoreImportService = keystoreImportService
-        self.availableCryptoTypes = availableCryptoTypes
-        self.defaultCryptoType = defaultCryptoType
+        self.secretImportService = secretImportService
     }
 
-    private func setupKeystoreImportObserver() {
-        keystoreImportService.add(observer: self)
-        handleIfNeededKeystoreImport()
+    private func setupSecretImportObserver() {
+        secretImportService.add(observer: self)
+        handleIfNeededSecretImport()
     }
 
-    private func handleIfNeededKeystoreImport() {
-        if let definition = keystoreImportService.definition {
-            keystoreImportService.clear()
+    private func handleIfNeededSecretImport() {
+        if let definition = secretImportService.definition {
+            secretImportService.clear()
 
             do {
                 switch definition {
@@ -49,11 +43,11 @@ class BaseAccountImportInteractor {
                     let info = try AccountImportJsonFactory().createInfo(from: keystoreDefinition)
 
                     if let text = String(data: jsonData, encoding: .utf8) {
-                        presenter.didSuggestKeystore(text: text, preferredInfo: info)
+                        presenter.didSuggestSecret(text: text, preferredInfo: info)
                     }
                 case let .mnemonic(mnemonicDefinition):
                     let text = mnemonicDefinition.mnemonic.toString()
-                    presenter.didSuggestKeystore(
+                    presenter.didSuggestSecret(
                         text: text,
                         preferredInfo: mnemonicDefinition.prefferedInfo
                     )
@@ -64,25 +58,18 @@ class BaseAccountImportInteractor {
         }
     }
 
-    private func provideMetadata() {
-        let metadata = MetaAccountImportMetadata(
-            availableCryptoTypes: availableCryptoTypes,
-            defaultCryptoType: defaultCryptoType
-        )
-
-        presenter.didReceiveAccountImport(metadata: metadata)
-    }
-
     func importAccountUsingOperation(_: BaseOperation<MetaAccountModel>) {}
 }
 
 extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     func setup() {
-        provideMetadata()
-        setupKeystoreImportObserver()
+        setupSecretImportObserver()
     }
 
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest) {
+    func importAccountWithMnemonic(
+        request: MetaAccountImportMnemonicRequest,
+        from origin: SecretSource.Origin
+    ) {
         guard let mnemonic = try? mnemonicCreator.mnemonic(fromList: request.mnemonic) else {
             presenter.didReceiveAccountImport(error: AccountCreateError.invalidMnemonicFormat)
             return
@@ -95,7 +82,9 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             cryptoType: request.cryptoType
         )
 
-        let accountOperation = metaAccountOperationFactory.newSecretsMetaAccountOperation(
+        let accountOperation = metaAccountOperationFactoryProvider.createFactory(
+            for: origin
+        ).newSecretsMetaAccountOperation(
             request: creationRequest,
             mnemonic: mnemonic
         )
@@ -104,12 +93,18 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     }
 
     func importAccountWithSeed(request: MetaAccountImportSeedRequest) {
-        let operation = metaAccountOperationFactory.newSecretsMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactoryProvider.createAppDefaultFactory().newSecretsMetaAccountOperation(
+            request: request
+        )
+
         importAccountUsingOperation(operation)
     }
 
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest) {
-        let operation = metaAccountOperationFactory.newSecretsMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactoryProvider.createAppDefaultFactory().newSecretsMetaAccountOperation(
+            request: request
+        )
+
         importAccountUsingOperation(operation)
     }
 
@@ -123,7 +118,8 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             return
         }
 
-        let operation = metaAccountOperationFactory
+        let operation = metaAccountOperationFactoryProvider
+            .createAppDefaultFactory()
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
@@ -133,7 +129,8 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         request: ChainAccountImportSeedRequest,
         into wallet: MetaAccountModel
     ) {
-        let operation = metaAccountOperationFactory
+        let operation = metaAccountOperationFactoryProvider
+            .createAppDefaultFactory()
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
@@ -143,7 +140,8 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         request: ChainAccountImportKeystoreRequest,
         into wallet: MetaAccountModel
     ) {
-        let operation = metaAccountOperationFactory
+        let operation = metaAccountOperationFactoryProvider
+            .createAppDefaultFactory()
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
@@ -153,14 +151,14 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             let data = keystore.data(using: .utf8),
             let definition = try? jsonDecoder.decode(KeystoreDefinition.self, from: data),
             let info = try? AccountImportJsonFactory().createInfo(from: definition) {
-            presenter.didSuggestKeystore(text: keystore, preferredInfo: info)
+            presenter.didSuggestSecret(text: keystore, preferredInfo: info)
         }
     }
 }
 
-extension BaseAccountImportInteractor: KeystoreImportObserver {
+extension BaseAccountImportInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
-        handleIfNeededKeystoreImport()
+        handleIfNeededSecretImport()
     }
 
     func didReceiveError(secretImportError: ErrorContentConvertible & Error) {

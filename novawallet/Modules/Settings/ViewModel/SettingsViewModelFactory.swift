@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
@@ -24,6 +24,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             )
 
         return SettingsAccountViewModel(
+            identifier: wallet.identifier,
             name: wallet.name,
             icon: icon,
             walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type),

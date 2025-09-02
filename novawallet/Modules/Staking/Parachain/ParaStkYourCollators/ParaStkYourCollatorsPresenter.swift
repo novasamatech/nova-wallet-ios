@@ -1,23 +1,23 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkYourCollatorsPresenter {
-    weak var view: ParaStkYourCollatorsViewProtocol?
+    weak var view: CollatorStkYourCollatorsViewProtocol?
     let wireframe: ParaStkYourCollatorsWireframeProtocol
     let interactor: ParaStkYourCollatorsInteractorInputProtocol
 
-    private var collators: Result<[CollatorSelectionInfo], Error>?
+    private var collators: Result<[ParachainStkCollatorSelectionInfo], Error>?
     private var delegator: Result<ParachainStaking.Delegator?, Error>?
     private var scheduledRequests: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>?
 
     let selectedAccount: MetaChainAccountResponse
-    let viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol
+    let viewModelFactory: CollatorStkYourCollatorsViewModelFactory
 
     init(
         interactor: ParaStkYourCollatorsInteractorInputProtocol,
         wireframe: ParaStkYourCollatorsWireframeProtocol,
         selectedAccount: MetaChainAccountResponse,
-        viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol,
+        viewModelFactory: CollatorStkYourCollatorsViewModelFactory,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -34,10 +34,11 @@ final class ParaStkYourCollatorsPresenter {
                 return
             }
 
+            let collatorDelegator = CollatorStakingDelegator(parachainDelegator: delegator)
             let viewModel = try viewModelFactory.createViewModel(
                 for: selectedAccount.chainAccount.accountId,
                 collators: collators,
-                delegator: delegator,
+                delegator: collatorDelegator,
                 locale: selectedLocale
             )
 
@@ -53,7 +54,7 @@ final class ParaStkYourCollatorsPresenter {
     }
 }
 
-extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
+extension ParaStkYourCollatorsPresenter: CollatorStkYourCollatorsPresenterProtocol {
     func setup() {
         provideViewModel()
 
@@ -69,17 +70,17 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
 
         wireframe.showManageCollators(
             from: view,
-            options: [.stakeMore, .unstake],
+            options: options,
             delegate: self,
             context: options as NSArray
         )
     }
 
     func selectCollator(viewModel: CollatorSelectionViewModel) {
-        guard
-            let accountId = try? viewModel.collator.address.toAccountId(),
-            let collators = try? collators?.get(),
-            let collatorInfo = collators.first(where: { $0.accountId == accountId }) else {
+        let collators = try? collators?.get()
+        let optCollatorInfo = collators?.first { $0.accountId == viewModel.identifier }
+
+        guard let collatorInfo = optCollatorInfo else {
             return
         }
 
@@ -88,7 +89,7 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
 }
 
 extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputProtocol {
-    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>) {
+    func didReceiveCollators(result: Result<[ParachainStkCollatorSelectionInfo], Error>) {
         collators = result
 
         provideViewModel()

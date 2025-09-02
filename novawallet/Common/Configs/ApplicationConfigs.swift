@@ -7,6 +7,10 @@ protocol ApplicationConfigProtocol {
     var supportEmail: String { get }
     var websiteURL: URL { get }
     var appStoreURL: URL { get }
+    var externalUniversalLinkURL: URL { get }
+    var internalUniversalLinkURL: URL { get }
+    var deepLinkScheme: String { get }
+    var deepLinkHost: String { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -20,6 +24,7 @@ protocol ApplicationConfigProtocol {
     var phishingListURL: URL { get }
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
+    var xcmDynamicTransfersURL: URL { get }
     var xcmTransfersURL: URL { get }
     var stakingGlobalConfigURL: URL { get }
     var dAppsListURL: URL { get }
@@ -38,12 +43,20 @@ protocol ApplicationConfigProtocol {
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
     var proxyWikiURL: URL { get }
+    var multisigWikiURL: URL { get }
+    var unifiedAddressWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
     var wikiURL: URL { get }
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
+}
+
+extension ApplicationConfigProtocol {
+    var deepLinkURL: URL {
+        URL(string: "\(deepLinkScheme)://\(deepLinkHost)")!
+    }
 }
 
 final class ApplicationConfig {
@@ -139,25 +152,25 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
         #endif
     }
 
     var preConfiguredLightChainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains_dev.json")!
         #endif
     }
 
     var preConfiguredChainDirectoryURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/details")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/details")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/detailsDev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/detailsDev")!
         #endif
     }
 
@@ -173,9 +186,17 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dev.json")!
+        #endif
+    }
+
+    var xcmDynamicTransfersURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dynamic.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dynamic_dev.json")!
         #endif
     }
 
@@ -254,7 +275,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var ledgerGuideURL: URL {
-        URL(string: "https://support.ledger.com/hc/en-us/articles/360019138694-Set-up-Bluetooth-connection")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/ledger-devices")!
     }
 
     var ledgerMigrationURL: URL {
@@ -308,12 +329,32 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
-    var universalLinkURL: URL {
+    var multisigWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/multisig-wallets")!
+    }
+
+    var unifiedAddressWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
+    }
+
+    var externalUniversalLinkURL: URL {
+        URL(string: "https://nova-wallet.app.link")!
+    }
+
+    var internalUniversalLinkURL: URL {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
         #else
             URL(string: "https://dev.novawallet.io")!
         #endif
+    }
+
+    var deepLinkScheme: String {
+        "novawallet"
+    }
+
+    var deepLinkHost: String {
+        "nova"
     }
 
     var whiteAppearanceIconsPath: String {
@@ -322,6 +363,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var coloredAppearanceIconsPath: String {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/colored/"
+    }
+
+    var bannersContentPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/v2/content/"
     }
 
     // swiftlint:enable line_length

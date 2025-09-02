@@ -72,17 +72,21 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
             xcmService: XcmTransferService(
                 wallet: wallet,
                 chainRegistry: chainRegistry,
-                metadataHashOperationFactory: MetadataHashOperationFactory(
-                    metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-                    operationQueue: operationQueue
-                ),
                 userStorageFacade: userStorageFacade,
                 substrateStorageFacade: substrateStorageFacade,
                 operationQueue: operationQueue,
-                customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
+                customFeeEstimatingFactory: AssetExchangeFeeEstimatingRouter(
                     graphProxy: graphProxy,
-                    operationQueue: operationQueue
-                )
+                    dependencies: .init(
+                        wallet: wallet,
+                        userStorageFacade: userStorageFacade,
+                        substrateStorageFacade: substrateStorageFacade,
+                        chainRegistry: chainRegistry,
+                        operationQueue: operationQueue,
+                        logger: logger
+                    )
+                ),
+                logger: logger
             ),
             resolutionFactory: XcmTransferResolutionFactory(
                 chainRegistry: chainRegistry,

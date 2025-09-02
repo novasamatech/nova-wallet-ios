@@ -1,5 +1,5 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 final class AccountCreateInteractor {

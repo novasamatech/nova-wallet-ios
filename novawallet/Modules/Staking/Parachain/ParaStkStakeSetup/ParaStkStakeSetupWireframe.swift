@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     let state: ParachainStakingSharedStateProtocol
@@ -9,7 +9,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showConfirmation(
-        from view: ParaStkStakeSetupViewProtocol?,
+        from view: CollatorStakingSetupViewProtocol?,
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?
@@ -30,10 +30,10 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showCollatorSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
-        delegate: ParaStkSelectCollatorsDelegate
+        from view: CollatorStakingSetupViewProtocol?,
+        delegate: CollatorStakingSelectDelegate
     ) {
-        guard let collatorsView = ParaStkSelectCollatorsViewFactory.createView(
+        guard let collatorsView = CollatorStakingSelectViewFactory.createParachainStakingView(
             with: state,
             delegate: delegate
         ) else {
@@ -41,32 +41,5 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
         }
 
         view?.controller.navigationController?.pushViewController(collatorsView.controller, animated: true)
-    }
-
-    func showDelegationSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    ) {
-        let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
-            let icon = R.image.iconBlueAdd()
-
-            return IconWithTitleViewModel(icon: icon, title: title)
-        }
-
-        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
-            viewModels,
-            actionViewModel: actionViewModel,
-            selectedIndex: selectedIndex,
-            delegate: delegate,
-            context: context
-        ) else {
-            return
-        }
-
-        view?.controller.present(infoVew, animated: true, completion: nil)
     }
 }

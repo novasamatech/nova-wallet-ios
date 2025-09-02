@@ -151,6 +151,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: chainAccountId,
             chainAddress: transaction.from,
+            feeAsset: nil,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )
@@ -171,7 +172,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
                 self?.lastFee = model
                 let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
                 let feeModel = FeeOutputModel(
-                    value: ExtrinsicFee(amount: model.fee, payer: nil, weight: 0),
+                    value: ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero),
                     validationProvider: validationProvider
                 )
 

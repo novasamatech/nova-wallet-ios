@@ -20,6 +20,7 @@ extension WebViewPool: WebViewPoolProtocol {
 
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
+        configuration.allowsInlineMediaPlayback = true
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always

@@ -1,9 +1,9 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkStakeConfirmPresenter {
-    weak var view: ParaStkStakeConfirmViewProtocol?
+    weak var view: CollatorStakingConfirmViewProtocol?
     let wireframe: ParaStkStakeConfirmWireframeProtocol
     let interactor: ParaStkStakeConfirmInteractorInputProtocol
 
@@ -199,7 +199,7 @@ final class ParaStkStakeConfirmPresenter {
     }
 }
 
-extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
+extension ParaStkStakeConfirmPresenter: CollatorStakingConfirmPresenterProtocol {
     func setup() {
         applyCurrentState()
 
@@ -293,12 +293,16 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
         }
     }
 
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.complete(
+                on: view,
+                sender: model.sender,
+                locale: selectedLocale
+            )
         case let .failure(error):
             applyCurrentState()
             refreshFee()

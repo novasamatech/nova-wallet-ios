@@ -3,39 +3,38 @@ import UIKit
 final class AssetListCollectionManager {
     weak var delegate: AssetListCollectionManagerDelegate?
 
-    var ableToClosePromotion: Bool {
-        promotionBannerViewModel != nil
-    }
-
     var collectionViewLayout: AssetListFlowLayout? {
-        view?.collectionViewLayout
+        viewController?.rootView.collectionViewLayout
     }
 
-    weak var view: AssetListViewLayout?
+    weak var viewController: AssetListViewController?
 
     private var groupsViewModel: AssetListViewModel
-    private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
     private let collectionViewDataSource: AssetListCollectionViewDataSource
     // swiftlint:disable weak_delegate
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
     init(
-        view: AssetListViewLayout,
+        viewController: AssetListViewController,
+        bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
         delegate: AssetListCollectionManagerDelegate? = nil,
         selectedLocale: Locale
     ) {
         self.groupsViewModel = groupsViewModel
-        self.view = view
+        self.viewController = viewController
         self.delegate = delegate
 
         collectionViewDataSource = AssetListCollectionViewDataSource(
+            view: viewController,
+            bannersViewProvider: bannersViewProvider,
             groupsViewModel: groupsViewModel,
             selectedLocale: selectedLocale
         )
 
         collectionViewDelegate = AssetListCollectionViewDelegate(
+            bannersViewProvider: bannersViewProvider,
             groupsViewModel: groupsViewModel
         )
 
@@ -48,10 +47,10 @@ final class AssetListCollectionManager {
         collectionViewDelegate.selectionDelegate = self
         collectionViewDelegate.groupsLayoutDelegate = self
 
-        view?.collectionView.dataSource = collectionViewDataSource
-        view?.collectionView.delegate = collectionViewDelegate
+        viewController?.rootView.collectionView.dataSource = collectionViewDataSource
+        viewController?.rootView.collectionView.delegate = collectionViewDelegate
 
-        view?.collectionView.refreshControl?.addTarget(
+        viewController?.rootView.collectionView.refreshControl?.addTarget(
             self,
             action: #selector(actionRefresh),
             for: .valueChanged
@@ -86,17 +85,23 @@ final class AssetListCollectionManager {
 
 extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     func setupCollectionView() {
-        view?.collectionView.registerCellClass(AssetListTokenGroupAssetCell.self)
-        view?.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
-        view?.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
-        view?.collectionView.registerCellClass(AssetListAccountCell.self)
-        view?.collectionView.registerCellClass(AssetListSettingsCell.self)
-        view?.collectionView.registerCellClass(AssetListEmptyCell.self)
-        view?.collectionView.registerCellClass(AssetListNftsCell.self)
-        view?.collectionView.registerCellClass(AssetListBannerCell.self)
-        view?.collectionView.registerClass(
+        viewController?.rootView.collectionView.registerCellClass(AssetListTokenGroupAssetCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListAccountCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListMultisigOperationsCell.self)
+        viewController?.rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
+        viewController?.rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
+
+        collectionViewLayout?.register(
+            AssetListOrganizerDecorationView.self,
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.organizer
         )
 
         collectionViewLayout?.register(
@@ -114,7 +119,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         from _: AssetListViewModel,
         to newViewModel: AssetListViewModel
     ) {
-        guard let view else { return }
+        guard let view = viewController?.rootView else { return }
 
         prepareForLayoutTransition()
         updateTokensGroupLayout()
@@ -174,13 +179,12 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         collectionViewDataSource.headerViewModel = model
     }
 
-    func updateNftViewModel(with model: AssetListNftsViewModel?) {
-        collectionViewDataSource.nftViewModel = model
+    func updateOrganizerViewModel(with model: AssetListOrganizerViewModel?) {
+        collectionViewDataSource.organizerViewModel = model
     }
 
-    func updatePromotionBannerViewModel(with model: PromotionBannerView.ViewModel?) {
-        promotionBannerViewModel = model
-        collectionViewDataSource.promotionBannerViewModel = model
+    func updateBanners(available: Bool) {
+        collectionViewDataSource.bannersAvailable = available
     }
 
     func updateSelectedLocale(with locale: Locale) {
@@ -188,7 +192,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     }
 
     func updateLoadingState() {
-        view?.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
+        viewController?.rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
     }
 }
 
@@ -196,7 +200,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
 
 extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     func sectionInsets(for type: AssetListFlowLayout.SectionType, section: Int) -> UIEdgeInsets {
-        view?.collectionViewLayout.sectionInsets(
+        viewController?.rootView.collectionViewLayout.sectionInsets(
             for: type,
             section: section
         ) ?? .zero
@@ -215,7 +219,7 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     }
 
     func cellHeight(for type: AssetListFlowLayout.CellType, at indexPath: IndexPath) -> CGFloat {
-        view?.collectionViewLayout.cellHeight(
+        viewController?.rootView.collectionViewLayout.cellHeight(
             for: type,
             at: indexPath
         ) ?? .zero
@@ -229,15 +233,11 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
 // MARK: AssetListCollectionSelectionDelegate
 
 extension AssetListCollectionManager: AssetListCollectionSelectionDelegate {
+    func selectOrganizerItem(at index: Int) {
+        delegate?.selectOrganizerItem(at: index)
+    }
+
     func selectAsset(for chainAssetId: ChainAssetId) {
         delegate?.selectAsset(for: chainAssetId)
-    }
-
-    func selectNfts() {
-        delegate?.selectNfts()
-    }
-
-    func selectPromotion() {
-        delegate?.selectPromotion()
     }
 }

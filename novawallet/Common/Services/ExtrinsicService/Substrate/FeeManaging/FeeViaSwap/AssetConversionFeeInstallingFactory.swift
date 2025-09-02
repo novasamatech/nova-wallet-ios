@@ -49,24 +49,32 @@ final class AssetConversionFeeInstallingFactory {
     }
 }
 
-extension AssetConversionFeeInstallingFactory: ExtrinsicCustomFeeInstallingFactoryProtocol {
-    func createCustomFeeInstallerWrapper(
+extension AssetConversionFeeInstallingFactory: ExtrinsicFeeInstallingFactoryProtocol {
+    func createFeeInstallerWrapper(
         chainAsset: ChainAsset,
         accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         switch AssetType(rawType: chainAsset.asset.type) {
         case .statemine where chainAsset.chain.hasAssetHubFees:
-            CompoundOperationWrapper.createWithResult(
+            .createWithResult(
                 ExtrinsicAssetConversionFeeInstaller(
                     feeAsset: chainAsset
                 )
             )
-        case .orml where chainAsset.chain.hasHydrationFees:
+        case .none where chainAsset.chain.hasHydrationFees:
             createHydraFeeInstallingWrapper(
                 chainAsset: chainAsset,
                 accountClosure: accountClosure
             )
-        case .none, .orml, .statemine, .equilibrium, .evmNative, .evmAsset:
+        case .orml where chainAsset.chain.hasHydrationFees,
+             .ormlHydrationEvm where chainAsset.chain.hasHydrationFees:
+            createHydraFeeInstallingWrapper(
+                chainAsset: chainAsset,
+                accountClosure: accountClosure
+            )
+        case .none, .orml, .ormlHydrationEvm, .statemine, .equilibrium:
+            .createWithResult(ExtrinsicNativeFeeInstaller())
+        case .evmNative, .evmAsset:
             .createWithError(
                 ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAsset.chainAssetId)
             )

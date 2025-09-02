@@ -1,6 +1,6 @@
 import XCTest
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 @testable import novawallet
 

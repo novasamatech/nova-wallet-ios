@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class WalletSwitchContentView: UIView {
     let typeImageView: UIImageView = {
@@ -130,6 +130,10 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconProxiedWallet()
+        case .multisig:
+            applyCommonStyle(to: controlBackgroundView)
+
+            typeImageView.image = R.image.iconMultisig()
         case .genericLedger:
             applyCommonStyle(to: controlBackgroundView)
 

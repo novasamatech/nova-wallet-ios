@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBase, AccountFetching {
     let nomination: PreparedNomination<ExistingBonding>
@@ -194,8 +194,8 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             runningIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(txHash):
-                self?.presenter.didCompleteNomination(txHash: txHash)
+            case let .success(model):
+                self?.presenter.didCompleteNomination(submission: model)
             case let .failure(error):
                 self?.presenter.didFailNomination(error: error)
             }

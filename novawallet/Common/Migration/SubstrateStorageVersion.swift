@@ -33,6 +33,10 @@ enum SubstrateStorageVersion: String, CaseIterable {
     case version32 = "SubstrateDataModel32"
     case version33 = "SubstrateDataModel33"
     case version34 = "SubstrateDataModel34"
+    case version35 = "SubstrateDataModel35"
+    case version36 = "SubstrateDataModel36"
+    case version37 = "SubstrateDataModel37"
+    case version38 = "SubstrateDataModel38"
 
     static var current: SubstrateStorageVersion {
         allCases.last!
@@ -40,75 +44,45 @@ enum SubstrateStorageVersion: String, CaseIterable {
 
     var nextVersion: SubstrateStorageVersion? {
         switch self {
-        case .version1:
-            return .version2
-        case .version2:
-            return .version3
-        case .version3:
-            return .version4
-        case .version4:
-            return .version5
-        case .version5:
-            return .version6
-        case .version6:
-            return .version7
-        case .version7:
-            return .version8
-        case .version8:
-            return .version9
-        case .version9:
-            return .version10
-        case .version10:
-            return .version11
-        case .version11:
-            return .version12
-        case .version12:
-            return .version13
-        case .version13:
-            return .version14
-        case .version14:
-            return .version15
-        case .version15:
-            return .version16
-        case .version16:
-            return .version17
-        case .version17:
-            return .version18
-        case .version18:
-            return .version19
-        case .version19:
-            return .version20
-        case .version20:
-            return .version21
-        case .version21:
-            return .version22
-        case .version22:
-            return .version23
-        case .version23:
-            return .version24
-        case .version24:
-            return .version25
-        case .version25:
-            return .version26
-        case .version26:
-            return .version27
-        case .version27:
-            return .version28
-        case .version28:
-            return .version29
-        case .version29:
-            return .version30
-        case .version30:
-            return .version31
-        case .version31:
-            return .version32
-        case .version32:
-            // we have broken migration from 32 to 33
-            return .version34
-        case .version33:
-            return .version34
-        case .version34:
-            return nil
+        case .version1: .version2
+        case .version2: .version3
+        case .version3: .version4
+        case .version4: .version5
+        case .version5: .version6
+        case .version6: .version7
+        case .version7: .version8
+        case .version8: .version9
+        case .version9: .version10
+        case .version10: .version11
+        case .version11: .version12
+        case .version12: .version13
+        case .version13: .version14
+        case .version14: .version15
+        case .version15: .version16
+        case .version16: .version17
+        case .version17: .version18
+        case .version18: .version19
+        case .version19: .version20
+        case .version20: .version21
+        case .version21: .version22
+        case .version22: .version23
+        case .version23: .version24
+        case .version24: .version25
+        case .version25: .version26
+        case .version26: .version27
+        case .version27: .version28
+        case .version28: .version29
+        case .version29: .version30
+        case .version30: .version31
+        case .version31: .version32
+        // we have broken migration from 32 to 33
+        case .version32: .version34
+        case .version33: .version34
+        case .version34: .version35
+        case .version35: .version36
+        case .version36: .version37
+        case .version37: .version38
+        case .version38: nil
         }
     }
 }

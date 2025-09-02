@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 protocol CloudBackupUpdateApplicationFactoryProtocol {
     func createUpdateApplyOperation(for changes: CloudBackupSyncResult.Changes) -> CompoundOperationWrapper<Void>
@@ -81,6 +81,8 @@ final class CloudBackupUpdateApplicationFactory {
                     return remote.metaId
                 case let .updatedChainAccounts(_, remote, _):
                     return remote.metaId
+                case let .updatedMainAccounts(_, remote):
+                    return remote.metaId
                 case .delete, .updatedMetadata:
                     return nil
                 }
@@ -128,6 +130,16 @@ final class CloudBackupUpdateApplicationFactory {
                     )
 
                     nextOrder += 1
+                case let .updatedMainAccounts(_, remote):
+                    if let local = walletsById[remote.metaId] {
+                        newOrUpdatedWallets.append(
+                            ManagedMetaAccountModel(
+                                info: remote,
+                                isSelected: local.isSelected,
+                                order: local.order
+                            )
+                        )
+                    }
                 case let .updatedChainAccounts(_, remote, _):
                     if let local = walletsById[remote.metaId] {
                         newOrUpdatedWallets.append(

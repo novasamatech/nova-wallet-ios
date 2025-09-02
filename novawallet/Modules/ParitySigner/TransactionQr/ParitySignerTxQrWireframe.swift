@@ -1,10 +1,12 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class ParitySignerTxQrWireframe: ParitySignerTxQrWireframeProtocol {
     let sharedSigningPayload: Data
+    let params: ParitySignerConfirmationParams
 
-    init(sharedSigningPayload: Data) {
+    init(params: ParitySignerConfirmationParams, sharedSigningPayload: Data) {
+        self.params = params
         self.sharedSigningPayload = sharedSigningPayload
     }
 
@@ -15,14 +17,13 @@ final class ParitySignerTxQrWireframe: ParitySignerTxQrWireframeProtocol {
     func proceed(
         from view: ParitySignerTxQrViewProtocol?,
         accountId: AccountId,
-        type: ParitySignerType,
-        timer: CountdownTimerMediating,
+        timer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let scanView = ParitySignerTxScanViewFactory.createView(
             from: sharedSigningPayload,
             accountId: accountId,
-            type: type,
+            params: params,
             expirationTimer: timer,
             completion: completion
         ) else {

@@ -1,5 +1,5 @@
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 import Operation_iOS
 import SubstrateSdk
 
@@ -64,8 +64,6 @@ struct StakingBondMoreViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
-
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
@@ -87,7 +85,8 @@ struct StakingBondMoreViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
-            operationManager: operationManager,
+            runtimeProvider: runtimeRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 

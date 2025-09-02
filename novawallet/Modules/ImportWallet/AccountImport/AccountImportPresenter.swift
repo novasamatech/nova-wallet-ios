@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class AccountImportPresenter: BaseAccountImportPresenter {
     override func processProceed() {
@@ -42,7 +42,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         let ethereumDerivationPath = self.ethereumDerivationPath ?? ""
 
         switch selectedSourceType {
-        case .mnemonic:
+        case let .mnemonic(origin):
             let mnemonic = sourceViewModel.inputHandler.normalizedValue
             let request = MetaAccountImportMnemonicRequest(
                 mnemonic: mnemonic,
@@ -52,7 +52,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
                 cryptoType: selectedCryptoType
             )
 
-            interactor.importAccountWithMnemonic(request: request)
+            interactor.importAccountWithMnemonic(request: request, from: origin)
 
         case .seed:
             let seed = sourceViewModel.inputHandler.value
@@ -84,9 +84,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     override func shouldUseEthereumSeed() -> Bool { false }
 
     override func getAdvancedSettings() -> AdvancedWalletSettings? {
-        guard let metadata = metadata else {
-            return nil
-        }
+        let metadata = metadataFactory.deriveMetadata(for: selectedSourceType)
 
         let substrateSettings = AdvancedNetworkTypeSettings(
             availableCryptoTypes: metadata.availableCryptoTypes,

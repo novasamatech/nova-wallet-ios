@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 final class DAppOperationConfirmPresenter {
@@ -13,7 +13,7 @@ final class DAppOperationConfirmPresenter {
     private(set) weak var delegate: DAppOperationConfirmDelegate?
 
     let viewModelFactory: DAppOperationConfirmViewModelFactoryProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
 
     private var confirmationModel: DAppOperationConfirmModel?
     private var feeModel: FeeOutputModel?
@@ -24,7 +24,7 @@ final class DAppOperationConfirmPresenter {
         wireframe: DAppOperationConfirmWireframeProtocol,
         delegate: DAppOperationConfirmDelegate,
         viewModelFactory: DAppOperationConfirmViewModelFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         chain: DAppEitherChain,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
@@ -33,7 +33,7 @@ final class DAppOperationConfirmPresenter {
         self.wireframe = wireframe
         self.delegate = delegate
         self.viewModelFactory = viewModelFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.chain = chain
         self.logger = logger
 
@@ -62,18 +62,22 @@ final class DAppOperationConfirmPresenter {
             return
         }
 
-        guard let feeDecimal = viewModelFactory.convertBalanceToDecimal(feeModel.value.amount) else {
-            view?.didReceive(feeViewModel: .loading)
+        let assetInfo = confirmationModel?.feeAsset?.assetDisplayInfo ?? chain.utilityAssetBalanceInfo
+
+        guard feeModel.value.amount > 0, let assetInfo else {
+            view?.didReceive(feeViewModel: .empty)
             return
         }
 
-        if feeModel.value.amount > 0 {
-            let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
-                .value(for: selectedLocale)
-            view?.didReceive(feeViewModel: .loaded(value: viewModel))
-        } else {
-            view?.didReceive(feeViewModel: .empty)
-        }
+        let amountDecimal = feeModel.value.amount.decimal(assetInfo: assetInfo)
+
+        let viewModel = balanceViewModelFacade.balanceFromPrice(
+            targetAssetInfo: assetInfo,
+            amount: amountDecimal,
+            priceData: priceData
+        ).value(for: selectedLocale)
+
+        view?.didReceive(feeViewModel: .loaded(value: viewModel))
     }
 
     private func showConfirmationError(_ error: ErrorContentConvertible) {

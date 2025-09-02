@@ -1,22 +1,22 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 extension ParachainStaking {
     final class ValidatorFactory: ParaStkValidatorFactoryProtocol {
         weak var view: ControllerBackedProtocol?
 
-        var basePresentable: BaseErrorPresentable { presentable }
+        var collatorStakingPresentable: CollatorStakingErrorPresentable { presentable }
         let assetDisplayInfo: AssetBalanceDisplayInfo
         let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
         let presentable: ParachainStakingErrorPresentable
 
-        private lazy var balanceViewModelFactory = BalanceViewModelFactory(
+        private(set) lazy var balanceViewModelFactory: BalanceViewModelFactoryProtocol = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        private lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
+        private(set) lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
 
         init(
             presentable: ParachainStakingErrorPresentable,
@@ -31,18 +31,6 @@ extension ParachainStaking {
 }
 
 extension ParachainStaking.ValidatorFactory {
-    func delegatorNotExist(delegator: ParachainStaking.Delegator?, locale: Locale) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentDelegatorExists(view, locale: locale)
-        }, preservesCondition: {
-            delegator == nil
-        })
-    }
-
     func canStakeTopDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
@@ -127,74 +115,6 @@ extension ParachainStaking.ValidatorFactory {
 
             return !collator.bottomCapacity.isFull ||
                 totalAmountAfterStake > collator.lowestBottomDelegationAmount
-        })
-    }
-
-    func hasMinStake(amount: Decimal?, minTechStake: BigUInt?, locale: Locale) -> DataValidating {
-        let precision = assetDisplayInfo.assetPrecision
-        let optAmountInPlank = amount.flatMap {
-            $0.toSubstrateAmount(precision: precision)
-        }
-
-        return ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            let minStake = Decimal.fromSubstrateAmount(
-                minTechStake ?? 0,
-                precision: precision
-            )
-
-            let minStakeString = self?.balanceViewModelFactory.amountFromValue(
-                minStake ?? 0
-            ).value(for: locale)
-
-            self?.presentable.presentStakeAmountTooLow(
-                view,
-                minStake: minStakeString ?? "",
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let minTechStake = minTechStake, let amountInPlank = optAmountInPlank else {
-                return false
-            }
-
-            return amountInPlank >= minTechStake
-        })
-    }
-
-    func notExceedsMaxCollators(
-        delegator: ParachainStaking.Delegator?,
-        maxCollatorsAllowed: UInt32?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            let maxAllowed = self?.quantityFormatter.value(for: locale).string(
-                from: NSNumber(value: maxCollatorsAllowed ?? 0)
-            )
-
-            self?.presentable.presentDelegatorFull(
-                view,
-                maxAllowed: maxAllowed ?? "",
-                locale: locale
-            )
-
-        }, preservesCondition: {
-            guard let delegator = delegator else {
-                // there were no delegations previously
-                return true
-            }
-
-            guard let maxCollatorsAllowed = maxCollatorsAllowed else {
-                return false
-            }
-
-            return delegator.delegations.count < Int(maxCollatorsAllowed)
         })
     }
 

@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class LedgerAccountConfirmationPresenter {
     weak var view: LedgerAccountConfirmationViewProtocol?
@@ -9,6 +9,7 @@ final class LedgerAccountConfirmationPresenter {
     let tokenFormatter: LocalizableResource<TokenFormatter>
     let chain: ChainModel
     let deviceName: String
+    let deviceModel: LedgerDeviceModel
     let localizationManager: LocalizationManagerProtocol
 
     private var accounts: [LedgerAccountAmount] = []
@@ -21,6 +22,7 @@ final class LedgerAccountConfirmationPresenter {
         wireframe: LedgerAccountConfirmationWireframeProtocol,
         chain: ChainModel,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         tokenFormatter: LocalizableResource<TokenFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -28,6 +30,7 @@ final class LedgerAccountConfirmationPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.deviceName = deviceName
+        self.deviceModel = deviceModel
         self.tokenFormatter = tokenFormatter
         self.localizationManager = localizationManager
     }
@@ -79,9 +82,15 @@ final class LedgerAccountConfirmationPresenter {
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: chain.name,
-                cancelClosure: {},
-                retryClosure: retryClosure
+                context: LedgerErrorPresentableContext(
+                    networkName: chain.name,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
             )
         } else {
             wireframe.closeMessageSheet(on: view)
@@ -101,7 +110,12 @@ extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationPresenter
 
         interactor.confirm(address: account.address, at: UInt32(index))
 
-        wireframe.showAddressVerification(on: view, deviceName: deviceName, address: account.address) { [weak self] in
+        wireframe.showAddressVerification(
+            on: view,
+            deviceName: deviceName,
+            deviceModel: deviceModel,
+            address: account.address
+        ) { [weak self] in
             self?.interactor.cancelRequest()
         }
     }

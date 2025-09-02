@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 struct ChainAssetSelectionViewFactory {
@@ -20,7 +20,6 @@ struct ChainAssetSelectionViewFactory {
 
         let interactor = ChainAssetSelectionInteractor(
             selectedMetaAccount: SelectedWalletSettings.shared.value,
-            balanceSlice: balanceSlice ?? \.transferable,
             repository: AnyDataProviderRepository(repository),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -41,6 +40,7 @@ struct ChainAssetSelectionViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,
+            balanceMapper: AvailableBalanceSliceMapper(balanceSlice: balanceSlice ?? \.transferable),
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             assetIconViewModelFactory: assetIconViewModelFactory,
             localizationManager: localizationManager

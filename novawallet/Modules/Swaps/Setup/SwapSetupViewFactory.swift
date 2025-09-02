@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct SwapSetupViewFactory {
@@ -40,19 +40,23 @@ struct SwapSetupViewFactory {
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
+        let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
+        let percentFormatter = NumberFormatter.percentSingle.localizableResource()
+
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             priceAssetInfoFactory: priceInfoFactory,
             issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
-            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
-            priceDifferenceConfig: .defaultConfig
+            priceDifferenceModelFactory: priceDiffModelFactory,
+            percentFormatter: percentFormatter
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(
             presentable: wireframe,
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            percentFormatter: percentFormatter
         )
 
         let presenter = SwapSetupPresenter(
@@ -60,6 +64,7 @@ struct SwapSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            priceDiffModelFactory: priceDiffModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             priceStore: state.priceStore,
             localizationManager: LocalizationManager.shared,

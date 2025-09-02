@@ -1,9 +1,9 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 final class GenericLedgerWalletConfirmInteractor: BaseLedgerWalletConfirmInteractor {
-    let model: SubstrateLedgerWalletModel
+    let model: PolkadotLedgerWalletModel
     let walletOperationFactory: GenericLedgerWalletOperationFactoryProtocol
     let operationQueue: OperationQueue
     let settings: SelectedWalletSettings
@@ -13,7 +13,7 @@ final class GenericLedgerWalletConfirmInteractor: BaseLedgerWalletConfirmInterac
     let cancellableStore = CancellableCallStore()
 
     init(
-        model: SubstrateLedgerWalletModel,
+        model: PolkadotLedgerWalletModel,
         walletOperationFactory: GenericLedgerWalletOperationFactoryProtocol,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,

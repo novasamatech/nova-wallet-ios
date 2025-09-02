@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class SwapConfirmPresenter: SwapBasePresenter {
     weak var view: SwapConfirmViewProtocol?
@@ -23,6 +23,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         initState: SwapConfirmInitState,
         selectedWallet: MetaAccountModel,
         viewModelFactory: SwapDetailsViewModelFactoryProtocol,
+        priceDifferenceFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
@@ -39,6 +40,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         super.init(
             selectedWallet: selectedWallet,
             dataValidatingFactory: dataValidatingFactory,
+            priceDiffFactory: priceDifferenceFactory,
             priceStore: priceStore,
             logger: logger
         )
@@ -320,7 +322,9 @@ extension SwapConfirmPresenter {
             fee: fee
         )
 
-        wireframe.showSwapExecution(from: view, model: executionModel)
+        view?.didReceiveStartLoading()
+
+        interactor.initiateSwapSubmission(of: executionModel)
     }
 }
 
@@ -420,6 +424,35 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
                 self?.view?.didReceiveStartLoading()
             }
         )
+    }
+}
+
+extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
+    func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>) {
+        switch result {
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
+        case let .failure(error):
+            view?.didReceiveStopLoading()
+
+            logger.error("Swap failed: \(error)")
+
+            _ = wireframe.handleExtrinsicSigningErrorPresentation(
+                error,
+                view: view,
+                closeAction: .dismissAllModals,
+                completionClosure: nil
+            )
+        }
+    }
+
+    func didDecideMonitoredExecution(for model: SwapExecutionModel) {
+        wireframe.showSwapExecution(from: view, model: model)
     }
 }
 

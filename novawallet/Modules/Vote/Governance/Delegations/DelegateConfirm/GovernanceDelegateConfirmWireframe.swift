@@ -1,7 +1,7 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
-final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWireframeProtocol, ModalAlertPresenting {
+final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWireframeProtocol {
     let state: GovernanceSharedState
 
     init(state: GovernanceSharedState) {
@@ -24,14 +24,23 @@ final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWirefra
         view?.controller.present(tracksView.controller, animated: true)
     }
 
-    func complete(on view: GovernanceDelegateConfirmViewProtocol?, locale: Locale) {
+    func complete(
+        on view: GovernanceDelegateConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution?,
+        locale: Locale
+    ) {
         let presenter = view?.controller.navigationController
 
         if
             let yourDelegations = presenter?.viewControllers.first(
                 where: { $0 is GovernanceYourDelegationsViewProtocol }
             ) {
-            presenter?.popToViewController(yourDelegations, animated: true)
+            presentExtrinsicSubmission(
+                from: view,
+                sender: sender,
+                completionAction: .popToViewController(yourDelegations),
+                locale: locale
+            )
         } else {
             guard let yourDelegations = GovernanceYourDelegationsViewFactory.createView(for: state) else {
                 return
@@ -39,15 +48,13 @@ final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWirefra
 
             yourDelegations.controller.hidesBottomBarWhenPushed = true
 
-            presenter?.popToRootViewController(animated: false)
-
-            presenter?.pushViewController(yourDelegations.controller, animated: true)
+            presentExtrinsicSubmission(
+                from: view,
+                sender: sender,
+                completionAction: .popRootAndPush(yourDelegations.controller),
+                locale: locale
+            )
         }
-
-        let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
-
-        presentSuccessNotification(title, from: presenter, completion: nil)
     }
 
     func skip(on view: GovernanceDelegateConfirmViewProtocol?) {

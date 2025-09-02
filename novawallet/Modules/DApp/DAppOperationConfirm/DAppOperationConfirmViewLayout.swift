@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackView> {
     static let listImageSize = CGSize(width: 24, height: 24)
@@ -43,7 +43,7 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
 
     let transactionDetailsCell: StackActionCell = .create { view in
         view.rowContentView.iconSize = 0
-        view.rowContentView.titleLabel.apply(style: .footnoteSecondary)
+        view.titleLabel.apply(style: .footnoteSecondary)
     }
 
     let rejectButton: TriangularedButton = .create { button in
@@ -99,5 +99,20 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
 
         addArrangedSubview(transactionDetailsTableView, spacingAfter: 8)
         transactionDetailsTableView.addArrangedSubview(transactionDetailsCell)
+    }
+
+    func setupNetworkCell(with viewModel: StackCellViewModel?) {
+        if let viewModel {
+            senderTableView.insertArranged(
+                view: networkCell,
+                after: accountCell
+            )
+            networkCell.bind(
+                viewModel: viewModel,
+                cornerRadius: nil
+            )
+        } else {
+            networkCell.removeFromSuperview()
+        }
     }
 }

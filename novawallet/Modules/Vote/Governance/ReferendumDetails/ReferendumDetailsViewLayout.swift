@@ -9,6 +9,13 @@ final class ReferendumDetailsViewLayout: UIView {
         return view
     }()
 
+    let shareButton = UIBarButtonItem(
+        image: R.image.iconShare(),
+        style: .plain,
+        target: nil,
+        action: nil
+    )
+
     let titleView = ReferendumDetailsTitleView()
     let votingDetailsRow = ReferendumVotingStatusDetailsView()
     let dAppsTableView: StackTableView = .create {

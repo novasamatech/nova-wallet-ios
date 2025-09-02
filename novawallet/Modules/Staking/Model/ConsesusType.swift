@@ -13,7 +13,7 @@ enum ConsensusType {
             self = .auraGeneral
         case .azero:
             self = .auraAzero
-        case .parachain, .turing, .unsupported, .nominationPools:
+        case .parachain, .turing, .mythos, .unsupported, .nominationPools:
             return nil
         }
     }

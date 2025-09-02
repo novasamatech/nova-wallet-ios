@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
-import SoraUI
+import Foundation_iOS
+import Keystore_iOS
+import UIKit_iOS
 
 struct BackupAttentionViewFactory {
     static func createView(

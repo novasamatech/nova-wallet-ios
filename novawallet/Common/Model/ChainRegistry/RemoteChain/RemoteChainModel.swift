@@ -10,6 +10,7 @@ struct RemoteChainModel: Equatable, Codable {
     let nodes: [RemoteChainNodeModel]
     let nodeSelectionStrategy: String?
     let addressPrefix: ChainModel.AddressPrefix
+    let legacyAddressPrefix: ChainModel.AddressPrefix?
     let types: ChainModel.TypesSettings?
     let icon: URL?
     let options: [String]?
@@ -28,6 +29,7 @@ extension RemoteChainModel {
             nodes: nodes,
             nodeSelectionStrategy: nodeSelectionStrategy,
             addressPrefix: addressPrefix,
+            legacyAddressPrefix: legacyAddressPrefix,
             types: types,
             icon: icon,
             options: options,

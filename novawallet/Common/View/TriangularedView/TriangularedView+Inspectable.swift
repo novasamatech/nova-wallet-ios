@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 /// Extension of the TriangularedView to support design through Interface Builder
 extension TriangularedView {

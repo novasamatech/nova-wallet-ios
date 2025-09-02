@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkRebondPresenter {
     weak var view: ParaStkRebondViewProtocol?
@@ -12,7 +12,7 @@ final class ParaStkRebondPresenter {
     let selectedCollator: AccountId
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
+    let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -33,7 +33,7 @@ final class ParaStkRebondPresenter {
         collatorIdentity: AccountIdentity?,
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
+        hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -248,12 +248,17 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
         }
     }
 
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
         case let .failure(error):
             applyCurrentState()
             refreshFee()

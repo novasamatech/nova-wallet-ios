@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import BigInt
 
@@ -171,8 +171,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
         interactor.estimateOriginFee(
             for: amountValue,
-            recepient: getRecepientAccountId(),
-            weightLimit: crossChainFee?.weightLimit
+            recepient: getRecepientAccountId()
         )
     }
 
@@ -310,7 +309,6 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.interactor.submit(
                 amount: amountInPlank + crossChainFee.holdingPart,
                 recepient: strongSelf.recepientAccountAddress,
-                weightLimit: crossChainFee.weightLimit,
                 originFee: strongSelf.networkFee
             )
         }
@@ -330,11 +328,18 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 }
 
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
-    func didCompleteSubmition() {
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution) {
         view?.didStopLoading()
-        wireframe.complete(on: view, locale: selectedLocale) { [originChainAsset, transferCompletion] in
-            transferCompletion?(originChainAsset)
-        }
+
+        // Note: that transferCompletion is not called for delayed transfers
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: sender,
+            completionAction: .dismissWithPostNavigation { [originChainAsset, transferCompletion] in
+                transferCompletion?(originChainAsset)
+            },
+            locale: selectedLocale
+        )
     }
 }
 

@@ -1,12 +1,13 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 protocol AccountProviderFactoryProtocol {
     var operationManager: OperationManagerProtocol { get }
 
     func createStreambleProvider(
-        for accountId: AccountId
+        for accountId: AccountId,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<MetaAccountModel>
 }
 
@@ -26,11 +27,16 @@ final class AccountProviderFactory: AccountProviderFactoryProtocol {
     }
 
     func createStreambleProvider(
-        for accountId: AccountId
+        for accountId: AccountId,
+        chainId: ChainModel.Id
     ) -> StreamableProvider<MetaAccountModel> {
         let mapper = MetaAccountMapper()
 
-        let filter = NSPredicate.filterMetaAccountByAccountId(accountId)
+        let filter = NSPredicate.filterMetaAccount(
+            accountId: accountId,
+            chainId: chainId
+        )
+
         let repository: CoreDataRepository<MetaAccountModel, CDMetaAccount> = storageFacade
             .createRepository(
                 filter: filter,
@@ -51,7 +57,7 @@ final class AccountProviderFactory: AccountProviderFactoryProtocol {
                                 return false
                             }
 
-                            return chainAccount.accountId == hexAccountId
+                            return chainAccount.accountId == hexAccountId && chainAccount.chainId == chainId
                         }
                     ) ?? false
             }

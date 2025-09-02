@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct NftDetailsViewFactory {
     static func createView(from model: NftChainModel) -> NftDetailsViewProtocol? {
@@ -95,6 +95,14 @@ struct NftDetailsViewFactory {
                 nftMetadataService: nftMetadataService,
                 operationQueue: operationQueue
             )
+
+        case .unique:
+            return createUniqueInteractor(
+                from: nftChainModel,
+                accountRepository: AnyDataProviderRepository(accountRepository),
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
         case .none:
             return nil
         }
@@ -176,6 +184,21 @@ struct NftDetailsViewFactory {
             nftChainModel: nftChainModel,
             nftMetadataService: nftMetadataService,
             operationFactory: KodaDotNftOperationFactory(url: apiUrl),
+            accountRepository: accountRepository,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createUniqueInteractor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> (NftDetailsInteractor & NftDetailsInteractorInputProtocol)? {
+        UniqueDetailsInteractor(
+            nftChainModel: nftChainModel,
+            nftMetadataService: nftMetadataService,
+            operationFactory: UniqueNftOperationFactory(apiBase: UniqueScanApi.mainnet),
             accountRepository: accountRepository,
             operationQueue: operationQueue
         )

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 protocol KeyboardAdoptable: AnyObject {
     var keyboardHandler: KeyboardHandler? { get set }

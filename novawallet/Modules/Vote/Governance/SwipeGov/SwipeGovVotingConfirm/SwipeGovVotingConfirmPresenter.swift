@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
@@ -102,11 +102,12 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 // MARK: SwipeGovVotingConfirmInteractorOutputProtocol
 
 extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {
-    func didReceiveSuccessBatchVoting() {
+    func didReceiveSuccessBatchVoting(_ sender: ExtrinsicSenderResolution?) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(
             from: view,
+            sender: sender,
             completionAction: .dismissAllModals,
             locale: selectedLocale
         )

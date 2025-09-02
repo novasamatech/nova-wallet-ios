@@ -4,11 +4,12 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var stakingOption: Multistaking.ChainAssetOption { get }
     var chainRegistry: ChainRegistryProtocol { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
-    var accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol { get }
-    var collatorService: ParachainStakingCollatorServiceProtocol { get }
-    var rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol { get }
+    var accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol { get }
+    var collatorService: ParachainStakingCollatorServiceInterfaces { get }
+    var rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var preferredCollatorsProvider: PreferredValidatorsProviding { get }
     var logger: LoggerProtocol { get }
@@ -24,17 +25,18 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let stakingOption: Multistaking.ChainAssetOption
     let chainRegistry: ChainRegistryProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
-    let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol
+    let accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol
+    let collatorService: ParachainStakingCollatorServiceInterfaces
+    let rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
 
     private var globalRemoteSubscription: UUID?
-    private var accountRemoteSubscription: UUID?
+    private var accountRemoteSubscription: AccountRemoteSubscriptionModel?
 
     weak var sharedOperation: SharedOperationProtocol?
 
@@ -42,11 +44,12 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         stakingOption: Multistaking.ChainAssetOption,
         chainRegistry: ChainRegistryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
-        collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol,
+        accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol,
+        collatorService: ParachainStakingCollatorServiceInterfaces,
+        rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
+        stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
         logger: LoggerProtocol
@@ -59,6 +62,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         self.rewardCalculationService = rewardCalculationService
         self.blockTimeService = blockTimeService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.stakingRewardsLocalSubscriptionFactory = stakingRewardsLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.preferredCollatorsProvider = preferredCollatorsProvider
         self.logger = logger
@@ -80,9 +84,9 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         }
 
         if let accountId = accountId {
-            accountRemoteSubscription = accountRemoteSubscriptionService.attachToAccountData(
-                for: chainId,
-                accountId: accountId,
+            let chainAccountId = ChainAccountId(chainId: chainId, accountId: accountId)
+            let subscriptionId = accountRemoteSubscriptionService.attachToAccountData(
+                for: chainAccountId,
                 queue: .main
             ) { [weak self] result in
                 switch result {
@@ -91,6 +95,13 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
                 case let .failure(error):
                     self?.logger.error("Parachain account remote subscription failed: \(error)")
                 }
+            }
+
+            if let subscriptionId {
+                accountRemoteSubscription = AccountRemoteSubscriptionModel(
+                    subscriptionId: subscriptionId,
+                    chainAccountId: chainAccountId
+                )
             }
         }
 
@@ -111,10 +122,10 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
             )
         }
 
-        if let accountRemoteSubscription = accountRemoteSubscription {
-            globalRemoteSubscriptionService.detachFromGlobalData(
-                for: accountRemoteSubscription,
-                chainId: chainId,
+        if let accountRemoteSubscription {
+            accountRemoteSubscriptionService.detachFromAccountData(
+                for: accountRemoteSubscription.subscriptionId,
+                chainAccountId: accountRemoteSubscription.chainAccountId,
                 queue: nil,
                 closure: nil
             )

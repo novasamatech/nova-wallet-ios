@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 final class NominatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
     let chainAssetInfo: ChainAssetDisplayInfo

@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
     let wireframe: ParitySignerAddressesWireframeProtocol
@@ -52,7 +52,8 @@ extension ParitySignerAddressesPresenter: HardwareWalletAddressesPresenterProtoc
     }
 
     func proceed() {
-        guard let accountId = accountId else {
+        // PV supports only substrate now but evm will come soon
+        guard let accountId = addresses.first?.accountId else {
             return
         }
 
@@ -62,7 +63,12 @@ extension ParitySignerAddressesPresenter: HardwareWalletAddressesPresenterProtoc
 
 extension ParitySignerAddressesPresenter: ParitySignerAddressesInteractorOutputProtocol {
     func didReceive(accountId: AccountId) {
-        self.accountId = accountId
+        addresses = [
+            HardwareWalletAddressModel(
+                accountId: accountId,
+                scheme: .substrate
+            )
+        ]
 
         provideViewModel()
     }

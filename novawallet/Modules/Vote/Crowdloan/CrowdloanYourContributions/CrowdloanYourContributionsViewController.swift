@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class CrowdloanYourContributionsViewController: UIViewController, ViewHolder {
     typealias RootViewType = CrowdloanYourContributionsViewLayout

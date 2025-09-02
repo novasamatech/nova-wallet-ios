@@ -9,7 +9,7 @@ typealias XcmTransferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
 typealias XcmTransferCrosschainFeeClosure = (XcmTransferCrosschainFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
-    let txHash: String
+    let submittedModel: ExtrinsicSubmittedModel
     let callPath: CallCodingPath
 }
 
@@ -19,36 +19,19 @@ typealias XcmExtrinsicSubmitClosure = (XcmSubmitExtrinsicResult) -> Void
 protocol XcmTransferServiceProtocol {
     func estimateOriginFee(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferOriginFeeClosure
-    )
-
-    func estimateDestinationExecutionFee(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
-    )
-
-    func estimateReserveExecutionFee(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     // Note: weight of the result contains max between reserve and destination weights
     func estimateCrossChainFee(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     func submit(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmExtrinsicSubmitClosure
@@ -58,134 +41,41 @@ protocol XcmTransferServiceProtocol {
 extension XcmTransferService: XcmTransferServiceProtocol {
     func estimateOriginFee(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferOriginFeeClosure
     ) {
         do {
             let unweighted = request.unweighted
-            let maxWeight = request.maxWeight
 
-            let callBuilderWrapper = createTransferWrapper(
-                request: unweighted,
-                xcmTransfers: xcmTransfers,
-                maxWeight: maxWeight
+            let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
+                for: unweighted
             )
 
-            guard let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest()) else {
+            guard let chainAccount = wallet.fetch(for: unweighted.originChain.accountRequest()) else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
             let operationFactory = try createExtrinsicOperationFactory(
-                for: unweighted.origin.chain,
+                for: unweighted.originChain,
                 chainAccount: chainAccount
             )
 
             let feeWrapper = operationFactory.estimateFeeOperation({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
-                return try callClosure(builder)
+                let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                return try collector.addingToExtrinsic(builder: builder)
             }, payingIn: request.originFeeAsset)
 
             feeWrapper.addDependency(wrapper: callBuilderWrapper)
 
-            feeWrapper.targetOperation.completionBlock = {
-                switch feeWrapper.targetOperation.result {
-                case let .success(fee):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(fee))
-                case let .failure(error):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
+            let totalWrapper = feeWrapper.insertingHead(operations: callBuilderWrapper.allOperations)
 
-            let operations = callBuilderWrapper.allOperations + feeWrapper.allOperations
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func estimateDestinationExecutionFee(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
             )
 
-            let wrapper = createDestinationFeeWrapper(
-                for: feeMessages.destination,
-                request: request,
-                xcmTransfers: xcmTransfers
-            )
-
-            wrapper.targetOperation.completionBlock = {
-                switch wrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func estimateReserveExecutionFee(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
-
-            if let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
-
-                wrapper.targetOperation.completionBlock = {
-                    switch wrapper.targetOperation.result {
-                    case let .some(result):
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
-                }
-
-                operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-            } else {
-                callbackClosureIfProvided(
-                    completionClosure,
-                    queue: queue,
-                    result: .failure(XcmTransferServiceError.reserveFeeNotAvailable)
-                )
-            }
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
         }
@@ -193,94 +83,74 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
     func estimateCrossChainFee(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
+        let wrapper = crosschainFeeCalculator.crossChainFeeWrapper(
+            request: request
+        )
 
-            let executionFeeWrapper = createExecutionFeeWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                feeMessages: feeMessages
-            )
-
-            let deliveryFeeWrapper = createDeliveryFeeWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                feeMessages: feeMessages
-            )
-
-            let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
-                let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
-                let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
-
-                return XcmFeeModel.combine(executionFee, deliveryFee)
-            }
-
-            let dependencies = executionFeeWrapper.allOperations + deliveryFeeWrapper.allOperations
-
-            dependencies.forEach { mergeOperation.addDependency($0) }
-
-            mergeOperation.completionBlock = {
-                switch mergeOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mergeOperation], waitUntilFinished: false)
-
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: queue,
+            callbackClosure: completionClosure
+        )
     }
 
     func submit(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmExtrinsicSubmitClosure
     ) {
         do {
-            let callBuilderWrapper = createTransferWrapper(
-                request: request.unweighted,
-                xcmTransfers: xcmTransfers,
-                maxWeight: request.maxWeight
+            let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
+                for: request.unweighted
             )
 
-            guard let chainAccount = wallet.fetch(for: request.unweighted.origin.chain.accountRequest()) else {
+            guard let chainAccount = wallet.fetch(for: request.unweighted.originChain.accountRequest()) else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
             let operationFactory = try createExtrinsicOperationFactory(
-                for: request.unweighted.origin.chain,
+                for: request.unweighted.originChain,
                 chainAccount: chainAccount
             )
 
+            let verificationWrapper: CompoundOperationWrapper<Void> = if request.unweighted.metadata.isDynamicConfig {
+                submissionVerifier.createVerificationWrapper(
+                    for: request.unweighted,
+                    callOrigin: .system(.signed(chainAccount.accountId)),
+                    callClosure: {
+                        try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                    }
+                )
+            } else {
+                .createWithResult(())
+            }
+
+            verificationWrapper.addDependency(wrapper: callBuilderWrapper)
+
             let submitWrapper = operationFactory.submit({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
-                return try callClosure(builder)
+                // submit extrinsic only if verification passed
+                try verificationWrapper.targetOperation.extractNoCancellableResultData()
+
+                let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                return try collector.addingToExtrinsic(builder: builder)
             }, signer: signer, payingIn: request.originFeeAsset)
 
             submitWrapper.addDependency(wrapper: callBuilderWrapper)
+            submitWrapper.addDependency(wrapper: verificationWrapper)
 
             submitWrapper.targetOperation.completionBlock = {
                 do {
-                    let txHash = try submitWrapper.targetOperation.extractNoCancellableResultData()
-                    let callPath = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().1
-                    let extrinsicResult = XcmSubmitExtrinsic(txHash: txHash, callPath: callPath)
+                    let submittedModel = try submitWrapper.targetOperation.extractNoCancellableResultData()
+                    let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                    let extrinsicResult = XcmSubmitExtrinsic(
+                        submittedModel: submittedModel,
+                        callPath: collector.callPath
+                    )
 
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .success(extrinsicResult))
                 } catch {
@@ -288,7 +158,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 }
             }
 
-            let operations = callBuilderWrapper.allOperations + submitWrapper.allOperations
+            let operations = callBuilderWrapper.allOperations + verificationWrapper.allOperations +
+                submitWrapper.allOperations
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {

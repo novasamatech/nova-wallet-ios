@@ -9,7 +9,38 @@ enum UrlHandlingScreen {
     case staking
     case gov(Referenda.ReferendumIndex)
     case dApp(DAppNavigation)
+    case card(PayCardNavigation?)
     case error(UrlHandlingScreenError)
+}
+
+extension UrlHandlingScreen {
+    init?(pendingLink: URLHandlingPendingLink) {
+        switch pendingLink {
+        case .staking:
+            self = .staking
+        case let .governance(referendumIndex):
+            self = .gov(referendumIndex)
+        case let .dApp(url):
+            self = .dApp(.init(url: url))
+        case let .card(provider):
+            self = .card(.init(rawValue: provider ?? ""))
+        }
+    }
+
+    var pendingLink: URLHandlingPendingLink? {
+        switch self {
+        case .staking:
+            .staking
+        case let .gov(referendumIndex):
+            .governance(referendumIndex)
+        case let .dApp(navigation):
+            .dApp(navigation.url)
+        case let .card(navigation):
+            .card(navigation?.rawValue)
+        case .error:
+            nil
+        }
+    }
 }
 
 enum UrlHandlingScreenError {
@@ -43,24 +74,29 @@ final class ScreenOpenService {
 
     let logger: LoggerProtocol
     let parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol
+    let pendingLinkStore: URLHandlingStoreProtocol
     let validators: [URLActivityValidator]
 
     init(
         parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol,
+        pendingLinkStore: URLHandlingStoreProtocol,
         logger: LoggerProtocol,
         validators: [URLActivityValidator]
     ) {
         self.parsingFactory = parsingFactory
+        self.pendingLinkStore = pendingLinkStore
         self.logger = logger
         self.validators = validators
+
+        restorePendingScreen()
     }
 }
 
 extension ScreenOpenService {
     struct ActivityValidator: URLActivityValidator {
         func validate(_ url: URL) -> Bool {
-            let deeplinkHost = "nova"
-            let applinkHost = ApplicationConfig.shared.universalLinkURL.host
+            let deeplinkHost = ApplicationConfig.shared.deepLinkHost
+            let applinkHost = ApplicationConfig.shared.internalUniversalLinkURL.host
 
             guard url.host == deeplinkHost || url.host == applinkHost else {
                 return false
@@ -68,6 +104,31 @@ extension ScreenOpenService {
 
             return true
         }
+    }
+}
+
+private extension ScreenOpenService {
+    func restorePendingScreen() {
+        if let pendingLink = pendingLinkStore.getPendingLink() {
+            pendingScreen = UrlHandlingScreen(pendingLink: pendingLink)
+        }
+    }
+
+    func save(preparedScreen: UrlHandlingScreen) {
+        do {
+            if let pendingLink = preparedScreen.pendingLink {
+                try pendingLinkStore.save(pendingLink: pendingLink)
+            } else {
+                pendingLinkStore.clearPendingLink()
+            }
+        } catch {
+            logger.error("Screen pending deep link save failed")
+        }
+    }
+
+    func markPendingScreenConsumed() {
+        pendingScreen = nil
+        pendingLinkStore.clearPendingLink()
     }
 }
 
@@ -98,15 +159,17 @@ extension ScreenOpenService: ScreenOpenServiceProtocol {
             let screen: UrlHandlingScreen
             switch result {
             case let .success(preparedScreen):
+                self?.save(preparedScreen: preparedScreen)
                 screen = preparedScreen
             case let .failure(error):
                 self?.logger.error("error occurs: \(error) while parse url: \(url.absoluteString)")
+                self?.pendingLinkStore.clearPendingLink()
                 screen = .error(.deeplink(error))
             }
 
             DispatchQueue.main.async {
                 if let delegate = self?.delegate {
-                    self?.pendingScreen = nil
+                    self?.markPendingScreenConsumed()
                     delegate.didAskScreenOpen(screen)
                 } else {
                     self?.pendingScreen = screen
@@ -119,7 +182,7 @@ extension ScreenOpenService: ScreenOpenServiceProtocol {
     func consumePendingScreenOpen() -> UrlHandlingScreen? {
         let screen = pendingScreen
 
-        pendingScreen = nil
+        markPendingScreenConsumed()
 
         return screen
     }

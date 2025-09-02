@@ -1,6 +1,6 @@
 import Operation_iOS
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 import BigInt
 
 class CommonHandler {
@@ -104,28 +104,21 @@ extension CommonHandler {
         )
     }
 
-    func targetWalletName(
+    func targetWallet(
         for address: AccountAddress?,
-        chainId: ChainModel.Id,
-        wallets: [Web3Alert.LocalWallet],
+        chain: ChainModel,
         metaAccounts: [MetaAccountModel]
-    ) -> String? {
-        guard let address = address, wallets.count > 1 else {
+    ) -> MetaAccountModel? {
+        guard let accountId = try? address?.toAccountId() else {
             return nil
         }
 
-        guard let targetWallet = wallets.first(where: {
-            if let specificAddress = $0.model.chainSpecific[chainId] {
-                return specificAddress == address
-            } else {
-                return $0.model.baseSubstrate == address ||
-                    $0.model.baseEthereum == address
-            }
-        }) else {
-            return nil
-        }
+        let chainRequest = chain.accountRequest()
 
-        return metaAccounts.first(where: { $0.metaId == targetWallet.metaId })?.name
+        return metaAccounts
+            .filter { $0.fetchByAccountId(accountId, request: chainRequest) != nil }
+            .sorted { $0.type.signingDelegateOrder < $1.type.signingDelegateOrder }
+            .first
     }
 
     func walletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {

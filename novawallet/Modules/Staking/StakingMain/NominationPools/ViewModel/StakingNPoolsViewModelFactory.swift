@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 struct StakingNPoolsViewModelParams {
@@ -84,6 +84,9 @@ final class StakingNPoolsViewModelFactory {
         }
 
         switch onchainState {
+        case .activeIndependent:
+            // we should be here as pool currently still need to consult offchain storage for activity
+            return .active
         case .active:
             // we previously found that pool id still not in active pools list and not waiting
             return .inactive
@@ -151,7 +154,11 @@ final class StakingNPoolsViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: params.eraCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: params.eraCountdown,
+            items: viewModels,
+            canCancelUnbonding: false
+        )
     }
 
     private func createRewardsViewModel(

@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumDetailsViewLayout
@@ -32,9 +32,16 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigationItem()
         setupHandlers()
 
         presenter.setup()
+    }
+
+    private func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = rootView.shareButton
+        rootView.shareButton.target = self
+        rootView.shareButton.action = #selector(actionShare)
     }
 
     private func setupHandlers() {
@@ -107,6 +114,10 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         presenter.showAbstainVoters()
     }
 
+    @objc private func actionShare() {
+        presenter.share()
+    }
+
     @objc private func actionDApp(_ sender: UIControl) {
         guard
             let cell = sender as? ReferendumDAppCellView,
@@ -153,12 +164,13 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     }
 
     func didReceive(trackTagsModel: TrackTagsView.Model?) {
-        let barButtonItem: UIBarButtonItem? = trackTagsModel.map {
-            let trackTagsView = TrackTagsView()
-            trackTagsView.bind(viewModel: $0)
-            return .init(customView: trackTagsView)
+        let view = trackTagsModel.map {
+            let tracksTagsView = TrackTagsView()
+            tracksTagsView.bind(viewModel: $0)
+            return tracksTagsView
         }
-        navigationItem.setRightBarButton(barButtonItem, animated: true)
+
+        navigationItem.titleView = view
     }
 
     func didReceive(shouldHideFullDetails: Bool) {

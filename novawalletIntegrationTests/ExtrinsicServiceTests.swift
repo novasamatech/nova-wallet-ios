@@ -1,7 +1,7 @@
 import XCTest
-import SoraKeystore
+import Keystore_iOS
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 @testable import novawallet
 import Operation_iOS
 
@@ -82,9 +82,7 @@ class ExtrinsicServiceTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         let extrinsicService = ExtrinsicService(
@@ -92,6 +90,7 @@ class ExtrinsicServiceTests: XCTestCase {
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
@@ -165,9 +164,7 @@ class ExtrinsicServiceTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         let extrinsicService = ExtrinsicService(
@@ -175,6 +172,7 @@ class ExtrinsicServiceTests: XCTestCase {
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,

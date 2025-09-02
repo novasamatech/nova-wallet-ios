@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct SwipeGovViewFactory {
@@ -47,6 +47,7 @@ struct SwipeGovViewFactory {
             viewModelFactory: viewModelFactory,
             cardsViewModelFactory: cardsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             utilityAssetInfo: assetInfo,
             localizationManager: localizationManager
         )

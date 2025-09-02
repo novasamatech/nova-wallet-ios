@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class SwapNetworkFeeViewCell: RowView<NetworkFeeInfoView>, StackTableViewCellProtocol {
     var titleButton: RoundedButton { rowContentView.titleView }

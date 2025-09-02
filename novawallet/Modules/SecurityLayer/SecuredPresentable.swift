@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol SecuredPresentable: AnyObject {
     func securePresentingView(animated: Bool)

@@ -74,6 +74,8 @@
 	<string>Camera is used to scan QR codes with addresses, Polkadot Vault transactions, or connect via WalletConnect</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is used to authorize in Nova Wallet</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone is used for KYC media session</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save transfer request as a qr code</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -133,5 +135,17 @@
 	<string>Dark</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>branch_key</key>
+	<dict>
+		<key>live</key>
+		<string>key_live_dsxlmUqNhbtOYX6e7cfgrpkbqsjGPYBf</string>
+		<key>test</key>
+		<string>key_test_fyzebSFUdjxVW3Wi6opkwlgayukUP8d7</string>
+	</dict>
+	<key>branch_universal_link_domains</key>
+	<array>
+		<string>wdeqe.test-app.link</string>
+		<string>nova-wallet.app.link</string>
+	</array>
 </dict>
 </plist>

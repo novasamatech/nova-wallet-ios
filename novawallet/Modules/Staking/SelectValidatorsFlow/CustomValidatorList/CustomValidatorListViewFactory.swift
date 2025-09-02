@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 enum CustomValidatorListViewFactory {
     private static func createView(

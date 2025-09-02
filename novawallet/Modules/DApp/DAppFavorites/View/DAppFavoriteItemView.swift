@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol DAppFavoriteItemViewDelegate: AnyObject {
     func didTapFavoriteButton(_ itemId: String)

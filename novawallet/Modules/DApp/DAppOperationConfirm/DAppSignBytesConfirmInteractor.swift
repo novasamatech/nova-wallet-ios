@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
@@ -44,6 +44,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountResponse.accountId,
             chainAddress: chainAddress,
+            feeAsset: nil,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )

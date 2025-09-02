@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 protocol StakingUnbondingsViewDelegate: AnyObject {
     func stakingUnbondingViewDidCancel(_ view: StakingUnbondingsView)
@@ -104,6 +104,8 @@ final class StakingUnbondingsView: UIView {
         }
 
         self.viewModel = viewModel
+
+        canCancel = viewModel.canCancelUnbonding
 
         updateTimer()
 

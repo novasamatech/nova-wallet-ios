@@ -1,4 +1,5 @@
 import Foundation
+import WebKit
 
 struct DAppBrowserScript {
     enum InsertionPoint {
@@ -8,4 +9,15 @@ struct DAppBrowserScript {
 
     let content: String
     let insertionPoint: InsertionPoint
+}
+
+extension DAppBrowserScript.InsertionPoint {
+    var wkInsertionPoint: WKUserScriptInjectionTime {
+        switch self {
+        case .atDocStart:
+            return .atDocumentStart
+        case .atDocEnd:
+            return .atDocumentEnd
+        }
+    }
 }

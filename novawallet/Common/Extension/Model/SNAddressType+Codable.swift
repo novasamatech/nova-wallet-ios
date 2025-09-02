@@ -1,4 +1,4 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 extension SNAddressType: Codable {}

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol SharedStatusPresenterDelegate: AnyObject {
     func didTapSharedStatusView()
@@ -152,7 +152,7 @@ extension SharedStatusPresenter {
     }
 
     func hide() {
-        guard let sharedView = sharedView else {
+        guard sharedView != nil else {
             return
         }
 

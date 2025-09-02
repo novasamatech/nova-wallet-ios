@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 protocol ExtrinsicServiceProtocol {
     func estimateFee(
@@ -67,7 +67,7 @@ protocol ExtrinsicServiceProtocol {
         payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping ExtrinsicSubmitClosure
+        completion completionClosure: @escaping ExtrinsicBuiltClosure
     )
 }
 
@@ -212,14 +212,13 @@ extension ExtrinsicServiceProtocol {
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn chainAssetId: ChainAssetId? = nil,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping ExtrinsicSubmitClosure
+        completion completionClosure: @escaping ExtrinsicBuiltClosure
     ) {
         buildExtrinsic(
             closure,
-            payingIn: chainAssetId,
+            payingIn: nil,
             signer: signer,
             runningIn: queue,
             completion: completionClosure
@@ -236,8 +235,9 @@ final class ExtrinsicService {
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
     ) {
@@ -248,6 +248,7 @@ final class ExtrinsicService {
             engine: engine,
             feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
@@ -257,18 +258,22 @@ final class ExtrinsicService {
     }
 
     private func submitAndSubscribe(
-        extrinsic: String,
+        builtExtrinsic: ExtrinsicBuiltModel,
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
         notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
     ) {
         do {
+            let extrinsic = builtExtrinsic.extrinsic
             let extrinsicHash = try Data(hexString: extrinsic).blake2b32().toHex(includePrefix: true)
             let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { update in
                 let status = update.params.result
-                let model = ExtrinsicStatusUpdate(
-                    extrinsicHash: extrinsicHash,
-                    extrinsicStatus: status
+                let model = ExtrinsicSubscribedStatusModel(
+                    statusUpdate: ExtrinsicStatusUpdate(
+                        extrinsicHash: extrinsicHash,
+                        extrinsicStatus: status
+                    ),
+                    sender: builtExtrinsic.sender
                 )
 
                 queue.async {
@@ -531,9 +536,9 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         extrinsicWrapper.targetOperation.completionBlock = { [weak self] in
             queue.async {
                 do {
-                    let extrinsic = try extrinsicWrapper.targetOperation.extractNoCancellableResultData()
+                    let model = try extrinsicWrapper.targetOperation.extractNoCancellableResultData()
                     self?.submitAndSubscribe(
-                        extrinsic: extrinsic,
+                        builtExtrinsic: model,
                         runningIn: queue,
                         subscriptionIdClosure: subscriptionIdClosure,
                         notificationClosure: notificationClosure
@@ -556,7 +561,7 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping (Result<String, Error>) -> Void
+        completion completionClosure: @escaping ExtrinsicBuiltClosure
     ) {
         let extrinsicOperation = operationFactory.buildExtrinsic(
             closure,

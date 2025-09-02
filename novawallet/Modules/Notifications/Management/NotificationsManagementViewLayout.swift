@@ -25,8 +25,16 @@ final class NotificationsManagementViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 106))
-        tableView.contentInset = .init(top: 16, left: 0, bottom: 8, right: 0)
+        footerView.bounds = CGRect(
+            origin: .zero,
+            size: CGSize(width: bounds.width, height: 106)
+        )
+        tableView.contentInset = .init(
+            top: 16,
+            left: 0,
+            bottom: 8,
+            right: 0
+        )
     }
 
     private func setupLayout() {

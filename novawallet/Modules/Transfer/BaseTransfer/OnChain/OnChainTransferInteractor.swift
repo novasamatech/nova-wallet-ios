@@ -78,102 +78,84 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchAssetExistence(
-        for assetStorageInfo: AssetStorageInfo,
-        completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
+    override func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
-        let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
-            for: assetStorageInfo,
-            chainId: chain.chainId,
-            asset: asset
-        )
+        switch result {
+        case let .success(optBalance):
+            let balance = optBalance ??
+                AssetBalance.createZero(
+                    for: ChainAssetId(chainId: chainId, assetId: assetId),
+                    accountId: accountId
+                )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async {
-                do {
-                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
-                    completionClosure(.success(assetExistence))
-                } catch {
-                    completionClosure(.failure(error))
+            if accountId == selectedAccount.accountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetSenderBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetSenderBalance(balance)
+                }
+            } else if accountId == recepientAccountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetRecepientBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetRecepientBalance(balance)
                 }
             }
+        case .failure:
+            presenter?.didReceiveError(CommonError.databaseSubscription)
         }
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func createAssetExtractionWrapper() -> CompoundOperationWrapper<(AssetStorageInfo, AssetStorageInfo?)> {
-        let sendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: asset,
-            runtimeProvider: runtimeService
-        )
+    func addingTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        guard let sendingAssetInfo = sendingAssetInfo else {
+            return (builder, nil)
+        }
 
-        var dependencies = sendingAssetWrapper.allOperations
-
-        let utilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
-
-        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
-            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-                from: utilityAsset,
-                runtimeProvider: runtimeService
+        switch sendingAssetInfo {
+        case let .orml(info), let .ormlHydrationEvm(info):
+            return try addingOrmlTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                tokenStorageInfo: info
             )
-
-            utilityAssetWrapper = wrapper
-
-            dependencies.append(contentsOf: wrapper.allOperations)
-        } else {
-            utilityAssetWrapper = nil
-        }
-
-        let mergeOperation = ClosureOperation<(AssetStorageInfo, AssetStorageInfo?)> {
-            let sending = try sendingAssetWrapper.targetOperation.extractNoCancellableResultData()
-            let utility = try utilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
-
-            return (sending, utility)
-        }
-
-        dependencies.forEach { mergeOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
-    }
-
-    private func continueSetup() {
-        feeProxy.delegate = self
-
-        setupSendingAssetBalanceProvider()
-        setupUtilityAssetBalanceProviderIfNeeded()
-        setupSendingAssetPriceProviderIfNeeded()
-        setupUtilityAssetPriceProviderIfNeeded()
-
-        provideMinBalance()
-
-        presenter?.didCompleteSetup()
-    }
-
-    private func provideMinBalance() {
-        if let sendingAssetInfo = sendingAssetInfo {
-            fetchAssetExistence(for: sendingAssetInfo) { [weak self] result in
-                switch result {
-                case let .success(existence):
-                    self?.presenter?.didReceiveSendingAssetExistence(existence)
-                case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
-                }
-            }
-        }
-
-        if let utilityAssetInfo = utilityAssetInfo {
-            fetchAssetExistence(for: utilityAssetInfo) { [weak self] result in
-                switch result {
-                case let .success(existence):
-                    self?.presenter?.didReceiveUtilityAssetMinBalance(existence.minBalance)
-                case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
-                }
-            }
+        case let .statemine(info):
+            return try addingAssetsTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                info: info
+            )
+        case let .native(info):
+            return try addingNativeTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                info: info
+            )
+        case let .equilibrium(extras):
+            return try addingEquilibriumTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                extras: extras
+            )
+        case .erc20, .evmNative:
+            // we have a separate flow for evm
+            return (builder, nil)
         }
     }
+}
 
+private extension OnChainTransferInteractor {
     func addingOrmlTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -317,57 +299,109 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
-    func addingTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        guard let sendingAssetInfo = sendingAssetInfo else {
-            return (builder, nil)
+    func fetchAssetExistence(
+        for assetStorageInfo: AssetStorageInfo,
+        completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
+    ) {
+        let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
+            for: assetStorageInfo,
+            chainId: chain.chainId,
+            asset: asset
+        )
+
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(.success(assetExistence))
+                } catch {
+                    completionClosure(.failure(error))
+                }
+            }
         }
 
-        switch sendingAssetInfo {
-        case let .orml(info):
-            return try addingOrmlTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                tokenStorageInfo: info
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func createAssetExtractionWrapper() -> CompoundOperationWrapper<(AssetStorageInfo, AssetStorageInfo?)> {
+        let sendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: asset,
+            runtimeProvider: runtimeService
+        )
+
+        var dependencies = sendingAssetWrapper.allOperations
+
+        let utilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+
+        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
+            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                from: utilityAsset,
+                runtimeProvider: runtimeService
             )
-        case let .statemine(info):
-            return try addingAssetsTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .native(info):
-            return try addingNativeTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .equilibrium(extras):
-            return try addingEquilibriumTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                extras: extras
-            )
-        case .erc20, .evmNative:
-            // we have a separate flow for evm
-            return (builder, nil)
+
+            utilityAssetWrapper = wrapper
+
+            dependencies.append(contentsOf: wrapper.allOperations)
+        } else {
+            utilityAssetWrapper = nil
+        }
+
+        let mergeOperation = ClosureOperation<(AssetStorageInfo, AssetStorageInfo?)> {
+            let sending = try sendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+            let utility = try utilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return (sending, utility)
+        }
+
+        dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
+
+    func continueSetup() {
+        feeProxy.delegate = self
+
+        setupSendingAssetBalanceProvider()
+        setupUtilityAssetBalanceProviderIfNeeded()
+        setupSendingAssetPriceProviderIfNeeded()
+        setupUtilityAssetPriceProviderIfNeeded()
+
+        provideMinBalance()
+
+        presenter?.didCompleteSetup()
+    }
+
+    func provideMinBalance() {
+        if let sendingAssetInfo = sendingAssetInfo {
+            fetchAssetExistence(for: sendingAssetInfo) { [weak self] result in
+                switch result {
+                case let .success(existence):
+                    self?.presenter?.didReceiveSendingAssetExistence(existence)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        if let utilityAssetInfo = utilityAssetInfo {
+            fetchAssetExistence(for: utilityAssetInfo) { [weak self] result in
+                switch result {
+                case let .success(existence):
+                    self?.presenter?.didReceiveUtilityAssetMinBalance(existence.minBalance)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
         }
     }
 
-    private func cancelSetupCall() {
+    func cancelSetupCall() {
         let cancellingCall = setupCall
         setupCall = nil
         cancellingCall?.cancel()
     }
 
-    private func subscribeUtilityRecepientAssetBalance() {
+    func subscribeUtilityRecepientAssetBalance() {
         guard
             let utilityAssetInfo = utilityAssetInfo,
             let recepientAccountId = recepientAccountId,
@@ -390,7 +424,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         )
     }
 
-    private func subscribeSendingRecepientAssetBalance() {
+    func subscribeSendingRecepientAssetBalance() {
         guard
             let sendingAssetInfo = sendingAssetInfo,
             let recepientAccountId = recepientAccountId,
@@ -412,7 +446,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         )
     }
 
-    private func clearSendingAssetRemoteRecepientSubscription() {
+    func clearSendingAssetRemoteRecepientSubscription() {
         guard
             let sendingAssetInfo = sendingAssetInfo,
             let recepientAccountId = recepientAccountId,
@@ -431,12 +465,12 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         self.sendingAssetSubscriptionId = nil
     }
 
-    private func clearSendingAssetLocaleRecepientSubscription() {
+    func clearSendingAssetLocaleRecepientSubscription() {
         recepientSendingAssetProvider?.removeObserver(self)
         recepientSendingAssetProvider = nil
     }
 
-    private func clearUtilityAssetRemoteRecepientSubscriptions() {
+    func clearUtilityAssetRemoteRecepientSubscriptions() {
         guard
             let utilityAssetInfo = utilityAssetInfo,
             let recepientAccountId = recepientAccountId,
@@ -456,41 +490,9 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         self.utilityAssetSubscriptionId = nil
     }
 
-    private func clearUtilityAssetLocaleRecepientSubscriptions() {
+    func clearUtilityAssetLocaleRecepientSubscriptions() {
         recepientUtilityAssetProvider?.removeObserver(self)
         recepientUtilityAssetProvider = nil
-    }
-
-    override func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(optBalance):
-            let balance = optBalance ??
-                AssetBalance.createZero(
-                    for: ChainAssetId(chainId: chainId, assetId: assetId),
-                    accountId: accountId
-                )
-
-            if accountId == selectedAccount.accountId {
-                if asset.assetId == assetId {
-                    presenter?.didReceiveSendingAssetSenderBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
-                    presenter?.didReceiveUtilityAssetSenderBalance(balance)
-                }
-            } else if accountId == recepientAccountId {
-                if asset.assetId == assetId {
-                    presenter?.didReceiveSendingAssetRecepientBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
-                    presenter?.didReceiveUtilityAssetRecepientBalance(balance)
-                }
-            }
-        case .failure:
-            presenter?.didReceiveError(CommonError.databaseSubscription)
-        }
     }
 }
 

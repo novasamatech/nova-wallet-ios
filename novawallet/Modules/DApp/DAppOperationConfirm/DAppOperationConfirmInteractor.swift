@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     struct SignatureResult {
@@ -19,9 +19,11 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let runtimeProvider: RuntimeProviderProtocol
     let metadataHashFactory: MetadataHashOperationFactoryProtocol
     let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
+    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
+    var feeAsset: ChainAsset?
 
     var priceProvider: StreamableProvider<PriceData>?
     let feeCancellable = CancellableCallStore()
@@ -35,6 +37,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         connection: JSONRPCEngine,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         metadataHashFactory: MetadataHashOperationFactoryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -46,6 +49,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.connection = connection
         self.signingWrapperFactory = signingWrapperFactory
         self.metadataHashFactory = metadataHashFactory
+        self.userStorageFacade = userStorageFacade
         priceLocalSubscriptionFactory = priceProviderFactory
         self.operationQueue = operationQueue
         super.init()
@@ -92,14 +96,23 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
             chain: chain,
             runtimeProvider: runtimeProvider,
             connection: connection,
-            metadataHashOperationFactory: metadataHashFactory
+            feeRegistry: feeEstimationRegistry,
+            metadataHashOperationFactory: metadataHashFactory,
+            senderResolvingFactory: ExtrinsicSenderResolutionFactory(
+                chainAccount: result.account,
+                chain: chain,
+                userStorageFacade: userStorageFacade
+            )
         )
+
+        feeAsset = result.feeAsset
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: result.account.accountId,
             chainAddress: result.account.toAddress() ?? "",
+            feeAsset: feeAsset,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )
@@ -113,7 +126,9 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<SignatureResult> {
-        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data, context in
+        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper(
+            payingFeeIn: feeAsset?.chainAssetId
+        ) { data, context in
             try signer.sign(data, context: context).rawData()
         }
 

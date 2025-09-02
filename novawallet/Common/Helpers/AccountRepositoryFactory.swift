@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 protocol AccountRepositoryFactoryProtocol {
@@ -19,7 +19,7 @@ protocol AccountRepositoryFactoryProtocol {
 
     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>
 
-    func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>
+    func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -100,8 +100,8 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
-        let mapper = ProxiedSettingsMapper()
+    func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings> {
+        let mapper = DelegatedAccountSettingsMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(repository)
     }

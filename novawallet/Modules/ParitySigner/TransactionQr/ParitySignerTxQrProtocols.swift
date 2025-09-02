@@ -1,26 +1,29 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletAccountViewModel)
-    func didReceiveCode(viewModel: QRImageViewModel)
-    func didReceiveExpiration(viewModel: ExpirationTimeViewModel)
+    func didReceiveCode(viewModel: QRImageViewModel?)
+    func didReceiveQrFormat(viewModel: ParitySignerTxFormatViewModel)
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel?)
 }
 
 protocol ParitySignerTxQrPresenterProtocol: AnyObject {
     func setup(qrSize: CGSize)
     func activateAddressDetails()
     func activateTroubleshouting()
+    func toggleExtrinsicFormat()
     func proceed()
     func close()
 }
 
 protocol ParitySignerTxQrInteractorInputProtocol: AnyObject {
-    func setup(qrSize: CGSize)
+    func setup()
+    func generateQr(with format: ParitySignerQRFormat, qrSize: CGSize)
 }
 
 protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
-    func didReceive(chainWallet: ChainWalletDisplayAddress)
+    func didCompleteSetup(model: ParitySignerTxQrSetupModel)
     func didReceive(transactionCode: TransactionDisplayCode)
     func didReceive(error: Error)
 }
@@ -32,8 +35,7 @@ protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable,
     func proceed(
         from view: ParitySignerTxQrViewProtocol?,
         accountId: AccountId,
-        type: ParitySignerType,
-        timer: CountdownTimerMediating,
+        timer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     )
 }

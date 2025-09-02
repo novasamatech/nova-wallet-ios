@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol CrowdloanContributionConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
@@ -23,12 +23,11 @@ protocol CrowdloanContributionConfirmInteractorInputProtocol: CrowdloanContribut
 }
 
 protocol CrowdloanContributionConfirmInteractorOutputProtocol: CrowdloanContributionInteractorOutputProtocol {
-    func didSubmitContribution(result: Result<String, Error>)
+    func didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)
     func didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)
     func didReceiveRewardDestinationAddress(_ address: AccountAddress)
 }
 
 protocol CrowdloanContributionConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CrowdloanErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: CrowdloanContributionConfirmViewProtocol?)
-}
+    CrowdloanErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

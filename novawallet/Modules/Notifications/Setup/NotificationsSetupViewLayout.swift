@@ -1,9 +1,9 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class NotificationsSetupViewLayout: UIView {
     let titleImage: UIImageView = .create {
-        $0.image = R.image.iconNotiifcationRing()
+        $0.image = R.image.iconNotificationRing()
     }
 
     let titleLabel: UILabel = .create {

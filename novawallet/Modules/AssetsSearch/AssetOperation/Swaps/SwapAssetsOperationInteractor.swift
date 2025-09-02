@@ -1,5 +1,5 @@
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
@@ -15,7 +15,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
 
     private var builder: SpendAssetSearchBuilder?
     private var reachabilityCallStore = CancellableCallStore()
-    private var reachability: AssetsExchageGraphReachabilityProtocol?
+    private var matchingAssets: Set<ChainAssetId>?
 
     private var assetExchangeService: AssetsExchangeServiceProtocol?
 
@@ -42,7 +42,16 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             return
         }
 
-        let wrapper = assetExchangeService.fetchReachibilityWrapper()
+        let wrapper = switch selectionModel {
+        case let .payForAsset(chainAsset):
+            assetExchangeService.fetchAssetsInWrapper(
+                given: chainAsset?.chainAssetId
+            )
+        case let .receivePayingWith(chainAsset):
+            assetExchangeService.fetchAssetsOutWrapper(
+                given: chainAsset?.chainAssetId
+            )
+        }
 
         executeCancellable(
             wrapper: wrapper,
@@ -51,10 +60,9 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(reachibility):
-                self?.reachability = reachibility
+            case let .success(matchingAssets):
+                self?.matchingAssets = matchingAssets
                 self?.builder?.reload()
-                self?.presenter?.directionsLoaded()
             case let .failure(error):
                 self?.presenter?.didReceive(error: .directions(error))
             }
@@ -66,30 +74,11 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
         searchQueue.maxConcurrentOperationCount = 1
 
         let filter: ChainAssetsFilter = { [weak self] chainAsset in
-            guard let self, let reachability else {
+            guard let self, let matchingAssets else {
                 return false
             }
 
-            switch selectionModel {
-            case let .payForAsset(receiveAsset):
-                let assetsOut = reachability.getAssetsOut(for: chainAsset.chainAssetId)
-
-                if let receiveAsset {
-                    return assetsOut.contains(receiveAsset.chainAssetId)
-                } else {
-                    return !assetsOut.isEmpty
-                }
-
-            case let .receivePayingWith(payAsset):
-                let assetsIn = reachability.getAssetsIn(for: chainAsset.chainAssetId)
-
-                if let payAsset {
-                    return assetsIn.contains(payAsset.chainAssetId)
-
-                } else {
-                    return !assetsIn.isEmpty
-                }
-            }
+            return matchingAssets.contains(chainAsset.chainAssetId)
         }
 
         builder = .init(
@@ -101,6 +90,9 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)
+
+                let hasNoDirections = self?.matchingAssets?.isEmpty ?? true
+                self?.presenter?.didUpdate(hasDirections: !hasNoDirections)
             },
             operationQueue: searchQueue,
             logger: logger

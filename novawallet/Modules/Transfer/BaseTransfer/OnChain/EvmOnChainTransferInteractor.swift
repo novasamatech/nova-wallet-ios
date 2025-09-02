@@ -126,7 +126,7 @@ extension EvmOnChainTransferInteractor {
             transferType = .native
 
             continueSetup()
-        } else if let address = asset.typeExtras?.stringValue, (try? address.toEthereumAccountId()) != nil {
+        } else if let address = asset.evmContractAddress, (try? address.toEthereumAccountId()) != nil {
             transferType = .erc20(address)
 
             continueSetup()
@@ -206,7 +206,7 @@ extension EvmOnChainTransferInteractor: EvmTransactionFeeProxyDelegate {
             lastFeeModel = model
 
             let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
-            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: 0)
+            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
             let feeModel = FeeOutputModel(value: feeValue, validationProvider: validationProvider)
             presenter?.didReceiveFee(result: .success(feeModel))
         case let .failure(error):

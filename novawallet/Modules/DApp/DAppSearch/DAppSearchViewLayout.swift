@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppSearchViewLayout: UIView {
     let searchBar = CustomSearchBar()
@@ -46,19 +46,27 @@ final class DAppSearchViewLayout: UIView {
         addSubview(tableView)
 
         categoriesView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(safeAreaLayoutGuide).inset(Constants.categoriesViewVerticalInset)
             make.height.equalTo(DAppCategoriesView.preferredHeight)
             make.leading.trailing.equalToSuperview()
         }
 
         topBackgroundView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(categoriesView)
+            make.bottom.equalTo(categoriesView).inset(-Constants.categoriesViewVerticalInset)
         }
 
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(categoriesView.snp.bottom)
+            make.top.equalTo(topBackgroundView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+}
+
+// Constants
+
+private extension DAppSearchViewLayout {
+    enum Constants {
+        static let categoriesViewVerticalInset: CGFloat = 8.0
     }
 }

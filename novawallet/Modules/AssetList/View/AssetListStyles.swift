@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 extension RoundedView.Style {
     static let shadowedNft = RoundedView.Style(

@@ -1,8 +1,8 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 struct LedgerAccountConfirmationViewFactory {
     static func createAddAccountView(
@@ -92,7 +92,9 @@ struct LedgerAccountConfirmationViewFactory {
             wireframe: wireframe
         )
     }
+}
 
+private extension LedgerAccountConfirmationViewFactory {
     static func createView(
         chain: ChainModel,
         device: LedgerDeviceProtocol,
@@ -112,6 +114,7 @@ struct LedgerAccountConfirmationViewFactory {
             wireframe: wireframe,
             chain: chain,
             deviceName: device.name,
+            deviceModel: device.model,
             tokenFormatter: tokenFormatter,
             localizationManager: LocalizationManager.shared
         )

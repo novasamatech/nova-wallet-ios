@@ -58,6 +58,12 @@ struct PolkadotExtensionExtrinsic: Codable {
     let metadataHash: String?
 
     /**
+     *   Asset id to pay fee with
+     */
+
+    let assetId: String?
+
+    /**
      *   Whether transaction modification is allowed
      */
     let withSignedTransaction: Bool?

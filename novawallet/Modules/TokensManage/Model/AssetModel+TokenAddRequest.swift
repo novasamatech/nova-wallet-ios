@@ -16,8 +16,9 @@ extension AssetModel {
             priceId: priceId,
             stakings: nil,
             type: AssetType.evmAsset.rawValue,
-            typeExtras: JSON.stringValue(request.contractAddress),
+            typeExtras: AssetTypeExtras.createFrom(evmContractAddress: request.contractAddress),
             buyProviders: nil,
+            sellProviders: nil,
             enabled: true,
             source: .user
         )

@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkYieldBoostStartPresenter {
     weak var view: ParaStkYieldBoostStartViewProtocol?
@@ -248,10 +248,15 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutpu
         }
     }
 
-    func didScheduleYieldBoost(for _: String) {
+    func didScheduleYieldBoost(for model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: model.sender,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 
     func didReceiveConfirmation(error: ParaStkYieldBoostStartError) {

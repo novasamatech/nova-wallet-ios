@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class AccountManagementViewController: UIViewController, ViewHolder {
     typealias RootViewType = AccountManagementViewLayout
@@ -20,9 +20,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
     private var nameViewModel: InputViewModelProtocol?
     private var hasChanges: Bool = false
 
-    private var ledgerMigrationViewModel: LedgerMigrationBannerView.ViewModel?
-
-    private var walletType: WalletsListSectionViewModel.SectionType = .secrets
+    private var walletViewModel: AccountManageWalletViewModel?
 
     init(presenter: AccountManagementPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -76,6 +74,10 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             withClass: ChainAccountListSectionView.self
         )
 
+        tableView.registerHeaderFooterView(
+            withClass: ChainAccountListSectionWithActionView.self
+        )
+
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
 
@@ -91,78 +93,16 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
         walletNameTextField.title = R.string.localizable
             .walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
 
-        applyWalletType()
+        applyWalletViewModel()
     }
 
-    private func applyWalletType() {
-        switch walletType {
-        case .secrets:
-            rootView.headerView.messageType = .none
-        case .watchOnly:
-            rootView.headerView.messageType = .hint
-
-            let text = R.string.localizable.accountManagementWatchOnlyHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            let icon = R.image.iconWatchOnly()
-            rootView.headerView.bindHint(text: text, icon: icon)
-        case .paritySigner:
-            rootView.headerView.messageType = .hint
-
-            let text = R.string.localizable.paritySignerDetailsHint(
-                ParitySignerType.legacy.getName(for: selectedLocale),
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            let icon = R.image.iconParitySigner()
-            rootView.headerView.bindHint(text: text, icon: icon)
-        case .polkadotVault:
-            rootView.headerView.messageType = .hint
-
-            let text = R.string.localizable.paritySignerDetailsHint(
-                ParitySignerType.vault.getName(for: selectedLocale),
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            let icon = R.image.iconPolkadotVault()
-            rootView.headerView.bindHint(text: text, icon: icon)
-        case .ledger:
-            if let ledgerMigrationViewModel {
-                rootView.headerView.messageType = .banner
-                rootView.headerView.bind(bannerViewModel: ledgerMigrationViewModel)
-                rootView.headerView.apply(bannerStyle: .warning)
-            } else {
-                rootView.headerView.messageType = .hint
-
-                let text = R.string.localizable.ledgerDetailsHint(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-
-                let icon = R.image.iconLedger()
-
-                rootView.headerView.bindHint(text: text, icon: icon)
-            }
-        case .proxied:
-            rootView.headerView.messageType = .hint
-
-            let text = R.string.localizable.proxyDetailsHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            let icon = R.image.iconProxiedWallet()
-
-            rootView.headerView.bindHint(text: text, icon: icon)
-        case .genericLedger:
-            rootView.headerView.messageType = .hint
-
-            let text = R.string.localizable.ledgerDetailsHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            let icon = R.image.iconLedger()
-
-            rootView.headerView.bindHint(text: text, icon: icon)
+    private func applyWalletViewModel() {
+        guard let walletViewModel = walletViewModel else {
+            return
         }
 
-        rootView.updateHeaderLayout()
+        rootView.headerView.bind(viewModel: walletViewModel)
+        reload()
     }
 
     // MARK: - Actions
@@ -242,10 +182,22 @@ extension AccountManagementViewController: UITableViewDelegate {
             return nil
         }
 
-        let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
-        headerView.bind(description: title.uppercased())
+        if let action = presenter.actionForSection(section)?.value(for: selectedLocale) {
+            let headerView: ChainAccountListSectionWithActionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(
+                title: title,
+                action: action
+            ) { [weak self] in
+                self?.presenter.activateActionInSection(section)
+            }
 
-        return headerView
+            return headerView
+        } else {
+            let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(description: title)
+
+            return headerView
+        }
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -260,27 +212,15 @@ extension AccountManagementViewController: UITableViewDelegate {
 // MARK: - AccountManagementViewProtocol
 
 extension AccountManagementViewController: AccountManagementViewProtocol {
-    func set(walletType: WalletsListSectionViewModel.SectionType) {
-        self.walletType = walletType
+    func didReceive(walletViewModel: AccountManageWalletViewModel) {
+        self.walletViewModel = walletViewModel
 
-        applyWalletType()
+        applyWalletViewModel()
     }
 
-    func set(nameViewModel: InputViewModelProtocol) {
+    func didReceive(nameViewModel: InputViewModelProtocol) {
         walletNameTextField.text = nameViewModel.inputHandler.value
         self.nameViewModel = nameViewModel
-    }
-
-    func setProxy(viewModel: AccountProxyViewModel) {
-        rootView.headerView.hintView?.bindProxy(viewModel: viewModel)
-    }
-
-    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel) {
-        ledgerMigrationViewModel = migrationViewModel
-
-        applyWalletType()
-
-        reload()
     }
 
     func reload() {

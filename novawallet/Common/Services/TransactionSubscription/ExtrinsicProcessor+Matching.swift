@@ -57,7 +57,7 @@ extension ExtrinsicProcessor {
             let metadata = codingFactory.metadata
             let context = codingFactory.createRuntimeJsonContext()
 
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
                 to: MultiAddress.self,
                 with: context.toRawContext()
             ).accountId
@@ -134,7 +134,8 @@ extension ExtrinsicProcessor {
     ) -> AssetModel? {
         assets.first { asset in
             guard
-                asset.type == AssetType.orml.rawValue,
+                let type = AssetType(rawType: asset.type),
+                type.isOrmlCompatible,
                 let typeExtra = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
                 return false
             }
@@ -160,7 +161,7 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> OrmlParsingResult {
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
-        let optResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokenTransfer>>?
+        let optResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokensPallet.TransferCall>>?
         optResult = try? callMapper.mapRuntimeCall(
             call: extrinsic.call,
             context: context
@@ -175,7 +176,7 @@ extension ExtrinsicProcessor {
 
             return (callPath, isAccountMatched, callAccountId, callResult.callSender, currencyId, call.args.amount)
         } else {
-            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokenTransferAll>>
+            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokensPallet.TransferAllCall>>
             callResult = try callMapper.mapRuntimeCall(
                 call: extrinsic.call,
                 context: context
@@ -268,7 +269,7 @@ extension ExtrinsicProcessor {
         runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
                 to: MultiAddress.self,
                 with: runtimeJsonContext.toRawContext()
             ).accountId
@@ -352,7 +353,7 @@ extension ExtrinsicProcessor {
             let metadata = codingFactory.metadata
 
             let rawContext = context.toRawContext()
-            let maybeAddress = extrinsic.signature?.address
+            let maybeAddress = extrinsic.getSignedExtrinsic()?.signature.address
             let maybeSender = try maybeAddress?.map(to: MultiAddress.self, with: rawContext).accountId
 
             guard let sender = maybeSender else {
@@ -427,7 +428,9 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> AssetsParsingResult {
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
-        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<AssetsTransfer>> = try callMapper.mapRuntimeCall(
+
+        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<PalletAssets.TransferCall>>
+        callResult = try callMapper.mapRuntimeCall(
             call: extrinsic.call,
             context: context
         )
@@ -450,7 +453,7 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
                 to: MultiAddress.self,
                 with: context.toRawContext()
             ).accountId
@@ -600,7 +603,7 @@ extension ExtrinsicProcessor {
             let metadata = codingFactory.metadata
             let context = codingFactory.createRuntimeJsonContext()
 
-            let optExtrinsicSender: AccountId? = try extrinsic.signature?.address.map(
+            let optExtrinsicSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
                 to: MultiAddress.self,
                 with: context.toRawContext()
             ).accountId

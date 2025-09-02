@@ -1,19 +1,27 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class AssetDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetDetailsViewLayout
 
+    let chartViewProvider: AssetPriceChartViewProviderProtocol
     let presenter: AssetDetailsPresenterProtocol
     var observable = NovaWalletViewModelObserverContainer<ContainableObserver>()
     weak var reloadableDelegate: ReloadableDelegate?
-    var contentInsets: UIEdgeInsets = .zero
+    var contentInsets: UIEdgeInsets = .zero {
+        didSet {
+            rootView.setBottomInset(contentInsets.bottom)
+        }
+    }
+
     var preferredContentHeight: CGFloat { rootView.prefferedHeight }
 
     init(
+        chartViewProvider: AssetPriceChartViewProviderProtocol,
         presenter: AssetDetailsPresenterProtocol,
         localizableManager: LocalizationManagerProtocol
     ) {
+        self.chartViewProvider = chartViewProvider
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
         localizationManager = localizableManager
@@ -31,36 +39,83 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        addHandlers()
+        setupView()
         applyLocalization()
         presenter.setup()
     }
+}
 
-    private func addHandlers() {
-        rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
-        rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
-        rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
-        rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
-        rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+private extension AssetDetailsViewController {
+    func setupView() {
+        setupChartView()
+        addHandlers()
+
+        rootView.delegate = self
     }
 
-    @objc private func didTapSendButton() {
+    func setupChartView() {
+        let insets = UIEdgeInsets(
+            inset: AssetDetailsViewLayout.Constants.chartWidgetInset
+        )
+        chartViewProvider.setupView(
+            on: self,
+            view: rootView.chartContainerView,
+            insets: insets
+        )
+    }
+
+    func addHandlers() {
+        rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+        rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
+        rootView.buySellButton.addTarget(self, action: #selector(didTapBuySellButton), for: .touchUpInside)
+        rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
+        rootView.balanceWidget.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+    }
+
+    func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
+        let title = R.string.localizable.walletAssetBuySell(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        let image = R.image.iconBuy()
+
+        let imageColor: UIColor
+        let textColor: UIColor
+
+        if !availableOperations.rampAvailable() {
+            imageColor = R.color.colorIconInactive()!
+            textColor = R.color.colorButtonTextInactive()!
+        } else {
+            imageColor = R.color.colorIconPrimary()!
+            textColor = R.color.colorTextPrimary()!
+        }
+
+        rootView.buySellButton.imageWithTitleView?.title = title
+        rootView.buySellButton.imageWithTitleView?.titleColor = textColor
+        rootView.buySellButton.imageWithTitleView?.iconImage = image?
+            .withRenderingMode(.alwaysTemplate)
+            .tinted(with: imageColor)
+
+        rootView.buySellButton.invalidateLayout()
+    }
+
+    @objc func didTapSendButton() {
         presenter.handleSend()
     }
 
-    @objc private func didTapReceiveButton() {
+    @objc func didTapReceiveButton() {
         presenter.handleReceive()
     }
 
-    @objc private func didTapBuyButton() {
-        presenter.handleBuy()
+    @objc func didTapBuySellButton() {
+        presenter.handleBuySell()
     }
 
-    @objc private func didTapSwapButton() {
+    @objc func didTapSwapButton() {
         presenter.handleSwap()
     }
 
-    @objc private func didTapLocks() {
+    @objc func didTapLocks() {
         presenter.handleLocks()
     }
 }
@@ -70,24 +125,36 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.set(assetDetailsModel: assetModel)
     }
 
-    func didReceive(totalBalance: BalanceViewModelProtocol) {
-        rootView.totalCell.bind(viewModel: totalBalance)
-    }
-
-    func didReceive(transferableBalance: BalanceViewModelProtocol) {
-        rootView.transferrableCell.bind(viewModel: transferableBalance)
-    }
-
-    func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool) {
-        rootView.lockCell.bind(viewModel: lockedBalance)
-        rootView.lockCell.canSelect = isSelectable
-    }
-
     func didReceive(availableOperations: AssetDetailsOperation) {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
-        rootView.buyButton.isEnabled = availableOperations.contains(.buy)
+
+        configureBuySellAction(for: availableOperations)
+    }
+
+    func didReceive(balance: AssetDetailsBalanceModel) {
+        rootView.balanceWidget.bind(with: balance)
+    }
+
+    func didReceiveChartAvailable(_ available: Bool) {
+        let widgetHeight = available
+            ? chartViewProvider.getProposedHeight()
+            : .zero
+
+        rootView.setChartViewHeight(widgetHeight)
+
+        observable.observers.forEach {
+            $0.observer?.didChangePreferredContentHeight(to: preferredContentHeight)
+        }
+    }
+}
+
+extension AssetDetailsViewController: AssetDetailsViewLayoutDelegate {
+    func didUpdateHeight(_ height: CGFloat) {
+        observable.observers.forEach {
+            $0.observer?.didChangePreferredContentHeight(to: height)
+        }
     }
 }
 

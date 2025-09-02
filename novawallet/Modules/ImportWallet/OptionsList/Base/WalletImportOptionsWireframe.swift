@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class WalletImportOptionsWireframe: ActionsManagePresentable {
     class HDWalletsContext {
@@ -27,11 +27,15 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
     }
 
     func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {
-        showWalletRestore(from: view, secretSource: .mnemonic)
+        showWalletRestore(from: view, secretSource: .mnemonic(.appDefault))
     }
 
     func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
         showHardwareWalletSelection(from: view, locale: locale)
+    }
+
+    func showTrustWalletImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .mnemonic(.trustWallet))
     }
 
     func showHardwareWalletSelection(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
@@ -50,7 +54,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         let viewModels: [LocalizableResource<ActionManageViewModel>] = hwWalletOptions.map { option in
             switch option {
             case .paritySigner:
-                return LocalizableResource { locale in
+                LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: ParitySignerType.legacy.iconForAction,
                         title: ParitySignerType.legacy.getName(for: locale),
@@ -58,7 +62,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     )
                 }
             case .polkadotVault:
-                return LocalizableResource { locale in
+                LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: ParitySignerType.vault.iconForAction,
                         title: ParitySignerType.vault.getName(for: locale),
@@ -67,16 +71,16 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                 }
             case .ledger:
                 if isLedgerGenericAvailable {
-                    return LocalizableResource { locale in
+                    LocalizableResource { locale in
                         ActionManageViewModel(
                             icon: R.image.iconLedgerActionWarning(),
-                            title: R.string.localizable.commonLedgerNanoLegacy(preferredLanguages: locale.rLanguages),
+                            title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
                             details: nil,
                             allowsIconModification: false
                         )
                     }
                 } else {
-                    return LocalizableResource { locale in
+                    LocalizableResource { locale in
                         ActionManageViewModel(
                             icon: R.image.iconLedgerAction(),
                             title: R.string.localizable.commonLedgerNanoX(preferredLanguages: locale.rLanguages),
@@ -85,10 +89,15 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     }
                 }
             case .genericLedger:
-                return LocalizableResource { locale in
+                LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconLedgerAction(),
                         title: R.string.localizable.commonLedgerNanoGeneric(preferredLanguages: locale.rLanguages),
+                        subtitle: [
+                            R.string.localizable.commonLedgerModelFlex(preferredLanguages: locale.rLanguages),
+                            R.string.localizable.commonLedgerModelStax(preferredLanguages: locale.rLanguages),
+                            R.string.localizable.commonLedgerModelNanoX(preferredLanguages: locale.rLanguages)
+                        ].joined(with: .commaSpace),
                         details: nil
                     )
                 }

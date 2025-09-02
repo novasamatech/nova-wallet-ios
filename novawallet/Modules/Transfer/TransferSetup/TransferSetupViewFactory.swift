@@ -1,9 +1,11 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
+import BigInt
 
 struct TransferSetupViewParams {
     let chainAsset: ChainAsset
+    let amount: Decimal?
     let whoChainAssetPeer: TransferSetupPeer
     let chainAssetPeers: [ChainAsset]?
     let recepient: DisplayAddress?
@@ -14,11 +16,13 @@ enum TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
+        amount: Decimal? = nil,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
         createView(
             from: .init(
                 chainAsset: chainAsset,
+                amount: amount,
                 whoChainAssetPeer: .destination,
                 chainAssetPeers: nil,
                 recepient: recepient,
@@ -45,6 +49,7 @@ enum TransferSetupViewFactory {
         return createView(
             from: .init(
                 chainAsset: destination,
+                amount: nil,
                 whoChainAssetPeer: .origin,
                 chainAssetPeers: origins,
                 recepient: recepient,
@@ -52,6 +57,36 @@ enum TransferSetupViewFactory {
             ),
             wireframe: TransferSetupOriginSelectionWireframe(assetListObservable: assetListObservable),
             transferCompletion: transferCompletion
+        )
+    }
+
+    static func createOffRampView(
+        from chainAsset: ChainAsset,
+        recepient: DisplayAddress?,
+        amount: Decimal? = nil,
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> TransferSetupViewProtocol? {
+        createRampTransferSetupView(
+            from: chainAsset,
+            recepient: recepient,
+            amount: amount,
+            transferCompletion: transferCompletion,
+            flowType: .offRamp
+        )
+    }
+
+    static func createCardTopUpView(
+        from chainAsset: ChainAsset,
+        recepient: DisplayAddress?,
+        amount: Decimal? = nil,
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> TransferSetupViewProtocol? {
+        createRampTransferSetupView(
+            from: chainAsset,
+            recepient: recepient,
+            amount: amount,
+            transferCompletion: transferCompletion,
+            flowType: .cardTopUp
         )
     }
 
@@ -68,7 +103,13 @@ enum TransferSetupViewFactory {
             return nil
         }
 
-        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: nil)
+        let amount: AmountInputResult? = if let inputAmount = params.amount {
+            .absolute(inputAmount)
+        } else {
+            nil
+        }
+
+        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
 
         let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
 
@@ -135,8 +176,10 @@ enum TransferSetupViewFactory {
 
         return view
     }
+}
 
-    private static func createPresenterFactory(
+private extension TransferSetupViewFactory {
+    static func createPresenterFactory(
         for wallet: MetaAccountModel,
         transferCompletion: TransferCompletionClosure?
     ) -> TransferSetupPresenterFactory {
@@ -150,13 +193,104 @@ enum TransferSetupViewFactory {
         )
     }
 
-    private static func createInteractor(for params: TransferSetupViewParams) -> TransferSetupInteractor? {
+    static func createRampTransferSetupView(
+        from chainAsset: ChainAsset,
+        recepient: DisplayAddress?,
+        amount: Decimal? = nil,
+        transferCompletion: TransferCompletionClosure? = nil,
+        flowType: RampFlowTransferType
+    ) -> CardTopUpTransferSetupViewController? {
+        guard let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let params = TransferSetupViewParams(
+            chainAsset: chainAsset,
+            amount: amount,
+            whoChainAssetPeer: .destination,
+            chainAssetPeers: nil,
+            recepient: recepient,
+            xcmTransfers: nil
+        )
+
+        guard let interactor = createInteractor(for: params) else {
+            return nil
+        }
+
+        let amount: AmountInputResult? = if let inputAmount = params.amount {
+            .absolute(inputAmount)
+        } else {
+            nil
+        }
+
+        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
+
+        let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
+
+        let localizationManager = LocalizationManager.shared
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let viewModelFactory = Web3NameViewModelFactory(
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory()
+        )
+
+        let presenter = TransferSetupPresenter(
+            interactor: interactor,
+            wireframe: TransferSetupWireframe(),
+            wallet: wallet,
+            chainAsset: params.chainAsset,
+            whoChainAssetPeer: params.whoChainAssetPeer,
+            chainAssetPeers: params.chainAssetPeers,
+            childPresenterFactory: presenterFactory,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            networkViewModelFactory: networkViewModelFactory,
+            web3NameViewModelFactory: viewModelFactory,
+            logger: Logger.shared
+        )
+
+        let title = switch flowType {
+        case .offRamp:
+            LocalizableResource { locale in
+                R.string.localizable.sellNamedToken(
+                    chainAsset.asset.symbol,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        case .cardTopUp:
+            LocalizableResource { locale in
+                R.string.localizable.cardTopUpDotSetupTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        }
+
+        let view = CardTopUpTransferSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            titleResource: title
+        )
+
+        presenter.childPresenter = presenterFactory.createOnChainPresenter(
+            for: params.chainAsset,
+            initialState: initPresenterState,
+            view: view
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    static func createInteractor(for params: TransferSetupViewParams) -> TransferSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let syncService = XcmTransfersSyncService(
-            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            config: ApplicationConfig.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
         let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
@@ -171,11 +305,19 @@ enum TransferSetupViewFactory {
             chainAsset: params.chainAsset,
             whoChainAssetPeer: params.whoChainAssetPeer,
             restrictedChainAssetPeers: params.chainAssetPeers,
+            xcmTransfers: params.xcmTransfers,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
             web3NamesService: web3NameService,
             operationManager: OperationManager()
         )
+    }
+}
+
+private extension TransferSetupViewFactory {
+    enum RampFlowTransferType {
+        case offRamp
+        case cardTopUp
     }
 }

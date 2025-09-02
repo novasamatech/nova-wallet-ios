@@ -201,6 +201,7 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         }
 
         self.state = polkadotTransportState.state
+        self.state?.stateMachine = self
         dataSource = polkadotTransportState.dataSource
 
         logger.info("\(String(describing: self)) did restore \(polkadotTransportState.name) transport state")

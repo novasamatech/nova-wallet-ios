@@ -1,17 +1,31 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
     let filter: WalletHistoryFilter
+    let chainFormat: ChainFormat
 
-    init(filter: WalletHistoryFilter, baseUrl: URL, chainId: ChainModel.Id) {
+    init(
+        filter: WalletHistoryFilter,
+        chainFormat: ChainFormat,
+        baseUrl: URL,
+        chainId: ChainModel.Id
+    ) {
         self.filter = filter
+        self.chainFormat = chainFormat
 
-        super.init(baseUrl: baseUrl, chainId: chainId)
+        super.init(
+            baseUrl: baseUrl,
+            chainId: chainId
+        )
     }
+}
 
-    private func buildUrl(for info: EtherscanNativeHistoryInfo) -> URL? {
+// MARK: Private
+
+private extension EtherscanNativeOperationFactory {
+    func buildUrl(for info: EtherscanNativeHistoryInfo) -> URL? {
         guard var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
             return nil
         }
@@ -29,9 +43,36 @@ final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
         return components.url
     }
 
+    func createInfo(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
+        pagination: EtherscanPagination
+    ) throws -> EtherscanNativeHistoryInfo {
+        let address = try accountId.toAddress(using: chainFormat)
+        let ethereumAddress = address.toEthereumAddressWithChecksum() ?? address
+
+        let info = EtherscanNativeHistoryInfo(
+            address: ethereumAddress,
+            page: pagination.page,
+            offset: pagination.offset
+        )
+
+        return info
+    }
+
     func createFetchWrapper(
-        for info: EtherscanNativeHistoryInfo
+        for accountId: AccountId,
+        chainFormat: ChainFormat,
+        pagination: EtherscanPagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
+        guard let info = try? createInfo(
+            accountId: accountId,
+            chainFormat: chainFormat,
+            pagination: pagination
+        ) else {
+            return .createWithError(WalletRemoteHistoryError.fetchParamsCreation)
+        }
+
         guard let url = buildUrl(for: info) else {
             return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
         }
@@ -73,14 +114,11 @@ final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
     }
 }
 
-extension EtherscanNativeOperationFactory: WalletRemoteHistoryFactoryProtocol {
-    func isComplete(pagination: Pagination) -> Bool {
-        let context = EtherscanHistoryContext(context: pagination.context ?? [:], defaultOffset: pagination.count)
-        return context.isComplete
-    }
+// MARK: WalletRemoteHistoryFactoryProtocol
 
+extension EtherscanNativeOperationFactory: WalletRemoteHistoryFactoryProtocol {
     func createOperationWrapper(
-        for address: String,
+        for accountId: AccountId,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard let etherscanPagination = preparePagination(from: pagination) else {
@@ -88,18 +126,21 @@ extension EtherscanNativeOperationFactory: WalletRemoteHistoryFactoryProtocol {
             return CompoundOperationWrapper.createWithResult(historyData)
         }
 
-        let info = EtherscanNativeHistoryInfo(
-            address: address,
-            page: etherscanPagination.page,
-            offset: etherscanPagination.offset
+        let fetchWrapper = createFetchWrapper(
+            for: accountId,
+            chainFormat: chainFormat,
+            pagination: etherscanPagination
         )
-
-        let fetchWrapper = createFetchWrapper(for: info)
 
         let filterOperation = createFilterOperation(for: filter, dependingOn: fetchWrapper.targetOperation)
 
         filterOperation.addDependency(fetchWrapper.targetOperation)
 
         return .init(targetOperation: filterOperation, dependencies: fetchWrapper.allOperations)
+    }
+
+    func isComplete(pagination: Pagination) -> Bool {
+        let context = EtherscanHistoryContext(context: pagination.context ?? [:], defaultOffset: pagination.count)
+        return context.isComplete
     }
 }

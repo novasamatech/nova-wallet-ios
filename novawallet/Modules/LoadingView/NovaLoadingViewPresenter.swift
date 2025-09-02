@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class NovaLoadingViewPresenter: LoadingViewPresenter {
     static let shared = NovaLoadingViewPresenter(factory: NovaLoadingViewFactory.self)

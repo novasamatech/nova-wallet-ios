@@ -72,14 +72,39 @@ extension Array where Element == ChainModel {
         }
     }
 
+    func getAssetSymbols() -> Set<AssetModel.Symbol> {
+        let chainAssets = flatMap { $0.chainAssets() }
+        return chainAssets.getAssetSymbols()
+    }
+
     func createMultichainTokens() -> [MultichainToken] {
-        flatMap { $0.chainAssets() }.createMultichainTokens()
+        let validSymbols = getAssetSymbols()
+
+        return createMultichainTokensWithValidSymbols(validSymbols)
+    }
+
+    func createMultichainTokensWithValidSymbols(
+        _ validSymbols: Set<AssetModel.Symbol>
+    ) -> [MultichainToken] {
+        flatMap { $0.chainAssets() }.createMultichainTokensWithValidSymbols(validSymbols)
     }
 }
 
 extension Array where Element == ChainAsset {
+    func getAssetSymbols() -> Set<AssetModel.Symbol> {
+        reduce(into: []) { accum, chainAsset in
+            accum.insert(chainAsset.asset.symbol)
+        }
+    }
+
     func createMultichainTokens() -> [MultichainToken] {
-        let mapping = createMultichainTokenMapping()
+        let allSymbols = getAssetSymbols()
+
+        return createMultichainTokensWithValidSymbols(allSymbols)
+    }
+
+    func createMultichainTokensWithValidSymbols(_ validSymbols: Set<AssetModel.Symbol>) -> [MultichainToken] {
+        let mapping = createMultichainTokenMapping(validSymbols: validSymbols)
 
         let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { accum, chainOrder in
             accum[chainOrder.1.chain.chainId] = chainOrder.0
@@ -103,12 +128,8 @@ extension Array where Element == ChainAsset {
         }
     }
 
-    private func createMultichainTokenMapping() -> [String: MultichainToken] {
-        let allSymbols = reduce(into: Set<String>()) { accum, chainAsset in
-            accum.insert(chainAsset.asset.symbol)
-        }
-
-        return reduce(into: [String: MultichainToken]()) { accum, chainAsset in
+    private func createMultichainTokenMapping(validSymbols: Set<AssetModel.Symbol>) -> [String: MultichainToken] {
+        reduce(into: [String: MultichainToken]()) { accum, chainAsset in
             let instance = MultichainToken.Instance(
                 chainAssetId: chainAsset.chainAssetId,
                 chainName: chainAsset.chain.name,
@@ -119,7 +140,7 @@ extension Array where Element == ChainAsset {
 
             let symbolExtensions = MultichainToken.reserveTokensOf(symbol: chainAsset.asset.symbol)
             let tokenSymbol = symbolExtensions.first(
-                where: { allSymbols.contains($0) }
+                where: { validSymbols.contains($0) }
             ) ?? chainAsset.asset.symbol
 
             if let token = accum[tokenSymbol] {

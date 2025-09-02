@@ -30,7 +30,7 @@ protocol StartStakingConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(restrictions: RelaychainStakingRestrictions)
-    func didReceiveConfirmation(hash: String)
+    func didReceiveConfirmation(model: ExtrinsicSubmittedModel)
     func didReceive(error: StartStakingConfirmInteractorError)
 }
 

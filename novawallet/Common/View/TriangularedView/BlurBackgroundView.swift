@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 open class BlurBackgroundView: UIView {
     private(set) var blurView: UIVisualEffectView?

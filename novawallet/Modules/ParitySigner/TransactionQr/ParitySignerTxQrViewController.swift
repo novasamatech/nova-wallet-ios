@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class ParitySignerTxQrViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParitySignerTxQrViewLayout
@@ -66,6 +66,12 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
             for: .touchUpInside
         )
 
+        rootView.qrTypeSwitch.addTarget(
+            self,
+            action: #selector(actionToggleQrFormat),
+            for: .valueChanged
+        )
+
         rootView.closeBarItem.target = self
         rootView.closeBarItem.action = #selector(actionClose)
     }
@@ -78,10 +84,14 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
             preferredLanguages: languages
         )
 
-        rootView.titleLabel.text = R.string.localizable.paritySignerTxScan(
-            type.getName(for: selectedLocale),
-            preferredLanguages: languages
-        )
+        rootView.qrTypeSwitch.titles = [
+            R.string.localizable.polkadotVaultQrTypeV7(
+                preferredLanguages: languages
+            ),
+            R.string.localizable.polkadotVaultQrTypeLegacy(
+                preferredLanguages: languages
+            )
+        ]
 
         rootView.helpButton.imageWithTitleView?.title = R.string.localizable.paritySignerTxSecondaryAction(
             type.getName(for: selectedLocale),
@@ -105,6 +115,10 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
         presenter.proceed()
     }
 
+    @objc private func actionToggleQrFormat() {
+        presenter.toggleExtrinsicFormat()
+    }
+
     @objc private func actionClose() {
         presenter.close()
     }
@@ -115,12 +129,32 @@ extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {
         rootView.accountDetailsView.bind(viewModel: viewModel)
     }
 
-    func didReceiveCode(viewModel: QRImageViewModel) {
+    func didReceiveCode(viewModel: QRImageViewModel?) {
         rootView.qrView.imageView.bindQr(viewModel: viewModel)
     }
 
-    func didReceiveExpiration(viewModel: ExpirationTimeViewModel) {
-        rootView.timerLabel.bindQr(viewModel: viewModel, locale: selectedLocale)
+    func didReceiveQrFormat(viewModel: ParitySignerTxFormatViewModel) {
+        switch viewModel {
+        case .none:
+            rootView.qrTypeSwitch.isHidden = true
+        case .new:
+            rootView.qrTypeSwitch.isHidden = false
+
+            rootView.qrTypeSwitch.selectedSegmentIndex = 0
+        case .legacy:
+            rootView.qrTypeSwitch.isHidden = false
+
+            rootView.qrTypeSwitch.selectedSegmentIndex = 1
+        }
+    }
+
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel?) {
+        if let viewModel {
+            rootView.timerLabel.isHidden = false
+            rootView.timerLabel.bindQr(viewModel: viewModel, locale: selectedLocale)
+        } else {
+            rootView.timerLabel.isHidden = true
+        }
     }
 }
 

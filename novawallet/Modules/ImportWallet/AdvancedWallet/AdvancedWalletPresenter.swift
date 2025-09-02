@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class AdvancedWalletPresenter {
     weak var view: AdvancedWalletViewProtocol?
@@ -126,7 +126,7 @@ final class AdvancedWalletPresenter {
         let placeholder: String
 
         if cryptoType == .sr25519 {
-            if secretSource == .mnemonic {
+            if case .mnemonic = secretSource {
                 predicate = NSPredicate.deriviationPathHardSoftPassword
                 placeholder = DerivationPathConstants.hardSoftPasswordPlaceholder
             } else {
@@ -134,7 +134,7 @@ final class AdvancedWalletPresenter {
                 placeholder = DerivationPathConstants.hardSoftPlaceholder
             }
         } else {
-            if secretSource == .mnemonic {
+            if case .mnemonic = secretSource {
                 predicate = NSPredicate.deriviationPathHardPassword
                 placeholder = DerivationPathConstants.hardPasswordPlaceholder
             } else {

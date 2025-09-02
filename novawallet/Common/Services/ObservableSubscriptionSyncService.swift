@@ -5,7 +5,7 @@ import Operation_iOS
 protocol ObservableSubscriptionStateProtocol {
     associatedtype TChange: BatchStorageSubscriptionResult
 
-    init(change: TChange)
+    init(change: TChange) throws
 
     func merging(change: TChange) -> Self
 }
@@ -43,7 +43,6 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
         operationQueue: OperationQueue,
         repository: AnyDataProviderRepository<ChainStorageItem>? = nil,
         workQueue: DispatchQueue = .global(),
-
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -112,8 +111,9 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
     }
 
     private func handleStateChangeResult(_ result: Result<T.TChange, Error>) {
-        switch result {
-        case let .success(change):
+        do {
+            let change = try result.get()
+
             // switch sync state manually if needed to allow others track when new state applied
             if !isSyncing {
                 isSyncing = true
@@ -124,11 +124,11 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
             if let currentState = state {
                 state = currentState.merging(change: change)
             } else {
-                state = .init(change: change)
+                state = try .init(change: change)
             }
 
             completeImmediate(nil)
-        case let .failure(error):
+        } catch {
             logger.error("Unexpected error: \(error)")
             completeImmediate(error)
         }

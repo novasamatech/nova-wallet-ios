@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol StartStakingViewModelFactoryProtocol {
     func earnupModel(
@@ -10,7 +10,7 @@ protocol StartStakingViewModelFactoryProtocol {
     ) -> AccentTextModel
     func stakeModel(
         minStake: BigUInt?,
-        nextEra: TimeInterval,
+        rewardStartDelay: TimeInterval,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> ParagraphView.Model
@@ -18,7 +18,7 @@ protocol StartStakingViewModelFactoryProtocol {
     func rewardModel(
         amount: BigUInt?,
         chainAsset: ChainAsset,
-        eraDuration: TimeInterval,
+        rewardTimeInterval: TimeInterval,
         destination: DefaultStakingRewardDestination,
         locale: Locale
     ) -> ParagraphView.Model
@@ -73,13 +73,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
 
     func stakeModel(
         minStake: BigUInt?,
-        nextEra: TimeInterval,
+        rewardStartDelay: TimeInterval,
         chainAsset: ChainAsset,
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let timePreposition = R.string.localizable.commonTimeIn(preferredLanguages: locale.rLanguages)
-        let time = nextEra.localizedDaysHours(
+        let time = rewardStartDelay.localizedDaysHoursOrFallbackMinutes(
             for: locale,
             preposition: timePreposition,
             separator: separator,
@@ -122,7 +122,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodAfter(preferredLanguages: locale.rLanguages)
-        let unstakePeriodString = unstakePeriod.localizedDaysHours(
+        let unstakePeriodString = unstakePeriod.localizedDaysHoursOrFallbackMinutes(
             for: locale,
             preposition: preposition,
             separator: separator,
@@ -143,13 +143,13 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     func rewardModel(
         amount: BigUInt?,
         chainAsset: ChainAsset,
-        eraDuration: TimeInterval,
+        rewardTimeInterval: TimeInterval,
         destination: DefaultStakingRewardDestination,
         locale: Locale
     ) -> ParagraphView.Model {
         let separator = R.string.localizable.commonAnd(preferredLanguages: locale.rLanguages)
         let preposition = R.string.localizable.commonTimePeriodEvery(preferredLanguages: locale.rLanguages)
-        let rewardIntervals = eraDuration.localizedDaysHours(
+        let rewardIntervals = rewardTimeInterval.localizedDaysHoursOrFallbackMinutes(
             for: locale,
             preposition: preposition,
             separator: separator,

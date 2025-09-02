@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class ManagedAccountItemMapperTests: XCTestCase {
     func testSaveAndFetchItem() throws {
@@ -30,7 +30,8 @@ class ManagedAccountItemMapperTests: XCTestCase {
             ethereumAddress: address.asSecretData(),
             ethereumPublicKey: keypair.publicKey().rawData(),
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let accountItem = ManagedMetaAccountModel(

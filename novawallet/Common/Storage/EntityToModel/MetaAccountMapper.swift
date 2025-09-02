@@ -19,6 +19,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             return try transform(chainAccountEntity: chainAccountEntity)
         } ?? []
 
+        let multisig: DelegatedAccount.MultisigAccountModel? = try transform(multisigEntity: entity.multisig)
+
         let substrateAccountId = try entity.substrateAccountId.map { try Data(hexString: $0) }
         let substrateCryptoType = UInt8(bitPattern: Int8(entity.substrateCryptoType))
 
@@ -33,7 +35,29 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: entity.ethereumPublicKey,
             chainAccounts: Set(chainAccounts),
-            type: MetaAccountModelType(rawValue: UInt8(bitPattern: Int8(entity.type)))!
+            type: MetaAccountModelType(rawValue: UInt8(bitPattern: Int8(entity.type)))!,
+            multisig: multisig
+        )
+    }
+
+    func transform(multisigEntity: CDMultisig?) throws -> DelegatedAccount.MultisigAccountModel? {
+        guard let multisigEntity else { return nil }
+
+        let threshold = Int(multisigEntity.threshold)
+        let multisigAccountId = try Data(hexString: multisigEntity.multisigAccountId!)
+        let signatoryAccountId = try Data(hexString: multisigEntity.signatory!)
+        let otherSignatories = try multisigEntity.otherSignatories?
+            .split(by: .comma)
+            .compactMap { try Data(hexString: $0) } ?? []
+
+        let status = DelegatedAccount.Status(rawValue: multisigEntity.status!)!
+
+        return DelegatedAccount.MultisigAccountModel(
+            accountId: multisigAccountId,
+            signatory: signatoryAccountId,
+            otherSignatories: otherSignatories,
+            threshold: threshold,
+            status: status
         )
     }
 
@@ -42,12 +66,14 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             let accountId = try Data(hexString: $0.proxyAccountId!)
             let type = Proxy.ProxyType(id: $0.type!)
 
-            return ProxyAccountModel(
+            return DelegatedAccount.ProxyAccountModel(
                 type: type,
                 accountId: accountId,
-                status: ProxyAccountModel.Status(rawValue: $0.status!)!
+                status: DelegatedAccount.Status(rawValue: $0.status!)!
             )
         }
+
+        let multisigModel = try transform(multisigEntity: chainAccountEntity.multisig)
 
         let accountId = try Data(hexString: chainAccountEntity.accountId!)
 
@@ -56,7 +82,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             accountId: accountId,
             publicKey: chainAccountEntity.publicKey!,
             cryptoType: UInt8(chainAccountEntity.cryptoType),
-            proxy: proxyModel
+            proxy: proxyModel,
+            multisig: multisigModel
         )
     }
 
@@ -73,6 +100,18 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         entity.ethereumPublicKey = model.ethereumPublicKey
         entity.ethereumAddress = model.ethereumAddress?.toHex()
         entity.type = Int16(bitPattern: UInt16(model.type.rawValue))
+
+        if let multisig = model.multisig {
+            if entity.multisig == nil {
+                let multisig = CDMultisig(context: context)
+                multisig.metaAccount = entity
+                entity.multisig = multisig
+            }
+            try populateMultisigEntity(
+                entity.multisig,
+                from: multisig
+            )
+        }
 
         for chainAccount in model.chainAccounts {
             var chainAccountEntity = entity.chainAccounts?.first {
@@ -117,6 +156,34 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         } else {
             chainAccounEntity.proxy = nil
         }
+
+        if let multisig = model.multisig {
+            if chainAccounEntity.multisig == nil {
+                let multisig = CDMultisig(context: context)
+                multisig.chainAccount = chainAccounEntity
+                chainAccounEntity.multisig = multisig
+            }
+            try populateMultisigEntity(
+                chainAccounEntity.multisig,
+                from: multisig
+            )
+        } else {
+            chainAccounEntity.multisig = nil
+        }
+    }
+
+    func populateMultisigEntity(
+        _ entity: CDMultisig?,
+        from model: DelegatedAccount.MultisigAccountModel
+    ) throws {
+        entity?.multisigAccountId = model.accountId.toHex()
+        entity?.signatory = model.signatory.toHex()
+        entity?.otherSignatories = model.otherSignatories
+            .map { $0.toHex() }
+            .joined(with: .comma)
+        entity?.threshold = Int64(model.threshold)
+        entity?.status = model.status.rawValue
+        entity?.identifier = model.identifier
     }
 }
 

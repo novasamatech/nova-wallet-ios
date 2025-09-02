@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol CloudBackupCreateViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol)

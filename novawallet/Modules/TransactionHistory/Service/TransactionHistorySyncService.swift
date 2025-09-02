@@ -6,7 +6,7 @@ typealias TransactionSyncResultClosure = (WalletRemoteHistoryData) -> Void
 final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleaning {
     let remoteOperationFactory: WalletRemoteHistoryFactoryProtocol
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
-    let address: AccountAddress
+    let accountId: AccountId
     let chainAsset: ChainAsset
     let pageSize: Int
     let operationQueue: OperationQueue
@@ -16,7 +16,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
 
     init(
         chainAsset: ChainAsset,
-        address: AccountAddress,
+        accountId: AccountId,
         remoteOperationFactory: WalletRemoteHistoryFactoryProtocol,
         repository: AnyDataProviderRepository<TransactionHistoryItem>,
         pageSize: Int,
@@ -24,7 +24,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
         completionClosure: @escaping TransactionSyncResultClosure
     ) {
         self.remoteOperationFactory = remoteOperationFactory
-        self.address = address
+        self.accountId = accountId
         self.chainAsset = chainAsset
         self.repository = repository
         self.pageSize = pageSize
@@ -52,15 +52,14 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
     private func createHistoryMergeOperation(
         dependingOn remoteOperation: BaseOperation<WalletRemoteHistoryData>,
         localOperation: BaseOperation<[TransactionHistoryItem]>,
-        chainAsset: ChainAsset,
-        address: AccountAddress
+        chainAsset: ChainAsset
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
             let remoteTransactions = try remoteOperation.extractNoCancellableResultData().historyItems
             let localTransactions = try localOperation.extractNoCancellableResultData()
 
             if !localTransactions.isEmpty {
-                let manager = TransactionHistoryMergeManager(address: address, chainAsset: chainAsset)
+                let manager = TransactionHistoryMergeManager(chainAsset: chainAsset)
 
                 return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
             } else {
@@ -74,17 +73,12 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
     }
 
     private func createRemoteOperationWrapper() -> CompoundOperationWrapper<WalletRemoteHistoryData> {
-        let remoteAddress: AccountAddress
-
-        if chainAsset.chain.isEthereumBased {
-            remoteAddress = address.toEthereumAddressWithChecksum() ?? address
-        } else {
-            remoteAddress = address
-        }
-
         let pagination = Pagination(count: pageSize, context: nil)
 
-        return remoteOperationFactory.createOperationWrapper(for: remoteAddress, pagination: pagination)
+        return remoteOperationFactory.createOperationWrapper(
+            for: accountId,
+            pagination: pagination
+        )
     }
 
     override func performSyncUp() {
@@ -96,8 +90,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
         let mergeOperation = createHistoryMergeOperation(
             dependingOn: remoteFetchWrapper.targetOperation,
             localOperation: localFetchOperation,
-            chainAsset: chainAsset,
-            address: address
+            chainAsset: chainAsset
         )
 
         mergeOperation.addDependency(localFetchOperation)

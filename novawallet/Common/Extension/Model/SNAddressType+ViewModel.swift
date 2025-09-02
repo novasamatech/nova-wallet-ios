@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 extension SNAddressType {
     func titleForLocale(_: Locale) -> String {

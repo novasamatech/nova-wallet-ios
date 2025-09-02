@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 enum Web3NameServiceError: Error {
     typealias Chain = String

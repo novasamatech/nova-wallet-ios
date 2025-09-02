@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 @objc protocol DelegateInfoDelegate {
     func didTapOnDelegateInfo(sender: DelegateInfoView)

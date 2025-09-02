@@ -231,19 +231,6 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
         }
     }
 
-    func handleTotalReward(
-        result: Result<TotalRewardItem, Error>,
-        for _: AccountAddress,
-        api _: LocalChainExternalApi
-    ) {
-        switch result {
-        case let .success(totalReward):
-            presenter?.didReceive(totalReward: totalReward)
-        case let .failure(error):
-            presenter?.didReceive(totalRewardError: error)
-        }
-    }
-
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         presenter?.didReceiveMinNominatorBond(result: result)
     }
@@ -267,6 +254,21 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
             presenter?.didReceiveBagListScoreFactor(result: .success(scoreFactor))
         case let .failure(error):
             presenter?.didReceiveBagListScoreFactor(result: .failure(error))
+        }
+    }
+}
+
+extension StakingRelaychainInteractor: StakingRewardsLocalSubscriber, StakingRewardsLocalHandler {
+    func handleTotalReward(
+        result: Result<TotalRewardItem, Error>,
+        for _: AccountAddress,
+        api _: LocalChainExternalApi
+    ) {
+        switch result {
+        case let .success(totalReward):
+            presenter?.didReceive(totalReward: totalReward)
+        case let .failure(error):
+            presenter?.didReceive(totalRewardError: error)
         }
     }
 }

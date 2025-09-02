@@ -1,16 +1,28 @@
 import Foundation
 
 struct XcmTransferDestination {
-    let chain: ChainModel
+    let chainAsset: ChainAsset
     let parachainId: ParaId?
     let accountId: AccountId
 
+    var chain: ChainModel {
+        chainAsset.chain
+    }
+
     func replacing(accountId: AccountId) -> XcmTransferDestination {
-        XcmTransferDestination(chain: chain, parachainId: parachainId, accountId: accountId)
+        XcmTransferDestination(
+            chainAsset: chainAsset,
+            parachainId: parachainId,
+            accountId: accountId
+        )
     }
 }
 
 struct XcmTransferDestinationId {
-    let chainId: ChainModel.Id
+    let chainAssetId: ChainAssetId
     let accountId: AccountId
+
+    var chainId: ChainModel.Id {
+        chainAssetId.chainId
+    }
 }

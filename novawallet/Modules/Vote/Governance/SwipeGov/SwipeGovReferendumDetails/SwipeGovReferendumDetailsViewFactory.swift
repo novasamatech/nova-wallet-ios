@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import Operation_iOS
 
@@ -65,8 +65,11 @@ struct SwipeGovReferendumDetailsViewFactory {
         )
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
+        let universalLinkFactory = ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL)
+
         return SwipeGovReferendumDetailsPresenter(
             chain: chain,
+            governanceType: stateOption.type,
             interactor: interactor,
             wireframe: wireframe,
             referendumFormatter: indexFormatter,
@@ -74,6 +77,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             referendumMetadataViewModelFactory: metadataViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            universalLinkFactory: universalLinkFactory,
             initData: initData,
             logger: Logger.shared,
             localizationManager: LocalizationManager.shared

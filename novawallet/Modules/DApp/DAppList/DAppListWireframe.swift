@@ -1,10 +1,10 @@
 import Foundation
 
 final class DAppListWireframe: DAppListWireframeProtocol {
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
-    init(proxySyncService: ProxySyncServiceProtocol) {
-        self.proxySyncService = proxySyncService
+    init(delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol) {
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
     func showFavorites(from view: (any DAppListViewProtocol)?) {

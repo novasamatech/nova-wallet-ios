@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     let headerStyle: MultiColorTextStyle
@@ -12,8 +12,6 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     lazy var wikiView: UITextView = .create {
         $0.textAlignment = .center
-        $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
-                                 .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
         $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
@@ -24,8 +22,6 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     lazy var termsView: UITextView = .create {
         $0.textAlignment = .center
-        $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
-                                 .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
         $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
@@ -145,13 +141,25 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     private func setWiki(urlModel model: StartStakingUrlModel) {
-        wikiView.bind(url: model.url, urlText: model.urlName, in: model.text)
+        wikiView.bind(
+            url: model.url,
+            urlText: model.urlName,
+            in: model.text,
+            style: .regularCalloutSecondary,
+            linkFont: .semiBoldCallout
+        )
         addArrangedSubview(wikiView)
         stackView.setCustomSpacing(Constants.wikiAndTermsSpacing, after: wikiView)
     }
 
     private func setTerms(urlModel model: StartStakingUrlModel) {
-        termsView.bind(url: model.url, urlText: model.urlName, in: model.text)
+        termsView.bind(
+            url: model.url,
+            urlText: model.urlName,
+            in: model.text,
+            style: .regularCalloutSecondary,
+            linkFont: .semiBoldCallout
+        )
         addArrangedSubview(termsView)
     }
 }
@@ -287,5 +295,6 @@ extension StartStakingInfoViewLayout {
         static let wikiAndTermsSpacing: CGFloat = 16
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
         static let footerBorderWidth: CGFloat = 1
+        static let linkChevronSize: CGFloat = 20.0
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension StakingStateViewModelFactory {
     func stakingAlertsForNominatorState(_ state: NominatorState) -> [StakingAlert] {

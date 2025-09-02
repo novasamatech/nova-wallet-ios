@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "L'accès à la photothèque est utilisé pour permettre la sélection de codes QR avec des adresses, des transactions Polkadot Vault ou se connecter via WalletConnect";
 "NSPhotoLibraryAddUsageDescription" = "Enregistrer la demande de transfert en tant que code QR";
 "NSBluetoothAlwaysUsageDescription" = "Le Bluetooth est utilisé pour communiquer avec les appareils Ledger Nano X";
+"NSMicrophoneUsageDescription" = "Le microphone est utilisé pour la session média KYC";

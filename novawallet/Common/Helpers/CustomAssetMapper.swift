@@ -2,22 +2,35 @@ import Foundation
 import SubstrateSdk
 
 struct CustomAssetMapper {
+    struct ExtrasToValue<T> {
+        let nativeHandler: () -> T
+        let statemineHandler: (StatemineAssetExtras) -> T
+        let ormlHandler: (OrmlTokenExtras) -> T
+        let ormlHydrationEvmHandler: (OrmlTokenExtras) -> T
+        let evmHandler: (AccountId) -> T
+        let evmNativeHandler: () -> T
+        let equilibriumHandler: (EquilibriumAssetExtras) -> T
+    }
+
+    struct TypeToValue<T> {
+        let nativeHandler: () -> T
+        let statemineHandler: () -> T
+        let ormlHandler: () -> T
+        let evmHandler: () -> T
+        let ormlHydrationEvmHandler: () -> T
+        let evmNativeHandler: () -> T
+        let equilibriumHandler: () -> T
+    }
+
     enum MapperError: Error {
         case unexpectedType(_ type: String?)
         case invalidJson(_ type: String?)
     }
 
     let type: String?
-    let typeExtras: JSON?
+    let typeExtras: AssetTypeExtras?
 
-    func mapAssetWithExtras<T>(
-        nativeHandler: () -> T,
-        statemineHandler: (StatemineAssetExtras) -> T,
-        ormlHandler: (OrmlTokenExtras) -> T,
-        evmHandler: (AccountId) -> T,
-        evmNativeHandler: () -> T,
-        equilibriumHandler: (EquilibriumAssetExtras) -> T
-    ) throws -> T {
+    func mapAssetWithExtras<T>(_ handlers: ExtrasToValue<T>) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
                 return typeValue
@@ -32,42 +45,41 @@ struct CustomAssetMapper {
                 throw MapperError.invalidJson(type)
             }
 
-            return statemineHandler(wrappedExtras)
+            return handlers.statemineHandler(wrappedExtras)
         case .orml:
             guard let wrappedExtras = try? typeExtras?.map(to: OrmlTokenExtras.self) else {
                 throw MapperError.invalidJson(type)
             }
 
-            return ormlHandler(wrappedExtras)
+            return handlers.ormlHandler(wrappedExtras)
+        case .ormlHydrationEvm:
+            guard let wrappedExtras = try? typeExtras?.map(to: OrmlTokenExtras.self) else {
+                throw MapperError.invalidJson(type)
+            }
+
+            return handlers.ormlHandler(wrappedExtras)
         case .evmAsset:
-            guard let contractAddress = typeExtras?.stringValue else {
+            guard let contractAddress = typeExtras?.evmContractAddress else {
                 throw MapperError.invalidJson(type)
             }
 
             let accountId = try contractAddress.toAccountId(using: .ethereum)
 
-            return evmHandler(accountId)
+            return handlers.evmHandler(accountId)
         case .evmNative:
-            return evmNativeHandler()
+            return handlers.evmNativeHandler()
         case .equilibrium:
             guard let wrappedExtras = try? typeExtras?.map(to: EquilibriumAssetExtras.self) else {
                 throw MapperError.invalidJson(type)
             }
 
-            return equilibriumHandler(wrappedExtras)
+            return handlers.equilibriumHandler(wrappedExtras)
         case .none:
-            return nativeHandler()
+            return handlers.nativeHandler()
         }
     }
 
-    func mapAsset<T>(
-        nativeHandler: () -> T,
-        statemineHandler: () -> T,
-        ormlHandler: () -> T,
-        evmHandler: () -> T,
-        evmNativeHandler: () -> T,
-        equilibriumHandler: () -> T
-    ) throws -> T {
+    func mapAsset<T>(_ handlers: TypeToValue<T>) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
                 return typeValue
@@ -78,17 +90,19 @@ struct CustomAssetMapper {
 
         switch wrappedType {
         case .statemine:
-            return statemineHandler()
+            return handlers.statemineHandler()
         case .orml:
-            return ormlHandler()
+            return handlers.ormlHandler()
+        case .ormlHydrationEvm:
+            return handlers.ormlHydrationEvmHandler()
         case .evmAsset:
-            return evmHandler()
+            return handlers.evmHandler()
         case .evmNative:
-            return evmNativeHandler()
+            return handlers.evmNativeHandler()
         case .equilibrium:
-            return equilibriumHandler()
+            return handlers.equilibriumHandler()
         case .none:
-            return nativeHandler()
+            return handlers.nativeHandler()
         }
     }
 }
@@ -96,23 +110,29 @@ struct CustomAssetMapper {
 extension CustomAssetMapper {
     func historyAssetId() throws -> String? {
         try mapAssetWithExtras(
-            nativeHandler: { nil },
-            statemineHandler: { $0.assetId },
-            ormlHandler: { $0.currencyIdScale },
-            evmHandler: { try? $0.toAddress(using: .ethereum) },
-            evmNativeHandler: { nil },
-            equilibriumHandler: { String($0.assetId) }
+            .init(
+                nativeHandler: { nil },
+                statemineHandler: { $0.assetId },
+                ormlHandler: { $0.currencyIdScale },
+                ormlHydrationEvmHandler: { $0.currencyIdScale },
+                evmHandler: { try? $0.toAddress(using: .ethereum) },
+                evmNativeHandler: { nil },
+                equilibriumHandler: { String($0.assetId) }
+            )
         )
     }
 
     func transfersEnabled() throws -> Bool {
         try mapAssetWithExtras(
-            nativeHandler: { true },
-            statemineHandler: { _ in true },
-            ormlHandler: { $0.transfersEnabled ?? true },
-            evmHandler: { _ in true },
-            evmNativeHandler: { true },
-            equilibriumHandler: { $0.transfersEnabled ?? true }
+            .init(
+                nativeHandler: { true },
+                statemineHandler: { _ in true },
+                ormlHandler: { $0.transfersEnabled ?? true },
+                ormlHydrationEvmHandler: { $0.transfersEnabled ?? true },
+                evmHandler: { _ in true },
+                evmNativeHandler: { true },
+                equilibriumHandler: { $0.transfersEnabled ?? true }
+            )
         )
     }
 }

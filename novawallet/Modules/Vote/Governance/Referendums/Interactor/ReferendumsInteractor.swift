@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: ReferendumsInteractorOutputProtocol?
@@ -42,7 +42,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.eventCenter = eventCenter
         self.selectedMetaAccount = selectedMetaAccount
@@ -54,6 +55,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.currencyManager = currencyManager
+        self.localizationManager = localizationManager
 
         self.eventCenter.add(observer: self)
     }
@@ -156,13 +158,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     func setupSwipeGovService(for option: GovernanceSelectedOption) {
-        guard let localizationManager else {
-            return
-        }
-
-        let languageCode = localizationManager.selectedLocale.languageCodeOrEn
-
-        governanceState.replaceSwipeGovService(for: option, language: languageCode)
+        governanceState.replaceSwipeGovService(for: option, language: selectedLocale.languageCodeOrEn)
 
         guard let swipeGovService = governanceState.swipeGovService else {
             presenter?.didReceiveSwipeGovEligible([])
@@ -223,6 +219,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         if metadataProvider == nil {
             presenter?.didReceiveReferendumsMetadata([])
+        } else {
+            metadataProvider?.refresh()
         }
     }
 

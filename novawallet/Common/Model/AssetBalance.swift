@@ -14,6 +14,10 @@ struct AssetBalance: Equatable {
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
 
+    var isZero: Bool {
+        [freeInPlank, reservedInPlank, frozenInPlank].allSatisfy { $0 == 0 }
+    }
+
     var transferable: BigUInt {
         Self.transferrableBalance(
             from: freeInPlank,
@@ -45,11 +49,50 @@ struct AssetBalance: Equatable {
         )
     }
 
+    func spending(amount: Balance) -> Self {
+        .init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank.subtractOrZero(amount),
+            reservedInPlank: reservedInPlank,
+            frozenInPlank: frozenInPlank,
+            edCountMode: edCountMode,
+            transferrableMode: transferrableMode,
+            blocked: blocked
+        )
+    }
+
+    func reserving(balance: Balance) -> Self {
+        guard freeInPlank >= balance else {
+            return self
+        }
+
+        return .init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank - balance,
+            reservedInPlank: reservedInPlank + balance,
+            frozenInPlank: frozenInPlank,
+            edCountMode: edCountMode,
+            transferrableMode: transferrableMode,
+            blocked: blocked
+        )
+    }
+
     func regularTransferrableBalance() -> BigUInt {
         Self.transferrableBalance(
             from: freeInPlank,
             frozen: frozenInPlank,
             reserved: reservedInPlank,
+            mode: .regular
+        )
+    }
+
+    func regularReservableBalance(for existentialDeposit: Balance) -> Balance {
+        Self.reservableBalance(
+            from: freeInPlank,
+            frozen: frozenInPlank,
+            existentialDeposit: existentialDeposit,
             mode: .regular
         )
     }
@@ -66,6 +109,20 @@ struct AssetBalance: Equatable {
         case .fungibleTrait:
             let locked = frozen > reserved ? frozen - reserved : 0
             return free > locked ? free - locked : 0
+        }
+    }
+
+    static func reservableBalance(
+        from free: BigUInt,
+        frozen: BigUInt,
+        existentialDeposit: BigUInt,
+        mode: TransferrableMode
+    ) -> BigUInt {
+        switch mode {
+        case .regular:
+            free.subtractOrZero(max(existentialDeposit, frozen))
+        case .fungibleTrait:
+            free.subtractOrZero(existentialDeposit)
         }
     }
 }
@@ -175,6 +232,19 @@ extension AssetBalance {
             reservedInPlank: reservedInPlank,
             frozenInPlank: frozenInPlank,
             edCountMode: .basedOnTotal,
+            transferrableMode: .regular,
+            blocked: false
+        )
+    }
+
+    init(evmBalance: Balance, accountId: AccountId, chainAssetId: ChainAssetId) {
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: evmBalance,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
             transferrableMode: .regular,
             blocked: false
         )

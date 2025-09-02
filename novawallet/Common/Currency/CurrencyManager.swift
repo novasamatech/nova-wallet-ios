@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 protocol CurrencyManagerProtocol: AnyObject {
     var availableCurrencies: [Currency] { get }

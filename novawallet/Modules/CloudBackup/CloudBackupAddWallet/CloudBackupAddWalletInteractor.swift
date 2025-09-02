@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class CloudBackupAddWalletInteractor {
     weak var presenter: CloudBackupAddWalletInteractorOutputProtocol?

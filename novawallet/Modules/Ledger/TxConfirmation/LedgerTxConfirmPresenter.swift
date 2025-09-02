@@ -1,6 +1,6 @@
 import Foundation
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 
 final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     let completion: TransactionSigningClosure
@@ -24,6 +24,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
 
     let needsMigration: Bool
     let applicationConfig: ApplicationConfigProtocol
+    let logger: LoggerProtocol
 
     init(
         chainName: String,
@@ -32,11 +33,13 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         interactor: LedgerTxConfirmInteractorInputProtocol,
         wireframe: LedgerTxConfirmWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.completion = completion
         self.needsMigration = needsMigration
         self.applicationConfig = applicationConfig
+        self.logger = logger
 
         super.init(
             appName: chainName,
@@ -114,32 +117,39 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     }
 
     override func handleAppConnection(error: Error, deviceId: UUID) {
-        guard let view = view else {
-            return
-        }
+        guard
+            let view,
+            let device = devices.first(where: { $0.identifier == deviceId })
+        else { return }
 
         if let ledgerError = error as? LedgerError {
             wireframe?.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                migrationViewModel: createMigrationIfNeeded(for: ledgerError),
-                cancelClosure: { [weak self] in
-                    self?.performCancellation()
-                },
-                retryClosure: { [weak self] in
-                    guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
-                        return
-                    }
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: device.model,
+                    migrationViewModel: createMigrationIfNeeded(for: ledgerError)
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: { [weak self] in
+                        self?.performCancellation()
+                    },
+                    retryClosure: { [weak self] in
+                        guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                            return
+                        }
 
-                    self?.selectDevice(at: index)
-                }
+                        self?.selectDevice(at: index)
+                    }
+                )
             )
         } else if
             let signatureError = error as? LedgerTxConfirmInteractorError,
             signatureError == .invalidSignature {
             wireframe?.transitToInvalidSignature(
                 on: view,
+                deviceModel: device.model,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.performCancellation()
@@ -156,7 +166,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             wireframe?.transitToTransactionReview(
                 on: view,
                 timer: timer,
-                deviceName: device.name,
+                deviceInfo: device.deviceInfo,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.stopConnecting()
@@ -182,6 +192,7 @@ extension LedgerTxConfirmPresenter: CountdownTimerDelegate {
             wireframe?.transitToTransactionExpired(
                 on: view,
                 expirationTimeInterval: expirationTimeInterval,
+                deviceModel: connectingDevice?.model ?? .unknown,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.performCancellation()
@@ -208,6 +219,8 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
                 self.completion(.success(signature))
             }
         case let .failure(error):
+            logger.error("Did receive error: \(error)")
+
             stopConnecting()
 
             handleAppConnection(error: error, deviceId: deviceId)

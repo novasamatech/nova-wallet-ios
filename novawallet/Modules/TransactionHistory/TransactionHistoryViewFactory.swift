@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 import Operation_iOS
 
@@ -87,9 +87,10 @@ struct TransactionHistoryViewFactory {
             operationQueue: operationQueue
         )
 
-        let localFilterFactory = TransactionHistoryLocalFilterFactory(
+        let localFilterFactory = TransactionHistoryLocalFilterFactory.createFromKnownProviders(
+            for: chainAsset,
             chainRegistry: chainRegistry,
-            chainAsset: chainAsset,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 

@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class YourWalletsPresenter {
     weak var view: YourWalletsViewProtocol?
@@ -16,6 +16,7 @@ final class YourWalletsPresenter {
         .genericLedger,
         .ledger,
         .proxied,
+        .multisig,
         .watchOnly
     ]
 
@@ -93,6 +94,13 @@ final class YourWalletsPresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconProxy()
+            )
+        case .multisig:
+            return .init(
+                title: R.string.localizable.commonMultisig(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconMultisig()
             )
         case .genericLedger:
             return .init(

@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWireframeProtocol,
     ModalAlertPresenting {
@@ -26,10 +26,6 @@ final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWirefram
         tracksView.controller.modalPresentationStyle = .custom
 
         view?.controller.present(tracksView.controller, animated: true)
-    }
-
-    func complete(on view: GovernanceRemoveVotesConfirmViewProtocol?, locale: Locale) {
-        presentExtrinsicSubmission(from: view, completionAction: .popBack, locale: locale)
     }
 
     func skip(on view: GovernanceRemoveVotesConfirmViewProtocol?) {

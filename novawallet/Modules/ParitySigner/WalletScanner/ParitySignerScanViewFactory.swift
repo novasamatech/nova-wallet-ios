@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct ParitySignerScanViewFactory {
     static func createOnboardingView(with type: ParitySignerType) -> QRScannerViewProtocol? {
@@ -44,7 +44,7 @@ struct ParitySignerScanViewFactory {
         )
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle(
+            R.string.localizable.paritySignerScanTitle_9_7_0(
                 type.getName(for: locale),
                 preferredLanguages: locale.rLanguages
             )

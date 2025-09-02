@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class WalletsListViewController<
     Layout: WalletsListViewLayout, Cell: WalletsListTableViewCellProtocol & UITableViewCell
@@ -73,60 +73,52 @@ class WalletsListViewController<
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = basePresenter.section(at: section)
 
+        let icon: UIImage?
+        let title: String?
+
         switch section.type {
         case .secrets:
-            return nil
+            icon = nil
+            title = nil
         case .watchOnly:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconWatchOnlyHeader()
-            let title = R.string.localizable.commonWatchOnly(
+            icon = R.image.iconWatchOnlyHeader()
+            title = R.string.localizable.commonWatchOnly(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
         case .paritySigner:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = ParitySignerType.legacy.iconForHeader
-            let title = ParitySignerType.legacy.getName(for: selectedLocale).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
+            icon = ParitySignerType.legacy.iconForHeader
+            title = ParitySignerType.legacy.getName(for: selectedLocale).uppercased()
         case .polkadotVault:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = ParitySignerType.vault.iconForHeader
-            let title = ParitySignerType.vault.getName(for: selectedLocale).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
+            icon = ParitySignerType.vault.iconForHeader
+            title = ParitySignerType.vault.getName(for: selectedLocale).uppercased()
         case .ledger:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconLedgerHeaderWarning()
-            let title = R.string.localizable.commonLedgerLegacy(
+            icon = R.image.iconLedgerHeaderWarning()
+            title = R.string.localizable.commonLedgerLegacy(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
         case .proxied:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconProxy()
-            let title = R.string.localizable.commonProxieds(
+            icon = R.image.iconProxy()
+            title = R.string.localizable.commonProxieds(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
+        case .multisig:
+            icon = R.image.iconMultisigWallet()
+            title = R.string.localizable.commonMultisig(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
         case .genericLedger:
-            let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconLedgerHeader()
-            let title = R.string.localizable.commonLedger(
+            icon = R.image.iconLedgerHeader()
+            title = R.string.localizable.commonLedger(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
-
-            view.bind(title: title, icon: icon)
-            return view
         }
+
+        guard let title, let icon else { return nil }
+
+        let view = dequeueCommonHeader(from: tableView)
+        view.bind(title: title, icon: icon)
+
+        return view
     }
 
     // MARK: UITableView Delegate
@@ -141,7 +133,13 @@ class WalletsListViewController<
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
+        case .watchOnly,
+             .paritySigner,
+             .polkadotVault,
+             .ledger,
+             .proxied,
+             .genericLedger,
+             .multisig:
             return 46.0
         }
     }

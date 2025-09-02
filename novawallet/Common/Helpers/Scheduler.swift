@@ -49,9 +49,11 @@ final class Scheduler: NSObject, SchedulerProtocol {
 
         clearTimer()
 
+        let milliseconds = Int(min(Double(Int.max), 1000.0 * seconds))
+
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(
-            deadline: .now() + .milliseconds(Int(1000.0 * seconds)),
+            deadline: .now() + .milliseconds(milliseconds),
             repeating: DispatchTimeInterval.never
         )
         timer?.setEventHandler { [weak self] in

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, SwapIssueViewModelFactoryProtocol {
@@ -42,8 +42,8 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
         issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
-        percentForamatter: LocalizableResource<NumberFormatter>,
-        priceDifferenceConfig: SwapPriceDifferenceConfig
+        priceDifferenceModelFactory: SwapPriceDifferenceModelFactoryProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.issuesViewModelFactory = issuesViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
@@ -51,9 +51,9 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceDifferenceModelFactory: priceDifferenceModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
-            percentForamatter: percentForamatter,
-            priceDifferenceConfig: priceDifferenceConfig
+            percentFormatter: percentFormatter
         )
     }
 
@@ -104,7 +104,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     }
 
     override func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
-        percentForamatter.value(for: locale).stringFromDecimal(amount)?.inParenthesis() ?? ""
+        percentFormatter.value(for: locale).stringFromDecimal(amount)?.inParenthesis() ?? ""
     }
 }
 

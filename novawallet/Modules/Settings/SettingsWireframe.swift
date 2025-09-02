@@ -1,17 +1,34 @@
 import Foundation
 import UIKit
 
-final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
+final class SettingsWireframe {
     let serviceCoordinator: ServiceCoordinatorProtocol
 
-    var proxySyncService: ProxySyncServiceProtocol {
-        serviceCoordinator.proxySyncService
+    var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
+        serviceCoordinator.delegatedAccountSyncService
     }
 
     init(serviceCoordinator: ServiceCoordinatorProtocol) {
         self.serviceCoordinator = serviceCoordinator
     }
 
+    private func showPinSetup(from view: ControllerBackedProtocol?) {
+        guard let pinSetup = PinViewFactory.createPinChangeView() else {
+            return
+        }
+
+        pinSetup.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            pinSetup.controller,
+            animated: true
+        )
+    }
+}
+
+// MARK: SettingsWireframeProtocol
+
+extension SettingsWireframe: SettingsWireframeProtocol {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createView(for: walletId) else {
             return
@@ -147,21 +164,6 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
 
         view?.controller.navigationController?.pushViewController(
             appearanceView.controller,
-            animated: true
-        )
-    }
-
-    // MARK: Private
-
-    private func showPinSetup(from view: ControllerBackedProtocol?) {
-        guard let pinSetup = PinViewFactory.createPinChangeView() else {
-            return
-        }
-
-        pinSetup.controller.hidesBottomBarWhenPushed = true
-
-        view?.controller.navigationController?.pushViewController(
-            pinSetup.controller,
             animated: true
         )
     }

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class CustomNetworkViewController: UIViewController, ViewHolder {
     typealias RootViewType = CustomNetworkViewLayout
@@ -48,7 +48,7 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
 // MARK: CustomNetworkViewProtocol
 
 extension CustomNetworkViewController: CustomNetworkViewProtocol {
-    func didReceiveNetworkType(_ networkType: ChainType, show: Bool) {
+    func didReceiveNetworkType(_ networkType: CustomNetworkType, show: Bool) {
         show
             ? rootView.showNetworkTypeSwitch()
             : rootView.hideNetworkTypeSwitch()

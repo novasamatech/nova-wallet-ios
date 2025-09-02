@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 final class PinChangeInteractor {
     weak var presenter: PinSetupInteractorOutputProtocol?

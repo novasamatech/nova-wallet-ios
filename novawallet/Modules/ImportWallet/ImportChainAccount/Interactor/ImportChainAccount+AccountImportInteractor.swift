@@ -1,8 +1,8 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 extension ImportChainAccount {
     final class AccountImportInteractor: BaseAccountImportInteractor {
@@ -10,28 +10,21 @@ extension ImportChainAccount {
         let eventCenter: EventCenterProtocol
 
         init(
-            metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+            metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
             metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
-            keystoreImportService: KeystoreImportServiceProtocol,
-            eventCenter: EventCenterProtocol,
-            isEthereumBased: Bool
+            secretImportService: SecretImportServiceProtocol,
+            eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
             self.eventCenter = eventCenter
 
-            let availableCryptoTypes: [MultiassetCryptoType] = isEthereumBased ? [.ethereumEcdsa] :
-                MultiassetCryptoType.substrateTypeList
-            let defaultCryptoType: MultiassetCryptoType = isEthereumBased ? .ethereumEcdsa : .sr25519
-
             super.init(
-                metaAccountOperationFactory: metaAccountOperationFactory,
+                metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager,
-                keystoreImportService: keystoreImportService,
-                availableCryptoTypes: availableCryptoTypes,
-                defaultCryptoType: defaultCryptoType
+                secretImportService: secretImportService
             )
         }
 

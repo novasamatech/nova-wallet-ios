@@ -9,6 +9,8 @@ enum ChainFilterStrategy {
 
     case enabledChains
     case hasProxy
+    case hasMultisig
+    case hasDelegatedAccounts
     case chainId(ChainModel.Id)
     case genericLedger
 
@@ -36,6 +38,23 @@ enum ChainFilterStrategy {
                     return change.item?.hasProxy == true
                 #endif
             }
+        case .hasMultisig: { change in
+                if case .delete = change {
+                    return true
+                }
+
+                #if F_RELEASE
+                    return change.item?.hasMultisig == true
+                        && change.item?.isTestnet == false
+                #else
+                    return change.item?.hasMultisig == true
+                #endif
+            }
+        case .hasDelegatedAccounts: { change in
+                let strategies: [ChainFilterStrategy] = [.hasProxy, .hasMultisig]
+
+                return strategies.contains { $0.filter(change) }
+            }
         case let .chainId(chainId): { change in
                 if case let .delete(deleteId) = change, deleteId == chainId {
                     return true
@@ -57,7 +76,7 @@ enum ChainFilterStrategy {
         }
     }
 
-    private var transform: Transform? {
+    private var transform: Transform {
         switch self {
         case .enabledChains: { change, currentChain in
                 guard let changedChain = change.item else { return change }
@@ -97,6 +116,45 @@ enum ChainFilterStrategy {
                     updatedHasProxy
                 )
             }
+        case .hasMultisig: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                var currentHasMultisig: Bool {
+                    #if F_RELEASE
+                        currentChain?.hasMultisig == true
+                            && currentChain?.isTestnet == false
+                    #else
+                        currentChain?.hasMultisig == true
+                    #endif
+                }
+
+                var updatedHasMultisig: Bool {
+                    #if F_RELEASE
+                        changedChain.hasMultisig && !changedChain.isTestnet
+                    #else
+                        changedChain.hasMultisig
+                    #endif
+                }
+                return transform(
+                    change,
+                    for: currentHasMultisig,
+                    updatedHasMultisig
+                )
+            }
+        case .hasDelegatedAccounts: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                let currentHasDelegatedAccounts = filter(
+                    DataProviderChange<ChainModel>.update(newItem: currentChain ?? changedChain)
+                )
+                let updatedHasDelegatedAccounts = filter(change)
+
+                return transform(
+                    change,
+                    for: currentHasDelegatedAccounts,
+                    updatedHasDelegatedAccounts
+                )
+            }
         case let .chainId(chainId): { change, currentChain in
                 guard let changedChain = change.item else { return change }
 
@@ -111,7 +169,7 @@ enum ChainFilterStrategy {
             }
         case let .allSatisfies(strategies): { change, currentChain in
                 strategies
-                    .compactMap(\.transform)
+                    .map(\.transform)
                     .reduce(change) { $1($0, currentChain) }
             }
         case .genericLedger: { change, currentChain in
@@ -133,11 +191,7 @@ enum ChainFilterStrategy {
         _ changes: [DataProviderChange<ChainModel>],
         using chainsBeforeChanges: [ChainModel.Id: ChainModel]
     ) -> [DataProviderChange<ChainModel>] {
-        let mapped = if let transform {
-            changes.map { transform($0, chainsBeforeChanges[$0.identifier]) }
-        } else {
-            changes
-        }
+        let mapped = changes.map { transform($0, chainsBeforeChanges[$0.identifier]) }
 
         return mapped.filter(filter)
     }

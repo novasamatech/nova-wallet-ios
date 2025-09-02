@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 struct ElectedValidatorInfo: Equatable, Hashable, Recommendable {
     let address: String

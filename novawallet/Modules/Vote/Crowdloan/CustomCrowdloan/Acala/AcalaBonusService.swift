@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 final class AcalaBonusService {
@@ -285,7 +285,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         else {
             return builder
         }
-        let builder = builder.reset()
+        let builder = builder.resetCalls()
         let callFactory = SubstrateCallFactory()
         let transferCall = callFactory.nativeTransfer(to: accountId, amount: amount, callPath: .transfer)
         let statementRemark = callFactory.remarkWithEvent(remark: statement)

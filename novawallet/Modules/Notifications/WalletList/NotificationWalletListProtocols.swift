@@ -1,5 +1,6 @@
 protocol NotificationWalletListViewProtocol: WalletsListViewProtocol {
     func setAction(enabled: Bool)
+    func setTitle(_ title: String)
 }
 
 protocol NotificationWalletListPresenterProtocol: WalletsListPresenterProtocol {

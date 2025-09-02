@@ -1,5 +1,5 @@
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 protocol PercentInputViewDelegateProtocol: AnyObject {
     func didSelect(percent: SlippagePercentViewModel, sender: Any?)

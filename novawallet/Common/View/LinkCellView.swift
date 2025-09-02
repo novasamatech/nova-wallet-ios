@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class LinkCellView: GenericTitleValueView<UILabel, LinkView> {
     var actionButton: RoundedButton { valueView.actionButton }

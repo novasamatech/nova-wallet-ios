@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class LedgerTxConfirmViewController: LedgerPerformOperationViewController, ImportantViewProtocol {
     var presenter: LedgerTxConfirmPresenterProtocol? { basePresenter as? LedgerTxConfirmPresenterProtocol }

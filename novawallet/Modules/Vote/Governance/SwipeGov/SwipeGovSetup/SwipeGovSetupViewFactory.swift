@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct SwipeGovSetupViewFactory {
@@ -13,18 +13,15 @@ struct SwipeGovSetupViewFactory {
             let swipeGovSetupInteractor = createInteractor(
                 for: state,
                 currencyManager: currencyManager
-            )
+            ),
+            let option = state.settings.value
         else {
             return nil
         }
 
         let wireframe = SwipeGovSetupWireframe(newVotingPowerClosure: newVotingPowerClosure)
 
-        let dataValidatingFactory = GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         guard
             let presenter = createPresenter(
@@ -97,6 +94,7 @@ struct SwipeGovSetupViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             interactor: swipeGovSetupInteractor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,

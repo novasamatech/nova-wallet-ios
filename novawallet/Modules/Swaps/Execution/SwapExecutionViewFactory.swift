@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct SwapExecutionViewFactory {
     static func createView(
@@ -22,13 +22,16 @@ struct SwapExecutionViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
+        let percentFormatter = NumberFormatter.percentSingle.localizableResource()
+
         let detailsViewModelFactory = SwapDetailsViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
-            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
-            priceDifferenceConfig: .defaultConfig
+            priceDifferenceModelFactory: priceDiffModelFactory,
+            percentFormatter: percentFormatter
         )
 
         let presenter = SwapExecutionPresenter(

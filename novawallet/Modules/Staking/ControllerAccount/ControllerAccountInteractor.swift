@@ -1,7 +1,7 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 final class ControllerAccountInteractor: AccountFetching {

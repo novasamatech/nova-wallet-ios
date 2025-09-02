@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 final class AccountCreatePresenter: BaseAccountCreatePresenter {
     let walletName: String
 

@@ -111,7 +111,7 @@ extension SettingsRow {
         case .wiki:
             return R.image.iconWiki()!
         case .notifications:
-            return R.image.iconNotiifcation()!
+            return R.image.iconNotification()!
         case .backup:
             return R.image.iconSettingsBackup()!
         case .networks:

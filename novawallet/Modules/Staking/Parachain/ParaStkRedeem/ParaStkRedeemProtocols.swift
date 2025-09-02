@@ -1,18 +1,5 @@
 import Foundation
 
-protocol ParaStkRedeemViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
-    func didReceiveWallet(viewModel: DisplayWalletViewModel)
-    func didReceiveAccount(viewModel: DisplayAddressViewModel)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-}
-
-protocol ParaStkRedeemPresenterProtocol: AnyObject {
-    func setup()
-    func selectAccount()
-    func confirm()
-}
-
 protocol ParaStkRedeemInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
     func estimateFee(for collatorIds: Set<AccountId>)
@@ -26,7 +13,7 @@ protocol ParaStkRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>)
     func didReceiveError(_ error: Error)
 }
 

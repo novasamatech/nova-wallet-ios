@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
+import Foundation_iOS
 import BigInt
-import SoraFoundation
 
 final class NewReleaseHandler: PushNotificationHandler {
     let payload: NewReleasePayload
@@ -26,14 +26,14 @@ final class NewReleaseHandler: PushNotificationHandler {
         dispatchInQueueWhenPossible(callbackQueue) {
             let locale = self.localizationManager.selectedLocale
             let title = R.string.localizable.pushNotificationNewReleaseTitle(preferredLanguages: locale.rLanguages)
-            let subtitle = R.string.localizable.pushNotificationNewReleaseSubtitle(
+            let body = R.string.localizable.pushNotificationNewReleaseSubtitle(
                 self.payload.version,
                 preferredLanguages: locale.rLanguages
             )
 
             let notificationConentResult: NotificationContentResult = .init(
                 title: title,
-                subtitle: subtitle
+                body: body
             )
 
             completion(.modified(notificationConentResult))

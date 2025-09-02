@@ -195,7 +195,7 @@ class RemoteSubscriptionService {
                 throw RemoteSubscriptionServiceError.remoteKeysNotMatchLocal
             }
 
-            let remoteLocalKeys: [SubscriptionStorageKeys] = try zip(keyEncodingWrappers, requests)
+            let remoteLocalKeys: [SubscriptionStorageKeys] = zip(keyEncodingWrappers, requests)
                 .compactMap { encodingWrapper, request in
                     do {
                         let remoteKey = try encodingWrapper.targetOperation.extractNoCancellableResultData()
@@ -203,6 +203,10 @@ class RemoteSubscriptionService {
                     } catch StorageKeyEncodingOperationError.invalidStoragePath {
                         // ignore keys if path missing in runtime
                         logger.warning("Subscription path missing in runtime: \(request.storagePath)")
+                        return nil
+                    } catch {
+                        // ignore keys if subscription broken
+                        logger.error("Subscription failed in \(chainId): \(request.storagePath)")
                         return nil
                     }
                 }

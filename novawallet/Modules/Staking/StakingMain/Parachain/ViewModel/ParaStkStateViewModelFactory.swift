@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 protocol ParaStkStateViewModelFactoryProtocol {
@@ -17,7 +17,7 @@ final class ParaStkStateViewModelFactory {
 
     private func createDelegationStatus(
         for activeStake: BigUInt,
-        collatorStatuses: [ParaStkDelegationStatus]?,
+        collatorStatuses: [CollatorStakingDelegationStatus]?,
         commonData: ParachainStaking.CommonData
     ) -> NominationViewStatus {
         guard let statuses = collatorStatuses, let roundInfo = commonData.roundInfo else {
@@ -102,7 +102,11 @@ final class ParaStkStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: roundCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: roundCountdown,
+            items: viewModels,
+            canCancelUnbonding: true
+        )
     }
 
     private func createStakingRewardViewModel(
@@ -203,12 +207,20 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
         }
 
         let delegationsDict = state.delegatorState.delegationsDict()
-        let collatorsStatuses: [ParaStkDelegationStatus]? = state.delegations?.compactMap { delegation in
+        let delegatorModel = CollatorStakingDelegator(
+            parachainDelegator: state.delegatorState
+        )
+
+        let collatorsStatuses: [CollatorStakingDelegationStatus]? = state.delegations?.compactMap { delegation in
             guard let stake = delegationsDict[delegation.accountId]?.amount else {
                 return nil
             }
 
-            return delegation.status(for: accountId, stake: stake)
+            return delegation.status(
+                for: accountId,
+                delegatorModel: delegatorModel,
+                stake: stake
+            )
         }
 
         let delegationStatus = createDelegationStatus(

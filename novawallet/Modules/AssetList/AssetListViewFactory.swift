@@ -1,12 +1,12 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct AssetListViewFactory {
     static func createView(
         with dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dappMediator.children.first(
@@ -24,6 +24,7 @@ struct AssetListViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             walletNotificationService: walletNotificationService,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
@@ -36,7 +37,7 @@ struct AssetListViewFactory {
         let wireframe = AssetListWireframe(
             dappMediator: dappMediator,
             assetListModelObservable: assetListModelObservable,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )
 
         let nftDownloadService = NftFileDownloadService(
@@ -68,8 +69,16 @@ struct AssetListViewFactory {
             appearanceFacade: appearanceFacade
         )
 
+        guard let bannerModule = BannersViewFactory.createView(
+            domain: .assets,
+            output: presenter,
+            inputOwner: presenter,
+            locale: localizationManager.selectedLocale
+        ) else { return nil }
+
         let view = AssetListViewController(
             presenter: presenter,
+            bannersViewProvider: bannerModule,
             localizationManager: localizationManager
         )
 

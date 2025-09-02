@@ -29,7 +29,7 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(existentialDeposit: BigUInt?)
     func didReceive(fee: ExtrinsicFeeProtocol)
-    func didReceive(submissionResult: Result<String, Error>)
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>)
     func didReceive(needsMigration: Bool)
     func didReceive(error: NPoolsRedeemError)
 }

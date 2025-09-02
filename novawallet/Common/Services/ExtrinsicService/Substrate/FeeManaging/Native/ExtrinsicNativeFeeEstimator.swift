@@ -31,7 +31,7 @@ final class ExtrinsicNativeFeeEstimator {
                 with: context.toRawContext()
             )
 
-            if let tip = decodedExtrinsic.signature?.extra.getTip() {
+            if let tip = decodedExtrinsic.getSignedExtrinsic()?.signature.extra.getTip() {
                 let newFee = baseFee + tip
                 return RuntimeDispatchInfo(
                     fee: String(newFee),
@@ -80,12 +80,11 @@ final class ExtrinsicNativeFeeEstimator {
             let result = try infoOperation.extractNoCancellableResultData()
             let resultData = try Data(hexString: result)
             let decoder = try factory.createDecoder(from: resultData)
-            let remoteModel = try decoder.read(type: type).map(
-                to: RemoteRuntimeDispatchInfo.self,
+
+            return try decoder.read(type: type).map(
+                to: RuntimeDispatchInfo.self,
                 with: factory.createRuntimeJsonContext().toRawContext()
             )
-
-            return .init(fee: String(remoteModel.fee), weight: remoteModel.weight)
         }
 
         mapOperation.addDependency(infoOperation)

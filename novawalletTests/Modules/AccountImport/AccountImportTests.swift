@@ -1,9 +1,9 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import Cuckoo
-import SoraFoundation
+import Foundation_iOS
 
 class AccountImportTests: XCTestCase {
 
@@ -25,23 +25,27 @@ class AccountImportTests: XCTestCase {
         let eventCenter = MockEventCenterProtocol()
 
         let keychain = InMemoryKeychain()
-        let operationFactory = MetaAccountOperationFactory(keystore: keychain)
+        let operationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keychain)
 
-        let keystoreImportService = KeystoreImportService(logger: Logger.shared)
+        let secretImportService = SecretImportService(logger: Logger.shared)
 
         let interactor = AccountImportInteractor(
-            accountOperationFactory: operationFactory,
+            metaAccountOperationFactoryProvider: operationFactoryProvider,
             accountRepository: AnyDataProviderRepository(repository),
             operationManager: OperationManager(),
             settings: settings,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             eventCenter: eventCenter
         )
 
         let expectedUsername = "myname"
         let expetedMnemonic = "great fog follow obtain oyster raw patient extend use mirror fix balance blame sudden vessel"
 
-        let presenter = AccountImportPresenter(secretSource: .mnemonic)
+        let presenter = AccountImportPresenter(
+            secretSource: .mnemonic(.appDefault),
+            metadataFactory: WalletImportMetadataFactory()
+        )
+        
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor

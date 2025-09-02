@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 protocol MessageSheetPresentable: AnyObject {
     func transitToMessageSheet(_ newMessageSheetView: MessageSheetViewProtocol, on view: ControllerBackedProtocol)
@@ -73,6 +73,23 @@ extension MessageSheetPresentable {
 
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void) {
         guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: completion) else {
+            return
+        }
+
+        transitToMessageSheet(confirmationView, on: presentationView)
+    }
+
+    func presentFeatureUnsupportedView(
+        from presentationView: ControllerBackedProtocol,
+        type: UnsupportedFeatureType,
+        walletType: FeatureUnsupportedWalletType,
+        completion: @escaping () -> Void
+    ) {
+        guard let confirmationView = MessageSheetViewFactory.createFeatureNotSupportedView(
+            type: type,
+            walletType: walletType,
+            completionCallback: completion
+        ) else {
             return
         }
 

@@ -1,28 +1,21 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     private let chainRegistry: ChainRegistryProtocol
     private let settings: SettingsManagerProtocol
 
-    enum QueryKey {
-        static let chainid = "chainid"
-        static let referendumIndex = "id"
-        static let governanceType = "type"
-    }
-
-    enum ParsingGovernanceType: UInt8 {
-        case openGov = 0
-        case democracy = 1
-    }
+    let defaultChainId: ChainModel.Id
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        settings: SettingsManagerProtocol
+        settings: SettingsManagerProtocol,
+        defaultChainId: ChainModel.Id = UniversalLink.GovScreen.defaultChainId
     ) {
         self.chainRegistry = chainRegistry
         self.settings = settings
+        self.defaultChainId = defaultChainId
     }
 
     func cancel() {
@@ -43,21 +36,17 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             $0[$1.name.lowercased()] = $1.value ?? ""
         }
 
-        guard let chainId = queryItems[QueryKey.chainid],
-              !chainId.isEmpty else {
-            completion(.failure(.openGovScreen(.invalidChainId)))
-            return
-        }
-
-        guard let referendumIndexString = queryItems[QueryKey.referendumIndex],
+        guard let referendumIndexString = queryItems[UniversalLink.GovScreen.QueryKey.referendumIndex],
               let referendumIndex = UInt32(referendumIndexString) else {
             completion(.failure(.openGovScreen(.invalidReferendumId)))
             return
         }
 
+        let chainId = queryItems[UniversalLink.GovScreen.QueryKey.chainid] ?? defaultChainId
+
         handle(
             for: chainId,
-            type: queryItems[QueryKey.governanceType]
+            type: queryItems[UniversalLink.GovScreen.QueryKey.governanceType]
         ) {
             completion(.success(.gov(referendumIndex)))
         }
@@ -115,7 +104,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             return .failure(.chainNotSupportsGov)
         }
 
-        let governanceType = type.map { UInt8($0) }?.map { ParsingGovernanceType(rawValue: $0) } ?? nil
+        let governanceType = type.map { UInt8($0) }?.map { UniversalLink.GovScreen.GovType(rawValue: $0) } ?? nil
         switch governanceType {
         case .openGov:
             return chain.hasGovernanceV2 ? .success(.governanceV2) :
@@ -124,13 +113,12 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             return chain.hasGovernanceV1 ? .success(.governanceV1) :
                 .failure(.chainNotSupportsGovType(type: GovernanceType.governanceV1.rawValue))
         case nil:
-            if let type = type, !type.isEmpty {
+            if let type, !type.isEmpty {
                 return .failure(.chainNotSupportsGovType(type: type))
             }
-            if chain.hasGovernanceV2 {
-                return .success(.governanceV2)
-            } else if chain.hasGovernanceV1 {
-                return .success(.governanceV1)
+
+            if let defaultType = UniversalLink.GovScreen.defaultGovTypeForChain(chain) {
+                return .success(defaultType)
             } else {
                 return .failure(.govTypeIsNotSpecified)
             }

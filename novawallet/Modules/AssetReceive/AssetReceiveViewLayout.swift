@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 import SnapKit
 
 final class AssetReceiveViewLayout: UIView {
@@ -14,6 +14,16 @@ final class AssetReceiveViewLayout: UIView {
     let qrContainerView: RoundedView = .create { view in
         view.fillColor = .white
         view.cornerRadius = Constants.qrContainerCornerRadius
+    }
+
+    let legacyAddressMessageContainer: GenericMultiValueView<RoundedButton> = .create { view in
+        view.valueTop.apply(style: .footnoteSecondary)
+        view.valueTop.numberOfLines = 0
+
+        view.valueBottom.applyTextStyle()
+        view.valueBottom.imageWithTitleView?.titleFont = .semiBoldSubheadline
+
+        view.spacing = .zero
     }
 
     let chainView = AssetListChainView()
@@ -36,6 +46,14 @@ final class AssetReceiveViewLayout: UIView {
         $0.backgroundView.shadowOpacity = .zero
     }
 
+    var legacyAddressMessageLabel: UILabel {
+        legacyAddressMessageContainer.valueTop
+    }
+
+    var viewAddressFormatsButton: RoundedButton {
+        legacyAddressMessageContainer.valueBottom
+    }
+
     let shareButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
         $0.imageWithTitleView?.iconImage = R.image.iconShare()
@@ -56,7 +74,7 @@ final class AssetReceiveViewLayout: UIView {
     private func setupLayout() {
         addSubview(containerView)
         containerView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top)
+            $0.top.equalToSuperview().inset(Constants.verticalSpacing)
             $0.leading.trailing.bottom.equalToSuperview()
         }
         containerView.stackView.addArrangedSubview(titleLabel)
@@ -84,9 +102,17 @@ final class AssetReceiveViewLayout: UIView {
             after: titleLabel
         )
         containerView.stackView.setCustomSpacing(
-            Constants.detailsQRVerticalSpace,
+            Constants.verticalSpacing,
             after: detailsLabel
         )
+        containerView.stackView.setCustomSpacing(
+            Constants.verticalSpacing,
+            after: qrContainerView
+        )
+
+        viewAddressFormatsButton.snp.makeConstraints { make in
+            make.height.equalTo(Constants.viewFormatsButtonHeight)
+        }
 
         addSubview(shareButton)
         shareButton.snp.makeConstraints {
@@ -98,22 +124,32 @@ final class AssetReceiveViewLayout: UIView {
 }
 
 extension AssetReceiveViewLayout {
+    func showLegacyAddressMessage() {
+        containerView.stackView.addArrangedSubview(legacyAddressMessageContainer)
+        containerView.stackView.setCustomSpacing(
+            Constants.verticalSpacing,
+            after: legacyAddressMessageContainer
+        )
+    }
+}
+
+extension AssetReceiveViewLayout {
     enum Constants {
+        static let verticalSpacing: CGFloat = 24
         static let qrContainerCornerRadius: CGFloat = 16
         static let qrViewSizeRatio: CGFloat = 0.8
         static let qrViewPlaceHolderWidth: CGFloat = 280
         static let qrCodeMinimumWidth: CGFloat = 120
-        static let detailsQRVerticalSpace: CGFloat = 36
-        static let titleDetailsVerticalSpace: CGFloat = 4
+        static let titleDetailsVerticalSpace: CGFloat = 8
         static let qrViewContentInsets: CGFloat = 8
         static let containerHorizontalOffset: CGFloat = 16
-        static let shareButtonTopOffset: CGFloat = 24
         static let shareButtonHeight: CGFloat = 52
         static let addressViewBottomInset: CGFloat = 12
+        static let viewFormatsButtonHeight: CGFloat = 32.0
         static let containerInsets = UIEdgeInsets(
-            top: 40,
+            top: verticalSpacing,
             left: containerHorizontalOffset,
-            bottom: Constants.shareButtonHeight + shareButtonTopOffset,
+            bottom: Constants.shareButtonHeight + verticalSpacing,
             right: containerHorizontalOffset
         )
 

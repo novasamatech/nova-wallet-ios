@@ -4,9 +4,11 @@ class SwapBasePresenter {
     let logger: LoggerProtocol
     let selectedWallet: MetaAccountModel
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
+    let priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol
     let priceStore: AssetExchangePriceStoring
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
+    private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }
@@ -60,6 +62,12 @@ class SwapBasePresenter {
         }
     }
 
+    var destUtilityAssetBalanceExistense: AssetBalanceExistence? {
+        getReceiveChainAsset()?.chain.utilityChainAsset().flatMap {
+            assetBalanceExistences[$0.chainAssetId]
+        }
+    }
+
     var fee: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeQuote, Error>?
 
@@ -72,16 +80,28 @@ class SwapBasePresenter {
         }
     }
 
-    var accountInfo: AccountInfo?
+    var originAccountInfo: AccountInfo? {
+        getFeeChainAsset()?.chain.utilityChainAsset().flatMap {
+            accountInfoDict[$0.chain.chainId]
+        }
+    }
+
+    var destAccountInfo: AccountInfo? {
+        getReceiveChainAsset()?.chain.utilityChainAsset().flatMap {
+            accountInfoDict[$0.chain.chainId]
+        }
+    }
 
     init(
         selectedWallet: MetaAccountModel,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
+        priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.dataValidatingFactory = dataValidatingFactory
+        self.priceDiffFactory = priceDiffFactory
         self.priceStore = priceStore
         self.logger = logger
     }
@@ -112,7 +132,9 @@ class SwapBasePresenter {
             quoteArgs: quoteArgs,
             quote: quote,
             slippage: getSlippage(),
-            accountInfo: accountInfo
+            accountInfo: originAccountInfo,
+            destAccountInfo: destAccountInfo,
+            destUtilityAssetExistence: destUtilityAssetBalanceExistense
         )
     }
 
@@ -126,7 +148,29 @@ class SwapBasePresenter {
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: accountInfo
+            accountInfo: originAccountInfo
+        )
+    }
+
+    func getPriceDifferenceModel() -> SwapDifferenceModel? {
+        guard
+            let quote,
+            let assetInfoIn = getPayChainAsset()?.assetDisplayInfo,
+            let assetInfoOut = getReceiveChainAsset()?.assetDisplayInfo else {
+            return nil
+        }
+
+        let params = RateParams(
+            assetDisplayInfoIn: assetInfoIn,
+            assetDisplayInfoOut: assetInfoOut,
+            amountIn: quote.route.amountIn,
+            amountOut: quote.route.amountOut
+        )
+
+        return priceDiffFactory.createModel(
+            params: params,
+            priceIn: payAssetPriceData,
+            priceOut: receiveAssetPriceData
         )
     }
 
@@ -210,6 +254,46 @@ class SwapBasePresenter {
         }
     }
 
+    func getIntermediateEdValidation(
+        for swapModel: SwapModel,
+        interactor: SwapBaseInteractorInputProtocol,
+        locale: Locale
+    ) -> DataValidating? {
+        // for last operation validation is covered by canReceive
+        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
+            return dataValidatingFactory.passesIntermediateEDValidation(
+                params: swapModel,
+                remoteValidatingClosure: { closureParams in
+                    interactor.requestValidatingIntermediateED(
+                        for: closureParams.operations.dropLast(),
+                        completion: closureParams.completionClosure
+                    )
+                },
+                locale: locale
+            )
+        } else {
+            return nil
+        }
+    }
+
+    func getQuoteValidation(
+        for swapModel: SwapModel,
+        interactor: SwapBaseInteractorInputProtocol,
+        locale: Locale
+    ) -> DataValidating {
+        dataValidatingFactory.passesRealtimeQuoteValidation(
+            params: swapModel,
+            remoteValidatingClosure: { args, completion in
+                interactor.requestValidatingQuote(for: args, completion: completion)
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.quoteResult = .success(quote)
+                self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+            },
+            locale: locale
+        )
+    }
+
     func getBaseValidations(
         for swapModel: SwapModel,
         interactor: SwapBaseInteractorInputProtocol,
@@ -247,34 +331,23 @@ class SwapBasePresenter {
         ]
 
         // for last operation validation is covered by canReceive
-        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
-            let intermediateEdValidation = dataValidatingFactory.passesIntermediateEDValidation(
-                params: swapModel,
-                remoteValidatingClosure: { closureParams in
-                    interactor.requestValidatingIntermediateED(
-                        for: closureParams.operations.dropLast(),
-                        completion: closureParams.completionClosure
-                    )
-                },
-                locale: locale
-            )
-
-            baseValidations.append(intermediateEdValidation)
+        if let edValidation = getIntermediateEdValidation(for: swapModel, interactor: interactor, locale: locale) {
+            baseValidations.append(edValidation)
         }
 
-        let quoteValidation = dataValidatingFactory.passesRealtimeQuoteValidation(
-            params: swapModel,
-            remoteValidatingClosure: { args, completion in
-                interactor.requestValidatingQuote(for: args, completion: completion)
-            },
-            onQuoteUpdate: { [weak self] quote in
-                self?.quoteResult = .success(quote)
-                self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+        let quoteValidation = getQuoteValidation(for: swapModel, interactor: interactor, locale: locale)
+
+        baseValidations.append(quoteValidation)
+
+        // need to use recent quote as quote validation might change the price diff
+        let highPriceDiffValidation = dataValidatingFactory.noHighPriceDifference(
+            paramsClosure: { [weak self] in
+                self?.getPriceDifferenceModel()
             },
             locale: locale
         )
 
-        baseValidations.append(quoteValidation)
+        baseValidations.append(highPriceDiffValidation)
 
         return baseValidations
     }
@@ -336,13 +409,13 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
     }
 
     func didReceive(accountInfo: AccountInfo?, chainId: ChainModel.Id) {
-        guard self.accountInfo != accountInfo else {
+        guard accountInfoDict[chainId] != accountInfo else {
             return
         }
 
-        logger.debug("New account info: \(String(describing: accountInfo))")
+        logger.debug("New account info \(chainId): \(String(describing: accountInfo))")
 
-        self.accountInfo = accountInfo
+        accountInfoDict[chainId] = accountInfo
 
         handleNewAccountInfo(accountInfo, chainId: chainId)
     }

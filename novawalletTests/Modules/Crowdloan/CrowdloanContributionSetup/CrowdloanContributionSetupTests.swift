@@ -1,9 +1,9 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 import Cuckoo
 import BigInt
 import SubstrateSdk

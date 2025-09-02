@@ -2,18 +2,19 @@ import XCTest
 @testable import novawallet
 
 class LedgerTransportTests: XCTestCase {
+    static let mtu: Int = 153
 
     func testSingleChunk() {
         // given
 
         let transport = LedgerTransport()
-        let messageSize = transport.mtu - 5
+        let messageSize = Self.mtu - 5
         let message = Data.random(of: messageSize)!
 
         do {
             // when
 
-            let chunks = transport.prepareRequest(from: message)
+            let chunks = transport.prepareRequest(from: message, using: Self.mtu)
 
             XCTAssertEqual(chunks.count, 1)
 
@@ -34,14 +35,14 @@ class LedgerTransportTests: XCTestCase {
         // given
 
         let transport = LedgerTransport()
-        let packetSize = transport.mtu - 5
+        let packetSize = Self.mtu - 5
         let packetsCount = 5
         let message = Data.random(of: packetsCount * packetSize)!
 
         do {
             // when
 
-            let chunks = transport.prepareRequest(from: message)
+            let chunks = transport.prepareRequest(from: message, using: Self.mtu)
 
             XCTAssertEqual(chunks.count, packetsCount)
 

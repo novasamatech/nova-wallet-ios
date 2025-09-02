@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class CustomSearchView: UIView {
     let blurBackgroundView: BlurBackgroundView = {

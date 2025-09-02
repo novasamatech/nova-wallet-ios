@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class ChainAssetSelectionControl: DetailsTriangularedView {
     let iconBackgroundView: RoundedView = {

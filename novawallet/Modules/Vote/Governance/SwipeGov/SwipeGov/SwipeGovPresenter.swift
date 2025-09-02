@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SwipeGovPresenter {
@@ -12,6 +12,7 @@ final class SwipeGovPresenter {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
     private let utilityAssetInfo: AssetBalanceDisplayInfo
+    private let govBalanceCalculator: AvailableBalanceMapping
 
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
@@ -24,6 +25,7 @@ final class SwipeGovPresenter {
         viewModelFactory: SwipeGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        govBalanceCalculator: AvailableBalanceMapping,
         utilityAssetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -32,6 +34,7 @@ final class SwipeGovPresenter {
         self.viewModelFactory = viewModelFactory
         self.cardsViewModelFactory = cardsViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.govBalanceCalculator = govBalanceCalculator
         self.utilityAssetInfo = utilityAssetInfo
         self.localizationManager = localizationManager
     }
@@ -163,7 +166,7 @@ private extension SwipeGovPresenter {
             return false
         }
 
-        let availableBalance = optBalance?.availableForOpenGov ?? 0
+        let availableBalance = govBalanceCalculator.availableBalanceElseZero(from: optBalance)
 
         if availableBalance == 0 || votingPower.amount > availableBalance {
             interruptAndOfferChangeVotingPower(

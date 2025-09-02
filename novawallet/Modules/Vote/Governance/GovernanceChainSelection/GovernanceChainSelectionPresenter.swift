@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter {
     var wireframe: GovernanceChainSelectionWireframeProtocol? {
@@ -17,12 +17,14 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
     private var selectedChainId: ChainModel.Id?
 
     private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+    private let balanceMapperFactory: GovBalanceCalculatorFactoryProtocol
 
     init(
         interactor: ChainAssetSelectionInteractorInputProtocol,
         wireframe: GovernanceChainSelectionWireframeProtocol,
         selectedChainId: ChainModel.Id?,
         selectedGovernanceType: GovernanceType?,
+        balanceMapperFactory: GovBalanceCalculatorFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -30,6 +32,7 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
         self.selectedChainId = selectedChainId
         self.selectedGovernanceType = selectedGovernanceType
         self.assetIconViewModelFactory = assetIconViewModelFactory
+        self.balanceMapperFactory = balanceMapperFactory
 
         super.init(
             interactor: interactor,
@@ -44,12 +47,13 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
         governanceType: GovernanceType
     ) -> SelectableIconDetailsListViewModel {
         let chain = chainAsset.chain
-        let asset = chainAsset.asset
 
         let icon = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
         let title = governanceType.title(for: chain)
         let isSelected = selectedChainId == chain.chainId && selectedGovernanceType == governanceType
-        let balance = extractFormattedBalance(for: chainAsset) ?? ""
+
+        let balanceMapper = balanceMapperFactory.createCalculator(for: governanceType)
+        let balance = extractFormattedBalance(for: chainAsset, balanceMapper: balanceMapper) ?? ""
 
         return SelectableIconDetailsListViewModel(
             title: title,
@@ -59,37 +63,56 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
         )
     }
 
-    override func updateView() {
+    override func updateAvailableOptions() {
         guard let assets = assets, isReadyForDisplay else {
             return
         }
 
+        let gov2Mapper = balanceMapperFactory.createCalculator(for: .governanceV2)
+        let gov1Mapper = balanceMapperFactory.createCalculator(for: .governanceV1)
+
         // show gov2 options first but not testnets
-        availableOptions = assets.reduce(into: [Option]()) { accum, chainAsset in
+        let gov2Options: [Option] = assets.compactMap { chainAsset in
             if chainAsset.chain.hasGovernanceV2, !chainAsset.chain.isTestnet {
-                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV2))
+                Option(chainAsset: chainAsset, governanceType: .governanceV2)
+            } else {
+                nil
             }
-        }
+        }.sorted(by: { orderAssets($0.chainAsset, chainAsset2: $1.chainAsset, balanceMapper: gov2Mapper) })
 
         // then show gov1 options
-        availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
+        let gov1Options: [Option] = assets.compactMap { chainAsset in
             if chainAsset.chain.hasGovernanceV1, !chainAsset.chain.isTestnet {
-                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV1))
+                Option(chainAsset: chainAsset, governanceType: .governanceV1)
+            } else {
+                nil
             }
-        }
+        }.sorted(by: { orderAssets($0.chainAsset, chainAsset2: $1.chainAsset, balanceMapper: gov1Mapper) })
 
         // then show gov2 testnets
-        availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
+        let gov2Testnets: [Option] = assets.compactMap { chainAsset in
             if chainAsset.chain.hasGovernanceV2, chainAsset.chain.isTestnet {
-                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV2))
+                Option(chainAsset: chainAsset, governanceType: .governanceV2)
+            } else {
+                nil
             }
-        }
+        }.sorted(by: { orderAssets($0.chainAsset, chainAsset2: $1.chainAsset, balanceMapper: gov2Mapper) })
 
         // finally show gov1 testnets
-        availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
+        let gov1Testnets: [Option] = assets.compactMap { chainAsset in
             if chainAsset.chain.hasGovernanceV1, chainAsset.chain.isTestnet {
-                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV1))
+                Option(chainAsset: chainAsset, governanceType: .governanceV1)
+            } else {
+                nil
             }
+        }.sorted(by: { orderAssets($0.chainAsset, chainAsset2: $1.chainAsset, balanceMapper: gov1Mapper) })
+
+        availableOptions = gov2Options + gov1Options + gov2Testnets + gov1Testnets
+    }
+
+    override func updateView() {
+        guard assets != nil, isReadyForDisplay else {
+            return
         }
 
         let viewModels = availableOptions.map {

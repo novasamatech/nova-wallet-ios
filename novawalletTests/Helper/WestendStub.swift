@@ -1,7 +1,7 @@
 import Foundation
 @testable import novawallet
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 
 import SubstrateSdk
 

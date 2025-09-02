@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 enum MessageSheetViewFacade {
     static func setupBottomSheet(from controller: UIViewController, preferredHeight: CGFloat) {

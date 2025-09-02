@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 class CrowdloadSettingsTests: XCTestCase {

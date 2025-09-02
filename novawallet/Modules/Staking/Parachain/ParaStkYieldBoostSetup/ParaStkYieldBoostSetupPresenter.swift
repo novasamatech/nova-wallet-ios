@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkYieldBoostSetupPresenter {
     weak var view: ParaStkYieldBoostSetupViewProtocol?
@@ -8,7 +8,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let interactor: ParaStkYieldBoostSetupInteractorInputProtocol
     let chainAsset: ChainAsset
     let collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol
-    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
     let logger: LoggerProtocol
@@ -20,7 +20,7 @@ final class ParaStkYieldBoostSetupPresenter {
     private(set) var yieldBoostTasks: [ParaStkYieldBoostState.Task]?
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
-    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+    private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
     private(set) var yieldBoostParams: ParaStkYieldBoostResponse?
     private(set) var isYieldBoostSelected: Bool = false
     private(set) var extrinsicFee: ExtrinsicFeeProtocol?
@@ -38,7 +38,7 @@ final class ParaStkYieldBoostSetupPresenter {
         initState: ParaStkYieldBoostInitState,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol,
-        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
@@ -320,7 +320,7 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
         }
     }
 
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         rewardCalculator = calculator
 
         provideRewardsOptionComparisonViewModel()

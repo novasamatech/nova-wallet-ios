@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceChainSelectionViewFactory {
     static func createView(
@@ -19,7 +19,6 @@ final class GovernanceChainSelectionViewFactory {
 
         let interactor = ChainAssetSelectionInteractor(
             selectedMetaAccount: SelectedWalletSettings.shared.value,
-            balanceSlice: \.freeInPlank,
             repository: AnyDataProviderRepository(repository),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -44,6 +43,7 @@ final class GovernanceChainSelectionViewFactory {
             wireframe: wireframe,
             selectedChainId: chainId,
             selectedGovernanceType: governanceType,
+            balanceMapperFactory: GovBalanceCalculatorFactory(),
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             assetIconViewModelFactory: assetIconViewModelFactory,
             localizationManager: localizationManager

@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 extension NSPredicate {
     static func filterContactsByTarget(address: String) -> NSPredicate {
@@ -55,8 +55,42 @@ extension NSPredicate {
         ])
     }
 
+    static func filterMetaAccount(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
+        let hexAccountId = accountId.toHex()
+
+        let substrateAccountFilter = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMetaAccount.substrateAccountId), hexAccountId
+        )
+
+        let ethereumAccountFilter = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMetaAccount.ethereumAddress), hexAccountId
+        )
+
+        let chainAccountFilter = NSPredicate(
+            format: "SUBQUERY(%K, $account, $account.%K == %@ AND $account.%K == %@).@count > 0",
+            #keyPath(CDMetaAccount.chainAccounts),
+            #keyPath(CDChainAccount.accountId), hexAccountId,
+            #keyPath(CDChainAccount.chainId), chainId
+        )
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [
+            substrateAccountFilter,
+            ethereumAccountFilter,
+            chainAccountFilter
+        ])
+    }
+
     static func metaAccountById(_ identifier: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.metaId), identifier)
+    }
+
+    static func metaAccountsByType(_ type: MetaAccountModelType) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.type), type.rawValue)
     }
 
     static func selectedMetaAccount() -> NSPredicate {
@@ -207,6 +241,36 @@ extension NSPredicate {
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             accountPredicate, chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetLock(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId,
+        storage: String
+    ) -> NSPredicate {
+        let accountPredicate = assetLock(for: accountId)
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainAssetId.chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            chainAssetId.assetId
+        )
+
+        let storagePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.storage),
+            storage
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate, storagePredicate
         ])
     }
 
@@ -460,6 +524,42 @@ extension NSPredicate {
 
         return NSCompoundPredicate(
             andPredicateWithSubpredicates: [chainPredicate, metaAccountPredicate]
+        )
+    }
+
+    static func pendingMultisigOperations(
+        for chainId: ChainModel.Id,
+        multisigAccountId: AccountId
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.chainId),
+            chainId
+        )
+        let accountIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+
+        return NSCompoundPredicate(
+            andPredicateWithSubpredicates: [chainPredicate, accountIdPredicate]
+        )
+    }
+
+    static func pendingMultisigOperations(multisigAccountId: AccountId) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+    }
+
+    static func pendingOperation(identifier: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.identifier),
+            identifier
         )
     }
 }

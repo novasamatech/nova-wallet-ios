@@ -9,6 +9,7 @@ protocol SwapTokensFlowStateProtocol {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
 
     func setupAssetExchangeService() -> AssetsExchangeServiceProtocol
+    func setupWalletDelayedCallExecProvider() -> WalletDelayedExecutionProviding
 }
 
 final class SwapTokensFlowState {
@@ -18,6 +19,7 @@ final class SwapTokensFlowState {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
 
     private var assetExchangeService: AssetsExchangeServiceProtocol?
+    private var delayedCallExecProvider: WalletDelayedExecutionProviding?
 
     init(
         assetListObservable: AssetListModelObservable,
@@ -42,6 +44,29 @@ final class SwapTokensFlowState {
 }
 
 extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
+    func setupWalletDelayedCallExecProvider() -> WalletDelayedExecutionProviding {
+        if let delayedCallExecProvider {
+            return delayedCallExecProvider
+        }
+
+        let repository = WalletDelayedExecutionRepository(
+            userStorageFacade: assetExchangeParams.userDataStorageFacade
+        )
+
+        let delayedCallExecProvider = WalletDelayedExecutionProvider(
+            selectedWallet: assetExchangeParams.wallet,
+            repository: repository,
+            operationQueue: assetExchangeParams.operationQueue,
+            logger: assetExchangeParams.logger
+        )
+
+        self.delayedCallExecProvider = delayedCallExecProvider
+
+        delayedCallExecProvider.setup()
+
+        return delayedCallExecProvider
+    }
+
     func setupAssetExchangeService() -> AssetsExchangeServiceProtocol {
         if let assetExchangeService {
             return assetExchangeService
@@ -59,6 +84,8 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
             logger: assetExchangeParams.logger
         )
 
+        let delayedCallExecProvider = setupWalletDelayedCallExecProvider()
+
         let pathCostEstimator = AssetsExchangePathCostEstimator(
             priceStore: priceStore,
             chainRegistry: assetExchangeParams.chainRegistry
@@ -68,7 +95,8 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
             for: assetExchangeParams,
             feeSupportProvider: feeSupportProvider,
             exchangesStateMediator: exchangesStateMediator,
-            pathCostEstimator: pathCostEstimator
+            pathCostEstimator: pathCostEstimator,
+            delayedCallExecProvider: delayedCallExecProvider
         )
 
         let service = AssetsExchangeService(

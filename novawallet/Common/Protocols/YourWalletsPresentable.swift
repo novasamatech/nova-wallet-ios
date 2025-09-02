@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 protocol YourWalletsPresentable {
     func showYourWallets(

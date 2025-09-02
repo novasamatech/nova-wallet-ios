@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
     func setup() {
@@ -33,8 +33,6 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
 
     func fetchDelegations(for collators: [AccountId]) {
         clear(cancellable: &delegationsCancellable)
-
-        let chain = selectedChainAsset.chain
 
         let collatorService = sharedState.collatorService
         let rewardService = sharedState.rewardCalculationService

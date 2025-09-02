@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 struct GovernanceUnavailableTracksViewFactory {
     static func createView(

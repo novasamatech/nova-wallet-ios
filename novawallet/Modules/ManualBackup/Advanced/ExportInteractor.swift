@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 final class ExportInteractor {
     weak var presenter: ExportInteractorOutputProtocol?
@@ -160,7 +160,7 @@ private extension ExportInteractor {
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) throws -> ExportChainData {
-        var accountResponse = try accountResponse(
+        let accountResponse = try accountResponse(
             for: chain,
             metaAccount: metaAccount
         )

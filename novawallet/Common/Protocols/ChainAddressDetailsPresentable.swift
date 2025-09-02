@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 protocol ChainAddressDetailsPresentable {
     func presentChainAddressDetails(from presentationView: ControllerBackedProtocol, model: ChainAddressDetailsModel)

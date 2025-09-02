@@ -1,6 +1,6 @@
 import UIKit
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
@@ -22,7 +22,8 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         )
 
         let interactor = RootInteractor(
-            settings: SelectedWalletSettings.shared,
+            walletSettings: SelectedWalletSettings.shared,
+            settings: settings,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
             securityLayerInteractor: SecurityLayerService.shared.interactor,

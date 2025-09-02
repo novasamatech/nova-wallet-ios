@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 final class ValidatorInfoViewFactory {
     private static func createView(

@@ -19,7 +19,9 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private var feeCallStore = CancellableCallStore()
 
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var accountInfoProviders: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
+    private var originAccountInfoChainId: ChainModel.Id?
+    private var destinationAccountInfoChainId: ChainModel.Id?
 
     init(
         state: SwapTokensFlowStateProtocol,
@@ -116,14 +118,53 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         }
     }
 
-    func updateAccountInfoProvider(for chain: ChainModel) {
-        clear(dataProvider: &accountInfoProvider)
+    func clearAccountInfoProvider(for chainId: ChainModel.Id) {
+        accountInfoProviders[chainId]?.removeObserver(self)
+        accountInfoProviders[chainId] = nil
+    }
+
+    func clearOriginAccountInfoProvider() {
+        if let originAccountInfoChainId, originAccountInfoChainId != destinationAccountInfoChainId {
+            clearAccountInfoProvider(for: originAccountInfoChainId)
+        }
+
+        originAccountInfoChainId = nil
+    }
+
+    func updateOriginAccountInfoProvider(for chain: ChainModel) {
+        clearOriginAccountInfoProvider()
 
         guard let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId else {
             return
         }
 
-        accountInfoProvider = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
+        originAccountInfoChainId = chain.chainId
+
+        if accountInfoProviders[chain.chainId] == nil {
+            accountInfoProviders[chain.chainId] = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
+        }
+    }
+
+    func clearDestinationAccountInfoProvider() {
+        if let destinationAccountInfoChainId, destinationAccountInfoChainId != originAccountInfoChainId {
+            clearAccountInfoProvider(for: destinationAccountInfoChainId)
+        }
+
+        destinationAccountInfoChainId = nil
+    }
+
+    func updateDestinationAccountInfoProvider(for chain: ChainModel) {
+        clearDestinationAccountInfoProvider()
+
+        guard let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId else {
+            return
+        }
+
+        destinationAccountInfoChainId = chain.chainId
+
+        if accountInfoProviders[chain.chainId] == nil {
+            accountInfoProviders[chain.chainId] = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
+        }
     }
 
     func clearSubscriptionsByAssets(_ activeChainAssets: Set<ChainAssetId>) {
@@ -221,13 +262,19 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func setReceiveChainAssetSubscriptions(_ chainAsset: ChainAsset) {
+        updateDestinationAccountInfoProvider(for: chainAsset.chain)
+
         provideAssetBalanceExistenses(for: chainAsset)
+
+        if let utilityChainAsset = chainAsset.chain.utilityChainAsset() {
+            provideAssetBalanceExistenses(for: utilityChainAsset)
+        }
 
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     func setPayChainAssetSubscriptions(_ chainAsset: ChainAsset) {
-        updateAccountInfoProvider(for: chainAsset.chain)
+        updateOriginAccountInfoProvider(for: chainAsset.chain)
 
         provideAssetBalanceExistenses(for: chainAsset)
 
@@ -358,6 +405,8 @@ extension SwapBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorage
     ) {
         switch result {
         case let .success(accountInfo):
+            logger.debug("Did receive account info for chain \(chainId)")
+
             basePresenter?.didReceive(accountInfo: accountInfo, chainId: chainId)
         case let .failure(error):
             logger.error("Unexpected account info error: \(error)")

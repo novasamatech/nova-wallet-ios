@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class VoteRowIndicatorView: RoundedView {
     var preferredSize = CGSize(width: 4.0, height: 16.0) {

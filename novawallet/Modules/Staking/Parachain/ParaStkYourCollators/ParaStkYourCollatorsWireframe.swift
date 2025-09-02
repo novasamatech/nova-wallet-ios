@@ -8,10 +8,10 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showCollatorInfo(
-        from view: ParaStkYourCollatorsViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        from view: CollatorStkYourCollatorsViewProtocol?,
+        collatorInfo: ParachainStkCollatorSelectionInfo
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createView(
+        guard let infoView = CollatorStakingInfoViewFactory.createParachainStakingView(
             for: state,
             collatorInfo: collatorInfo
         ) else {
@@ -21,25 +21,8 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
         view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
     }
 
-    func showManageCollators(
-        from view: ParaStkYourCollatorsViewProtocol?,
-        options: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    ) {
-        guard let picker = ModalPickerFactory.createStakingManageSource(
-            options: options,
-            delegate: delegate,
-            context: context
-        ) else {
-            return
-        }
-
-        view?.controller.present(picker, animated: true, completion: nil)
-    }
-
     func showStakeMore(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
@@ -57,7 +40,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showUnstake(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
