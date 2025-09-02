@@ -6,221 +6,221 @@ import Cuckoo
 final class BrowserStateCleaningTests: XCTestCase {
     @MainActor func testRemovedWalletBrowserStateCleanerRemovesTabsAndWebViews() throws {
         // given
-        let operationQueue = OperationQueue()
-        let browserTabManager = MockDAppBrowserTabManagerProtocol()
-        let webViewPoolEraser = MockWebViewPoolEraserProtocol()
-        
-        let cleaner = RemovedWalletBrowserStateCleaner(
-            browserTabManager: browserTabManager,
-            webViewPoolEraser: webViewPoolEraser,
-            operationQueue: operationQueue
-        )
-        
-        let removedWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
-            isSelected: false,
-            order: 0
-        )
-        
+        let context = TestContext.create()
+        let removedWallet = createTestWallet()
         let tabIds: Set<UUID> = [UUID(), UUID()]
         
-        stub(browserTabManager) { stub in
-            when(stub.removeAllWrapper(for: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult(tabIds)
-            )
-        }
+        stubTabManagerForRemoval(context.browserTabManager, returning: tabIds)
         
-        var removedTabIds: Set<UUID> = []
-        stub(webViewPoolEraser) { stub in
-            when(stub.removeWebView(for: any())).then { tabId in
-                removedTabIds.insert(tabId)
-            }
-        }
+        let removedTabsCollector = stubWebViewEraser(context.webViewPoolEraser)
         
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.delete(deletedIdentifier: removedWallet.identifier)]
-            },
-            walletsBeforeChangesProvider: {
-                [removedWallet.identifier: removedWallet]
-            }
+        let cleaner = RemovedWalletBrowserStateCleaner(
+            browserTabManager: context.browserTabManager,
+            webViewPoolEraser: context.webViewPoolEraser,
+            operationQueue: context.operationQueue
         )
         
-        let expectation = XCTestExpectation()
+        let providers = createProviders(
+            changes: [.delete(deletedIdentifier: removedWallet.identifier)],
+            walletsBeforeChanges: [removedWallet.identifier: removedWallet]
+        )
         
         // when
         let wrapper = cleaner.cleanStorage(using: providers)
-        
-        wrapper.targetOperation.completionBlock = {
-            expectation.fulfill()
-        }
-        
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [expectation], timeout: 10.0)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        verify(browserTabManager, times(1)).removeAllWrapper(for: equal(to: Set([removedWallet.info.metaId])))
-        XCTAssertEqual(removedTabIds, tabIds)
+        verify(context.browserTabManager, times(1))
+            .removeAllWrapper(for: equal(to: Set([removedWallet.info.metaId])))
+        XCTAssertEqual(removedTabsCollector.tabIds, tabIds)
     }
     
     @MainActor func testUpdatedWalletBrowserStateCleanerCleansForUpdatedChainAccounts() throws {
         // given
-        let operationQueue = OperationQueue()
-        let browserTabManager = MockDAppBrowserTabManagerProtocol()
-        let webViewPoolEraser = MockWebViewPoolEraserProtocol()
-        
-        let cleaner = UpdatedWalletBrowserStateCleaner(
-            browserTabManager: browserTabManager,
-            webViewPoolEraser: webViewPoolEraser,
-            operationQueue: operationQueue
-        )
-        
-        let originalWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 1),
-            isSelected: true,
-            order: 0
-        )
+        let context = TestContext.create()
+        let originalWallet = createTestWallet(isSelected: true, chainAccounts: 1)
         
         let updatedInfo = originalWallet.info.replacingChainAccount(
             AccountGenerator.generateChainAccount()
         )
         let updatedWallet = originalWallet.replacingInfo(updatedInfo)
         
-        let tabs = [
-            DAppBrowserTab(
-                uuid: UUID(),
-                name: "Google",
-                url: URL(string: "https://google.com")!,
-                metaId: originalWallet.info.metaId,
-                createdAt: Date(),
-                renderModifiedAt: nil,
-                transportStates: nil,
-                desktopOnly: false,
-                icon: nil
-            )
-        ]
+        let tabs = [createTestTab(for: originalWallet)]
         let tabIds = Set(tabs.map(\.uuid))
         
-        stub(browserTabManager) { stub in
-            when(stub.getAllTabs(for: equal(to: Set([updatedWallet.info.metaId])))).thenReturn(
-                CompoundOperationWrapper.createWithResult(tabs)
-            )
-            when(stub.cleanTransport(for: any())).thenReturn(
-                ClosureOperation { }
-            )
-        }
+        stubTabManagerForUpdate(context.browserTabManager, returning: tabs)
         
-        var removedTabIds: Set<UUID> = []
-        stub(webViewPoolEraser) { stub in
-            when(stub.removeWebView(for: any())).then { tabId in
-                removedTabIds.insert(tabId)
-            }
-        }
+        let removedTabsCollector = stubWebViewEraser(context.webViewPoolEraser)
         
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.update(newItem: updatedWallet)]
-            },
-            walletsBeforeChangesProvider: {
-                [originalWallet.identifier: originalWallet]
-            }
+        let cleaner = UpdatedWalletBrowserStateCleaner(
+            browserTabManager: context.browserTabManager,
+            webViewPoolEraser: context.webViewPoolEraser,
+            operationQueue: context.operationQueue
         )
         
-        let expectation = XCTestExpectation()
+        let providers = createProviders(
+            changes: [.update(newItem: updatedWallet)],
+            walletsBeforeChanges: [originalWallet.identifier: originalWallet]
+        )
         
         // when
         let wrapper = cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            expectation.fulfill()
-        }
-        
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [expectation], timeout: 10.0)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        verify(browserTabManager, times(1)).cleanTransport(for: equal(to: tabIds))
-        XCTAssertEqual(removedTabIds, tabIds)
+        verify(context.browserTabManager, times(1)).cleanTransport(for: equal(to: tabIds))
+        XCTAssertEqual(removedTabsCollector.tabIds, tabIds)
     }
     
     @MainActor func testUpdatedWalletBrowserStateCleanerSkipsWhenChainAccountsUnchanged() throws {
         // given
-        let operationQueue = OperationQueue()
-        let browserTabManager = MockDAppBrowserTabManagerProtocol()
-        let webViewPoolEraser = MockWebViewPoolEraserProtocol()
-        
-        let cleaner = UpdatedWalletBrowserStateCleaner(
-            browserTabManager: browserTabManager,
-            webViewPoolEraser: webViewPoolEraser,
-            operationQueue: operationQueue
-        )
-        
-        let originalWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 1),
-            isSelected: true,
-            order: 0
-        )
+        let context = TestContext.create()
+        let originalWallet = createTestWallet(isSelected: true, chainAccounts: 1)
         
         let updatedInfo = originalWallet.info.replacingName(with: "New Name")
         let updatedWallet = originalWallet.replacingInfo(updatedInfo)
         
-        let tabs = [
-            DAppBrowserTab(
-                uuid: UUID(),
-                name: "Google",
-                url: URL(string: "https://google.com")!,
-                metaId: originalWallet.info.metaId,
-                createdAt: Date(),
-                renderModifiedAt: nil,
-                transportStates: nil,
-                desktopOnly: false,
-                icon: nil
-            )
-        ]
+        let tabs = [createTestTab(for: originalWallet)]
         
-        stub(browserTabManager) { stub in
-            when(stub.getAllTabs(for: equal(to: Set([updatedWallet.info.metaId])))).thenReturn(
-                CompoundOperationWrapper.createWithResult(tabs)
+        stub(context.browserTabManager) { stub in
+            when(stub.getAllTabs(for: equal(to: Set([updatedWallet.info.metaId]))))
+                .thenReturn(CompoundOperationWrapper.createWithResult(tabs))
+            when(stub.getAllTabs(for: equal(to: Set([]))))
+                .thenReturn(CompoundOperationWrapper.createWithResult([]))
+            when(stub.cleanTransport(for: any())).thenReturn(ClosureOperation { })
+        }
+        
+        stub(context.webViewPoolEraser) { stub in
+            when(stub.removeWebView(for: any())).thenDoNothing()
+        }
+        
+        let cleaner = UpdatedWalletBrowserStateCleaner(
+            browserTabManager: context.browserTabManager,
+            webViewPoolEraser: context.webViewPoolEraser,
+            operationQueue: context.operationQueue
+        )
+        
+        let providers = createProviders(
+            changes: [.update(newItem: updatedWallet)],
+            walletsBeforeChanges: [originalWallet.identifier: originalWallet]
+        )
+        
+        // when
+        let wrapper = cleaner.cleanStorage(using: providers)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
+        
+        // then
+        verify(context.webViewPoolEraser, never()).removeWebView(for: any())
+        verify(context.browserTabManager, never()).cleanTransport(for: any())
+    }
+}
+
+// MARK: - Private
+
+private extension BrowserStateCleaningTests {
+    struct TestContext {
+        let operationQueue: OperationQueue
+        let browserTabManager: MockDAppBrowserTabManagerProtocol
+        let webViewPoolEraser: MockWebViewPoolEraserProtocol
+        
+        @MainActor static func create() -> TestContext {
+            TestContext(
+                operationQueue: OperationQueue(),
+                browserTabManager: MockDAppBrowserTabManagerProtocol(),
+                webViewPoolEraser: MockWebViewPoolEraserProtocol()
             )
-            when(stub.getAllTabs(for: equal(to: Set([])))).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
+        }
+    }
+    
+    class RemovedTabIdsCollector {
+        var tabIds: Set<UUID> = []
+    }
+    
+    // MARK: - Helpers
+    
+    func createTestWallet(isSelected: Bool = false, order: UInt32 = 0, chainAccounts: Int = 0) -> ManagedMetaAccountModel {
+        ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: chainAccounts),
+            isSelected: isSelected,
+            order: order
+        )
+    }
+    
+    func createProviders(
+        changes: [DataProviderChange<ManagedMetaAccountModel>],
+        walletsBeforeChanges: [String: ManagedMetaAccountModel]
+    ) -> WalletStorageCleaningProviders {
+        WalletStorageCleaningProviders(
+            changesProvider: { changes },
+            walletsBeforeChangesProvider: { walletsBeforeChanges }
+        )
+    }
+    
+    func createTestTab(for wallet: ManagedMetaAccountModel) -> DAppBrowserTab {
+        DAppBrowserTab(
+            uuid: UUID(),
+            name: "Google",
+            url: URL(string: "https://google.com")!,
+            metaId: wallet.info.metaId,
+            createdAt: Date(),
+            renderModifiedAt: nil,
+            transportStates: nil,
+            desktopOnly: false,
+            icon: nil
+        )
+    }
+    
+    func executeAndWait(
+        wrapper: CompoundOperationWrapper<Void>,
+        in queue: OperationQueue,
+        timeout: TimeInterval = 10.0
+    ) throws {
+        let expectation = XCTestExpectation()
+        
+        wrapper.targetOperation.completionBlock = {
+            expectation.fulfill()
+        }
+        
+        queue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [expectation], timeout: timeout)
+        
+        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
+    }
+    
+    func stubTabManagerForRemoval(
+        _ manager: MockDAppBrowserTabManagerProtocol,
+        returning tabIds: Set<UUID>
+    ) {
+        stub(manager) { stub in
+            when(stub.removeAllWrapper(for: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult(tabIds)
+            )
+        }
+    }
+    
+    func stubTabManagerForUpdate(
+        _ manager: MockDAppBrowserTabManagerProtocol,
+        returning tabs: [DAppBrowserTab]
+    ) {
+        stub(manager) { stub in
+            when(stub.getAllTabs(for: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult(tabs)
             )
             when(stub.cleanTransport(for: any())).thenReturn(
                 ClosureOperation { }
             )
         }
-        
-        stub(webViewPoolEraser) { stub in
-            when(stub.removeWebView(for: any())).thenDoNothing()
-        }
-        
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.update(newItem: updatedWallet)]
-            },
-            walletsBeforeChangesProvider: {
-                [originalWallet.identifier: originalWallet]
+    }
+    
+    func stubWebViewEraser(
+        _ eraser: MockWebViewPoolEraserProtocol
+    ) -> RemovedTabIdsCollector {
+        let collector = RemovedTabIdsCollector()
+        stub(eraser) { stub in
+            when(stub.removeWebView(for: any())).then { tabId in
+                collector.tabIds.insert(tabId)
             }
-        )
-        
-        let expectation = XCTestExpectation()
-        
-        // when
-        let wrapper = cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            expectation.fulfill()
         }
-        
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [expectation], timeout: 10.0)
-        
-        // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        verify(webViewPoolEraser, never()).removeWebView(for: any())
-        verify(browserTabManager, never()).cleanTransport(for: any())
+        return collector
     }
 }

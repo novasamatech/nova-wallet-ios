@@ -5,304 +5,157 @@ import Operation_iOS
 import Cuckoo
 
 final class WalletNotificationsCleaningTests: XCTestCase {
+    // MARK: - Test Cases
+    
     func testRemovedWalletNotificationsCleanerRemovesSettingsForDeletedWallets() throws {
         // given
         let operationQueue = OperationQueue()
-        let common = Common.createRemoveDependencies(using: operationQueue)
+        let context = TestContext.createForRemoval(using: operationQueue)
         
-        let removedWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
-            isSelected: false,
-            order: 0
-        )
-        let keepWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
-            isSelected: true,
-            order: 1
-        )
+        let removedWallet = createTestWallet()
+        let keepWallet = createTestWallet(isSelected: true, order: 1)
         
-        let removedWalletLocal = Web3Alert.LocalWallet(
-            metaId: removedWallet.info.metaId,
-            model: Web3Alert.Wallet(
-                baseSubstrate: nil,
-                baseEthereum: nil,
-                chainSpecific: [:]
-            )
-        )
-        let keepWalletLocal = Web3Alert.LocalWallet(
-            metaId: keepWallet.info.metaId,
-            model: Web3Alert.Wallet(
-                baseSubstrate: nil,
-                baseEthereum: nil,
-                chainSpecific: [:]
-            )
-        )
+        let removedWalletLocal = createLocalWallet(for: removedWallet)
+        let keepWalletLocal = createLocalWallet(for: keepWallet)
         
-        var savedSettings: PushNotification.AllSettings?
-        stub(common.notificationsFacade) { stub in
-            when(stub.save(settings: any(), completion: any())).then { settings, completion in
-                savedSettings = settings
-                completion(.success(()))
-            }
-        }
+        let settingsCollector = stubNotificationsFacadeForSave(context.notificationsFacade)
         
-        let setupExpectation = XCTestExpectation()
-        
-        let setupWrapper = setupRemovedWalletCommonLocalSettings(
-            for: common,
+        try setupInitialSettings(
+            context: context,
             wallets: [keepWalletLocal, removedWalletLocal]
         )
-        setupWrapper.targetOperation.completionBlock = {
-            setupExpectation.fulfill()
-        }
         
-        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [setupExpectation], timeout: 10.0)
-        
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.delete(deletedIdentifier: removedWallet.identifier)]
-            },
-            walletsBeforeChangesProvider: {
-                [removedWallet.identifier: removedWallet, keepWallet.identifier: keepWallet]
-            }
+        let providers = createProviders(
+            changes: [.delete(deletedIdentifier: removedWallet.identifier)],
+            walletsBeforeChanges: [
+                removedWallet.identifier: removedWallet,
+                keepWallet.identifier: keepWallet
+            ]
         )
         
         // when
-        let cleanerExpectation = XCTestExpectation()
-        
-        let wrapper = common.cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            cleanerExpectation.fulfill()
-        }
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        wait(for: [cleanerExpectation], timeout: 10.0)
+        let wrapper = context.cleaner.cleanStorage(using: providers)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        XCTAssertNotNil(savedSettings)
-        XCTAssertEqual(savedSettings?.accountBased.wallets.count, 1)
-        XCTAssertEqual(savedSettings?.accountBased.wallets.first?.metaId, keepWallet.info.metaId)
-        verify(common.notificationsFacade, times(1)).save(settings: any(), completion: any())
+        XCTAssertNotNil(settingsCollector.settings)
+        XCTAssertEqual(settingsCollector.settings?.accountBased.wallets.count, 1)
+        XCTAssertEqual(settingsCollector.settings?.accountBased.wallets.first?.metaId, keepWallet.info.metaId)
+        verify(context.notificationsFacade, times(1)).save(settings: any(), completion: any())
     }
-        
+    
     func testRemovedWalletNotificationsCleanerSkipsWhenNoWalletsRemoved() throws {
         // given
         let operationQueue = OperationQueue()
-        let common = Common.createRemoveDependencies(using: operationQueue)
+        let context = TestContext.createForRemoval(using: operationQueue)
         
-        let wallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
-            isSelected: true,
-            order: 0
-        )
+        let wallet = createTestWallet(isSelected: true)
+        let walletLocal = createLocalWallet(for: wallet)
         
-        let walletLocal = Web3Alert.LocalWallet(
-            metaId: wallet.info.metaId,
-            model: Web3Alert.Wallet(
-                baseSubstrate: nil,
-                baseEthereum: nil,
-                chainSpecific: [:]
-            )
-        )
+        try setupInitialSettings(context: context, wallets: [walletLocal])
         
-        let setupExpectation = XCTestExpectation()
-        
-        let setupWrapper = setupRemovedWalletCommonLocalSettings(
-            for: common,
-            wallets: [walletLocal]
-        )
-        setupWrapper.targetOperation.completionBlock = {
-            setupExpectation.fulfill()
-        }
-        
-        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [setupExpectation], timeout: 10.0)
-        
-        stub(common.notificationsFacade) { stub in
+        stub(context.notificationsFacade) { stub in
             when(stub.save(settings: any(), completion: any())).then { _, completion in
                 completion(.success(()))
             }
         }
         
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: { [] },
-            walletsBeforeChangesProvider: { [wallet.identifier: wallet] }
+        let providers = createProviders(
+            changes: [],
+            walletsBeforeChanges: [wallet.identifier: wallet]
         )
         
         // when
-        let cleanerExpectation = XCTestExpectation()
-        
-        let wrapper = common.cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            cleanerExpectation.fulfill()
-        }
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        wait(for: [cleanerExpectation], timeout: 10.0)
+        let wrapper = context.cleaner.cleanStorage(using: providers)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        verify(common.notificationsFacade, never()).save(settings: any(), completion: any())
+        verify(context.notificationsFacade, never()).save(settings: any(), completion: any())
     }
     
     func testUpdatedWalletNotificationsCleanerUpdatesWhenChainAccountsChange() throws {
         // given
         let operationQueue = OperationQueue()
-        let common = Common.createUpdateDependencies(using: operationQueue)
-        
+        let context = TestContext.createForUpdate(using: operationQueue)
         let knownChainId = KnowChainId.polkadot
         
-        let originalChainAccount = AccountGenerator.generateChainAccount(with: knownChainId)
-        let originalWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(with: [originalChainAccount]),
-            isSelected: true,
-            order: 0
-        )
+        let (originalWallet, originalChainAccount) = createTestWalletWithChainAccount(chainId: knownChainId)
         
         let updatedChainAccount = AccountGenerator.generateChainAccount(with: knownChainId)
         let updatedInfo = originalWallet.info.replacingChainAccount(updatedChainAccount)
         let updatedWallet = originalWallet.replacingInfo(updatedInfo)
         
-        let initialWalletLocal = Web3Alert.LocalWallet(
-            metaId: originalWallet.info.metaId,
-            model: Web3Alert.Wallet(
-                baseSubstrate: nil,
-                baseEthereum: nil,
-                chainSpecific: [knownChainId: try! originalChainAccount.accountId.toAddressWithDefaultConversion()]
-            )
+        let initialWalletLocal = createLocalWallet(
+            for: originalWallet,
+            chainSpecific: [knownChainId: try! originalChainAccount.accountId.toAddressWithDefaultConversion()]
         )
         
-        let setupExpectation = XCTestExpectation()
-        
-        let setupWrapper = setupUpdatedWalletCommonLocalSettings(
-            for: common,
+        try setupInitialSettings(
+            context: context,
             wallets: [initialWalletLocal],
             chainId: knownChainId
         )
-        setupWrapper.targetOperation.completionBlock = {
-            setupExpectation.fulfill()
-        }
         
-        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
+        let settingsCollector = stubNotificationsFacadeForSave(context.notificationsFacade)
         
-        wait(for: [setupExpectation], timeout: 10.0)
-        
-        var savedSettings: PushNotification.AllSettings?
-        stub(common.notificationsFacade) { stub in
-            when(stub.save(settings: any(), completion: any())).then { settings, completion in
-                savedSettings = settings
-                completion(.success(()))
-            }
-        }
-        
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.update(newItem: updatedWallet)]
-            },
-            walletsBeforeChangesProvider: {
-                [originalWallet.identifier: originalWallet]
-            }
+        let providers = createProviders(
+            changes: [.update(newItem: updatedWallet)],
+            walletsBeforeChanges: [originalWallet.identifier: originalWallet]
         )
         
         // when
-        let cleanerExpectation = XCTestExpectation()
-        
-        let wrapper = common.cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            cleanerExpectation.fulfill()
-        }
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        wait(for: [cleanerExpectation], timeout: 10.0)
+        let wrapper = context.cleaner.cleanStorage(using: providers)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        XCTAssertNotNil(savedSettings)
+        XCTAssertNotNil(settingsCollector.settings)
+        XCTAssertEqual(settingsCollector.settings?.accountBased.wallets.count, 1)
+        XCTAssertEqual(settingsCollector.settings?.accountBased.wallets.first?.metaId, updatedWallet.info.metaId)
         
-        XCTAssertEqual(savedSettings?.accountBased.wallets.count, 1)
-        XCTAssertEqual(savedSettings?.accountBased.wallets.first?.metaId, updatedWallet.info.metaId)
-        
-        let savedChainSpecific = savedSettings?.accountBased.wallets.first?.model.chainSpecific
+        let savedChainSpecific = settingsCollector.settings?.accountBased.wallets.first?.model.chainSpecific
         XCTAssertEqual(
             savedChainSpecific?[knownChainId],
             try! updatedChainAccount.accountId.toAddressWithDefaultConversion()
         )
         
-        verify(common.notificationsFacade, times(1)).save(settings: any(), completion: any())
+        verify(context.notificationsFacade, times(1)).save(settings: any(), completion: any())
     }
-
+    
     func testUpdatedWalletNotificationsCleanerSkipsWhenChainAccountsUnchanged() throws {
         // given
         let operationQueue = OperationQueue()
-        let common = Common.createUpdateDependencies(using: operationQueue)
+        let context = TestContext.createForUpdate(using: operationQueue)
         
-        let originalWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 1),
-            isSelected: true,
-            order: 0
-        )
-        
+        let originalWallet = createTestWallet(isSelected: true, chainAccounts: 1)
         let updatedInfo = originalWallet.info.replacingName(with: "New Name")
         let updatedWallet = originalWallet.replacingInfo(updatedInfo)
         
-        let initialWalletLocal = Web3Alert.LocalWallet(
-            metaId: originalWallet.info.metaId,
-            model: Web3Alert.Wallet(
-                baseSubstrate: nil,
-                baseEthereum: nil,
-                chainSpecific: [:]
-            )
-        )
+        let initialWalletLocal = createLocalWallet(for: originalWallet)
         
-        let setupExpectation = XCTestExpectation()
+        try setupInitialSettings(context: context, wallets: [initialWalletLocal])
         
-        let setupWrapper = setupUpdatedWalletCommonLocalSettings(
-            for: common,
-            wallets: [initialWalletLocal]
-        )
-        setupWrapper.targetOperation.completionBlock = {
-            setupExpectation.fulfill()
-        }
-        
-        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
-        
-        wait(for: [setupExpectation], timeout: 10.0)
-        
-        stub(common.notificationsFacade) { stub in
+        stub(context.notificationsFacade) { stub in
             when(stub.save(settings: any(), completion: any())).thenDoNothing()
         }
         
-        let providers = WalletStorageCleaningProviders(
-            changesProvider: {
-                [DataProviderChange.update(newItem: updatedWallet)]
-            },
-            walletsBeforeChangesProvider: {
-                [originalWallet.identifier: originalWallet]
-            }
+        let providers = createProviders(
+            changes: [.update(newItem: updatedWallet)],
+            walletsBeforeChanges: [originalWallet.identifier: originalWallet]
         )
         
         // when
-        let cleanerExpectation = XCTestExpectation()
-        
-        let wrapper = common.cleaner.cleanStorage(using: providers)
-        wrapper.targetOperation.completionBlock = {
-            cleanerExpectation.fulfill()
-        }
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        wait(for: [cleanerExpectation], timeout: 10.0)
+        let wrapper = context.cleaner.cleanStorage(using: providers)
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
         
         // then
-        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
-        verify(common.notificationsFacade, never()).save(settings: any(), completion: any())
+        verify(context.notificationsFacade, never()).save(settings: any(), completion: any())
     }
-
 }
 
-// MARK: - Common
+// MARK: - Private
 
-extension WalletNotificationsCleaningTests {
-    struct Common {
+private extension WalletNotificationsCleaningTests {
+    struct TestContext {
         let operationQueue: OperationQueue
         let notificationsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>
         let topicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>
@@ -311,74 +164,83 @@ extension WalletNotificationsCleaningTests {
         let chainRepository: AnyDataProviderRepository<ChainModel>?
         let cleaner: WalletStorageCleaning
         
-        static func createRemoveDependencies(using operationQueue: OperationQueue) -> Common {
-            let facade = UserDataStorageTestFacade()
-            
-            let notificationsRepository = AnyDataProviderRepository(
-                facade.createRepository(
-                    filter: .pushSettings,
-                    sortDescriptors: [],
-                    mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
-                )
-            )
-            let topicsRepository = AnyDataProviderRepository(
-                facade.createRepository(
-                    filter: .topicSettings,
-                    sortDescriptors: [],
-                    mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
-                )
-            )
-            
-            let notificationsFacade = MockPushNotificationsServiceFacadeProtocol()
-            let settingsManager = MockSettingsManagerProtocol()
-            
-            stub(settingsManager) { stub in
-                when(stub.bool(for: SettingsKey.notificationsEnabled.rawValue)).thenReturn(true)
-            }
+        static func createForRemoval(using operationQueue: OperationQueue) -> TestContext {
+            let context = createBaseContext(using: operationQueue)
             
             let cleaner = RemovedWalletNotificationsCleaner(
-                notificationsSettingsRepository: notificationsRepository,
-                notificationsTopicsRepository: topicsRepository,
-                notificationsFacade: notificationsFacade,
-                settingsManager: settingsManager,
+                notificationsSettingsRepository: context.notificationsRepository,
+                notificationsTopicsRepository: context.topicsRepository,
+                notificationsFacade: context.notificationsFacade,
+                settingsManager: context.settingsManager,
                 operationQueue: operationQueue
             )
             
-            return Common(
+            return TestContext(
                 operationQueue: operationQueue,
-                notificationsRepository: notificationsRepository,
-                topicsRepository: topicsRepository,
-                notificationsFacade: notificationsFacade,
-                settingsManager: settingsManager,
+                notificationsRepository: context.notificationsRepository,
+                topicsRepository: context.topicsRepository,
+                notificationsFacade: context.notificationsFacade,
+                settingsManager: context.settingsManager,
                 chainRepository: nil,
                 cleaner: cleaner
             )
         }
         
-        static func createUpdateDependencies(using operationQueue: OperationQueue) -> Common {
-            let userStorageFacade = UserDataStorageTestFacade()
+        static func createForUpdate(using operationQueue: OperationQueue) -> TestContext {
+            let context = createBaseContext(using: operationQueue)
             let substrateStorageFacade = SubstrateStorageTestFacade()
             
-            let notificationsRepository = AnyDataProviderRepository(
-                userStorageFacade.createRepository(
-                    filter: .pushSettings,
-                    sortDescriptors: [],
-                    mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
-                )
-            )
-            let topicsRepository = AnyDataProviderRepository(
-                userStorageFacade.createRepository(
-                    filter: .topicSettings,
-                    sortDescriptors: [],
-                    mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
-                )
-            )
             let chainRepository = AnyDataProviderRepository(
                 substrateStorageFacade.createRepository(
                     mapper: AnyCoreDataMapper(ChainModelMapper())
                 )
             )
             
+            let cleaner = UpdatedWalletNotificationsCleaner(
+                pushNotificationSettingsFactory: PushNotificationSettingsFactory(),
+                chainRepository: chainRepository,
+                notificationsSettingsRepository: context.notificationsRepository,
+                notificationsTopicsRepository: context.topicsRepository,
+                notificationsFacade: context.notificationsFacade,
+                settingsManager: context.settingsManager,
+                operationQueue: operationQueue
+            )
+            
+            return TestContext(
+                operationQueue: operationQueue,
+                notificationsRepository: context.notificationsRepository,
+                topicsRepository: context.topicsRepository,
+                notificationsFacade: context.notificationsFacade,
+                settingsManager: context.settingsManager,
+                chainRepository: chainRepository,
+                cleaner: cleaner
+            )
+        }
+        
+        private static func createBaseContext(using operationQueue: OperationQueue) -> (
+            notificationsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
+            topicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>,
+            notificationsFacade: MockPushNotificationsServiceFacadeProtocol,
+            settingsManager: MockSettingsManagerProtocol
+        ) {
+            let userStorageFacade = UserDataStorageTestFacade()
+            
+            let notificationsRepository = AnyDataProviderRepository(
+                userStorageFacade.createRepository(
+                    filter: .pushSettings,
+                    sortDescriptors: [],
+                    mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+                )
+            )
+            
+            let topicsRepository = AnyDataProviderRepository(
+                userStorageFacade.createRepository(
+                    filter: .topicSettings,
+                    sortDescriptors: [],
+                    mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
+                )
+            )
+            
             let notificationsFacade = MockPushNotificationsServiceFacadeProtocol()
             let settingsManager = MockSettingsManagerProtocol()
             
@@ -386,31 +248,84 @@ extension WalletNotificationsCleaningTests {
                 when(stub.bool(for: SettingsKey.notificationsEnabled.rawValue)).thenReturn(true)
             }
             
-            let cleaner = UpdatedWalletNotificationsCleaner(
-                pushNotificationSettingsFactory: PushNotificationSettingsFactory(),
-                chainRepository: chainRepository,
-                notificationsSettingsRepository: notificationsRepository,
-                notificationsTopicsRepository: topicsRepository,
-                notificationsFacade: notificationsFacade,
-                settingsManager: settingsManager,
-                operationQueue: operationQueue
-            )
-            
-            return Common(
-                operationQueue: operationQueue,
-                notificationsRepository: notificationsRepository,
-                topicsRepository: topicsRepository,
-                notificationsFacade: notificationsFacade,
-                settingsManager: settingsManager,
-                chainRepository: chainRepository,
-                cleaner: cleaner
-            )
+            return (notificationsRepository, topicsRepository, notificationsFacade, settingsManager)
         }
     }
     
-    func setupWalletCommonLocalSettings(
-        for dependencies: Common,
-        wallets: [Web3Alert.LocalWallet]
+    class SavedSettingsCollector {
+        var settings: PushNotification.AllSettings?
+    }
+    
+    // MARK: - Helpers
+    
+    func createTestWallet(
+        isSelected: Bool = false,
+        order: UInt32 = 0,
+        chainAccounts: Int = 0
+    ) -> ManagedMetaAccountModel {
+        ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: chainAccounts),
+            isSelected: isSelected,
+            order: order
+        )
+    }
+    
+    func createTestWalletWithChainAccount(
+        isSelected: Bool = true,
+        order: UInt32 = 0,
+        chainId: ChainModel.Id
+    ) -> (wallet: ManagedMetaAccountModel, chainAccount: ChainAccountModel) {
+        let chainAccount = AccountGenerator.generateChainAccount(with: chainId)
+        let wallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(with: [chainAccount]),
+            isSelected: isSelected,
+            order: order
+        )
+        return (wallet, chainAccount)
+    }
+    
+    func createLocalWallet(
+        for wallet: ManagedMetaAccountModel,
+        chainSpecific: [String: String] = [:]
+    ) -> Web3Alert.LocalWallet {
+        Web3Alert.LocalWallet(
+            metaId: wallet.info.metaId,
+            model: Web3Alert.Wallet(
+                baseSubstrate: nil,
+                baseEthereum: nil,
+                chainSpecific: chainSpecific
+            )
+        )
+    }
+    
+    func createProviders(
+        changes: [DataProviderChange<ManagedMetaAccountModel>],
+        walletsBeforeChanges: [String: ManagedMetaAccountModel]
+    ) -> WalletStorageCleaningProviders {
+        WalletStorageCleaningProviders(
+            changesProvider: { changes },
+            walletsBeforeChangesProvider: { walletsBeforeChanges }
+        )
+    }
+    
+    func setupInitialSettings(
+        context: TestContext,
+        wallets: [Web3Alert.LocalWallet],
+        chainId: ChainModel.Id? = nil
+    ) throws {
+        let wrapper = createInitialSettingsSetupWrapper(
+            context: context,
+            wallets: wallets,
+            chainId: chainId
+        )
+        
+        try executeAndWait(wrapper: wrapper, in: context.operationQueue)
+    }
+    
+    func createInitialSettingsSetupWrapper(
+        context: TestContext,
+        wallets: [Web3Alert.LocalWallet],
+        chainId: ChainModel.Id? = nil
     ) -> CompoundOperationWrapper<Void> {
         let initialSettings = Web3Alert.LocalSettings(
             remoteIdentifier: UUID().uuidString,
@@ -424,75 +339,73 @@ extension WalletNotificationsCleaningTests {
             )
         )
         
-        let saveSettingsOperation = dependencies.notificationsRepository.saveOperation(
+        let saveSettingsOperation = context.notificationsRepository.saveOperation(
             { [initialSettings] },
             { [] }
         )
-        let saveTopicsOperation = dependencies.topicsRepository.saveOperation(
+        
+        let saveTopicsOperation = context.topicsRepository.saveOperation(
             { [PushNotification.TopicSettings(topics: [])] },
             { [] }
         )
-        let resultOperation = ClosureOperation<Void> {
-            try saveSettingsOperation.extractNoCancellableResultData()
-            try saveTopicsOperation.extractNoCancellableResultData()
+        
+        var allOperations = [saveSettingsOperation, saveTopicsOperation]
+        
+        // Add chain setup if needed
+        if let chainId, let chainRepository = context.chainRepository {
+            let chain = ChainModelGenerator.generateChain(
+                defaultChainId: chainId,
+                generatingAssets: 2,
+                addressPrefix: ChainModel.AddressPrefix(0),
+                hasCrowdloans: true
+            )
+            
+            let chainSaveOperation = chainRepository.saveOperation({ [chain] }, { [] })
+            allOperations.append(chainSaveOperation)
         }
         
-        resultOperation.addDependency(saveSettingsOperation)
-        resultOperation.addDependency(saveTopicsOperation)
+        let resultOperation = ClosureOperation<Void> {
+            for operation in allOperations {
+                try operation.extractNoCancellableResultData()
+            }
+        }
+        
+        allOperations.forEach { resultOperation.addDependency($0) }
         
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: [saveSettingsOperation, saveTopicsOperation]
+            dependencies: allOperations
         )
     }
     
-    func setupRemovedWalletCommonLocalSettings(
-        for dependencies: Common,
-        wallets: [Web3Alert.LocalWallet]
-    ) -> CompoundOperationWrapper<Void> {
-        setupWalletCommonLocalSettings(
-            for: dependencies,
-            wallets: wallets
-        )
+    func executeAndWait(
+        wrapper: CompoundOperationWrapper<Void>,
+        in queue: OperationQueue,
+        timeout: TimeInterval = 10.0
+    ) throws {
+        let expectation = XCTestExpectation()
+        
+        wrapper.targetOperation.completionBlock = {
+            expectation.fulfill()
+        }
+        
+        queue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [expectation], timeout: timeout)
+        
+        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
     }
     
-    func setupUpdatedWalletCommonLocalSettings(
-        for dependencies: Common,
-        wallets: [Web3Alert.LocalWallet],
-        chainId: ChainModel.Id? = nil
-    ) -> CompoundOperationWrapper<Void> {
-        let commonSetupWrapper = setupWalletCommonLocalSettings(
-            for: dependencies,
-            wallets: wallets
-        )
-        
-        guard let chainRepository = dependencies.chainRepository else {
-            return commonSetupWrapper
+    func stubNotificationsFacadeForSave(
+        _ facade: MockPushNotificationsServiceFacadeProtocol
+    ) -> SavedSettingsCollector {
+        let collector = SavedSettingsCollector()
+        stub(facade) { stub in
+            when(stub.save(settings: any(), completion: any())).then { settings, completion in
+                collector.settings = settings
+                completion(.success(()))
+            }
         }
         
-        let chain = ChainModelGenerator.generateChain(
-            defaultChainId: chainId,
-            generatingAssets: 2,
-            addressPrefix: ChainModel.AddressPrefix(0),
-            hasCrowdloans: true
-        )
-        
-        let chainSaveOperation = chainRepository.saveOperation(
-            { [chain] },
-            { [] }
-        )
-        
-        let resultOperation = ClosureOperation<Void> {
-            try commonSetupWrapper.targetOperation.extractNoCancellableResultData()
-            try chainSaveOperation.extractNoCancellableResultData()
-        }
-        
-        resultOperation.addDependency(commonSetupWrapper.targetOperation)
-        resultOperation.addDependency(chainSaveOperation)
-        
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: commonSetupWrapper.allOperations + [chainSaveOperation]
-        )
+        return collector
     }
 }
