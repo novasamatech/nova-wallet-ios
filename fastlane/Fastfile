@@ -89,7 +89,7 @@ platform :ios do
     
     ios_app_version = ENV["IOS_APP_VERSION"]
     latest_testflight_version = lane_context[:LATEST_TESTFLIGHT_VERSION]
-    # Increment patch version of latest_testflight_version (semver: "1.2.3" -> "1.2.4")
+
     if latest_testflight_version
       parts = latest_testflight_version.split('.').map(&:to_i)
       if parts.length == 3
