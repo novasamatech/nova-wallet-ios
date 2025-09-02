@@ -89,11 +89,21 @@ platform :ios do
     
     ios_app_version = ENV["IOS_APP_VERSION"]
     latest_testflight_version = lane_context[:LATEST_TESTFLIGHT_VERSION]
+    # Increment patch version of latest_testflight_version (semver: "1.2.3" -> "1.2.4")
+    if latest_testflight_version
+      parts = latest_testflight_version.split('.').map(&:to_i)
+      if parts.length == 3
+        incremented_testflight_version = "#{parts[0]}.#{parts[1]}.#{parts[2] + 1}"
+      else
+        UI.user_error!("Invalid semver format for latest_testflight_version: #{latest_testflight_version}")
+      end
+    else
+      UI.user_error!("LATEST_TESTFLIGHT_VERSION not found in lane_context")
+    end
 
     UI.message("Comparing versions: iOS App Version: #{ios_app_version}, Latest TestFlight Version: #{latest_testflight_version}")
 
-    # Use the greater version (lexicographically, which works for standard semver)
-    version_to_use = [ios_app_version, latest_testflight_version].max
+    version_to_use = [ios_app_version, incremented_testflight_version].max
 
     UI.message("Using version: #{version_to_use}")
     increment_version_number(
