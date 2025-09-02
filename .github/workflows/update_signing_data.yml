@@ -11,6 +11,7 @@ on:
 
 env:
   XCODE_VERSION: '16.2'
+  BUILD_NUMBER: ${{ github.run_number }}
 
 jobs:
   update_signing_data:

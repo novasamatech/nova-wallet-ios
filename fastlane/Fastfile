@@ -84,11 +84,6 @@ platform :ios do
       app_identifiers: main_app_identifier,
       notification_service_identifier: testflight_notification_service_identifier
     )
-    latest_build = latest_testflight_build_number(
-      app_identifier: main_app_identifier,
-      version: ENV["IOS_APP_VERSION"]
-    )
-    new_build_number = latest_build + 1
 
     increment_version_number(
       version_number: ENV["IOS_APP_VERSION"],
@@ -99,7 +94,6 @@ platform :ios do
       scheme: testflight_distribution_scheme,
       target: main_target,
       configuration: testflight_distribution_configuration,
-      build_number: new_build_number,
       app_identifier: main_app_identifier,
       notification_service_identifier: testflight_notification_service_identifier,
       notification_target: notification_target

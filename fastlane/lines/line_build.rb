@@ -27,12 +27,12 @@ lane :base_build_app do |options|
   clean_build_artifacts
 
   increment_build_number(
-    build_number: options[:build_number],
+    build_number: ENV["BUILD_NUMBER"],
     xcodeproj: xcodeproj_path
   )
 
   increment_build_number(
-    build_number: options[:build_number],
+    build_number: ENV["BUILD_NUMBER"],
     xcodeproj: notification_path
   )
 
