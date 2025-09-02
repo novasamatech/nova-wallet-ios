@@ -85,8 +85,19 @@ platform :ios do
       notification_service_identifier: testflight_notification_service_identifier
     )
 
+    latest_testflight_build_number()
+    
+    ios_app_version = ENV["IOS_APP_VERSION"]
+    latest_testflight_version = lane_context[:LATEST_TESTFLIGHT_VERSION]
+
+    UI.message("Comparing versions: iOS App Version: #{ios_app_version}, Latest TestFlight Version: #{latest_testflight_version}")
+
+    # Use the greater version (lexicographically, which works for standard semver)
+    version_to_use = [ios_app_version, latest_testflight_version].max
+
+    UI.message("Using version: #{version_to_use}")
     increment_version_number(
-      version_number: ENV["IOS_APP_VERSION"],
+      version_number: version_to_use,
       xcodeproj: "./#{main_target}.xcodeproj"
     )
 

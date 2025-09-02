@@ -15,7 +15,7 @@ on:
 
 env:
   XCODE_VERSION: '16.4'
-  IOS_APP_VERSION: '9.4.2'
+  IOS_APP_VERSION: ${{ secrets.IOS_APP_VERSION }}
   BUILD_NUMBER: ${{ github.run_number }}
 
 jobs:
