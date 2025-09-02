@@ -48,7 +48,7 @@ final class RemovedWalletNotificationsCleaner: WalletNotificationsCleaner {
                 let settings = try settingsOperation.extractNoCancellableResultData().first,
                 let topicSettings = try topicsOperation.extractNoCancellableResultData().first
             else {
-                throw RemovedWalletNotificationsCleanerError.settingsNotFound
+                return nil
             }
 
             let updatedWallets = settings.wallets.filter { !metaIds.contains($0.metaId) }

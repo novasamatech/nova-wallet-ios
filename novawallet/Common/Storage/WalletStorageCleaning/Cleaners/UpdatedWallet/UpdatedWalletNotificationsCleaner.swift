@@ -62,7 +62,7 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
                 let settings = try settingsOperation.extractNoCancellableResultData().first,
                 let topicSettings = try topicsOperation.extractNoCancellableResultData().first
             else {
-                throw RemovedWalletNotificationsCleanerError.settingsNotFound
+                return nil
             }
 
             let settingsWallets = metaAccountsToRegister

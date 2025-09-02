@@ -291,6 +291,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
         selectedWalletUpdateOperation.addDependency(cleanerWrapper.targetOperation)
 
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
+            try saveOperation.extractNoCancellableResultData()
             try cleanerWrapper.targetOperation.extractNoCancellableResultData()
             let isWalletSwitched = try selectedWalletUpdateOperation.extractNoCancellableResultData()
             let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().walletToSelect
@@ -298,7 +299,9 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             return .init(selectedWallet: currentWallet, isWalletSwitched: isWalletSwitched)
         }
 
+        resultOperation.addDependency(saveOperation)
         resultOperation.addDependency(selectedWalletUpdateOperation)
+        resultOperation.addDependency(newSelectedWalletOperation)
 
         let dependencies = [
             allWalletsOperation,
