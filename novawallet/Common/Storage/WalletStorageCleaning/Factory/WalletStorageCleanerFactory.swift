@@ -17,7 +17,7 @@ enum WalletStorageCleanerFactory {
         let updateNotificationsSettingsCleaner = createUpdatedNotificationsSettingsCleaner(
             operationQueue: operationQueue
         )
-        
+
         // Add every cleaner to the array
         // in the same order it should get called
         let cleaners = [
@@ -27,52 +27,52 @@ enum WalletStorageCleanerFactory {
             updateNotificationsSettingsCleaner,
             updatedBrowserStateCleaner
         ]
-        
+
         let mainCleaner = WalletStorageCleaner(cleanersCascade: cleaners)
-        
+
         return mainCleaner
     }
-    
+
     // Remove
-    
+
     private static func createRemovedWalletBrowserStateCleaner(
         using operationQueue: OperationQueue
     ) -> WalletStorageCleaning {
         let browserTabManager = DAppBrowserTabManager.shared
         let webViewPoolEraser = WebViewPool.shared
-        
+
         let browserStateCleaner = RemovedWalletBrowserStateCleaner(
             browserTabManager: browserTabManager,
             webViewPoolEraser: webViewPoolEraser,
             operationQueue: operationQueue
         )
-        
+
         return browserStateCleaner
     }
-    
+
     private static func createRemovedWalletDAppSettingsCleaner() -> WalletStorageCleaning {
         let mapper = DAppSettingsMapper()
         let storageFacade = UserDataStorageFacade.shared
-        
+
         let repository = storageFacade.createRepository(
             filter: nil,
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
         let authorizedDAppRepository = AnyDataProviderRepository(repository)
-        
+
         let dappSettingsCleaner = RemovedWalletDAppSettingsCleaner(
             authorizedDAppRepository: authorizedDAppRepository
         )
-        
+
         return dappSettingsCleaner
     }
-    
+
     private static func createRemovedNotificationsSettingsCleaner(
         operationQueue: OperationQueue
     ) -> WalletStorageCleaning {
         let storageFacade = UserDataStorageFacade.shared
-        
+
         let notificationsSettingsRepository = storageFacade.createRepository(
             filter: .pushSettings,
             sortDescriptors: [],
@@ -83,7 +83,7 @@ enum WalletStorageCleanerFactory {
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
         )
-        
+
         return RemovedWalletNotificationsCleaner(
             notificationsSettingsRepository: AnyDataProviderRepository(notificationsSettingsRepository),
             notificationsTopicsRepository: AnyDataProviderRepository(topicsSettingsRepository),
@@ -92,29 +92,29 @@ enum WalletStorageCleanerFactory {
             operationQueue: operationQueue
         )
     }
-    
+
     // Update
-    
+
     private static func createUpdatedWalletBrowserStateCleaner(
         using operationQueue: OperationQueue
     ) -> WalletStorageCleaning {
         let browserTabManager = DAppBrowserTabManager.shared
         let webViewPoolEraser = WebViewPool.shared
-        
+
         let browserStateCleaner = UpdatedWalletBrowserStateCleaner(
             browserTabManager: browserTabManager,
             webViewPoolEraser: webViewPoolEraser,
             operationQueue: operationQueue
         )
-        
+
         return browserStateCleaner
     }
-    
+
     private static func createUpdatedNotificationsSettingsCleaner(
         operationQueue: OperationQueue
     ) -> WalletStorageCleaning {
         let storageFacade = UserDataStorageFacade.shared
-        
+
         let notificationsSettingsRepository = storageFacade.createRepository(
             filter: .pushSettings,
             sortDescriptors: [],
@@ -128,7 +128,7 @@ enum WalletStorageCleanerFactory {
         let chainRepository = SubstrateDataStorageFacade.shared.createRepository(
             mapper: AnyCoreDataMapper(ChainModelMapper())
         )
-        
+
         return UpdatedWalletNotificationsCleaner(
             pushNotificationSettingsFactory: PushNotificationSettingsFactory(),
             chainRepository: AnyDataProviderRepository(chainRepository),
