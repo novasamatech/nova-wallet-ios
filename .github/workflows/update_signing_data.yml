@@ -10,7 +10,7 @@ on:
     - cron: '0 10 * * *' # 10:00 AM every day
 
 env:
-  XCODE_VERSION: '16.2'
+  XCODE_VERSION: '16.4'
   BUILD_NUMBER: ${{ github.run_number }}
 
 jobs:

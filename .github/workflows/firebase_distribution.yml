@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  XCODE_VERSION: '16.2'
+  XCODE_VERSION: '16.4'
   BUILD_NUMBER: ${{ github.run_number }}
   FIREBASE_GROUPS: dev-team
   RELEASE_NOTES: ${{ github.event.head_commit.message }}
