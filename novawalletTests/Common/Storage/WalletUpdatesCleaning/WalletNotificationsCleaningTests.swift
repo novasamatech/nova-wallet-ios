@@ -152,15 +152,17 @@ final class WalletNotificationsCleaningTests: XCTestCase {
         let operationQueue = OperationQueue()
         let common = Common.createUpdateDependencies(using: operationQueue)
         
+        let knownChainId = KnowChainId.polkadot
+        
+        let originalChainAccount = AccountGenerator.generateChainAccount(with: knownChainId)
         let originalWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 1),
+            info: AccountGenerator.generateMetaAccount(with: [originalChainAccount]),
             isSelected: true,
             order: 0
         )
         
-        let updatedInfo = originalWallet.info.replacingChainAccount(
-            AccountGenerator.generateChainAccount(with: originalWallet.info.chainAccounts.first!.chainId)
-        )
+        let updatedChainAccount = AccountGenerator.generateChainAccount(with: knownChainId)
+        let updatedInfo = originalWallet.info.replacingChainAccount(updatedChainAccount)
         let updatedWallet = originalWallet.replacingInfo(updatedInfo)
         
         let initialWalletLocal = Web3Alert.LocalWallet(
@@ -168,7 +170,7 @@ final class WalletNotificationsCleaningTests: XCTestCase {
             model: Web3Alert.Wallet(
                 baseSubstrate: nil,
                 baseEthereum: nil,
-                chainSpecific: [:]
+                chainSpecific: [knownChainId: try! originalChainAccount.accountId.toAddressWithDefaultConversion()]
             )
         )
         
@@ -176,7 +178,8 @@ final class WalletNotificationsCleaningTests: XCTestCase {
         
         let setupWrapper = setupUpdatedWalletCommonLocalSettings(
             for: common,
-            wallets: [initialWalletLocal]
+            wallets: [initialWalletLocal],
+            chainId: knownChainId
         )
         setupWrapper.targetOperation.completionBlock = {
             setupExpectation.fulfill()
@@ -219,6 +222,12 @@ final class WalletNotificationsCleaningTests: XCTestCase {
         
         XCTAssertEqual(savedSettings?.accountBased.wallets.count, 1)
         XCTAssertEqual(savedSettings?.accountBased.wallets.first?.metaId, updatedWallet.info.metaId)
+        
+        let savedChainSpecific = savedSettings?.accountBased.wallets.first?.model.chainSpecific
+        XCTAssertEqual(
+            savedChainSpecific?[knownChainId],
+            try! updatedChainAccount.accountId.toAddressWithDefaultConversion()
+        )
         
         verify(common.notificationsFacade, times(1)).save(settings: any(), completion: any())
     }
@@ -287,6 +296,7 @@ final class WalletNotificationsCleaningTests: XCTestCase {
         XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
         verify(common.notificationsFacade, never()).save(settings: any(), completion: any())
     }
+
 }
 
 // MARK: - Common
@@ -448,7 +458,8 @@ extension WalletNotificationsCleaningTests {
     
     func setupUpdatedWalletCommonLocalSettings(
         for dependencies: Common,
-        wallets: [Web3Alert.LocalWallet]
+        wallets: [Web3Alert.LocalWallet],
+        chainId: ChainModel.Id? = nil
     ) -> CompoundOperationWrapper<Void> {
         let commonSetupWrapper = setupWalletCommonLocalSettings(
             for: dependencies,
@@ -460,6 +471,7 @@ extension WalletNotificationsCleaningTests {
         }
         
         let chain = ChainModelGenerator.generateChain(
+            defaultChainId: chainId,
             generatingAssets: 2,
             addressPrefix: ChainModel.AddressPrefix(0),
             hasCrowdloans: true
