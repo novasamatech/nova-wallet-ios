@@ -19,6 +19,7 @@ extension MultisigPendingOperationsService {
         let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
+            configProvider: GlobalConfigProvider.shared,
             operationManager: pendingMultisigOperationManager,
             operationQueue: pendingMultisigQueue
         )

@@ -16,6 +16,14 @@ extension DelegatedAccount {
         func getOtherSignatoriesInOrder() -> [AccountId] {
             otherSignatories.sorted { $0.lexicographicallyPrecedes($1) }
         }
+
+        var isNotRevoked: Bool {
+            status != .revoked
+        }
+
+        var isRevoked: Bool {
+            status == .revoked
+        }
     }
 }
 

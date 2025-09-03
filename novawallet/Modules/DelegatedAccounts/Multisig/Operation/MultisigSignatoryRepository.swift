@@ -59,7 +59,7 @@ private extension MultisigSignatoryRepository {
                     .first {
                     delegate = Multisig.LocalSignatory.Delegate(
                         metaAccount: delegateAccount,
-                        delegationType: delegationId.delegationType
+                        delegationType: delegationId.delegateType
                     )
                 }
 
