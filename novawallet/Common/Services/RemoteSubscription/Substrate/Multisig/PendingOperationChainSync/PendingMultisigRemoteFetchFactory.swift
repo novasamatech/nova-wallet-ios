@@ -13,6 +13,7 @@ final class PendingMultisigRemoteFetchFactory {
     private let pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol
     private let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     private let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
+    private let offchainFactory: OffchainMultisigOperationsFactoryProtocol
     private let operationManager: OperationManagerProtocol
 
     init(
@@ -22,6 +23,7 @@ final class PendingMultisigRemoteFetchFactory {
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
+        configProvider: GlobalConfigProviding,
         operationManager: OperationManagerProtocol
     ) {
         self.multisigAccountId = multisigAccountId
@@ -31,6 +33,11 @@ final class PendingMultisigRemoteFetchFactory {
         self.blockTimeOperationFactory = blockTimeOperationFactory
         self.blockNumberOperationFactory = blockNumberOperationFactory
         self.operationManager = operationManager
+        offchainFactory = OffchainMultisigOperationsFactoryFacade(
+            configProvider: configProvider,
+            chainId: chain.chainId,
+            operationManager: operationManager
+        )
     }
 }
 
@@ -71,14 +78,10 @@ private extension PendingMultisigRemoteFetchFactory {
                 return .createWithResult([:])
             }
 
-            let remoteCallDataFetchFactory = SubqueryMultisigsOperationFactory(url: apiURL)
-
-            let operationInfoFetchOperation = remoteCallDataFetchFactory.createFetchOffChainOperationInfo(
+            return offchainFactory.createFetchOffChainOperationInfo(
                 for: multisigAccountId,
                 callHashes: Set(callHashes)
             )
-
-            return CompoundOperationWrapper(targetOperation: operationInfoFetchOperation)
         }
     }
 

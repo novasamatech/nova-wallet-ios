@@ -8,7 +8,7 @@ protocol AccountDelegationPathValue {
         context: RuntimeJsonContext
     ) throws -> JSON
 
-    var delegationType: DelegationType { get }
+    var delegationType: DelegationResolution.ItemType { get }
 
     func delaysCallExecution() -> Bool
 }
@@ -31,6 +31,20 @@ extension DelegationResolution {
     struct PathFinderResult {
         let delegate: MetaChainAccountResponse
         let callToPath: [CallCodingPath: PathFinderPath]
+    }
+
+    enum ItemType {
+        case proxy(Proxy.ProxyType)
+        case multisig
+
+        var delegationClass: DelegationClass {
+            switch self {
+            case .proxy:
+                .proxy
+            case .multisig:
+                .multisig
+            }
+        }
     }
 
     final class PathFinder {
@@ -190,7 +204,7 @@ extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
         let proxyType: Proxy.ProxyType
 
-        var delegationType: DelegationType {
+        var delegationType: DelegationResolution.ItemType {
             .proxy(proxyType)
         }
 
@@ -217,7 +231,7 @@ extension DelegationResolution.PathFinder {
         let threshold: UInt16
         let signatories: [AccountId]
 
-        var delegationType: DelegationType {
+        var delegationType: DelegationResolution.ItemType {
             .multisig
         }
 

@@ -2,10 +2,10 @@ import Foundation
 import Operation_iOS
 
 final class SubqueryMultistakingProxy: BaseFetchOperationFactory {
-    let configProvider: StakingGlobalConfigProviding
+    let configProvider: GlobalConfigProviding
     let operationQueue: OperationQueue
 
-    init(configProvider: StakingGlobalConfigProviding, operationQueue: OperationQueue) {
+    init(configProvider: GlobalConfigProviding, operationQueue: OperationQueue) {
         self.configProvider = configProvider
         self.operationQueue = operationQueue
     }

@@ -29,8 +29,7 @@ final class ExtrinsicSenderResolutionFactory {
 
     private func createDelegateResolver(
         for delegatedAccount: ChainAccountResponse,
-        chain: ChainModel,
-        delegateKeyPath: KeyPath<MetaAccountModel, AccountId?>
+        chain: ChainModel
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         let repository = AccountRepositoryFactory(storageFacade: userStorageFacade).createMetaAccountRepository(
             for: nil,
@@ -44,7 +43,7 @@ final class ExtrinsicSenderResolutionFactory {
 
             guard let delegateAccountId = wallets.first(
                 where: { $0.metaId == delegatedAccount.metaId }
-            )?[keyPath: delegateKeyPath]
+            )?.getDelegateIdentifier()?.delegateAccountId
             else {
                 throw ChainAccountFetchingError.accountNotExists
             }
@@ -77,8 +76,7 @@ extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProt
         case .proxied, .multisig:
             createDelegateResolver(
                 for: chainAccount,
-                chain: chain,
-                delegateKeyPath: \.delegationId?.delegateAccountId
+                chain: chain
             )
         }
     }

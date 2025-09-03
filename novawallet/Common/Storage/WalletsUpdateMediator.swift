@@ -44,13 +44,15 @@ private extension WalletUpdateMediator {
     ) -> Bool {
         var currentDelegatedSet: Set<MetaAccountModel.Id> = [delegatedWallet.info.metaId]
         var prevDelegated = currentDelegatedSet
-        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [delegatedWallet.info.metaId: delegatedWallet]
+        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [
+            delegatedWallet.info.metaId: delegatedWallet
+        ]
 
         repeat {
             let newReachableWallets: [ManagedMetaAccountModel] = currentDelegatedSet.flatMap { delegatedId in
                 guard
                     let delegated = foundWallets[delegatedId],
-                    let delegationId = delegated.info.delegationId else {
+                    let delegationId = delegated.info.getDelegateIdentifier() else {
                     return [ManagedMetaAccountModel]()
                 }
 

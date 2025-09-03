@@ -17,6 +17,10 @@ extension DelegatedAccount.ProxyAccountModel: Identifiable {
     var isNotRevoked: Bool {
         status == .new || status == .active
     }
+
+    var isRevoked: Bool {
+        status == .revoked
+    }
 }
 
 extension DelegatedAccount.ProxyAccountModel {
