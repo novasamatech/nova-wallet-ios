@@ -75,7 +75,7 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
                 return nil
             }
 
-            let updatedSettings = settings.with(wallets: settingsWallets)
+            let updatedSettings = settings.updating(with: settingsWallets)
 
             return PushNotification.AllSettings(
                 notificationsEnabled: settingsManager.notificationsEnabled,
