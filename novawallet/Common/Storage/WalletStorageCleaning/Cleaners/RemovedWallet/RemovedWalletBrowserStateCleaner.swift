@@ -47,8 +47,9 @@ private extension RemovedWalletBrowserStateCleaner {
             DispatchQueue.main.async {
                 tabIds.forEach { tabId in
                     self?.webViewPoolEraser.removeWebView(for: tabId)
-                    completion(.success(()))
                 }
+
+                completion(.success(()))
             }
         }
     }
