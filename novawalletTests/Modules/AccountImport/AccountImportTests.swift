@@ -31,8 +31,7 @@ class AccountImportTests: XCTestCase {
 
         let interactor = AccountImportInteractor(
             metaAccountOperationFactoryProvider: operationFactoryProvider,
-            accountRepository: AnyDataProviderRepository(repository),
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             settings: settings,
             secretImportService: secretImportService,
             eventCenter: eventCenter
