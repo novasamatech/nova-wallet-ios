@@ -58,7 +58,7 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                     priceOperation = .createWithResult([])
                 }
                 priceOperation.addDependency(chainOperation)
-                let fetchMetaAccountsOperation = walletsRepository().fetchAllOperation(with: .init())
+                let fetchMetaAccountsOperation = walletsRepository.fetchAllOperation(with: .init())
 
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
