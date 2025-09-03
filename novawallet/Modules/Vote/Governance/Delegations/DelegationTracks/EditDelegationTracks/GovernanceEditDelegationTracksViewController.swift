@@ -4,12 +4,8 @@ final class GovEditDelegationTracksViewController: GovBaseEditDelegationViewCont
     override func setupLocalization() {
         super.setupLocalization()
 
-        editDelegationLayout?.titleLabel.text = R.string.localizable.govEditDelegationTracksTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        editDelegationLayout?.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govEditDelegationTracksTitle()
 
-        editDelegationLayout?.descriptionLabel.text = R.string.localizable.govAddDelegationTracksDetails(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        editDelegationLayout?.descriptionLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govAddDelegationTracksDetails()
     }
 }

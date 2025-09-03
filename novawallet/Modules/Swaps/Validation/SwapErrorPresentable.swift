@@ -66,7 +66,7 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         let title = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.swapsSetupErrorNotEnoughLiquidityTitle()
-        let closeAction = R.string(preferredLanguages: locale?.rLanguages).localizable.commonClose()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: nil, title: title, closeAction: closeAction, from: view)
     }

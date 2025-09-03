@@ -41,43 +41,31 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
     private func highlightedForStep1() -> String {
         switch walletType {
         case .legacy:
-            return R.string.localizable.ledgerInstructionsStep1Highlighted(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerInstructionsStep1Highlighted()
         case .generic:
-            return R.string.localizable.genericLedgerInstructionsStep1Highlighted(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.genericLedgerInstructionsStep1Highlighted()
         }
     }
 
     private func highlightedForStep2() -> String {
         switch walletType {
         case .legacy:
-            return R.string.localizable.ledgerInstructionsStep2Highlighted(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerInstructionsStep2Highlighted()
         case .generic:
-            return R.string.localizable.genericLedgerInstructionsStep2Highlighted(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.genericLedgerInstructionsStep2Highlighted()
         }
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.ledgerInstructionsTitle(preferredLanguages: languages)
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.ledgerInstructionsTitle()
 
-        rootView.hintLinkView.actionButton.imageWithTitleView?.title = R.string.localizable.ledgerInstructionsLink(
-            preferredLanguages: languages
-        )
+        rootView.hintLinkView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.ledgerInstructionsLink()
 
         rootView.hintLinkView.actionButton.invalidateLayout()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
 
         rootView.actionButton.invalidateLayout()
 
@@ -94,7 +82,7 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep1(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep1(marker)
             )
         )
 
@@ -106,31 +94,31 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep2(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep2(marker)
             )
         )
 
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.ledgerInstructionsStep3Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep3Highlighted()],
             attributes: highlitingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep3(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep3(marker)
             )
         )
 
         let step4Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.ledgerInstructionsStep4Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep4Highlighted()],
             attributes: highlitingAttributes
         )
 
         rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep4(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.ledgerInstructionsStep4(marker)
             )
         )
     }

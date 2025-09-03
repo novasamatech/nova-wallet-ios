@@ -47,25 +47,17 @@ final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder,
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonUnlock(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.commonUnlock()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: languages
-        )
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: languages
-        )
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transferableTitleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
+        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
 
-        rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(
-            preferredLanguages: languages
-        )
+        rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
 
         rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
@@ -120,9 +112,8 @@ extension GovernanceUnlockConfirmViewController: GovernanceUnlockConfirmViewProt
                 .joined(separator: ", ")
 
             let remainingLocksAttributedString = NSAttributedString(
-                string: R.string.localizable.govRemainsLockedSuffix(
-                    remainingLocksString,
-                    preferredLanguages: selectedLocale.rLanguages
+                string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govRemainsLockedSuffix(
+                    remainingLocksString
                 ),
                 attributes: [
                     .foregroundColor: R.color.colorTextSecondary()!,

@@ -133,7 +133,7 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         cancelButton?.setTitle(
-            R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel(),
             for: .normal
         )
 

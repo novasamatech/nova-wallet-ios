@@ -89,16 +89,12 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
             rootView.proceedButton.applyEnabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = true
 
-            title = R.string.localizable.commonContinue(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         } else {
             rootView.proceedButton.applyDisabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = false
 
-            title = R.string.localizable.govTracksSelectionHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracksSelectionHint()
         }
 
         rootView.proceedButton.imageWithTitleView?.title = title

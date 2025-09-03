@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import RswiftResources
 
 final class ChainAssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {
     override var selectableCellIdentifier: ReuseIdentifier<SelectionIconDetailsTableViewCell>! {

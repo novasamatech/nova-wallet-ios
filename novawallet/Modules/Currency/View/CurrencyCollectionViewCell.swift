@@ -1,25 +1,22 @@
 import UIKit
 
 final class CurrencyCollectionViewCell: UICollectionViewCell {
-    private typealias Colors = R.color
-    private typealias Fonts = R.font
-
     private let symbolLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
         $0.titleLabel.font = .systemFont(ofSize: 13)
-        $0.titleLabel.textColor = Colors.colorTextSecondary()
+        $0.titleLabel.textColor = R.color.colorTextSecondary()
         $0.contentInsets = Constants.Symbol.contentInsets
         $0.backgroundView.apply(style: .roundedContainer(radius: Constants.Symbol.cornerRadius))
     }
 
     private let titleLabel: UILabel = .create {
-        $0.textColor = Colors.colorTextPrimary()
+        $0.textColor = R.color.colorTextPrimary()
         $0.font = .regularSubheadline
         $0.numberOfLines = 0
     }
 
     private let subtitleLabel: UILabel = .create {
-        $0.textColor = Colors.colorTextSecondary()
+        $0.textColor = R.color.colorTextSecondary()
         $0.font = .regularFootnote
         $0.numberOfLines = 0
     }

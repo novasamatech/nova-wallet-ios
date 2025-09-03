@@ -1,5 +1,5 @@
 {
-  "originHash" : "98520fb9c599427e25584f50f0f0e1a82de1bce3d86f3d112b543f1d38ed85be",
+  "originHash" : "568c5b11583c9cecccafc08a88a30332a4e4ea66f65740f1a5d19dc566be528b",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -447,8 +447,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/WalletConnectSwiftV2.git",
       "state" : {
-        "branch" : "bump/dependencies",
-        "revision" : "636b6bcc5c7926fd3660afb8bd26391ece98efdb"
+        "branch" : "release/1_9_8",
+        "revision" : "34499d769a12796c622a25c7d265d0d4153a375b"
       }
     },
     {

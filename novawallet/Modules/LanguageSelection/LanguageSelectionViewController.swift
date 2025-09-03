@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import RswiftResources
 
 final class LanguageSelectionViewController: SelectionListViewController<SelectionSubtitleTableViewCell> {
     var presenter: LanguageSelectionPresenterProtocol!
