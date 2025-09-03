@@ -10,7 +10,7 @@ extension AddChainAccount {
         let walletUpdateMediator: WalletUpdateMediating
         let eventCenter: EventCenterProtocol
 
-        private var currentOperation: Operation?
+        private let callStore = CancellableCallStore()
 
         init(
             metaAccountModel: MetaAccountModel,
@@ -40,6 +40,10 @@ extension AddChainAccount {
         }
 
         override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
+            guard !callStore.hasCall else {
+                return
+            }
+            
             let managedWalletWrapper = createManagedWalletOperation(using: importOperation)
 
             managedWalletWrapper.addDependency(operations: [importOperation])
@@ -75,9 +79,10 @@ extension AddChainAccount {
                 dependencies: dependencies
             )
 
-            execute(
+            executeCancellable(
                 wrapper: wrapper,
                 inOperationQueue: operationQueue,
+                backingCallIn: callStore,
                 runningCallbackIn: .main
             ) { [weak self] result in
                 switch result {

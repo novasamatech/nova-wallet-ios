@@ -5,7 +5,8 @@ import Operation_iOS
 
 class AccountConfirmInteractor: BaseAccountConfirmInteractor {
     private(set) var settings: SelectedWalletSettings
-    private var currentOperation: Operation?
+    
+    private let callStore = CancellableCallStore()
 
     let eventCenter: EventCenterProtocol
 
@@ -31,7 +32,7 @@ class AccountConfirmInteractor: BaseAccountConfirmInteractor {
     }
 
     override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-        guard currentOperation == nil else {
+        guard !callStore.hasCall else {
             return
         }
 
@@ -50,9 +51,10 @@ class AccountConfirmInteractor: BaseAccountConfirmInteractor {
             dependencies: [importOperation]
         )
 
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: callStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
