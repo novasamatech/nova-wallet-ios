@@ -11,21 +11,21 @@ class BaseAccountConfirmInteractor {
     let shuffledWords: [String]
     let accountOperationFactory: MetaAccountOperationFactoryProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     init(
         request: MetaAccountCreationRequest,
         mnemonic: IRMnemonicProtocol,
         accountOperationFactory: MetaAccountOperationFactoryProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.request = request
         self.mnemonic = mnemonic
         shuffledWords = mnemonic.allWords().shuffled()
         self.accountOperationFactory = accountOperationFactory
         self.accountRepository = accountRepository
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 
     internal func createAccountUsingOperation(_: BaseOperation<MetaAccountModel>) {

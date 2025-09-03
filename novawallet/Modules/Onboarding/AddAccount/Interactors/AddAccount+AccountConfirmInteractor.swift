@@ -8,14 +8,14 @@ extension AddAccount {
         private(set) var settings: SelectedWalletSettings
         let eventCenter: EventCenterProtocol
 
-        private var currentOperation: Operation?
+        private let callStore = CancellableCallStore()
 
         init(
             request: MetaAccountCreationRequest,
             mnemonic: IRMnemonicProtocol,
             accountOperationFactory: MetaAccountOperationFactoryProtocol,
             accountRepository: AnyDataProviderRepository<MetaAccountModel>,
-            operationManager: OperationManagerProtocol,
+            operationQueue: OperationQueue,
             settings: SelectedWalletSettings,
             eventCenter: EventCenterProtocol
         ) {
@@ -27,12 +27,12 @@ extension AddAccount {
                 mnemonic: mnemonic,
                 accountOperationFactory: accountOperationFactory,
                 accountRepository: accountRepository,
-                operationManager: operationManager
+                operationQueue: operationQueue
             )
         }
 
         override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-            guard currentOperation == nil else {
+            guard !callStore.hasCall else {
                 return
             }
 
@@ -44,33 +44,29 @@ extension AddAccount {
                 return accountItem
             }
 
-            saveOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    self?.currentOperation = nil
-
-                    switch saveOperation.result {
-                    case .success:
-                        self?.settings.setup()
-                        self?.eventCenter.notify(with: SelectedWalletSwitched())
-                        self?.eventCenter.notify(with: NewWalletCreated())
-                        self?.presenter?.didCompleteConfirmation()
-
-                    case let .failure(error):
-                        self?.presenter?.didReceive(error: error)
-
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        self?.presenter?.didReceive(error: error)
-                    }
-                }
-            }
-
             saveOperation.addDependency(importOperation)
 
-            operationManager.enqueue(
-                operations: [importOperation, saveOperation],
-                in: .transient
+            let wrapper = CompoundOperationWrapper(
+                targetOperation: saveOperation,
+                dependencies: [importOperation]
             )
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: callStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.settings.setup()
+                    self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    self?.eventCenter.notify(with: NewWalletCreated())
+                    self?.presenter?.didCompleteConfirmation()
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: error)
+                }
+            }
         }
     }
 }

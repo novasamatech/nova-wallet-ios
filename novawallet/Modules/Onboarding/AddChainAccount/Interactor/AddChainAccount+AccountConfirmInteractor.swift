@@ -6,6 +6,8 @@ import Operation_iOS
 extension AddChainAccount {
     final class AccountConfirmInteractor: BaseChainAccountConfirmInteractor {
         private(set) var settings: SelectedWalletSettings
+        let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        let walletUpdateMediator: WalletUpdateMediating
         let eventCenter: EventCenterProtocol
 
         private var currentOperation: Operation?
@@ -16,12 +18,15 @@ extension AddChainAccount {
             chainModelId: ChainModel.Id,
             mnemonic: IRMnemonicProtocol,
             metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
-            metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
-            operationManager: OperationManagerProtocol,
+            walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+            walletUpdateMediator: WalletUpdateMediating,
+            operationQueue: OperationQueue,
             settings: SelectedWalletSettings,
             eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
+            self.walletRepository = walletRepository
+            self.walletUpdateMediator = walletUpdateMediator
             self.eventCenter = eventCenter
 
             super.init(
@@ -30,20 +35,23 @@ extension AddChainAccount {
                 chainModelId: chainModelId,
                 mnemonic: mnemonic,
                 metaAccountOperationFactory: metaAccountOperationFactory,
-                metaAccountRepository: metaAccountRepository,
-                operationManager: operationManager
+                operationQueue: operationQueue
             )
         }
 
         override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-            let persistentOperation = metaAccountRepository.saveOperation({
-                let metaAccountItem = try importOperation
+            let managedWalletWrapper = createManagedWalletOperation(using: importOperation)
+
+            managedWalletWrapper.addDependency(operations: [importOperation])
+
+            let persistentWrapper = walletUpdateMediator.saveChanges {
+                let updatedManagedWallet = try managedWalletWrapper
+                    .targetOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                return .init(newOrUpdatedItems: [updatedManagedWallet])
+            }
 
-                return [metaAccountItem]
-            }, { [] })
-
-            persistentOperation.addDependency(importOperation)
+            persistentWrapper.addDependency(wrapper: managedWalletWrapper)
 
             let saveOperation: ClosureOperation<Void> = ClosureOperation {
                 let metaAccountItem = try importOperation
@@ -56,29 +64,69 @@ extension AddChainAccount {
                 }
             }
 
-            saveOperation.addDependency(importOperation)
-            saveOperation.addDependency(persistentOperation)
+            saveOperation.addDependency(persistentWrapper.targetOperation)
 
-            saveOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    switch saveOperation.result {
-                    case .success:
-                        self?.eventCenter.notify(with: ChainAccountChanged())
-                        self?.presenter?.didCompleteConfirmation()
+            let dependencies = [importOperation]
+                + persistentWrapper.allOperations
+                + managedWalletWrapper.allOperations
 
-                    case let .failure(error):
-                        self?.presenter?.didReceive(error: error)
+            let wrapper = CompoundOperationWrapper(
+                targetOperation: saveOperation,
+                dependencies: dependencies
+            )
 
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        self?.presenter?.didReceive(error: error)
-                    }
+            execute(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.eventCenter.notify(with: ChainAccountChanged())
+                    self?.presenter?.didCompleteConfirmation()
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: error)
                 }
             }
+        }
+    }
+}
 
-            operationManager.enqueue(
-                operations: [importOperation, persistentOperation, saveOperation],
-                in: .transient
+// MARK: - Private
+
+private extension AddChainAccount.AccountConfirmInteractor {
+    func createManagedWalletOperation(
+        using importOperation: BaseOperation<MetaAccountModel>
+    ) -> CompoundOperationWrapper<ManagedMetaAccountModel> {
+        OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let metaAccountItem = try importOperation
+                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+            let fetchOperation = walletRepository.fetchOperation(
+                by: { metaAccountItem.identifier },
+                options: .init()
+            )
+            let mapOperation: ClosureOperation<ManagedMetaAccountModel> = ClosureOperation {
+                let updatedManagedWallet = try fetchOperation
+                    .extractNoCancellableResultData()?
+                    .replacingInfo(metaAccountItem)
+
+                guard let updatedManagedWallet else {
+                    throw BaseOperationError.parentOperationCancelled
+                }
+
+                return updatedManagedWallet
+            }
+
+            mapOperation.addDependency(fetchOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: [fetchOperation]
             )
         }
     }
