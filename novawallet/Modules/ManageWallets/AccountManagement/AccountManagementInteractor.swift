@@ -109,7 +109,7 @@ final class AccountManagementInteractor {
     }
 
     func fetchDelegateWalletIfneeded(for wallet: MetaAccountModel) {
-        guard let delegationId = wallet.delegationId else { return }
+        guard let delegationId = wallet.getDelegateIdentifier() else { return }
 
         let operation = walletRepository.fetchAllOperation(with: RepositoryFetchOptions())
 

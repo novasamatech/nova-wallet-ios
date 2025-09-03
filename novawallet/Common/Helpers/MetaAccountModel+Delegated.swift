@@ -41,47 +41,6 @@ extension MetaAccountModel {
         return chainAccount.proxy
     }
 
-    var delegationId: MetaAccountDelegationId? {
-        switch type {
-        case .multisig:
-            var multisigModel: DelegatedAccount.MultisigAccountModel?
-            var chainId: ChainModel.Id?
-
-            switch multisigAccount {
-            case let .universalSubstrate(multisig), let .universalEvm(multisig):
-                multisigModel = multisig
-            case let .singleChain(chainAccount):
-                multisigModel = chainAccount.multisig
-                chainId = chainAccount.chainId
-            default:
-                return nil
-            }
-
-            guard let multisigModel else { return nil }
-
-            return MetaAccountDelegationId(
-                delegateAccountId: multisigModel.signatory,
-                delegatorId: multisigModel.accountId,
-                chainId: chainId,
-                delegationType: .multisig
-            )
-        case .proxied:
-            guard
-                let proxy,
-                let proxiedAccount = chainAccounts.first(where: { $0.proxy?.accountId == proxy.accountId })
-            else { return nil }
-
-            return MetaAccountDelegationId(
-                delegateAccountId: proxy.accountId,
-                delegatorId: proxiedAccount.accountId,
-                chainId: proxiedAccount.chainId,
-                delegationType: .proxy(proxy.type)
-            )
-        default:
-            return nil
-        }
-    }
-
     func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
         type == .proxied && has(accountId: accountId, chainId: chainId)
     }
@@ -105,6 +64,10 @@ extension MetaAccountModel {
         chainId: ChainModel.Id
     ) -> ChainAccountModel? {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
+    }
+
+    func proxyChainAccount() -> ChainAccountModel? {
+        chainAccounts.first { $0.proxy != nil }
     }
 
     func address(for chain: ChainModel) throws -> AccountAddress? {

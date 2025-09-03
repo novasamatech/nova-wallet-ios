@@ -1,4 +1,5 @@
 import UIKit
+import UIKit_iOS
 import SnapKit
 
 final class NovaMainAppContainerViewController: UIViewController,
@@ -151,7 +152,13 @@ private extension NovaMainAppContainerViewController {
         while presentedViewController != nil {
             let presentationController = presentedViewController?.presentationController
 
-            guard !(presentationController is ModalCardPresentationController) else {
+            let ignoredControllerMatchers = Self.layoutUpdateIgnoringControllers
+
+            let shouldIgnorePresentationController = ignoredControllerMatchers.contains { typeMatcher in
+                typeMatcher.match(value: presentationController as Any)
+            }
+
+            guard !shouldIgnorePresentationController else {
                 presentedViewController = presentedViewController?.presentedViewController
                 continue
             }
@@ -280,4 +287,21 @@ private extension NovaMainAppContainerViewController {
             return minimizedWidgetHeight + childSpacing
         }
     }
+}
+
+private extension NovaMainAppContainerViewController {
+    protocol TypeMatching {
+        func match(value: Any) -> Bool
+    }
+
+    struct TypeMatcher<T>: TypeMatching {
+        func match(value: Any) -> Bool {
+            value is T
+        }
+    }
+
+    static var layoutUpdateIgnoringControllers: [TypeMatching] = [
+        TypeMatcher<ModalCardPresentationController>(),
+        TypeMatcher<ModalPresenterProtocol>()
+    ]
 }
