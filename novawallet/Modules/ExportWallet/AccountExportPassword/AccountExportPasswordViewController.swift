@@ -63,7 +63,7 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
         )
 
         let enterPasswordPlaceholder = NSAttributedString(
-            string: R.string.localizable.commonSetPassword(preferredLanguages: selectedLocale.rLanguages),
+            string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSetPassword(),
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
@@ -73,7 +73,7 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
         rootView.enterPasswordView.textField.attributedPlaceholder = enterPasswordPlaceholder
 
         let confirmPasswordPlaceholder = NSAttributedString(
-            string: R.string.localizable.commonConfirmPassword(preferredLanguages: selectedLocale.rLanguages),
+            string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirmPassword(),
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
@@ -123,7 +123,7 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
             )
         } else {
             enabled = true
-            title = R.string.localizable.restoreJsonDownloadButton(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.restoreJsonDownloadButton()
         }
 
         rootView.proceedButton.imageWithTitleView?.title = title

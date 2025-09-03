@@ -9,12 +9,12 @@ extension XcmTransferVerifierError: ErrorContentConvertible {
         switch self {
         case .verificationFailed:
             ErrorContent(
-                title: R.string.localizable.commonDryRunFailedTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.commonDryRunFailedMessage(
-                    preferredLanguages: locale?.rLanguages
-                )
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonDryRunFailedTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonDryRunFailedMessage()
             )
         }
     }

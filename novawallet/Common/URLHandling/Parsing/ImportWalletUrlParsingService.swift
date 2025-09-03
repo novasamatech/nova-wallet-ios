@@ -16,17 +16,11 @@ enum CreateWalletError: Error, ErrorContentConvertible {
         let message: String
         switch self {
         case .emptyMnemonic, .invalidMnemonic, .emptyQueryParameters:
-            message = R.string.localizable.deeplinkErrorInvalidMnemonicMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidMnemonicMessage()
         case .invalidCryptoType:
-            message = R.string.localizable.deeplinkErrorInvalidCryptoTypeMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidCryptoTypeMessage()
         case .invalidSubstrateDerivationPath, .invalidEvmDerivationPath:
-            message = R.string.localizable.deeplinkErrorInvalidDerivationPathMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidDerivationPathMessage()
         }
 
         return .init(title: "", message: message)

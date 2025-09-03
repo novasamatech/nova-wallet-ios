@@ -8,19 +8,16 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupCreateBottomSheetTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateBottomSheetTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupCreateBottomSheetPassword(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateBottomSheetPassword()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupCreateBottomSheetMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateBottomSheetMessage(
+                                items[0]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -30,7 +27,7 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonGotIt()
                     },
                     handler: {}
                 ),
@@ -50,19 +47,16 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupExistingBottomSheetTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupExistingBottomSheetTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupExistingBottomSheetRecover(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupExistingBottomSheetRecover()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupExistingBottomSheetMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupExistingBottomSheetMessage(
+                                items[0]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -72,13 +66,13 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonRecoverWallets(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonRecoverWallets()
                     },
                     handler: recoverClosure
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
                     },
                     handler: {}
                 )
@@ -98,23 +92,18 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupNoPasswordTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupNoPasswordHighlighted1(
-                                preferredLanguages: locale.rLanguages
-                            ),
-                            R.string.localizable.cloudBackupNoPasswordHighlighted2(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted1(),
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted2()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupNoPasswordMessage(
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordMessage(
                                 items[0],
-                                items[1],
-                                preferredLanguages: locale.rLanguages
+                                items[1]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -124,14 +113,14 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonDeleteBackup()
                     },
                     handler: deleteClosure,
                     actionType: .destructive
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
                     },
                     handler: {
                         cancelClosure?()
@@ -153,19 +142,16 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupBrokenTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupBrokenTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupNoPasswordHighlighted1(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted1()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupBrokenMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupBrokenMessage(
+                                items[0]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -175,14 +161,14 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonDeleteBackup()
                     },
                     handler: deleteClosure,
                     actionType: .destructive
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
                     },
                     handler: {
                         cancelClosure?()
@@ -213,17 +199,15 @@ enum CloudBackupMessageSheetViewFactory {
         let presenter = CloudBackupRemindPresenter(interactor: interactor, wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.cloudBackupAutoSyncTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupAutoSyncTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.cloudBackupAutoSyncDescription(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupAutoSyncDescription()
         }
 
         let text = LocalizableResource { locale in
-            R.string.localizable.delegatedSigningCheckmarkTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegatedSigningCheckmarkTitle()
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
@@ -257,23 +241,23 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupUnsyncedChangesTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupUnsyncedChangesTitle()
                 },
                 message: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupUnsyncedChangesMessage(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupUnsyncedChangesMessage()
                 },
                 graphics: R.image.imageUnsyncedCloudBackup(),
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonReviewUpdates(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonReviewUpdates()
                     },
                     handler: completionClosure,
                     actionType: .normal
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonNotNow()
                     },
                     handler: {
                         cancelClosure?()
@@ -295,19 +279,16 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupSheetPasswordChangedTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSheetPasswordChangedTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupSheetPasswordChangedEnterNew(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSheetPasswordChangedEnterNew()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupSheetPasswordChangedMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSheetPasswordChangedMessage(
+                                items[0]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -317,14 +298,14 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonEnterPasswordButton(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonEnterPasswordButton()
                     },
                     handler: completionClosure,
                     actionType: .normal
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonNotNow()
                     },
                     handler: {
                         cancelClosure?()
@@ -346,23 +327,23 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupSyncFailedTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSyncFailedTitle()
                 },
                 message: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupSyncFailedMessage(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSyncFailedMessage()
                 },
                 graphics: R.image.imageUnsyncedCloudBackup(),
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonReviewIssue(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonReviewIssue()
                     },
                     handler: completionClosure,
                     actionType: .normal
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonNotNow()
                     },
                     handler: {
                         cancelClosure?()
@@ -384,23 +365,23 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupRemoveWalletTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupRemoveWalletTitle()
                 },
                 message: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupRemoveWalletMessage(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupRemoveWalletMessage()
                 },
                 graphics: R.image.imageRemoveWalletCloudBackup(),
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonRemove(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonRemove()
                     },
                     handler: removeClosure,
                     actionType: .destructive
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
                     },
                     handler: {
                         cancelClosure?()
@@ -422,19 +403,16 @@ enum CloudBackupMessageSheetViewFactory {
         let messageSheetView = MessageSheetViewFactory.createNoContentView(
             viewModel: .init(
                 title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupWillDeleteTitle(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupWillDeleteTitle()
                 },
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string.localizable.cloudBackupWillDeleteHighlighted(
-                                preferredLanguages: locale.rLanguages
-                            )
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupWillDeleteHighlighted()
                         ],
                         formattingClosure: { items in
-                            R.string.localizable.cloudBackupWillDeleteMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
+                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupWillDeleteMessage(
+                                items[0]
                             )
                         },
                         color: R.color.colorTextPrimary()!
@@ -444,14 +422,14 @@ enum CloudBackupMessageSheetViewFactory {
                 content: nil,
                 mainAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonDeleteBackup()
                     },
                     handler: deleteClosure,
                     actionType: .destructive
                 ),
                 secondaryAction: .init(
                     title: LocalizableResource { locale in
-                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                        R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
                     },
                     handler: {
                         cancelClosure?()

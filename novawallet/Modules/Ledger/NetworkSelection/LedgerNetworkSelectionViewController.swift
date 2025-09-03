@@ -38,10 +38,8 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.headerView.valueTop.text = R.string.localizable.ledgerAccountsTitle(preferredLanguages: languages)
-        rootView.headerView.valueBottom.text = R.string.localizable.ledgerAccountsSubtitle(
-            preferredLanguages: languages
-        )
+        rootView.headerView.valueTop.text = R.string(preferredLanguages: languages).localizable.ledgerAccountsTitle()
+        rootView.headerView.valueBottom.text = R.string(preferredLanguages: languages).localizable.ledgerAccountsSubtitle()
 
         updateActionButton()
     }
@@ -60,16 +58,12 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyEnabledStyle()
             rootView.actionButton.isUserInteractionEnabled = true
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonDone(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
         } else {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.ledgerAccountsButtonAdd(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerAccountsButtonAdd()
         }
 
         rootView.actionButton.invalidateLayout()

@@ -99,7 +99,7 @@ private extension DelegatedAccountsUpdateFactory {
         case let .proxy(proxyType):
             proxyType.subtitle(locale: locale)
         case .multisig:
-            R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages) + ":"
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory() + ":"
         }
     }
 }

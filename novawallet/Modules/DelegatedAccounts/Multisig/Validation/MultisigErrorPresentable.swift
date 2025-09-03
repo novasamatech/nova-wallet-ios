@@ -40,31 +40,26 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
         params: MultisigNotEnoughForDeposit,
         locale: Locale?
     ) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
-            preferredLanguages: languages
-        )
+        let title = R.string(preferredLanguages: languages).localizable.multisigValidationNotEnoughTokensTitle()
+
         let message = if let fee = params.fee {
-            R.string.localizable.multisigValidationInsuffisientBalanceMessage(
+            R.string(preferredLanguages: languages).localizable.multisigValidationInsuffisientBalanceMessage(
                 params.signatoryName,
                 fee,
                 params.deposit,
-                params.needToAdd,
-                preferredLanguages: languages
+                params.needToAdd
             )
         } else {
-            R.string.localizable.multisigValidationNotEnoughForDepositMessage(
+            R.string(preferredLanguages: languages).localizable.multisigValidationNotEnoughForDepositMessage(
                 params.signatoryName,
                 params.deposit,
-                params.needToAdd,
-                preferredLanguages: languages
+                params.needToAdd
             )
         }
 
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: languages
-        )
+        let closeAction = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -76,21 +71,16 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
         signatoryName: String,
         locale: Locale?
     ) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(preferredLanguages: languages).localizable.multisigValidationNotEnoughTokensTitle()
         let message = R.string.localizable.multisigValidationNotEnoughForFeeMessage(
             signatoryName,
             fee,
-            needToAdd,
-            preferredLanguages: languages
+            needToAdd
         )
 
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: languages
-        )
+        let closeAction = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -102,18 +92,15 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
     ) {
         let languages = locale.rLanguages
 
-        let title = R.string.localizable.multisigValidationAlreadyExistsTitle(
-            preferredLanguages: languages
-        )
+        let title = R.string(preferredLanguages: languages).localizable.multisigValidationAlreadyExistsTitle()
 
-        let message = R.string.localizable.multisigValidationAlreadyExistsMessage(
+        let message = R.string(
+            preferredLanguages: languages
+        ).localizable.multisigValidationAlreadyExistsMessage(
             multisigName,
-            preferredLanguages: languages
         )
 
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: languages
-        )
+        let closeAction = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -124,17 +111,15 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
     ) {
         let languages = locale.rLanguages
 
-        let title = R.string.localizable.multisigTransactionNotExistTitle(
+        let title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.multisigTransactionNotExistTitle()
 
-        let message = R.string.localizable.multisigTransactionNotExistMessage(
+        let message = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.multisigTransactionNotExistMessage()
 
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: languages
-        )
+        let closeAction = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

@@ -34,14 +34,14 @@ extension EvmValidationErrorPresentable where Self: AlertPresentable {
         )
 
         let refreshAction = AlertPresentableAction(
-            title: R.string.localizable.commonRefreshFee(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonRefreshFee(),
             style: .normal
         ) {
             onRefresh()
         }
 
         let proceedAction = AlertPresentableAction(
-            title: R.string.localizable.commonProceed(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonProceed(),
             style: .destructive
         ) {
             onProceed()

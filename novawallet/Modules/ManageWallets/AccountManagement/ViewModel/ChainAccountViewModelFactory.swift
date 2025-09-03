@@ -50,7 +50,7 @@ final class ChainAccountViewModelFactory {
                 chainId: chainAccount.chainId,
                 name: chainName,
                 address: accountAddress,
-                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                warning: R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundCaption(),
                 chainIconViewModel: imageViewModel,
                 accountIcon: icon,
                 hasAction: true
@@ -94,18 +94,16 @@ final class ChainAccountViewModelFactory {
 
             switch wallet.type {
             case .secrets, .watchOnly, .ledger, .proxied, .multisig:
-                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                warning = R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundCaption()
                 hasAction = true
             case .paritySigner:
-                warning = R.string.localizable.paritySignerNotSupportedChain(
-                    ParitySignerType.legacy.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                warning = R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerNotSupportedChain(
+                    ParitySignerType.legacy.getName(for: locale)
                 )
                 hasAction = accountAddress != nil
             case .polkadotVault:
-                warning = R.string.localizable.paritySignerNotSupportedChain(
-                    ParitySignerType.vault.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                warning = R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerNotSupportedChain(
+                    ParitySignerType.vault.getName(for: locale)
                 )
 
                 hasAction = accountAddress != nil
@@ -114,7 +112,7 @@ final class ChainAccountViewModelFactory {
                     return nil
                 }
 
-                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                warning = R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundCaption()
                 hasAction = true
             }
 
@@ -205,20 +203,18 @@ final class ChainAccountViewModelFactory {
 
         let substrateItems = createAccountList(from: wallet, chains: substrateChains, locale: locale)
         let substrateTitle = LocalizableResource { locale in
-            R.string.localizable.accountsSubstrate(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountsSubstrate()
         }
 
         let evmItems = createAccountList(from: wallet, chains: evmChains, locale: locale)
         let evmTitle = LocalizableResource { locale in
-            R.string.localizable.accountsEvm(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountsEvm()
         }
 
         let evmAction = LocalizableResource { locale in
             IconWithTitleViewModel(
                 icon: R.image.iconBlueAdd(),
-                title: R.string.localizable.commonAddAddress(
-                    preferredLanguages: locale.rLanguages
-                )
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonAddAddress()
             )
         }
 

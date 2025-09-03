@@ -15,7 +15,7 @@ struct WalletConnectSignDecision {
     }
 
     static func reject(request: Request) -> WalletConnectSignDecision {
-        let error = WalletConnectSwiftV2.JSONRPCError(
+        let error = WalletConnectSign.JSONRPCError(
             code: 4001,
             message: "Rejected",
             data: nil

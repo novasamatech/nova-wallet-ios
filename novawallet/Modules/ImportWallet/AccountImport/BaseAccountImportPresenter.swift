@@ -234,8 +234,8 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
             }
         }
 
-        let title = R.string.localizable.importRecoveryJson(preferredLanguages: locale?.rLanguages)
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale?.rLanguages).localizable.importRecoveryJson()
+        let closeTitle = R.string(preferredLanguages: locale?.rLanguages).localizable.commonCancel()
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: nil,

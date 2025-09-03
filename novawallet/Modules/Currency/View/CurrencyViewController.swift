@@ -103,7 +103,7 @@ extension CurrencyViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             let languages = localizationManager?.preferredLocalizations
-            title = R.string.localizable.currencyTitle(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.currencyTitle()
         }
     }
 }

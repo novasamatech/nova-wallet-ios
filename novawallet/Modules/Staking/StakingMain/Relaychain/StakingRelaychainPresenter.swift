@@ -213,8 +213,8 @@ final class StakingRelaychainPresenter {
             return action
         }
 
-        let title = R.string.localizable.stakingRebond(preferredLanguages: locale?.rLanguages)
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebond()
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: nil,
@@ -233,16 +233,11 @@ final class StakingRelaychainPresenter {
         } else {
             displayName = stashAddress
         }
-        let title = R.string.localizable.stakingAlertSwitchToStashTitle(
-            preferredLanguages: locale?.rLanguages
-        )
-        let message = R.string.localizable.stakingAlertSwitchToStashMessage(
-            displayName,
-            preferredLanguages: locale?.rLanguages
-        )
-        let closeTitle = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingAlertSwitchToStashTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingAlertSwitchToStashMessage(displayName)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         wireframe.present(
             message: message,

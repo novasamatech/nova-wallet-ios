@@ -96,7 +96,7 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
         }
 
         let passwordPlaceholder = NSAttributedString(
-            string: R.string.localizable.commonBackupPassword(preferredLanguages: selectedLocale.rLanguages),
+            string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackupPassword(),
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
@@ -145,15 +145,11 @@ extension CloudBackupCreateViewController: CloudBackupCreateViewProtocol {
 
         if canContinue {
             actionButton.applyEnabledStyle()
-            actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         } else {
             actionButton.applyDisabledStyle()
 
-            actionButton.imageWithTitleView?.title = R.string.localizable.commonEnterPassword(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonEnterPassword()
         }
     }
 

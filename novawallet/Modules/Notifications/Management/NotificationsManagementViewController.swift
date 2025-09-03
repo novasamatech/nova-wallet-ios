@@ -62,7 +62,7 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
     }
 
     private func setupNavigationItem() {
-        let title = R.string.localizable.commonSave(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSave()
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: title,
             style: .plain,

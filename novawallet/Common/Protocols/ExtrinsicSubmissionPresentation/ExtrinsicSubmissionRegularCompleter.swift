@@ -12,7 +12,9 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
         case let .preferred(value):
             value
         case let .general(locale):
-            R.string.localizable.commonTransactionSubmitted(preferredLanguages: locale?.rLanguages)
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonTransactionSubmitted()
         }
 
         switch params.preferredCompletionAction {

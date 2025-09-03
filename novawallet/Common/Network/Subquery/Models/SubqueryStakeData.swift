@@ -45,13 +45,13 @@ extension SubqueryStakeChangeData.SubqueryStakeChangeType {
     func title(for locale: Locale) -> String {
         switch self {
         case .bonded:
-            return R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondMore_v190()
         case .unbonded:
-            return R.string.localizable.stakingUnbond_v190(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnbond_v190()
         case .rewarded:
-            return R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingReward()
         case .slashed:
-            return R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSlash()
         }
     }
 }

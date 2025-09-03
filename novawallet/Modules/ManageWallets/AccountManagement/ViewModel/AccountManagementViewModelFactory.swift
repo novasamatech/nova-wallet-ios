@@ -36,24 +36,20 @@ private extension AccountManagementViewModelFactory {
             .none
         case .watchOnly:
             .hint(
-                text: R.string.localizable.accountManagementWatchOnlyHint(
-                    preferredLanguages: locale.rLanguages
-                ),
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.accountManagementWatchOnlyHint(),
                 icon: R.image.iconWatchOnly()
             )
         case .paritySigner:
             .hint(
-                text: R.string.localizable.paritySignerDetailsHint(
-                    ParitySignerType.legacy.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerDetailsHint(
+                    ParitySignerType.legacy.getName(for: locale)
                 ),
                 icon: R.image.iconParitySigner()
             )
         case .polkadotVault:
             .hint(
-                text: R.string.localizable.paritySignerDetailsHint(
-                    ParitySignerType.vault.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerDetailsHint(
+                    ParitySignerType.vault.getName(for: locale)
                 ),
                 icon: R.image.iconPolkadotVault()
             )
@@ -62,17 +58,13 @@ private extension AccountManagementViewModelFactory {
                 .banner(.createLedgerMigrationDownload(for: locale, action: legacyLedgerAction))
             } else {
                 .hint(
-                    text: R.string.localizable.ledgerDetailsHint(
-                        preferredLanguages: locale.rLanguages
-                    ),
+                    text: R.string(preferredLanguages: locale.rLanguages).localizable.ledgerDetailsHint(),
                     icon: R.image.iconLedger()
                 )
             }
         case .proxied:
             .hint(
-                text: R.string.localizable.proxyDetailsHint(
-                    preferredLanguages: locale.rLanguages
-                ),
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.proxyDetailsHint(),
                 icon: R.image.iconProxiedWallet()
             )
         case .multisig:
@@ -82,9 +74,7 @@ private extension AccountManagementViewModelFactory {
             )
         case .genericLedger:
             .hint(
-                text: R.string.localizable.ledgerDetailsHint(
-                    preferredLanguages: locale.rLanguages
-                ),
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.ledgerDetailsHint(),
                 icon: R.image.iconLedger()
             )
         }
@@ -95,20 +85,15 @@ private extension AccountManagementViewModelFactory {
         locale: Locale
     ) -> String {
         guard let multisigContext else {
-            return R.string.localizable.multisigDetailsHint(
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages).localizable.multisigDetailsHint()
         }
 
         return [
-            R.string.localizable.multisigWalletDetailsThreshold(
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigWalletDetailsThreshold(
                 multisigContext.threshold,
-                multisigContext.otherSignatories.count + 1,
-                preferredLanguages: locale.rLanguages
+                multisigContext.otherSignatories.count + 1
             ),
-            R.string.localizable.multisigDetailsHint(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigDetailsHint()
         ].joined(separator: "\n\n")
     }
 
@@ -198,9 +183,7 @@ private extension AccountManagementViewModelFactory {
             )
         }
 
-        let otherSignatoriesTitle = R.string.localizable.multisigOtherSignatories(
-            preferredLanguages: locale.rLanguages
-        )
+        let otherSignatoriesTitle = R.string(preferredLanguages: locale.rLanguages).localizable.multisigOtherSignatories()
 
         return .init(
             signatory: signatoryViewModel,

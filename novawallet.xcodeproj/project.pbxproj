@@ -409,6 +409,9 @@
 		0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA332E67841C008157E7 /* RswiftLibrary */; };
 		0C2BAA4A2E683152008157E7 /* Data+Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BAA492E683152008157E7 /* Data+Bytes.swift */; };
 		0C2BAA4B2E683152008157E7 /* Data+Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BAA492E683152008157E7 /* Data+Bytes.swift */; };
+		0C2BAA562E687BD0008157E7 /* HydraMathApi in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA552E687BD0008157E7 /* HydraMathApi */; };
+		0C2BAA582E687BE3008157E7 /* HydraMathApi in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA572E687BE3008157E7 /* HydraMathApi */; };
+		0C2BAA5B2E687D2F008157E7 /* BranchSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA5A2E687D2F008157E7 /* BranchSDK */; };
 		0C2BE7872E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7862E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift */; };
 		0C2BE78A2E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */; };
 		0C2BE78C2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */; };
@@ -2128,15 +2131,15 @@
 		2DEDEF802E4D12C2008F07B2 /* ExtrinsicSignedExtensionFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */; };
 		2DEDEF812E4D12D0008F07B2 /* ExtrinsicSignedExtensionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DEE7032797FBF800B9A39E /* ExtrinsicSignedExtensionFactory.swift */; };
 		2DEDEF822E4D12DA008F07B2 /* AssetConversionPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */; };
-		2DEDEF832E4D12F3008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF842E4D1301008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF852E4D130D008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF862E4D131A008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF872E4D1332008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF882E4D135B008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF832E4D12F3008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF842E4D1301008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF852E4D130D008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF862E4D131A008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF872E4D1332008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF882E4D135B008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEF892E4D1397008F07B2 /* Xcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1D285C58FF00B42FC0 /* Xcm.swift */; };
 		2DEDEF8A2E4D13BA008F07B2 /* XcmPalletTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E83AA328632AF50000B418 /* XcmPalletTransfer.swift */; };
-		2DEDEF8B2E4D13C4008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF8B2E4D13C4008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEF8C2E4D1444008F07B2 /* XcmChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117073285B0E92006F4DFB /* XcmChain.swift */; };
 		2DEDEF8D2E4D1444008F07B2 /* XcmAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117075285B0F1F006F4DFB /* XcmAsset.swift */; };
 		2DEDEF8E2E4D1444008F07B2 /* XcmAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117077285B1050006F4DFB /* XcmAssetTransfer.swift */; };
@@ -2165,36 +2168,36 @@
 		2DEDEFA52E4D1444008F07B2 /* XcmTransferOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */; };
 		2DEDEFA62E4D14E1008F07B2 /* XcmLegacyModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF3A2D89280A00DB4E6A /* XcmLegacyModelFactory.swift */; };
 		2DEDEFA72E4D14E1008F07B2 /* XcmLegacyMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C16668D2D80065D005E6CD3 /* XcmLegacyMessagesFactory.swift */; };
-		2DEDEFA82E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFA92E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAA2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAB2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAC2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAD2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAE2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAF2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB02E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB12E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB22E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB32E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB42E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB52E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB62E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB72E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB82E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB92E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBA2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBB2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBC2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFA82E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFA92E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAA2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAB2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAC2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAD2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAE2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAF2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB02E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB12E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB22E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB32E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB42E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB52E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB62E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB72E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB82E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB92E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBA2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBB2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBC2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFBD2E4D14E1008F07B2 /* XcmWeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */; };
-		2DEDEFBE2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBE2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFBF2E4D14E1008F07B2 /* XcmPalletMetadataQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */; };
 		2DEDEFC12E4D14E1008F07B2 /* XcmMessageSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CCC442B60CAE800A6EA17 /* XcmMessageSerializer.swift */; };
-		2DEDEFC22E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFC32E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC22E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC32E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFC42E4D14E1008F07B2 /* Xcm+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF821E2D8B580E00DB17A4 /* Xcm+Event.swift */; };
-		2DEDEFC52E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFC62E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC52E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC62E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFC72E4D1504008F07B2 /* SubstratePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */; };
 		2DEDEFC82E4D1594008F07B2 /* MoonbeamEvmPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F52DF0E9AD0042134B /* MoonbeamEvmPallet.swift */; };
 		2DEDEFC92E4D1594008F07B2 /* MoonbeamEvmPallet+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */; };
@@ -2333,7 +2336,7 @@
 		2DEDF0592E4D1B8B008F07B2 /* AvailSignedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */; };
 		2DEDF05A2E4D1B98008F07B2 /* AssetConversionTxPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */; };
 		2DEDF05B2E4D1BCC008F07B2 /* XcmModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */; };
-		2DEDF05C2E4D1C01008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDF05C2E4D1C01008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDF05E2E4D1D32008F07B2 /* XcmExecute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCED285E82BB0006327E /* XcmExecute.swift */; };
 		2DEDF05F2E4D1D3E008F07B2 /* BlockchainWeightFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539629BF606D00C77111 /* BlockchainWeightFactory.swift */; };
 		2DEDF0602E4D1D4B008F07B2 /* CallMetadata+TypeCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0EE0D292D69A9008B2953 /* CallMetadata+TypeCheck.swift */; };
@@ -12612,6 +12615,7 @@
 				0C3252302E6772E000E322DB /* SubstrateSdk in Frameworks */,
 				0C3252322E67734000E322DB /* Keystore-iOS in Frameworks */,
 				0C2BAA302E6783D7008157E7 /* SwiftyBeaver in Frameworks */,
+				0C2BAA582E687BE3008157E7 /* HydraMathApi in Frameworks */,
 				0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12637,6 +12641,7 @@
 				0C8FCEBD2E67331300034ED3 /* Starscream in Frameworks */,
 				0C8FCE762E65ED3400034ED3 /* DGCharts in Frameworks */,
 				0C8FCED52E67363000034ED3 /* MetadataShortenerApi in Frameworks */,
+				0C2BAA5B2E687D2F008157E7 /* BranchSDK in Frameworks */,
 				0C8FCE782E65ED3400034ED3 /* DGChartsDynamic in Frameworks */,
 				0C8FCECC2E6735F300034ED3 /* FirebaseAppCheck in Frameworks */,
 				0C8FCEA22E672BB000034ED3 /* UIKit-iOS in Frameworks */,
@@ -12661,6 +12666,7 @@
 				0C8FCEB42E672D3900034ED3 /* Kingfisher in Frameworks */,
 				0C8FCECE2E6735F300034ED3 /* FirebaseAuth in Frameworks */,
 				0C8FCE9F2E672B2200034ED3 /* Keystore-iOS in Frameworks */,
+				0C2BAA562E687BD0008157E7 /* HydraMathApi in Frameworks */,
 				0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -29420,7 +29426,6 @@
 				8438E1CB24BFAAD2001BDB13 /* Sources */,
 				8438E1CC24BFAAD2001BDB13 /* Frameworks */,
 				8438E1CD24BFAAD2001BDB13 /* Resources */,
-				0F35ADC6D0502E07FDAF96B9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -29445,7 +29450,6 @@
 				849013A524A80984008F705E /* Frameworks */,
 				849013A624A80984008F705E /* Resources */,
 				77CAF4372B8E96A400E4297C /* Embed Foundation Extensions */,
-				6F8C778E5A223CC04EB848C9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -29537,7 +29541,7 @@
 				0C8FCEA32E672BCE00034ED3 /* XCRemoteSwiftPackageReference "Operation-iOS" */,
 				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
 				0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
-				0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */,
+				0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */,
 				0C8FCEAF2E672CFA00034ED3 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0C8FCEB22E672D3900034ED3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				0C8FCEB52E672D8100034ED3 /* XCRemoteSwiftPackageReference "SwiftDraw" */,
@@ -29549,10 +29553,12 @@
 				0C8FCEC72E6734E900034ED3 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
 				0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */,
-				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */,
+				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */,
 				0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */,
 				0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */,
 				0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */,
+				0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */,
+				0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */,
 			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
@@ -29696,23 +29702,6 @@
 			shellPath = /bin/sh;
 			shellScript = "DEV_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Dev.plist\"\nPRODUCTION_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Release.plist\"\nDESTINATION=\"${PROJECT_DIR}/novawallet/GoogleService-Info.plist\"\n\n# Copy appropriate plist based on build configuration\ncase \"${CONFIGURATION}\" in\n   \"Debug\" | \"Dev\" | \"Staging\" )\n        if [ -f \"$DEV_PLIST\" ]; then\n            cp -r \"$DEV_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Development plist not found at $DEV_PLIST\"\n            exit 1\n        fi\n        ;;\n   \"Release\" )\n        if [ -f \"$PRODUCTION_PLIST\" ]; then\n            cp -r \"$PRODUCTION_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Production plist not found at $PRODUCTION_PLIST\"\n            exit 1\n        fi\n        ;;\n    *)\n        echo \"Unknown configuration: ${CONFIGURATION}\"\n        exit 1\n        ;;\nesac\n\necho \"GoogleService-Info.plist copied successfully.\"\nexit 0\n";
 		};
-		0F35ADC6D0502E07FDAF96B9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		142CF7691E6DF0775F0CC173 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -29733,23 +29722,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6F8C778E5A223CC04EB848C9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		77EDF9212B95F2E0003266B1 /* SwiftFormat */ = {
@@ -29883,7 +29855,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				$PROJECT_DIR/CIKeys.generated.swift,
+				"$PROJECT_DIR/CIKeys.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -30072,40 +30044,40 @@
 				2DEDF0372E4D1594008F07B2 /* TuringStaking.swift in Sources */,
 				2DEDEFA62E4D14E1008F07B2 /* XcmLegacyModelFactory.swift in Sources */,
 				2DEDEFA72E4D14E1008F07B2 /* XcmLegacyMessagesFactory.swift in Sources */,
-				2DEDEFA82E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFA92E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAA2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAB2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFA82E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFA92E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAA2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAB2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DE8B0932E54443900F8BD40 /* FormattedCall.swift in Sources */,
-				2DEDEFAC2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAD2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAE2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAF2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB02E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB12E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB22E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB32E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB42E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB52E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB62E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB72E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB82E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB92E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFAC2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAD2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAE2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAF2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB02E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB12E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB22E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB32E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB42E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB52E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB62E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB72E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB82E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB92E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0642E4D1DF7008F07B2 /* UInt+Serialization.swift in Sources */,
-				2DEDEFBA2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFBB2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFBC2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFBA2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFBB2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFBC2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0382E4D15B5008F07B2 /* ExtrinsicFee.swift in Sources */,
 				2DEDEFBD2E4D14E1008F07B2 /* XcmWeightLimit.swift in Sources */,
-				2DEDEFBE2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFBE2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDEFBF2E4D14E1008F07B2 /* XcmPalletMetadataQueryFactory.swift in Sources */,
 				2DEDEFC12E4D14E1008F07B2 /* XcmMessageSerializer.swift in Sources */,
-				2DEDEFC22E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFC32E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC22E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFC32E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDEFC42E4D14E1008F07B2 /* Xcm+Event.swift in Sources */,
-				2DEDEFC52E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC52E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DE8B0982E5444A800F8BD40 /* OrmlTokensPallet.swift in Sources */,
-				2DEDEFC62E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC62E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0472E4D1754008F07B2 /* ErrorContentConvertible.swift in Sources */,
 				2DEDF05A2E4D1B98008F07B2 /* AssetConversionTxPayment.swift in Sources */,
 				2DEDEF8C2E4D1444008F07B2 /* XcmChain.swift in Sources */,
@@ -30143,7 +30115,7 @@
 				2DEDF03A2E4D15CD008F07B2 /* DelegationResolutionPathFinder.swift in Sources */,
 				77AE4F902B9058D300426519 /* Web3AlertLocalModel.swift in Sources */,
 				7778FE5E2B910B8A0023E801 /* OperationManagerFacade.swift in Sources */,
-				2DEDEF882E4D135B008F07B2 /* (null) in Sources */,
+				2DEDEF882E4D135B008F07B2 /* BuildFile in Sources */,
 				2DEDF03C2E4D1627008F07B2 /* DelegationResolution.swift in Sources */,
 				77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */,
 				2DEDF0632E4D1DCB008F07B2 /* AccountIdCodingWrapper.swift in Sources */,
@@ -30152,7 +30124,7 @@
 				0CCD18C92BA1F0A90068D73A /* SubstrateConstansts.swift in Sources */,
 				2DE8B09F2E54456000F8BD40 /* WalletType+Delegation.swift in Sources */,
 				77AE4F992B905B6E00426519 /* ChainNodeModel.swift in Sources */,
-				2DEDF05C2E4D1C01008F07B2 /* (null) in Sources */,
+				2DEDF05C2E4D1C01008F07B2 /* BuildFile in Sources */,
 				0CCD18BB2BA1EE830068D73A /* StateminAssetExtras.swift in Sources */,
 				77AE4F922B90591400426519 /* StorageFacadeProtocol.swift in Sources */,
 				2DEDF04B2E4D18ED008F07B2 /* JSON+BigUInt.swift in Sources */,
@@ -30179,9 +30151,9 @@
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				0CCD18B42BA1EDC30068D73A /* EquilibriumTokenExtras.swift in Sources */,
 				2DEDEF5B2E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift in Sources */,
-				2DEDEF852E4D130D008F07B2 /* (null) in Sources */,
+				2DEDEF852E4D130D008F07B2 /* BuildFile in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
-				2DEDEF842E4D1301008F07B2 /* (null) in Sources */,
+				2DEDEF842E4D1301008F07B2 /* BuildFile in Sources */,
 				2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */,
 				77AE4FA42B905CE700426519 /* Currency.swift in Sources */,
 				770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */,
@@ -30264,7 +30236,7 @@
 				2DC694482DF2EEC7004F4584 /* AccountId+Dummy.swift in Sources */,
 				0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
-				2DEDEF8B2E4D13C4008F07B2 /* (null) in Sources */,
+				2DEDEF8B2E4D13C4008F07B2 /* BuildFile in Sources */,
 				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				2DC6945D2DF837A6004F4584 /* NotEqualWrapper.swift in Sources */,
 				2DEDEF822E4D12DA008F07B2 /* AssetConversionPallet.swift in Sources */,
@@ -30282,7 +30254,7 @@
 				778215D62B959344006C7D13 /* SharedSettingsManager.swift in Sources */,
 				2DE8B0BF2E54D99600F8BD40 /* UtilityBatchType.swift in Sources */,
 				2DEDEF7F2E4D12B3008F07B2 /* RuntimeTypeRegistryFactory.swift in Sources */,
-				2DEDEF872E4D1332008F07B2 /* (null) in Sources */,
+				2DEDEF872E4D1332008F07B2 /* BuildFile in Sources */,
 				7778FE552B9109C50023E801 /* AssetBalanceFormatterFactory.swift in Sources */,
 				778215CB2B914E9D006C7D13 /* Payload.swift in Sources */,
 				2DE8B0902E5336C100F8BD40 /* HexCodingWrapper.swift in Sources */,
@@ -30291,9 +30263,9 @@
 				0CCD18B02BA1C2D80068D73A /* AssetBalanceDisplayInfo.swift in Sources */,
 				77EDF9232B96D74E003266B1 /* MetaAccountModel.swift in Sources */,
 				778215E72B95C432006C7D13 /* StakingRewardsHandler.swift in Sources */,
-				2DEDEF862E4D131A008F07B2 /* (null) in Sources */,
+				2DEDEF862E4D131A008F07B2 /* BuildFile in Sources */,
 				0CFF823C2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */,
-				2DEDEF832E4D12F3008F07B2 /* (null) in Sources */,
+				2DEDEF832E4D12F3008F07B2 /* BuildFile in Sources */,
 				7778FE5D2B910B7D0023E801 /* SettingsExtension.swift in Sources */,
 				2DEDEF8A2E4D13BA008F07B2 /* XcmPalletTransfer.swift in Sources */,
 				77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */,
@@ -36282,11 +36254,11 @@
 /* Begin PBXTargetDependency section */
 		0C2BAA202E677D3F008157E7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */;
+			productRef = 0C2BAA1F2E677D3F008157E7 /* plugin:RswiftGenerateInternalResources */;
 		};
 		0C8FCEDA2E67392800034ED3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */;
+			productRef = 0C8FCED92E67392800034ED3 /* plugin:RswiftGenerateInternalResources */;
 		};
 		77CAF4352B8E96A400E4297C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -37191,6 +37163,22 @@
 				revision = 3f16f980d1ff4a576cb8530688770ee74087fe4d;
 			};
 		};
+		0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/hydra-math-swift";
+			requirement = {
+				branch = feature/spm;
+				kind = branch;
+			};
+		};
+		0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BranchMetrics/ios-branch-sdk-spm";
+			requirement = {
+				kind = exactVersion;
+				version = 3.10.0;
+			};
+		};
 		0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/WalletConnectSwiftV2.git";
@@ -37287,7 +37275,7 @@
 				version = 2.1.1;
 			};
 		};
-		0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */ = {
+		0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
 			requirement = {
@@ -37383,7 +37371,7 @@
 				version = 0.2.1;
 			};
 		};
-		0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */ = {
+		0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mac-cain13/R.swift";
 			requirement = {
@@ -37423,9 +37411,9 @@
 			package = 0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */;
 			productName = web3swift;
 		};
-		0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */ = {
+		0C2BAA1F2E677D3F008157E7 /* plugin:RswiftGenerateInternalResources */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0C2BAA2F2E6783D7008157E7 /* SwiftyBeaver */ = {
@@ -37435,8 +37423,23 @@
 		};
 		0C2BAA332E67841C008157E7 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = RswiftLibrary;
+		};
+		0C2BAA552E687BD0008157E7 /* HydraMathApi */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */;
+			productName = HydraMathApi;
+		};
+		0C2BAA572E687BE3008157E7 /* HydraMathApi */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */;
+			productName = HydraMathApi;
+		};
+		0C2BAA5A2E687D2F008157E7 /* BranchSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */;
+			productName = BranchSDK;
 		};
 		0C32522C2E67477700E322DB /* WalletConnect */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -37540,7 +37543,7 @@
 		};
 		0C8FCEAD2E672CB000034ED3 /* Reachability */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */;
+			package = 0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */;
 			productName = Reachability;
 		};
 		0C8FCEB02E672CFA00034ED3 /* SnapKit */ = {
@@ -37615,12 +37618,12 @@
 		};
 		0C8FCED72E6736E900034ED3 /* rswift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = rswift;
 		};
-		0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */ = {
+		0C8FCED92E67392800034ED3 /* plugin:RswiftGenerateInternalResources */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0CBE44962E6741220034DC0A /* QRCodeStatic */ = {

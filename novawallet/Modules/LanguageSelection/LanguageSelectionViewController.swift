@@ -26,6 +26,6 @@ extension LanguageSelectionViewController: LanguageSelectionViewProtocol {}
 extension LanguageSelectionViewController: Localizable {
     func applyLocalization() {
         let languages = localizationManager?.preferredLocalizations
-        title = R.string.localizable.languageTitle(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.languageTitle()
     }
 }

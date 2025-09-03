@@ -1,45 +1,28 @@
 PODS:
-  - BranchSDK (3.10.0)
   - FireMock (3.1)
-  - HydraMath (0.3.0)
   - Sourcery (1.4.1)
   - SwiftFormat/CLI (0.47.13)
   - SwiftLint (0.43.1)
 
 DEPENDENCIES:
-  - BranchSDK (~> 3.10.0)
   - FireMock
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.3`)
   - Sourcery (~> 1.4)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
 
 SPEC REPOS:
   trunk:
-    - BranchSDK
     - FireMock
     - Sourcery
     - SwiftFormat
     - SwiftLint
 
-EXTERNAL SOURCES:
-  HydraMath:
-    :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.3'
-
-CHECKOUT OPTIONS:
-  HydraMath:
-    :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.3'
-
 SPEC CHECKSUMS:
-  BranchSDK: 5678ea6de1b289812e99b55e828e826b00688f06
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
-  HydraMath: 3a53bad758aa1661ab671f9288f1884b7c97c659
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
 
-PODFILE CHECKSUM: 50aa0094d3bd63292810ab5382eb8cb9ab6b8f59
+PODFILE CHECKSUM: a24084476548e6904f58c49421a6a9de3e5cc478
 
 COCOAPODS: 1.15.2

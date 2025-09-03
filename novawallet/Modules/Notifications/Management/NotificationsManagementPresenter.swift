@@ -282,7 +282,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         let languages = selectedLocale.rLanguages
 
         let closeViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonClose(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonClose(),
             style: .destructive
         ) { [weak self] in
             self?.wireframe.complete(from: self?.view)
@@ -290,9 +290,9 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
 
         let viewModel = AlertPresentableViewModel(
             title: nil,
-            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            message: R.string(preferredLanguages: languages).localizable.commonCloseWhenChangesConfirmation(),
             actions: [closeViewModel],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
+            closeAction: R.string(preferredLanguages: languages).localizable.commonCancel()
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
@@ -347,9 +347,7 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             if isStatusDeniedError(error) {
                 showNotificationDeniedError()
             } else {
-                let title = R.string.localizable.commonErrorGeneralTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle()
 
                 let message = error.localizedDescription
 

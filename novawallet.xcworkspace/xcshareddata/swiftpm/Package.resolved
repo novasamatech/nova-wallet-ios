@@ -1,5 +1,5 @@
 {
-  "originHash" : "3a042b5b745219063315710625cb975e72f53a87343697e36688f07e41787c7a",
+  "originHash" : "98520fb9c599427e25584f50f0f0e1a82de1bce3d86f3d112b543f1d38ed85be",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -164,12 +164,30 @@
       }
     },
     {
+      "identity" : "hydra-math-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/novasamatech/hydra-math-swift",
+      "state" : {
+        "branch" : "feature/spm",
+        "revision" : "b5ff84d7f9a7a7478d97fc29bdefebac36405187"
+      }
+    },
+    {
       "identity" : "interop-ios-for-google-sdks",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/interop-ios-for-google-sdks.git",
       "state" : {
         "revision" : "2d12673670417654f08f5f90fdd62926dc3a2648",
         "version" : "100.0.0"
+      }
+    },
+    {
+      "identity" : "ios-branch-sdk-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/BranchMetrics/ios-branch-sdk-spm",
+      "state" : {
+        "revision" : "e3b2b380f483ab16e072ad329c6e2c019a2e88c5",
+        "version" : "3.10.0"
       }
     },
     {

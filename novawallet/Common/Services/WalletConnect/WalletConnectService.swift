@@ -518,7 +518,7 @@ private struct DefaultCryptoProvider: CryptoProvider {
         case invalidSignatureOrMessage
     }
 
-    public func recoverPubKey(signature: WalletConnectSwiftV2.EthereumSignature, message: Data) throws -> Data {
+    public func recoverPubKey(signature: WalletConnectSign.EthereumSignature, message: Data) throws -> Data {
         guard
             let publicKey = SECP256K1.recoverPublicKey(
                 hash: message,

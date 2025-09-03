@@ -32,14 +32,14 @@ abstract_target 'novawalletAll' do
   #pod 'FirebaseFirestore', '~> 11.3.0'
   #pod 'FirebaseMessaging', '~> 11.3.0'
   #pod 'FirebaseAppCheck', '~> 11.3.0'
-  pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.3'
+  #pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.3'
   #pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
   #pod 'NovaCrypto', :git => 'https://github.com/novasamatech/Crypto-iOS', :tag => '0.2.0'
   #pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   #pod 'sr25519c', :git => 'https://github.com/novasamatech/sr25519.c', :tag => '0.2.0'
   #pod 'ed25519.c', :git => 'https://github.com/novasamatech/ed25519.c', :tag => '0.1.1'
   #pod 'blake2.c', :git => 'https://github.com/novasamatech/blake2.c', :tag => '0.1.0'
-  pod 'BranchSDK', '~> 3.10.0'
+  #pod 'BranchSDK', '~> 3.10.0'
   
   target 'novawalletTests' do
     inherit! :search_paths
@@ -53,7 +53,7 @@ abstract_target 'novawalletAll' do
     #pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
     pod 'Sourcery', '~> 1.4'
     #pod 'Starscream', :git => 'https://github.com/novasamatech/Starscream.git', :tag => '4.0.12'
-    pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.3'
+    #pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.3'
     #pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
     #pod 'NovaCrypto', :git => 'https://github.com/novasamatech/Crypto-iOS', :tag => '0.2.0'
     #pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'

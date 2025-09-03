@@ -48,15 +48,12 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         balance: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.stakingSetupProxyErrorInsufficientBalanceTitle(
-            preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInsufficientBalanceTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
             deposit,
-            balance,
-            preferredLanguages: locale?.rLanguages
+            balance
         )
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -67,15 +64,12 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         networkName: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingSetupProxyErrorInvalidMaximumProxiesTitle(
-            preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorInvalidMaximumProxiesMessage(
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInvalidMaximumProxiesTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInvalidMaximumProxiesMessage(
             limit,
-            networkName,
-            preferredLanguages: locale.rLanguages
+            networkName
         )
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -85,14 +79,11 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         account: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingSetupProxyErrorProxyAlreadyExistsTitle(
-            preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorProxyAlreadyExistsMessage(
-            account,
-            preferredLanguages: locale.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorProxyAlreadyExistsTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorProxyAlreadyExistsMessage(
+            account
         )
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -102,14 +93,15 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         networkName: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.stakingSetupProxyErrorInvalidAddressTitle(
-            preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorInvalidAddressMessage(
-            networkName,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInvalidAddressTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInvalidAddressMessage(
+            networkName
         )
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -121,15 +113,14 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         accountName: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.proxyFeeErrorMessage(
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.proxyFeeErrorMessage(
             accountName,
             fee,
-            balance,
-            preferredLanguages: locale?.rLanguages
+            balance
         )
 
-        let title = R.string.localizable.commonNotEnoughFeeTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNotEnoughFeeTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -138,15 +129,11 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govAddDelegateSelfErrorTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govAddDelegateSelfErrorTitle()
 
-        let message = R.string.localizable.govAddDelegateSelfErrorMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.govAddDelegateSelfErrorMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }

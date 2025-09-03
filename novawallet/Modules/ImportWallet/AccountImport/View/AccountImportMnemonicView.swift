@@ -121,20 +121,14 @@ final class AccountImportMnemonicView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = R.string.localizable.walletImportMnemonicTitle(preferredLanguages: locale?.rLanguages)
-        subtitleLabel.text = R.string.localizable.walletImportMnemonicSubtitle(
-            preferredLanguages: locale?.rLanguages
-        )
-        mnemonicTitleLabel.text = R.string.localizable.importMnemonic(preferredLanguages: locale?.rLanguages)
-        hintLabel.text = R.string.localizable.walletImportMnemonicHint(preferredLanguages: locale?.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletImportMnemonicTitle()
+        subtitleLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletImportMnemonicSubtitle()
+        mnemonicTitleLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.importMnemonic()
+        hintLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletImportMnemonicHint()
 
-        usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
+        usernameTextField.title = R.string(preferredLanguages: locale?.rLanguages).localizable.walletUsernameSetupChooseTitle_v2_2_0()
 
-        usernameHintLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
+        usernameHintLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletNicknameCreateCaption_v2_2_0()
 
         updateProceedButton()
     }

@@ -57,7 +57,7 @@ enum ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.parastkManageCollators(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.parastkManageCollators()
         }
 
         viewController.selectedIndex = NSNotFound
@@ -103,7 +103,7 @@ enum ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.secretTypePickerTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.secretTypePickerTitle()
         }
 
         viewController.selectedIndex = NSNotFound
@@ -151,7 +151,7 @@ enum ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.commonCryptoType(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCryptoType()
         }
 
         viewController.cellNib = UINib(resource: R.nib.titleWithSubtitleTableViewCell)
@@ -247,7 +247,7 @@ enum ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.stakingValidatorTotalStake(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorTotalStake()
         }
 
         viewController.delegate = delegate
@@ -319,7 +319,7 @@ enum ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.parachainStakingCollator(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollator()
         }
 
         viewController.delegate = delegate

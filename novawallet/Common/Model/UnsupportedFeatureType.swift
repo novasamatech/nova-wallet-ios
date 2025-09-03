@@ -48,19 +48,19 @@ enum FeatureUnsupportedWalletType {
 
         return switch self {
         case .secrets:
-            R.string.localizable.commonAccount(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonAccount()
         case .watchOnly:
-            R.string.localizable.commonWatchOnly(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonWatchOnly()
         case .paritySigner:
-            R.string.localizable.commonParitySigner(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonParitySigner()
         case .ledger, .genericLedger:
-            R.string.localizable.commonLedger(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonLedger()
         case .polkadotVault:
-            R.string.localizable.commonPolkadotVault(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonPolkadotVault()
         case .proxied:
-            R.string.localizable.commonProxied(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonProxied()
         case .multisig:
-            R.string.localizable.commonMultisig(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.commonMultisig()
         }
     }
 

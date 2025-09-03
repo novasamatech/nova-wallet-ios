@@ -78,7 +78,7 @@ class AccountInputView: BackgroundedContentControl {
     }()
 
     var localizablePlaceholder: LocalizableResource<String> = LocalizableResource { locale in
-        R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.commonAddress()
     } {
         didSet {
             setupPlaceholder()

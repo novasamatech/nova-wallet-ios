@@ -48,9 +48,8 @@ final class ChangeWatchOnlyPresenter {
     private func provideAddressInputViewModel() {
         let value = partialAddress ?? ""
 
-        let title = R.string.localizable.commonChainAddressTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonChainAddressTitle(
+            chain.name
         )
 
         let inputViewModel = InputViewModel.createAccountInputViewModel(

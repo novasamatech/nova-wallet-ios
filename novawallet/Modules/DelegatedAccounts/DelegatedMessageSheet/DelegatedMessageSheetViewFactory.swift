@@ -37,9 +37,7 @@ enum DelegatedMessageSheetViewFactory {
         }
 
         let text = LocalizableResource { locale in
-            R.string.localizable.delegatedSigningCheckmarkTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegatedSigningCheckmarkTitle()
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
@@ -76,16 +74,15 @@ enum DelegatedMessageSheetViewFactory {
         completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.proxySigningNotEnoughPermissionsTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningNotEnoughPermissionsTitle()
         }
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.proxySigningNotEnoughPermissionsMessage(
+            let template = R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningNotEnoughPermissionsMessage(
                 marker,
                 marker,
-                marker,
-                preferredLanguages: locale.rLanguages
+                marker
             )
 
             let replacements = [proxiedName, proxyName, type.value(for: locale)]
@@ -122,17 +119,16 @@ enum DelegatedMessageSheetViewFactory {
         viewDetailsCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.multisigTransactionCreatedSheetTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionCreatedSheetTitle()
         }
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.multisigTransactionCreatedSheetMessage(
-                marker,
-                preferredLanguages: locale.rLanguages
+            let template = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionCreatedSheetMessage(
+                marker
             )
 
-            let replacement = R.string.localizable.multisigTransactionsToSign(preferredLanguages: locale.rLanguages)
+            let replacement = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionsToSign()
 
             let decorator = AttributedReplacementStringDecorator(
                 pattern: marker,
@@ -145,7 +141,7 @@ enum DelegatedMessageSheetViewFactory {
 
         let viewDetailsAction = MessageSheetAction(
             title: LocalizableResource { locale in
-                R.string.localizable.commonViewDetails(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonViewDetails()
             },
             handler: viewDetailsCallback
         )
@@ -195,9 +191,7 @@ enum DelegatedMessageSheetViewFactory {
         let sheetContent = createMultisigRejectContent(depositorName: depositorAccount.chainAccount.name)
 
         let text = LocalizableResource { locale in
-            R.string.localizable.delegatedSigningCheckmarkTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegatedSigningCheckmarkTitle()
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
@@ -237,12 +231,12 @@ private extension DelegatedMessageSheetViewFactory {
 
     static func createProxyContent(proxyName: String) -> MessageSheetContent {
         let title = LocalizableResource { locale in
-            R.string.localizable.proxySigningTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningTitle()
         }
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.proxySigningMessage(marker, preferredLanguages: locale.rLanguages)
+            let template = R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningMessage(marker)
 
             let decorator = AttributedReplacementStringDecorator(
                 pattern: marker,
@@ -262,14 +256,13 @@ private extension DelegatedMessageSheetViewFactory {
 
     static func createMultisigContent(signatoryName: String) -> MessageSheetContent {
         let title = LocalizableResource { locale in
-            R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigSigningTitle()
         }
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.multisigSigningMessage(
-                marker,
-                preferredLanguages: locale.rLanguages
+            let template = R.string(preferredLanguages: locale.rLanguages).localizable.multisigSigningMessage(
+                marker
             )
 
             let decorator = AttributedReplacementStringDecorator(
@@ -290,14 +283,13 @@ private extension DelegatedMessageSheetViewFactory {
 
     static func createMultisigRejectContent(depositorName: String?) -> MessageSheetContent {
         let title = LocalizableResource { locale in
-            R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigSigningTitle()
         }
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.multisigTransactionRejectSheetMessage(
-                marker,
-                preferredLanguages: locale.rLanguages
+            let template = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionRejectSheetMessage(
+                marker
             )
 
             let decorator = AttributedReplacementStringDecorator(

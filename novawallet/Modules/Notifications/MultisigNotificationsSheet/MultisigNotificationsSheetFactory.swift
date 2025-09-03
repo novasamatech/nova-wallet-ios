@@ -8,19 +8,15 @@ enum MultisigNotificationsSheetFactory {
         enableSettingsClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.multisigNotificationsPromoSheetTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigNotificationsPromoSheetTitle()
         }
         let message = LocalizableResource { locale in
-            R.string.localizable.multisigNotificationsPromoSheetMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigNotificationsPromoSheetMessage()
         }
 
         let enableSettingsAction = MessageSheetAction(
             title: LocalizableResource { locale in
-                R.string.localizable.commonEnableSettings(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonEnableSettings()
             },
             handler: enableSettingsClosure
         )

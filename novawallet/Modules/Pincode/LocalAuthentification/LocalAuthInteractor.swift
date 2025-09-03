@@ -54,7 +54,7 @@ class LocalAuthInteractor {
         }
 
         biometryAuth.authenticate(
-            localizedReason: R.string.localizable.askBiometryReason(preferredLanguages: locale.rLanguages),
+            localizedReason: R.string(preferredLanguages: locale.rLanguages).localizable.askBiometryReason(),
             completionQueue: DispatchQueue.main
         ) { [weak self] (result: Bool) -> Void in
 

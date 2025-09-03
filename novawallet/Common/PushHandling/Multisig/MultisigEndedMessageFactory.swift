@@ -139,7 +139,7 @@ private extension MultisigEndedMessageFactory {
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             let delegatedAccountPart = [
-                R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+                R.string(preferredLanguages: locale.rLanguages).localizable.delegatedAccountOnBehalfOf(),
                 delegatedAccount
             ].joined(with: .space)
 
@@ -168,11 +168,10 @@ private extension MultisigEndedMessageFactory {
                 let nameOrAddress
             else { return "" }
 
-            return R.string.localizable.multisigOperationFormatTransferText(
+            return R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatTransferText(
                 amount,
                 nameOrAddress,
-                transfer.asset.chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                transfer.asset.chain.name.capitalized
             )
         }
     }
@@ -182,10 +181,9 @@ private extension MultisigEndedMessageFactory {
         chain: ChainModel
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatGeneralText(
                 batch.type.fullModuleCallDescription.value(for: locale),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                chain.name.capitalized
             )
         }
     }
@@ -195,10 +193,9 @@ private extension MultisigEndedMessageFactory {
         chain: ChainModel
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatGeneralText(
                 self.createModuleCallInfo(for: generalDefinition.callPath),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                chain.name.capitalized
             )
         }
     }
@@ -212,13 +209,13 @@ private extension MultisigEndedMessageFactory {
 
     func createExecutedTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonMultisigExecuted(preferredLanguages: locale.rLanguages).capitalized
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigExecuted().capitalized
         }
     }
 
     func createRejectedTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonMultisigRejected(preferredLanguages: locale.rLanguages).capitalized
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigRejected().capitalized
         }
     }
 

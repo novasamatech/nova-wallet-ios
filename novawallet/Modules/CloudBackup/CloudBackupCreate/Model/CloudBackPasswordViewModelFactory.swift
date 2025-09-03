@@ -35,18 +35,17 @@ extension CloudBackPasswordViewModelFactory: CloudBackPasswordViewModelFactoryPr
     ) -> [HintListView.ViewModel] {
         var hints = [
             createViewModel(
-                for: R.string.localizable.cloudBackupCreateHintMinChar(
-                    "\(CloudBackup.PasswordValidationResult.minLength)",
-                    preferredLanguages: locale.rLanguages
+                for: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateHintMinChar(
+                    "\(CloudBackup.PasswordValidationResult.minLength)"
                 ),
                 isMatches: result.contains(.minChars)
             ),
             createViewModel(
-                for: R.string.localizable.cloudBackupCreateHintNumbers(preferredLanguages: locale.rLanguages),
+                for: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateHintNumbers(),
                 isMatches: result.contains(.digits)
             ),
             createViewModel(
-                for: R.string.localizable.cloudBackupCreateHintLetters(preferredLanguages: locale.rLanguages),
+                for: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateHintLetters(),
                 isMatches: result.contains(.asciiChars)
             )
         ]
@@ -54,7 +53,7 @@ extension CloudBackPasswordViewModelFactory: CloudBackPasswordViewModelFactoryPr
         if flow == .confirmPassword {
             hints.append(
                 createViewModel(
-                    for: R.string.localizable.cloudBackupCreateHintPasswordMatch(preferredLanguages: locale.rLanguages),
+                    for: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateHintPasswordMatch(),
                     isMatches: result.contains(.confirmMatchesPassword)
                 )
             )

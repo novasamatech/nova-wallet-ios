@@ -51,8 +51,8 @@ private extension DelegatedAccountsUpdateViewController {
     }
 
     func setupInfoContent() {
-        let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
-        let link = R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages)
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegateUpdatesHint()
+        let link = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLearnMore()
 
         rootView.infoView.bind(
             text: text,
@@ -95,19 +95,14 @@ private extension DelegatedAccountsUpdateViewController {
 
     func setupDoneButton() {
         let preferredLanguages = selectedLocale.rLanguages
-        rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
-            preferredLanguages: preferredLanguages)
+        rootView.doneButton.imageWithTitleView?.title = R.string(preferredLanguages: preferredLanguages).localizable.commonDone()
         rootView.doneButton.addTarget(self, action: #selector(didTapOnDoneButton), for: .touchUpInside)
     }
 
     func setupSegmentedControl() {
         rootView.segmentedControl.titles = [
-            R.string.localizable.commonProxied(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
-            R.string.localizable.commonMultisig(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonProxied(),
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonMultisig()
         ]
 
         rootView.segmentedControl.addTarget(
@@ -118,13 +113,11 @@ private extension DelegatedAccountsUpdateViewController {
     }
 
     func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable.delegateUpdatesTitle(
-            preferredLanguages: selectedLocale.rLanguages)
-        rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
-            preferredLanguages: selectedLocale.rLanguages)
+        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegateUpdatesTitle()
+        rootView.doneButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
 
-        let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
-        let link = R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages)
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegateUpdatesHint()
+        let link = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLearnMore()
         rootView.infoView.bind(text: text, link: link)
     }
 

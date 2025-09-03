@@ -133,7 +133,7 @@ extension TimeInterval {
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
 
         guard days > 0 || hours > 0 else {
-            return R.string.localizable.commonDaysFormat(format: 0, preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFormat(format: 0)
         }
 
         return localizedDaysHours(for: locale)
@@ -174,11 +174,10 @@ extension TimeInterval {
 extension UInt {
     func localizedDaysPeriod(for locale: Locale) -> String {
         if self == 1 {
-            return R.string.localizable.commonDaysEveryday(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysEveryday()
         } else {
-            return R.string.localizable.commonEveryDaysFormat(
-                format: Int(bitPattern: self),
-                preferredLanguages: locale.rLanguages
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonEveryDaysFormat(
+                format: Int(bitPattern: self)
             )
         }
     }

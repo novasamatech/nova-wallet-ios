@@ -61,14 +61,14 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
             rootView.proceedButton.applyEnabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = true
 
-            rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-                .commonContinue(preferredLanguages: selectedLocale.rLanguages)
+            rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+                .commonContinue()
         } else {
             rootView.proceedButton.applyDisabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = false
 
-            rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-                .commonEnterWalletNameDisabled(preferredLanguages: selectedLocale.rLanguages)
+            rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+                .commonEnterWalletNameDisabled()
         }
 
         rootView.proceedButton.invalidateLayout()
@@ -77,11 +77,9 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.walletNameTitle(preferredLanguages: languages)
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletNameTitle()
 
-        rootView.subtitleLabel.text = R.string.localizable.walletNameSubtitle(
-            preferredLanguages: languages
-        )
+        rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.walletNameSubtitle()
 
         rootView.nameView.locale = selectedLocale
 

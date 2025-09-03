@@ -2,9 +2,8 @@ import Foundation
 
 final class MultisigApprovalHandler: CommonMultisigHandler, PushNotificationHandler {
     override func createTitle(params: MultisigNotificationParams) -> String {
-        R.string.localizable.pushNotificationMultisigApprovalTitle(
-            params.signatory,
-            preferredLanguages: locale.rLanguages
+        R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationMultisigApprovalTitle(
+            params.signatory
         )
     }
 
@@ -14,10 +13,9 @@ final class MultisigApprovalHandler: CommonMultisigHandler, PushNotificationHand
     ) -> String {
         guard let approvals = payload.approvals else { return "" }
 
-        return R.string.localizable.pushNotificationMultisigApprovalBody(
+        return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationMultisigApprovalBody(
             approvals,
-            params.multisigAccount.threshold,
-            preferredLanguages: locale.rLanguages
+            params.multisigAccount.threshold
         )
     }
 }

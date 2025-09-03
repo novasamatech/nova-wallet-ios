@@ -63,10 +63,8 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
 
 extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentNotEnoughLiquidity(from view: ControllerBackedProtocol, locale: Locale?) {
-        let title = R.string.localizable.swapsSetupErrorNotEnoughLiquidityTitle(
-            preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale?.rLanguages).localizable.swapsSetupErrorNotEnoughLiquidityTitle()
+        let closeAction = R.string(preferredLanguages: locale?.rLanguages).localizable.commonClose()
 
         present(message: nil, title: title, closeAction: closeAction, from: view)
     }
@@ -78,19 +76,18 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         onConfirm: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.swapsErrorRateWasUpdatedTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.swapsErrorRateWasUpdatedMessage(
+        let title = R.string(preferredLanguages: locale?.rLanguages).localizable.swapsErrorRateWasUpdatedTitle()
+        let message = R.string(preferredLanguages: locale?.rLanguages).localizable.swapsErrorRateWasUpdatedMessage(
             oldRate,
-            newRate,
-            preferredLanguages: locale?.rLanguages
+            newRate
         )
 
         let cancelAction = AlertPresentableAction(
-            title: R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+            title: R.string(preferredLanguages: locale?.rLanguages).localizable.commonCancel()
         )
 
         let confirmAction = AlertPresentableAction(
-            title: R.string.localizable.commonConfirm(preferredLanguages: locale?.rLanguages),
+            title: R.string(preferredLanguages: locale?.rLanguages).localizable.commonConfirm(),
             handler: onConfirm
         )
 
@@ -111,16 +108,15 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         network: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
 
-        let message = R.string.localizable.swapFailureCannotReceiveInsufficientAssetOut(
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.swapFailureCannotReceiveInsufficientAssetOut(
             utilityMinBalance,
             network,
-            token,
-            preferredLanguages: locale.rLanguages
+            token
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -130,12 +126,11 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         minBalance: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.commonReceiveAtLeastEdError(
-            minBalance,
-            preferredLanguages: locale.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonReceiveAtLeastEdError(
+            minBalance
         )
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -145,12 +140,11 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         minBalance: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.swapDeliveryFeeErrorMessage(
-            minBalance,
-            preferredLanguages: locale.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.swapDeliveryFeeErrorMessage(
+            minBalance
         )
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
