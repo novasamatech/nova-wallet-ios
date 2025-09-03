@@ -114,7 +114,7 @@ private extension CommonMultisigHandler {
     ) -> BaseOperation<MultisigNotificationParams> {
         ClosureOperation {
             guard
-                let multisigWallet = self.targetWallet(
+                let multisigWallet = self.findMultisigWallet(
                     for: payload.multisigAddress,
                     chain: chain,
                     metaAccounts: try metaAccounts()
@@ -332,5 +332,23 @@ private extension CommonMultisigHandler {
             callPath.moduleName.displayModule,
             callPath.callName.displayCall
         ].joined(with: .colonSpace)
+    }
+    
+    func findMultisigWallet(
+        for address: AccountAddress?,
+        chain: ChainModel,
+        metaAccounts: [MetaAccountModel]
+    ) -> MetaAccountModel? {
+        guard let accountId = try? address?.toAccountId() else {
+            return nil
+        }
+
+        let chainRequest = chain.accountRequest()
+
+        return metaAccounts
+            .filter {
+                $0.type == .multisig && $0.fetchByAccountId(accountId, request: chainRequest) != nil
+            }
+            .first
     }
 }
