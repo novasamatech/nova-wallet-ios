@@ -18,10 +18,6 @@ class AccountImportTests: XCTestCase {
             operationQueue: OperationQueue()
         )
 
-        let repository = AccountRepositoryFactory(
-            storageFacade: UserDataStorageTestFacade())
-            .createMetaAccountRepository(for: nil, sortDescriptors: [])
-
         let eventCenter = MockEventCenterProtocol()
 
         let keychain = InMemoryKeychain()
