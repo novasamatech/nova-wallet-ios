@@ -45,7 +45,7 @@ extension WalletDelayedExecVerifier: WalletDelayedExecVerifing {
             let newMetaIds: [MetaAccountModel.Id] = currentMetaIds.flatMap { metaId in
                 guard
                     let wallet = allWallets[metaId],
-                    let delegation = wallet.delegationId,
+                    let delegation = wallet.getDelegateIdentifier(),
                     delegation.existsInChainWithId(chain.chainId) else {
                     return [MetaAccountModel.Id]()
                 }

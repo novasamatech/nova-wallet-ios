@@ -5,16 +5,16 @@ protocol MultistakingSyncServiceFactoryProtocol {
 }
 
 final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtocol {
-    let stakingConfigProvider: StakingGlobalConfigProviding
+    let configProvider: GlobalConfigProviding
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
 
     init(
-        stakingConfigProvider: StakingGlobalConfigProviding,
+        configProvider: GlobalConfigProviding,
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol
     ) {
-        self.stakingConfigProvider = stakingConfigProvider
+        self.configProvider = configProvider
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
     }
@@ -31,7 +31,7 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
         )
 
         let offchainOperationFactory = SubqueryMultistakingProxy(
-            configProvider: stakingConfigProvider,
+            configProvider: configProvider,
             operationQueue: operationQueue
         )
 

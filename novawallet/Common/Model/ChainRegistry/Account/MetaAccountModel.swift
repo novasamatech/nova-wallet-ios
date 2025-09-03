@@ -175,7 +175,7 @@ extension MetaAccountModel {
             return self
         }
 
-        return if let multisig {
+        return if multisig != nil {
             replacingUniversalMultisigStatus(from: oldStatus, to: newStatus)
         } else {
             replacingDelegatedChainAccountStatus(from: oldStatus, to: newStatus)

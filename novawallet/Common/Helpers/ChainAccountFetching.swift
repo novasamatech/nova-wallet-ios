@@ -35,19 +35,8 @@ struct MetaChainAccountResponse {
     let substrateAccountId: AccountId?
     let ethereumAccountId: AccountId?
     let walletIdenticonData: Data?
-    let delegationId: MetaAccountDelegationId?
+    let delegationId: DelegateIdentifier?
     let chainAccount: ChainAccountResponse
-}
-
-struct MetaAccountDelegationId: Hashable {
-    let delegateAccountId: AccountId
-    let delegatorId: AccountId
-    let chainId: ChainModel.Id?
-    let delegationType: DelegationType
-
-    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
-        chainId == nil || chainId == identifier
-    }
 }
 
 enum ChainAccountFetchingError: Error {
@@ -347,7 +336,7 @@ extension MetaAccountModel {
                 substrateAccountId: substrateAccountId,
                 ethereumAccountId: ethereumAddress,
                 walletIdenticonData: walletIdenticonData(),
-                delegationId: delegationId,
+                delegationId: getDelegateIdentifier(),
                 chainAccount: $0
             )
         }
