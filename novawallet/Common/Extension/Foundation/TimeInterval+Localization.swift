@@ -50,16 +50,16 @@ extension TimeInterval {
         var components: [String] = []
 
         if days > 0 {
-            let daysString = R.string.localizable.commonDaysFormat(
-                format: days, preferredLanguages: locale.rLanguages
+            let daysString = R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFormat(
+                format: days
             )
 
             components.append(daysString)
         }
 
         if hours > 0 {
-            let hoursString = R.string.localizable.commonHoursFormat(
-                format: hours, preferredLanguages: locale.rLanguages
+            let hoursString = R.string(preferredLanguages: locale.rLanguages).localizable.commonHoursFormat(
+                format: hours
             )
 
             components.append(hoursString)
@@ -88,32 +88,32 @@ extension TimeInterval {
         var components: [String] = []
 
         if days > 0 {
-            let daysString = R.string.localizable.commonDaysFormat(
-                format: days, preferredLanguages: locale.rLanguages
+            let daysString = R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFormat(
+                format: days
             )
 
             components.append(daysString)
         }
 
         if hours > 0 {
-            let hoursString = R.string.localizable.commonHoursFormat(
-                format: hours, preferredLanguages: locale.rLanguages
+            let hoursString = R.string(preferredLanguages: locale.rLanguages).localizable.commonHoursFormat(
+                format: hours
             )
 
             components.append(hoursString)
         }
 
         if minutes > 0, components.count < 2 {
-            let minutesString = R.string.localizable.commonMinutesFormat(
-                format: minutes, preferredLanguages: locale.rLanguages
+            let minutesString = R.string(preferredLanguages: locale.rLanguages).localizable.commonMinutesFormat(
+                format: minutes
             )
 
             components.append(minutesString)
         }
 
         if components.isEmpty, let minutes = atLeastMinutesToShow {
-            let minutesString = R.string.localizable.commonMinutesFormat(
-                format: minutes, preferredLanguages: locale.rLanguages
+            let minutesString = R.string(preferredLanguages: locale.rLanguages).localizable.commonMinutesFormat(
+                format: minutes
             )
 
             components.append(minutesString)
@@ -147,9 +147,8 @@ extension TimeInterval {
 
         if shouldAnnotate {
             if let daysString = optDaysString {
-                return R.string.localizable.commonDaysFractionFormat(
-                    daysString,
-                    preferredLanguages: locale.rLanguages
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFractionFormat(
+                    daysString
                 )
             } else {
                 return ""

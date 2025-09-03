@@ -73,26 +73,14 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         switch flow {
         case .newBackup:
-            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupCreateTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.valueTop.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupCreateTitle()
+            rootView.titleView.valueBottom.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupCreateDetails()
         case .confirmPassword:
-            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupPasswordConfirmTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupPasswordConfirmDetails(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.valueTop.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupPasswordConfirmTitle()
+            rootView.titleView.valueBottom.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupPasswordConfirmDetails()
         case .changePassword:
-            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupUpdatePasswordTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.valueTop.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupUpdatePasswordTitle()
+            rootView.titleView.valueBottom.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupCreateDetails()
         }
 
         let passwordPlaceholder = NSAttributedString(

@@ -75,7 +75,7 @@ private extension ReferendumStatusViewModelFactory {
         blockDuration: UInt64,
         locale: Locale
     ) -> StatusTimeViewModel? {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
 
         if model.deposit == nil || currentBlock >= model.preparingEnd {
             return createTimeViewModel(
@@ -83,7 +83,9 @@ private extension ReferendumStatusViewModelFactory {
                 atBlock: max(currentBlock, model.timeoutAt),
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeTimeout,
+                timeStringProvider: { value in
+                    strings.governanceReferendumsTimeTimeout(value)
+                },
                 locale: locale
             )
         } else {
@@ -92,7 +94,9 @@ private extension ReferendumStatusViewModelFactory {
                 atBlock: model.preparingEnd,
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeDeciding,
+                timeStringProvider: { value in
+                    strings.governanceReferendumsTimeDeciding(value)
+                },
                 locale: locale
             )
         }
@@ -105,7 +109,7 @@ private extension ReferendumStatusViewModelFactory {
         blockDuration: UInt64,
         locale: Locale
     ) -> StatusTimeViewModel? {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
 
         if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
             return createTimeViewModel(
@@ -113,7 +117,9 @@ private extension ReferendumStatusViewModelFactory {
                 atBlock: confirmationUntil,
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeApprove,
+                timeStringProvider: { value in
+                    strings.governanceReferendumsTimeApprove(value)
+                },
                 locale: locale
             )
         } else {
@@ -124,7 +130,9 @@ private extension ReferendumStatusViewModelFactory {
                     atBlock: approvalBlock,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeApprove,
+                    timeStringProvider: { value in
+                        strings.governanceReferendumsTimeApprove(value)
+                    },
                     locale: locale
                 )
             case .notPassing:
@@ -133,7 +141,9 @@ private extension ReferendumStatusViewModelFactory {
                     atBlock: model.rejectedAt,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeReject,
+                    timeStringProvider: { value in
+                        strings.governanceReferendumsTimeReject(value)
+                    },
                     locale: locale
                 )
             }
@@ -147,7 +157,7 @@ private extension ReferendumStatusViewModelFactory {
         blockDuration: UInt64,
         locale: Locale
     ) -> StatusTimeViewModel? {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
 
         guard let whenEnactment = model.whenEnactment else {
             return nil
@@ -158,7 +168,9 @@ private extension ReferendumStatusViewModelFactory {
             atBlock: whenEnactment,
             currentBlock: currentBlock,
             blockDuration: blockDuration,
-            timeStringProvider: strings.governanceReferendumsTimeExecute,
+            timeStringProvider: { value in
+                strings.governanceReferendumsTimeExecute(value)
+            },
             locale: locale
         )
     }
@@ -169,7 +181,7 @@ private extension ReferendumStatusViewModelFactory {
         atBlock: Moment,
         currentBlock: BlockNumber,
         blockDuration: UInt64,
-        timeStringProvider: @escaping (String, [String]?) -> String,
+        timeStringProvider: @escaping (String) -> String,
         locale: Locale
     ) -> StatusTimeViewModel? {
         let time = calculateTime(
@@ -197,7 +209,7 @@ private extension ReferendumStatusViewModelFactory {
 
     func createTimeViewModel(
         time: TimeInterval,
-        timeStringProvider: (String, [String]?) -> String,
+        timeStringProvider: (String) -> String,
         state: ReferendumStateLocal,
         locale: Locale
     ) -> ReferendumInfoView.Time? {
@@ -205,7 +217,7 @@ private extension ReferendumStatusViewModelFactory {
             return nil
         }
 
-        let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
+        let timeString = timeStringProvider(localizedDaysHours)
         let timeModel = isUrgent(state: state, time: time).map { isUrgent in
             ReferendumInfoView.Time(
                 titleIcon: .init(

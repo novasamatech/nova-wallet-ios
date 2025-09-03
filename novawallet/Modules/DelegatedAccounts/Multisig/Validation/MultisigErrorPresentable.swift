@@ -74,7 +74,7 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
         let languages = locale.rLanguages
 
         let title = R.string(preferredLanguages: languages).localizable.multisigValidationNotEnoughTokensTitle()
-        let message = R.string.localizable.multisigValidationNotEnoughForFeeMessage(
+        let message = R.string(preferredLanguages: languages).localizable.multisigValidationNotEnoughForFeeMessage(
             signatoryName,
             fee,
             needToAdd
@@ -97,7 +97,7 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
         let message = R.string(
             preferredLanguages: languages
         ).localizable.multisigValidationAlreadyExistsMessage(
-            multisigName,
+            multisigName
         )
 
         let closeAction = R.string(preferredLanguages: languages).localizable.commonClose()

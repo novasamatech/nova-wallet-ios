@@ -98,11 +98,13 @@ extension NominatorState {
     }
 
     private func createActiveStatus(locale: Locale?) -> AlertPresentableViewModel? {
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusAlertActiveTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingNominatorStatusAlertActiveMessage(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertActiveTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertActiveMessage()
 
         return AlertPresentableViewModel(
             title: title,
@@ -119,20 +121,24 @@ extension NominatorState {
             return nil
         }
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusAlertInactiveTitle(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertInactiveTitle()
         let message: String
 
         if ledgerInfo.active < minStake {
-            message = R.string.localizable
-                .stakingNominatorStatusAlertLowStake(preferredLanguages: locale?.rLanguages)
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingNominatorStatusAlertLowStake()
         } else if allValidatorsWithoutReward {
-            message = R.string.localizable
-                .stakingYourOversubscribedMessage(preferredLanguages: locale?.rLanguages)
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingYourOversubscribedMessage()
         } else {
-            message = R.string.localizable
-                .stakingNominatorStatusAlertNoValidators(preferredLanguages: locale?.rLanguages)
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingNominatorStatusAlertNoValidators()
         }
 
         return AlertPresentableViewModel(
@@ -144,11 +150,13 @@ extension NominatorState {
     }
 
     private func createWaitingStatus(locale: Locale?) -> AlertPresentableViewModel? {
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusWaiting(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingNominatorStatusAlertWaitingMessage(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusWaiting()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertWaitingMessage()
 
         return AlertPresentableViewModel(
             title: title,

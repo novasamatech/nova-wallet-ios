@@ -23,20 +23,18 @@ final class NetworkAvailabilityLayerPresenter {
 
 extension NetworkAvailabilityLayerPresenter: NetworkAvailabilityLayerInteractorOutputProtocol {
     func didDecideUnreachableStatusPresentation() {
-        let languages = localizationManager?.preferredLocalizations
+        let languages = localizationManager?.preferredLocalizations ?? []
         view.presentStatus(
-            title: R.string.localizable
-                .networkStatusConnecting(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.networkStatusConnecting(),
             style: unavailbleStyle,
             animated: true
         )
     }
 
     func didDecideReachableStatusPresentation() {
-        let languages = localizationManager?.preferredLocalizations
+        let languages = localizationManager?.preferredLocalizations ?? []
         view.dismissStatus(
-            title: R.string.localizable
-                .networkStatusConnected(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.networkStatusConnected(),
             style: availableStyle,
             animated: true
         )

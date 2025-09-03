@@ -10,11 +10,11 @@ extension AccountExportPasswordError: ErrorContentConvertible {
 
         switch self {
         case .passwordMismatch:
-            message = R.string(preferredLanguages: locale?.rLanguages)
+            message = R.string(preferredLanguages: locale.rLanguages)
                 .localizable.commonErrorPasswordMismatch()
         }
 
-        let title = R.string(preferredLanguages: locale?.rLanguages).localizable.commonErrorGeneralTitle()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
         return ErrorContent(title: title, message: message)
     }
 }

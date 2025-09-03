@@ -18,19 +18,18 @@ extension StakingBaseErrorPresentable where Self: AlertPresentable & ErrorPresen
         action: @escaping () -> Void,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingUnstakeCrossedMinTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeCrossedMinMessage(
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeCrossedMinTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeCrossedMinMessage(
             minStake,
-            remaining,
-            preferredLanguages: locale.rLanguages
+            remaining
         )
 
         let cancelAction = AlertPresentableAction(
-            title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         )
 
         let unstakeAllAction = AlertPresentableAction(
-            title: R.string.localizable.stakingUnstakeAll(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeAll(),
             handler: action
         )
 

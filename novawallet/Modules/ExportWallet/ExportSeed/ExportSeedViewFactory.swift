@@ -48,13 +48,9 @@ final class ExportSeedViewFactory {
             },
             sourceHint: LocalizableResource { locale in
                 if chain.isEthereumBased {
-                    return R.string.localizable.accountExportEthereumPrivateKeyPlaceholder(
-                        preferredLanguages: locale.rLanguages
-                    )
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.accountExportEthereumPrivateKeyPlaceholder()
                 } else {
-                    return R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                        preferredLanguages: locale.rLanguages
-                    )
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0()
                 }
             },
             actionTitle: nil,

@@ -96,9 +96,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
             return nil
         }
 
-        return R.string.localizable.notificationsManagementWalletsWarning(
-            preferredLanguages: locale.rLanguages
-        )
+        return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementWalletsWarning()
     }
 
     private func createSwitchViewModel(

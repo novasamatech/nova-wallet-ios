@@ -42,9 +42,9 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let message = R.string.localizable.addTokenInvalidContractAddressMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.addTokenInvalidContractAddressTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressMessage()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -54,12 +54,11 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         name: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.addTokenInvalidNetworkContractMessage(
-            name,
-            preferredLanguages: locale?.rLanguages
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidNetworkContractMessage(
+            name
         )
-        let title = R.string.localizable.addTokenInvalidContractAddressTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -69,12 +68,11 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         maxValue: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.addTokenInvalidDecimalsMessage(
-            maxValue,
-            preferredLanguages: locale?.rLanguages
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidDecimalsMessage(
+            maxValue
         )
-        let title = R.string.localizable.addTokenInvalidDecimalsTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidDecimalsTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -84,9 +82,9 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         symbol: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.addTokenAlreadyExistsMessage(symbol, preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.addTokenAlreadyExistsTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenAlreadyExistsMessage(symbol)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenAlreadyExistsTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -95,9 +93,9 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let message = R.string.localizable.addTokenInvalidPriceUrlMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.addTokenInvalidPriceUrlTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidPriceUrlMessage()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidPriceUrlTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -108,11 +106,11 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         onContinue: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.addTokenAlreadyExistsTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.tokenAddRemoteExistMessage(symbol, preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenAlreadyExistsTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.tokenAddRemoteExistMessage(symbol)
 
         let continueAction = AlertPresentableAction(
-            title: R.string.localizable.commonContinue(preferredLanguages: locale?.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue(),
             style: .destructive
         ) {
             onContinue()
@@ -122,7 +120,7 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
             title: title,
             message: message,
             actions: [continueAction],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         )
 
         present(viewModel: viewModel, style: .alert, from: view)

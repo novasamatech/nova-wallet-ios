@@ -54,17 +54,21 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         maxAction: (() -> Void)?,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonAmountTooBig(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govNotEnoughVoteTokens(available, preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonAmountTooBig()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govNotEnoughVoteTokens(available)
 
         if let maxAction = maxAction {
-            let cancelTitle = R.string.localizable.commonCancel(
-                preferredLanguages: locale?.rLanguages
-            )
+            let cancelTitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonCancel()
 
-            let maxTitle = R.string.localizable.swipeGovAmountAlertUseMax(
-                preferredLanguages: locale?.rLanguages
-            )
+            let maxTitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swipeGovAmountAlertUseMax()
 
             present(
                 viewModel: .init(
@@ -80,7 +84,9 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
                 from: view
             )
         } else {
-            let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+            let close = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonClose()
 
             present(message: message, title: title, closeAction: close, from: view)
         }
@@ -92,28 +98,32 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         locale: Locale?
     ) {
         let title = if let referendumId {
-            R.string.localizable.govReferendumCompletedTitleWithIndex(
-                Int(referendumId),
-                preferredLanguages: locale?.rLanguages
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumCompletedTitleWithIndex(
+                Int(referendumId)
             )
         } else {
-            R.string.localizable.govReferendumCompletedTitle(
-                preferredLanguages: locale?.rLanguages
-            )
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumCompletedTitle()
         }
 
         let message = if let referendumId {
-            R.string.localizable.govReferendumCompletedMessageWithIndex(
-                Int(referendumId),
-                preferredLanguages: locale?.rLanguages
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumCompletedMessageWithIndex(
+                Int(referendumId)
             )
         } else {
-            R.string.localizable.govReferendumCompletedMessage(
-                preferredLanguages: locale?.rLanguages
-            )
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumCompletedMessage()
         }
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -122,10 +132,16 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govAlreadyDelegatingVotesTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govAlreadyDelegatingVotesMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govAlreadyDelegatingVotesTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govAlreadyDelegatingVotesMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -135,10 +151,14 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         allowed: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govMaxVotesReachedTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govMaxVotesReachedMessage(allowed, preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govMaxVotesReachedTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govMaxVotesReachedMessage(allowed)
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -147,15 +167,17 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govAddDelegateSelfErrorTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govAddDelegateSelfErrorTitle()
 
-        let message = R.string.localizable.govAddDelegateSelfErrorMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govAddDelegateSelfErrorMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -164,10 +186,12 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govAddDelegateVotingErrorTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govAddDelegateVotingErrorMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govAddDelegateVotingErrorTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.govAddDelegateVotingErrorMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -176,10 +200,10 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govRevokeDelegateMissingErrorTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govRevokeDelegateMissingErrorMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govRevokeDelegateMissingErrorTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.govRevokeDelegateMissingErrorMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let close = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
@@ -189,22 +213,22 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
         let actions = [
             AlertPresentableAction(
-                title: R.string.localizable.commonCancel(preferredLanguages: languages),
+                title: R.string(preferredLanguages: languages).localizable.commonCancel(),
                 style: .destructive,
                 handler: {}
             ),
             AlertPresentableAction(
-                title: R.string.localizable.commonContinue(preferredLanguages: languages),
+                title: R.string(preferredLanguages: languages).localizable.commonContinue(),
                 style: .normal,
                 handler: action
             )
         ]
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.govVoteConvictionAlertTitle(preferredLanguages: languages),
-            message: R.string.localizable.govVoteConvictionAlertMessage(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.govVoteConvictionAlertTitle(),
+            message: R.string(preferredLanguages: languages).localizable.govVoteConvictionAlertMessage(),
             actions: actions,
             closeAction: nil
         )

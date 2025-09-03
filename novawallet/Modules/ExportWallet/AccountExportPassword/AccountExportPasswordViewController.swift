@@ -54,13 +54,9 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable.exportPasswordTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.exportPasswordTitle()
 
-        rootView.subtitleLabel.text = R.string.localizable.accountExportJsonHint(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.subtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountExportJsonHint()
 
         let enterPasswordPlaceholder = NSAttributedString(
             string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSetPassword(),
@@ -111,16 +107,14 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
 
         if let viewModel = rootView.enterPasswordView.inputViewModel, !viewModel.inputHandler.completed {
             enabled = false
-            title = R.string.localizable.exportPasswordProceedSetTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.exportPasswordProceedSetTitle()
         } else if
             let viewModel = rootView.confirmPasswordView.inputViewModel,
             !viewModel.inputHandler.completed {
             enabled = false
-            title = R.string.localizable.exportPasswordProceedConfirmTitle(
+            title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.exportPasswordProceedConfirmTitle()
         } else {
             enabled = true
             title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.restoreJsonDownloadButton()

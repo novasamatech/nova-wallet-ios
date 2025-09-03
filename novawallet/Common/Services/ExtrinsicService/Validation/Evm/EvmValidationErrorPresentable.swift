@@ -23,14 +23,11 @@ extension EvmValidationErrorPresentable where Self: AlertPresentable {
         onProceed: @escaping () -> Void,
         locale: Locale
     ) {
-        let title = R.string.localizable.evmTransactionFeeTooHighTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.evmTransactionFeeTooHighTitle()
 
-        let message = R.string.localizable.evmTransactionFeeTooHighMessage(
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.evmTransactionFeeTooHighMessage(
             params.maxPriorityFee,
-            params.defaultFee,
-            preferredLanguages: locale.rLanguages
+            params.defaultFee
         )
 
         let refreshAction = AlertPresentableAction(

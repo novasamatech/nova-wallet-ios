@@ -46,52 +46,56 @@ extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
         switch self {
         case let .alreadyExistRemote(_, chain):
             .init(
-                title: R.string.localizable.networkAddAlertAlreadyExistsTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.networkAddAlertAlreadyExistsRemoteMessage(
-                    chain.name,
-                    preferredLanguages: locale?.rLanguages
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertAlreadyExistsTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertAlreadyExistsRemoteMessage(
+                    chain.name
                 )
             )
         case let .alreadyExistCustom(_, chain):
             .init(
-                title: R.string.localizable.networkAddAlertAlreadyExistsTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.networkAddAlertAlreadyExistsCustomMessage(
-                    chain.name,
-                    preferredLanguages: locale?.rLanguages
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertAlreadyExistsTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertAlreadyExistsCustomMessage(
+                    chain.name
                 )
             )
         case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
             .init(
-                title: R.string.localizable.networkAddAlertInvalidSymbolTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.networkAddAlertInvalidSymbolMessage(
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidSymbolTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidSymbolMessage(
                     enteredSymbol,
-                    actualSymbol,
-                    preferredLanguages: locale?.rLanguages
+                    actualSymbol
                 )
             )
         case .invalidChainId:
             .init(
-                title: R.string.localizable.networkAddAlertInvalidChainIdTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.networkAddAlertInvalidChainIdMessage(
-                    preferredLanguages: locale?.rLanguages
-                )
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidChainIdTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidChainIdMessage()
             )
         case let .invalidNetworkType(selectedType):
             .init(
-                title: R.string.localizable.networkAddAlertInvalidNetworkTypeTitle(
-                    preferredLanguages: locale?.rLanguages
-                ),
-                message: R.string.localizable.networkAddAlertInvalidNetworkTypeMessage(
-                    selectedType == .evm ? "Substrate" : "EVM",
-                    preferredLanguages: locale?.rLanguages
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidNetworkTypeTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.networkAddAlertInvalidNetworkTypeMessage(
+                    selectedType == .evm ? "Substrate" : "EVM"
                 )
             )
         case let .connecting(innerError):

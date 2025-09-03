@@ -113,7 +113,7 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
         guard
             getSubstrateAccountId() != nil,
             let substrateAddress = partialSubstrateAddress else {
-            let languages = view?.selectedLocale.rLanguages
+            let languages = view?.selectedLocale.rLanguages ?? []
             wireframe.present(
                 message: R.string(preferredLanguages: languages).localizable.commonInvalidSubstrateAddress(),
                 title: R.string(preferredLanguages: languages).localizable.commonErrorGeneralTitle(),
@@ -126,7 +126,7 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
 
         let evmAddressEmpty = (partialEvmAddress ?? "").isEmpty
         if !evmAddressEmpty, getEVMAccountId() == nil {
-            let languages = view?.selectedLocale.rLanguages
+            let languages = view?.selectedLocale.rLanguages ?? []
             wireframe.present(
                 message: R.string(preferredLanguages: languages).localizable.commonInvalidEvmAddress(),
                 title: R.string(preferredLanguages: languages).localizable.commonErrorGeneralTitle(),

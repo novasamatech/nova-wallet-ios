@@ -9,10 +9,13 @@ extension DAppInteractionError: ErrorContentConvertible {
         switch self {
         case let .unexpected(reason, _):
             return .init(
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.dappUnexpectedErrorFormat(
-                    reason,
-                    preferredLanguages: locale?.rLanguages
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonErrorGeneralTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.dappUnexpectedErrorFormat(
+                    reason
                 )
             )
         }

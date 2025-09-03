@@ -186,9 +186,7 @@ class AccountInputView: BackgroundedContentControl {
     private func setupLocalization() {
         setupPlaceholder()
 
-        pasteButton.imageWithTitleView?.title = R.string.localizable.commonPaste(
-            preferredLanguages: locale.rLanguages
-        )
+        pasteButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonPaste()
 
         setupMyselfLocalization()
 
@@ -208,9 +206,7 @@ class AccountInputView: BackgroundedContentControl {
     }
 
     private func setupMyselfLocalization() {
-        mySelfButton?.imageWithTitleView?.title = R.string.localizable.commonMyself(
-            preferredLanguages: locale.rLanguages
-        )
+        mySelfButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonMyself()
     }
 
     private func layoutContent() {

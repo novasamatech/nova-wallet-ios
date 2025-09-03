@@ -113,12 +113,16 @@ final class AccountImportSeedView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletImportSeedTitle()
-        seedTitleLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.importRawSeed()
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletImportSeedTitle()
+        seedTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.importRawSeed()
 
-        usernameTextField.title = R.string(preferredLanguages: locale?.rLanguages).localizable.walletUsernameSetupChooseTitle_v2_2_0()
+        usernameTextField.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletUsernameSetupChooseTitle_v2_2_0()
 
-        usernameHintLabel.text = R.string(preferredLanguages: locale?.rLanguages).localizable.walletNicknameCreateCaption_v2_2_0()
+        usernameHintLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletNicknameCreateCaption_v2_2_0()
 
         updateProceedButton()
     }
@@ -242,22 +246,22 @@ final class AccountImportSeedView: AccountImportBaseView {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, seedTextView.text.isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoSeedTitle(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.walletImportNoSeedTitle()
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonEnterWalletNameDisabled(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonEnterWalletNameDisabled()
         } else {
             proceedButton.applyEnabledStyle()
             proceedButton.isUserInteractionEnabled = true
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonContinue()
         }
     }
 

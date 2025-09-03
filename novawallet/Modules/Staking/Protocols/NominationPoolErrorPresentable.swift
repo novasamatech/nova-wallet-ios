@@ -65,8 +65,8 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingPoolHasNoApyMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNoRewardsTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolHasNoApyMessage()
 
         presentWarning(
             for: title,
@@ -81,11 +81,10 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingPoolRewardsBondMorePoolIsDestroing(
-            preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolIsDestroing()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
@@ -93,23 +92,21 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.stakingPoolRewardsBondMorePoolUnbondingErrorTitle(
-            preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingPoolRewardsBondMorePoolUnbondingErrorMessage(
-            preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorMessage()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentUnstakeAmountToHigh(from view: ControllerBackedProtocol?, locale: Locale) {
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeTooHighMessage(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonInsufficientBalance()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeTooHighMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
@@ -119,16 +116,15 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         unstakeAfter: String,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingUnstakeNoSpaceTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingUnstakeNoSpaceMessage(
-            "~\(unstakeAfter)",
-            preferredLanguages: locale.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeNoSpaceTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnstakeNoSpaceMessage(
+            "~\(unstakeAfter)"
         )
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
@@ -138,8 +134,8 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         action: @escaping () -> Void,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonConfirmationTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingWarningTinyPayout(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirmationTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingWarningTinyPayout()
 
         presentWarning(
             for: title,
@@ -154,13 +150,13 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingPoolIsNotOpenTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingPoolIsNotOpenMessage(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolIsNotOpenTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolIsNotOpenMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
@@ -169,13 +165,13 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale
     ) {
-        let title = R.string.localizable.stakingPoolIsFullTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingPoolIsFullMessage(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolIsFullTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolIsFullMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
@@ -186,16 +182,15 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         action: (() -> Void)?,
         locale: Locale
     ) {
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.stakingPoolEdErrorMessage(
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonInsufficientBalance()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolEdErrorMessage(
             params.availableBalance,
             params.minimumBalance,
             params.fee,
-            params.maxStake,
-            preferredLanguages: locale.rLanguages
+            params.maxStake
         )
 
-        let proceedTitle = R.string.localizable.stakingMaximumAction(preferredLanguages: locale.rLanguages)
+        let proceedTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingMaximumAction()
 
         let actions: [AlertPresentableAction]
 
@@ -209,7 +204,7 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
             actions = []
         }
 
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
 
         let viewModel = AlertPresentableViewModel(
             title: title,
@@ -225,13 +220,13 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale
     ) {
-        let title = R.string.localizable.nominationPoolsConflictTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.nominationPoolsConflictMessage(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.nominationPoolsConflictTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.nominationPoolsConflictMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
