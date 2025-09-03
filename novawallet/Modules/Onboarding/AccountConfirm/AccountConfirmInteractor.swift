@@ -5,7 +5,7 @@ import Operation_iOS
 
 class AccountConfirmInteractor: BaseAccountConfirmInteractor {
     private(set) var settings: SelectedWalletSettings
-    
+
     private let callStore = CancellableCallStore()
 
     let eventCenter: EventCenterProtocol

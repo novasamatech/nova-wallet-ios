@@ -43,7 +43,7 @@ extension AddChainAccount {
             guard !callStore.hasCall else {
                 return
             }
-            
+
             let managedWalletWrapper = createManagedWalletOperation(using: importOperation)
 
             managedWalletWrapper.addDependency(operations: [importOperation])
