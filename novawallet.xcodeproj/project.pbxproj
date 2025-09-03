@@ -404,6 +404,11 @@
 		0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */; };
 		0C2B18B22BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */; };
 		0C2B18B42BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */; };
+		0C2BAA1D2E677B6E008157E7 /* web3swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA1C2E677B6E008157E7 /* web3swift */; };
+		0C2BAA302E6783D7008157E7 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA2F2E6783D7008157E7 /* SwiftyBeaver */; };
+		0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2BAA332E67841C008157E7 /* RswiftLibrary */; };
+		0C2BAA4A2E683152008157E7 /* Data+Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BAA492E683152008157E7 /* Data+Bytes.swift */; };
+		0C2BAA4B2E683152008157E7 /* Data+Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BAA492E683152008157E7 /* Data+Bytes.swift */; };
 		0C2BE7872E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7862E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift */; };
 		0C2BE78A2E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */; };
 		0C2BE78C2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */; };
@@ -458,6 +463,13 @@
 		0C3205E82A898195002EB914 /* EvmValidationErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205E72A898195002EB914 /* EvmValidationErrorPresentable.swift */; };
 		0C3205EA2A8A0539002EB914 /* EvmValidationProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205E92A8A0539002EB914 /* EvmValidationProviderFactory.swift */; };
 		0C3205EC2A8A122D002EB914 /* FeeOutputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */; };
+		0C32522D2E67477700E322DB /* WalletConnect in Frameworks */ = {isa = PBXBuildFile; productRef = 0C32522C2E67477700E322DB /* WalletConnect */; };
+		0C3252302E6772E000E322DB /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 0C32522F2E6772E000E322DB /* SubstrateSdk */; };
+		0C3252322E67734000E322DB /* Keystore-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C3252312E67734000E322DB /* Keystore-iOS */; };
+		0C3252342E67735000E322DB /* Foundation-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C3252332E67735000E322DB /* Foundation-iOS */; };
+		0C3252362E67736300E322DB /* Operation-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C3252352E67736300E322DB /* Operation-iOS */; };
+		0C3252382E67737300E322DB /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 0C3252372E67737300E322DB /* NovaCrypto */; };
+		0C32523B2E6773A200E322DB /* web3swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C32523A2E6773A200E322DB /* web3swift */; };
 		0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */; };
 		0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */; };
 		0C32728F2CD203F000FC1B42 /* XcmTotalFeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */; };
@@ -782,6 +794,35 @@
 		0C8C8F852D6C3E2D00441FB3 /* CoingeckoStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C8F7A2D6C3E2D00441FB3 /* CoingeckoStreamableSource.swift */; };
 		0C8C8F882D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C8F872D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift */; };
 		0C8C8F8A2D6F168A00441FB3 /* ParitySignerMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */; };
+		0C8FCE762E65ED3400034ED3 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE752E65ED3400034ED3 /* DGCharts */; };
+		0C8FCE782E65ED3400034ED3 /* DGChartsDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE772E65ED3400034ED3 /* DGChartsDynamic */; };
+		0C8FCE7B2E65EE0B00034ED3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7A2E65EE0B00034ED3 /* QRCode */; };
+		0C8FCE7D2E65EE0B00034ED3 /* QRCodeDetector in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7C2E65EE0B00034ED3 /* QRCodeDetector */; };
+		0C8FCE802E65EE5600034ED3 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7F2E65EE5600034ED3 /* SubstrateSdk */; };
+		0C8FCE832E65EF7800034ED3 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE822E65EF7800034ED3 /* NovaCrypto */; };
+		0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE982E6725D700034ED3 /* web3swift */; };
+		0C8FCE9C2E672A3200034ED3 /* WalletConnect in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE9B2E672A3200034ED3 /* WalletConnect */; };
+		0C8FCE9F2E672B2200034ED3 /* Keystore-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE9E2E672B2200034ED3 /* Keystore-iOS */; };
+		0C8FCEA22E672BB000034ED3 /* UIKit-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEA12E672BB000034ED3 /* UIKit-iOS */; };
+		0C8FCEA52E672BCE00034ED3 /* Operation-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEA42E672BCE00034ED3 /* Operation-iOS */; };
+		0C8FCEA82E672BFB00034ED3 /* Foundation-iOS in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEA72E672BFB00034ED3 /* Foundation-iOS */; };
+		0C8FCEAB2E672C5500034ED3 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEAA2E672C5500034ED3 /* SwiftyBeaver */; };
+		0C8FCEAE2E672CB000034ED3 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEAD2E672CB000034ED3 /* Reachability */; };
+		0C8FCEB12E672CFA00034ED3 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEB02E672CFA00034ED3 /* SnapKit */; };
+		0C8FCEB42E672D3900034ED3 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEB32E672D3900034ED3 /* Kingfisher */; };
+		0C8FCEB72E672D8100034ED3 /* SwiftDraw in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEB62E672D8100034ED3 /* SwiftDraw */; };
+		0C8FCEBA2E6732D600034ED3 /* SwiftRLP in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEB92E6732D600034ED3 /* SwiftRLP */; };
+		0C8FCEBD2E67331300034ED3 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEBC2E67331300034ED3 /* Starscream */; };
+		0C8FCEC02E67335200034ED3 /* CDMarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEBF2E67335200034ED3 /* CDMarkdownKit */; };
+		0C8FCEC32E6733AD00034ED3 /* EthereumSignTypedDataUtil in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEC22E6733AD00034ED3 /* EthereumSignTypedDataUtil */; };
+		0C8FCEC62E67346F00034ED3 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEC52E67346F00034ED3 /* Algorithms */; };
+		0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCEC82E6734E900034ED3 /* ZMarkupParser */; };
+		0C8FCECC2E6735F300034ED3 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCECB2E6735F300034ED3 /* FirebaseAppCheck */; };
+		0C8FCECE2E6735F300034ED3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCECD2E6735F300034ED3 /* FirebaseAuth */; };
+		0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCECF2E6735F300034ED3 /* FirebaseFirestore */; };
+		0C8FCED22E6735F300034ED3 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCED12E6735F300034ED3 /* FirebaseMessaging */; };
+		0C8FCED52E67363000034ED3 /* MetadataShortenerApi in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCED42E67363000034ED3 /* MetadataShortenerApi */; };
+		0C8FCED82E6736E900034ED3 /* rswift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCED72E6736E900034ED3 /* rswift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
@@ -1008,6 +1049,7 @@
 		0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */; };
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CBD23F822E358320E328F2D /* GovernanceTracksSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */; };
+		0CBE44972E6741220034DC0A /* QRCodeStatic in Frameworks */ = {isa = PBXBuildFile; productRef = 0CBE44962E6741220034DC0A /* QRCodeStatic */; };
 		0CBF5DE72AB1A60500087EBF /* SharedOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */; };
 		0CC0F7EC2BAD8A78002C49F6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */; };
 		0CC0F7F22BADEB1D002C49F6 /* notification-ext.release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */; };
@@ -1045,7 +1087,6 @@
 		0CCCDF8A2B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF892B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift */; };
 		0CCCDF8C2B67BCA000473D42 /* ChainModelFetchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF8B2B67BCA000473D42 /* ChainModelFetchError.swift */; };
 		0CCD18A52BA160950068D73A /* CurrencyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842105F289BBAE600306F2C /* CurrencyRepository.swift */; };
-		0CCD18A72BA160C10068D73A /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18A62BA160C10068D73A /* R.generated.swift */; };
 		0CCD18AA2BA162B00068D73A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0CCD18AC2BA162B00068D73A /* Localizable.strings */; };
 		0CCD18AF2BA175540068D73A /* NotificationContentResult+UserContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18AE2BA175540068D73A /* NotificationContentResult+UserContent.swift */; };
 		0CCD18B02BA1C2D80068D73A /* AssetBalanceDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2226F6879900F0A25E /* AssetBalanceDisplayInfo.swift */; };
@@ -1275,6 +1316,8 @@
 		0CF692922C2412AB000FC395 /* BackupMnemonicAccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
+		0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF8F68F2E673E73007E41C4 /* Cuckoo */; };
+		0CF8F6942E673FBC007E41C4 /* QRCodeDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF8F6932E673FBC007E41C4 /* QRCodeDynamic */; };
 		0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */; };
 		0CF976752CF082BF001D2801 /* SwapExecutionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976742CF082BF001D2801 /* SwapExecutionViewModel.swift */; };
 		0CF976772CF08EF9001D2801 /* OperationExecutionProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976762CF08EF9001D2801 /* OperationExecutionProgressView.swift */; };
@@ -4327,7 +4370,6 @@
 		849013AC24A80984008F705E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013AB24A80984008F705E /* AppDelegate.swift */; };
 		849013B524A80986008F705E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 849013B424A80986008F705E /* Assets.xcassets */; };
 		849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 849013B624A80986008F705E /* LaunchScreen.storyboard */; };
-		849013D024A9267F008F705E /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013CF24A9267F008F705E /* R.generated.swift */; };
 		849013DB24A927E2008F705E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D624A927E2008F705E /* ApplicationConfigs.swift */; };
 		849013DD24A927E2008F705E /* KeystoreExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D824A927E2008F705E /* KeystoreExtensions.swift */; };
@@ -6835,6 +6877,7 @@
 		0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupConflictsResolver.swift; sourceTree = "<group>"; };
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
+		0C2BAA492E683152008157E7 /* Data+Bytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Bytes.swift"; sourceTree = "<group>"; };
 		0C2BD7CE1EF80FCD3569BD44 /* SwapRouteDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapRouteDetailsProtocols.swift; sourceTree = "<group>"; };
 		0C2BE7862E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicMonitorSubmission.swift; sourceTree = "<group>"; };
 		0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionRegularCompleter.swift; sourceTree = "<group>"; };
@@ -7526,7 +7569,6 @@
 		0CCCDF872B660E8700473D42 /* HydraOmnipoolQuoteParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolQuoteParamsService.swift; sourceTree = "<group>"; };
 		0CCCDF892B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolQuoteRemoteState.swift; sourceTree = "<group>"; };
 		0CCCDF8B2B67BCA000473D42 /* ChainModelFetchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainModelFetchError.swift; sourceTree = "<group>"; };
-		0CCD18A62BA160C10068D73A /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
 		0CCD18AB2BA162B00068D73A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0CCD18AD2BA162B30068D73A /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0CCD18AE2BA175540068D73A /* NotificationContentResult+UserContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationContentResult+UserContent.swift"; sourceTree = "<group>"; };
@@ -9197,7 +9239,6 @@
 		77F9FB0A2A9D97A100820625 /* NominationPoolBondMoreSetupWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupWireframe.swift; sourceTree = "<group>"; };
 		77F9FB0C2A9D9C5600820625 /* NominationPoolBondMoreBaseProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreBaseProtocols.swift; sourceTree = "<group>"; };
 		77FC822E2BA1B99E00E7ED3C /* TransferTypeExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTypeExtensions.swift; sourceTree = "<group>"; };
-		77FC82302BA1BA6F00E7ED3C /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
 		77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenDAppUrlParsingService.swift; sourceTree = "<group>"; };
 		77FDFC472B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportWalletUrlParsingService.swift; sourceTree = "<group>"; };
 		77FE763F2B67682A00ADA73F /* ProxyAccountUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountUpdatingService.swift; sourceTree = "<group>"; };
@@ -10451,7 +10492,6 @@
 		849013B924A80986008F705E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		849013BE24A80986008F705E /* novawalletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = novawalletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		849013C424A80986008F705E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		849013CF24A9267F008F705E /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = SOURCE_ROOT; };
 		849013D424A927E2008F705E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		849013D624A927E2008F705E /* ApplicationConfigs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationConfigs.swift; sourceTree = "<group>"; };
 		849013D824A927E2008F705E /* KeystoreExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeystoreExtensions.swift; sourceTree = "<group>"; };
@@ -12565,6 +12605,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				78A20523CF046A96E52F4218 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
+				0C32523B2E6773A200E322DB /* web3swift in Frameworks */,
+				0C3252382E67737300E322DB /* NovaCrypto in Frameworks */,
+				0C3252362E67736300E322DB /* Operation-iOS in Frameworks */,
+				0C3252342E67735000E322DB /* Foundation-iOS in Frameworks */,
+				0C3252302E6772E000E322DB /* SubstrateSdk in Frameworks */,
+				0C3252322E67734000E322DB /* Keystore-iOS in Frameworks */,
+				0C2BAA302E6783D7008157E7 /* SwiftyBeaver in Frameworks */,
+				0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12580,7 +12628,40 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C8FCE7D2E65EE0B00034ED3 /* QRCodeDetector in Frameworks */,
+				0C8FCEC02E67335200034ED3 /* CDMarkdownKit in Frameworks */,
+				0C8FCEC62E67346F00034ED3 /* Algorithms in Frameworks */,
+				0C8FCEB12E672CFA00034ED3 /* SnapKit in Frameworks */,
+				0C8FCE7B2E65EE0B00034ED3 /* QRCode in Frameworks */,
+				0C8FCED82E6736E900034ED3 /* rswift in Frameworks */,
+				0C8FCEBD2E67331300034ED3 /* Starscream in Frameworks */,
+				0C8FCE762E65ED3400034ED3 /* DGCharts in Frameworks */,
+				0C8FCED52E67363000034ED3 /* MetadataShortenerApi in Frameworks */,
+				0C8FCE782E65ED3400034ED3 /* DGChartsDynamic in Frameworks */,
+				0C8FCECC2E6735F300034ED3 /* FirebaseAppCheck in Frameworks */,
+				0C8FCEA22E672BB000034ED3 /* UIKit-iOS in Frameworks */,
+				0C8FCEA82E672BFB00034ED3 /* Foundation-iOS in Frameworks */,
+				0C2BAA1D2E677B6E008157E7 /* web3swift in Frameworks */,
+				0C8FCE832E65EF7800034ED3 /* NovaCrypto in Frameworks */,
+				0C8FCEB72E672D8100034ED3 /* SwiftDraw in Frameworks */,
+				0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */,
+				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
+				0C8FCEAE2E672CB000034ED3 /* Reachability in Frameworks */,
+				0CBE44972E6741220034DC0A /* QRCodeStatic in Frameworks */,
+				0C8FCED22E6735F300034ED3 /* FirebaseMessaging in Frameworks */,
+				0CF8F6942E673FBC007E41C4 /* QRCodeDynamic in Frameworks */,
+				0C8FCEA52E672BCE00034ED3 /* Operation-iOS in Frameworks */,
+				0C8FCEC32E6733AD00034ED3 /* EthereumSignTypedDataUtil in Frameworks */,
+				0C32522D2E67477700E322DB /* WalletConnect in Frameworks */,
+				0C8FCE9C2E672A3200034ED3 /* WalletConnect in Frameworks */,
+				0C8FCEBA2E6732D600034ED3 /* SwiftRLP in Frameworks */,
+				0C8FCEAB2E672C5500034ED3 /* SwiftyBeaver in Frameworks */,
 				DA90FE0482D7F07AFE69EC52 /* Pods_novawalletAll_novawallet.framework in Frameworks */,
+				0C8FCE802E65EE5600034ED3 /* SubstrateSdk in Frameworks */,
+				0C8FCEB42E672D3900034ED3 /* Kingfisher in Frameworks */,
+				0C8FCECE2E6735F300034ED3 /* FirebaseAuth in Frameworks */,
+				0C8FCE9F2E672B2200034ED3 /* Keystore-iOS in Frameworks */,
+				0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12588,6 +12669,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */,
 				662E592F9476AA892DDC0827 /* Pods_novawalletTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -19346,14 +19428,12 @@
 			isa = PBXGroup;
 			children = (
 				0CC0F7EE2BADEA6F002C49F6 /* Config */,
-				77FC82302BA1BA6F00E7ED3C /* R.generated.swift */,
 				778215DA2B95A8F7006C7D13 /* Handlers */,
 				778215D92B95A8DE006C7D13 /* Model */,
 				77AE4FB52B906B2E00426519 /* NovaPushNotificationServiceExtensionDebug.entitlements */,
 				77AE4FB42B906B2600426519 /* NovaPushNotificationServiceExtensionDev.entitlements */,
 				0CC0F7E72BAD4359002C49F6 /* NovaPushNotificationServiceExtensionRelease.entitlements */,
 				77CAF4312B8E96A400E4297C /* NotificationService.swift */,
-				0CCD18A62BA160C10068D73A /* R.generated.swift */,
 				849013A924A80984008F705E /* Products */,
 				77CAF4332B8E96A400E4297C /* Info.plist */,
 				0CCD18AC2BA162B00068D73A /* Localizable.strings */,
@@ -22776,7 +22856,6 @@
 				2D77487F2C8B48C40059607B /* CIKeys.generated.swift */,
 				849013AB24A80984008F705E /* AppDelegate.swift */,
 				0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */,
-				849013CF24A9267F008F705E /* R.generated.swift */,
 				849013B424A80986008F705E /* Assets.xcassets */,
 				849013B624A80986008F705E /* LaunchScreen.storyboard */,
 				849013B924A80986008F705E /* Info.plist */,
@@ -23349,6 +23428,7 @@
 				0C5FA9A62B8313950077934C /* String+Search.swift */,
 				0C803D082C9B7D8400AEB35B /* String+Trimming.swift */,
 				2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */,
+				0C2BAA492E683152008157E7 /* Data+Bytes.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -29317,7 +29397,6 @@
 			buildConfigurationList = 77CAF43C2B8E96A400E4297C /* Build configuration list for PBXNativeTarget "NovaPushNotificationServiceExtension" */;
 			buildPhases = (
 				D13F720D7C8DE10884938000 /* [CP] Check Pods Manifest.lock */,
-				0CCD18A42BA15D900068D73A /* R.swift */,
 				77EDF9212B95F2E0003266B1 /* SwiftFormat */,
 				77CAF42B2B8E96A400E4297C /* Sources */,
 				77CAF42C2B8E96A400E4297C /* Frameworks */,
@@ -29326,6 +29405,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0C2BAA202E677D3F008157E7 /* PBXTargetDependency */,
 			);
 			name = NovaPushNotificationServiceExtension;
 			productName = NovaPushNotificationServiceExtension;
@@ -29358,7 +29438,6 @@
 			buildPhases = (
 				ACA4060FDEC7A5EE415FC9AB /* [CP] Check Pods Manifest.lock */,
 				849013CD24A92260008F705E /* Swiftlint */,
-				849013CE24A92280008F705E /* R.swift */,
 				F472A8D6261758DE003C58BC /* SwiftFormat */,
 				AE2060202636DA5900357578 /* Inject keys */,
 				0CC0F7EA2BAD88E7002C49F6 /* Google Service Generation */,
@@ -29371,6 +29450,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0C8FCEDA2E67392800034ED3 /* PBXTargetDependency */,
 				77CAF4352B8E96A400E4297C /* PBXTargetDependency */,
 			);
 			name = novawallet;
@@ -29448,6 +29528,32 @@
 				hu,
 			);
 			mainGroup = 8490139F24A80984008F705E;
+			packageReferences = (
+				0C8FCE742E65ED3400034ED3 /* XCRemoteSwiftPackageReference "Charts" */,
+				0C8FCE7E2E65EE5600034ED3 /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */,
+				0C8FCE812E65EF7800034ED3 /* XCRemoteSwiftPackageReference "Crypto-iOS" */,
+				0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */,
+				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
+				0C8FCEA32E672BCE00034ED3 /* XCRemoteSwiftPackageReference "Operation-iOS" */,
+				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
+				0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
+				0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */,
+				0C8FCEAF2E672CFA00034ED3 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				0C8FCEB22E672D3900034ED3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				0C8FCEB52E672D8100034ED3 /* XCRemoteSwiftPackageReference "SwiftDraw" */,
+				0C8FCEB82E6732D600034ED3 /* XCRemoteSwiftPackageReference "SwiftRLP" */,
+				0C8FCEBB2E67331300034ED3 /* XCRemoteSwiftPackageReference "Starscream" */,
+				0C8FCEBE2E67335200034ED3 /* XCRemoteSwiftPackageReference "CDMarkdownKit" */,
+				0C8FCEC12E6733AD00034ED3 /* XCRemoteSwiftPackageReference "EthereumSignTypedDataUtil" */,
+				0C8FCEC42E67346F00034ED3 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				0C8FCEC72E6734E900034ED3 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
+				0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */,
+				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */,
+				0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */,
+				0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */,
+				0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */,
+			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -29590,26 +29696,6 @@
 			shellPath = /bin/sh;
 			shellScript = "DEV_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Dev.plist\"\nPRODUCTION_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Release.plist\"\nDESTINATION=\"${PROJECT_DIR}/novawallet/GoogleService-Info.plist\"\n\n# Copy appropriate plist based on build configuration\ncase \"${CONFIGURATION}\" in\n   \"Debug\" | \"Dev\" | \"Staging\" )\n        if [ -f \"$DEV_PLIST\" ]; then\n            cp -r \"$DEV_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Development plist not found at $DEV_PLIST\"\n            exit 1\n        fi\n        ;;\n   \"Release\" )\n        if [ -f \"$PRODUCTION_PLIST\" ]; then\n            cp -r \"$PRODUCTION_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Production plist not found at $PRODUCTION_PLIST\"\n            exit 1\n        fi\n        ;;\n    *)\n        echo \"Unknown configuration: ${CONFIGURATION}\"\n        exit 1\n        ;;\nesac\n\necho \"GoogleService-Info.plist copied successfully.\"\nexit 0\n";
 		};
-		0CCD18A42BA15D900068D73A /* R.swift */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$TEMP_DIR/rswift-lastrun",
-			);
-			name = R.swift;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift\"\n";
-		};
 		0F35ADC6D0502E07FDAF96B9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -29737,26 +29823,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\" --config \".swiftlint.yml\"\n";
-		};
-		849013CE24A92280008F705E /* R.swift */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$TEMP_DIR/rswift-lastrun",
-			);
-			name = R.swift;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				$PROJECT_DIR/R.generated.swift,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$PROJECT_DIR/R.generated.swift\"\n";
 		};
 		9CA8F58360B989B1B9F75BA2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -30080,7 +30146,6 @@
 				2DEDEF882E4D135B008F07B2 /* (null) in Sources */,
 				2DEDF03C2E4D1627008F07B2 /* DelegationResolution.swift in Sources */,
 				77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */,
-				0CCD18A72BA160C10068D73A /* R.generated.swift in Sources */,
 				2DEDF0632E4D1DCB008F07B2 /* AccountIdCodingWrapper.swift in Sources */,
 				2DEDEF6E2E4CFC11008F07B2 /* EvmEventParser.swift in Sources */,
 				2DEDEF6C2E4CFBF8008F07B2 /* CallCodingPath.swift in Sources */,
@@ -30130,6 +30195,7 @@
 				7778FE5F2B910BC10023E801 /* NumberFormatter.swift in Sources */,
 				77EF9A7F2B9F141D0034D619 /* Web3Alert+ChainId.swift in Sources */,
 				2DEDEF652E4CFB40008F07B2 /* RuntimeSnapshot.swift in Sources */,
+				0C2BAA4B2E683152008157E7 /* Data+Bytes.swift in Sources */,
 				77AE4FA02B905C0C00426519 /* ChainAsset.swift in Sources */,
 				2DEDF0522E4D1A43008F07B2 /* RuntimeDefaultTypesSnapshotFactory.swift in Sources */,
 				2DE8B09E2E54455000F8BD40 /* DataProviderRepository+Wallets.swift in Sources */,
@@ -30841,6 +30907,7 @@
 				887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */,
 				2D32BE202C6CF4A20047F520 /* AssetTransferAggregationFactory.swift in Sources */,
 				84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */,
+				0C2BAA4A2E683152008157E7 /* Data+Bytes.swift in Sources */,
 				84D8F17124D856D300AF43E9 /* SNAddressType+ViewModel.swift in Sources */,
 				0CA72A882D4A2DA000B3FD02 /* CollatorStkPartialUnstakeSetupVC.swift in Sources */,
 				84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */,
@@ -32299,7 +32366,6 @@
 				8407715C28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift in Sources */,
 				848CCB482832EF4400A1FD00 /* GeneralLocalStorageHandler.swift in Sources */,
 				2DC694552DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift in Sources */,
-				849013D024A9267F008F705E /* R.generated.swift in Sources */,
 				0C3272912CD2409B00FC1B42 /* AssetExchangeOperationFee.swift in Sources */,
 				844CED2529260B6A001A7757 /* EvmQueryContractMessageFactory.swift in Sources */,
 				0C0F6DD92D413DEB00943A7C /* CollatorStakingAccountViewModelFactory.swift in Sources */,
@@ -36214,6 +36280,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0C2BAA202E677D3F008157E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */;
+		};
+		0C8FCEDA2E67392800034ED3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */;
+		};
 		77CAF4352B8E96A400E4297C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 77CAF42E2B8E96A400E4297C /* NovaPushNotificationServiceExtension */;
@@ -37107,6 +37181,464 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/web3swift";
+			requirement = {
+				kind = revision;
+				revision = 3f16f980d1ff4a576cb8530688770ee74087fe4d;
+			};
+		};
+		0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/WalletConnectSwiftV2.git";
+			requirement = {
+				branch = bump/dependencies;
+				kind = branch;
+			};
+		};
+		0C8FCE742E65ED3400034ED3 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ChartsOrg/Charts";
+			requirement = {
+				kind = exactVersion;
+				version = 5.1.0;
+			};
+		};
+		0C8FCE792E65EE0B00034ED3 /* XCRemoteSwiftPackageReference "qrcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dagronf/qrcode.git";
+			requirement = {
+				kind = exactVersion;
+				version = 14.4.1;
+			};
+		};
+		0C8FCE7E2E65EE5600034ED3 /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nova-wallet/substrate-sdk-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 4.4.0;
+			};
+		};
+		0C8FCE812E65EF7800034ED3 /* XCRemoteSwiftPackageReference "Crypto-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Crypto-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 0.2.0;
+			};
+		};
+		0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/web3swift";
+			requirement = {
+				branch = fix/secp256k1;
+				kind = branch;
+			};
+		};
+		0C8FCE9A2E672A3200034ED3 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/WalletConnectSwiftV2.git";
+			requirement = {
+				kind = revision;
+				revision = 3556625f59c454a89da4f0380bd3262b38d1d3a9;
+			};
+		};
+		0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Keystore-iOS.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.1;
+			};
+		};
+		0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/UIKit-iOS.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.1.3;
+			};
+		};
+		0C8FCEA32E672BCE00034ED3 /* XCRemoteSwiftPackageReference "Operation-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Operation-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 2.1.1;
+			};
+		};
+		0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Foundation-iOS.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.0;
+			};
+		};
+		0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyBeaver/SwiftyBeaver";
+			requirement = {
+				kind = exactVersion;
+				version = 2.1.1;
+			};
+		};
+		0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
+			requirement = {
+				kind = exactVersion;
+				version = 5.2.4;
+			};
+		};
+		0C8FCEAF2E672CFA00034ED3 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = exactVersion;
+				version = 5.0.1;
+			};
+		};
+		0C8FCEB22E672D3900034ED3 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = exactVersion;
+				version = 6.3.0;
+			};
+		};
+		0C8FCEB52E672D8100034ED3 /* XCRemoteSwiftPackageReference "SwiftDraw" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swhitty/SwiftDraw";
+			requirement = {
+				kind = exactVersion;
+				version = 0.18.0;
+			};
+		};
+		0C8FCEB82E6732D600034ED3 /* XCRemoteSwiftPackageReference "SwiftRLP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/SwiftRLP";
+			requirement = {
+				branch = bump/dependencies;
+				kind = branch;
+			};
+		};
+		0C8FCEBB2E67331300034ED3 /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Starscream";
+			requirement = {
+				kind = exactVersion;
+				version = 4.0.13;
+			};
+		};
+		0C8FCEBE2E67335200034ED3 /* XCRemoteSwiftPackageReference "CDMarkdownKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nova-wallet/CDMarkdownKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.5.2;
+			};
+		};
+		0C8FCEC12E6733AD00034ED3 /* XCRemoteSwiftPackageReference "EthereumSignTypedDataUtil" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/EthereumSignTypedDataUtil";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		0C8FCEC42E67346F00034ED3 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.1;
+			};
+		};
+		0C8FCEC72E6734E900034ED3 /* XCRemoteSwiftPackageReference "ZMarkupParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ZhgChgLi/ZMarkupParser";
+			requirement = {
+				kind = exactVersion;
+				version = 1.6.1;
+			};
+		};
+		0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = exactVersion;
+				version = 11.3.0;
+			};
+		};
+		0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/metadata-shortener-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.2.1;
+			};
+		};
+		0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mac-cain13/R.swift";
+			requirement = {
+				kind = exactVersion;
+				version = 7.8.0;
+			};
+		};
+		0CBE44952E6741220034DC0A /* XCRemoteSwiftPackageReference "qrcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dagronf/qrcode.git";
+			requirement = {
+				kind = exactVersion;
+				version = 14.4.1;
+			};
+		};
+		0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Brightify/Cuckoo";
+			requirement = {
+				kind = exactVersion;
+				version = 1.7.1;
+			};
+		};
+		0CF8F6922E673FBC007E41C4 /* XCRemoteSwiftPackageReference "qrcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dagronf/qrcode.git";
+			requirement = {
+				kind = exactVersion;
+				version = 14.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0C2BAA1C2E677B6E008157E7 /* web3swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */;
+			productName = web3swift;
+		};
+		0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = "plugin:RswiftGenerateInternalResources";
+		};
+		0C2BAA2F2E6783D7008157E7 /* SwiftyBeaver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
+			productName = SwiftyBeaver;
+		};
+		0C2BAA332E67841C008157E7 /* RswiftLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = RswiftLibrary;
+		};
+		0C32522C2E67477700E322DB /* WalletConnect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */;
+			productName = WalletConnect;
+		};
+		0C32522F2E6772E000E322DB /* SubstrateSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE7E2E65EE5600034ED3 /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */;
+			productName = SubstrateSdk;
+		};
+		0C3252312E67734000E322DB /* Keystore-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */;
+			productName = "Keystore-iOS";
+		};
+		0C3252332E67735000E322DB /* Foundation-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */;
+			productName = "Foundation-iOS";
+		};
+		0C3252352E67736300E322DB /* Operation-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA32E672BCE00034ED3 /* XCRemoteSwiftPackageReference "Operation-iOS" */;
+			productName = "Operation-iOS";
+		};
+		0C3252372E67737300E322DB /* NovaCrypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE812E65EF7800034ED3 /* XCRemoteSwiftPackageReference "Crypto-iOS" */;
+			productName = NovaCrypto;
+		};
+		0C32523A2E6773A200E322DB /* web3swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */;
+			productName = web3swift;
+		};
+		0C8FCE752E65ED3400034ED3 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE742E65ED3400034ED3 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+		0C8FCE772E65ED3400034ED3 /* DGChartsDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE742E65ED3400034ED3 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGChartsDynamic;
+		};
+		0C8FCE7A2E65EE0B00034ED3 /* QRCode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE792E65EE0B00034ED3 /* XCRemoteSwiftPackageReference "qrcode" */;
+			productName = QRCode;
+		};
+		0C8FCE7C2E65EE0B00034ED3 /* QRCodeDetector */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE792E65EE0B00034ED3 /* XCRemoteSwiftPackageReference "qrcode" */;
+			productName = QRCodeDetector;
+		};
+		0C8FCE7F2E65EE5600034ED3 /* SubstrateSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE7E2E65EE5600034ED3 /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */;
+			productName = SubstrateSdk;
+		};
+		0C8FCE822E65EF7800034ED3 /* NovaCrypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE812E65EF7800034ED3 /* XCRemoteSwiftPackageReference "Crypto-iOS" */;
+			productName = NovaCrypto;
+		};
+		0C8FCE982E6725D700034ED3 /* web3swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */;
+			productName = web3swift;
+		};
+		0C8FCE9B2E672A3200034ED3 /* WalletConnect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE9A2E672A3200034ED3 /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */;
+			productName = WalletConnect;
+		};
+		0C8FCE9E2E672B2200034ED3 /* Keystore-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */;
+			productName = "Keystore-iOS";
+		};
+		0C8FCEA12E672BB000034ED3 /* UIKit-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */;
+			productName = "UIKit-iOS";
+		};
+		0C8FCEA42E672BCE00034ED3 /* Operation-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA32E672BCE00034ED3 /* XCRemoteSwiftPackageReference "Operation-iOS" */;
+			productName = "Operation-iOS";
+		};
+		0C8FCEA72E672BFB00034ED3 /* Foundation-iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */;
+			productName = "Foundation-iOS";
+		};
+		0C8FCEAA2E672C5500034ED3 /* SwiftyBeaver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
+			productName = SwiftyBeaver;
+		};
+		0C8FCEAD2E672CB000034ED3 /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */;
+			productName = Reachability;
+		};
+		0C8FCEB02E672CFA00034ED3 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEAF2E672CFA00034ED3 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		0C8FCEB32E672D3900034ED3 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEB22E672D3900034ED3 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		0C8FCEB62E672D8100034ED3 /* SwiftDraw */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEB52E672D8100034ED3 /* XCRemoteSwiftPackageReference "SwiftDraw" */;
+			productName = SwiftDraw;
+		};
+		0C8FCEB92E6732D600034ED3 /* SwiftRLP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEB82E6732D600034ED3 /* XCRemoteSwiftPackageReference "SwiftRLP" */;
+			productName = SwiftRLP;
+		};
+		0C8FCEBC2E67331300034ED3 /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEBB2E67331300034ED3 /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
+		};
+		0C8FCEBF2E67335200034ED3 /* CDMarkdownKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEBE2E67335200034ED3 /* XCRemoteSwiftPackageReference "CDMarkdownKit" */;
+			productName = CDMarkdownKit;
+		};
+		0C8FCEC22E6733AD00034ED3 /* EthereumSignTypedDataUtil */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEC12E6733AD00034ED3 /* XCRemoteSwiftPackageReference "EthereumSignTypedDataUtil" */;
+			productName = EthereumSignTypedDataUtil;
+		};
+		0C8FCEC52E67346F00034ED3 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEC42E67346F00034ED3 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		0C8FCEC82E6734E900034ED3 /* ZMarkupParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCEC72E6734E900034ED3 /* XCRemoteSwiftPackageReference "ZMarkupParser" */;
+			productName = ZMarkupParser;
+		};
+		0C8FCECB2E6735F300034ED3 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		0C8FCECD2E6735F300034ED3 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		0C8FCECF2E6735F300034ED3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		0C8FCED12E6735F300034ED3 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		0C8FCED42E67363000034ED3 /* MetadataShortenerApi */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */;
+			productName = MetadataShortenerApi;
+		};
+		0C8FCED72E6736E900034ED3 /* rswift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = rswift;
+		};
+		0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = "plugin:RswiftGenerateInternalResources";
+		};
+		0CBE44962E6741220034DC0A /* QRCodeStatic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CBE44952E6741220034DC0A /* XCRemoteSwiftPackageReference "qrcode" */;
+			productName = QRCodeStatic;
+		};
+		0CF8F68F2E673E73007E41C4 /* Cuckoo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */;
+			productName = Cuckoo;
+		};
+		0CF8F6932E673FBC007E41C4 /* QRCodeDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CF8F6922E673FBC007E41C4 /* XCRemoteSwiftPackageReference "qrcode" */;
+			productName = QRCodeDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {

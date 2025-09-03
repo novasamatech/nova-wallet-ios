@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import UIKit
 
 protocol PayoutTimeViewModelFactoryProtocol {
     func timeLeftAttributedString(

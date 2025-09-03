@@ -1,5 +1,4 @@
 import UIKit
-import Rswift
 import Foundation_iOS
 
 final class ChainAssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {

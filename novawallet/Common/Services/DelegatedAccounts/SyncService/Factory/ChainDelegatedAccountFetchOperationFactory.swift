@@ -1,5 +1,6 @@
 import SubstrateSdk
 import Operation_iOS
+import Foundation
 
 protocol DelegatedAccountFetchOperationFactoryProtocol {
     func createChangesWrapper(

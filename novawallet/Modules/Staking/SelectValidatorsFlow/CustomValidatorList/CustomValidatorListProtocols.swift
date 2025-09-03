@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 protocol CustomValidatorListViewProtocol: ControllerBackedProtocol, Localizable {

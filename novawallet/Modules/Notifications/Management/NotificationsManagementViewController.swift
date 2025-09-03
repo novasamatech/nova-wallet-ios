@@ -1,3 +1,4 @@
+import UIKit
 import Foundation_iOS
 
 final class NotificationsManagementViewController: UIViewController, ViewHolder {

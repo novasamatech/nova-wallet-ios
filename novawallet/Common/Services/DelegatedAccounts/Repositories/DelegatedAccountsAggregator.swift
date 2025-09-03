@@ -1,4 +1,5 @@
 import Operation_iOS
+import Foundation
 
 // Type used to represent ordered collection of accounts grouped by their delegate
 typealias DelegatedAccountsByDelegate = [(delegate: AccountId, accounts: [DiscoveredDelegatedAccountProtocol])]

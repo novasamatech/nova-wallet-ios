@@ -1,5 +1,6 @@
 import Foundation
 import UIKit_iOS
+import UIKit
 
 extension SingleDecoration {
     static func createDecoration(

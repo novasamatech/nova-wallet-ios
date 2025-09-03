@@ -1,3 +1,4 @@
+import Foundation
 import BigInt
 
 protocol ParaStkYieldBoostSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {

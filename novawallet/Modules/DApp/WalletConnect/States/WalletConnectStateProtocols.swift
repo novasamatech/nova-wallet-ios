@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectPairing
 
 protocol WalletConnectStateMachineProtocol: AnyObject {
     func emit(nextState: WalletConnectStateProtocol)

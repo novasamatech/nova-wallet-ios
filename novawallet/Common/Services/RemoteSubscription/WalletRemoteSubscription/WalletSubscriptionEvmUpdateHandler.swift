@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import Core
+import Web3Core
 import SubstrateSdk
 
 final class WalletSubscriptionEvmUpdateHandler {
@@ -23,7 +23,7 @@ final class WalletSubscriptionEvmUpdateHandler {
 }
 
 private extension WalletSubscriptionEvmUpdateHandler {
-    func createBlockHashWrapper(for block: Core.BlockNumber?) -> CompoundOperationWrapper<Data?> {
+    func createBlockHashWrapper(for block: Web3Core.BlockNumber?) -> CompoundOperationWrapper<Data?> {
         guard
             let blockNumberMapper,
             case let .exact(number) = block, let blockNumber = BlockNumber(exactly: number) else {
@@ -38,7 +38,7 @@ extension WalletSubscriptionEvmUpdateHandler: EvmBalanceUpdateHandling {
     func onBalanceUpdateWrapper(
         balances: [ChainAssetId: Balance],
         holder: AccountAddress,
-        block: Core.BlockNumber?
+        block: Web3Core.BlockNumber?
     ) -> CompoundOperationWrapper<Bool> {
         let blockHashWrapper = createBlockHashWrapper(for: block)
 

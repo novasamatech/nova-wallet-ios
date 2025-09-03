@@ -1,5 +1,6 @@
 import SubstrateSdk
 import Operation_iOS
+import Foundation
 
 typealias ProxiedAccountId = AccountId
 

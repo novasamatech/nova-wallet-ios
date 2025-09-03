@@ -1,5 +1,7 @@
 import SnapKit
 import UIKit_iOS
+import UIKit
+import CoreGraphics
 
 protocol PercentInputViewDelegateProtocol: AnyObject {
     func didSelect(percent: SlippagePercentViewModel, sender: Any?)

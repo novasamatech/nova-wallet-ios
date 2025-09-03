@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 protocol StakingPayoutConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {

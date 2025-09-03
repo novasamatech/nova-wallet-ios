@@ -1,5 +1,6 @@
 import Foundation
 import UIKit_iOS
+import UIKit
 
 extension RoundedButton {
     func applyAccessoryCaps2Style() {

@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 import Keystore_iOS
 import UIKit_iOS
+import UIKit
 
 enum DelegatedMessageSheetViewFactory {
     static func createSigningView(

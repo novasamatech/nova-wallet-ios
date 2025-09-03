@@ -1,5 +1,6 @@
 import Foundation
 import UIKit_iOS
+import UIKit
 
 class AmountInputView: BackgroundedContentControl {
     private(set) var titleLabel: UILabel!

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import UIKit
 
 enum SupportCheckingFeatureType {
     case ramp(type: RampActionType, chainAsset: ChainAsset, all: [RampAction])

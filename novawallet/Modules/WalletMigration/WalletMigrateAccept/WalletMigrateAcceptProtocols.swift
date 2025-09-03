@@ -1,3 +1,4 @@
+import Foundation
 import UIKit_iOS
 
 protocol WalletMigrateAcceptViewProtocol: ControllerBackedProtocol {}

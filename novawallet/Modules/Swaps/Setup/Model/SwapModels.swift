@@ -1,3 +1,5 @@
+import Foundation
+import UIKit
 import Foundation_iOS
 
 struct SwapSetupInitState {

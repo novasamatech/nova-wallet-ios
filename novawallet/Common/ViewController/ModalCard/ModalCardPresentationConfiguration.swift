@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UIKit_iOS
 
 public struct ModalCardPresentationConfiguration {

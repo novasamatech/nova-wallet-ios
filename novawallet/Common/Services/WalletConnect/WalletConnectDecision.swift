@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 
 enum WalletConnectProposalDecision {
     case approve(proposal: Session.Proposal, namespaces: [String: SessionNamespace])

@@ -1,3 +1,4 @@
+import Foundation
 import SubstrateSdk
 
 typealias RewardPoint = UInt32
