@@ -91,6 +91,24 @@ extension Web3Alert.LocalSettings {
         )
     }
 
+    func updating(with wallets: [Web3Alert.LocalWallet]) -> Web3Alert.LocalSettings {
+        var updatedWalletsMap = self.wallets.reduce(into: [MetaAccountModel.Id: Web3Alert.LocalWallet]()) {
+            $0[$1.metaId] = $1
+        }
+
+        wallets.forEach {
+            updatedWalletsMap[$0.metaId] = $0
+        }
+
+        return .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: updatedAt,
+            wallets: Array(updatedWalletsMap.values),
+            notifications: notifications
+        )
+    }
+
     func updatingMetadata(from other: Web3Alert.LocalSettings) -> Web3Alert.LocalSettings {
         .init(
             remoteIdentifier: other.remoteIdentifier,
