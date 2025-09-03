@@ -114,12 +114,11 @@ private extension CommonMultisigHandler {
     ) -> BaseOperation<MultisigNotificationParams> {
         ClosureOperation {
             guard
-                let multisigWallet = self.findMultisigWallet(
+                let multisigContext = self.getMultisigContext(
                     for: payload.multisigAddress,
                     chain: chain,
                     metaAccounts: try metaAccounts()
-                ),
-                let multisigAccount = multisigWallet.multisigAccount?.anyChainMultisig
+                )
             else { throw PushNotificationsHandlerErrors.undefined }
 
             let signatory = self.targetWallet(
@@ -130,8 +129,8 @@ private extension CommonMultisigHandler {
 
             return MultisigNotificationParams(
                 signatory: signatory,
-                multisigName: multisigWallet.name,
-                multisigAccount: multisigAccount
+                multisigName: multisigContext.name,
+                multisigAccount: multisigContext.multisigAccount
             )
         }
     }
@@ -333,22 +332,41 @@ private extension CommonMultisigHandler {
             callPath.callName.displayCall
         ].joined(with: .colonSpace)
     }
-    
-    func findMultisigWallet(
+
+    func getMultisigContext(
         for address: AccountAddress?,
         chain: ChainModel,
         metaAccounts: [MetaAccountModel]
-    ) -> MetaAccountModel? {
+    ) -> MultisigWalletContext? {
         guard let accountId = try? address?.toAccountId() else {
             return nil
         }
 
         let chainRequest = chain.accountRequest()
 
-        return metaAccounts
+        let wallet = metaAccounts
             .filter {
                 $0.type == .multisig && $0.fetchByAccountId(accountId, request: chainRequest) != nil
             }
             .first
+
+        guard
+            let wallet,
+            let multisigAccount = wallet.multisigAccount?.anyChainMultisig
+        else { return nil }
+
+        return MultisigWalletContext(
+            name: wallet.name,
+            multisigAccount: multisigAccount
+        )
+    }
+}
+
+// MARK: - Private types
+
+private extension CommonMultisigHandler {
+    struct MultisigWalletContext {
+        let name: String
+        let multisigAccount: DelegatedAccount.MultisigAccountModel
     }
 }
