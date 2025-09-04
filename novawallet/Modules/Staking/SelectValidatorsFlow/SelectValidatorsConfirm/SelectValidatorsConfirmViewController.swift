@@ -220,7 +220,7 @@ extension SelectValidatorsConfirmViewController: SelectValidatorsConfirmViewProt
     }
 }
 
-extension SelectValidatorsConfirmViewController {
+extension SelectValidatorsConfirmViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             applyLocalization()

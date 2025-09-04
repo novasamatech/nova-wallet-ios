@@ -28,7 +28,7 @@ class RecommendedValidatorListTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 XCTAssertEqual(self.validators.count, viewModel.itemViewModels.count)
                 expectation.fulfill()
             }

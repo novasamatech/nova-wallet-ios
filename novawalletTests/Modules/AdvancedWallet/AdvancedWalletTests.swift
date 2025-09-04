@@ -40,25 +40,25 @@ class AdvancedWalletTests: XCTestCase {
         var ethereumDPViewModel: InputViewModelProtocol?
 
         stub(view) { stub in
-            when(stub).setSubstrateDerivationPath(viewModel: any()).then { viewModel in
+            when(stub.setSubstrateDerivationPath(viewModel: any())).then { viewModel in
                 substrateDPViewModel = viewModel
             }
 
-            when(stub).setEthereumDerivationPath(viewModel: any()).then { viewModel in
+            when(stub.setEthereumDerivationPath(viewModel: any())).then { viewModel in
                 ethereumDPViewModel = viewModel
             }
 
-            when(stub).setSubstrateCrypto(viewModel: any()).thenDoNothing()
+            when(stub.setSubstrateCrypto(viewModel: any())).thenDoNothing()
 
-            when(stub).setEthreumCrypto(viewModel: any()).thenDoNothing()
+            when(stub.setEthreumCrypto(viewModel: any())).thenDoNothing()
 
-            when(stub).didCompleteCryptoTypeSelection().thenDoNothing()
+            when(stub.didCompleteCryptoTypeSelection()).thenDoNothing()
         }
 
         var actualSettings: AdvancedWalletSettings?
 
         stub(delegate) { stub in
-            when(stub).didReceiveNewAdvanced(walletSettings: any()).then { newSettings in
+            when(stub.didReceiveNewAdvanced(walletSettings: any())).then { newSettings in
                 actualSettings = newSettings
             }
         }
@@ -66,7 +66,7 @@ class AdvancedWalletTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).complete(from: any()).then { _ in
+            when(stub.complete(from: any())).then { _ in
                 completionExpectation.fulfill()
             }
         }

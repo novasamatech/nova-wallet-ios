@@ -22,24 +22,22 @@ class BondMoreConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveAmount(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveConfirmation(viewModel: any())).thenDoNothing()
 
-            when(stub).localizationManager.get.then { nil }
+            when(stub.didStartLoading()).thenDoNothing()
 
-            when(stub).didStartLoading().thenDoNothing()
-
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -147,7 +145,7 @@ class BondMoreConfirmTests: XCTestCase {
         let confirmViewModelExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAmount(viewModel: any())).then { viewModel in
                 let balance = viewModel.value(for: Locale.current).amount
 
                 if !balance.isEmpty {
@@ -155,13 +153,13 @@ class BondMoreConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if let fee = viewModel?.value(for: Locale.current).amount, !fee.isEmpty {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveConfirmation(viewModel: any()).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { viewModel in
                 confirmViewModelExpectation.fulfill()
             }
         }

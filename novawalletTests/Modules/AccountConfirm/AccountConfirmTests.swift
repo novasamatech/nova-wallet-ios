@@ -61,11 +61,11 @@ class AccountConfirmTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).update(
+            when(stub.update(
                 with: any(),
                 gridUnits: any(),
                 afterConfirmationFail: any()
-            ).then { _ in
+            )).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -73,7 +73,7 @@ class AccountConfirmTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).proceed(from: any()).then { _ in
+            when(stub.proceed(from: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -81,7 +81,7 @@ class AccountConfirmTests: XCTestCase {
         let completeExpectation = XCTestExpectation()
 
         stub(eventCenter) { stub in
-            stub.notify(with: any()).then { event in
+            when(stub.notify(with: any())).then { event in
                 if event is SelectedWalletSwitched {
                     completeExpectation.fulfill()
                 }

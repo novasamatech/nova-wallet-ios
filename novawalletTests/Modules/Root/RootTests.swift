@@ -31,7 +31,7 @@ class RootTests: XCTestCase {
         let onboardingExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showOnboarding(on: any()).then { _ in
+            when(stub.showOnboarding(on: any())).then { _ in
                 onboardingExpectation.fulfill()
             }
         }
@@ -74,7 +74,7 @@ class RootTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showPincodeSetup(on: any()).then { _ in
+            when(stub.showPincodeSetup(on: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -116,7 +116,7 @@ class RootTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showLocalAuthentication(on: any()).then { _ in
+            when(stub.showLocalAuthentication(on: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -147,7 +147,7 @@ class RootTests: XCTestCase {
             let mockLayer = MockSecurityLayerInteractorInputProtocol()
 
             stub(mockLayer) { stub in
-                when(stub).setup().thenDoNothing()
+                when(stub.setup()).thenDoNothing()
             }
 
             actualSecurityLayerInteractor = mockLayer
@@ -171,10 +171,10 @@ class RootTests: XCTestCase {
 
 
         stub(wireframe) { stub in
-            when(stub).showOnboarding(on: any()).thenDoNothing()
-            when(stub).showLocalAuthentication(on: any()).thenDoNothing()
-            when(stub).showPincodeSetup(on: any()).thenDoNothing()
-            when(stub).showBroken(on: any()).thenDoNothing()
+            when(stub.showOnboarding(on: any())).thenDoNothing()
+            when(stub.showLocalAuthentication(on: any())).thenDoNothing()
+            when(stub.showPincodeSetup(on: any())).thenDoNothing()
+            when(stub.showBroken(on: any())).thenDoNothing()
         }
 
         return presenter

@@ -1,9 +1,10 @@
-@testable import novawallet
+import Foundation
 import Operation_iOS
 import SubstrateSdk
+@testable import novawallet
 
 final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
-    var connection: JSONRPCEngine { MockJSONRPCEngine() }
+    var connection: JSONRPCEngine { MockConnection() }
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,

@@ -80,16 +80,25 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.bannerView.infoView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRecommendedBannerTitle()
+        rootView.bannerView.infoView.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingRecommendedBannerTitle()
 
-        rootView.bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRecommendedBannerMessage()
+        rootView.bannerView.infoView.subtitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingRecommendedBannerMessage()
 
-        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonHowItWorks()
+        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonHowItWorks()
 
-        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
 
-        rootView.customValidatorsCell.titleLabel.text = R.string.localizable
-            .stakingSelectValidatorsCustomButtonTitle(preferredLanguages: languages)
+        rootView.customValidatorsCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingSelectValidatorsCustomButtonTitle()
 
         switch phase {
         case .setup:
@@ -166,7 +175,7 @@ extension SelectValidatorsStartViewController: SelectValidatorsStartViewProtocol
     }
 }
 
-extension SelectValidatorsStartViewController {
+extension SelectValidatorsStartViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

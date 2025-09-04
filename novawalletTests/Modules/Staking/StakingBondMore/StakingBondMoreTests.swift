@@ -29,7 +29,8 @@ class StakingBondMoreTests: XCTestCase {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidator,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = MockStakingBondMoreViewProtocol()
@@ -37,16 +38,15 @@ class StakingBondMoreTests: XCTestCase {
         dataValidator.view = view
 
         stub(view) { stub in
-            when(stub).localizationManager.get.then { _ in nil }
-            when(stub).didReceiveInput(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveInput(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveAsset(viewModel: any())).thenDoNothing()
         }
 
         // given
         let continueExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub).showConfirmation(from: any(), amount: any()).then { _ in
+            when(stub.showConfirmation(from: any(), amount: any())).then { _ in
                 continueExpectation.fulfill()
             }
         }
@@ -99,7 +99,14 @@ class StakingBondMoreTests: XCTestCase {
         // given
         let errorAlertExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub).present(message: any(), title: any(), closeAction: any(), from: any()).then { _ in
+            when(
+                stub.present(
+                    message: any(),
+                    title: any(),
+                    closeAction: any(),
+                    from: any()
+                )
+            ).then { _ in
                 errorAlertExpectation.fulfill()
             }
         }

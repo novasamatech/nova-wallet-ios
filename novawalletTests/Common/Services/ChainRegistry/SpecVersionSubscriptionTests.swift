@@ -21,29 +21,23 @@ class SpecVersionSubscriptionTests: XCTestCase {
 
         // when
 
-        stub(connection) { stub in
-            stub.subscribe(
-                any(),
-                params: any([String].self),
-                unsubscribeMethod: any(),
-                updateClosure: any(),
-                failureClosure: any()
-            ).then { (_, _, _, updateClosure: @escaping (RuntimeVersionUpdate) -> Void, _) in
-                DispatchQueue.global().async {
-                    let update = RuntimeVersionUpdate(
-                        jsonrpc: "2.0",
-                        method: RPCMethod.runtimeVersionSubscribe,
-                        params: JSONRPCSubscriptionUpdate.Result(
-                            result: version,
-                            subscription: ""
-                        )
+        connection.stubSubscribe { (_, _, _, closure, _) -> UInt16 in
+            DispatchQueue.global().async {
+                let update = RuntimeVersionUpdate(
+                    jsonrpc: "2.0",
+                    method: RPCMethod.runtimeVersionSubscribe,
+                    params: JSONRPCSubscriptionUpdate.Result(
+                        result: version,
+                        subscription: ""
                     )
+                )
 
+                if let updateClosure = closure as? (RuntimeVersionUpdate) -> Void {
                     updateClosure(update)
                 }
-
-                return 0
             }
+
+            return 0
         }
 
         let expectation = XCTestExpectation()

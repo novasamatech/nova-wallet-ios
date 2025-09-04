@@ -29,7 +29,7 @@ final class SelectValidatorsConfirmViewFactory {
         let wireframe = SelectValidatorsConfirmWireframe()
 
         let title = LocalizableResource { locale in
-            R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartTitle()
         }
 
         return createView(
@@ -74,7 +74,7 @@ final class SelectValidatorsConfirmViewFactory {
         }
 
         let title = LocalizableResource { locale in
-            R.string.localizable.stakingChangeValidators(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingChangeValidators()
         }
 
         return createView(
@@ -116,6 +116,7 @@ final class SelectValidatorsConfirmViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

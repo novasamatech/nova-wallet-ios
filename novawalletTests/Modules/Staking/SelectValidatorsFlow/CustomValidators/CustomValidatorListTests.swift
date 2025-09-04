@@ -75,11 +75,11 @@ class CustomValidatorListTests: XCTestCase {
         let filterExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).setFilterAppliedState(to: any()).then { _ in
+            when(stub.setFilterAppliedState(to: any())).then { _ in
                 filterExpectation.fulfill()
             }
 
-            when(stub).reload(any(), at: any()).then { (viewModel, _) in
+            when(stub.reload(any(), at: any())).then { (viewModel, _) in
                 XCTAssertEqual(WestendStub.recommendedValidators.count, viewModel.cellViewModels.count)
                 reloadExpectation.fulfill()
             }

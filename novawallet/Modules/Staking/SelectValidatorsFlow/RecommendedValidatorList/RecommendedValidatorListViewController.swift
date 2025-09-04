@@ -113,7 +113,7 @@ extension RecommendedValidatorListViewController: RecommendedValidatorListViewPr
     }
 }
 
-extension RecommendedValidatorListViewController {
+extension RecommendedValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

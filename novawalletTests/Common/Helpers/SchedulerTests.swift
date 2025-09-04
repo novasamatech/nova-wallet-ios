@@ -15,7 +15,7 @@ class SchedulerTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(delegate) { stub in
-            when(stub).didTrigger(scheduler: any()).then { _ in
+            when(stub.didTrigger(scheduler: any())).then { _ in
                 expectation.fulfill()
             }
         }

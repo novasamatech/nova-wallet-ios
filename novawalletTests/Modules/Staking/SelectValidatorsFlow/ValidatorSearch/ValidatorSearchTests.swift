@@ -42,9 +42,9 @@ class ValidatorSearchTests: XCTestCase {
         let reloadExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReset().thenDoNothing()
+            when(stub.didReset()).thenDoNothing()
             
-            when(stub).didReload(any()).then { viewModel in
+            when(stub.didReload(any())).then { viewModel in
                 XCTAssertEqual(viewModel.cellViewModels.count, fullValidatorList.count)
                 reloadExpectation.fulfill()
             }

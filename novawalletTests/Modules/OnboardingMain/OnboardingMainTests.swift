@@ -155,15 +155,15 @@ class OnboardingMainTests: XCTestCase {
         interactor.presenter = presenter
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
         }
 
         stub(wireframe) { stub in
-            when(stub).showAccountRestore(from: any()).thenDoNothing()
-            when(stub).showSignup(from: any()).thenDoNothing()
-            when(stub).showWeb(url: any(), from: any(), style: any()).thenDoNothing()
-            when(stub).showAccountSecretImport(from: any(), source: any()).thenDoNothing()
-            when(stub).showWalletMigration(from: any(), message: any()).thenDoNothing()
+            when(stub.showAccountRestore(from: any())).thenDoNothing()
+            when(stub.showSignup(from: any())).thenDoNothing()
+            when(stub.showWeb(url: any(), from: any(), style: any())).thenDoNothing()
+            when(stub.showAccountSecretImport(from: any(), source: any())).thenDoNothing()
+            when(stub.showWalletMigration(from: any(), message: any())).thenDoNothing()
         }
 
         return presenter

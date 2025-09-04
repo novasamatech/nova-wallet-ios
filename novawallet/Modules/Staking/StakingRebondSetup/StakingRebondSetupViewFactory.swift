@@ -32,7 +32,8 @@ final class StakingRebondSetupViewFactory {
             interactor: interactor,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         // MARK: - View

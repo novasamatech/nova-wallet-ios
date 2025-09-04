@@ -32,8 +32,6 @@ final class ValidatorListFilterViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.view = self
-
         setupResetButton()
         setupApplyButton()
         setupTableView()

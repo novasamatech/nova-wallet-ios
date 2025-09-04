@@ -70,34 +70,34 @@ class CrowdloanContributionConfirmTests: XCTestCase {
         let bonusReceived = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAsset(viewModel: any())).then { viewModel in
                 if viewModel.balance != nil {
                     assetReceived.fulfill()
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if viewModel != nil {
                     feeReceived.fulfill()
                 }
             }
 
-            when(stub).didReceiveEstimatedReward(viewModel: any()).then { viewModel in
+            when(stub.didReceiveEstimatedReward(viewModel: any())).then { viewModel in
                 estimatedRewardReceived.fulfill()
             }
 
-            when(stub).didReceiveCrowdloan(viewModel: any()).then { _ in
+            when(stub.didReceiveCrowdloan(viewModel: any())).then { _ in
                 crowdloanReceived.fulfill()
             }
 
-            when(stub).didReceiveBonus(viewModel: any()).then { _ in
+            when(stub.didReceiveBonus(viewModel: any())).then { _ in
                 bonusReceived.fulfill()
             }
 
-            when(stub).didStartLoading().thenDoNothing()
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStartLoading()).thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
 
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
         }
 
         presenter.setup()
@@ -116,15 +116,14 @@ class CrowdloanContributionConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
 
-            // TODO: Check whether it has to be tested
-            when(stub).present(message: any(), title: any(), closeAction: any(), from: any()).thenDoNothing()
+            when(stub.present(message: any(), title: any(), closeAction: any(), from: any())).thenDoNothing()
         }
 
         presenter.confirm()

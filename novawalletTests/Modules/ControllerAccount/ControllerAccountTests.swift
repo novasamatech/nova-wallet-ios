@@ -31,32 +31,29 @@ class ControllerAccountTests: XCTestCase {
             applicationConfig: ApplicationConfig.shared,
             assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
-            chain: chain
+            chain: chain,
+            localizationManager: LocalizationManager.shared
         )
         presenter.view = view
         dataValidatingFactory.view = view
-
-        stub(view) { stub in
-            when(stub).localizationManager.get.then { LocalizationManager.shared }
-        }
 
         // given
         let showConfirmationExpectation = XCTestExpectation(
             description: "Show Confirmation screen if user has sufficient balance to pay fee"
         )
         stub(wireframe) { stub in
-            when(stub).showConfirmation(from: any(), controllerAccountItem: any()).then { _ in
+            when(stub.showConfirmation(from: any(), controllerAccountItem: any())).then { _ in
                 showConfirmationExpectation.fulfill()
             }
         }
 
         stub(viewModelFactory) { stub in
-            when(stub).createViewModel(
+            when(stub.createViewModel(
                 stashItem: any(),
                 stashAccountItem: any(),
                 chosenAccountItem: any(),
                 isDeprecated: any()
-            )
+            ))
                 .then { _ in ControllerAccountViewModel(
                     stashViewModel: WalletAccountViewModel.empty,
                     controllerViewModel: WalletAccountViewModel.empty,
@@ -66,8 +63,8 @@ class ControllerAccountTests: XCTestCase {
                 )}
         }
         stub(view) { stub in
-            when(stub).reload(with: any()).thenDoNothing()
-            when(stub).didCompleteControllerSelection().thenDoNothing()
+            when(stub.reload(with: any())).thenDoNothing()
+            when(stub.didCompleteControllerSelection()).thenDoNothing()
         }
 
         let controllerAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
@@ -136,7 +133,7 @@ class ControllerAccountTests: XCTestCase {
             description: "Show error alert if user has not sufficient balance to pay fee"
         )
         stub(wireframe) { stub in
-            when(stub).present(message: any(), title: any(), closeAction: any(), from: any()).then { _ in
+            when(stub.present(message: any(), title: any(), closeAction: any(), from: any())).then { _ in
                 showErrorAlertExpectation.fulfill()
             }
         }

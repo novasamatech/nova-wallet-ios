@@ -24,22 +24,22 @@ class UsernameSetupTests: XCTestCase {
         let proceedExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).setInput(viewModel: any()).then { viewModel in
+            when(stub.setInput(viewModel: any())).then { viewModel in
                 receivedViewModel = viewModel
                 inputViewModelExpectation.fulfill()
             }
         }
 
         stub(wireframe) { stub in
-            when(stub).proceed(from: any(), walletName: any()).then { (_, walletName) in
+            when(stub.proceed(from: any(), walletName: any())).then { (_, walletName) in
                 resultName = walletName
 
                 proceedExpectation.fulfill()
             }
 
-            when(stub).present(viewModel: any(),
-                               style: any(),
-                               from: any()).then { (viewModel, _, _) in
+            when(stub.present(viewModel: any(),
+                              style: any(),
+                              from: any())).then { (viewModel, _, _) in
                 viewModel.actions.first?.handler?()
 
             }

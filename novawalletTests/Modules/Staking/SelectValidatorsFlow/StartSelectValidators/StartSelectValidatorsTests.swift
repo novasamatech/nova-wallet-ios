@@ -52,7 +52,7 @@ class SelectValidatorsStartTests: XCTestCase {
         let wireframe = MockSelectValidatorsStartWireframeProtocol()
         let operationFactory = MockValidatorOperationFactoryProtocol()
 
-        let connection = JSONRPCEngineStub()
+        let connection = MockConnection()
         let runtimeService = try RuntimeCodingServiceStub.createWestendService()
         let operationQueue = OperationQueue()
         
@@ -81,7 +81,7 @@ class SelectValidatorsStartTests: XCTestCase {
         // when
 
         stub(operationFactory) { stub in
-            when(stub).allPreferred(for: any()).then { _ in
+            when(stub.allPreferred(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(
                     .init(
                         allElectedValidators: allValidators,
@@ -95,7 +95,7 @@ class SelectValidatorsStartTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 XCTAssertEqual(viewModel, expectedViewModel)
                 setupExpectation.fulfill()
             }
@@ -107,11 +107,14 @@ class SelectValidatorsStartTests: XCTestCase {
             .createSelectedValidators(from: expectedRecommendedValidators)
 
         stub(wireframe) { stub in
-            when(stub).proceedToCustomList(
-                from: any(),
-                selectionValidatorGroups: any(),
-                selectedValidatorList: any(),
-                validatorsSelectionParams: any()).then { (_, selectionValidatorGroups, _ , _) in
+            when(
+                stub.proceedToCustomList(
+                    from: any(),
+                    selectionValidatorGroups: any(),
+                    selectedValidatorList: any(),
+                    validatorsSelectionParams: any()
+                )
+            ).then { (_, selectionValidatorGroups, _ , _) in
                     XCTAssertEqual(
                         expectedCustomValidators.sorted {
                             $0.address.lexicographicallyPrecedes($1.address)
@@ -121,7 +124,7 @@ class SelectValidatorsStartTests: XCTestCase {
                         })
             }
 
-            when(stub).proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any()).then { (_, targets, _) in
+            when(stub.proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any())).then { (_, targets, _) in
                 XCTAssertEqual(Set(recommended.map({ $0.address })),
                                Set(targets.map({ $0.address })))
             }

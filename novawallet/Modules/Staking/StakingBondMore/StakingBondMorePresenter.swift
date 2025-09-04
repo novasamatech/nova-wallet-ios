@@ -9,6 +9,7 @@ final class StakingBondMorePresenter {
     weak var view: StakingBondMoreViewProtocol?
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     var amount: Decimal = 0
@@ -36,6 +37,7 @@ final class StakingBondMorePresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -43,6 +45,7 @@ final class StakingBondMorePresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -89,7 +92,7 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
     }
 
     func handleContinueAction() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.interactor.estimateFee()
@@ -148,7 +151,7 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
             } else if let view = view {
                 wireframe.presentAmountTooHigh(
                     from: view,
-                    locale: view.localizationManager?.selectedLocale
+                    locale: localizationManager.selectedLocale
                 )
             }
         }

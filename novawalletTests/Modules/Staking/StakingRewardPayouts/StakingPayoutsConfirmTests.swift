@@ -94,41 +94,39 @@ class StakingPayoutsConfirmTests: XCTestCase {
         let amounExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(feeViewModel: any()).then { viewModel in
+            when(stub.didReceive(feeViewModel: any())).then { viewModel in
                 if viewModel != nil {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didRecieve(viewModel: any()).then {_ in
+            when(stub.didRecieve(viewModel: any())).then {_ in
                 viewModelExpectation.fulfill()
             }
 
-            when(stub).didRecieve(amountViewModel: any()).then { _ in
+            when(stub.didRecieve(amountViewModel: any())).then { _ in
                 amounExpectation.fulfill()
             }
 
-            when(stub).didStartLoading().thenDoNothing()
-            when(stub).didStopLoading().thenDoNothing()
-
-            when(stub).localizationManager.get.then { LocalizationManager.shared }
+            when(stub.didStartLoading()).thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
 
-            when(stub).present(
+            when(stub.present(
                 message: any(),
                 title: any(),
                 closeAction: any(),
-                from: any()).thenDoNothing()
+                from: any())).thenDoNothing()
         }
 
         // when

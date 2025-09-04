@@ -91,15 +91,15 @@ class YourValidatorListTests: XCTestCase {
         let validatorOperationFactory = MockValidatorOperationFactoryProtocol()
 
         stub(validatorOperationFactory) { stub in
-            when(stub).allSelectedOperation(by: any(), nominatorAddress: any()).then { _ in
+            when(stub.allSelectedOperation(by: any(), nominatorAddress: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(activeValidators)
             }
 
-            when(stub).pendingValidatorsOperation(for: any()).then { _ in
+            when(stub.pendingValidatorsOperation(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult([])
             }
 
-            when(stub).activeValidatorsOperation(for: any()).then { _ in
+            when(stub.activeValidatorsOperation(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(activeValidators)
             }
         }
@@ -147,7 +147,7 @@ class YourValidatorListTests: XCTestCase {
         var receivedValidatorAddresses: Set<AccountAddress>?
 
         stub(view) { stub in
-            when(stub).reload(state: any()).then { state in
+            when(stub.reload(state: any())).then { state in
                 if case .validatorList(let viewModel) = state, !viewModel.sections.isEmpty {
                     receivedValidatorAddresses = viewModel.sections
                         .flatMap { $0.validators }

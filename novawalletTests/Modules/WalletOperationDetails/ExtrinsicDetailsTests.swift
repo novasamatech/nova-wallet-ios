@@ -86,9 +86,9 @@ class OperationDetailsTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 expectation.fulfill()
             }
         }

@@ -34,13 +34,13 @@ class AccountCreateTests: XCTestCase {
         let setupMnemonicExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub).update(with: any()).then { _ in
+            when(stub.update(with: any())).then { _ in
                 setupMnemonicExpectation.fulfill()
             }
             
-            when(stub).update(using: any()).then { _ in
+            when(stub.update(using: any())).then { _ in
                 setupCheckboxesExpectation.fulfill()
             }
         }
@@ -50,7 +50,7 @@ class AccountCreateTests: XCTestCase {
         var receivedRequest: MetaAccountCreationRequest?
 
         stub(wireframe) { stub in
-            when(stub).confirm(from: any(), request: any(), metadata: any()).then { (_, request, _) in
+            when(stub.confirm(from: any(), request: any(), metadata: any())).then { (_, request, _) in
                 receivedRequest = request
                 expectation.fulfill()
             }

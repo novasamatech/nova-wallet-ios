@@ -127,21 +127,21 @@ class DAppBrowserTests: XCTestCase {
         let tabCountExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 loadedModel = viewModel
 
                 loadingExpectation.fulfill()
             }
             
-            when(stub).didSet(favorite: any()).then { _ in
+            when(stub.didSet(favorite: any())).then { _ in
                 favoriteExpectation.fulfill()
             }
             
-            when(stub).didReceiveTabsCount(viewModel: any()).then { _ in
+            when(stub.didReceiveTabsCount(viewModel: any())).then { _ in
                 tabCountExpectation.fulfill()
             }
 
-            when(stub).didSet(canShowSettings: any()).then { canShowSettings in
+            when(stub.didSet(canShowSettings: any())).then { canShowSettings in
                 if canShowSettings {
                     enableSettingsExpectation.fulfill()
                 }

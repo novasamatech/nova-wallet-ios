@@ -53,11 +53,11 @@ class DAppSearchTests: XCTestCase {
         let dAppSetupExpectatation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(initialQuery: any()).then { _ in
+            when(stub.didReceive(initialQuery: any())).then { _ in
                 querySetupExpectation.fulfill()
             }
 
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 if viewModel?.dApps.isEmpty == false {
                     dAppSetupExpectatation.fulfill()
                 }
@@ -79,9 +79,9 @@ class DAppSearchTests: XCTestCase {
         var selectedDApp: DAppViewModel?
 
         stub(view) { stub in
-            when(stub).didReceive(initialQuery: any()).thenDoNothing()
+            when(stub.didReceive(initialQuery: any())).thenDoNothing()
 
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 if let dApp = viewModel?.dApps.last {
                     selectedDApp = dApp
                     dAppSearchExpectation.fulfill()
@@ -101,7 +101,7 @@ class DAppSearchTests: XCTestCase {
         let dAppSelectionCloseExpectation = XCTestExpectation()
 
         stub(delegate) { stub in
-            when(stub).didCompleteDAppSearchResult(any()).then { result in
+            when(stub.didCompleteDAppSearchResult(any())).then { result in
                 if case .dApp = result {
                     dAppSelectionExpectation.fulfill()
                 }
@@ -109,7 +109,7 @@ class DAppSearchTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub).close(from: any()).then { _ in
+            when(stub.close(from: any())).then { _ in
                 dAppSelectionCloseExpectation.fulfill()
             }
         }

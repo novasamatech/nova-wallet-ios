@@ -76,8 +76,9 @@ final class YourValidatorListViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourValidatorsTitle()
 
-        navigationItem.rightBarButtonItem?.title = R.string.localizable
-            .commonChange(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonChange()
     }
 
     private func setupNavigationItem() {
@@ -375,7 +376,7 @@ extension YourValidatorListViewController: YourValidatorListViewProtocol {
     }
 }
 
-extension YourValidatorListViewController {
+extension YourValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingRebondSetupPresenter {
@@ -9,6 +10,7 @@ final class StakingRebondSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var inputAmount: Decimal?
@@ -33,6 +35,7 @@ final class StakingRebondSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.wireframe = wireframe
@@ -40,6 +43,7 @@ final class StakingRebondSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -99,7 +103,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupPresenterProtocol {
     }
 
     func proceed() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.canRebond(amount: inputAmount, unbonding: unbonding, locale: locale),
 
