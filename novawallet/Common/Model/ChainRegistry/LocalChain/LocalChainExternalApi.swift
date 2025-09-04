@@ -48,6 +48,10 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
     func staking() -> Set<LocalChainExternalApi>? {
         getApis(for: .staking)
     }
+    
+    func stakingRewards() -> Set<LocalChainExternalApi>? {
+        getApis(for: .stakingRewards)
+    }
 
     func history() -> Set<LocalChainExternalApi>? {
         getApis(for: .history)
