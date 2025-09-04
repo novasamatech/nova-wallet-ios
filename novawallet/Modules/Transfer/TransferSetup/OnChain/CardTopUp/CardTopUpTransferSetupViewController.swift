@@ -62,21 +62,13 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         rootView.title.text = titleResource.value(for: selectedLocale)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
 
-        rootView.recepientTitleLabel.text = R.string.localizable.commonRecipient(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.recepientTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonRecipient()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.amountView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendAmountTitle()
 
-        rootView.originFeeView.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.originFeeView.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonNetworkFee()
 
         rootView.recepientInputView.locale = selectedLocale
 
@@ -109,9 +101,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 
@@ -155,9 +145,7 @@ extension CardTopUpTransferSetupViewController: CardTopUpTransferSetupViewProtoc
         let detailsTitleLabel = rootView.amountView.detailsTitleLabel
         let detailsValueLabel = rootView.amountView.detailsValueLabel
 
-        detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        detailsTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransferablePrefix()
 
         detailsValueLabel.text = viewModel
     }

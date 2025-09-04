@@ -34,19 +34,13 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: languages
-        )
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
-            preferredLanguages: languages
-        )
+        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonStakedPrefix()
 
-        rootView.transferableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
+        rootView.transferableView.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -69,9 +63,7 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 

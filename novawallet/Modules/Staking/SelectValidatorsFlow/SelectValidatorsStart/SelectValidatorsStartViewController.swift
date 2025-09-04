@@ -80,30 +80,22 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.bannerView.infoView.titleLabel.text = R.string.localizable.stakingRecommendedBannerTitle(
-            preferredLanguages: languages
-        )
+        rootView.bannerView.infoView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRecommendedBannerTitle()
 
-        rootView.bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingRecommendedBannerMessage(
-            preferredLanguages: languages
-        )
+        rootView.bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRecommendedBannerMessage()
 
-        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonHowItWorks(
-            preferredLanguages: languages
-        )
+        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonHowItWorks()
 
-        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
+        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
 
         rootView.customValidatorsCell.titleLabel.text = R.string.localizable
             .stakingSelectValidatorsCustomButtonTitle(preferredLanguages: languages)
 
         switch phase {
         case .setup:
-            title = R.string.localizable.stakingSetValidators(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.stakingSetValidators()
         case .update:
-            title = R.string.localizable.stakingChangeValidators(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.stakingChangeValidators()
         }
 
         updateSelected()

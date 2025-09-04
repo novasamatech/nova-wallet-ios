@@ -11,7 +11,9 @@ extension UIAlertController {
     ) -> UIAlertController {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendPhishingWarningTitle()
 
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendPhishingWarningText(paramValue)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendPhishingWarningText(paramValue)
 
         let cancelTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         let proceedTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()

@@ -98,28 +98,19 @@ final class CloudBackupReviewChangesViewController: UIViewController, ViewHolder
     }
 
     private func setupLocalization() {
-        rootView.notNowButton.imageWithTitleView?.title = R.string.localizable.commonNotNow(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.notNowButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonNotNow()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply()
 
-        rootView.header.valueTop.text = R.string.localizable.cloudBackupReviewTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.header.valueTop.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupReviewTitle()
 
         rootView.header.valueBottom.attributedText = NSAttributedString.coloredItems(
             [
-                R.string.localizable.cloudBackupReviewEnsurePassphrase(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupReviewEnsurePassphrase()
             ],
             formattingClosure: { items in
-                R.string.localizable.cloudBackupReviewSubtitle(
-                    items[0],
-                    preferredLanguages: selectedLocale.rLanguages
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupReviewSubtitle(
+                    items[0]
                 )
             },
             color: R.color.colorTextPrimary()!

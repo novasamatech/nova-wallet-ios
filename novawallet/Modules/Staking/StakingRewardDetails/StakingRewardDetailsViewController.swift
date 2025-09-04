@@ -52,17 +52,11 @@ final class StakingRewardDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.validatorCell.titleLabel.text = R.string.localizable.stakingCommonValidator(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.validatorCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCommonValidator()
 
-        rootView.eraCell.titleLabel.text = R.string.localizable.stakingCommonEra(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.eraCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCommonEra()
 
-        let actionTitle = R.string.localizable.stakingRewardDetailsPayout(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let actionTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardDetailsPayout()
 
         rootView.actionButton.imageWithTitleView?.title = actionTitle
     }
