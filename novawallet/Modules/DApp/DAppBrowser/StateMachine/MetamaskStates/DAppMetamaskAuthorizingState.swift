@@ -29,7 +29,7 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
 
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
             let newSettings = DAppSettings(
-                identifier: host,
+                dAppId: host,
                 metaId: dataSource.wallet.metaId,
                 source: nil
             )

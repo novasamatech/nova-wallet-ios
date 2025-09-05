@@ -15,15 +15,9 @@ struct DAppBrowserWidgetViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
-            using: operationQueue
-        )
-
         let interactor = DAppBrowserWidgetInteractor(
             tabManager: DAppBrowserTabManager.shared,
-            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             selectedWalletSettings: SelectedWalletSettings.shared,
-            walletCleaner: walletStorageCleaner,
             operationQueue: operationQueue,
             logger: logger
         )

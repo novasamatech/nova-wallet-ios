@@ -31,6 +31,11 @@ private extension UpdatedWalletBrowserStateCleaner {
             }
 
             let tabIds = try tabIdsWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard !tabIds.isEmpty else {
+                return .createWithResult(())
+            }
+
             let cleaningOperation = browserTabManager.cleanTransport(for: tabIds)
 
             return CompoundOperationWrapper(targetOperation: cleaningOperation)
@@ -39,14 +44,20 @@ private extension UpdatedWalletBrowserStateCleaner {
 
     func createWebViewCleaningOperation(
         dependingOn tabIdsWrapper: CompoundOperationWrapper<Set<UUID>>
-    ) -> ClosureOperation<Void> {
-        ClosureOperation { [weak self] in
+    ) -> BaseOperation<Void> {
+        AsyncClosureOperation { [weak self] completion in
             let tabIds = try tabIdsWrapper.targetOperation.extractNoCancellableResultData()
 
-            tabIds.forEach { tabId in
-                DispatchQueue.main.async {
+            guard !tabIds.isEmpty else {
+                completion(.success(()))
+                return
+            }
+
+            DispatchQueue.main.async {
+                tabIds.forEach { tabId in
                     self?.webViewPoolEraser.removeWebView(for: tabId)
                 }
+                completion(.success(()))
             }
         }
     }
@@ -74,7 +85,8 @@ private extension UpdatedWalletBrowserStateCleaner {
     ) -> CompoundOperationWrapper<[DAppBrowserTab]> {
         let metaIdsOperation = createMetaIdsOperation(using: providers)
 
-        let tabsWrapper: CompoundOperationWrapper<[DAppBrowserTab]> = OperationCombiningService.compoundNonOptionalWrapper(
+        let tabsWrapper: CompoundOperationWrapper<[DAppBrowserTab]>
+        tabsWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
             guard let self else {

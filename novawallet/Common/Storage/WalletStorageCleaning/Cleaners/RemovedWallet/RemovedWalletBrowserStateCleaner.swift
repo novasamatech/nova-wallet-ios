@@ -40,14 +40,16 @@ private extension RemovedWalletBrowserStateCleaner {
 
     func createWebViewCleaningOperation(
         dependingOn tabIdsOperation: BaseOperation<Set<UUID>>
-    ) -> ClosureOperation<Void> {
-        ClosureOperation { [weak self] in
+    ) -> BaseOperation<Void> {
+        AsyncClosureOperation { [weak self] completion in
             let tabIds = try tabIdsOperation.extractNoCancellableResultData()
 
-            tabIds.forEach { tabId in
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                tabIds.forEach { tabId in
                     self?.webViewPoolEraser.removeWebView(for: tabId)
                 }
+
+                completion(.success(()))
             }
         }
     }

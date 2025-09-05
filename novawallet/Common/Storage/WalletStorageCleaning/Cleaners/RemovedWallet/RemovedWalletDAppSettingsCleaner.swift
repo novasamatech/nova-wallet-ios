@@ -19,13 +19,14 @@ extension RemovedWalletDAppSettingsCleaner: WalletStorageCleaning {
         let fetchSettingsOperation = authorizedDAppRepository.fetchAllOperation(with: fetchOptions)
 
         let deletionBlock: () throws -> [String] = {
-            let removedWallets = try providers.changesProvider()
-                .filter { $0.isDeletion }
-                .map(\.identifier)
-            let removedWalletsSet = Set(removedWallets)
+            let removedWalletsIds = Set(
+                try providers.changesProvider()
+                    .filter { $0.isDeletion }
+                    .map(\.identifier)
+            )
             let dappSettingsIds = try fetchSettingsOperation.extractNoCancellableResultData()
-                .compactMap(\.metaId)
-                .filter { removedWallets.contains($0) }
+                .filter { removedWalletsIds.contains($0.metaId) }
+                .map(\.identifier)
 
             return dappSettingsIds
         }

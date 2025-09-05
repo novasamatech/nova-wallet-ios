@@ -6817,6 +6817,806 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+import Operation_iOS
+
+
+ class MockDAppBrowserTabsObserver: DAppBrowserTabsObserver, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserTabsObserver
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserTabsObserver
+     typealias Verification = __VerificationProxy_DAppBrowserTabsObserver
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserTabsObserver?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserTabsObserver) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceiveUpdatedTabs(_ tabs: [DAppBrowserTab])  {
+        
+    return cuckoo_manager.call("didReceiveUpdatedTabs(_: [DAppBrowserTab])",
+            parameters: (tabs),
+            escapingParameters: (tabs),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveUpdatedTabs(tabs))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserTabsObserver: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceiveUpdatedTabs<M1: Cuckoo.Matchable>(_ tabs: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppBrowserTab])> where M1.MatchedType == [DAppBrowserTab] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppBrowserTab])>] = [wrap(matchable: tabs) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabsObserver.self, method: "didReceiveUpdatedTabs(_: [DAppBrowserTab])", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserTabsObserver: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceiveUpdatedTabs<M1: Cuckoo.Matchable>(_ tabs: M1) -> Cuckoo.__DoNotUse<([DAppBrowserTab]), Void> where M1.MatchedType == [DAppBrowserTab] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppBrowserTab])>] = [wrap(matchable: tabs) { $0 }]
+	        return cuckoo_manager.verify("didReceiveUpdatedTabs(_: [DAppBrowserTab])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserTabsObserverStub: DAppBrowserTabsObserver {
+    
+
+    
+
+    
+    
+    
+     func didReceiveUpdatedTabs(_ tabs: [DAppBrowserTab])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppBrowserTabManagerProtocol: DAppBrowserTabManagerProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserTabManagerProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserTabManagerProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserTabManagerProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserTabManagerProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserTabManagerProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?> {
+        
+    return cuckoo_manager.call("retrieveTab(with: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.retrieveTab(with: id))
+        
+    }
+    
+    
+    
+     func getAllTabs(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+        
+    return cuckoo_manager.call("getAllTabs(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]>",
+            parameters: (metaIds),
+            escapingParameters: (metaIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.getAllTabs(for: metaIds))
+        
+    }
+    
+    
+    
+     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
+        
+    return cuckoo_manager.call("updateTab(_: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>",
+            parameters: (tab),
+            escapingParameters: (tab),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateTab(tab))
+        
+    }
+    
+    
+    
+     func updateRenderForTab(with id: UUID, render: DAppBrowserTabRenderProtocol) -> CompoundOperationWrapper<Void> {
+        
+    return cuckoo_manager.call("updateRenderForTab(with: UUID, render: DAppBrowserTabRenderProtocol) -> CompoundOperationWrapper<Void>",
+            parameters: (id, render),
+            escapingParameters: (id, render),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateRenderForTab(with: id, render: render))
+        
+    }
+    
+    
+    
+     func cleanTransport(for tabIds: Set<UUID>) -> BaseOperation<Void> {
+        
+    return cuckoo_manager.call("cleanTransport(for: Set<UUID>) -> BaseOperation<Void>",
+            parameters: (tabIds),
+            escapingParameters: (tabIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.cleanTransport(for: tabIds))
+        
+    }
+    
+    
+    
+     func removeTab(with id: UUID)  {
+        
+    return cuckoo_manager.call("removeTab(with: UUID)",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeTab(with: id))
+        
+    }
+    
+    
+    
+     func removeAll(for metaIds: Set<MetaAccountModel.Id>?)  {
+        
+    return cuckoo_manager.call("removeAll(for: Set<MetaAccountModel.Id>?)",
+            parameters: (metaIds),
+            escapingParameters: (metaIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeAll(for: metaIds))
+        
+    }
+    
+    
+    
+     func removeAllWrapper(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>> {
+        
+    return cuckoo_manager.call("removeAllWrapper(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>>",
+            parameters: (metaIds),
+            escapingParameters: (metaIds),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeAllWrapper(for: metaIds))
+        
+    }
+    
+    
+    
+     func addObserver(_ observer: DAppBrowserTabsObserver, sendOnSubscription: Bool)  {
+        
+    return cuckoo_manager.call("addObserver(_: DAppBrowserTabsObserver, sendOnSubscription: Bool)",
+            parameters: (observer, sendOnSubscription),
+            escapingParameters: (observer, sendOnSubscription),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.addObserver(observer, sendOnSubscription: sendOnSubscription))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserTabManagerProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func retrieveTab<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.ProtocolStubFunction<(UUID), CompoundOperationWrapper<DAppBrowserTab?>> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "retrieveTab(with: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>", parameterMatchers: matchers))
+	    }
+	    
+	    func getAllTabs<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.ProtocolStubFunction<(Set<MetaAccountModel.Id>?), CompoundOperationWrapper<[DAppBrowserTab]>> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "getAllTabs(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]>", parameterMatchers: matchers))
+	    }
+	    
+	    func updateTab<M1: Cuckoo.Matchable>(_ tab: M1) -> Cuckoo.ProtocolStubFunction<(DAppBrowserTab), CompoundOperationWrapper<DAppBrowserTab>> where M1.MatchedType == DAppBrowserTab {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTab)>] = [wrap(matchable: tab) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "updateTab(_: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>", parameterMatchers: matchers))
+	    }
+	    
+	    func updateRenderForTab<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(with id: M1, render: M2) -> Cuckoo.ProtocolStubFunction<(UUID, DAppBrowserTabRenderProtocol), CompoundOperationWrapper<Void>> where M1.MatchedType == UUID, M2.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, DAppBrowserTabRenderProtocol)>] = [wrap(matchable: id) { $0.0 }, wrap(matchable: render) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "updateRenderForTab(with: UUID, render: DAppBrowserTabRenderProtocol) -> CompoundOperationWrapper<Void>", parameterMatchers: matchers))
+	    }
+	    
+	    func cleanTransport<M1: Cuckoo.Matchable>(for tabIds: M1) -> Cuckoo.ProtocolStubFunction<(Set<UUID>), BaseOperation<Void>> where M1.MatchedType == Set<UUID> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<UUID>)>] = [wrap(matchable: tabIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "cleanTransport(for: Set<UUID>) -> BaseOperation<Void>", parameterMatchers: matchers))
+	    }
+	    
+	    func removeTab<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID)> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "removeTab(with: UUID)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeAll<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Set<MetaAccountModel.Id>?)> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "removeAll(for: Set<MetaAccountModel.Id>?)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeAllWrapper<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.ProtocolStubFunction<(Set<MetaAccountModel.Id>?), CompoundOperationWrapper<Set<UUID>>> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "removeAllWrapper(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>>", parameterMatchers: matchers))
+	    }
+	    
+	    func addObserver<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ observer: M1, sendOnSubscription: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabsObserver, Bool)> where M1.MatchedType == DAppBrowserTabsObserver, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabsObserver, Bool)>] = [wrap(matchable: observer) { $0.0 }, wrap(matchable: sendOnSubscription) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserTabManagerProtocol.self, method: "addObserver(_: DAppBrowserTabsObserver, sendOnSubscription: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserTabManagerProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func retrieveTab<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.__DoNotUse<(UUID), CompoundOperationWrapper<DAppBrowserTab?>> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("retrieveTab(with: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func getAllTabs<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.__DoNotUse<(Set<MetaAccountModel.Id>?), CompoundOperationWrapper<[DAppBrowserTab]>> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return cuckoo_manager.verify("getAllTabs(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func updateTab<M1: Cuckoo.Matchable>(_ tab: M1) -> Cuckoo.__DoNotUse<(DAppBrowserTab), CompoundOperationWrapper<DAppBrowserTab>> where M1.MatchedType == DAppBrowserTab {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTab)>] = [wrap(matchable: tab) { $0 }]
+	        return cuckoo_manager.verify("updateTab(_: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func updateRenderForTab<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(with id: M1, render: M2) -> Cuckoo.__DoNotUse<(UUID, DAppBrowserTabRenderProtocol), CompoundOperationWrapper<Void>> where M1.MatchedType == UUID, M2.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, DAppBrowserTabRenderProtocol)>] = [wrap(matchable: id) { $0.0 }, wrap(matchable: render) { $0.1 }]
+	        return cuckoo_manager.verify("updateRenderForTab(with: UUID, render: DAppBrowserTabRenderProtocol) -> CompoundOperationWrapper<Void>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func cleanTransport<M1: Cuckoo.Matchable>(for tabIds: M1) -> Cuckoo.__DoNotUse<(Set<UUID>), BaseOperation<Void>> where M1.MatchedType == Set<UUID> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<UUID>)>] = [wrap(matchable: tabIds) { $0 }]
+	        return cuckoo_manager.verify("cleanTransport(for: Set<UUID>) -> BaseOperation<Void>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeTab<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.__DoNotUse<(UUID), Void> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("removeTab(with: UUID)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeAll<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.__DoNotUse<(Set<MetaAccountModel.Id>?), Void> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return cuckoo_manager.verify("removeAll(for: Set<MetaAccountModel.Id>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeAllWrapper<M1: Cuckoo.OptionalMatchable>(for metaIds: M1) -> Cuckoo.__DoNotUse<(Set<MetaAccountModel.Id>?), CompoundOperationWrapper<Set<UUID>>> where M1.OptionalMatchedType == Set<MetaAccountModel.Id> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<MetaAccountModel.Id>?)>] = [wrap(matchable: metaIds) { $0 }]
+	        return cuckoo_manager.verify("removeAllWrapper(for: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func addObserver<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ observer: M1, sendOnSubscription: M2) -> Cuckoo.__DoNotUse<(DAppBrowserTabsObserver, Bool), Void> where M1.MatchedType == DAppBrowserTabsObserver, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabsObserver, Bool)>] = [wrap(matchable: observer) { $0.0 }, wrap(matchable: sendOnSubscription) { $0.1 }]
+	        return cuckoo_manager.verify("addObserver(_: DAppBrowserTabsObserver, sendOnSubscription: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserTabManagerProtocolStub: DAppBrowserTabManagerProtocol {
+    
+
+    
+
+    
+    
+    
+     func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<DAppBrowserTab?>).self)
+    }
+    
+    
+    
+     func getAllTabs(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[DAppBrowserTab]>).self)
+    }
+    
+    
+    
+     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<DAppBrowserTab>).self)
+    }
+    
+    
+    
+     func updateRenderForTab(with id: UUID, render: DAppBrowserTabRenderProtocol) -> CompoundOperationWrapper<Void>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Void>).self)
+    }
+    
+    
+    
+     func cleanTransport(for tabIds: Set<UUID>) -> BaseOperation<Void>  {
+        return DefaultValueRegistry.defaultValue(for: (BaseOperation<Void>).self)
+    }
+    
+    
+    
+     func removeTab(with id: UUID)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func removeAll(for metaIds: Set<MetaAccountModel.Id>?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func removeAllWrapper(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Set<UUID>>).self)
+    }
+    
+    
+    
+     func addObserver(_ observer: DAppBrowserTabsObserver, sendOnSubscription: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import Foundation
+import WebKit
+
+
+ class MockWebViewPoolEraserProtocol: WebViewPoolEraserProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = WebViewPoolEraserProtocol
+    
+     typealias Stubbing = __StubbingProxy_WebViewPoolEraserProtocol
+     typealias Verification = __VerificationProxy_WebViewPoolEraserProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: WebViewPoolEraserProtocol?
+
+     func enableDefaultImplementation(_ stub: WebViewPoolEraserProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func removeWebView(for id: UUID)  {
+        
+    return cuckoo_manager.call("removeWebView(for: UUID)",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeWebView(for: id))
+        
+    }
+    
+    
+    
+     func removeAll()  {
+        
+    return cuckoo_manager.call("removeAll()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeAll())
+        
+    }
+    
+
+	 struct __StubbingProxy_WebViewPoolEraserProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func removeWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID)> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolEraserProtocol.self, method: "removeWebView(for: UUID)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeAll() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolEraserProtocol.self, method: "removeAll()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_WebViewPoolEraserProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func removeWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.__DoNotUse<(UUID), Void> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("removeWebView(for: UUID)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeAll() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("removeAll()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class WebViewPoolEraserProtocolStub: WebViewPoolEraserProtocol {
+    
+
+    
+
+    
+    
+    
+     func removeWebView(for id: UUID)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func removeAll()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockWebViewPoolProtocol: WebViewPoolProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = WebViewPoolProtocol
+    
+     typealias Stubbing = __StubbingProxy_WebViewPoolProtocol
+     typealias Verification = __VerificationProxy_WebViewPoolProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: WebViewPoolProtocol?
+
+     func enableDefaultImplementation(_ stub: WebViewPoolProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func getWebView(for id: UUID) -> WKWebView? {
+        
+    return cuckoo_manager.call("getWebView(for: UUID) -> WKWebView?",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.getWebView(for: id))
+        
+    }
+    
+    
+    
+     func webViewExists(for id: UUID) -> Bool {
+        
+    return cuckoo_manager.call("webViewExists(for: UUID) -> Bool",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.webViewExists(for: id))
+        
+    }
+    
+    
+    
+     func setupWebView(for id: UUID) -> WKWebView {
+        
+    return cuckoo_manager.call("setupWebView(for: UUID) -> WKWebView",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setupWebView(for: id))
+        
+    }
+    
+    
+    
+     func removeWebView(for id: UUID)  {
+        
+    return cuckoo_manager.call("removeWebView(for: UUID)",
+            parameters: (id),
+            escapingParameters: (id),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeWebView(for: id))
+        
+    }
+    
+    
+    
+     func removeAll()  {
+        
+    return cuckoo_manager.call("removeAll()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeAll())
+        
+    }
+    
+
+	 struct __StubbingProxy_WebViewPoolProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func getWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.ProtocolStubFunction<(UUID), WKWebView?> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolProtocol.self, method: "getWebView(for: UUID) -> WKWebView?", parameterMatchers: matchers))
+	    }
+	    
+	    func webViewExists<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.ProtocolStubFunction<(UUID), Bool> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolProtocol.self, method: "webViewExists(for: UUID) -> Bool", parameterMatchers: matchers))
+	    }
+	    
+	    func setupWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.ProtocolStubFunction<(UUID), WKWebView> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolProtocol.self, method: "setupWebView(for: UUID) -> WKWebView", parameterMatchers: matchers))
+	    }
+	    
+	    func removeWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID)> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolProtocol.self, method: "removeWebView(for: UUID)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeAll() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockWebViewPoolProtocol.self, method: "removeAll()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_WebViewPoolProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func getWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.__DoNotUse<(UUID), WKWebView?> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("getWebView(for: UUID) -> WKWebView?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func webViewExists<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.__DoNotUse<(UUID), Bool> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("webViewExists(for: UUID) -> Bool", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func setupWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.__DoNotUse<(UUID), WKWebView> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("setupWebView(for: UUID) -> WKWebView", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeWebView<M1: Cuckoo.Matchable>(for id: M1) -> Cuckoo.__DoNotUse<(UUID), Void> where M1.MatchedType == UUID {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID)>] = [wrap(matchable: id) { $0 }]
+	        return cuckoo_manager.verify("removeWebView(for: UUID)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeAll() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("removeAll()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class WebViewPoolProtocolStub: WebViewPoolProtocol {
+    
+
+    
+
+    
+    
+    
+     func getWebView(for id: UUID) -> WKWebView?  {
+        return DefaultValueRegistry.defaultValue(for: (WKWebView?).self)
+    }
+    
+    
+    
+     func webViewExists(for id: UUID) -> Bool  {
+        return DefaultValueRegistry.defaultValue(for: (Bool).self)
+    }
+    
+    
+    
+     func setupWebView(for id: UUID) -> WKWebView  {
+        return DefaultValueRegistry.defaultValue(for: (WKWebView).self)
+    }
+    
+    
+    
+     func removeWebView(for id: UUID)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func removeAll()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 import Operation_iOS
 import SubstrateSdk
 
