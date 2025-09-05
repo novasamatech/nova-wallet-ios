@@ -2675,7 +2675,6 @@
 		65A80BD323486DD14C539570 /* CloudBackupSettingsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97B4637D6CD42C7BE4579AF1 /* CloudBackupSettingsWireframe.swift */; };
 		65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02E38ABE379CA48E63328C4 /* DAppBrowserProtocols.swift */; };
 		65CD159259A06EC3E92FD4B0 /* AssetDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998CDEAB9F149770B27F5317 /* AssetDetailsProtocols.swift */; };
-		662E592F9476AA892DDC0827 /* Pods_novawalletTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56A52AE20E423B0FEAD92AF /* Pods_novawalletTests.framework */; };
 		663DB041307C59E939BF0BE2 /* ParitySignerAddConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44809BCF44D7329266A60A9D /* ParitySignerAddConfirmInteractor.swift */; };
 		66436210FD782DAF13814711 /* TransferNetworkSelectionPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE1DE626A1960428C9AEC52 /* TransferNetworkSelectionPresenter.swift */; };
 		66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */; };
@@ -3143,7 +3142,6 @@
 		77FFB2B12B0D392A00C7C879 /* OpenStakingUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */; };
 		77FFB2B32B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */; };
 		782C073E35DE4CEA38B610E0 /* NetworksListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C890ABA28180F1F93B7865C /* NetworksListViewFactory.swift */; };
-		78A20523CF046A96E52F4218 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B3C516E748F09D1A316E1D /* Pods_NovaPushNotificationServiceExtension.framework */; };
 		78D63EC7EC5F7427335A025E /* StakingClaimRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7302440137F083F7AEC64E /* StakingClaimRewardsViewLayout.swift */; };
 		78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B309EC85D8897A4ADD98A /* CustomValidatorListViewController.swift */; };
 		78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */; };
@@ -6138,7 +6136,6 @@
 		DA33289649E281A2D6378C1C /* StakingConfirmProxyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */; };
 		DA46697F2BA60F98B01AE6FA /* CloudBackupCreateProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */; };
 		DA53192887DFEEE42B658286 /* TokensManageAddViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A5632D4768BC5039EE8276 /* TokensManageAddViewLayout.swift */; };
-		DA90FE0482D7F07AFE69EC52 /* Pods_novawalletAll_novawallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 595EF68393284A976472FDF7 /* Pods_novawalletAll_novawallet.framework */; };
 		DAB29F2A9C864D7FCF1AF934 /* UsernameSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD098B40697FD6CC08F9A6AC /* UsernameSetupProtocols.swift */; };
 		DAD46B2B29A446C19A6ABF2D /* DAppTxDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29DAC8F2DB0F7BF909812FA /* DAppTxDetailsViewLayout.swift */; };
 		DAEE468553039B3600F64A0E /* AccountManagementWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855FB8DD761E110A42435A02 /* AccountManagementWireframe.swift */; };
@@ -6422,7 +6419,6 @@
 		FED2AE2928BD8A4301138CAC /* DAppSettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA43AABAC7555C2E648442F /* DAppSettingsViewFactory.swift */; };
 		FED75BD7C31275BD40CCEE30 /* UnifiedAddressPopupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683CDF030218DF76037B60D9 /* UnifiedAddressPopupViewFactory.swift */; };
 		FEEBBD315C4EFD4F8F237887 /* ParaStkYourCollatorsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A45125DF93218FC6C5119 /* ParaStkYourCollatorsViewFactory.swift */; };
-		FF15CEDBF6FD35B235646D1D /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5492E69FB56BD72519F442A3 /* Pods_novawalletAll_novawalletIntegrationTests.framework */; };
 		FF2E6053091276EBBA4D986C /* LedgerAccountConfirmationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902360B8577FAC9504F5854F /* LedgerAccountConfirmationPresenter.swift */; };
 		FF3E3B0F71CD8C7AE878D06E /* MythosStkUnstakeSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFE51495049A00C21E1CACB /* MythosStkUnstakeSetupProtocols.swift */; };
 		FF507CA7B1A33AD160DB59DE /* StakingMoreOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3157288B4033B2264628C866 /* StakingMoreOptionsViewFactory.swift */; };
@@ -12595,7 +12591,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78A20523CF046A96E52F4218 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
 				0C32523B2E6773A200E322DB /* web3swift in Frameworks */,
 				0C3252382E67737300E322DB /* NovaCrypto in Frameworks */,
 				0C3252362E67736300E322DB /* Operation-iOS in Frameworks */,
@@ -12612,7 +12607,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF15CEDBF6FD35B235646D1D /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12648,7 +12642,6 @@
 				0C8FCE9C2E672A3200034ED3 /* WalletConnect in Frameworks */,
 				0C8FCEBA2E6732D600034ED3 /* SwiftRLP in Frameworks */,
 				0C8FCEAB2E672C5500034ED3 /* SwiftyBeaver in Frameworks */,
-				DA90FE0482D7F07AFE69EC52 /* Pods_novawalletAll_novawallet.framework in Frameworks */,
 				0C8FCE802E65EE5600034ED3 /* SubstrateSdk in Frameworks */,
 				0C8FCEB42E672D3900034ED3 /* Kingfisher in Frameworks */,
 				0C8FCECE2E6735F300034ED3 /* FirebaseAuth in Frameworks */,
@@ -12663,7 +12656,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */,
-				662E592F9476AA892DDC0827 /* Pods_novawalletTests.framework in Frameworks */,
 				0C1A0F572E69EC5C00254E20 /* RswiftLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -29374,7 +29366,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 77CAF43C2B8E96A400E4297C /* Build configuration list for PBXNativeTarget "NovaPushNotificationServiceExtension" */;
 			buildPhases = (
-				D13F720D7C8DE10884938000 /* [CP] Check Pods Manifest.lock */,
 				77EDF9212B95F2E0003266B1 /* SwiftFormat */,
 				77CAF42B2B8E96A400E4297C /* Sources */,
 				77CAF42C2B8E96A400E4297C /* Frameworks */,
@@ -29383,7 +29374,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				0C2BAA202E677D3F008157E7 /* PBXTargetDependency */,
+				0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */,
 			);
 			name = NovaPushNotificationServiceExtension;
 			productName = NovaPushNotificationServiceExtension;
@@ -29394,7 +29385,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8438E1D624BFAAD2001BDB13 /* Build configuration list for PBXNativeTarget "novawalletIntegrationTests" */;
 			buildPhases = (
-				142CF7691E6DF0775F0CC173 /* [CP] Check Pods Manifest.lock */,
 				8438E1CB24BFAAD2001BDB13 /* Sources */,
 				8438E1CC24BFAAD2001BDB13 /* Frameworks */,
 				8438E1CD24BFAAD2001BDB13 /* Resources */,
@@ -29413,8 +29403,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 849013C724A80986008F705E /* Build configuration list for PBXNativeTarget "novawallet" */;
 			buildPhases = (
-				ACA4060FDEC7A5EE415FC9AB /* [CP] Check Pods Manifest.lock */,
-				849013CD24A92260008F705E /* Swiftlint */,
 				F472A8D6261758DE003C58BC /* SwiftFormat */,
 				AE2060202636DA5900357578 /* Inject keys */,
 				0CC0F7EA2BAD88E7002C49F6 /* Google Service Generation */,
@@ -29426,7 +29414,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				0C8FCEDA2E67392800034ED3 /* PBXTargetDependency */,
+				0C6A9E2D2E6B1FC40088C2BA /* PBXTargetDependency */,
 				77CAF4352B8E96A400E4297C /* PBXTargetDependency */,
 			);
 			name = novawallet;
@@ -29438,7 +29426,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 849013CA24A80986008F705E /* Build configuration list for PBXNativeTarget "novawalletTests" */;
 			buildPhases = (
-				9CA8F58360B989B1B9F75BA2 /* [CP] Check Pods Manifest.lock */,
 				849013BA24A80986008F705E /* Sources */,
 				849013BB24A80986008F705E /* Frameworks */,
 				849013BC24A80986008F705E /* Resources */,
@@ -29446,7 +29433,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0C1A0F552E69EC4700254E20 /* PBXTargetDependency */,
 				0C1A0F502E69C04E00254E20 /* PBXTargetDependency */,
 				849013C024A80986008F705E /* PBXTargetDependency */,
 			);
@@ -29657,28 +29643,6 @@
 			shellPath = /bin/sh;
 			shellScript = "DEV_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Dev.plist\"\nPRODUCTION_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Release.plist\"\nDESTINATION=\"${PROJECT_DIR}/novawallet/GoogleService-Info.plist\"\n\n# Copy appropriate plist based on build configuration\ncase \"${CONFIGURATION}\" in\n   \"Debug\" | \"Dev\" | \"Staging\" )\n        if [ -f \"$DEV_PLIST\" ]; then\n            cp -r \"$DEV_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Development plist not found at $DEV_PLIST\"\n            exit 1\n        fi\n        ;;\n   \"Release\" )\n        if [ -f \"$PRODUCTION_PLIST\" ]; then\n            cp -r \"$PRODUCTION_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Production plist not found at $PRODUCTION_PLIST\"\n            exit 1\n        fi\n        ;;\n    *)\n        echo \"Unknown configuration: ${CONFIGURATION}\"\n        exit 1\n        ;;\nesac\n\necho \"GoogleService-Info.plist copied successfully.\"\nexit 0\n";
 		};
-		142CF7691E6DF0775F0CC173 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-novawalletAll-novawalletIntegrationTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		77EDF9212B95F2E0003266B1 /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -29695,69 +29659,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"$SRCROOT/NovaPushNotificationServiceExtension\"\n";
-		};
-		849013CD24A92260008F705E /* Swiftlint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Swiftlint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\" --config \".swiftlint.yml\"\n";
-		};
-		9CA8F58360B989B1B9F75BA2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-novawalletTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		ACA4060FDEC7A5EE415FC9AB /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-novawalletAll-novawallet-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "
+";
 		};
 		AE2060202636DA5900357578 /* Inject keys */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -29778,29 +29681,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f $PROJECT_DIR/$PROJECT_NAME/env-vars.sh ]\nthen\nsource $PROJECT_DIR/$PROJECT_NAME/env-vars.sh\nfi\n#no `else` case needed if the CI works as expected\n\nWORK_DIR=\"$PROJECT_DIR/$PROJECT_NAME\"\necho \"Sourcery Work Directory = $WORK_DIR\"\n\nOUT_FILE=\"$PROJECT_DIR/CIKeys.generated.swift\"\necho \"Sourcery Output File = $OUT_FILE\"\n\n\"$PODS_ROOT/Sourcery/bin/sourcery\" --templates \"$WORK_DIR\" --sources \"$WORK_DIR\" --output \"$OUT_FILE\" --args mercuryoSecretKey=$MERCURYO_PRODUCTION_SECRET,mercuryoTestSecretKey=$MERCURYO_TEST_SECRET,acalaAuthToken=$ACALA_AUTH_TOKEN,moonbeamHistoryApiKey=$MOONBEAM_HISTORY_API_KEY,moonriverHistoryApiKey=$MOONRIVER_HISTORY_API_KEY,etherscanHistoryApiKey=$ETHERSCAN_HISTORY_API_KEY,acalaAuthTestToken=$ACALA_TEST_AUTH_TOKEN,moonbeamApiKey=$MOONBEAM_API_KEY,moonbeamApiTestKey=$MOONBEAM_TEST_API_KEY,infuraApiKey=$INFURA_API_KEY,wcProjectId=$WC_PROJECT_ID,dwellirApiKey=$DWELLIR_API_KEY,polkassemblySummaryApiKey=$POLKASSEMBLY_SUMMARY_API_KEY\n";
-		};
-		D13F720D7C8DE10884938000 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-NovaPushNotificationServiceExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "
+";
 		};
 		F472A8D6261758DE003C58BC /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -29818,7 +29700,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"$SRCROOT/novawallet\"\n";
+			shellScript = "
+";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -36166,21 +36049,17 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0C1995CA2E6B2DE600E0B909 /* RswiftGenerateInternalResources */;
+		};
 		0C1A0F502E69C04E00254E20 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 0C1A0F4F2E69C04E00254E20 /* CuckooPluginSingleFile */;
 		};
-		0C1A0F552E69EC4700254E20 /* PBXTargetDependency */ = {
+		0C6A9E2D2E6B1FC40088C2BA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C1A0F542E69EC4700254E20 /* RswiftGenerateInternalResources */;
-		};
-		0C2BAA202E677D3F008157E7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */;
-		};
-		0C8FCEDA2E67392800034ED3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */;
+			productRef = 0C6A9E2C2E6B1FC40088C2BA /* RswiftGenerateInternalResources */;
 		};
 		77CAF4352B8E96A400E4297C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -36712,7 +36591,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FA8B4D3A7F5BA7AFF4F01F3E /* Pods-novawalletTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -36741,7 +36619,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B0FE2BED10A39A4443C62C02 /* Pods-novawalletTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -36861,7 +36738,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D21C114CFE24AAABAF216C9 /* Pods-novawalletTests.dev.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -36974,7 +36850,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C5F422D2CB7D179CB9E3BE58 /* Pods-novawalletTests.staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -37336,6 +37211,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0C1995CA2E6B2DE600E0B909 /* RswiftGenerateInternalResources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = "plugin:RswiftGenerateInternalResources";
+		};
 		0C1A0F472E68E01C00254E20 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
@@ -37346,11 +37226,6 @@
 			package = 0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */;
 			productName = "plugin:CuckooPluginSingleFile";
 		};
-		0C1A0F542E69EC4700254E20 /* RswiftGenerateInternalResources */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
-			productName = "plugin:RswiftGenerateInternalResources";
-		};
 		0C1A0F562E69EC5C00254E20 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
@@ -37360,11 +37235,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */;
 			productName = web3swift;
-		};
-		0C2BAA1F2E677D3F008157E7 /* RswiftGenerateInternalResources */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
-			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0C2BAA2F2E6783D7008157E7 /* SwiftyBeaver */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -37425,6 +37295,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */;
 			productName = web3swift;
+		};
+		0C6A9E2C2E6B1FC40088C2BA /* RswiftGenerateInternalResources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0C8FCE752E65ED3400034ED3 /* DGCharts */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -37560,11 +37435,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */;
 			productName = MetadataShortenerApi;
-		};
-		0C8FCED92E67392800034ED3 /* RswiftGenerateInternalResources */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
-			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0CA9B6CE2E68DD32002B0707 /* DGCharts */ = {
 			isa = XCSwiftPackageProductDependency;
