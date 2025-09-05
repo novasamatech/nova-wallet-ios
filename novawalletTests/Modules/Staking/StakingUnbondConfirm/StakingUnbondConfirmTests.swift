@@ -156,7 +156,8 @@ class StakingUnbondConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            chain: ChainModelGenerator.generate(count: 1).first!
+            chain: ChainModelGenerator.generate(count: 1).first!,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view

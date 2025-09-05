@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingRelaychainPresenter {
@@ -8,6 +9,7 @@ final class StakingRelaychainPresenter {
 
     let networkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol
     let viewModelFacade: StakingViewModelFacadeProtocol
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -33,11 +35,13 @@ final class StakingRelaychainPresenter {
         networkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol,
         viewModelFacade: StakingViewModelFacadeProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
         self.stateViewModelFactory = stateViewModelFactory
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.viewModelFacade = viewModelFacade
+        self.localizationManager = localizationManager
         self.logger = logger
 
         let stateMachine = StakingStateMachine()
@@ -83,7 +87,7 @@ final class StakingRelaychainPresenter {
                     chainAsset: chainAsset,
                     params: params,
                     priceData: commonData?.price,
-                    locale: view?.selectedLocale ?? Locale.current
+                    locale: localizationManager.selectedLocale
                 )
             view?.didRecieveNetworkStakingInfo(viewModel: networkStakingInfoViewModel)
         } else {
@@ -97,7 +101,7 @@ final class StakingRelaychainPresenter {
     }
 
     private func handleStakeMore() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let stashItem: StashItem? = stateMachine.viewState { (state: BaseStashNextState) in
             state.stashItem
@@ -117,7 +121,7 @@ final class StakingRelaychainPresenter {
     }
 
     private func handleUnstake() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let stashItem: StashItem? = stateMachine.viewState { (state: BaseStakingState) in
             (state as? StashLedgerStateProtocol)?.stashItem
@@ -160,7 +164,7 @@ final class StakingRelaychainPresenter {
     }
 
     private func setupValidators(for bondedState: BondedState) {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let stashItem = bondedState.stashItem
         let controllerAccount = accountForAddress(stashItem.controller)
@@ -203,7 +207,7 @@ final class StakingRelaychainPresenter {
     }
 
     private func presentRebond() {
-        let locale = view?.selectedLocale
+        let locale = localizationManager.selectedLocale
 
         let actions = StakingRebondOption.allCases.map { option -> AlertPresentableAction in
             let title = option.titleForLocale(locale)
@@ -226,7 +230,7 @@ final class StakingRelaychainPresenter {
     }
 
     private func presentSwitchToStashAccountAlert(stashAddress: AccountAddress) {
-        let locale = view?.selectedLocale
+        let locale = localizationManager.selectedLocale
         let displayName: String
         if let displayAddress = try? accountForAddress(stashAddress)?.toWalletDisplayAddress() {
             displayName = displayAddress.walletName ?? displayAddress.address
@@ -286,7 +290,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
 
     func performRedeemAction() {
         guard let view = view else { return }
-        let selectedLocale = view.localizationManager?.selectedLocale
+        let selectedLocale = localizationManager.selectedLocale
 
         let baseState = stateMachine.viewState(using: { (state: BaseStashNextState) in state })
         let controllerAccount = baseState.flatMap { accountForAddress($0.stashItem.controller) }
@@ -304,7 +308,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRebondAction() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let baseState = stateMachine.viewState(using: { (state: BaseStashNextState) in state })
         let controllerAccount = baseState.flatMap { accountForAddress($0.stashItem.controller) }
@@ -321,7 +325,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRebag() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let stashItem: StashItem? = stateMachine.viewState { (state: BaseStashNextState) in
             state.stashItem
@@ -405,7 +409,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
 
 extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol {
     private func handle(error: Error) {
-        let locale = view?.localizationManager?.selectedLocale
+        let locale = localizationManager.selectedLocale
 
         if !wireframe.present(error: error, from: view, locale: locale) {
             logger?.error("Did receive error: \(error)")

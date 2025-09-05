@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import Cuckoo
 import Operation_iOS
+import Foundation_iOS
 
 class SelectValidatorsStartTests: XCTestCase {
     func testSetupValidators() throws {
@@ -72,7 +73,8 @@ class SelectValidatorsStartTests: XCTestCase {
             wireframe: wireframe,
             existingStashAddress: nil,
             initialTargets: selectedTargets,
-            applicationConfig: ApplicationConfig.shared
+            applicationConfig: ApplicationConfig.shared,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view

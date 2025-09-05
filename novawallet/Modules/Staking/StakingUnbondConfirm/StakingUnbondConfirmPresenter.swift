@@ -13,6 +13,7 @@ final class StakingUnbondConfirmPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
     let chain: ChainModel
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var bonded: Decimal?
@@ -115,6 +116,7 @@ final class StakingUnbondConfirmPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -125,6 +127,7 @@ final class StakingUnbondConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 }
@@ -140,7 +143,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
     }
 
     func confirm() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.canUnbond(amount: inputAmount, bonded: bonded, locale: locale),
 
@@ -173,7 +176,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
     func selectAccount() {
         guard let view = view, let address = stashItem?.controller else { return }
 
-        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         wireframe.presentAccountOptions(
             from: view,
@@ -338,14 +341,14 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 from: view,
                 sender: model.sender,
                 completionAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale
+                locale: localizationManager.selectedLocale
             )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,
                 closeAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale,
+                locale: localizationManager.selectedLocale,
                 completionClosure: nil
             )
         }

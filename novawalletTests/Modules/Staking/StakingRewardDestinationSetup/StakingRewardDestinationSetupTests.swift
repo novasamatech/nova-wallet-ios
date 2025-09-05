@@ -200,7 +200,8 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: validationFactory,
             applicationConfig: ApplicationConfig.shared,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         let mockedPresenter = MockStakingRewardDestSetupInteractorOutputProtocol()

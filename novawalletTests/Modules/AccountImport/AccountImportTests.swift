@@ -58,29 +58,29 @@ class AccountImportTests: XCTestCase {
         var usernameViewModel: InputViewModelProtocol?
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub).setSource(viewModel: any()).then { viewModel in
+            when(stub.setSource(viewModel: any())).then { viewModel in
                 sourceInputViewModel = viewModel
 
                 setupExpectation.fulfill()
             }
 
-            when(stub).setName(viewModel: any()).then { viewModel in
+            when(stub.setName(viewModel: any())).then { viewModel in
                 usernameViewModel = viewModel
 
                 setupExpectation.fulfill()
             }
 
-            when(stub).setSource(type: any()).thenDoNothing()
+            when(stub.setSource(type: any())).thenDoNothing()
 
-            when(stub).setShouldShowAdvancedSettings(any()).then { _ in }
+            when(stub.setShouldShowAdvancedSettings(any())).then { _ in }
         }
 
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).proceed(from: any()).then { _ in
+            when(stub.proceed(from: any())).then { _ in
                 expectation.fulfill()
             }
         }

@@ -292,6 +292,14 @@
 		0C1A0F482E68E01C00254E20 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C1A0F472E68E01C00254E20 /* RswiftLibrary */; };
 		0C1A0F572E69EC5C00254E20 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C1A0F562E69EC5C00254E20 /* RswiftLibrary */; };
 		0C1A0FEA2E6A380400254E20 /* MockJSONRPCEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */; };
+		0C1A10342E6AD64600254E20 /* TestSecretStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */; };
+		0C1A104F2E6AE97300254E20 /* runtime-default.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104D2E6AE97300254E20 /* runtime-default.json */; };
+		0C1A10502E6AE97300254E20 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104E2E6AE97300254E20 /* runtime-westend.json */; };
+		0C1A10552E6AEA2300254E20 /* runtime-default.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104D2E6AE97300254E20 /* runtime-default.json */; };
+		0C1A10562E6AEA2B00254E20 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104E2E6AE97300254E20 /* runtime-westend.json */; };
+		0C1A10572E6AEA3300254E20 /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 84FACB2C25F562CB00F32ED4 /* westend-metadata */; };
+		0C1A105D2E6AEB1400254E20 /* runtime-kusama.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */; };
+		0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */; };
 		0C1BE19E2A46EDB40010933C /* String+ScientificInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */; };
 		0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */; };
 		0C1BE1A22A46F93B0010933C /* BigUInt+Scientific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */; };
@@ -6757,6 +6765,10 @@
 		0C19CCA12CC6EC75007F8ED8 /* AssetsHubExchangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHubExchangeProvider.swift; sourceTree = "<group>"; };
 		0C19CCA42CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeBaseProvider.swift; sourceTree = "<group>"; };
 		0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockJSONRPCEngine.swift; sourceTree = "<group>"; };
+		0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecretStoreManager.swift; sourceTree = "<group>"; };
+		0C1A104D2E6AE97300254E20 /* runtime-default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-default.json"; sourceTree = "<group>"; };
+		0C1A104E2E6AE97300254E20 /* runtime-westend.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-westend.json"; sourceTree = "<group>"; };
+		0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-kusama.json"; sourceTree = "<group>"; };
 		0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ScientificInt.swift"; sourceTree = "<group>"; };
 		0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScientificStringParsing.swift; sourceTree = "<group>"; };
 		0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BigUInt+Scientific.swift"; sourceTree = "<group>"; };
@@ -20501,6 +20513,7 @@
 				8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */,
 				0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */,
 				0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */,
+				0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -26474,6 +26487,9 @@
 		84FACB2B25F562CB00F32ED4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */,
+				0C1A104D2E6AE97300254E20 /* runtime-default.json */,
+				0C1A104E2E6AE97300254E20 /* runtime-westend.json */,
 				77A6F5D82A31FAA6004AFD1A /* canonicalization */,
 				881BA30829DC1B3000EB8C48 /* kilt-addresses.json */,
 				77AAC3E42B70DB0300B8B89E /* firestore-settings.json */,
@@ -29576,6 +29592,7 @@
 				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
+				0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
 				8490145E24A94373008F705E /* Localizable.strings in Resources */,
 				8477DAA32888329800129B45 /* watchOnlyPreset.json in Resources */,
@@ -29591,6 +29608,8 @@
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
 				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
+				0C1A10552E6AEA2300254E20 /* runtime-default.json in Resources */,
+				0C1A10562E6AEA2B00254E20 /* runtime-westend.json in Resources */,
 				849013B524A80986008F705E /* Assets.xcassets in Resources */,
 				848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */,
 				84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */,
@@ -29603,6 +29622,7 @@
 				8842104C289BBA6400306F2C /* currencies.json in Resources */,
 				842876A924AE049B00D91AD8 /* SelectionSubtitleTableViewCell.xib in Resources */,
 				84AE11CB273C007E00B294B7 /* novawallet.staging.xcconfig in Resources */,
+				0C1A10572E6AEA3300254E20 /* westend-metadata in Resources */,
 				AE2060B02637068700357578 /* CIKeys.stencil in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -29611,6 +29631,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C1A105D2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				84FACB2D25F562CB00F32ED4 /* westend-metadata in Resources */,
 				77AAC3E52B70DB0300B8B89E /* firestore-settings.json in Resources */,
 				77EA2A242A333C1500B0670B /* arrays_output.json in Resources */,
@@ -29620,6 +29641,8 @@
 				8467FD0624E5E0A5005D486C /* invalidKeystore.json in Resources */,
 				84F438B225DA548700AEDA56 /* runtimeTestMetadata in Resources */,
 				881BA30929DC1B3000EB8C48 /* kilt-addresses.json in Resources */,
+				0C1A104F2E6AE97300254E20 /* runtime-default.json in Resources */,
+				0C1A10502E6AE97300254E20 /* runtime-westend.json in Resources */,
 				77EA2A292A333C1500B0670B /* arrays_input.json in Resources */,
 				77EA2A282A333C1500B0670B /* french_input.json in Resources */,
 				77EA2A252A333C1500B0670B /* weird_output.json in Resources */,
@@ -36160,6 +36183,7 @@
 				84FACB3825F5630000F32ED4 /* RuntimeHelper.swift in Sources */,
 				840BF22526C2653100E3A955 /* ChainSyncServiceTests.swift in Sources */,
 				845C7F01263C44B70024E797 /* AnyProviderAutoClearTests.swift in Sources */,
+				0C1A10342E6AD64600254E20 /* TestSecretStoreManager.swift in Sources */,
 				84CE9AE726CA993900B4EF62 /* CommonTypesSyncTests.swift in Sources */,
 				84B7C742289BFA79001A3566 /* AssetSelectionTests.swift in Sources */,
 				84443BA026C121BA00C33B5D /* MockConnection.swift in Sources */,

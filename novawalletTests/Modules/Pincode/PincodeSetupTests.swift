@@ -11,7 +11,7 @@ class PincodeSetupTests: XCTestCase {
         let view = MockPinSetupViewProtocol()
         let wireframe = MockPinSetupWireframeProtocol()
 
-        let keystore = MockSecretStoreManagerProtocol()
+        let keystore = MockTestSecretStoreManager()
         let biometry = MockBiometryAuthProtocol()
         let settings = InMemorySettingsManager()
 
@@ -31,7 +31,7 @@ class PincodeSetupTests: XCTestCase {
         var savedPin: String?
 
         stub(keystore) { stub in
-            when(stub).saveSecret(any(), for: any(), completionQueue: any(), completionBlock: any()).then {
+            when(stub.saveSecret(any(), for: any(), completionQueue: any(), completionBlock: any())).then {
                 (secret, _, _, completion) in
 
                 savedPin = secret.toUTF8String()
@@ -42,11 +42,11 @@ class PincodeSetupTests: XCTestCase {
 
         let availableBiometryType = AvailableBiometryType.none
         stub(biometry) { stub in
-            when(stub).availableBiometryType.get.thenReturn(availableBiometryType)
+            when(stub.availableBiometryType.get).thenReturn(availableBiometryType)
         }
 
         stub(view) { stub in
-            when(stub).didChangeAccessoryState(enabled: any(), availableBiometryType: any())
+            when(stub.didChangeAccessoryState(enabled: any(), availableBiometryType: any()))
                 .then { enabled, biometryType in
                     XCTAssert(enabled == false)
                     XCTAssert(biometryType == availableBiometryType)
@@ -56,7 +56,7 @@ class PincodeSetupTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showMain(from: any()).then { _ in
+            when(stub.showMain(from: any())).then { _ in
                 expectation.fulfill()
             }
         }

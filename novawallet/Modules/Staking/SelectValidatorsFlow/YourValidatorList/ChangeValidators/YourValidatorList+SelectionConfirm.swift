@@ -1,11 +1,18 @@
 import Foundation
+import Foundation_iOS
 
 extension YourValidatorList {
     final class SelectValidatorsConfirmWireframe: SelectValidatorsConfirmWireframeProtocol, ModalAlertPresenting {
+        let localizationManager: LocalizationManagerProtocol
+
+        init(localizationManager: LocalizationManagerProtocol) {
+            self.localizationManager = localizationManager
+        }
+
         func complete(from view: SelectValidatorsConfirmViewProtocol?) {
-            let languages = view?.localizationManager?.selectedLocale.rLanguages
+            let languages = localizationManager.selectedLocale.rLanguages
             let title = R.string(
-                preferredLanguages: languages ?? []
+                preferredLanguages: languages
             ).localizable.commonTransactionSubmitted()
 
             let navigationController = view?.controller.navigationController

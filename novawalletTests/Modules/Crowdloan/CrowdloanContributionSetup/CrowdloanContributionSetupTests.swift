@@ -68,35 +68,35 @@ class CrowdloanContributionSetupTests: XCTestCase {
         let bonusReceived = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveInput(viewModel: any()).then { viewModel in
+            when(stub.didReceiveInput(viewModel: any())).then { viewModel in
                 inputViewModelReceived.fulfill()
             }
 
-            when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAsset(viewModel: any())).then { viewModel in
                 if viewModel.balance != nil {
                     assetReceived.fulfill()
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if viewModel != nil {
                     feeReceived.fulfill()
                 }
             }
 
-            when(stub).didReceiveEstimatedReward(viewModel: any()).then { viewModel in
+            when(stub.didReceiveEstimatedReward(viewModel: any())).then { viewModel in
                 estimatedRewardReceived.fulfill()
             }
 
-            when(stub).didReceiveCrowdloan(viewModel: any()).then { _ in
+            when(stub.didReceiveCrowdloan(viewModel: any())).then { _ in
                 crowdloanReceived.fulfill()
             }
 
-            when(stub).didReceiveBonus(viewModel: any()).then { _ in
+            when(stub.didReceiveBonus(viewModel: any())).then { _ in
                 bonusReceived.fulfill()
             }
 
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
         }
 
         presenter.setup()
@@ -120,12 +120,12 @@ class CrowdloanContributionSetupTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showConfirmation(
+            when(stub.showConfirmation(
                 from: any(),
                 paraId: any(),
                 inputAmount: any(),
                 bonusService: any()
-            ).then { (_, _, amount, _) in
+            )).then { (_, _, amount, _) in
                 XCTAssertEqual(expectedAmount, amount)
                 completionExpectation.fulfill()
             }

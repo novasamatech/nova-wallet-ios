@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingBondMoreConfirmationPresenter {
@@ -12,6 +13,7 @@ final class StakingBondMoreConfirmationPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
     let chain: ChainModel
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var freeBalance: Decimal?
@@ -40,6 +42,7 @@ final class StakingBondMoreConfirmationPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -50,6 +53,7 @@ final class StakingBondMoreConfirmationPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -104,7 +108,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
     }
 
     func confirm() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFeeIfNeeded()
@@ -150,7 +154,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
     func selectAccount() {
         guard let view = view, let address = stashItem?.controller else { return }
 
-        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         wireframe.presentAccountOptions(
             from: view,
@@ -270,14 +274,14 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
                 from: view,
                 sender: model.sender,
                 completionAction: .dismiss,
-                locale: view.selectedLocale
+                locale: localizationManager.selectedLocale
             )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,
                 closeAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale,
+                locale: localizationManager.selectedLocale,
                 completionClosure: nil
             )
         }

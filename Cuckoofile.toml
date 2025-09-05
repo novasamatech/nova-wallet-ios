@@ -5,6 +5,7 @@ imports = ["Foundation", "Foundation_iOS", "Keystore_iOS", "SubstrateSdk",]
 testableImports = ["novawallet"]
 
 sources = [
+    "novawalletTests/Mocks/TestSecretStoreManager.swift",
     "novawallet/Common/Helpers/Scheduler.swift",
     "novawallet/Common/LocalAuthentication/BiometryAuth.swift",
     "novawallet/Common/EventCenter/EventProtocols.swift",

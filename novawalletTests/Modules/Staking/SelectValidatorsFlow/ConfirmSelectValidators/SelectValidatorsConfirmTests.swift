@@ -89,7 +89,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: chainAsset.assetDisplayInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -104,37 +105,35 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let hintExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(feeViewModel: any()).then { viewModel in
+            when(stub.didReceive(feeViewModel: any())).then { viewModel in
                 if viewModel != nil {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceive(amountViewModel: any()).then { _ in
+            when(stub.didReceive(amountViewModel: any())).then { _ in
                 assetExpectation.fulfill()
             }
 
-            when(stub).didReceive(confirmationViewModel: any()).then { _ in
+            when(stub.didReceive(confirmationViewModel: any())).then { _ in
                 confirmExpectation.fulfill()
             }
 
-            when(stub).didReceive(hintsViewModel: any()).then { _ in
+            when(stub.didReceive(hintsViewModel: any())).then { _ in
                 hintExpectation.fulfill()
             }
 
-            when(stub).localizationManager.get.thenReturn(LocalizationManager.shared)
-
-            when(stub).didStartLoading().thenDoNothing()
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStartLoading()).thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }

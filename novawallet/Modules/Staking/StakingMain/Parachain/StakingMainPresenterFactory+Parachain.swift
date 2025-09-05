@@ -37,6 +37,7 @@ extension StakingMainPresenterFactory {
             networkInfoViewModelFactory: networkInfoViewModelFactory,
             stateViewModelFactory: stateViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

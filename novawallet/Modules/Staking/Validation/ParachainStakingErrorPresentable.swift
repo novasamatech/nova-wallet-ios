@@ -41,7 +41,9 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     func presentCantStakeCollator(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.amountTooLow()
 
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollatorGreaterMinstkMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorGreaterMinstkMessage(
             minStake
         )
 
@@ -56,8 +58,12 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNoRewardsTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollatorGreaterMinstkMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNoRewardsTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorGreaterMinstkMessage(
             minStake
         )
 
@@ -85,8 +91,12 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNoRewardsTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollatorLessMinstkMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNoRewardsTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorLessMinstkMessage(
             minStake
         )
 

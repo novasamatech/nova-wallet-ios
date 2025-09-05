@@ -148,7 +148,8 @@ class StakingRebondConfirmationTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view

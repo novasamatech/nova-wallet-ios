@@ -53,7 +53,10 @@ final class SelectValidatorsConfirmViewFactory {
         for state: PreparedNomination<ExistingBonding>,
         stakingState: RelaychainStakingSharedStateProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
-        let wireframe = YourValidatorList.SelectValidatorsConfirmWireframe()
+        let wireframe = YourValidatorList.SelectValidatorsConfirmWireframe(
+            localizationManager: LocalizationManager.shared
+        )
+
         return createExistingBondingView(for: state, wireframe: wireframe, stakingState: stakingState)
     }
 
