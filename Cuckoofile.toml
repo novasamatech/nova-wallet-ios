@@ -6,6 +6,7 @@ testableImports = ["novawallet"]
 
 sources = [
     "novawalletTests/Mocks/TestSecretStoreManager.swift",
+    "novawalletTests/Mocks/TestJSONRPCEngine.swift",
     "novawallet/Common/Helpers/Scheduler.swift",
     "novawallet/Common/LocalAuthentication/BiometryAuth.swift",
     "novawallet/Common/EventCenter/EventProtocols.swift",

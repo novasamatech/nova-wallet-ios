@@ -3,7 +3,7 @@ import Foundation
 import SubstrateSdk
 
 final class MockConnection {
-    let internalConnection = MockJSONRPCEngine()
+    let internalConnection = MockTestJSONRPCEngine()
     let autobalancing = MockConnectionAutobalancing()
     let stateReporting = MockConnectionStateReporting()
 }

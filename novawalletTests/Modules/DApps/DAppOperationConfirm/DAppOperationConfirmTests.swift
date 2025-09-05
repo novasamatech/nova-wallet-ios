@@ -95,18 +95,25 @@ class DAppOperationConfirmTests: XCTestCase {
         )
 
         let connection = MockConnection()
+        
+        stub(connection.internalConnection) { stub in
+            when(
+                stub.callMethod(
+                    any(),
+                    params: any(),
+                    options: any(),
+                    completion: any()
+                )
+            ).then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
+                
+                let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
 
-        connection.internalConnection.stubCallMethod { (_, _, _, completion) in
-            
-            let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
-
-            DispatchQueue.global().async {
-                if let closure = completion as? (Result<RuntimeDispatchInfo, Error>) -> Void {
-                    closure(.success(fee))
+                DispatchQueue.global().async {
+                    completion?(.success(fee))
                 }
-            }
 
-            return 0
+                return 0
+            }
         }
 
         let signingWrapperFactory = DummySigningWrapperFactory()

@@ -291,7 +291,7 @@
 		0C19CCA52CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C19CCA42CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift */; };
 		0C1A0F482E68E01C00254E20 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C1A0F472E68E01C00254E20 /* RswiftLibrary */; };
 		0C1A0F572E69EC5C00254E20 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C1A0F562E69EC5C00254E20 /* RswiftLibrary */; };
-		0C1A0FEA2E6A380400254E20 /* MockJSONRPCEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */; };
+		0C1A0FEA2E6A380400254E20 /* TestJSONRPCEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1A0FE92E6A380400254E20 /* TestJSONRPCEngine.swift */; };
 		0C1A10342E6AD64600254E20 /* TestSecretStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */; };
 		0C1A104F2E6AE97300254E20 /* runtime-default.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104D2E6AE97300254E20 /* runtime-default.json */; };
 		0C1A10502E6AE97300254E20 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104E2E6AE97300254E20 /* runtime-westend.json */; };
@@ -6764,7 +6764,7 @@
 		0C19CC9E2CC6EBBC007F8ED8 /* CrosschainAssetsExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainAssetsExchange.swift; sourceTree = "<group>"; };
 		0C19CCA12CC6EC75007F8ED8 /* AssetsHubExchangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHubExchangeProvider.swift; sourceTree = "<group>"; };
 		0C19CCA42CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeBaseProvider.swift; sourceTree = "<group>"; };
-		0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockJSONRPCEngine.swift; sourceTree = "<group>"; };
+		0C1A0FE92E6A380400254E20 /* TestJSONRPCEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestJSONRPCEngine.swift; sourceTree = "<group>"; };
 		0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecretStoreManager.swift; sourceTree = "<group>"; };
 		0C1A104D2E6AE97300254E20 /* runtime-default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-default.json"; sourceTree = "<group>"; };
 		0C1A104E2E6AE97300254E20 /* runtime-westend.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-westend.json"; sourceTree = "<group>"; };
@@ -20512,7 +20512,7 @@
 				8476D39727F431D5004D9A7A /* MockApplicationService.swift */,
 				8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */,
 				0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */,
-				0C1A0FE92E6A380400254E20 /* MockJSONRPCEngine.swift */,
+				0C1A0FE92E6A380400254E20 /* TestJSONRPCEngine.swift */,
 				0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */,
 			);
 			path = Mocks;
@@ -36046,7 +36046,7 @@
 				842D1E8124D0BEF400C30A7A /* RTests.swift in Sources */,
 				F47F6403263BD90000FF67E9 /* StubBalanceViewModelFactory.swift in Sources */,
 				0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */,
-				0C1A0FEA2E6A380400254E20 /* MockJSONRPCEngine.swift in Sources */,
+				0C1A0FEA2E6A380400254E20 /* TestJSONRPCEngine.swift in Sources */,
 				84BEE63026CBFDBC00757009 /* ChainRegistryTests.swift in Sources */,
 				84B7C73C289BFA79001A3566 /* StakingRewardPayoutsTests.swift in Sources */,
 				84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */,
