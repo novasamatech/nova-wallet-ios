@@ -26,10 +26,9 @@ final class RemovedWalletNotificationsCleaner: WalletNotificationsCleaner {
     override func createUpdatedSettingsWrapper(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
-        let settingsOperation = notificationsSettingsRepository.fetchAllOperation(with: .init())
-        let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
-
-        let resultOperation = ClosureOperation<PushNotification.AllSettings?> { [weak self] in
+        OperationCombiningService.compoundOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
@@ -41,7 +40,26 @@ final class RemovedWalletNotificationsCleaner: WalletNotificationsCleaner {
             )
 
             guard !metaIds.isEmpty else {
-                return nil
+                return .createWithResult(nil)
+            }
+
+            return createUpdatedSettingsWrapper(for: metaIds)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension RemovedWalletNotificationsCleaner {
+    func createUpdatedSettingsWrapper(
+        for metaIds: Set<MetaAccountModel.Id>
+    ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
+        let settingsOperation = notificationsSettingsRepository.fetchAllOperation(with: .init())
+        let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
+
+        let resultOperation = ClosureOperation<PushNotification.AllSettings?> { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
             }
 
             guard
@@ -64,7 +82,10 @@ final class RemovedWalletNotificationsCleaner: WalletNotificationsCleaner {
         resultOperation.addDependency(settingsOperation)
         resultOperation.addDependency(topicsOperation)
 
-        let dependencies = [settingsOperation, topicsOperation]
+        let dependencies = [
+            settingsOperation,
+            topicsOperation
+        ]
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
@@ -81,10 +102,4 @@ extension RemovedWalletNotificationsCleaner: WalletStorageCleaning {
     ) -> CompoundOperationWrapper<Void> {
         createCleaningWrapper(using: providers)
     }
-}
-
-// MARK: - Errors
-
-enum RemovedWalletNotificationsCleanerError: Error {
-    case settingsNotFound
 }
