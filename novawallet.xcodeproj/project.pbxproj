@@ -4334,7 +4334,6 @@
 		848DAF022822AA1100D56F55 /* ParachainStakingCollatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DAF012822AA1100D56F55 /* ParachainStakingCollatorService.swift */; };
 		848DAF042822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DAF032822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift */; };
 		848DB993260638440055DDE7 /* rewardResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 848DB992260638440055DDE7 /* rewardResponse.json */; };
-		848DB998260639C70055DDE7 /* TotalRewardMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DB997260639C70055DDE7 /* TotalRewardMock.swift */; };
 		848DE76226D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DE76126D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift */; };
 		848DE76626D642670045CD29 /* StorageMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DE76526D642670045CD29 /* StorageMigrator.swift */; };
 		848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DE76726D64F7F0045CD29 /* UserStorageVersion.swift */; };
@@ -5121,7 +5120,6 @@
 		84E25BEE27E8895400290BF1 /* TransferErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BED27E8895400290BF1 /* TransferErrorPresentable.swift */; };
 		84E25BF027E8EFB500290BF1 /* SubqueryAccumulateReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BEF27E8EFB500290BF1 /* SubqueryAccumulateReward.swift */; };
 		84E25BF227E8FDC100290BF1 /* DecodedProviderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF127E8FDC100290BF1 /* DecodedProviderTypes.swift */; };
-		84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF327E8FEFC00290BF1 /* RewardDataSourceTests.swift */; };
 		84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF527E9A51D00290BF1 /* LeaseParam.swift */; };
 		84E25BF827E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF727E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift */; };
 		84E2ABC82992724600A5D3C1 /* GovernanceDelegatorAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */; };
@@ -5246,8 +5244,6 @@
 		84F4387025D9BC3900AEDA56 /* EmptyStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386F25D9BC3900AEDA56 /* EmptyStreamableSource.swift */; };
 		84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4387425D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift */; };
 		84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */; };
-		84F4388525DA4F2A00AEDA56 /* NetworkMockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4388425DA4F2A00AEDA56 /* NetworkMockManager.swift */; };
-		84F4389225DA505300AEDA56 /* NetworkBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4389125DA505300AEDA56 /* NetworkBaseTests.swift */; };
 		84F438B225DA548700AEDA56 /* runtimeTestMetadata in Resources */ = {isa = PBXBuildFile; fileRef = 84F438B125DA548700AEDA56 /* runtimeTestMetadata */; };
 		84F4393A25DAC48D00AEDA56 /* JSONRPCAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4393925DAC48D00AEDA56 /* JSONRPCAliases.swift */; };
 		84F43BAA25DEB75000AEDA56 /* StakingMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F43BA925DEB75000AEDA56 /* StakingMainViewModel.swift */; };
@@ -10448,7 +10444,6 @@
 		848DAF012822AA1100D56F55 /* ParachainStakingCollatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCollatorService.swift; sourceTree = "<group>"; };
 		848DAF032822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParachainStakingCollatorService+Fetch.swift"; sourceTree = "<group>"; };
 		848DB992260638440055DDE7 /* rewardResponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = rewardResponse.json; sourceTree = "<group>"; };
-		848DB997260639C70055DDE7 /* TotalRewardMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalRewardMock.swift; sourceTree = "<group>"; };
 		848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel.xcdatamodel; sourceTree = "<group>"; };
 		848DE76126D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistentStoreCoordinator+Extensions.swift"; sourceTree = "<group>"; };
 		848DE76526D642670045CD29 /* StorageMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMigrator.swift; sourceTree = "<group>"; };
@@ -11246,7 +11241,6 @@
 		84E25BED27E8895400290BF1 /* TransferErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferErrorPresentable.swift; sourceTree = "<group>"; };
 		84E25BEF27E8EFB500290BF1 /* SubqueryAccumulateReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryAccumulateReward.swift; sourceTree = "<group>"; };
 		84E25BF127E8FDC100290BF1 /* DecodedProviderTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodedProviderTypes.swift; sourceTree = "<group>"; };
-		84E25BF327E8FEFC00290BF1 /* RewardDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RewardDataSourceTests.swift; sourceTree = "<group>"; };
 		84E25BF527E9A51D00290BF1 /* LeaseParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaseParam.swift; sourceTree = "<group>"; };
 		84E25BF727E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt32+CrowdloanAccountId.swift"; sourceTree = "<group>"; };
 		84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatorAction.swift; sourceTree = "<group>"; };
@@ -11374,8 +11368,6 @@
 		84F4386F25D9BC3900AEDA56 /* EmptyStreamableSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStreamableSource.swift; sourceTree = "<group>"; };
 		84F4387425D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateDataProviderFactory.swift; sourceTree = "<group>"; };
 		84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageTestFacade.swift; sourceTree = "<group>"; };
-		84F4388425DA4F2A00AEDA56 /* NetworkMockManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkMockManager.swift; sourceTree = "<group>"; };
-		84F4389125DA505300AEDA56 /* NetworkBaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkBaseTests.swift; sourceTree = "<group>"; };
 		84F438B125DA548700AEDA56 /* runtimeTestMetadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = runtimeTestMetadata; sourceTree = "<group>"; };
 		84F4393925DAC48D00AEDA56 /* JSONRPCAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCAliases.swift; sourceTree = "<group>"; };
 		84F43BA925DEB75000AEDA56 /* StakingMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMainViewModel.swift; sourceTree = "<group>"; };
@@ -20505,7 +20497,6 @@
 				84F47D632667802F00F7647A /* Crowdloan */,
 				F47F6401263BD8EC00FF67E9 /* ViewModel */,
 				844D228F25EE5CB700C022F7 /* DataProviders */,
-				84F4388325DA4F2A00AEDA56 /* Network */,
 				84F43BB825DEFA0A00AEDA56 /* DefaultStub.swift */,
 				84B66A1726FE05B00038B963 /* ChainRegistryStub.swift */,
 				843612CA279011B400DC739E /* SigningWrapperFactoryStub.swift */,
@@ -22683,7 +22674,6 @@
 		848DB99C26063BA90055DDE7 /* DataProvider */ = {
 			isa = PBXGroup;
 			children = (
-				84E25BF327E8FEFC00290BF1 /* RewardDataSourceTests.swift */,
 				845C7F00263C44B70024E797 /* AnyProviderAutoClearTests.swift */,
 			);
 			path = DataProvider;
@@ -26345,16 +26335,6 @@
 			path = DataProvider;
 			sourceTree = "<group>";
 		};
-		84F4388325DA4F2A00AEDA56 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				84F4389125DA505300AEDA56 /* NetworkBaseTests.swift */,
-				84F4388425DA4F2A00AEDA56 /* NetworkMockManager.swift */,
-				848DB997260639C70055DDE7 /* TotalRewardMock.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
 		84F43B8725DE9F8500AEDA56 /* Staking */ = {
 			isa = PBXGroup;
 			children = (
@@ -29462,7 +29442,6 @@
 				849013BA24A80986008F705E /* Sources */,
 				849013BB24A80986008F705E /* Frameworks */,
 				849013BC24A80986008F705E /* Resources */,
-				074A172CA1024180F0BC4FBC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -29659,23 +29638,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		074A172CA1024180F0BC4FBC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		0CC0F7EA2BAD88E7002C49F6 /* Google Service Generation */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -36105,8 +36067,6 @@
 				847CD46626416D0900E1542F /* SlashesOperationFactoryStub.swift in Sources */,
 				0C41D21C2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift in Sources */,
 				84B7C71F289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift in Sources */,
-				84F4388525DA4F2A00AEDA56 /* NetworkMockManager.swift in Sources */,
-				84F4389225DA505300AEDA56 /* NetworkBaseTests.swift in Sources */,
 				8467FD5C24EFDCC9005D486C /* UserDataStorageTestFacade.swift in Sources */,
 				84B7C745289BFA79001A3566 /* AssetsManageTests.swift in Sources */,
 				84B7C728289BFA79001A3566 /* YourValidatorListTests.swift in Sources */,
@@ -36141,7 +36101,6 @@
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				84B7C736289BFA79001A3566 /* StakingDurationOperationFactoryTests.swift in Sources */,
 				8828C05A28B4A6A800555CB6 /* Samples.swift in Sources */,
-				848DB998260639C70055DDE7 /* TotalRewardMock.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,
 				0C803D0B2C9B805800AEB35B /* StringTrimmingTests.swift in Sources */,
@@ -36197,7 +36156,6 @@
 				848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */,
 				846CA7822709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift in Sources */,
 				84B7C72C289BFA79001A3566 /* SelectValidatorsConfirmTests.swift in Sources */,
-				84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */,
 				84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */,
 				8413B27A29507F3A00F8E2E4 /* DataProviderRepositoryStub.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,

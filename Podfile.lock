@@ -1,28 +1,24 @@
 PODS:
-  - FireMock (3.1)
   - Sourcery (1.4.1)
   - SwiftFormat/CLI (0.47.13)
   - SwiftLint (0.43.1)
 
 DEPENDENCIES:
-  - FireMock
   - Sourcery (~> 1.4)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
 
 SPEC REPOS:
   trunk:
-    - FireMock
     - Sourcery
     - SwiftFormat
     - SwiftLint
 
 SPEC CHECKSUMS:
-  FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
 
-PODFILE CHECKSUM: a24084476548e6904f58c49421a6a9de3e5cc478
+PODFILE CHECKSUM: c29757d3085bdd489bbd0dc354171c08f63c07f7
 
 COCOAPODS: 1.15.2
