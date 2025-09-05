@@ -160,7 +160,7 @@ private extension WalletNotificationsCleaningTests {
         let notificationsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>
         let topicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>
         let notificationsFacade: MockPushNotificationsServiceFacadeProtocol
-        let settingsManager: MockSettingsManagerProtocol
+        let settingsManager: SettingsManagerProtocol
         let chainRepository: AnyDataProviderRepository<ChainModel>?
         let cleaner: WalletStorageCleaning
         
@@ -221,7 +221,7 @@ private extension WalletNotificationsCleaningTests {
             notificationsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
             topicsRepository: AnyDataProviderRepository<PushNotification.TopicSettings>,
             notificationsFacade: MockPushNotificationsServiceFacadeProtocol,
-            settingsManager: MockSettingsManagerProtocol
+            settingsManager: SettingsManagerProtocol
         ) {
             let userStorageFacade = UserDataStorageTestFacade()
             
@@ -242,11 +242,9 @@ private extension WalletNotificationsCleaningTests {
             )
             
             let notificationsFacade = MockPushNotificationsServiceFacadeProtocol()
-            let settingsManager = MockSettingsManagerProtocol()
+            let settingsManager = InMemorySettingsManager()
             
-            stub(settingsManager) { stub in
-                when(stub.bool(for: SettingsKey.notificationsEnabled.rawValue)).thenReturn(true)
-            }
+            settingsManager.notificationsEnabled = true
             
             return (notificationsRepository, topicsRepository, notificationsFacade, settingsManager)
         }

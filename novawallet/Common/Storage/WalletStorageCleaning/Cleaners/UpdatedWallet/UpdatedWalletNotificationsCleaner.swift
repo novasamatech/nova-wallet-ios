@@ -32,16 +32,19 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
     override func createUpdatedSettingsWrapper(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
-        let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
-        let settingsOperation = notificationsSettingsRepository.fetchAllOperation(with: .init())
-        let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
-
-        let resultOperation = ClosureOperation<PushNotification.AllSettings?> { [weak self] in
+        OperationCombiningService.compoundOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
             let updatedMetaAccounts = try providers.changesProvider().compactMap(\.item)
+
+            guard !updatedMetaAccounts.isEmpty else {
+                return .createWithResult(nil)
+            }
+
             let metaAccountsBeforeChanges = try providers.walletsBeforeChangesProvider()
 
             let metaAccountsToRegister = updatedMetaAccounts.filter { updatedMetaAccount in
@@ -53,7 +56,27 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
             }
 
             guard !metaAccountsToRegister.isEmpty else {
-                return nil
+                return .createWithResult(nil)
+            }
+
+            return createUpdatedSettingsWrapper(for: metaAccountsToRegister)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension UpdatedWalletNotificationsCleaner {
+    func createUpdatedSettingsWrapper(
+        for metaAccounts: [ManagedMetaAccountModel]
+    ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
+        let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
+        let settingsOperation = notificationsSettingsRepository.fetchAllOperation(with: .init())
+        let topicsOperation = notificationsTopicsRepository.fetchAllOperation(with: .init())
+
+        let resultOperation = ClosureOperation<PushNotification.AllSettings?> { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
             }
 
             let chains = try chainsFetchOperation.extractNoCancellableResultData().reduceToDict()
@@ -65,7 +88,7 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
                 return nil
             }
 
-            let settingsWallets = metaAccountsToRegister
+            let settingsWallets = metaAccounts
                 .filter { metaAccount in
                     settings.wallets.contains { $0.metaId == metaAccount.info.metaId }
                 }
