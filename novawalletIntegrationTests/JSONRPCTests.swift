@@ -33,7 +33,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result.methods)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -63,7 +63,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result!)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -89,7 +89,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -117,7 +117,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -145,7 +145,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -174,7 +174,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
             logger.debug("Received response: \(result)")
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -209,7 +209,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
 
             guard let activeEra = result.underlyingValue else {
                 XCTFail("Empty Active Era")
@@ -251,7 +251,7 @@ class JSONRPCTests: XCTestCase {
         // then
 
         do {
-            let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let result = try operation.extractNoCancellableResultData()
 
             guard let currentEra = result.underlyingValue else {
                 XCTFail("Empty Current Era")

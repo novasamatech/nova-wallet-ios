@@ -83,7 +83,7 @@ final class TransactionSubscription {
     ) -> BaseOperation<[TransactionSubscriptionResult]> {
         ClosureOperation<[TransactionSubscriptionResult]> {
             let block = try fetchOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                .extractNoCancellableResultData()
                 .block
 
             let eventRecords = try eventsOperation.extractNoCancellableResultData().first?.value ?? []

@@ -47,7 +47,7 @@ class ManagedAccountItemMapperTests: XCTestCase {
         operationQueue.addOperations([fetchOperation], waitUntilFinished: true)
 
         // then
-        XCTAssertNoThrow(try saveOperation.extractResultData(throwing: BaseOperationError.parentOperationCancelled))
+        XCTAssertNoThrow(try saveOperation.extractNoCancellableResultData())
 
         // when
         let receivedAccountItem = try fetchOperation.extractResultData()

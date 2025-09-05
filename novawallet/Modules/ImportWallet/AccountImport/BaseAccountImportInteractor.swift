@@ -11,19 +11,16 @@ class BaseAccountImportInteractor {
     private(set) lazy var mnemonicCreator = IRMnemonicCreator()
 
     let metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding
-    let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let secretImportService: SecretImportServiceProtocol
 
     init(
         metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
-        metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         secretImportService: SecretImportServiceProtocol
     ) {
         self.metaAccountOperationFactoryProvider = metaAccountOperationFactoryProvider
-        self.metaAccountRepository = metaAccountRepository
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.secretImportService = secretImportService
     }
 

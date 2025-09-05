@@ -32,7 +32,7 @@ class FileManagerTests: XCTestCase {
 
         // then
 
-        let result = try operation.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let result = try operation.extractNoCancellableResultData()
         XCTAssertEqual(result, .notExists)
     }
 
@@ -60,9 +60,9 @@ class FileManagerTests: XCTestCase {
         do {
             try save.extractResultData()
 
-            let exists = try fileExists.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let exists = try fileExists.extractNoCancellableResultData()
 
-            let readData = try read.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let readData = try read.extractNoCancellableResultData()
 
             XCTAssertEqual(exists, .file)
             XCTAssertEqual(data, readData)
@@ -105,9 +105,9 @@ class FileManagerTests: XCTestCase {
             try copy.extractResultData()
             try remove.extractResultData()
 
-            let exists = try fileExists.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let exists = try fileExists.extractNoCancellableResultData()
 
-            let readData = try read.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let readData = try read.extractNoCancellableResultData()
 
             XCTAssertEqual(exists, .notExists)
             XCTAssertEqual(data, readData)
@@ -138,15 +138,13 @@ class FileManagerTests: XCTestCase {
         queue.addOperations([newDirectory, existsBefore, remove, existsAfter], waitUntilFinished: true)
 
         do {
-            try newDirectory.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            try newDirectory.extractNoCancellableResultData()
 
-            let existsBeforeValue = try existsBefore
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let existsBeforeValue = try existsBefore.extractNoCancellableResultData()
 
-            try remove.extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            try remove.extractNoCancellableResultData()
 
-            let existsAfterValue = try existsAfter
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let existsAfterValue = try existsAfter.extractNoCancellableResultData()
 
             XCTAssertEqual(existsBeforeValue, .directory)
             XCTAssertEqual(existsAfterValue, .notExists)

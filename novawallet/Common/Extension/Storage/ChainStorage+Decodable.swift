@@ -13,7 +13,7 @@ extension AnyDataProviderRepository where AnyDataProviderRepository.Model == Cha
         decoderOperation.configurationBlock = {
             do {
                 decoderOperation.data = try fetchOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)?
+                    .extractNoCancellableResultData()?
                     .data
             } catch {
                 decoderOperation.result = .failure(error)

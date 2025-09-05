@@ -8,10 +8,11 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
     private(set) var settings: SelectedWalletSettings
     private(set) var eventCenter: EventCenterProtocol
 
+    private let callStore = CancellableCallStore()
+
     init(
         metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
-        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         settings: SelectedWalletSettings,
         secretImportService: SecretImportServiceProtocol,
         eventCenter: EventCenterProtocol
@@ -21,45 +22,45 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
 
         super.init(
             metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
-            metaAccountRepository: accountRepository,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             secretImportService: secretImportService
         )
     }
 
     override func importAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
+        guard !callStore.hasCall else {
+            return
+        }
+
         let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
-            let accountItem = try importOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let accountItem = try importOperation.extractNoCancellableResultData()
             self?.settings.save(value: accountItem)
 
             return accountItem
         }
 
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                switch saveOperation.result {
-                case .success:
-                    self?.settings.setup()
-                    self?.eventCenter.notify(with: SelectedWalletSwitched())
-                    self?.eventCenter.notify(with: NewWalletImported())
-                    self?.presenter?.didCompleteAccountImport()
-
-                case let .failure(error):
-                    self?.presenter?.didReceiveAccountImport(error: error)
-
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    self?.presenter?.didReceiveAccountImport(error: error)
-                }
-            }
-        }
-
         saveOperation.addDependency(importOperation)
 
-        operationManager.enqueue(
-            operations: [importOperation, saveOperation],
-            in: .transient
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: saveOperation,
+            dependencies: [importOperation]
         )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.settings.setup()
+                self?.eventCenter.notify(with: SelectedWalletSwitched())
+                self?.eventCenter.notify(with: NewWalletImported())
+                self?.presenter?.didCompleteAccountImport()
+            case let .failure(error):
+                self?.presenter?.didReceiveAccountImport(error: error)
+            }
+        }
     }
 }
