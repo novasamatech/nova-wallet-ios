@@ -102,10 +102,9 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
 
     private func handleSubscription(_ result: Result<BatchSubscriptionHandler, Error>) {
         switch result {
-        case let .success(handler):
-            if let blockHash = handler.blockHash {
-                delegatedAccountSyncService.syncUp(chainId: chainId, at: blockHash)
-            }
+        case .success:
+            // TODO: Need more robust solution to wait block to index
+            delegatedAccountSyncService.syncUp()
         case let .failure(error):
             logger?.error(error.localizedDescription)
         }

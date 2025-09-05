@@ -13,7 +13,7 @@ protocol DSValidationSequenceFactoryProtocol {
 }
 
 enum DSValidationSequenceFactoryError: Error {
-    case unexpectedDelegationType(depth: Int, type: DelegationType)
+    case unexpectedDelegationType(depth: Int, type: DelegationResolution.ItemType)
     case unexpectedEndOfChain(depth: Int)
 }
 

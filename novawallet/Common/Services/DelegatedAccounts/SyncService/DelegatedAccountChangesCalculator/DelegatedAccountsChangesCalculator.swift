@@ -1,162 +1,122 @@
 import Foundation
 
-protocol DelegatedAccountsChangesCalcualtorProtocol {
+protocol DelegatedAccountsChangesCalculatorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
-        chainMetaAccounts: [ManagedMetaAccountModel],
+        from remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
+        initialMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
-    ) throws -> SyncChanges<ManagedMetaAccountModel>
+    ) -> SyncChanges<ManagedMetaAccountModel>
 }
 
 final class DelegatedAccountsChangesCalculator {
-    let chainModel: ChainModel
-    let factories: [DelegatedMetaAccountFactoryProtocol]
+    let chainIds: Set<ChainModel.Id>
+    let chainRegistry: ChainRegistryProtocol
+    let logger: LoggerProtocol
 
     init(
-        chainModel: ChainModel,
-        factories: [DelegatedMetaAccountFactoryProtocol]
+        chainIds: Set<ChainModel.Id>,
+        chainRegistry: ChainRegistryProtocol,
+        logger: LoggerProtocol
     ) {
-        self.chainModel = chainModel
-        self.factories = factories
-    }
-
-    convenience init(chainModel: ChainModel) {
-        let factories: [DelegatedMetaAccountFactoryProtocol] = [
-            ProxyMetaAccountFactory(chainModel: chainModel),
-            MultisigMetaAccountFactory(chainModel: chainModel)
-        ]
-        self.init(chainModel: chainModel, factories: factories)
+        self.chainIds = chainIds
+        self.chainRegistry = chainRegistry
+        self.logger = logger
     }
 }
 
 // MARK: - Private
 
 private extension DelegatedAccountsChangesCalculator {
-    func buildLocalDelegatedAccountsMap(
-        from chainMetaAccounts: [ManagedMetaAccountModel]
-    ) -> [DelegateIdentifier: ManagedMetaAccountModel] {
-        chainMetaAccounts.reduce(into: [:]) { acc, metaAccount in
-            factories
-                .filter { $0.canHandle(metaAccount) }
-                .forEach { factory in
-                    if let identifier = factory.extractDelegateIdentifier(from: metaAccount) {
-                        acc[identifier] = metaAccount
-                    }
-                }
-        }
+    private func resolveFactory() -> CompoundDelegatedMetaAccountFactory {
+        let chains = chainIds.compactMap { chainRegistry.getChain(for: $0) }
+
+        return CompoundDelegatedMetaAccountFactory(chains: chains, logger: logger)
     }
 
-    func processRemoteDelegatedAccounts(
-        _ remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
-        localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
-        localMetaAccounts: [ManagedMetaAccountModel],
+    func createOrRenewWallets(
+        for remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
+        factory: CompoundDelegatedMetaAccountFactory,
+        localDelegatedWallets: [DelegateIdentifier: ManagedMetaAccountModel],
+        initialLocalNonDelegatedWallets: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
-    ) throws -> [ManagedMetaAccountModel] {
-        try remoteDelegatedAccounts.reduce(localMetaAccounts) { updatedMetaAccounts, delegatedAccount in
-            guard let factory = getFactoryForDelegatedAccount(delegatedAccount) else {
-                return updatedMetaAccounts
-            }
-
-            let existingMetaAccount = findExistingMetaAccount(
-                for: delegatedAccount,
-                in: localDelegatedAccounts,
-                using: factory
+    ) -> [ManagedMetaAccountModel] {
+        remoteDelegatedAccounts.reduce([]) { updatedDelegatedWallets, delegatedAccount in
+            // we intentionally don't add local delegated wallets since they might be revoked
+            let context = DelegatedMetaAccountFactoryContext(
+                identities: identities,
+                metaAccounts: initialLocalNonDelegatedWallets + updatedDelegatedWallets
             )
 
-            let delegatedMetaAccount = if let existingMetaAccount {
-                factory.renew(existingMetaAccount)
-            } else {
-                try factory.createMetaAccount(
-                    for: delegatedAccount,
-                    using: identities,
-                    metaAccounts: updatedMetaAccounts
-                )
+            let delegatedWallets = factory.createMetaAccount(
+                for: delegatedAccount,
+                context: context
+            )
+
+            let newOrUpdatedWallets: [ManagedMetaAccountModel] = delegatedWallets.compactMap { delegatedWallet in
+                guard let delegatedWalletId = delegatedWallet.info.getDelegateIdentifier() else {
+                    logger.error("Expected identifier can't be created")
+                    return nil
+                }
+
+                guard let existingLocalWallet = localDelegatedWallets[delegatedWalletId] else {
+                    return delegatedWallet
+                }
+
+                if let renewedWallet = existingLocalWallet.renew() {
+                    return renewedWallet
+                } else {
+                    return existingLocalWallet
+                }
             }
 
-            return updatedMetaAccounts + [delegatedMetaAccount].compactMap { $0 }
+            return updatedDelegatedWallets + newOrUpdatedWallets
         }
     }
 
-    func findExistingMetaAccount(
-        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
-        in localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
-        using factory: DelegatedMetaAccountFactoryProtocol
-    ) -> ManagedMetaAccountModel? {
-        localDelegatedAccounts.first { id, metaAccount in
-            id.delegatorAccountId == delegatedAccount.accountId &&
-                factory.matchesDelegatedAccount(
-                    metaAccount,
-                    delegatedAccount: delegatedAccount
-                )
-        }?.value
-    }
-
-    func findRevokedAccounts(
-        updatedMetaAccounts: [ManagedMetaAccountModel],
-        remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol]
+    func revokeWalletsIfNeeded(
+        _ localDelegatedWallets: [ManagedMetaAccountModel],
+        basedOn newOrUpdatedDelegatedWallets: [ManagedMetaAccountModel]
     ) -> [ManagedMetaAccountModel] {
-        let updatedDelegatedAccounts = buildLocalDelegatedAccountsMap(from: updatedMetaAccounts)
+        let indexedNewOrUpdatedWallets = newOrUpdatedDelegatedWallets.indexDelegatedAccounts()
 
-        let revokedAccounts: [ManagedMetaAccountModel] = updatedDelegatedAccounts
-            .values
-            .reduce(into: []) { acc, metaAccount in
-                guard
-                    let factory = getFactoryForMetaAccount(metaAccount),
-                    !remoteDelegatedAccounts.contains(
-                        where: { factory.matchesDelegatedAccount(metaAccount, delegatedAccount: $0) }
-                    )
-                else { return }
-
-                let revokedAccount = factory.markAsRevoked(metaAccount)
-
-                acc.append(revokedAccount)
+        let revokedWallets: [ManagedMetaAccountModel] = localDelegatedWallets.compactMap { localDelegatedWallet in
+            guard
+                let delegateIdentifier = localDelegatedWallet.info.getDelegateIdentifier(),
+                indexedNewOrUpdatedWallets[delegateIdentifier] == nil else {
+                return nil
             }
 
-        return revokedAccounts
-    }
+            return localDelegatedWallet.markAsRevoked()
+        }
 
-    func getFactoryForDelegatedAccount(
-        _ delegatedAccount: DiscoveredDelegatedAccountProtocol
-    ) -> DelegatedMetaAccountFactoryProtocol? {
-        factories.first { $0.canHandle(delegatedAccount) }
-    }
-
-    func getFactoryForMetaAccount(
-        _ metaAccount: ManagedMetaAccountModel
-    ) -> DelegatedMetaAccountFactoryProtocol? {
-        factories.first { $0.canHandle(metaAccount) }
+        return revokedWallets
     }
 }
 
 // MARK: - DelegatedAccountsChangesCalcualtorProtocol
 
-extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtorProtocol {
+extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalculatorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
-        chainMetaAccounts: [ManagedMetaAccountModel],
+        from remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
+        initialMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
-    ) throws -> SyncChanges<ManagedMetaAccountModel> {
-        let localDelegatedAccounts = buildLocalDelegatedAccountsMap(from: chainMetaAccounts)
+    ) -> SyncChanges<ManagedMetaAccountModel> {
+        let initialDelegatedWallets = initialMetaAccounts.indexDelegatedAccounts()
+        let initialNonDelegatedWallets = initialMetaAccounts.filter { !$0.info.isDelegated() }
 
-        let updatedMetaAccounts = try remoteDelegatedAccounts.reduce(
-            chainMetaAccounts
-        ) { nextMetaAccounts, delegatedAccounts in
-            try processRemoteDelegatedAccounts(
-                delegatedAccounts.accounts,
-                localDelegatedAccounts: localDelegatedAccounts,
-                localMetaAccounts: nextMetaAccounts,
-                identities: identities
-            )
-        }
-
-        let revokedAccounts = findRevokedAccounts(
-            updatedMetaAccounts: updatedMetaAccounts,
-            remoteDelegatedAccounts: remoteDelegatedAccounts.flatMap(\.accounts)
+        let newOrRenewedWallets = createOrRenewWallets(
+            for: remoteDelegatedAccounts,
+            factory: resolveFactory(),
+            localDelegatedWallets: initialDelegatedWallets,
+            initialLocalNonDelegatedWallets: initialNonDelegatedWallets,
+            identities: identities
         )
 
-        return SyncChanges(
-            newOrUpdatedItems: updatedMetaAccounts + revokedAccounts,
-            removedItems: []
+        let revokedWallets = revokeWalletsIfNeeded(
+            initialMetaAccounts.filter { $0.info.isDelegated() },
+            basedOn: newOrRenewedWallets
         )
+
+        return SyncChanges(newOrUpdatedItems: newOrRenewedWallets + revokedWallets, removedItems: [])
     }
 }

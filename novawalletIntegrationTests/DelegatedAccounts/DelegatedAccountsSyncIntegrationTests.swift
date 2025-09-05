@@ -39,6 +39,7 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
     
     func checkMultisigAdded(to metaAccounts: [ManagedMetaAccountModel]) -> Bool {
         metaAccounts.first { metaAccount in
+            metaAccount.info.multisig != nil ||
             metaAccount.info.chainAccounts.contains { $0.multisig != nil }
         } != nil
     }
@@ -88,15 +89,11 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
         
         let completionExpectation = XCTestExpectation()
         
-        syncService.setup()
-        
         syncService.subscribeSyncState(
             self,
             queue: nil
-        ) { (_, state) in
-            let synced = state
-            
-            if synced {
+        ) { (_, isSyncing) in
+            if !isSyncing {
                 do {
                     let fetchWalletsOperation = managedAccountRepository.fetchAllOperation(with: RepositoryFetchOptions())
                     operationQueue.addOperations([fetchWalletsOperation], waitUntilFinished: true)
@@ -104,17 +101,18 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
                     if checkAccountClosure(wallets) {
                         Logger.shared.info("Proxy wallet was added")
                         completionExpectation.fulfill()
-                    } else {
-                        XCTFail("No proxy in chain: \(chainId)")
                     }
                 } catch {
                     XCTFail(error.localizedDescription)
                 }
-             
             }
         }
         
+        syncService.setup()
+        
         wait(for: [completionExpectation], timeout: 6000)
+        
+        syncService.throttle()
     }
 }
 

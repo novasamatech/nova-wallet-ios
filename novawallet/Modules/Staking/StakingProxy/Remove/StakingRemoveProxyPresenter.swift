@@ -7,7 +7,7 @@ final class StakingRemoveProxyPresenter {
 
     let wireframe: StakingConfirmProxyWireframeProtocol
     let interactor: StakingRemoveProxyInteractorInputProtocol
-    let proxyAccount: ProxyAccount
+    let proxyAccount: Proxy.Account
     let wallet: MetaAccountModel
     let chainAsset: ChainAsset
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
@@ -27,7 +27,7 @@ final class StakingRemoveProxyPresenter {
     init(
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
-        proxyAccount: ProxyAccount,
+        proxyAccount: Proxy.Account,
         interactor: StakingRemoveProxyInteractorInputProtocol,
         wireframe: StakingConfirmProxyWireframeProtocol,
         dataValidatingFactory: ProxyDataValidatorFactoryProtocol,
