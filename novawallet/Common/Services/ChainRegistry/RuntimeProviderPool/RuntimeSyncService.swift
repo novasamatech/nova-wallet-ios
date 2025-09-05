@@ -274,8 +274,7 @@ final class RuntimeSyncService {
         remoteFetchWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
-            let currentItem = try localMetadataOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let currentItem = try localMetadataOperation.extractNoCancellableResultData()
 
             if
                 let item = currentItem,

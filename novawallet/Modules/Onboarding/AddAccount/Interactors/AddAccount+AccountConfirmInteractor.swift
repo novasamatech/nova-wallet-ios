@@ -37,8 +37,7 @@ extension AddAccount {
             }
 
             let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
-                let accountItem = try importOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                let accountItem = try importOperation.extractNoCancellableResultData()
                 self?.settings.save(value: accountItem)
 
                 return accountItem

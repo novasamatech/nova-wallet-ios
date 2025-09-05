@@ -48,31 +48,30 @@ extension ImportChainAccount {
             let persistentWrapper = walletUpdateMediator.saveChanges {
                 let updatedManagedWallet = try managedWalletWrapper
                     .targetOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                    .extractNoCancellableResultData()
                 return .init(newOrUpdatedItems: [updatedManagedWallet])
             }
 
             persistentWrapper.addDependency(wrapper: managedWalletWrapper)
 
-            let saveOperation: ClosureOperation<Void> = ClosureOperation {
-                let metaAccountItem = try importOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let settingsSetupOperation: ClosureOperation<Void> = ClosureOperation {
+                let metaAccountItem = try importOperation.extractNoCancellableResultData()
 
                 if let savedAccountItem = self.settings.value,
                    savedAccountItem.identifier == metaAccountItem.identifier {
-                    self.settings.save(value: metaAccountItem)
+                    self.settings.setup()
                     self.eventCenter.notify(with: SelectedWalletSwitched())
                 }
             }
 
-            saveOperation.addDependency(persistentWrapper.targetOperation)
+            settingsSetupOperation.addDependency(persistentWrapper.targetOperation)
 
             let dependencies = [importOperation]
                 + persistentWrapper.allOperations
                 + managedWalletWrapper.allOperations
 
             let wrapper = CompoundOperationWrapper(
-                targetOperation: saveOperation,
+                targetOperation: settingsSetupOperation,
                 dependencies: dependencies
             )
 
@@ -105,8 +104,7 @@ private extension ImportChainAccount.AccountImportInteractor {
         ) { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let metaAccountItem = try importOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let metaAccountItem = try importOperation.extractNoCancellableResultData()
 
             let fetchOperation = walletRepository.fetchOperation(
                 by: { metaAccountItem.identifier },
