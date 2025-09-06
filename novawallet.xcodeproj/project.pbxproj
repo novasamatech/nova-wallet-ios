@@ -29310,7 +29310,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 77CAF43C2B8E96A400E4297C /* Build configuration list for PBXNativeTarget "NovaPushNotificationServiceExtension" */;
 			buildPhases = (
-				77EDF9212B95F2E0003266B1 /* SwiftFormat */,
 				77CAF42B2B8E96A400E4297C /* Sources */,
 				77CAF42C2B8E96A400E4297C /* Frameworks */,
 				77CAF42D2B8E96A400E4297C /* Resources */,
@@ -29604,26 +29603,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mint run realm/SwiftLint@0.59.1 swiftlint \\\n  --quiet \\\n  --config ${SRCROOT}/.swiftlint.yml\n";
-		};
-		77EDF9212B95F2E0003266B1 /* SwiftFormat */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftFormat;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "$PROJECT_DIR/Scripts/lint.sh\n";
 		};
 		AE2060202636DA5900357578 /* Inject keys */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -29644,7 +29624,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f $PROJECT_DIR/$PROJECT_NAME/env-vars.sh ]\nthen\nsource $PROJECT_DIR/$PROJECT_NAME/env-vars.sh\nfi\n#no `else` case needed if the CI works as expected\n\nWORK_DIR=\"$PROJECT_DIR/$PROJECT_NAME\"\necho \"Sourcery Work Directory = $WORK_DIR\"\n\nOUT_FILE=\"$PROJECT_DIR/CIKeys.generated.swift\"\necho \"Sourcery Output File = $OUT_FILE\"\n\nmint run krzysztofzablocki/Sourcery@1.4.1 sourcery \\\n --templates $WORK_DIR \\\n --sources $WORK_DIR \\\n --output $OUT_FILE \\\n --args mercuryoSecretKey=${MERCURYO_PRODUCTION_SECRET},mercuryoTestSecretKey=${MERCURYO_TEST_SECRET},acalaAuthToken=${ACALA_AUTH_TOKEN},moonbeamHistoryApiKey=${MOONBEAM_HISTORY_API_KEY},moonriverHistoryApiKey=${MOONRIVER_HISTORY_API_KEY},etherscanHistoryApiKey=${ETHERSCAN_HISTORY_API_KEY},acalaAuthTestToken=${ACALA_TEST_AUTH_TOKEN},moonbeamApiKey=${MOONBEAM_API_KEY},moonbeamApiTestKey=${MOONBEAM_TEST_API_KEY},infuraApiKey=${INFURA_API_KEY},wcProjectId=${WC_PROJECT_ID},dwellirApiKey=${DWELLIR_API_KEY},polkassemblySummaryApiKey=${POLKASSEMBLY_SUMMARY_API_KEY}\n\n\n";
+			shellScript = "$PROJECT_DIR/Scripts/inject-keys.sh\n";
 		};
 		F472A8D6261758DE003C58BC /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -29662,7 +29642,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mint run nicklockwood/SwiftFormat@0.54.6 swiftformat \\\n  --config ${SRCROOT}/.swiftformat \\\n  .\n";
+			shellScript = "$PROJECT_DIR/Scripts/format.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
