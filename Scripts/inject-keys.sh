@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure Homebrew paths are in PATH for Xcode/non-login shells
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 WORK_DIR="novawallet"
 
@@ -14,7 +18,7 @@ fi
 OUT_FILE="$WORK_DIR/CIKeys.generated.swift"
 echo "Sourcery Output File = $OUT_FILE"
 
-mint run krzysztofzablocki/Sourcery@1.4.1 sourcery \
+mint run krzysztofzablocki/Sourcery@2.2.0 sourcery \
  --templates $WORK_DIR \
  --sources $WORK_DIR \
  --output $OUT_FILE \

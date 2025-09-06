@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRebondSetupTests: XCTestCase {
-
     func testRebondSetupAndAmountProvidingSuccess() throws {
         // given
 
@@ -28,7 +27,7 @@ class StakingRebondSetupTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub.proceed(view: any(), amount: any())).then { (view, amount) in
+            when(stub.proceed(view: any(), amount: any())).then { _, _ in
                 completionExpectation.fulfill()
             }
         }

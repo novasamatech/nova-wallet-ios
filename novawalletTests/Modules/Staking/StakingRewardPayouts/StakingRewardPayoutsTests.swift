@@ -5,7 +5,6 @@ import Foundation_iOS
 @testable import novawallet
 
 class StakingRewardPayoutsTests: XCTestCase {
-
     func testViewStateIsLoadingThenError() {
         let chain = ChainModelGenerator.generateChain(
             generatingAssets: 2,
@@ -62,7 +61,7 @@ class StakingRewardPayoutsTests: XCTestCase {
                         viewStateIsNotLoadingWhenPresenterRecievedResult.fulfill()
                     }
                 }.then { viewState in
-                    if case StakingRewardPayoutsViewState.error(_) = viewState {
+                    if case StakingRewardPayoutsViewState.error = viewState {
                         viewStateIsErrorWhenPresenterRecievedError.fulfill()
                     }
                 }
@@ -137,7 +136,7 @@ class StakingRewardPayoutsTests: XCTestCase {
         let viewStateIsPayoutListExpectation = XCTestExpectation()
         stub(view) { stub in
             when(stub.reload(with: any())).then { viewState in
-                if case StakingRewardPayoutsViewState.payoutsList(_) = viewState {
+                if case StakingRewardPayoutsViewState.payoutsList = viewState {
                     viewStateIsPayoutListExpectation.fulfill()
                 }
             }
@@ -150,7 +149,7 @@ class StakingRewardPayoutsTests: XCTestCase {
                 payoutInfo: any(),
                 historyDepth: any(),
                 eraCountdown: any()
-        )).then { _ in
+            )).then { _ in
                 showRewardDetailsExpectation.fulfill()
             }
         }
@@ -158,8 +157,8 @@ class StakingRewardPayoutsTests: XCTestCase {
         let showPayoutConfirmationExpectation = XCTestExpectation()
         stub(wireframe) { stub in
             when(stub.showPayoutConfirmation(for: any(), from: any())).then { _ in
-                    showPayoutConfirmationExpectation.fulfill()
-                }
+                showPayoutConfirmationExpectation.fulfill()
+            }
         }
 
         // when

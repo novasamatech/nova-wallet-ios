@@ -15,7 +15,7 @@ final class EraValidatorServiceStub: EraValidatorServiceProtocol {
     func throttle() {}
 
     func fetchInfoOperation() -> BaseOperation<EraStakersInfo> {
-        return BaseOperation.createWithResult(info)
+        BaseOperation.createWithResult(info)
     }
 }
 

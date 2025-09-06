@@ -23,7 +23,8 @@ class SelectedValidatorListTests: XCTestCase {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedValidatorList: selectedvalidatorList,
-            maxTargets: 16)
+            maxTargets: 16
+        )
 
         presenter.view = view
 

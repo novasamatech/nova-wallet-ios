@@ -13,8 +13,10 @@ class RootTests: XCTestCase {
         let settings = InMemorySettingsManager()
 
         let expectedPincode = "123456"
-        try keystore.saveKey(expectedPincode.data(using: .utf8)!,
-                             with: KeystoreTag.pincode.rawValue)
+        try keystore.saveKey(
+            expectedPincode.data(using: .utf8)!,
+            with: KeystoreTag.pincode.rawValue
+        )
 
         let walletSettings = SelectedWalletSettings(
             storageFacade: UserDataStorageTestFacade(),
@@ -66,10 +68,12 @@ class RootTests: XCTestCase {
 
         let keystore = InMemoryKeychain()
 
-        let presenter = createPresenter(wireframe: wireframe,
-                                        walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore)
+        let presenter = createPresenter(
+            wireframe: wireframe,
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore
+        )
 
         let expectation = XCTestExpectation()
 
@@ -105,13 +109,17 @@ class RootTests: XCTestCase {
         walletSettings.save(value: selectedAccount)
 
         let expectedPincode = "123456"
-        try keystore.saveKey(expectedPincode.data(using: .utf8)!,
-                             with: KeystoreTag.pincode.rawValue)
+        try keystore.saveKey(
+            expectedPincode.data(using: .utf8)!,
+            with: KeystoreTag.pincode.rawValue
+        )
 
-        let presenter = createPresenter(wireframe: wireframe,
-                                        walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore)
+        let presenter = createPresenter(
+            wireframe: wireframe,
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore
+        )
 
         let expectation = XCTestExpectation()
 
@@ -153,22 +161,22 @@ class RootTests: XCTestCase {
             actualSecurityLayerInteractor = mockLayer
         }
 
-        let interactor = RootInteractor(walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore,
-                                        applicationConfig: ApplicationConfig.shared,
-                                        securityLayerInteractor: actualSecurityLayerInteractor,
-                                        chainRegistryClosure: { chainRegistry },
-                                        eventCenter: MockEventCenterProtocol(),
-                                        migrators: migrators)
+        let interactor = RootInteractor(
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore,
+            applicationConfig: ApplicationConfig.shared,
+            securityLayerInteractor: actualSecurityLayerInteractor,
+            chainRegistryClosure: { chainRegistry },
+            eventCenter: MockEventCenterProtocol(),
+            migrators: migrators
+        )
         let presenter = RootPresenter()
 
         presenter.view = UIWindow()
         presenter.wireframe = wireframe
         presenter.interactor = interactor
         interactor.presenter = presenter
-
-
 
         stub(wireframe) { stub in
             when(stub.showOnboarding(on: any())).thenDoNothing()

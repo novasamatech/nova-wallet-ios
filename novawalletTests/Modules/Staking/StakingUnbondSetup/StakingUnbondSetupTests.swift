@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingUnbondSetupTests: XCTestCase {
-
     func testUnbondingSetupAndAmountProvidingSuccess() throws {
         // given
 
@@ -22,7 +21,7 @@ class StakingUnbondSetupTests: XCTestCase {
         let inputViewModelReloaded = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub.didReceiveInput(viewModel: any())).then { viewModel in
+            when(stub.didReceiveInput(viewModel: any())).then { _ in
                 inputViewModelReloaded.fulfill()
             }
 
@@ -35,11 +34,10 @@ class StakingUnbondSetupTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub.proceed(view: any(), amount: any())).then { (view, amount) in
+            when(stub.proceed(view: any(), amount: any())).then { _, _ in
                 completionExpectation.fulfill()
             }
         }
-        
 
         presenter.selectAmountPercentage(0.75)
         presenter.proceed()
@@ -66,7 +64,7 @@ class StakingUnbondSetupTests: XCTestCase {
         let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
-        
+
         let operationManager = OperationManager()
 
         let nominatorAddress = selectedAccount.toAddress()!

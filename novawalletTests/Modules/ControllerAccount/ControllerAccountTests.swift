@@ -7,7 +7,6 @@ import Foundation_iOS
 @testable import novawallet
 
 class ControllerAccountTests: XCTestCase {
-
     func testContinueAction() throws {
         let wireframe = MockControllerAccountWireframeProtocol()
         let interactor = MockControllerAccountInteractorInputProtocol()
@@ -60,7 +59,7 @@ class ControllerAccountTests: XCTestCase {
                     currentAccountIsController: false,
                     isDeprecated: false,
                     hasChangesToSave: true
-                )}
+                ) }
         }
         stub(view) { stub in
             when(stub.reload(with: any())).thenDoNothing()
@@ -100,7 +99,7 @@ class ControllerAccountTests: XCTestCase {
 
         let controllerAccountInfo = AccountInfo(
             nonce: 0,
-            data: AccountData(free: 100000000000000, reserved: 0, miscFrozen: 0, feeFrozen: 0)
+            data: AccountData(free: 100_000_000_000_000, reserved: 0, miscFrozen: 0, feeFrozen: 0)
         )
         presenter.didReceiveControllerAccountInfo(result: .success(controllerAccountInfo), address: controllerAddress)
 
@@ -108,7 +107,7 @@ class ControllerAccountTests: XCTestCase {
         let stashBalance = AssetBalance(
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: chain.utilityAsset()!.assetId),
             accountId: stashAccountId,
-            freeInPlank: 100000000000000,
+            freeInPlank: 100_000_000_000_000,
             reservedInPlank: 0,
             frozenInPlank: 0,
             edCountMode: .basedOnFree,
@@ -118,7 +117,7 @@ class ControllerAccountTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(stashBalance), address: stashAddress)
 
-        let fee = ExtrinsicFee(amount: 12600002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let fee = ExtrinsicFee(amount: 12_600_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(fee))
 
         // when
@@ -126,7 +125,6 @@ class ControllerAccountTests: XCTestCase {
 
         // then
         wait(for: [showConfirmationExpectation], timeout: Constants.defaultExpectationDuration)
-
 
         // otherwise
         let showErrorAlertExpectation = XCTestExpectation(
@@ -151,7 +149,7 @@ class ControllerAccountTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(assetSmallBalance), address: stashAddress)
 
-        let extraFee = ExtrinsicFee(amount: 126000002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let extraFee = ExtrinsicFee(amount: 126_000_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(extraFee))
 
         // when

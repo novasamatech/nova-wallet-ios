@@ -9,15 +9,21 @@ import Foundation_iOS
 
 class SelectValidatorsConfirmTests: XCTestCase {
     let initiatedBoding: PreparedNomination<InitiatedBonding> = {
-        let validator1 = SelectedValidatorInfo(address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
-                                               identity: nil)
-        let validator2 = SelectedValidatorInfo(address: "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq",
-                                               identity: nil)
+        let validator1 = SelectedValidatorInfo(
+            address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
+            identity: nil
+        )
+        let validator2 = SelectedValidatorInfo(
+            address: "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq",
+            identity: nil
+        )
         let initiatedBonding = InitiatedBonding(amount: 1.0, rewardDestination: .restake)
 
-        return PreparedNomination(bonding: initiatedBonding,
-                                  targets: [validator1, validator2],
-                                  maxTargets: 16)
+        return PreparedNomination(
+            bonding: initiatedBonding,
+            targets: [validator1, validator2],
+            maxTargets: 16
+        )
     }()
 
     func testSetupAndSendExtrinsic() throws {
@@ -50,7 +56,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
 
         let extrinsicService = ExtrinsicServiceStub.dummy()
 
-        let selectedMetaAccount  = AccountGenerator.generateMetaAccount()
+        let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chain.accountRequest())!
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
@@ -144,8 +150,10 @@ class SelectValidatorsConfirmTests: XCTestCase {
 
         // then
 
-        wait(for: [feeExpectation, assetExpectation, confirmExpectation, hintExpectation],
-             timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [feeExpectation, assetExpectation, confirmExpectation, hintExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         // when
 

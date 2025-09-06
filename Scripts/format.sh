@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-mint run nicklockwood/SwiftFormat@0.54.6 swiftformat \
+# Ensure Homebrew paths are in PATH for Xcode/non-login shells
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+mint run nicklockwood/SwiftFormat@0.47.13 swiftformat \
   --config .swiftformat \
   .

@@ -95,7 +95,7 @@ class DAppOperationConfirmTests: XCTestCase {
         )
 
         let connection = MockConnection()
-        
+
         stub(connection.internalConnection) { stub in
             when(
                 stub.callMethod(
@@ -104,8 +104,8 @@ class DAppOperationConfirmTests: XCTestCase {
                     options: any(),
                     completion: any()
                 )
-            ).then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
-                
+            ).then { (_, _: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
+
                 let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
 
                 DispatchQueue.global().async {
@@ -118,11 +118,11 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let signingWrapperFactory = DummySigningWrapperFactory()
         let priceProvider = PriceProviderFactoryStub(priceData: nil)
-        
+
         let operationQueue = OperationQueue()
-        
-        let  storageFacade = SubstrateStorageTestFacade()
-        
+
+        let storageFacade = SubstrateStorageTestFacade()
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: wallet.fetch(for: chain.accountRequest())!,
             chain: chain,
@@ -132,7 +132,7 @@ class DAppOperationConfirmTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -141,7 +141,7 @@ class DAppOperationConfirmTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         let metadataHashFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
                 storageFacade: storageFacade
@@ -155,7 +155,7 @@ class DAppOperationConfirmTests: XCTestCase {
             runtimeProvider: runtimeProvider,
             feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
-            signingWrapperFactory: signingWrapperFactory, 
+            signingWrapperFactory: signingWrapperFactory,
             metadataHashFactory: metadataHashFactory,
             userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
@@ -275,7 +275,7 @@ class DAppOperationConfirmTests: XCTestCase {
             dAppIcon: nil,
             operationData: jsonRequest
         )
-        
+
         let serializationFactory = PolkadotExtensionMessageSignFactory()
 
         let interactor = DAppSignBytesConfirmInteractor(

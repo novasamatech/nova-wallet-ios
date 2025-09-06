@@ -7,7 +7,6 @@ import NovaCrypto
 @testable import novawallet
 
 class StakingBondMoreTests: XCTestCase {
-
     func testContinueAction() throws {
         let wireframe = MockStakingBondMoreWireframeProtocol()
         let interactor = MockStakingBondMoreInteractorInputProtocol()
@@ -57,7 +56,7 @@ class StakingBondMoreTests: XCTestCase {
         let assetBalance = AssetBalance(
             chainAssetId: chain.utilityChainAssetId()!,
             accountId: stashAccountId,
-            freeInPlank: 100000000000000,
+            freeInPlank: 100_000_000_000_000,
             reservedInPlank: 0,
             frozenInPlank: 0,
             edCountMode: .basedOnFree,
@@ -67,7 +66,7 @@ class StakingBondMoreTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(assetBalance))
 
-        let paymentInfo = ExtrinsicFee(amount: 12600002654,payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let paymentInfo = ExtrinsicFee(amount: 12_600_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfo))
 
         presenter.didReceiveStashItem(result: .success(stashItem))
@@ -112,7 +111,7 @@ class StakingBondMoreTests: XCTestCase {
         }
         // empty balance & extra fee is received
         presenter.didReceiveAccountBalance(result: .success(nil))
-        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12600000000002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12_600_000_000_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfoWithExtraFee))
 
         // when

@@ -8,40 +8,40 @@ import SubstrateSdk
  */
 class TestJSONRPCEngine: JSONRPCEngine {
     func callMethod<P: Encodable, T: Decodable>(
-        _ method: String,
-        params: P?,
-        options: JSONRPCOptions,
-        completion closure: ((Result<T, Error>) -> Void)?
+        _: String,
+        params _: P?,
+        options _: JSONRPCOptions,
+        completion _: ((Result<T, Error>) -> Void)?
     ) throws -> UInt16 {
         0
     }
 
     func subscribe<P: Encodable, T: Decodable>(
-        _ method: String,
-        params: P?,
-        unsubscribeMethod: String,
-        updateClosure: @escaping (T) -> Void,
-        failureClosure: @escaping (Error, Bool) -> Void
+        _: String,
+        params _: P?,
+        unsubscribeMethod _: String,
+        updateClosure _: @escaping (T) -> Void,
+        failureClosure _: @escaping (Error, Bool) -> Void
     )
-    throws -> UInt16 {
+        throws -> UInt16 {
         0
     }
 
-    func cancelForIdentifiers(_ identifiers: [UInt16]) {}
+    func cancelForIdentifiers(_: [UInt16]) {}
 
     func addBatchCallMethod<P: Encodable>(
-        _ method: String,
-        params: P?,
-        batchId: JSONRPCBatchId
+        _: String,
+        params _: P?,
+        batchId _: JSONRPCBatchId
     ) throws {}
 
     func submitBatch(
-        for batchId: JSONRPCBatchId,
-        options: JSONRPCOptions,
-        completion closure: (([Result<JSON, Error>]) -> Void)?
+        for _: JSONRPCBatchId,
+        options _: JSONRPCOptions,
+        completion _: (([Result<JSON, Error>]) -> Void)?
     ) throws -> [UInt16] {
         []
     }
 
-    func clearBatch(for batchId: JSONRPCBatchId) {}
+    func clearBatch(for _: JSONRPCBatchId) {}
 }

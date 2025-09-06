@@ -36,9 +36,9 @@ final class SettingsTests: XCTestCase {
                 sectionsExpectation.fulfill()
             }
         }
-        
+
         let biometryAuthMock = MockBiometryAuth()
-        
+
         stub(biometryAuthMock) { stub in
             when(stub.availableBiometryType.get).thenReturn(.none)
             when(stub.supportedBiometryType.get).thenReturn(.none)
@@ -51,7 +51,7 @@ final class SettingsTests: XCTestCase {
             facade: SubstrateStorageTestFacade(),
             operationManager: OperationManagerFacade.sharedManager
         )
-        
+
         let walletConnect = MockWalletConnectDelegateInputProtocol()
         let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
             chainRegistry: ChainRegistryProtocolStub(),
@@ -70,7 +70,7 @@ final class SettingsTests: XCTestCase {
             multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
-        
+
         stub(walletConnect) { stub in
             when(stub.add(delegate: any())).thenDoNothing()
             when(stub.connect(uri: any(), completion: any())).thenDoNothing()
@@ -79,13 +79,13 @@ final class SettingsTests: XCTestCase {
             when(stub.fetchSessions(any())).then { closure in
                 closure(.success([]))
             }
-            when(stub.disconnect(from: any(), completion: any())).then { session, completion in
+            when(stub.disconnect(from: any(), completion: any())).then { _, completion in
                 completion(nil)
             }
         }
-        
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-      
+
         let pushNotificationsFacade = MockPushNotificationsServiceFacadeProtocol()
         stub(pushNotificationsFacade) { stub in
             when(stub.subscribeStatus(any(), closure: any())).then { _, closure in

@@ -7,19 +7,24 @@ import Keystore_iOS
  *  2) Add path to the Test class to the Cuckoofile.toml
  */
 class TestSecretStoreManager: SecretStoreManagerProtocol {
-    func loadSecret(for identifier: String,
-                    completionQueue: DispatchQueue,
-                    completionBlock: @escaping (SecretDataRepresentable?) -> Void) {}
+    func loadSecret(
+        for _: String,
+        completionQueue _: DispatchQueue,
+        completionBlock _: @escaping (SecretDataRepresentable?) -> Void
+    ) {}
 
-    func saveSecret(_ secret: SecretDataRepresentable,
-                    for identifier: String,
-                    completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void) {}
+    func saveSecret(
+        _: SecretDataRepresentable,
+        for _: String,
+        completionQueue _: DispatchQueue,
+        completionBlock _: @escaping (Bool) -> Void
+    ) {}
 
-    func removeSecret(for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void) {}
+    func removeSecret(for _: String, completionQueue _: DispatchQueue, completionBlock _: @escaping (Bool) -> Void) {}
 
-    func checkSecret(for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void) {}
+    func checkSecret(for _: String, completionQueue _: DispatchQueue, completionBlock _: @escaping (Bool) -> Void) {}
 
-    func checkSecret(for identifier: String) -> Bool {
+    func checkSecret(for _: String) -> Bool {
         true
     }
 }

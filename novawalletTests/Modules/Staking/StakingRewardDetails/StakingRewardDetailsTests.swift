@@ -6,7 +6,6 @@ import Keystore_iOS
 @testable import novawallet
 
 class StakingRewardDetailsTests: XCTestCase {
-
     func testSetupAndHandlePayout() {
         let chain = ChainModelGenerator.generateChain(
             generatingAssets: 2,
@@ -68,7 +67,7 @@ class StakingRewardDetailsTests: XCTestCase {
             targetAssetInfo: assetInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
-        
+
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
             chainFormat: chain.chainFormat

@@ -7,17 +7,17 @@ enum GovernanceUnlocksTestBuilding {
         let givenSchedule: GovernanceUnlockSchedule?
         let expectSchedule: UnlockScheduleTestBuilding.ScheduleResult?
     }
-    
+
     struct ReferendumDef {
         enum ReferendumType {
             case ongoing(since: BlockNumber)
         }
-        
+
         let index: ReferendumIdLocal
         let trackId: Referenda.TrackId
         let type: ReferendumType
     }
-    
+
     struct TrackDef {
         let trackId: Referenda.TrackId
         let decisionPeriod: Moment
@@ -25,7 +25,7 @@ enum GovernanceUnlocksTestBuilding {
     }
 
     @resultBuilder
-    struct TestBuilder {
+    enum TestBuilder {
         static func buildBlock(_ givenSchedule: GovernanceUnlockSchedule) -> Test {
             .init(givenSchedule: givenSchedule, expectSchedule: nil)
         }
@@ -37,7 +37,7 @@ enum GovernanceUnlocksTestBuilding {
         static func buildBlock(_ components: Test...) -> Test {
             let initTest = Test(givenSchedule: nil, expectSchedule: nil)
 
-            return components.reduce(initTest) { (accum, test) in
+            return components.reduce(initTest) { accum, test in
                 let given = test.givenSchedule ?? accum.givenSchedule
                 let expect = test.expectSchedule ?? accum.expectSchedule
 
@@ -74,7 +74,7 @@ enum GovernanceUnlocksTestBuilding {
         let refendumsUnlock = compoundVoting.referendumsUnlock
 
         let initReferendums = [ReferendumIdLocal: GovUnlockReferendumProtocol]()
-        let referendums = tracksVoting.votes.tracksByReferendums().keys.reduce(into: initReferendums) { (accum, referendumId) in
+        let referendums = tracksVoting.votes.tracksByReferendums().keys.reduce(into: initReferendums) { accum, referendumId in
             let referendum = prepareReferendumInfo(
                 for: referendumId,
                 given: referendumsDef,
@@ -107,15 +107,15 @@ enum GovernanceUnlocksTestBuilding {
 
         return .init(givenSchedule: nil, expectSchedule: result)
     }
-    
+
     private static func prepareReferendumInfo(
         for referendumId: ReferendumIdLocal,
         given definitions: [ReferendumDef],
         referendumsUnlock: [ReferendumIdLocal: BlockNumber]
     ) -> ReferendumInfo {
         let deposit = Referenda.Deposit(who: AccountId.zeroAccountId(of: 32), amount: BigUInt(0))
-        
-        guard let definition = definitions.first(where: {$0.index == referendumId }) else {
+
+        guard let definition = definitions.first(where: { $0.index == referendumId }) else {
             return .approved(
                 .init(
                     since: referendumsUnlock[referendumId] ?? 0,
@@ -124,7 +124,7 @@ enum GovernanceUnlocksTestBuilding {
                 )
             )
         }
-        
+
         switch definition.type {
         case let .ongoing(since):
             return .ongoing(
@@ -142,11 +142,11 @@ enum GovernanceUnlocksTestBuilding {
             )
         }
     }
-    
+
     private static func prepareDecisionPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
         tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.decisionPeriod }
     }
-    
+
     private static func prepareConfirmPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
         tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.confirmPeriod }
     }
@@ -154,14 +154,14 @@ enum GovernanceUnlocksTestBuilding {
 
 enum UnlockScheduleTestBuilding {
     @resultBuilder
-    struct ClaimActionBuilder {
+    enum ClaimActionBuilder {
         static func buildBlock(_ components: GovernanceUnlockSchedule.Action...) -> Set<GovernanceUnlockSchedule.Action> {
             Set(components)
         }
     }
 
     @resultBuilder
-    struct ItemBuilder {
+    enum ItemBuilder {
         static func buildBlock(_ components: GovernanceUnlockSchedule.Item...) -> [GovernanceUnlockSchedule.Item] {
             Array(components)
         }
@@ -175,12 +175,12 @@ enum UnlockScheduleTestBuilding {
             amount: BigUInt,
             @ClaimActionBuilder _ actionsBlock: () -> Set<GovernanceUnlockSchedule.Action>
         ) -> ScheduleResult {
-            return .init(
+            .init(
                 available:
-                        .init(
-                            amount: amount,
-                            actions: actionsBlock()
-                        ),
+                .init(
+                    amount: amount,
+                    actions: actionsBlock()
+                ),
                 remaining: []
             )
         }
@@ -191,11 +191,11 @@ enum UnlockScheduleTestBuilding {
     }
 
     @resultBuilder
-    struct ScheduleResultBuilder {
+    enum ScheduleResultBuilder {
         static func buildBlock(_ components: ScheduleResult...) -> ScheduleResult {
             let initResult = ScheduleResult(available: .empty(), remaining: [])
 
-            return components.reduce(initResult) { (accum, schedule) in
+            return components.reduce(initResult) { accum, schedule in
                 let available = !schedule.available.isEmpty ? schedule.available : accum.available
                 let remaining = accum.remaining + schedule.remaining
 
@@ -215,7 +215,7 @@ enum UnlockScheduleTestBuilding {
     }
 
     static func unlockAfterUndelegate(amount: BigUInt) -> GovernanceUnlockSchedule.Item {
-        return .init(amount: amount, unlockWhen: .afterUndelegate, actions: Set())
+        .init(amount: amount, unlockWhen: .afterUndelegate, actions: Set())
     }
 }
 
@@ -226,19 +226,19 @@ enum TrackTestBuilding {
     }
 
     @resultBuilder
-    struct TrackVotingBuilder {
+    enum TrackVotingBuilder {
         static func buildBlock(_ components: Voting...) -> VotingWithReferendumUnlock {
             let initValue = ReferendumTracksVotingDistribution(
                 votes: .init(maxVotesPerTrack: 512),
                 trackLocks: []
             )
 
-            let votingDistribution = components.reduce(initValue) { (accum, voting) in
+            let votingDistribution = components.reduce(initValue) { accum, voting in
                 var accountVoting = accum.votes
 
                 for vote in voting.votes {
                     switch vote.type {
-                    case .standard(let amount, let conviction, let isAye):
+                    case let .standard(amount, conviction, isAye):
                         accountVoting = accountVoting
                             .addingReferendum(vote.referendum, track: voting.trackId)
                             .addingVote(
@@ -250,7 +250,7 @@ enum TrackTestBuilding {
                                 ),
                                 referendumId: vote.referendum
                             )
-                    case .abstain(let amount):
+                    case let .abstain(amount):
                         accountVoting = accountVoting
                             .addingReferendum(vote.referendum, track: voting.trackId)
                             .addingVote(
@@ -285,7 +285,7 @@ enum TrackTestBuilding {
                 )
             }
 
-            let referendumsUnlock = components.reduce(into: [ReferendumIdLocal: BlockNumber]()) { (accum, voting) in
+            let referendumsUnlock = components.reduce(into: [ReferendumIdLocal: BlockNumber]()) { accum, voting in
                 for vote in voting.votes {
                     accum[vote.referendum] = vote.unlockAt
                 }
@@ -304,7 +304,7 @@ enum TrackTestBuilding {
     }
 
     typealias Locked = BigUInt
-    
+
     enum VoteType {
         case standard(amount: BigUInt, conviction: ConvictionVoting.Conviction, isAye: Bool)
         case abstain(amount: BigUInt)
@@ -314,7 +314,7 @@ enum TrackTestBuilding {
         let referendum: ReferendumIdLocal
         let unlockAt: BlockNumber
         let type: VoteType
-        
+
         static func standard(
             referendum: ReferendumIdLocal,
             amount: BigUInt,
@@ -328,7 +328,7 @@ enum TrackTestBuilding {
                 type: .standard(amount: amount, conviction: conviction, isAye: isAye)
             )
         }
-        
+
         static func abstain(
             referendum: ReferendumIdLocal,
             amount: BigUInt,
@@ -339,7 +339,7 @@ enum TrackTestBuilding {
     }
 
     @resultBuilder
-    struct VoteBuilder {
+    enum VoteBuilder {
         static func buildBlock(_ components: Vote...) -> [Vote] {
             Array(components)
         }
@@ -380,11 +380,11 @@ enum TrackTestBuilding {
     }
 
     @resultBuilder
-    class VotingParamsBuilder {
+    enum VotingParamsBuilder {
         static func buildBlock(_ components: VotingParams...) -> VotingParams {
             let initValue = VotingParams(locked: 0, votes: [], prior: .notExisting, delegating: nil)
 
-            return components.reduce(initValue) { (accum, param) in
+            return components.reduce(initValue) { accum, param in
                 VotingParams(
                     locked: accum.locked + param.locked,
                     votes: accum.votes + param.votes,

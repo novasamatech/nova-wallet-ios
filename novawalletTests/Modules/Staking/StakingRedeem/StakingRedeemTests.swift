@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRedeemTests: XCTestCase {
-
     func testRedeemConfirmationSuccess() throws {
         // given
 
@@ -50,7 +49,7 @@ class StakingRedeemTests: XCTestCase {
     }
 
     private func setupPresenter(
-        for inputAmount: Decimal,
+        for _: Decimal,
         view: MockStakingRedeemViewProtocol,
         wireframe: MockStakingRedeemWireframeProtocol
     ) throws -> StakingRedeemPresenterProtocol {
@@ -180,7 +179,7 @@ class StakingRedeemTests: XCTestCase {
                 }
             }
 
-            when(stub.didReceiveConfirmation(viewModel: any())).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
         }

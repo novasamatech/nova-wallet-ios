@@ -14,7 +14,7 @@ class RuntimeSyncServiceTests: XCTestCase {
         let dataOperationFactory = MockDataOperationFactoryProtocol()
         let eventCenter = MockEventCenterProtocol()
         let connection = MockConnection()
-        
+
         let operationQueue = OperationQueue()
 
         let syncService = RuntimeSyncService(
@@ -67,17 +67,17 @@ class RuntimeSyncServiceTests: XCTestCase {
         let chainCount = 10
         let chains = ChainModelGenerator.generate(count: chainCount)
 
-        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { storage, chain in
             storage[chain.chainId] = MockConnection()
         }
 
-        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(
                 content: Data.random(of: 128)!,
                 isOpaque: false
             )
         }
-        
+
         let syncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(metadataRepository),
             runtimeFetchFactory: MockRuntimeFetchOperationFactory(
@@ -102,7 +102,7 @@ class RuntimeSyncServiceTests: XCTestCase {
         // stub chain types file save to disk
 
         stub(filesOperationFactory) { stub in
-            stub.saveChainTypesOperation(for: any(), data: any()).then { (chainId, data) in
+            stub.saveChainTypesOperation(for: any(), data: any()).then { _, _ in
                 CompoundOperationWrapper.createWithResult(())
             }
         }
@@ -144,7 +144,7 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 10)
 
-        let expectedChainIds = Set(chains.map { $0.chainId })
+        let expectedChainIds = Set(chains.map(\.chainId))
 
         XCTAssertEqual(expectedChainIds, syncedTypesChainIds)
         XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
@@ -182,14 +182,14 @@ class RuntimeSyncServiceTests: XCTestCase {
         let chainCount = 10
         let chains = ChainModelGenerator.generate(count: chainCount, withTypes: false)
 
-        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { storage, chain in
             storage[chain.chainId] = MockConnection()
         }
 
-        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: true)
         }
-        
+
         let syncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(metadataRepository),
             runtimeFetchFactory: MockRuntimeFetchOperationFactory(
@@ -234,7 +234,7 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 10)
 
-        let expectedChainIds = Set(chains.map { $0.chainId })
+        let expectedChainIds = Set(chains.map(\.chainId))
 
         XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
 
@@ -267,21 +267,21 @@ class RuntimeSyncServiceTests: XCTestCase {
         let chainCount = 10
         let chains = ChainModelGenerator.generate(count: chainCount)
 
-        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { storage, chain in
             storage[chain.chainId] = MockConnection()
         }
 
-        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(
                 content: Data.random(of: 128)!,
                 isOpaque: false
             )
         }
-        
+
         // stub runtime metadata fetch
 
         var failureCounterForMetadata: Int = 0
-        
+
         let runtimeFetchFactory = MockRuntimeFetchOperationFactory { chainId in
             if failureCounterForMetadata < chainCount {
                 failureCounterForMetadata += 1
@@ -322,7 +322,7 @@ class RuntimeSyncServiceTests: XCTestCase {
         // stub chain types file save to disk
 
         stub(filesOperationFactory) { stub in
-            stub.saveChainTypesOperation(for: any(), data: any()).then { (chainId, data) in
+            stub.saveChainTypesOperation(for: any(), data: any()).then { _, _ in
                 CompoundOperationWrapper.createWithResult(())
             }
         }
@@ -364,7 +364,7 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 10)
 
-        let expectedChainIds = Set(chains.map { $0.chainId })
+        let expectedChainIds = Set(chains.map(\.chainId))
 
         XCTAssertEqual(expectedChainIds, syncedTypesChainIds)
         XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
@@ -405,14 +405,14 @@ class RuntimeSyncServiceTests: XCTestCase {
         let chainCount = 10
         let chains = ChainModelGenerator.generate(count: chainCount)
 
-        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { storage, chain in
             storage[chain.chainId] = MockConnection()
         }
 
-        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+        let runtimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: false)
         }
-        
+
         let runtimeFetcherFactory = MockRuntimeFetchOperationFactory(rawMetadataDict: runtimeMetadataItems)
         let syncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(metadataRepository),
@@ -444,7 +444,7 @@ class RuntimeSyncServiceTests: XCTestCase {
         // stub chain types file save to disk
 
         stub(filesOperationFactory) { stub in
-            stub.saveChainTypesOperation(for: any(), data: any()).then { (chainId, data) in
+            stub.saveChainTypesOperation(for: any(), data: any()).then { _, _ in
                 CompoundOperationWrapper.createWithResult(())
             }
         }
@@ -486,7 +486,7 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 10)
 
-        let expectedChainIds = Set(chains.map { $0.chainId })
+        let expectedChainIds = Set(chains.map(\.chainId))
 
         XCTAssertEqual(expectedChainIds, syncedTypesChainIds)
         XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
@@ -517,7 +517,7 @@ class RuntimeSyncServiceTests: XCTestCase {
             XCTAssertEqual(actualMetadataItem.opaque, runtimeMetadataItems[actualMetadataItem.chain]!.isOpaque)
         }
     }
-    
+
     func testNoMetadataSyncRequired() throws {
         try performMetadataSyncTest(
             currentSpecVersion: 2,
@@ -526,7 +526,7 @@ class RuntimeSyncServiceTests: XCTestCase {
             newLocalMigratorVersion: 3
         )
     }
-    
+
     func testMetadataSyncChangeDueToSpecVersion() throws {
         try performMetadataSyncTest(
             currentSpecVersion: 2,
@@ -535,7 +535,7 @@ class RuntimeSyncServiceTests: XCTestCase {
             newLocalMigratorVersion: 3
         )
     }
-    
+
     func testMetadataSyncChangeDueToLocalMigratoVersion() throws {
         try performMetadataSyncTest(
             currentSpecVersion: 2,
@@ -544,7 +544,7 @@ class RuntimeSyncServiceTests: XCTestCase {
             newLocalMigratorVersion: 4
         )
     }
-    
+
     func testMetadataSyncChangeDueToBothSpecLocalMigratoVersion() throws {
         try performMetadataSyncTest(
             currentSpecVersion: 2,
@@ -553,7 +553,7 @@ class RuntimeSyncServiceTests: XCTestCase {
             newLocalMigratorVersion: 4
         )
     }
-    
+
     private func performMetadataSyncTest(
         currentSpecVersion: UInt32,
         newSpecVersion: UInt32,
@@ -575,25 +575,25 @@ class RuntimeSyncServiceTests: XCTestCase {
         let chainCount = 10
         let chains = ChainModelGenerator.generate(count: chainCount)
 
-        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { storage, chain in
             storage[chain.chainId] = MockConnection()
         }
 
-        let oldRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+        let oldRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: false)
         }
-        
+
         save(
             runtimes: oldRuntimeMetadataItems,
             in: AnyDataProviderRepository(metadataRepository),
             specVersion: currentSpecVersion,
             localMigratorVersion: currentLocalMigratorVersion
         )
-        
-        let newRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+
+        let newRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { storage, chain in
             storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: false)
         }
-        
+
         let runtimeFetcherFactory = MockRuntimeFetchOperationFactory(rawMetadataDict: newRuntimeMetadataItems)
         let syncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(metadataRepository),
@@ -604,11 +604,11 @@ class RuntimeSyncServiceTests: XCTestCase {
             eventCenter: eventCenter,
             operationQueue: operationQueue
         )
-        
+
         stubTypesLoading(dataOperationFactory: dataOperationFactory, filesOperationFactory: filesOperationFactory)
-        
+
         // then
-        
+
         waitSyncAndVerify(
             for: chains,
             connections: connections,
@@ -616,21 +616,21 @@ class RuntimeSyncServiceTests: XCTestCase {
             eventCenter: eventCenter,
             syncService: syncService
         )
-        
+
         let changesExpected = currentSpecVersion != newSpecVersion || currentLocalMigratorVersion != newLocalMigratorVersion
-        
+
         try expect(
             runtimeMetadataItems: changesExpected ? newRuntimeMetadataItems : oldRuntimeMetadataItems,
             in: AnyDataProviderRepository(metadataRepository),
             specVersion: newSpecVersion,
             localMigratorVersion: newLocalMigratorVersion
         )
-        
+
         for chain in chains {
             XCTAssertEqual(runtimeFetcherFactory.getRequestsCount(for: chain.chainId), changesExpected ? 1 : 0)
         }
     }
-    
+
     private func stubTypesLoading(
         dataOperationFactory: MockDataOperationFactoryProtocol,
         filesOperationFactory: MockRuntimeFilesOperationFactoryProtocol
@@ -643,12 +643,12 @@ class RuntimeSyncServiceTests: XCTestCase {
         }
 
         stub(filesOperationFactory) { stub in
-            stub.saveChainTypesOperation(for: any(), data: any()).then { (chainId, data) in
+            stub.saveChainTypesOperation(for: any(), data: any()).then { _, _ in
                 CompoundOperationWrapper.createWithResult(())
             }
         }
     }
-    
+
     private func waitSyncAndVerify(
         for chains: [ChainModel],
         connections: [ChainModel.Id: MockConnection],
@@ -684,18 +684,18 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 10)
 
-        let expectedChainIds = Set(chains.map { $0.chainId })
+        let expectedChainIds = Set(chains.map(\.chainId))
 
         XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
     }
-    
+
     private func save(
         runtimes: [ChainModel.Id: RawRuntimeMetadata],
         in repository: AnyDataProviderRepository<RuntimeMetadataItem>,
         specVersion: UInt32,
         localMigratorVersion: UInt32
     ) {
-        let runtimeMetadataItems: [RuntimeMetadataItem] = runtimes.map { (chainId, metadata) in
+        let runtimeMetadataItems: [RuntimeMetadataItem] = runtimes.map { chainId, metadata in
             RuntimeMetadataItem(
                 chain: chainId,
                 version: specVersion,
@@ -705,12 +705,12 @@ class RuntimeSyncServiceTests: XCTestCase {
                 metadata: metadata.content
             )
         }
-        
+
         let saveOperation = repository.saveOperation({ runtimeMetadataItems }, { [] })
-        
+
         OperationQueue().addOperations([saveOperation], waitUntilFinished: true)
     }
-    
+
     private func expect(
         runtimeMetadataItems: [ChainModel.Id: RawRuntimeMetadata],
         in repository: AnyDataProviderRepository<RuntimeMetadataItem>,

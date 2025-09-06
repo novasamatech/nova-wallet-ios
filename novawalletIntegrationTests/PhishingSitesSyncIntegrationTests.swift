@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 class PhishingSitesSyncIntegrationTests: XCTestCase {
-
     func testSyncUp() {
         // given
 
@@ -42,7 +41,7 @@ class PhishingSitesSyncIntegrationTests: XCTestCase {
         let syncExpectation = XCTestExpectation()
 
         observer.addObserver(self, deliverOn: .global()) { changes in
-            let newItems = changes.compactMap { $0.item }
+            let newItems = changes.compactMap(\.item)
 
             if !newItems.isEmpty {
                 items = newItems

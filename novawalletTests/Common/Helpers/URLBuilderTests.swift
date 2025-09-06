@@ -95,7 +95,7 @@ class URLBuilderTests: XCTestCase {
 
                 return key
             }
-            
+
             let expectedUrl = URL(string: "https://novawallet.io/api/0?key=1")
 
             XCTAssertEqual(url, expectedUrl)

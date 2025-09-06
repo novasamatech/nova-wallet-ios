@@ -19,12 +19,14 @@ class ValidatorListFilterTests: XCTestCase {
 
         let hasIdentity = true
         let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
-        let presenter = ValidatorListFilterPresenter(wireframe: wireframe,
-                                                     viewModelFactory: viewModelFactory,
-                                                     assetInfo: assetInfo,
-                                                     filter: filter,
-                                                     hasIdentity: hasIdentity,
-                                                     localizationManager: LocalizationManager.shared)
+        let presenter = ValidatorListFilterPresenter(
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            assetInfo: assetInfo,
+            filter: filter,
+            hasIdentity: hasIdentity,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
 
@@ -67,4 +69,5 @@ class ValidatorListFilterTests: XCTestCase {
         // then
 
         wait(for: [filterChangeExpectation], timeout: Constants.defaultExpectationDuration)
-    }}
+    }
+}

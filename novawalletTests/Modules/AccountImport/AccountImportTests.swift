@@ -6,7 +6,6 @@ import Cuckoo
 import Foundation_iOS
 
 class AccountImportTests: XCTestCase {
-
     func testMnemonicRestore() {
         // given
 
@@ -45,7 +44,7 @@ class AccountImportTests: XCTestCase {
             secretSource: .mnemonic(.appDefault),
             metadataFactory: WalletImportMetadataFactory()
         )
-        
+
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor
@@ -101,11 +100,15 @@ class AccountImportTests: XCTestCase {
 
         wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
 
-        _ = sourceInputViewModel?.inputHandler.didReceiveReplacement(expetedMnemonic,
-                                                                     for: NSRange(location: 0, length: 0));
+        _ = sourceInputViewModel?.inputHandler.didReceiveReplacement(
+            expetedMnemonic,
+            for: NSRange(location: 0, length: 0)
+        )
 
-        _ = usernameViewModel?.inputHandler.didReceiveReplacement(expectedUsername,
-                                                                  for: NSRange(location: 0, length: 0))
+        _ = usernameViewModel?.inputHandler.didReceiveReplacement(
+            expectedUsername,
+            for: NSRange(location: 0, length: 0)
+        )
 
         presenter.proceed()
 

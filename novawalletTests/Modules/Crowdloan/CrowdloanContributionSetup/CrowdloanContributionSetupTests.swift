@@ -19,7 +19,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
             deposit: 100,
             raised: 100,
             end: currentBlockNumber + 100,
-            cap: 1000000000000000,
+            cap: 1_000_000_000_000_000,
             lastContribution: .never,
             firstPeriod: 100,
             lastPeriod: 101,
@@ -68,7 +68,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
         let bonusReceived = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub.didReceiveInput(viewModel: any())).then { viewModel in
+            when(stub.didReceiveInput(viewModel: any())).then { _ in
                 inputViewModelReceived.fulfill()
             }
 
@@ -84,7 +84,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
                 }
             }
 
-            when(stub.didReceiveEstimatedReward(viewModel: any())).then { viewModel in
+            when(stub.didReceiveEstimatedReward(viewModel: any())).then { _ in
                 estimatedRewardReceived.fulfill()
             }
 
@@ -125,7 +125,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
                 paraId: any(),
                 inputAmount: any(),
                 bonusService: any()
-            )).then { (_, _, amount, _) in
+            )).then { _, _, amount, _ in
                 XCTAssertEqual(expectedAmount, amount)
                 completionExpectation.fulfill()
             }

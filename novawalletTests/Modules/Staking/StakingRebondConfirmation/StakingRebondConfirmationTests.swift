@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRebondConfirmationTests: XCTestCase {
-
     func testRebondConfirmationSuccess() throws {
         // given
 
@@ -175,7 +174,7 @@ class StakingRebondConfirmationTests: XCTestCase {
                 }
             }
 
-            when(stub.didReceiveConfirmation(viewModel: any())).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
         }

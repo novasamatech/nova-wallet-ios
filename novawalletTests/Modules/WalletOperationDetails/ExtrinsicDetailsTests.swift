@@ -33,7 +33,7 @@ class OperationDetailsTests: XCTestCase {
             operationQueue: operationQueue,
             logger: nil
         )
-        
+
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
             priceData: PriceData(
                 identifier: "id",
@@ -42,7 +42,7 @@ class OperationDetailsTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-        
+
         let operationDetailsProviderFactory = OperationDetailsDataProviderFactory(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
@@ -50,7 +50,7 @@ class OperationDetailsTests: XCTestCase {
             accountRepositoryFactory: accountRepositoryFactory,
             operationQueue: operationQueue
         )
-        
+
         let operationDataProvider = operationDetailsProviderFactory.createProvider(for: txData)!
 
         let interactor = OperationDetailsInteractor(
@@ -88,7 +88,7 @@ class OperationDetailsTests: XCTestCase {
         stub(view) { stub in
             when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub.didReceive(viewModel: any())).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { _ in
                 expectation.fulfill()
             }
         }

@@ -8,8 +8,8 @@ extension MockChainRegistryProtocol {
         stub(self) { stub in
             let availableChains = chains
                 .reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
-            
-            let availableChainIds = Set(chains.map({ $0.chainId }))
+
+            let availableChainIds = Set(chains.map(\.chainId))
             stub.availableChainIds.get.thenReturn(availableChainIds)
 
             stub.getConnection(for: any()).then { chainId in
@@ -30,13 +30,13 @@ extension MockChainRegistryProtocol {
 
             stub.chainsSubscribe(
                 any(),
-                runningInQueue: any(), 
+                runningInQueue: any(),
                 filterStrategy: any(),
                 updateClosure: any()
-            ).then { (_, queue, filterStrategy, closure) in
+            ).then { _, queue, filterStrategy, closure in
                 queue.async {
                     let changes = chains.map { DataProviderChange.insert(newItem: $0) }
-                    
+
                     let filteredChanges = if let filterStrategy {
                         filterStrategy.filter(changes, using: availableChains)
                     } else {

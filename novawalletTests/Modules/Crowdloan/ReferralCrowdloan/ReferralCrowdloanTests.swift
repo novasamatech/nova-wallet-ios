@@ -5,7 +5,6 @@ import Cuckoo
 import Foundation_iOS
 
 class ReferralCrowdloanTests: XCTestCase {
-
     let displayInfo = CrowdloanDisplayInfo(
         paraid: "2000",
         name: "Karura",
@@ -86,7 +85,7 @@ class ReferralCrowdloanTests: XCTestCase {
 
         // when
 
-        var actualCode: String? = nil
+        var actualCode: String?
 
         let completionExpectation = XCTestExpectation()
 

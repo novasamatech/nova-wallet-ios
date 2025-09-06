@@ -5,8 +5,8 @@ import BigInt
 @testable import novawallet
 
 extension Crowdloan {
-    static let currentBlockNumber: BlockNumber = 403200 * 101
- 
+    static let currentBlockNumber: BlockNumber = 403_200 * 101
+
     static let ended = Crowdloan(
         paraId: 2001,
         fundInfo: CrowdloanFunds(
@@ -23,7 +23,7 @@ extension Crowdloan {
             fundIndex: StringScaleMapper(value: 2)
         )
     )
-    
+
     static let active = Crowdloan(
         paraId: 2000,
         fundInfo: CrowdloanFunds(
@@ -40,16 +40,16 @@ extension Crowdloan {
             fundIndex: StringScaleMapper(value: 1)
         )
     )
-    
+
     var fundIndex: UInt32 {
-        return fundInfo.fundIndex!.value
+        fundInfo.fundIndex!.value
     }
 }
 
 extension ExternalContribution {
-    static let sample = ExternalContribution(source: nil, amount: BigUInt(1000000), paraId: 2000)
+    static let sample = ExternalContribution(source: nil, amount: BigUInt(1_000_000), paraId: 2000)
 }
 
 extension CrowdloanContribution {
-    static let sample = CrowdloanContribution(balance: 10362973, memo: Data())
+    static let sample = CrowdloanContribution(balance: 10_362_973, memo: Data())
 }

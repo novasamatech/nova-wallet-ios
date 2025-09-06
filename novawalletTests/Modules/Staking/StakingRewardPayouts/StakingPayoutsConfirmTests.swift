@@ -65,7 +65,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-        
+
         let runtimeService = try RuntimeCodingServiceStub.createWestendService()
 
         let interactor = StakingPayoutConfirmationInteractor(
@@ -101,7 +101,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub.didRecieve(viewModel: any())).then {_ in
+            when(stub.didRecieve(viewModel: any())).then { _ in
                 viewModelExpectation.fulfill()
             }
 
@@ -127,7 +127,8 @@ class StakingPayoutsConfirmTests: XCTestCase {
                 message: any(),
                 title: any(),
                 closeAction: any(),
-                from: any())).thenDoNothing()
+                from: any()
+            )).thenDoNothing()
         }
 
         // when

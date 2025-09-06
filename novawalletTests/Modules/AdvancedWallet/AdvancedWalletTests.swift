@@ -4,7 +4,6 @@ import Foundation_iOS
 import Cuckoo
 
 class AdvancedWalletTests: XCTestCase {
-
     func testApplySettings() {
         // given
 
@@ -96,7 +95,7 @@ class AdvancedWalletTests: XCTestCase {
 
         wait(for: [completionExpectation], timeout: 1.0)
 
-        if case .combined(let actualSubstrateSettings, let actualEthereumDP) = actualSettings {
+        if case let .combined(actualSubstrateSettings, actualEthereumDP) = actualSettings {
             XCTAssertEqual(actualSubstrateSettings.selectedCryptoType, expectedSubstrateCryptoType)
             XCTAssertEqual(actualSubstrateSettings.derivationPath, expectedSubstrateDP)
             XCTAssertEqual(actualEthereumDP, expectedEthereumDP)

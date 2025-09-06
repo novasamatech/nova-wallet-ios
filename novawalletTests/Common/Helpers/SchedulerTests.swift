@@ -3,7 +3,6 @@ import XCTest
 import Cuckoo
 
 class SchedulerTests: XCTestCase {
-
     func testTriggerDelivered() {
         // given
 

@@ -12,7 +12,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let presenter: StakingRewardDestSetupPresenter
         let outputProxy: StakingRewardDestSetupInteractorOutputProtocol
     }
-    
+
     func testRewardDestinationSetupSuccess() throws {
         // given
 
@@ -52,7 +52,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 delegate: any(),
                 from: any(),
                 context: any()
-            )).then { (accounts, _, _, delegate, _, context) in
+            )).then { accounts, _, _, delegate, _, context in
                 if let index = accounts.firstIndex(
                     where: { newPayoutAccount.substrateAccountId == $0.substrateAccountId }) {
                     delegate.modalPickerDidSelectModelAtIndex(index, context: context)
@@ -192,7 +192,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         )
 
         let validationFactory = StakingDataValidatingFactory(presentable: wireframe)
-        
+
         let presenter = StakingRewardDestSetupPresenter(
             wireframe: wireframe,
             interactor: interactor,
@@ -205,7 +205,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         )
 
         let mockedPresenter = MockStakingRewardDestSetupInteractorOutputProtocol()
-        
+
         presenter.view = view
         interactor.presenter = mockedPresenter
         validationFactory.view = view
@@ -229,16 +229,16 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 }
             }
         }
-        
+
         stub(mockedPresenter) { stub in
             when(stub.didReceiveFee(result: any())).then { fee in
                 presenter.didReceiveFee(result: fee)
             }
-            
+
             when(stub.didReceivePriceData(result: any())).then { result in
                 presenter.didReceivePriceData(result: result)
             }
-            
+
             when(stub.didReceiveStashItem(result: any())).then { result in
                 presenter.didReceiveStashItem(result: result)
             }
@@ -246,19 +246,19 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             when(stub.didReceiveStakingLedger(result: any())).then { result in
                 presenter.didReceiveStakingLedger(result: result)
             }
-            
+
             when(stub.didReceiveController(result: any())).then { result in
                 presenter.didReceiveController(result: result)
             }
-            
+
             when(stub.didReceiveStash(result: any())).then { result in
                 presenter.didReceiveStash(result: result)
             }
-            
+
             when(stub.didReceiveRewardDestinationAccount(result: any())).then { result in
                 presenter.didReceiveRewardDestinationAccount(result: result)
             }
-            
+
             when(stub.didReceiveRewardDestinationAddress(result: any())).then { result in
                 presenter.didReceiveRewardDestinationAddress(result: result)
             }
@@ -266,18 +266,18 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             when(stub.didReceiveCalculator(result: any())).then { result in
                 presenter.didReceiveCalculator(result: result)
             }
-            
+
             when(stub.didReceiveAccounts(result: any())).then { result in
                 presenter.didReceiveAccounts(result: result)
             }
-            
+
             when(stub.didReceiveNomination(result: any())).then { result in
                 presenter.didReceiveNomination(result: result)
             }
-            
+
             when(stub.didReceiveAccountBalance(result: any())).then { result in
                 presenter.didReceiveAccountBalance(result: result)
-                
+
                 if case .success = result {
                     balanceExpectation.fulfill()
                 }
@@ -292,5 +292,4 @@ class StakingRewardDestinationSetupTests: XCTestCase {
 
         return PresenterSetupResult(presenter: presenter, outputProxy: mockedPresenter)
     }
-
 }

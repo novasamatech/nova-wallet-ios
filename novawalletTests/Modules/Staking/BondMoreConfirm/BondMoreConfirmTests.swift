@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class BondMoreConfirmTests: XCTestCase {
-
     func testBondMoreConfirmationSuccess() throws {
         // given
 
@@ -98,7 +97,7 @@ class BondMoreConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-        
+
         let runtimeProvider = MockRuntimeProviderProtocol().applyDefault(for: KnowChainId.westend)
 
         let interactor = StakingBondMoreConfirmationInteractor(
@@ -160,7 +159,7 @@ class BondMoreConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub.didReceiveConfirmation(viewModel: any())).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
         }
@@ -184,5 +183,4 @@ class BondMoreConfirmTests: XCTestCase {
 
         return presenter
     }
-
 }

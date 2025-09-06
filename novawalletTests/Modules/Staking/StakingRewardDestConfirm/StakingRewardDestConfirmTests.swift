@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRewardDestConfirmTests: XCTestCase {
-
     func testRewardDestinationConfirmSuccess() throws {
         // given
 
@@ -214,5 +213,4 @@ class StakingRewardDestConfirmTests: XCTestCase {
 
         return presenter
     }
-
 }

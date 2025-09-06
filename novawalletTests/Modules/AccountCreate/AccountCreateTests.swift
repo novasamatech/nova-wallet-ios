@@ -5,7 +5,6 @@ import Foundation_iOS
 import Cuckoo
 
 class AccountCreateTests: XCTestCase {
-
     func testSuccessfullAccountCreation() {
         // given
 
@@ -13,7 +12,7 @@ class AccountCreateTests: XCTestCase {
         let wireframe = MockAccountCreateWireframeProtocol()
 
         let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
-        
+
         let localizationManager = LocalizationManager.shared
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
@@ -39,7 +38,7 @@ class AccountCreateTests: XCTestCase {
             when(stub.update(with: any())).then { _ in
                 setupMnemonicExpectation.fulfill()
             }
-            
+
             when(stub.update(using: any())).then { _ in
                 setupCheckboxesExpectation.fulfill()
             }
@@ -50,7 +49,7 @@ class AccountCreateTests: XCTestCase {
         var receivedRequest: MetaAccountCreationRequest?
 
         stub(wireframe) { stub in
-            when(stub.confirm(from: any(), request: any(), metadata: any())).then { (_, request, _) in
+            when(stub.confirm(from: any(), request: any(), metadata: any())).then { _, request, _ in
                 receivedRequest = request
                 expectation.fulfill()
             }
@@ -59,7 +58,7 @@ class AccountCreateTests: XCTestCase {
         // when
 
         presenter.setup()
-        
+
         interactor.provideMnemonic()
 
         wait(

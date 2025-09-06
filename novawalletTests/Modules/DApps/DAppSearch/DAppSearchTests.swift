@@ -27,7 +27,7 @@ class DAppSearchTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dAppProviderFactory,
             logger: Logger.shared
         )
-        
+
         let viewModelFactory = DAppListViewModelFactory(
             dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
             dappIconViewModelFactory: DAppIconViewModelFactory()

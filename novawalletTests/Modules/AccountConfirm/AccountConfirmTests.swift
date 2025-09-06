@@ -7,7 +7,6 @@ import NovaCrypto
 import Operation_iOS
 
 class AccountConfirmTests: XCTestCase {
-
     func testMnemonicConfirm() throws {
         // given
 
@@ -38,14 +37,16 @@ class AccountConfirmTests: XCTestCase {
 
         let eventCenter = MockEventCenterProtocol()
 
-        let interactor = AccountConfirmInteractor(request: newAccountRequest,
-                                                  mnemonic: mnemonic,
-                                                  accountOperationFactory: accountOperationFactory,
-                                                  accountRepository: AnyDataProviderRepository(repository),
-                                                  settings: settings,
-                                                  operationManager: OperationManager(),
-                                                  eventCenter: eventCenter)
-        
+        let interactor = AccountConfirmInteractor(
+            request: newAccountRequest,
+            mnemonic: mnemonic,
+            accountOperationFactory: accountOperationFactory,
+            accountRepository: AnyDataProviderRepository(repository),
+            settings: settings,
+            operationManager: OperationManager(),
+            eventCenter: eventCenter
+        )
+
         let localizationManager = LocalizationManager.shared
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 

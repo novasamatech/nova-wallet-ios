@@ -4,7 +4,6 @@ import Cuckoo
 import Foundation_iOS
 
 class UsernameSetupTests: XCTestCase {
-
     func testSuccessfullUsernameInput() {
         // given
 
@@ -31,17 +30,18 @@ class UsernameSetupTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub.proceed(from: any(), walletName: any())).then { (_, walletName) in
+            when(stub.proceed(from: any(), walletName: any())).then { _, walletName in
                 resultName = walletName
 
                 proceedExpectation.fulfill()
             }
 
-            when(stub.present(viewModel: any(),
-                              style: any(),
-                              from: any())).then { (viewModel, _, _) in
+            when(stub.present(
+                viewModel: any(),
+                style: any(),
+                from: any()
+            )).then { viewModel, _, _ in
                 viewModel.actions.first?.handler?()
-
             }
         }
 
@@ -60,10 +60,10 @@ class UsernameSetupTests: XCTestCase {
 
         guard
             let accepted = receivedViewModel?.inputHandler
-                .didReceiveReplacement(
-                    expectedName,
-                    for: NSRange(location: 0, length: 0)
-                ), accepted else {
+            .didReceiveReplacement(
+                expectedName,
+                for: NSRange(location: 0, length: 0)
+            ), accepted else {
             XCTFail("Unexpected empty view model")
             return
         }

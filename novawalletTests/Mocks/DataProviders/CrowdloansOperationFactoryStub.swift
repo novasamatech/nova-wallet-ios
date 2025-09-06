@@ -13,15 +13,15 @@ final class CrowdloansOperationFactoryStub: CrowdloanOperationFactoryProtocol {
     }
 
     func fetchCrowdloansOperation(
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        connection _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[Crowdloan]> {
         CompoundOperationWrapper.createWithResult(crowdloans)
     }
 
     func fetchContributionOperation(
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        connection _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol,
         accountId: AccountId,
         index: FundIndex
     ) -> CompoundOperationWrapper<CrowdloanContributionResponse> {
@@ -31,9 +31,9 @@ final class CrowdloansOperationFactoryStub: CrowdloanOperationFactoryProtocol {
     }
 
     func fetchLeaseInfoOperation(
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        params: [LeaseParam]
+        connection _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol,
+        params _: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]> {
         CompoundOperationWrapper.createWithResult(parachainLeaseInfo)
     }

@@ -20,7 +20,7 @@ class SpecVersionSubscriptionTests: XCTestCase {
         let version = RuntimeVersion(specVersion: 1, transactionVersion: 2)
 
         // when
-        
+
         stub(connection) { stub in
             when(
                 stub.subscribe(
@@ -51,7 +51,7 @@ class SpecVersionSubscriptionTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(runtimeSyncService) { stub in
-            stub.apply(version: any(), for: any()).then { actualVersion, chainId in
+            stub.apply(version: any(), for: any()).then { actualVersion, _ in
                 XCTAssertEqual(version, actualVersion)
                 expectation.fulfill()
             }

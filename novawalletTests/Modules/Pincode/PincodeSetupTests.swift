@@ -4,7 +4,6 @@ import Keystore_iOS
 import Cuckoo
 
 class PincodeSetupTests: XCTestCase {
-
     func testSuccessfullPincodeSetup() {
         // given
 
@@ -15,10 +14,12 @@ class PincodeSetupTests: XCTestCase {
         let biometry = MockBiometryAuthProtocol()
         let settings = InMemorySettingsManager()
 
-        let interactor = PinSetupInteractor(secretManager: keystore,
-                                            settingsManager: settings,
-                                            biometryAuth: biometry,
-                                            locale: Locale.current)
+        let interactor = PinSetupInteractor(
+            secretManager: keystore,
+            settingsManager: settings,
+            biometryAuth: biometry,
+            locale: Locale.current
+        )
 
         let presenter = PinSetupPresenter()
         presenter.view = view
@@ -32,7 +33,7 @@ class PincodeSetupTests: XCTestCase {
 
         stub(keystore) { stub in
             when(stub.saveSecret(any(), for: any(), completionQueue: any(), completionBlock: any())).then {
-                (secret, _, _, completion) in
+                secret, _, _, completion in
 
                 savedPin = secret.toUTF8String()
 

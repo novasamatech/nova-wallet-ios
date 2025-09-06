@@ -13,7 +13,7 @@ final class DataProviderRepositoryStub<T: Identifiable>: DataProviderRepositoryP
 
     func fetchOperation(
         by modelIdClosure: @escaping () throws -> String,
-        options: RepositoryFetchOptions
+        options _: RepositoryFetchOptions
     ) -> BaseOperation<Model?> {
         ClosureOperation { [weak self] in
             let identifier = try modelIdClosure()
@@ -22,13 +22,13 @@ final class DataProviderRepositoryStub<T: Identifiable>: DataProviderRepositoryP
         }
     }
 
-    func fetchAllOperation(with options: RepositoryFetchOptions) -> BaseOperation<[Model]> {
+    func fetchAllOperation(with _: RepositoryFetchOptions) -> BaseOperation<[Model]> {
         BaseOperation.createWithResult(models)
     }
 
     func fetchOperation(
-        by request: RepositorySliceRequest,
-        options: RepositoryFetchOptions
+        by _: RepositorySliceRequest,
+        options _: RepositoryFetchOptions
     ) -> BaseOperation<[Model]> {
         ClosureOperation {
             self.models
@@ -84,9 +84,11 @@ final class DataProviderObservableStub<T>: DataProviderRepositoryObservable {
         completionBlock(nil)
     }
 
-    func addObserver(_ observer: AnyObject,
-                     deliverOn queue: DispatchQueue,
-                     executing updateBlock: @escaping ([DataProviderChange<Model>]) -> Void) {}
+    func addObserver(
+        _: AnyObject,
+        deliverOn _: DispatchQueue,
+        executing _: @escaping ([DataProviderChange<Model>]) -> Void
+    ) {}
 
-    func removeObserver(_ observer: AnyObject) {}
+    func removeObserver(_: AnyObject) {}
 }

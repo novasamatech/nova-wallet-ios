@@ -3,7 +3,6 @@ import XCTest
 import Cuckoo
 
 class WalletHistoryFilterTests: XCTestCase {
-
     func testSetup() {
         // given
 

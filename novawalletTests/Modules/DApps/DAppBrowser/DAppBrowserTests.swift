@@ -63,14 +63,14 @@ class DAppBrowserTests: XCTestCase {
         let dAppsFavoriteRepository = AccountRepositoryFactory(
             storageFacade: storageFacade
         ).createFavoriteDAppsRepository()
-        
+
         let tabManager = DAppBrowserTabManager.shared
-        
+
         let tab = DAppBrowserTab(
             from: dAppURL,
             metaId: walletSettings.value.metaId
         )!
-        
+
         let appAttestService = AppAttestService()
         let remoteAttestationFactory = DAppRemoteAttestFactory()
 
@@ -132,11 +132,11 @@ class DAppBrowserTests: XCTestCase {
 
                 loadingExpectation.fulfill()
             }
-            
+
             when(stub.didSet(favorite: any())).then { _ in
                 favoriteExpectation.fulfill()
             }
-            
+
             when(stub.didReceiveTabsCount(viewModel: any())).then { _ in
                 tabCountExpectation.fulfill()
             }
