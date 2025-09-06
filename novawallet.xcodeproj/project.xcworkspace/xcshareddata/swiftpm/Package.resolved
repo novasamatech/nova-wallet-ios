@@ -31,7 +31,7 @@
     {
       "identity" : "bigint",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/attaswift/BigInt",
+      "location" : "https://github.com/attaswift/BigInt.git",
       "state" : {
         "revision" : "114343a705df4725dfe7ab8a2a326b8883cfd79c",
         "version" : "5.5.1"
@@ -373,7 +373,7 @@
     {
       "identity" : "starscream",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/novasamatech/Starscream.git",
+      "location" : "https://github.com/novasamatech/Starscream",
       "state" : {
         "revision" : "3a13d13fb653645cb646a04f5a6bfcd438517eb3",
         "version" : "4.0.13"
