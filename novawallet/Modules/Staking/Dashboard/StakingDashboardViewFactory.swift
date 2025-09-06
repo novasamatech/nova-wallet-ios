@@ -62,12 +62,8 @@ struct StakingDashboardViewFactory {
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let stakingConfigProvider = StakingGlobalConfigProvider(
-            configUrl: ApplicationConfig.shared.stakingGlobalConfigURL
-        )
-
         let syncServiceFactory = MultistakingSyncServiceFactory(
-            stakingConfigProvider: stakingConfigProvider,
+            configProvider: GlobalConfigProvider.shared,
             storageFacade: SubstrateDataStorageFacade.shared,
             chainRegistry: chainRegistry
         )

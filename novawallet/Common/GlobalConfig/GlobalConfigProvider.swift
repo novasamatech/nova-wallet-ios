@@ -1,37 +1,33 @@
 import Foundation
 import Operation_iOS
 
-struct StakingGlobalConfig: Decodable {
-    let multiStakingApiUrl: URL
+protocol GlobalConfigProviding {
+    func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig>
 }
 
-protocol StakingGlobalConfigProviding {
-    func createConfigWrapper() -> CompoundOperationWrapper<StakingGlobalConfig>
-}
-
-final class StakingGlobalConfigProvider: BaseFetchOperationFactory {
+final class GlobalConfigProvider: BaseFetchOperationFactory {
     let configUrl: URL
 
     @Atomic(defaultValue: nil)
-    private var config: StakingGlobalConfig?
+    private var config: GlobalConfig?
 
     init(configUrl: URL) {
         self.configUrl = configUrl
     }
 }
 
-extension StakingGlobalConfigProvider: StakingGlobalConfigProviding {
-    func createConfigWrapper() -> CompoundOperationWrapper<StakingGlobalConfig> {
+extension GlobalConfigProvider: GlobalConfigProviding {
+    func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
         if let config {
             return CompoundOperationWrapper.createWithResult(config)
         }
 
-        let fetchOperation: BaseOperation<StakingGlobalConfig> = createFetchOperation(
+        let fetchOperation: BaseOperation<GlobalConfig> = createFetchOperation(
             from: configUrl,
             shouldUseCache: false
         )
 
-        let mapOperation = ClosureOperation<StakingGlobalConfig> {
+        let mapOperation = ClosureOperation<GlobalConfig> {
             let config = try fetchOperation.extractNoCancellableResultData()
             self.config = config
             return config

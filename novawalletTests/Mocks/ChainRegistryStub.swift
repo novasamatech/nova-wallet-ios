@@ -28,6 +28,10 @@ extension MockChainRegistryProtocol {
                 }
             }
 
+            stub.getChain(for: any()).then { chainId in
+                availableChains[chainId]
+            }
+
             stub.chainsSubscribe(
                 any(),
                 runningInQueue: any(),

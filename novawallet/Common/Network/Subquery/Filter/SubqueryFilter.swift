@@ -86,6 +86,28 @@ struct SubqueryContainsKeyFilter: SubqueryFilter {
     }
 }
 
+struct SubqueryFieldInFilter: SubqueryFilter {
+    let fieldName: String
+    let values: [SubqueryFilterValue]
+
+    func rawSubqueryFilter() -> String {
+        let rawValues = values
+            .map { $0.rawSubqueryFilter() }
+            .joined(with: .commaSpace)
+
+        return "\(fieldName): { in: [\(rawValues)] }"
+    }
+}
+
+struct SubqueryFieldInnerFilter: SubqueryFilter {
+    let fieldName: String
+    let innerFilter: SubqueryFilter
+
+    func rawSubqueryFilter() -> String {
+        "\(fieldName): { \(innerFilter.rawSubqueryFilter()) }"
+    }
+}
+
 struct SubqueryIsNullFilter: SubqueryFilter {
     let fieldName: String
 
@@ -97,6 +119,14 @@ struct SubqueryIsNullFilter: SubqueryFilter {
 extension String: SubqueryFilterValue {
     func rawSubqueryFilter() -> String {
         "\"\(self)\""
+    }
+}
+
+struct SubqueryStringConvertibleValue<T: LosslessStringConvertible>: SubqueryFilterValue {
+    let value: T
+
+    func rawSubqueryFilter() -> String {
+        "\(value)"
     }
 }
 

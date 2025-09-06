@@ -51,7 +51,7 @@ final class SubqueryMultistakingTests: XCTestCase {
         let operationQueue = OperationQueue()
 
         let operationFactory = SubqueryMultistakingProxy(
-            configProvider: StakingGlobalConfigProvider(configUrl: ApplicationConfig.shared.stakingGlobalConfigURL),
+            configProvider: GlobalConfigProvider(configUrl: ApplicationConfig.shared.globalConfigURL),
             operationQueue: operationQueue
         )
 

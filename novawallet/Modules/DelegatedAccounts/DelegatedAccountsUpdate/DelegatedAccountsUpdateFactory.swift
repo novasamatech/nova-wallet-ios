@@ -36,7 +36,7 @@ private extension DelegatedAccountsUpdateFactory {
             .filter { walletsFilter($0) }
             .compactMap { wallet -> DelegationInfo? in
                 guard
-                    let delegationId = wallet.info.delegationId,
+                    let delegationId = wallet.info.getDelegateIdentifier(),
                     let status = wallet.info.delegatedAccountStatus(),
                     statuses.contains(status)
                 else {
@@ -78,7 +78,7 @@ private extension DelegatedAccountsUpdateFactory {
 
                 let delegatedInfo = WalletView.ViewModel.DelegatedAccountInfo(
                     networkIcon: chainIcon,
-                    type: createSubtitle(for: delegationId.delegationType, locale: locale),
+                    type: createSubtitle(for: delegationId.delegateType, locale: locale),
                     pairedAccountIcon: subtitleDetailsIconViewModel,
                     pairedAccountName: delegateWallet?.info.name,
                     isNew: false
@@ -96,8 +96,8 @@ private extension DelegatedAccountsUpdateFactory {
         locale: Locale
     ) -> String {
         switch delegationType {
-        case let .proxy(proxyType):
-            proxyType.subtitle(locale: locale)
+        case let .proxy(model):
+            model.type.subtitle(locale: locale)
         case .multisig:
             R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory() + ":"
         }

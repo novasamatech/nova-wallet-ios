@@ -2,42 +2,48 @@ import Foundation
 
 final class ProxyMetaAccountFactory {
     let chainModel: ChainModel
+    let logger: LoggerProtocol
 
-    init(chainModel: ChainModel) {
+    init(chainModel: ChainModel, logger: LoggerProtocol) {
         self.chainModel = chainModel
-    }
-
-    private func updateProxyStatus(
-        for metaAccount: ManagedMetaAccountModel,
-        _ newStatus: DelegatedAccount.Status,
-        proxy: DelegatedAccount.ProxyAccountModel
-    ) -> ManagedMetaAccountModel {
-        let updatedProxy = proxy.replacingStatus(newStatus)
-
-        let newInfo = metaAccount.info.replacingProxy(
-            chainId: chainModel.chainId,
-            proxy: updatedProxy
-        )
-
-        return metaAccount.replacingInfo(newInfo)
+        self.logger = logger
     }
 }
 
-extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
-    func createMetaAccount(
-        for delegatedAccount: any DiscoveredDelegatedAccountProtocol,
-        using identities: [AccountId: AccountIdentity],
-        metaAccounts _: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel {
-        guard let proxied = delegatedAccount as? ProxiedAccount else {
-            throw DelegatedAccountError.invalidAccountType
+private extension ProxyMetaAccountFactory {
+    func ensureCanHandle(
+        delegatedAccount: DiscoveredDelegatedAccountProtocol
+    ) -> DiscoveredAccount.ProxiedModel? {
+        guard
+            let proxied = delegatedAccount as? DiscoveredAccount.ProxiedModel,
+            proxied.chainId == chainModel.chainId else {
+            return nil
         }
 
+        return proxied
+    }
+
+    func ensureProxyWalletExists(
+        for proxied: DiscoveredAccount.ProxiedModel,
+        context: DelegatedMetaAccountFactoryContext
+    ) -> Bool {
+        context.metaAccounts.contains { metaAccount in
+            metaAccount.info.has(
+                accountId: proxied.proxyAccountId,
+                chainId: chainModel.chainId
+            )
+        }
+    }
+
+    func createWallet(
+        for proxied: DiscoveredAccount.ProxiedModel,
+        context: DelegatedMetaAccountFactoryContext
+    ) -> ManagedMetaAccountModel {
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
 
         let proxy = DelegatedAccount.ProxyAccountModel(
-            type: proxied.proxyAccount.type,
-            accountId: proxied.proxyAccount.accountId,
+            type: proxied.type,
+            accountId: proxied.proxyAccountId,
             status: .new
         )
 
@@ -50,8 +56,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
             multisig: nil
         )
 
-        let name = try identities[proxied.accountId]?.displayName
-            ?? proxied.accountId.toAddress(using: chainModel.chainFormat)
+        let name = context.deriveName(for: proxied.accountId, maybeChain: chainModel)
 
         let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
             metaId: UUID().uuidString,
@@ -68,76 +73,21 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
         return newWallet
     }
-
-    func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
-        guard
-            let proxyAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
-            let proxy = proxyAccount.proxy,
-            proxy.status == .revoked
-        else { return metaAccount }
-
-        return updateProxyStatus(
-            for: metaAccount,
-            .new,
-            proxy: proxy
-        )
-    }
-
-    func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
-        guard
-            let proxyAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
-            let proxy = proxyAccount.proxy
-        else { return metaAccount }
-
-        return updateProxyStatus(
-            for: metaAccount,
-            .revoked,
-            proxy: proxy
-        )
-    }
-
-    func matchesDelegatedAccount(
-        _ metaAccount: ManagedMetaAccountModel,
-        delegatedAccount: DiscoveredDelegatedAccountProtocol
-    ) -> Bool {
-        guard
-            let remoteProxied = delegatedAccount as? ProxiedAccount,
-            let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
-            let localProxyModel = chainAccount.proxy
-        else { return false }
-
-        return chainAccount.accountId == remoteProxied.accountId &&
-            localProxyModel.accountId == remoteProxied.proxyAccount.accountId &&
-            localProxyModel.type == remoteProxied.proxyAccount.type
-    }
-
-    func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
-        guard
-            let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
-            let proxy = chainAccount.proxy
-        else { return nil }
-
-        return DelegateIdentifier(
-            delegatorAccountId: chainAccount.accountId,
-            delegateAccountId: proxy.accountId,
-            delegateType: .proxy(proxy.type)
-        )
-    }
-
-    func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool {
-        guard let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId) else {
-            return false
-        }
-
-        return chainAccount.proxy != nil
-    }
-
-    func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
-        delegatedAccount is ProxiedAccount
-    }
 }
 
-enum DelegatedAccountError: Error {
-    case invalidAccountType
-    case callHashNotFound
+extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
+    func createMetaAccount(
+        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
+        context: DelegatedMetaAccountFactoryContext
+    ) -> ManagedMetaAccountModel? {
+        guard let proxied = ensureCanHandle(delegatedAccount: delegatedAccount) else {
+            return nil
+        }
+
+        guard ensureProxyWalletExists(for: proxied, context: context) else {
+            return nil
+        }
+
+        return createWallet(for: proxied, context: context)
+    }
 }

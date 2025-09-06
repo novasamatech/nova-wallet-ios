@@ -57,7 +57,7 @@ final class MultistakingSyncTests: XCTestCase {
         )
 
         let subqueryFactory = SubqueryMultistakingProxy(
-            configProvider: StakingGlobalConfigProvider(configUrl: ApplicationConfig.shared.stakingGlobalConfigURL),
+            configProvider: GlobalConfigProvider(configUrl: ApplicationConfig.shared.globalConfigURL),
             operationQueue: operationQueue
         )
 

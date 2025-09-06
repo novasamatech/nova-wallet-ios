@@ -384,7 +384,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         case .proxied:
             guard let delegate = localSignatory.delegate else { return .noInfo }
 
-            if case let .proxy(proxyType) = delegate.delegationType {
+            if case let .proxy(proxyModel) = delegate.delegationType {
                 guard let iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
                     from: delegate.metaAccount.walletIdenticonData,
                     identifier: localSignatory.metaAccount.metaId
@@ -394,7 +394,7 @@ private extension MultisigOperationConfirmViewModelFactory {
 
                 let delegatedAccountInfo = WalletView.ViewModel.DelegatedAccountInfo(
                     networkIcon: iconViewModel,
-                    type: proxyType.title(locale: locale),
+                    type: proxyModel.type.title(locale: locale),
                     pairedAccountIcon: iconViewModel,
                     pairedAccountName: delegate.metaAccount.chainAccount.name,
                     isNew: false
