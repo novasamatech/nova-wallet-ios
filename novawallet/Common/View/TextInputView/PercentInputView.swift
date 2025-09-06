@@ -91,7 +91,7 @@ final class PercentInputView: BackgroundedContentControl {
 
         if !buttonsStack.isHidden, !buttonsStack.arrangedSubviews.isEmpty {
             var buttonsWidth: CGFloat = buttonsStack.arrangedSubviews.reduce(into: 0) {
-                $0 = $0 + $1.intrinsicContentSize.width
+                $0 += $1.intrinsicContentSize.width
             }
             buttonsWidth += CGFloat(buttonsStack.arrangedSubviews.count - 1) * 8
             let height: CGFloat = buttonsStack.arrangedSubviews.max(by: {
