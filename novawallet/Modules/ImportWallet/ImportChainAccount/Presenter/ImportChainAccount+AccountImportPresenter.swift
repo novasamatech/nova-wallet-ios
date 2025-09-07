@@ -194,8 +194,7 @@ extension ImportChainAccount {
 
         override func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {
             if (try? Data(hexString: chainModelId)) != preferredInfo.genesisHash {
-                let message = R.string.localizable
-                    .accountImportWrongNetwork(preferredLanguages: selectedLocale.rLanguages)
+                let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountImportWrongNetwork()
                 view?.setUploadWarning(message: message)
                 return
             }

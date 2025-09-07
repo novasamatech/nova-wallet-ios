@@ -275,10 +275,8 @@ final class CrowdloansViewModelFactory {
         }
 
         let (active, completed) = cellsViewModel
-        let activeTitle = R.string.localizable
-            .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
-        let completedTitle = R.string.localizable
-            .crowdloanCompletedSection(preferredLanguages: locale.rLanguages)
+        let activeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanActiveSection()
+        let completedTitle = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanCompletedSection()
 
         if !active.isEmpty {
             if !completed.isEmpty {
@@ -304,8 +302,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         chainAsset: ChainAssetDisplayInfo?,
         locale: Locale
     ) -> CrowdloansViewModel {
-        let message = R.string.localizable
-            .commonErrorNoDataRetrieved_v3_9_1(preferredLanguages: locale.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorNoDataRetrieved_v3_9_1()
         let errorSection = CrowdloansSection.error(message: message)
         let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
         return .init(sections: [
@@ -325,8 +322,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
     ) -> CrowdloansViewModel {
         guard !crowdloans.isEmpty else {
             let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
-            let activeTitle = R.string.localizable
-                .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
+            let activeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanActiveSection()
             let emptySection = CrowdloansSection.empty(title: activeTitle)
 
             return .init(sections: [

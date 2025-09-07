@@ -13,10 +13,14 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateBottomSheetPassword()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupCreateBottomSheetPassword()
                         ],
                         formattingClosure: { items in
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateBottomSheetMessage(
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupCreateBottomSheetMessage(
                                 items[0]
                             )
                         },
@@ -97,8 +101,12 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted1(),
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted2()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupNoPasswordHighlighted1(),
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupNoPasswordHighlighted2()
                         ],
                         formattingClosure: { items in
                             R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordMessage(
@@ -147,10 +155,14 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNoPasswordHighlighted1()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupNoPasswordHighlighted1()
                         ],
                         formattingClosure: { items in
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupBrokenMessage(
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupBrokenMessage(
                                 items[0]
                             )
                         },
@@ -284,10 +296,14 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSheetPasswordChangedEnterNew()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupSheetPasswordChangedEnterNew()
                         ],
                         formattingClosure: { items in
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSheetPasswordChangedMessage(
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupSheetPasswordChangedMessage(
                                 items[0]
                             )
                         },
@@ -408,7 +424,9 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupWillDeleteHighlighted()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupWillDeleteHighlighted()
                         ],
                         formattingClosure: { items in
                             R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupWillDeleteMessage(

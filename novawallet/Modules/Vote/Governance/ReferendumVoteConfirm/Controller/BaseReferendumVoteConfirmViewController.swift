@@ -65,8 +65,7 @@ class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
         let hint = R.string(preferredLanguages: languages).localizable.govVoteSetupHint()
         rootView.hintsView.bind(texts: [hint])
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

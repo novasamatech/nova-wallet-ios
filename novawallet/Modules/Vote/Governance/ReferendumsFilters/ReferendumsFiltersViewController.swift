@@ -157,14 +157,11 @@ extension ReferendumsFiltersViewController: Localizable {
             return
         }
 
-        title = R.string.localizable
-            .governanceReferendumsFilterTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumsFilterTitle()
 
-        navigationItem.rightBarButtonItem?.title = R.string.localizable
-            .commonReset(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable
-            .commonApply(preferredLanguages: selectedLocale.rLanguages)
+        rootView.applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply()
 
         rootView.tableView.reloadData()
     }

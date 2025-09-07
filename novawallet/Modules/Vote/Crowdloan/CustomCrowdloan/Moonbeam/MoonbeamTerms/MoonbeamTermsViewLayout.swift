@@ -102,14 +102,11 @@ final class MoonbeamTermsViewLayout: UIView {
     }
 
     private func applyLocalization() {
-        descriptionLabel.text = R.string.localizable
-            .crowdloanMoonbeamTermsDescription(preferredLanguages: locale.rLanguages)
+        descriptionLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamTermsDescription()
 
         let termsConditions = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanTermsValue()
-        termsLabel.text = R.string.localizable
-            .crowdloanTermsFormat(termsConditions, preferredLanguages: locale.rLanguages)
-        learnMoreView.titleLabel.text = R.string.localizable
-            .crowdloanMoonbeamTermsTitle(preferredLanguages: locale.rLanguages)
+        termsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanTermsFormat(termsConditions)
+        learnMoreView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamTermsTitle()
         networkFeeConfirmView.locale = locale
         updateActionButton()
     }
@@ -120,12 +117,10 @@ final class MoonbeamTermsViewLayout: UIView {
 
     func updateActionButton() {
         if termsSwitchView.isOn {
-            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .crowdloanSubmitAgreement(preferredLanguages: locale.rLanguages)
+            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanSubmitAgreement()
             networkFeeConfirmView.actionButton.applyEnabledStyle()
         } else {
-            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .karuraTermsAction(preferredLanguages: locale.rLanguages)
+            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.karuraTermsAction()
             networkFeeConfirmView.actionButton.applyDisabledStyle()
         }
     }

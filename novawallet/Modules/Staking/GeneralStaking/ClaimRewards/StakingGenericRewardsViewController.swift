@@ -47,8 +47,7 @@ class StakingGenericRewardsViewController<V: StakingGenericRewardsViewLayout>: U
 
         title = R.string(preferredLanguages: languages).localizable.stakingClaimRewards()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
 
         rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
         ).localizable.commonWallet()

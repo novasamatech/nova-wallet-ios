@@ -57,8 +57,7 @@ extension StakingAlert {
         case let .nominatorChangeValidators(_, localizedString):
             return localizedString.value(for: locale)
         case .nominatorAllOversubscribed:
-            return R.string.localizable
-                .stakingYourOversubscribedMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourOversubscribedMessage()
         case let .nominatorLowStake(localizedString):
             return localizedString.value(for: locale)
         case let .redeemUnbonded(localizedString):

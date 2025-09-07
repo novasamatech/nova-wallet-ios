@@ -54,8 +54,7 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendTitle()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
 
         if rootView.destinationNetworkCell == nil {
             rootView.originNetworkCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages

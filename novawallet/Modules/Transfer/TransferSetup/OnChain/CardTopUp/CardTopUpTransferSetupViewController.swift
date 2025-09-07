@@ -80,8 +80,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAddress(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAddress()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -91,8 +90,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAmount()
             rootView.actionButton.invalidateLayout()
 
             return

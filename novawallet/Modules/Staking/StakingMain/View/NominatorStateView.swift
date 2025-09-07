@@ -32,8 +32,7 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     }
 
     private func applyLocalization() {
-        titleLabel.text = R.string.localizable
-            .stakingYourStake(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourStake()
     }
 
     private func applyViewModel() {

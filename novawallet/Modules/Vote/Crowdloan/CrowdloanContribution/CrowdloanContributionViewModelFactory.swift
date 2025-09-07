@@ -243,8 +243,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         }()
 
         return CrowdloanRewardDestinationVM(
-            title: R.string.localizable
-                .crowdloanRewardDestinationFormat(displayInfo.token, preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanRewardDestinationFormat(displayInfo.token),
             accountName: displayInfo.name,
             accountAddress: address,
             crowdloanIcon: displayInfo.icon,

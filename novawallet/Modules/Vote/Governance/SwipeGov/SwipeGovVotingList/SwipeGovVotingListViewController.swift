@@ -170,11 +170,9 @@ private extension SwipeGovVotingListViewController {
 
     func updateEditButton() {
         if rootView.tableView.isEditing {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable
-                .commonDone(preferredLanguages: selectedLocale.rLanguages)
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
         } else {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable
-                .commonEdit(preferredLanguages: selectedLocale.rLanguages)
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonEdit()
         }
     }
 

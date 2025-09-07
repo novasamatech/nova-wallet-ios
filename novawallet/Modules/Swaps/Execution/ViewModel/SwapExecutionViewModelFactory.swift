@@ -35,14 +35,16 @@ final class SwapExecutionViewModelFactory {
     ) -> String {
         switch operation.label {
         case .transfer:
-            return R.string(preferredLanguages: locale.rLanguages
+            return R.string(
+                preferredLanguages: locale.rLanguages
             ).localizable.swapsExecutionTransferDetails(operation.assetIn.asset.symbol, operation.assetOut.chain.name)
         case .swap:
-            return R.string.localizable.swapsExecutionSwapDetails(
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsExecutionSwapDetails(
                 operation.assetIn.asset.symbol,
                 operation.assetOut.asset.symbol,
-                operation.assetOut.chain.name,
-                preferredLanguages: locale.rLanguages
+                operation.assetOut.chain.name
             )
         }
     }

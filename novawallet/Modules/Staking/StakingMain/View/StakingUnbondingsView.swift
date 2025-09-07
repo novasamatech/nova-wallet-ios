@@ -220,8 +220,7 @@ final class StakingUnbondingsView: UIView {
         if daysLeft == 0 {
             return (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
         } else {
-            return R.string.localizable
-                .commonDaysLeftFormat(format: daysLeft, preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysLeftFormat(format: daysLeft)
         }
     }
 

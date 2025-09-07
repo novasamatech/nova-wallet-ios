@@ -122,8 +122,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         leasingPeriodView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
         ).localizable.crowdloanLeasingPeriod()
 
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
+        amountInputView.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendAmountTitle()
 
         estimatedRewardView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
         ).localizable.crowdloanReward()

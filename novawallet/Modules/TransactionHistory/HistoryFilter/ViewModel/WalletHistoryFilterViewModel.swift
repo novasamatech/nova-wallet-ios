@@ -15,8 +15,7 @@ enum WalletHistoryFilterRow: Int, CaseIterable {
             }
         case .rewardsAndSlashes:
             return LocalizableResource { locale in
-                R.string.localizable
-                    .walletFiltersRewardsAndSlashes(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.walletFiltersRewardsAndSlashes()
             }
         case .extrinsics:
             return LocalizableResource { locale in

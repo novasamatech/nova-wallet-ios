@@ -83,7 +83,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
 
     private func setupInstallButton() {
         let preferredLanguages = selectedLocale.rLanguages
-        rootView.installButton.imageWithTitleView?.title =R.string(
+        rootView.installButton.imageWithTitleView?.title = R.string(
             preferredLanguages: preferredLanguages
         ).localizable.inAppUpdatesInstallButtonTitle()
         rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)

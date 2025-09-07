@@ -24,8 +24,7 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
     }
 
     private func applyLocalization() {
-        titleLabel.text = R.string.localizable
-            .stakingValidatorSummaryTitle(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorSummaryTitle()
     }
 
     private func applyViewModel() {

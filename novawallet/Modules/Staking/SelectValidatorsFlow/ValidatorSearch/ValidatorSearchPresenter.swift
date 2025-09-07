@@ -116,12 +116,9 @@ extension ValidatorSearchPresenter: ValidatorSearchPresenterProtocol {
 
         guard !changedValidator.blocked else {
             wireframe.present(
-                message: R.string.localizable
-                    .stakingCustomBlockedWarning(preferredLanguages: selectedLocale.rLanguages),
-                title: R.string.localizable
-                    .commonWarning(preferredLanguages: selectedLocale.rLanguages),
-                closeAction: R.string.localizable
-                    .commonClose(preferredLanguages: selectedLocale.rLanguages),
+                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomBlockedWarning(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
+                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view
             )
             return

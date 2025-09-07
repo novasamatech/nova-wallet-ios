@@ -53,7 +53,9 @@ extension CloudBackPasswordViewModelFactory: CloudBackPasswordViewModelFactoryPr
         if flow == .confirmPassword {
             hints.append(
                 createViewModel(
-                    for: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreateHintPasswordMatch(),
+                    for: R.string(
+                        preferredLanguages: locale.rLanguages
+                    ).localizable.cloudBackupCreateHintPasswordMatch(),
                     isMatches: result.contains(.confirmMatchesPassword)
                 )
             )

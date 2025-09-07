@@ -39,8 +39,7 @@ final class CollatorStakingRedeemViewController: UIViewController, ViewHolder {
 
         title = R.string(preferredLanguages: languages).localizable.stakingRedeem()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
 
         rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
         ).localizable.commonWallet()

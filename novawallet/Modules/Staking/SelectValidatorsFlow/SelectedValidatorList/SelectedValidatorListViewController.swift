@@ -74,11 +74,9 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 
     private func updateEditButton() {
         if rootView.tableView.isEditing {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable
-                .commonDone(preferredLanguages: selectedLocale.rLanguages)
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
         } else {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable
-                .commonEdit(preferredLanguages: selectedLocale.rLanguages)
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonEdit()
         }
     }
 
@@ -90,18 +88,13 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 
         if cellViewModels.count > selectedValidatorsLimit {
             isEnabled = false
-            buttonTitle = R.string.localizable
-                .stakingCustomProceedButtonDisabledTitle(
-                    selectedValidatorsLimit,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomProceedButtonDisabledTitle(selectedValidatorsLimit)
 
         } else {
             isEnabled = true
-            buttonTitle = R.string.localizable
-                .commonContinue(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonContinue()
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle
@@ -152,8 +145,7 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 extension SelectedValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .stakingSelectedValidatorsTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectedValidatorsTitle()
 
             updateEditButton()
             updateProceedButton()

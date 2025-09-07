@@ -170,8 +170,7 @@ extension NominationPoolSearchViewController: EmptyStateDataSource {
             emptyView.title = text
         case .loaded:
             emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable
-                .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchStartTitle_v2_2_0()
         case .loading:
             return nil
         }

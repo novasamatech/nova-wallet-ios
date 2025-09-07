@@ -30,11 +30,9 @@ extension UnifiedAddressPopup.ViewModelFactory {
         let wikiText = R.string(preferredLanguages: languages).localizable.commonLearnMore()
         let checkboxText = R.string(preferredLanguages: languages).localizable.unifiedAddressPopupCheckboxText()
 
-        let newFormatText = R.string.localizable
-            .unifiedAddressNewFormat(preferredLanguages: languages)
+        let newFormatText = R.string(preferredLanguages: languages).localizable.unifiedAddressNewFormat()
             .uppercased()
-        let legacyFormatText = R.string.localizable
-            .unifiedAddressLegacyFormat(preferredLanguages: languages)
+        let legacyFormatText = R.string(preferredLanguages: languages).localizable.unifiedAddressLegacyFormat()
             .uppercased()
         let newAddress = UnifiedAddressPopup.AddressViewModel(
             formatText: newFormatText,

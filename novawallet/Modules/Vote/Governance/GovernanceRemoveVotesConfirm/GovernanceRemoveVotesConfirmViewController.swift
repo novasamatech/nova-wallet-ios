@@ -59,8 +59,7 @@ final class GovRemoveVotesConfirmViewController: UIViewController, ViewHolder {
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

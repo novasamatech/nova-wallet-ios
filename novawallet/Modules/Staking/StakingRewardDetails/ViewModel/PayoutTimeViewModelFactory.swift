@@ -46,8 +46,7 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
                 return R.string(preferredLanguages: locale.rLanguages
                 ).localizable.commonTimeLeftFormat(formattedTime)
             } else {
-                return R.string.localizable
-                    .commonDaysLeftFormat(format: daysLeft, preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysLeftFormat(format: daysLeft)
             }
         }()
 

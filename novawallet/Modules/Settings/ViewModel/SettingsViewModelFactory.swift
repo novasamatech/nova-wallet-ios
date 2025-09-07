@@ -94,8 +94,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     }
 
     private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profileLanguageTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.profileLanguageTitle()
 
         let subtitle = language?.title(in: locale)?.capitalized
 
