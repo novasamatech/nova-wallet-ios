@@ -341,12 +341,10 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 
     func showPriceDifferenceInfo() {
         let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsSetupPriceDifference()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifference()
         }
         let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsSetupPriceDifferenceDescription()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifferenceDescription()
         }
         wireframe.showInfo(
             from: view,

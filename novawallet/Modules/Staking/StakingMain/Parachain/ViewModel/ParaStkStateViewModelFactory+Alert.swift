@@ -65,8 +65,7 @@ extension ParaStkStateViewModelFactory {
     ) -> StakingAlert? {
         if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notRewarded }) {
             let description = LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages
-                ).localizable.parachainStakingAlertCollatorsWithNoRewards()
+                R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingAlertCollatorsWithNoRewards()
             }
 
             return .nominatorLowStake(description)
@@ -80,8 +79,7 @@ extension ParaStkStateViewModelFactory {
     ) -> StakingAlert? {
         if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notElected }) {
             let description = LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages
-                ).localizable.parachainStakingAlertCollatorsChange()
+                R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingAlertCollatorsChange()
             }
 
             let title = LocalizableResource { locale in

@@ -68,8 +68,7 @@ class CollatorStkBaseUnstakeSetupVC<V: CollatorStkBaseUnstakeSetupLayout>: UIVie
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 }
@@ -80,22 +79,17 @@ private extension CollatorStkBaseUnstakeSetupVC {
 
         title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
-        rootView.collatorTitleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.parachainStakingCollator()
+        rootView.collatorTitleLabel.text = R.string(preferredLanguages: languages).localizable.parachainStakingCollator()
 
         applyCollator(viewModel: collatorViewModel)
 
-        rootView.amountView.titleView.text = R.string(preferredLanguages: languages
-        ).localizable.walletSendAmountTitle()
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonStakedPrefix()
+        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonStakedPrefix()
 
-        rootView.transferableView.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.walletBalanceAvailable()
+        rootView.transferableView.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
 
-        rootView.minStakeView.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.stakingMainMinimumStakeTitle()
+        rootView.minStakeView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainMinimumStakeTitle()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -123,8 +117,7 @@ private extension CollatorStkBaseUnstakeSetupVC {
             let emptyViewModel = AccountDetailsSelectionViewModel(
                 displayAddress: DisplayAddressViewModel(
                     address: "",
-                    name: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.parachainStakingSelectCollator(),
+                    name: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingSelectCollator(),
                     imageViewModel: nil
                 ),
                 details: nil

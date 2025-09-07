@@ -333,8 +333,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
     func didDeleteBackup() {
         wireframe.presentMultilineSuccessNotification(
-            R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.cloudBackupDeleted(),
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupDeleted(),
             from: view
         )
     }

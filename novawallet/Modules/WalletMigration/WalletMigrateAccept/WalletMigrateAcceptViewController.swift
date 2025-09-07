@@ -67,8 +67,7 @@ private extension WalletMigrateAcceptViewController {
         ).localizable.walletMigrateAcceptMessage()
 
         rootView.genericActionView.actionButton.setTitle(
-            R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonContinue())
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue())
     }
 
     @objc func actionAccept() {

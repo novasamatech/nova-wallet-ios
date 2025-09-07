@@ -89,16 +89,13 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     func setup(locale: Locale) {
         slippageCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupSlippage()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippage()
         )
         priceDifferenceCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupPriceDifference()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupPriceDifference()
         )
         rateCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupDetailsRate()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
         )
         routeCell.titleButton.setTitle(
             R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()

@@ -63,8 +63,7 @@ final class ReferendumDetailsViewLayout: UIView {
     }
 
     func setTimeline(model: [ReferendumTimelineView.Model]?, locale: Locale) {
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.govReferendumDetailsTimelineTitle()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govReferendumDetailsTimelineTitle()
 
         timelineView.titleLabel.text = title
 
@@ -77,8 +76,7 @@ final class ReferendumDetailsViewLayout: UIView {
         if let models = models, !models.isEmpty {
             dAppsTableView.isHidden = false
 
-            let title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonUseDapp()
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonUseDapp()
 
             let headerView = createHeader(with: title)
             dAppsTableView.setCustomHeight(32, at: 0)

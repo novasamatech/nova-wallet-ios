@@ -82,8 +82,7 @@ class WalletsListViewController<
             title = nil
         case .watchOnly:
             icon = R.image.iconWatchOnlyHeader()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonWatchOnly().uppercased()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWatchOnly().uppercased()
         case .paritySigner:
             icon = ParitySignerType.legacy.iconForHeader
             title = ParitySignerType.legacy.getName(for: selectedLocale).uppercased()
@@ -92,20 +91,16 @@ class WalletsListViewController<
             title = ParitySignerType.vault.getName(for: selectedLocale).uppercased()
         case .ledger:
             icon = R.image.iconLedgerHeaderWarning()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonLedgerLegacy().uppercased()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedgerLegacy().uppercased()
         case .proxied:
             icon = R.image.iconProxy()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonProxieds().uppercased()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonProxieds().uppercased()
         case .multisig:
             icon = R.image.iconMultisigWallet()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonMultisig().uppercased()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonMultisig().uppercased()
         case .genericLedger:
             icon = R.image.iconLedgerHeader()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonLedger().uppercased()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedger().uppercased()
         }
 
         guard let title, let icon else { return nil }

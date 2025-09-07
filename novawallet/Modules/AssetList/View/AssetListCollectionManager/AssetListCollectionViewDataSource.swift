@@ -236,8 +236,7 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListEmptyMessage()
-        let actionTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.walletListEmptyActionTitle()
+        let actionTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListEmptyActionTitle()
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)

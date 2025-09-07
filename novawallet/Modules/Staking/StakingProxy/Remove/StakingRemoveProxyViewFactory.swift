@@ -48,8 +48,7 @@ struct StakingRemoveProxyViewFactory {
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             title: .init {
-                R.string(preferredLanguages: $0.rLanguages
-                ).localizable.stakingProxyManagementRevokeAccess()
+                R.string(preferredLanguages: $0.rLanguages).localizable.stakingProxyManagementRevokeAccess()
             }
         )
 

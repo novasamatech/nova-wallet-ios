@@ -59,8 +59,7 @@ final class NftDetailsPresenter {
             labelString = R.string(preferredLanguages: selectedLocale.rLanguages
             ).localizable.nftListItemLimitedFormat(snString, totalIssuanceString)
         case .unlimited:
-            labelString = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.nftListItemUnlimited()
+            labelString = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.nftListItemUnlimited()
         case let .fungible(amount, totalSupply):
             let amountString = balanceViewModelFactory.unitsFromValue(amount.decimal()).value(
                 for: selectedLocale
@@ -101,8 +100,7 @@ final class NftDetailsPresenter {
 
         if let unitsDecimal = price.units?.decimal() {
             let unitsString = balanceViewModelFactory.unitsFromValue(unitsDecimal).value(for: selectedLocale)
-            let amount = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.nftFungiblePrice(unitsString, viewModel.amount)
+            let amount = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.nftFungiblePrice(unitsString, viewModel.amount)
 
             let viewModelWithUnits = BalanceViewModel(amount: amount, price: viewModel.price)
 

@@ -44,11 +44,9 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingSetupYourProxies()
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSetupYourProxies()
 
-        rootView.addButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.delegationsAddTitle()
+        rootView.addButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsAddTitle()
     }
 
     private func makeDataSource() -> DataSource {
@@ -98,8 +96,7 @@ extension StakingProxyManagementViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let text = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingProxyManagementTitle()
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingProxyManagementTitle()
         header.bind(text: text)
         return header
     }

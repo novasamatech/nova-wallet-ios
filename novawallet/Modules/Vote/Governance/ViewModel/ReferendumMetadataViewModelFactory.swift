@@ -43,8 +43,7 @@ extension ReferendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory
         } else {
             let index = indexFormatter.value(for: locale).string(from: referendum.index as NSNumber)
 
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.govReferendumTitleFallback(index ?? "")
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govReferendumTitleFallback(index ?? "")
         }
     }
 

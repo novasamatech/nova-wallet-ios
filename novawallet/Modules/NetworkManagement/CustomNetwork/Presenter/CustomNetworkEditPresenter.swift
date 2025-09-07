@@ -42,8 +42,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
     }
 
     override func completeButtonTitle() -> String {
-        R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonSave()
+        R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSave()
     }
 
     override func provideURLViewModel() {

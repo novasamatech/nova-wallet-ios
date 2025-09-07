@@ -48,8 +48,7 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumsYourDelegations()
 
-        rootView.addDelegationButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.delegationsAddTitle()
+        rootView.addDelegationButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsAddTitle()
     }
 
     private func setupHandlers() {

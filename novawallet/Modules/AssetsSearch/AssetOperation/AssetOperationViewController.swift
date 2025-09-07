@@ -14,11 +14,9 @@ class AssetOperationViewController: AssetsSearchViewController {
         let languages = selectedLocale.rLanguages
 
         rootView.searchBar.textField.placeholder = if assetGroupsLayoutStyle == .networks {
-            R.string(preferredLanguages: languages
-            ).localizable.assetsSearchPlaceholder()
+            R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()
         } else {
-            R.string(preferredLanguages: languages
-            ).localizable.assetsSearchTokenHint()
+            R.string(preferredLanguages: languages).localizable.assetsSearchTokenHint()
         }
     }
 }

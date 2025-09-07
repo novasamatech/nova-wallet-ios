@@ -55,8 +55,7 @@ final class YieldBoostCollatorSelectionFactory: YieldBoostCollatorSelectionFacto
 
             return LocalizableResource { locale in
                 let detailsTitle = localizedAprString.value(for: locale)
-                let detailsSubtitle = isYieldBoosted ? R.string(preferredLanguages: locale.rLanguages
-                ).localizable.commonYieldBoosted() : ""
+                let detailsSubtitle = isYieldBoosted ? R.string(preferredLanguages: locale.rLanguages).localizable.commonYieldBoosted() : ""
 
                 let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)
 

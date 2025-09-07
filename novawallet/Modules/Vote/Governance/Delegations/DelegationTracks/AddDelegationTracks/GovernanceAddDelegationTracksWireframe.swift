@@ -47,11 +47,9 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
         }
 
         let message = LocalizableResource { locale in
-            let tracksString = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonInTracks(format: tracksCount)
+            let tracksString = R.string(preferredLanguages: locale.rLanguages).localizable.commonInTracks(format: tracksCount)
 
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.govRemoveVotesAskDetails(tracksString)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govRemoveVotesAskDetails(tracksString)
         }
 
         let skipAction = MessageSheetAction(

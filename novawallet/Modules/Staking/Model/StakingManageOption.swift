@@ -22,8 +22,7 @@ enum StakingManageOption {
         case .pendingRewards:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingPendingRewards_v2_0_0()
         case .rewardDestination:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingRewardsDestinationTitle_v2_0_0()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardsDestinationTitle_v2_0_0()
         case .changeValidators, .setupValidators:
             if let statics = statics {
                 return statics.actionsYourValidators(for: locale)

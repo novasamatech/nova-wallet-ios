@@ -9,8 +9,7 @@ final class ValidatorSearchViewModelFactory {
         displayValidatorsCount: Int,
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonSearchResultsNumber(displayValidatorsCount)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonSearchResultsNumber(displayValidatorsCount)
 
         let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleRewards()
 

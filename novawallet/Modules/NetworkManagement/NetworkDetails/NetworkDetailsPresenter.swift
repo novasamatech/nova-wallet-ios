@@ -253,19 +253,15 @@ private extension NetworkDetailsPresenter {
 
     func openDeleteNodeAlert(for node: ChainNodeModel) {
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.networkNodeDeleteAlertTitle(),
-            message: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.networkNodeDeleteAlertDescription(node.name),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertTitle(),
+            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertDescription(node.name),
             actions: [
                 .init(
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonCancel(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),
                     style: .cancel
                 ),
                 .init(
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonDelete(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDelete(),
                     style: .destructive,
                     handler: {
                         [weak self] in self?.interactor.deleteNode(node)
@@ -283,19 +279,15 @@ private extension NetworkDetailsPresenter {
 
     func openDeleteNetworkAlert() {
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.networkManageDeleteAlertTitle(),
-            message: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.networkManageDeleteAlertDescription(),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertTitle(),
+            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertDescription(),
             actions: [
                 .init(
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonCancel(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),
                     style: .cancel
                 ),
                 .init(
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonDelete(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDelete(),
                     style: .destructive,
                     handler: {
                         [weak self] in self?.interactor.deleteNetwork()

@@ -126,19 +126,16 @@ final class ValidatorInfoViewLayout: UIView {
     ) -> UIView {
         let statusCell = StackTableCell()
         statusCell.rowContentView.valueView.mode = .detailsIcon
-        statusCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingRewardDetailsStatus()
+        statusCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardDetailsStatus()
 
         switch viewModel.status {
         case .elected:
-            statusCell.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingValidatorStatusElected()
+            statusCell.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorStatusElected()
 
             statusCell.iconImageView.image = R.image.iconValid()
 
         case .unelected:
-            statusCell.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingValidatorStatusUnelected()
+            statusCell.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorStatusUnelected()
 
             statusCell.iconImageView.image = R.image.iconPending()
         }
@@ -171,8 +168,7 @@ final class ValidatorInfoViewLayout: UIView {
         locale: Locale
     ) -> UIControl {
         let cell = StackTitleMultiValueCell()
-        cell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingValidatorTotalStake()
+        cell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorTotalStake()
 
         cell.rowContentView.valueView.bind(
             topValue: exposure.totalStake.amount,
@@ -192,8 +188,7 @@ final class ValidatorInfoViewLayout: UIView {
         let cell = StackTitleMultiValueCell()
         cell.canSelect = false
 
-        cell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingMainMinimumStakeTitle()
+        cell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingMainMinimumStakeTitle()
 
         cell.rowContentView.valueView.bind(topValue: minimumStake.amount, bottomValue: minimumStake.price)
 

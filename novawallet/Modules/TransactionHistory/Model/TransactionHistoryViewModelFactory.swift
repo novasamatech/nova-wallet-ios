@@ -153,10 +153,8 @@ final class TransactionHistoryViewModelFactory {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.transferTitle()
 
         let subtitle = txType == .incoming ?
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.walletHistoryTransferIncomingDetails(peerAddress) :
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.walletHistoryTransferOutgoingDetails(peerAddress)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryTransferIncomingDetails(peerAddress) :
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryTransferOutgoingDetails(peerAddress)
 
         return .init(title: title, subtitle: subtitle)
     }
@@ -168,8 +166,7 @@ final class TransactionHistoryViewModelFactory {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.evmContractCall()
 
         guard let functionName = data.evmContractFunctionName else {
-            let subtitle = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
+            let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
 
             return .init(title: title, subtitle: subtitle)
         }
@@ -177,8 +174,7 @@ final class TransactionHistoryViewModelFactory {
         if !functionName.hasAmbiguousFunctionName {
             return .init(title: title, subtitle: functionName)
         } else {
-            let subtitle = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
+            let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
             return .init(title: title, subtitle: subtitle)
         }
     }
@@ -314,8 +310,7 @@ final class TransactionHistoryViewModelFactory {
         guard let price = price else {
             return time
         }
-        return R.string(preferredLanguages: locale.rLanguages
-        ).localizable.walletHistoryAmountDetails(price, time)
+        return R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryAmountDetails(price, time)
     }
 }
 

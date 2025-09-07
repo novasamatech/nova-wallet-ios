@@ -31,8 +31,7 @@ enum SwapAssetsOperationViewFactory {
         selectClosure: @escaping SwapAssetSelectionClosure
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsPayTokenSelectionTitle()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsPayTokenSelectionTitle()
         }
 
         return createView(
@@ -72,8 +71,7 @@ enum SwapAssetsOperationViewFactory {
         selectClosure: @escaping SwapAssetSelectionClosure
     ) -> AssetsSearchViewProtocol? {
         let title: LocalizableResource<String> = .init {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsReceiveTokenSelectionTitle()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsReceiveTokenSelectionTitle()
         }
 
         return createView(

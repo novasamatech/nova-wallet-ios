@@ -52,8 +52,7 @@ final class YourValidatorListPresenter {
         } catch {
             logger?.error("Did receive error: \(error)")
 
-            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonErrorGeneralTitle()
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle()
 
             view?.reload(state: .error(errorDescription))
         }

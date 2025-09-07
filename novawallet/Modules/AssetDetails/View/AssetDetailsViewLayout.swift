@@ -147,16 +147,13 @@ final class AssetDetailsViewLayout: UIView {
 
         balanceWidget.set(locale: locale)
 
-        sendButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.walletSendTitle()
+        sendButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletSendTitle()
         sendButton.invalidateLayout()
 
-        receiveButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.walletAssetReceive()
+        receiveButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletAssetReceive()
         receiveButton.invalidateLayout()
 
-        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonSwapAction()
+        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonSwapAction()
         swapButton.invalidateLayout()
     }
 

@@ -72,8 +72,7 @@ class CustomNetworkBasePresenter {
         let title: String = if completed {
             completeButtonTitle()
         } else {
-            R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.networkNodeAddButtonEnterDetails()
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeAddButtonEnterDetails()
         }
 
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
@@ -105,8 +104,7 @@ class CustomNetworkBasePresenter {
     func provideCurrencySymbolViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCurrencySymbol ?? "",
-            placeholder: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonToken().uppercased()
+            placeholder: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonToken().uppercased()
         )
         view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
     }
@@ -297,8 +295,7 @@ private extension CustomNetworkBasePresenter {
     }
 
     func provideTitle() {
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.networkAddTitle()
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkAddTitle()
         view?.didReceiveTitle(text: title)
     }
 

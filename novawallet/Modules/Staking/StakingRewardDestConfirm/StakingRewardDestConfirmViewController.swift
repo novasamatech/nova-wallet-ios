@@ -51,8 +51,7 @@ final class StakingRewardDestConfirmViewController: UIViewController, ViewHolder
     }
 
     private func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingRewardsDestinationTitle_v2_0_0()
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardsDestinationTitle_v2_0_0()
 
         rootView.locale = selectedLocale
 

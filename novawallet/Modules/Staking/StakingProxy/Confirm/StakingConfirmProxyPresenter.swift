@@ -62,8 +62,7 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     }
 
     private func provideProxyTypeViewModel() {
-        let type = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingConfirmProxyTypeSubtitle()
+        let type = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingConfirmProxyTypeSubtitle()
         view?.didReceiveProxyType(viewModel: type)
     }
 
@@ -93,10 +92,8 @@ final class StakingConfirmProxyPresenter: StakingProxyBasePresenter {
     }
 
     private func provideTitles() {
-        let typeTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingConfirmProxyTypeTitle()
-        let proxyAddressTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingConfirmProxyAccountProxy()
+        let typeTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingConfirmProxyTypeTitle()
+        let proxyAddressTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingConfirmProxyAccountProxy()
         view?.didReceiveProxyType(title: typeTitle)
         view?.didReceiveProxyAddress(title: proxyAddressTitle)
     }

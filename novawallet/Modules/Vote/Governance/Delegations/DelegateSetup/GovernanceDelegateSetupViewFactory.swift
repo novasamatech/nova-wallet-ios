@@ -9,8 +9,7 @@ struct GovernanceDelegateSetupViewFactory {
         delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.delegationsAddTitle()
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddTitle()
         }
 
         return createModule(
@@ -28,8 +27,7 @@ struct GovernanceDelegateSetupViewFactory {
         delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.govEditDelegation()
+            R.string(preferredLanguages: locale.rLanguages).localizable.govEditDelegation()
         }
 
         return createModule(

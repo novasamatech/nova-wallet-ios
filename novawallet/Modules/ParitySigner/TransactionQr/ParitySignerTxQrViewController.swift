@@ -85,10 +85,8 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
         )
 
         rootView.qrTypeSwitch.titles = [
-            R.string(preferredLanguages: languages
-            ).localizable.polkadotVaultQrTypeV7(),
-            R.string(preferredLanguages: languages
-            ).localizable.polkadotVaultQrTypeLegacy()
+            R.string(preferredLanguages: languages).localizable.polkadotVaultQrTypeV7(),
+            R.string(preferredLanguages: languages).localizable.polkadotVaultQrTypeLegacy()
         ]
 
         rootView.helpButton.imageWithTitleView?.title = R.string.localizable.paritySignerTxSecondaryAction(
@@ -96,8 +94,7 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
             preferredLanguages: languages
         )
 
-        rootView.continueButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonContinue()
+        rootView.continueButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
     }
 
     @objc private func actionSelectAccount() {

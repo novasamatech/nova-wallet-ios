@@ -87,8 +87,7 @@ final class StakingRebagConfirmPresenter {
     }
 
     private func provideHintsViewModel() {
-        let hint = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingRebagAlertMessage()
+        let hint = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRebagAlertMessage()
         view?.didReceiveHints(viewModel: [
             hint
         ])

@@ -67,11 +67,9 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder, 
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.parachainStakingCollator()
+        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.parachainStakingCollator()
 
-        rootView.stakingTypeCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.stakingTitle()
+        rootView.stakingTypeCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingTitle()
 
         rootView.stakingTypeCell.bind(
             details: R.string(preferredLanguages: languages).localizable.withYieldBoost()
@@ -101,8 +99,7 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder, 
 
         let period = periodViewModel.localizedDaysPeriod(for: selectedLocale)
 
-        rootView.acceptTermsView.controlContentView.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.yieldBoostTermsMessage(period, thresholdViewModel)
+        rootView.acceptTermsView.controlContentView.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.yieldBoostTermsMessage(period, thresholdViewModel)
     }
 
     private func updateActionButtonState() {

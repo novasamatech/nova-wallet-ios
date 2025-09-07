@@ -107,50 +107,38 @@ final class ControllerAccountViewLayout: ScrollableContainerLayoutView {
     private func applyLocalization() {
         applyBannerLocalization()
 
-        bannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonFindMore()
+        bannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonFindMore()
 
-        stashHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingStash()
+        stashHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStash()
 
-        stashHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingStashCanHint_v2_2_0()
+        stashHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStashCanHint_v2_2_0()
 
-        controllerHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingController()
+        controllerHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingController()
 
-        controllerHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingControllerCanHint_v2_2_0()
+        controllerHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerCanHint_v2_2_0()
 
-        currentAccountIsControllerHint.contentView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingSwitchAccountToStash()
+        currentAccountIsControllerHint.contentView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSwitchAccountToStash()
 
         applyActionButtonLocalization()
     }
 
     private func applyBannerLocalization() {
         if isDeprecated {
-            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingControllerDeprecatedTitle()
+            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerDeprecatedTitle()
 
-            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingControllerDeprecatedDetails()
+            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerDeprecatedDetails()
         } else {
-            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingControllerBannerTitle()
+            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerBannerTitle()
 
-            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingControllerBannerMessage()
+            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerBannerMessage()
         }
     }
 
     private func applyActionButtonLocalization() {
         if isDeprecated {
-            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingControllerDeprecatedAction()
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerDeprecatedAction()
         } else {
-            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonContinue()
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
         }
     }
 

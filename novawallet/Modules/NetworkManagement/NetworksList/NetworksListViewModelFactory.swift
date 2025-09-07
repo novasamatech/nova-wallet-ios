@@ -92,8 +92,7 @@ class NetworksListViewModelFactory {
                 connectionState = .notConnected
             } else {
                 connectionState = .connecting(
-                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ).localizable.networkStatusConnecting().uppercased()
+                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkStatusConnecting().uppercased()
                 )
             }
 
@@ -103,14 +102,12 @@ class NetworksListViewModelFactory {
                 networkState = .enabled
             } else {
                 networkState = .disabled(
-                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ).localizable.commonDisabled()
+                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonDisabled()
                 )
             }
 
             let networkType: String? = chainModel.isTestnet
-                ? R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ).localizable.commonTestnet().uppercased()
+                ? R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonTestnet().uppercased()
                 : nil
 
             return .network(

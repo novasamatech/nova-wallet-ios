@@ -124,8 +124,7 @@ final class CrowdloanContributionViewModelFactory {
         let iconViewModel: ImageViewModelProtocol? = URL(string: displayInfo.icon).map { RemoteImageViewModel(url: $0)
         }
 
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.crowdloanLearn_v2_2_0(displayInfo.name)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanLearn_v2_2_0(displayInfo.name)
         return LearnMoreViewModel(iconViewModel: iconViewModel, title: title)
     }
 }
@@ -205,8 +204,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         locale: Locale
     ) -> String? {
         guard let bonusRate = bonusRate else {
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.crowdloanEmptyBonusTitle()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanEmptyBonusTitle()
         }
 
         let tokenInfo = AssetBalanceDisplayInfo.fromCrowdloan(info: displayInfo)

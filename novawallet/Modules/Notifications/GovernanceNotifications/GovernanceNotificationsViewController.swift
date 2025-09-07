@@ -14,8 +14,7 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
             presenter: presenter,
             localizationManager: localizationManager,
             navigationItemTitle: .init {
-                R.string(preferredLanguages: $0.rLanguages
-                ).localizable.tabbarGovernanceTitle()
+                R.string(preferredLanguages: $0.rLanguages).localizable.tabbarGovernanceTitle()
             }
         )
     }
@@ -37,12 +36,9 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
     }
 
     private func createSection(from model: GovernanceNotificationsViewModel) -> Section {
-        let newRefendumTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.notificationsManagementGovNewReferendum()
-        let referendumUpdate = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.notificationsManagementGovReferendumUpdate()
-        let tracks = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.govTracks()
+        let newRefendumTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsManagementGovNewReferendum()
+        let referendumUpdate = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsManagementGovReferendumUpdate()
+        let tracks = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks()
         return .collapsable([
             .switchCell(.init(
                 title: model.name,
@@ -88,8 +84,7 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
         from selectedTracks: GovernanceNotificationsViewModel.SelectedTracks
     ) -> String {
         if selectedTracks.allSelected {
-            return R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonAll()
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAll()
         } else {
             return R.string(preferredLanguages: selectedLocale.rLanguages
             ).localizable.notificationsManagementGovSelectedTracks(selectedTracks.tracks.count, selectedTracks.totalTracksCount)

@@ -34,8 +34,7 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
     }
 
     override func provideTitle() {
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.buyOperationNetworkListTitle(multichainToken.symbol)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.buyOperationNetworkListTitle(multichainToken.symbol)
 
         view?.updateHeader(with: title)
     }

@@ -16,8 +16,7 @@ class KnownNetworksListviewModelFactory {
         let addNetworkRow = KnownNetworksListViewLayout.Row.addNetwork(
             IconWithTitleViewModel(
                 icon: R.image.iconAddNetwork(),
-                title: R.string(preferredLanguages: selectedLocale.rLanguages
-                ).localizable.networkAddNetworkManually()
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkAddNetworkManually()
             )
         )
 
@@ -25,8 +24,7 @@ class KnownNetworksListviewModelFactory {
             .enumerated()
             .map { index, chain in
                 let networkType = chain.options?.contains(.testnet) ?? false
-                    ? R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonTestnet().uppercased()
+                    ? R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTestnet().uppercased()
                     : nil
 
                 let viewModel = NetworksListViewLayout.NetworkWithConnectionModel(

@@ -34,8 +34,7 @@ final class LocksPresenter {
             locale: selectedLocale
         )
 
-        let header = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.walletSendBalanceTotal()
+        let header = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendBalanceTotal()
 
         view?.updateHeader(title: header, value: balanceModel.total)
         view?.update(viewModel: [
@@ -51,8 +50,7 @@ final class LocksPresenter {
         return LocksViewSectionModel(
             header: .init(
                 icon: R.image.iconTransferable(),
-                title: R.string(preferredLanguages: selectedLocale.rLanguages
-                ).localizable.walletBalanceAvailable(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletBalanceAvailable(),
                 details: displayPercent,
                 value: balanceModel.transferrable
             ),
@@ -71,8 +69,7 @@ final class LocksPresenter {
         return LocksViewSectionModel(
             header: .init(
                 icon: R.image.iconLock(),
-                title: R.string(preferredLanguages: selectedLocale.rLanguages
-                ).localizable.walletBalanceLocked(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletBalanceLocked(),
                 details: displayPercent,
                 value: balanceModel.locks
             ),
@@ -127,8 +124,7 @@ final class LocksPresenter {
             return createCell(
                 amountInPlank: reservesNotInHolds,
                 chainAssetId: balance.chainAssetId,
-                title: R.string(preferredLanguages: selectedLocale.rLanguages
-                ).localizable.walletBalanceReserved(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletBalanceReserved(),
                 identifier: balance.identifier
             )
         }

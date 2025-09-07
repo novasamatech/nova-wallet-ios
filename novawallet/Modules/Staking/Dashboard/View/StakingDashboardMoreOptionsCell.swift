@@ -17,7 +17,6 @@ final class StakingDashboardMoreOptionsCell: BlurredCollectionViewCell<
     }
 
     func bind(locale: Locale) {
-        view.view.titleView.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.multistakingMoreOptions()
+        view.view.titleView.text = R.string(preferredLanguages: locale.rLanguages).localizable.multistakingMoreOptions()
     }
 }

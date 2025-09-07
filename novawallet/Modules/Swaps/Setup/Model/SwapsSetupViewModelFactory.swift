@@ -134,8 +134,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model {
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupAssetSelectPayTitle()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectPayTitle()
 
         if let assetDisplayInfo = assetDisplayInfo, let maxValue = maxValue {
             let maxValueString = balanceViewModelFactoryFacade.amountFromValue(
@@ -146,15 +145,13 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             return .init(
                 title: title,
                 subtitle:
-                R.string(preferredLanguages: locale.rLanguages
-                ).localizable.swapsSetupAssetMax(),
+                R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetMax(),
                 value: maxValueString
             )
         } else {
             return .init(
                 title:
-                R.string(preferredLanguages: locale.rLanguages
-                ).localizable.swapsSetupAssetSelectPayTitle(),
+                R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectPayTitle(),
                 subtitle: "",
                 value: ""
             )

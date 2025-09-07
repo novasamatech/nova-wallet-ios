@@ -43,8 +43,7 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
             }
             if daysLeft == 0 {
                 let formattedTime = (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
-                return R.string(preferredLanguages: locale.rLanguages
-                ).localizable.commonTimeLeftFormat(formattedTime)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonTimeLeftFormat(formattedTime)
             } else {
                 return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysLeftFormat(format: daysLeft)
             }

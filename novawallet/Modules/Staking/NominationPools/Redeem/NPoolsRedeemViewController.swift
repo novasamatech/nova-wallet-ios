@@ -38,11 +38,9 @@ final class NPoolsRedeemViewController: UIViewController, ViewHolder {
 
         rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
     }

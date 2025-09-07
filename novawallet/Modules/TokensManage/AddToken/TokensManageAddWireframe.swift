@@ -5,11 +5,9 @@ final class TokensManageAddWireframe: TokensManageAddWireframeProtocol, ModalAle
         let title: String
 
         if result.isNew {
-            title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.addTokenCompletionMessage(result.chainAsset.asset.symbol)
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenCompletionMessage(result.chainAsset.asset.symbol)
         } else {
-            title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.updateTokenCompletionMessage(result.chainAsset.asset.symbol)
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.updateTokenCompletionMessage(result.chainAsset.asset.symbol)
         }
 
         let presenter = view?.controller.navigationController?.presentingViewController

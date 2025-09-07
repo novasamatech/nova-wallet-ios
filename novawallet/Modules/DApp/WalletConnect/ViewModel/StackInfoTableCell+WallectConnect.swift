@@ -2,8 +2,7 @@ import Foundation
 
 extension StackInfoTableCell {
     func bindNetworks(viewModel: DAppNetworksViewModel, locale: Locale) {
-        titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonNetworksTitle(viewModel.totalNetworks)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworksTitle(viewModel.totalNetworks)
 
         if let networkViewModel = viewModel.network {
             if viewModel.totalNetworks > 1 {
@@ -24,8 +23,7 @@ extension StackInfoTableCell {
         } else if viewModel.unsupported > 0 {
             canSelect = true
 
-            let details = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonUnsupportedCount(format: viewModel.unsupported)
+            let details = R.string(preferredLanguages: locale.rLanguages).localizable.commonUnsupportedCount(format: viewModel.unsupported)
 
             bind(details: details)
         } else {

@@ -37,22 +37,18 @@ extension LedgerDeviceModel {
     func approveTxText(for deviceName: String, locale: Locale) -> String {
         switch self {
         case .flex, .stax:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerFlexStaxSignTransactionDetails(deviceName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerFlexStaxSignTransactionDetails(deviceName)
         case .nanoX, .unknown:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerSignTransactionDetails(deviceName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerSignTransactionDetails(deviceName)
         }
     }
 
     func approveAddressText(for deviceName: String, locale: Locale) -> String {
         switch self {
         case .flex, .stax:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerFlexStaxAddressVerifyMessage(deviceName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerFlexStaxAddressVerifyMessage(deviceName)
         case .nanoX, .unknown:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerAddressVerifyMessage(deviceName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerAddressVerifyMessage(deviceName)
         }
     }
 }

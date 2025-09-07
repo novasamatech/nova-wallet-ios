@@ -17,8 +17,7 @@ class ManualBackupKeyListViewModelFactory {
         from defaultChains: [ChainModel],
         _ customChains: [ChainModel]
     ) -> ManualBackupKeyListViewLayout.Model {
-        let listHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).localizable.chainAccountsListHeader()
+        let listHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.chainAccountsListHeader()
 
         var sections: [ManualBackupKeyListViewLayout.Sections] = []
 
@@ -41,11 +40,9 @@ class ManualBackupKeyListViewModelFactory {
 
 private extension ManualBackupKeyListViewModelFactory {
     func createDefaultChainsSection(for chains: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
-        let defaultChainsHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).localizable.chainAccountsListDefaultHeader()
+        let defaultChainsHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.chainAccountsListDefaultHeader()
 
-        let defaultChainsTitleText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).localizable.chainAccountsListDefaultTitle()
+        let defaultChainsTitleText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.chainAccountsListDefaultTitle()
 
         return .defaultKeys(
             .init(
@@ -70,8 +67,7 @@ private extension ManualBackupKeyListViewModelFactory {
                 )
             }
 
-        let customChainsHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).localizable.chainAccountsListCustomHeader()
+        let customChainsHeaderText = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.chainAccountsListCustomHeader()
 
         return .customKeys(
             .init(

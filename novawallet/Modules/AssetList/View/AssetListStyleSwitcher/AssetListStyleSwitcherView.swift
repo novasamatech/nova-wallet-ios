@@ -97,11 +97,9 @@ private extension AssetListStyleSwitcherView {
     func setupLocalizations() {
         switch state {
         case .networks:
-            label.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonNetworks()
+            label.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworks()
         case .tokens:
-            label.text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonTokens()
+            label.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTokens()
         }
     }
 
@@ -186,8 +184,7 @@ private extension AssetListStyleSwitcherView {
 private extension AssetListStyleSwitcherView {
     func animateToTokens() {
         animateLabels(
-            newText: R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonTokens(),
+            newText: R.string(preferredLanguages: locale.rLanguages).localizable.commonTokens(),
             direction: .top
         )
         animateIndicators(
@@ -198,8 +195,7 @@ private extension AssetListStyleSwitcherView {
 
     func animateToNetworks() {
         animateLabels(
-            newText: R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonNetworks(),
+            newText: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworks(),
             direction: .bottom
         )
         animateIndicators(

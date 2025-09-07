@@ -32,10 +32,8 @@ final class SwapRouteDetailsViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.titleView.bind(
-            topValue: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.swapsDetailsRoute(),
-            bottomValue: R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.swapRouteDetailsSubtitle()
+            topValue: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.swapsDetailsRoute(),
+            bottomValue: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.swapRouteDetailsSubtitle()
         )
     }
 }

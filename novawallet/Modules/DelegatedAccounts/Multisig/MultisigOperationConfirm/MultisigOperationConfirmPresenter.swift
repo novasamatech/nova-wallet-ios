@@ -140,11 +140,9 @@ private extension MultisigOperationConfirmPresenter {
         else { return }
 
         let text = if multisigContext.threshold - definition.approvals.count > 1 {
-            R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonTransactionSigned()
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransactionSigned()
         } else {
-            R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonTransactionSignedAndExecuted()
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransactionSignedAndExecuted()
         }
 
         wireframe.presentExtrinsicSubmission(

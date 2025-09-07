@@ -143,8 +143,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         if viewModel.hasFullDescription {
             optReadMoreButton = RoundedButton()
             optReadMoreButton?.applyLinkStyle()
-            optReadMoreButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonReadMore()
+            optReadMoreButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonReadMore()
         } else {
             optReadMoreButton = nil
         }
@@ -275,11 +274,9 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     func addYourDelegationActions(for locale: Locale) -> StackButtonsCell {
         let cell = StackButtonsCell()
 
-        cell.mainButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonEdit()
+        cell.mainButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonEdit()
 
-        cell.secondaryButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonRevoke()
+        cell.secondaryButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonRevoke()
 
         yourDelegationTable?.addArrangedSubview(cell)
 
@@ -314,8 +311,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             addDelegationButton = button
         }
 
-        addDelegationButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.delegationsAddTitle()
+        addDelegationButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddTitle()
 
         updateContentInsets()
 

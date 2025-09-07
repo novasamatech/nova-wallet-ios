@@ -34,14 +34,12 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
             return nil
         }
 
-        let titleText = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonCountedReferenda(filteredReferendums.count)
+        let titleText = R.string(preferredLanguages: locale.rLanguages).localizable.commonCountedReferenda(filteredReferendums.count)
 
         return .swipeGov(
             SwipeGovBannerViewModel(
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSwipeGov(),
-                description: R.string(preferredLanguages: locale.rLanguages
-                ).localizable.swipeGovBannerMessage(),
+                description: R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovBannerMessage(),
                 referendumCounterText: titleText
             )
         )
@@ -71,11 +69,9 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
         locale: Locale
     ) -> String? {
         if availableToVoteCount > 0 {
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swipeGovReferendaCounter(availableToVoteCount)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovReferendaCounter(availableToVoteCount)
         } else {
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swipeGovReferendaCounterEmpty()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovReferendaCounterEmpty()
         }
     }
 }

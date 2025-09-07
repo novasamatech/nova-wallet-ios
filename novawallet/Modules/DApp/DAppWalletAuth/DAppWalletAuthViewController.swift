@@ -63,11 +63,9 @@ final class DAppWalletAuthViewController: UIViewController, ViewHolder {
     }
 
     private func setupButtonsLocalization() {
-        rootView.approveButton?.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonAllow()
+        rootView.approveButton?.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAllow()
 
-        rootView.rejectButton?.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonReject()
+        rootView.rejectButton?.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReject()
     }
 
     private func setupButtonsHandlers() {
@@ -113,8 +111,7 @@ extension DAppWalletAuthViewController: DAppWalletAuthViewProtocol {
             size: DAppIconLargeConstants.displaySize
         )
 
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.dappAuthTitle(viewModel.dAppName)
+        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappAuthTitle(viewModel.dAppName)
 
         rootView.dappCell.bind(details: viewModel.dAppHost)
 

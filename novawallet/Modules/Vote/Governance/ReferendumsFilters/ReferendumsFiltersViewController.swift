@@ -131,8 +131,7 @@ extension ReferendumsFiltersViewController: UITableViewDataSource {
 extension ReferendumsFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let header = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.governanceReferendumsFilterHeader()
+        let header = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumsFilterHeader()
         view.bind(title: header, icon: nil)
         view.contentInsets = UIEdgeInsets(top: 24, left: 0, bottom: 8, right: 0)
         return view

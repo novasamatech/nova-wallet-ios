@@ -41,11 +41,9 @@ final class CollatorStakingSelectFiltersViewController: UIViewController, ViewHo
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.tabbarSettingsTitle()
 
-        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonReset()
+        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonApply()
+        rootView.applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply()
     }
 
     private func setupTableView() {
@@ -130,8 +128,7 @@ extension CollatorStakingSelectFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
 
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonFilterSortHeader()
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonFilterSortHeader()
 
         view.bind(title: title, icon: nil)
 

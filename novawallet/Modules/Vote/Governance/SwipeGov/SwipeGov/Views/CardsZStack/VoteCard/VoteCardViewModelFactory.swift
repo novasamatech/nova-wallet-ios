@@ -89,16 +89,13 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     ) -> SwipeGovEmptyStateViewModel {
         if model.votingList.isEmpty {
             .empty(
-                text: R.string(preferredLanguages: locale.rLanguages
-                ).localizable.swipeGovEmptyViewText()
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovEmptyViewText()
             )
         } else {
             .votings(
                 .init(
-                    text: R.string(preferredLanguages: locale.rLanguages
-                    ).localizable.swipeGovEmptyViewVotedText(),
-                    buttonText: R.string(preferredLanguages: locale.rLanguages
-                    ).localizable.swipeGovEmptyViewButton(),
+                    text: R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovEmptyViewVotedText(),
+                    buttonText: R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovEmptyViewButton(),
                     action: emptyViewAction
                 )
             )

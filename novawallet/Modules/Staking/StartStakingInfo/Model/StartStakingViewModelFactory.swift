@@ -58,8 +58,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         let amount = earnings.map { estimatedEarningsFormatter.value(for: locale).stringFromDecimal($0) } ?? ""
         let token = chainAsset.asset.displayInfo.symbol
         let value = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartEarnUp(amount ?? "")
-        let text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingStartEarnUpTitle(value, token)
+        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartEarnUpTitle(value, token)
 
         let textWithAccents = AccentTextModel(
             text: text,
@@ -97,8 +96,7 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 accents: [amount, time]
             )
         } else {
-            let text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingStartStakeWithoutMinimumStake(time)
+            let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartStakeWithoutMinimumStake(time)
             textWithAccents = AccentTextModel(
                 text: text,
                 accents: [time]
@@ -165,14 +163,11 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         } else {
             switch destination {
             case .balance:
-                text = R.string(preferredLanguages: locale.rLanguages
-                ).localizable.stakingStartRewardsBalance(rewardIntervals)
+                text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartRewardsBalance(rewardIntervals)
             case .stake:
-                text = R.string(preferredLanguages: locale.rLanguages
-                ).localizable.stakingStartRewardsRestake(rewardIntervals)
+                text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartRewardsRestake(rewardIntervals)
             case .manual:
-                text = R.string(preferredLanguages: locale.rLanguages
-                ).localizable.stakingStartRewardsManualClaim(rewardIntervals)
+                text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartRewardsManualClaim(rewardIntervals)
             }
         }
 
@@ -200,10 +195,8 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
                 precision: Int16(chainAsset.asset.precision)
             ) ?? 0.0
             let formattedAmount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
-            action = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingStartGovNominationDirectStakingAction()
-            text = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingStartGovDirectStaking(formattedAmount, action)
+            action = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartGovNominationDirectStakingAction()
+            text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartGovDirectStaking(formattedAmount, action)
         } else {
             action = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartGovNominationPoolAction()
             text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartGovNominationPool(action)
@@ -278,11 +271,9 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         ).value(for: locale)
 
         if let price = balance.price {
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingStartBalanceWithFiat(balance.amount, price)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartBalanceWithFiat(balance.amount, price)
         } else {
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingStartBalance(balance.amount)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartBalance(balance.amount)
         }
     }
 

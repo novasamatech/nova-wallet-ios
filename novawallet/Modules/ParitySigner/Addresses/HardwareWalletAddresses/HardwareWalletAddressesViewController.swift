@@ -55,8 +55,7 @@ private extension HardwareWalletAddressesViewController {
 
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
     }
 
     @objc func actionProceed() {
@@ -69,11 +68,9 @@ private extension HardwareWalletAddressesViewController {
     ) -> String {
         switch scheme {
         case .substrate:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.accountsSubstrate().uppercased()
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountsSubstrate().uppercased()
         case .evm:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.accountsEvm().uppercased()
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountsEvm().uppercased()
         }
     }
 

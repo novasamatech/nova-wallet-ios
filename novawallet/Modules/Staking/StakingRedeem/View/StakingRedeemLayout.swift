@@ -58,8 +58,7 @@ final class StakingRedeemLayout: UIView {
 
         networkFeeCell.rowContentView.locale = locale
 
-        actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonConfirm()
+        actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirm()
 
         setNeedsLayout()
     }

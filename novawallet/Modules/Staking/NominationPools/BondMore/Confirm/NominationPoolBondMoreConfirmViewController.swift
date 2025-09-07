@@ -35,16 +35,13 @@ final class NominationPoolBondMoreConfirmViewController: UIViewController, ViewH
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string(preferredLanguages: languages
-        ).localizable.stakingBondMore_v190()
+        title = R.string(preferredLanguages: languages).localizable.stakingBondMore_v190()
 
         rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
     }

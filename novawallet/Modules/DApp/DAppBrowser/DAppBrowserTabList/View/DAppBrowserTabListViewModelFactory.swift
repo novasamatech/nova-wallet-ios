@@ -34,8 +34,7 @@ struct DAppBrowserTabListViewModelFactory {
         } else if let url {
             url
         } else {
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.dappBrowserTabNotAvailable()
+            R.string(preferredLanguages: locale.rLanguages).localizable.dappBrowserTabNotAvailable()
         }
 
         return DAppBrowserTabViewModel(

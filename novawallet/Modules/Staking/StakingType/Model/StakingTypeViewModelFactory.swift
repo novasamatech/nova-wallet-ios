@@ -43,20 +43,20 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         method: StakingSelectionMethod?,
         locale: Locale
     ) -> DirectStakingTypeViewModel {
-        let strings = R.string.localizable.self
-        let title = strings.stakingTypeDirect(preferredLanguages: locale.rLanguages)
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
+        let title = strings.stakingTypeDirect()
         let amountDecimal = minStake.map {
             Decimal.fromSubstrateAmount($0, precision: chainAsset.assetDisplayInfo.assetPrecision)
         } ?? nil
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? nil
         let minStakeString = amount.map {
-            strings.stakingTypeMinimumStake($0, preferredLanguages: locale.rLanguages)
+            strings.stakingTypeMinimumStake($0)
         } ?? nil
 
-        let rewardsString = strings.stakingTypeAutoRewards(preferredLanguages: locale.rLanguages)
+        let rewardsString = strings.stakingTypeAutoRewards()
         let govString = chainAsset.chain.hasGovernance ?
-            strings.stakingTypeGovReuseTokens(preferredLanguages: locale.rLanguages) : nil
-        let managmentString = strings.stakingTypeStakingManagment(preferredLanguages: locale.rLanguages)
+            strings.stakingTypeGovReuseTokens() : nil
+        let managmentString = strings.stakingTypeStakingManagment()
 
         let subtitle = [
             minStakeString,
@@ -88,16 +88,16 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         method: StakingSelectionMethod?,
         locale: Locale
     ) -> PoolStakingTypeViewModel {
-        let strings = R.string.localizable.self
-        let title = strings.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
+        let title = strings.stakingTypeNominationPool()
         let amountDecimal = minStake.map {
             Decimal.fromSubstrateAmount($0, precision: chainAsset.assetDisplayInfo.assetPrecision)
         } ?? nil
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? nil
         let minStakeString = amount.map {
-            strings.stakingTypeMinimumStake($0, preferredLanguages: locale.rLanguages)
+            strings.stakingTypeMinimumStake($0)
         } ?? nil
-        let rewardsString = strings.stakingTypeManualRewards(preferredLanguages: locale.rLanguages)
+        let rewardsString = strings.stakingTypeManualRewards()
 
         let subtitle = [
             minStakeString,
@@ -130,9 +130,9 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         guard let minStake = minStake else {
             return ""
         }
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
         let amountDecimal = Decimal.fromSubstrateAmount(minStake, precision: chainAsset.assetDisplayInfo.assetPrecision)
         let amount = amountDecimal.map { balanceViewModelFactory.amountFromValue($0).value(for: locale) } ?? ""
-        return strings.stakingTypeMinimumStake(amount, preferredLanguages: locale.rLanguages)
+        return strings.stakingTypeMinimumStake(amount)
     }
 }

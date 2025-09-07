@@ -34,11 +34,9 @@ final class StakingRewardsHeaderCell: UITableViewCell {
     }
 
     func applyLocalization() {
-        bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingPendingRewardsHintTitle()
+        bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPendingRewardsHintTitle()
 
-        bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingPendingRewardsHintMessage()
+        bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPendingRewardsHintMessage()
     }
 
     func setupLayout() {

@@ -67,13 +67,15 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
             locale: locale
         )
 
-        let totalOperations = R.string(preferredLanguages: locale.rLanguages
+        let totalOperations = R.string(
+            preferredLanguages: locale.rLanguages
         ).localizable.commonOperations(format: quote.metaOperations.count)
 
-        let details = R.string.localizable.commonOf(
-            String(currentOperationIndex + 1),
-            totalOperations,
+        let details = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.commonOf(
+            String(currentOperationIndex + 1),
+            totalOperations
         )
 
         return .inProgress(
@@ -95,10 +97,11 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
 
         let operationLabel = quote.metaOperations[currentOperationIndex].label.getTitle(for: locale)
 
-        let operationDescription = R.string.localizable.swapsExecutionSwapFailure(
-            String(currentOperationIndex + 1),
-            operationLabel,
+        let operationDescription = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.swapsExecutionSwapFailure(
+            String(currentOperationIndex + 1),
+            operationLabel
         )
 
         let details = if let errorDetails = failure.getErrorDetails(for: locale) {
@@ -117,7 +120,8 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: date)
 
-        let operationsString = R.string(preferredLanguages: locale.rLanguages
+        let operationsString = R.string(
+            preferredLanguages: locale.rLanguages
         ).localizable.commonOperations(format: quote.metaOperations.count)
 
         return .completed(.init(time: time, details: operationsString))

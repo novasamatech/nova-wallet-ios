@@ -47,22 +47,16 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonConfirmTitle()
         rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.dappConfirmSubtitle()
         rootView.dAppCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonDapp()
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonWallet()
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonAccountAddress()
-        rootView.networkCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonNetwork()
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccountAddress()
+        rootView.networkCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonNetwork()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transactionDetailsCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonTxDetails()
+        rootView.transactionDetailsCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonTxDetails()
 
-        rootView.confirmButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonConfirm()
-        rootView.rejectButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonReject()
+        rootView.confirmButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
+        rootView.rejectButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonReject()
     }
 
     @objc private func actionConfirm() {

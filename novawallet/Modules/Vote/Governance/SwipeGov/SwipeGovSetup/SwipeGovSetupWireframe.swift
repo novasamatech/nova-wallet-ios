@@ -12,8 +12,7 @@ final class SwipeGovSetupWireframe: SwipeGovSetupWireframeProtocol {
         newVotingPower: VotingPowerLocal,
         locale: Locale
     ) {
-        let successAlertTitle = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.govVotingPowerSetSuccessMessage()
+        let successAlertTitle = R.string(preferredLanguages: locale.rLanguages).localizable.govVotingPowerSetSuccessMessage()
 
         let navigationController = view?.controller.navigationController
         let presentingController = navigationController?.presentingViewController

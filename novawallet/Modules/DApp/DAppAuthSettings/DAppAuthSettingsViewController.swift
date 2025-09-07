@@ -138,8 +138,7 @@ extension DAppAuthSettingsViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconEmptyHistory()
-        emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.dappAuthorizedEmpty()
+        emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappAuthorizedEmpty()
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView

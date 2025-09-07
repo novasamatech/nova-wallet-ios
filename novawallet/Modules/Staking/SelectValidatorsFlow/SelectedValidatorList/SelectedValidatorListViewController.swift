@@ -93,8 +93,7 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 
         } else {
             isEnabled = true
-            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonContinue()
+            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle

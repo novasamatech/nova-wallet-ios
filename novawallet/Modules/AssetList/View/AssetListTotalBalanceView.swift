@@ -54,13 +54,11 @@ final class AssetListTotalBalanceView: UIView {
         icon: R.image.iconReceive()
     )
     lazy var swapButton = createActionButton(
-        title: R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonSwapAction(),
+        title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapAction(),
         icon: R.image.iconActionChange()
     )
     lazy var buySellButton = createActionButton(
-        title: R.string(preferredLanguages: locale.rLanguages
-        ).localizable.walletAssetBuySell(),
+        title: R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetBuySell(),
         icon: R.image.iconBuy()
     )
 
@@ -205,14 +203,11 @@ final class AssetListTotalBalanceView: UIView {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.walletTotalBalance()
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletTotalBalance()
         sendButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendTitle()
         receiveButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetReceive()
-        buySellButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.walletAssetBuySell()
-        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonSwapAction()
+        buySellButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetBuySell()
+        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapAction()
     }
 
     private func setupLayout() {

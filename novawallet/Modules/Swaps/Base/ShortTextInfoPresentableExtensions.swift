@@ -3,12 +3,10 @@ import Foundation_iOS
 extension ShortTextInfoPresentable {
     func showFeeInfo(from view: ControllerBackedProtocol?) {
         let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.commonNetworkFee()
+            R.string(preferredLanguages: $0.rLanguages).localizable.commonNetworkFee()
         }
         let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsNetworkFeeDescription()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsNetworkFeeDescription()
         }
         showInfo(
             from: view,
@@ -19,12 +17,10 @@ extension ShortTextInfoPresentable {
 
     func showRateInfo(from view: ControllerBackedProtocol?) {
         let title = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsSetupDetailsRate()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupDetailsRate()
         }
         let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages
-            ).localizable.swapsRateDescription()
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsRateDescription()
         }
         showInfo(
             from: view,

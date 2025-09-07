@@ -39,8 +39,7 @@ final class SwapExecutionView: UIView {
 
             statusTitleView.bind(
                 viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages
-                    ).localizable.swapsExecutionDontCloseApp(),
+                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.swapsExecutionDontCloseApp(),
                     bottomValue: inProgress.currentOperation
                 )
             )
@@ -56,8 +55,7 @@ final class SwapExecutionView: UIView {
 
             statusTitleView.bind(
                 viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages
-                    ).localizable.transactionStatusCompleted(),
+                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.transactionStatusCompleted(),
                     bottomValue: completed.time
                 )
             )
@@ -72,8 +70,7 @@ final class SwapExecutionView: UIView {
 
             statusTitleView.bind(
                 viewModel: .init(
-                    topValue: R.string(preferredLanguages: locale.rLanguages
-                    ).localizable.transactionStatusFailed(),
+                    topValue: R.string(preferredLanguages: locale.rLanguages).localizable.transactionStatusFailed(),
                     bottomValue: failed.time
                 )
             )

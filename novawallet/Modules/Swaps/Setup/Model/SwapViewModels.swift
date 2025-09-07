@@ -34,17 +34,14 @@ enum FeeSelectionViewModel: Int, CaseIterable {
 
 extension FeeSelectionViewModel {
     static var title = LocalizableResource {
-        R.string(preferredLanguages: $0.rLanguages
-        ).localizable.commonNetworkFee()
+        R.string(preferredLanguages: $0.rLanguages).localizable.commonNetworkFee()
     }
 
     static var message = LocalizableResource {
-        R.string(preferredLanguages: $0.rLanguages
-        ).localizable.swapsSetupNetworkFeeTokenTitle()
+        R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupNetworkFeeTokenTitle()
     }
 
     static var hint = LocalizableResource {
-        R.string(preferredLanguages: $0.rLanguages
-        ).localizable.swapsSetupNetworkFeeTokenHint()
+        R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupNetworkFeeTokenHint()
     }
 }

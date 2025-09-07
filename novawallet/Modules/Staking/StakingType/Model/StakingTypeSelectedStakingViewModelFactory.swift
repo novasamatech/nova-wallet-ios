@@ -30,24 +30,23 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
         displaysRecommended: Bool,
         locale: Locale
     ) -> DirectStakingTypeViewModel.ValidatorModel {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
 
         if displaysRecommended {
             return .init(
-                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
-                subtitle: strings.commonRecommended(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(),
+                subtitle: strings.commonRecommended(),
                 isRecommended: true,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
             )
         } else {
             let validatorsString = strings.stakingSetupAmountDirectTypeSubtitle(
                 validators.targets.count,
-                validators.maxTargets,
-                preferredLanguages: locale.rLanguages
+                validators.maxTargets
             )
 
             return .init(
-                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(),
                 subtitle: validatorsString,
                 isRecommended: false,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
@@ -69,7 +68,8 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
 
         let title = pool.title(for: chainAsset.chain.chainFormat) ?? ""
 
-        let subtitle = displaysRecommended ? R.string(preferredLanguages: locale.rLanguages
+        let subtitle = displaysRecommended ? R.string(
+            preferredLanguages: locale.rLanguages
         ).localizable.commonRecommended() : nil
 
         return PoolStakingTypeViewModel.PoolAccountModel(

@@ -67,8 +67,7 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
         statusView.glowingView.innerFillColor = R.color.colorTextPositive()!
         statusView.detailsLabel.textColor = R.color.colorTextPositive()!
 
-        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingNominatorStatusActive().uppercased()
+        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingNominatorStatusActive().uppercased()
     }
 
     private func presentInactiveStatus() {
@@ -76,7 +75,6 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
         statusView.glowingView.innerFillColor = R.color.colorTextNegative()!
         statusView.detailsLabel.textColor = R.color.colorTextNegative()!
 
-        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.stakingNominatorStatusInactive().uppercased()
+        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingNominatorStatusInactive().uppercased()
     }
 }

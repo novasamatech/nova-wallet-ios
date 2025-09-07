@@ -140,8 +140,7 @@ extension NominationPoolSearchViewController: UITableViewDelegate {
             return nil
         }
         let header: StakingSelectPoolListHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonSearchResultsNumber(viewModels.count)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchResultsNumber(viewModels.count)
         let details = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectPoolMembers()
 
         header.bind(

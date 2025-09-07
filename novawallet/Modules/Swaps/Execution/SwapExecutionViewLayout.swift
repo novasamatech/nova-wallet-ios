@@ -55,20 +55,16 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        detailsView.titleControl.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupDetailsTitle()
+        detailsView.titleControl.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsTitle()
 
         slippageCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupSlippage()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippage()
         )
         priceDifferenceCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupPriceDifference()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupPriceDifference()
         )
         rateCell.titleButton.setTitle(
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.swapsSetupDetailsRate()
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
         )
         routeCell.titleButton.setTitle(
             R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()

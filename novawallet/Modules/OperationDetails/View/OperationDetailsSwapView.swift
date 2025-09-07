@@ -79,8 +79,7 @@ final class OperationDetailsSwapView: LocalizableView {
 
         walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
         accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
-        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonTxId()
+        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxId()
     }
 
     func setupStyle() {

@@ -39,8 +39,7 @@ final class TokensAddSelectNetworkViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.headerView.valueTop.text = R.string(preferredLanguages: languages
-        ).localizable.addTokenNetworkSelectionTitle()
+        rootView.headerView.valueTop.text = R.string(preferredLanguages: languages).localizable.addTokenNetworkSelectionTitle()
     }
 
     private func setupTableView() {

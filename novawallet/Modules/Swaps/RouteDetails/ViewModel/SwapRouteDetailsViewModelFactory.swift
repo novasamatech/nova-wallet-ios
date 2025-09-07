@@ -113,8 +113,7 @@ private extension SwapRouteDetailsViewModelFactory {
             currencyId: priceStore.getCurrencyId()
         ).value(for: locale)
 
-        return R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonFeeAmountPrefixed(amount)
+        return R.string(preferredLanguages: locale.rLanguages).localizable.commonFeeAmountPrefixed(amount)
     }
 }
 

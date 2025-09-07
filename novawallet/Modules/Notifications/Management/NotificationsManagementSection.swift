@@ -12,14 +12,11 @@ enum NotificationsManagementSection {
         case .main:
             return nil
         case .general:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.settingsGeneral().uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsGeneral().uppercased()
         case .balances:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementBalances().uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementBalances().uppercased()
         case .others:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementOthers().uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementOthers().uppercased()
         }
     }
 }
@@ -48,29 +45,21 @@ enum NotificationsManagementRow {
     func title(for locale: Locale) -> String {
         switch self {
         case .enableNotifications:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementEnableNotifications()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementEnableNotifications()
         case .wallets:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementWallets()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementWallets()
         case .announcements:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementAnnouncements()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementAnnouncements()
         case .sentTokens:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementSentTokens()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementSentTokens()
         case .receivedTokens:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementReceivedTokens()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementReceivedTokens()
         case .gov:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.tabbarGovernanceTitle()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.tabbarGovernanceTitle()
         case .staking:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementStakingRewards()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementStakingRewards()
         case .multisig:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.notificationsManagementMultisigTransactions()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementMultisigTransactions()
         }
     }
 }

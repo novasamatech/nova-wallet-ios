@@ -45,8 +45,7 @@ final class CollatorStakingSelectSearchPresenter {
     private func createHeaderViewModel(for collatorsCount: Int) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
-        let title = R.string(preferredLanguages: languages
-        ).localizable.commonSearchResultsNumber(collatorsCount)
+        let title = R.string(preferredLanguages: languages).localizable.commonSearchResultsNumber(collatorsCount)
 
         let subtitle = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
 

@@ -154,8 +154,7 @@ class YourValidatorTableCell: UITableViewCell {
         }
 
         if let amount = viewModel.amount {
-            let prefixString = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.stakingYourNominatedPrefix()
+            let prefixString = R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourNominatedPrefix()
 
             let details = NSMutableAttributedString()
 

@@ -39,8 +39,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingType() {
-        let stakingType = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingTypeDirect()
+        let stakingType = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingTypeDirect()
 
         view?.didReceiveStakingType(viewModel: stakingType)
     }

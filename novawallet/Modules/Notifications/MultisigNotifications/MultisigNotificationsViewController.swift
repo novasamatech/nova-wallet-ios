@@ -14,8 +14,7 @@ final class MultisigNotificationsViewController: BaseNotificationSettingsViewCon
             presenter: presenter,
             localizationManager: localizationManager,
             navigationItemTitle: .init {
-                R.string(preferredLanguages: $0.rLanguages
-                ).localizable.notificationsManagementMultisigTransactions()
+                R.string(preferredLanguages: $0.rLanguages).localizable.notificationsManagementMultisigTransactions()
             }
         )
     }

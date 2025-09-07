@@ -73,14 +73,10 @@ extension DAppBrowserTabsClosePresentable where Self: AlertPresentable {
         with locale: Locale,
         onClose: @escaping () -> Void
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.dappWidgetCloseAlertTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.dappWidgetCloseAlertMessage()
-        let cancelActionText = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonCancel()
-        let closeActionText = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.commonCloseAll()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.dappWidgetCloseAlertTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.dappWidgetCloseAlertMessage()
+        let cancelActionText = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
+        let closeActionText = R.string(preferredLanguages: locale.rLanguages).localizable.commonCloseAll()
         let closeAction = AlertPresentableAction(
             title: closeActionText,
             style: .destructive

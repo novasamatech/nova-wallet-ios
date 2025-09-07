@@ -205,8 +205,7 @@ extension ValidatorSearchViewController: Localizable {
         if isViewLoaded {
             title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-            rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.searchByAddressNamePlaceholder()
+            rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.searchByAddressNamePlaceholder()
 
             navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
         }

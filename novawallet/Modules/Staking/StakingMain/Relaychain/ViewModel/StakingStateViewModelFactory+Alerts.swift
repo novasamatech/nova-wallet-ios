@@ -72,8 +72,7 @@ extension StakingStateViewModelFactory {
                 let message = minActiveAmount.price.map { "\(minActiveAmount.amount) (\($0))" }
                     ?? minActiveAmount.amount
 
-                return R.string(preferredLanguages: locale.rLanguages
-                ).localizable.stakingInactiveCurrentMinimalStake(message)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.stakingInactiveCurrentMinimalStake(message)
             }
             return .nominatorLowStake(localizedString)
         } else {
@@ -88,8 +87,7 @@ extension StakingStateViewModelFactory {
 
         if !minStakeViolated, !state.hasElectedValidators {
             let description = LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages
-                ).localizable.stakingNominatorStatusAlertNoValidators()
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingNominatorStatusAlertNoValidators()
             }
 
             let title = LocalizableResource { locale in

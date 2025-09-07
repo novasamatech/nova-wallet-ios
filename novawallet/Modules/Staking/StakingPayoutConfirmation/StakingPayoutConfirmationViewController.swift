@@ -57,13 +57,11 @@ extension StakingPayoutConfirmationViewController: Localizable {
         title = R.string(preferredLanguages: languages).localizable.stakingPayoutTitle()
 
         rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
 
         applyFeeViewModel()
         applyConfirmationViewModel()

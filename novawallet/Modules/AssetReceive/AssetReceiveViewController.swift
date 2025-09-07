@@ -51,15 +51,11 @@ private extension AssetReceiveViewController {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.shareButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.walletReceiveShareTitle()
-        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonCopyAddress().capitalized
-        rootView.legacyAddressMessageLabel.text = R.string(preferredLanguages: languages
-        ).localizable.assetReceiveLookingForAddressMessage()
+        rootView.shareButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletReceiveShareTitle()
+        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonCopyAddress().capitalized
+        rootView.legacyAddressMessageLabel.text = R.string(preferredLanguages: languages).localizable.assetReceiveLookingForAddressMessage()
         rootView.viewAddressFormatsButton.setTitle(
-            R.string(preferredLanguages: languages
-            ).localizable.assetReceiveViewAddressFormat()
+            R.string(preferredLanguages: languages).localizable.assetReceiveViewAddressFormat()
         )
     }
 
@@ -87,11 +83,9 @@ private extension AssetReceiveViewController {
     ) {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.walletReceiveTitleFormat(token)
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletReceiveTitleFormat(token)
 
-        rootView.detailsLabel.text = R.string(preferredLanguages: languages
-        ).localizable.walletReceiveDetailsFormat(token, chainName)
+        rootView.detailsLabel.text = R.string(preferredLanguages: languages).localizable.walletReceiveDetailsFormat(token, chainName)
     }
 
     func updateNavigationBar() {

@@ -128,8 +128,7 @@ extension WalletHistoryFilterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
 
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages
-        ).localizable.walletFiltersHeader()
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletFiltersHeader()
 
         view.bind(title: title, icon: nil)
 

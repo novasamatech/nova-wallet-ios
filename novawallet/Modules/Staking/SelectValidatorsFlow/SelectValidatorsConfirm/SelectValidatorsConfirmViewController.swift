@@ -70,22 +70,17 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
         title = localizableTitle.value(for: selectedLocale)
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
-        ).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
 
         rootView.actionButton.invalidateLayout()
 
-        rootView.validatorsCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.stakingSelectedValidatorsTitle()
+        rootView.validatorsCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingSelectedValidatorsTitle()
 
-        rootView.rewardDestinationCell.titleLabel.text = R.string(preferredLanguages: languages
-        ).localizable.stakingRewardsDestinationTitle_v2_0_0()
+        rootView.rewardDestinationCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRewardsDestinationTitle_v2_0_0()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
@@ -144,8 +139,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             )
 
             rootView.payoutAccountCell?.titleLabel.text =
-                R.string(preferredLanguages: selectedLocale.rLanguages
-                ).localizable.stakingRewardPayoutAccount()
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardPayoutAccount()
 
             rootView.payoutAccountCell?.bind(viewModel: details.displayAddress().cellViewModel)
         }

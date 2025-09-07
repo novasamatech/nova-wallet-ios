@@ -7,11 +7,9 @@ enum ParitySignerType {
     func getName(for locale: Locale) -> String {
         switch self {
         case .legacy:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonParitySigner()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonParitySigner()
         case .vault:
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonPolkadotVault()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonPolkadotVault()
         }
     }
 

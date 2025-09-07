@@ -119,8 +119,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         priceData: PriceData?,
         locale: Locale
     ) -> YourContributionsView.Model {
-        let title = R.string(preferredLanguages: locale.rLanguages
-        ).localizable.crowdloanYouContributionsTotal()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanYouContributionsTotal()
         let balance = balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: chainAsset.asset,
             amount: amount,

@@ -46,8 +46,7 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
         let details: TitleWithSubtitleViewModel?
 
         if let stakedAmount {
-            let detailsName = R.string(preferredLanguages: locale.rLanguages
-            ).localizable.commonStakedPrefix()
+            let detailsName = R.string(preferredLanguages: locale.rLanguages).localizable.commonStakedPrefix()
 
             let stakedDecimal = stakedAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 

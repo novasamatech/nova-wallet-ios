@@ -33,10 +33,8 @@ extension ImportChainAccount {
                 // we don't support ethereum crypto for substrate accounts
 
                 wireframe.present(
-                    message: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.importJsonUnsupportedSubstrateCryptoMessage(),
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonErrorGeneralTitle(),
+                    message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.importJsonUnsupportedSubstrateCryptoMessage(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle(),
                     closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                     from: view
                 )
@@ -112,10 +110,8 @@ extension ImportChainAccount {
                 // we don't support substrate crypto for ethereum wallets
 
                 wireframe.present(
-                    message: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.importJsonUnsupportedEthereumCryptoMessage(),
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages
-                    ).localizable.commonErrorGeneralTitle(),
+                    message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.importJsonUnsupportedEthereumCryptoMessage(),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle(),
                     closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                     from: view
                 )

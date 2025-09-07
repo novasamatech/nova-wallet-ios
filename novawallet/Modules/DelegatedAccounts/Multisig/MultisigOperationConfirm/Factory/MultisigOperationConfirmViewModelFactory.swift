@@ -475,11 +475,9 @@ private extension MultisigOperationConfirmViewModelFactory {
         case let .batch(batch):
             batch.type.callDescription.value(for: locale)
         case .transfer:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.transferTitle()
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferTitle()
         case nil:
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.multisigOperationTypeUnknown()
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationTypeUnknown()
         }
     }
 

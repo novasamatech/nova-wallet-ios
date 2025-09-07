@@ -252,8 +252,7 @@ enum LedgerMessageSheetViewFactory {
             let minutes = R.string(preferredLanguages: locale.rLanguages
             ).localizable.commonMinutesFormat(format: expirationTimeInterval.minutesFromSeconds)
 
-            return R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerTransactionExpiredDetails(minutes)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.ledgerTransactionExpiredDetails(minutes)
         }
 
         return createLedgerWarningView(
@@ -275,8 +274,7 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerTransactionNotSupportedMessage()
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerTransactionNotSupportedMessage()
         }
 
         return createLedgerWarningView(
@@ -298,8 +296,7 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerTransactionSignatureInvalid()
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerTransactionSignatureInvalid()
         }
 
         return createLedgerWarningView(
@@ -322,8 +319,7 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerTransactionUpdateMetadata(chainName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerTransactionUpdateMetadata(chainName)
         }
 
         return createLedgerWarningView(
@@ -464,8 +460,7 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages
-            ).localizable.ledgerNotSupportTokenMessage(tokenName, tokenName)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerNotSupportTokenMessage(tokenName, tokenName)
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(

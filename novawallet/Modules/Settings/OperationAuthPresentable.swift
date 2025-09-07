@@ -27,10 +27,8 @@ extension OperationAuthPresentable {
     ) {
         let biometryTypeName = biometrySettings.name
         let languages = locale.rLanguages
-        let title = R.string(preferredLanguages: languages
-        ).localizable.settingsBiometryAuthAlertTitle(biometryTypeName)
-        let message = R.string(preferredLanguages: languages
-        ).localizable.settingsBiometryAuthAlertMessage(biometryTypeName)
+        let title = R.string(preferredLanguages: languages).localizable.settingsBiometryAuthAlertTitle(biometryTypeName)
+        let message = R.string(preferredLanguages: languages).localizable.settingsBiometryAuthAlertMessage(biometryTypeName)
         let alertModel = AlertPresentableViewModel(
             title: title,
             message: message,

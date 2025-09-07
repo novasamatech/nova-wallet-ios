@@ -78,8 +78,7 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
 private extension DAppSearchViewController {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.searchBar.textField.placeholder = R.string(preferredLanguages: languages
-        ).localizable.dappListSearch()
+        rootView.searchBar.textField.placeholder = R.string(preferredLanguages: languages).localizable.dappListSearch()
 
         rootView.cancelBarItem.title = R.string(preferredLanguages: languages).localizable.commonCancel()
     }
@@ -195,11 +194,9 @@ extension DAppSearchViewController: UITableViewDataSource {
 
         switch tableSection {
         case .search:
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.dappSearchQuerySection()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappSearchQuerySection()
         case .dapps:
-            title = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.dappListFeaturedWebsites()
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappListFeaturedWebsites()
         }
 
         view.bind(title: title)

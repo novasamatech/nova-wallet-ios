@@ -14,8 +14,7 @@ final class StakingRewardsNotificationsViewController: BaseNotificationSettingsV
             presenter: presenter,
             localizationManager: localizationManager,
             navigationItemTitle: .init {
-                R.string(preferredLanguages: $0.rLanguages
-                ).localizable.notificationsManagementStakingRewards()
+                R.string(preferredLanguages: $0.rLanguages).localizable.notificationsManagementStakingRewards()
             }
         )
     }

@@ -149,8 +149,7 @@ final class CloudBackupSettingsViewModelFactory {
         case .syncing, .unsynced, .synced, .unavailable:
             if let lastSync {
                 let formattedDate = dateFormatter.value(for: locale).string(from: lastSync)
-                return R.string(preferredLanguages: locale.rLanguages
-                ).localizable.cloudBackupLastSyncedFormat(formattedDate)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupLastSyncedFormat(formattedDate)
             } else {
                 return nil
             }
