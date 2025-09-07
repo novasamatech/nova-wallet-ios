@@ -91,11 +91,15 @@ private extension MultisigOperationConfirmViewModelFactory {
         let walletViewModel = createWalletViewModel(using: wallet)
 
         let networkField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonNetwork(),
             value: networkModel
         )
         let walletField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonMultisig(preferredLanguages: locale.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonMultisig(),
             value: walletViewModel
         )
 

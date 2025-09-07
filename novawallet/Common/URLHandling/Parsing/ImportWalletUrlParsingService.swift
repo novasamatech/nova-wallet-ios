@@ -18,9 +18,13 @@ enum CreateWalletError: Error, ErrorContentConvertible {
         case .emptyMnemonic, .invalidMnemonic, .emptyQueryParameters:
             message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidMnemonicMessage()
         case .invalidCryptoType:
-            message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidCryptoTypeMessage()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.deeplinkErrorInvalidCryptoTypeMessage()
         case .invalidSubstrateDerivationPath, .invalidEvmDerivationPath:
-            message = R.string(preferredLanguages: locale.rLanguages).localizable.deeplinkErrorInvalidDerivationPathMessage()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.deeplinkErrorInvalidDerivationPathMessage()
         }
 
         return .init(title: "", message: message)

@@ -95,7 +95,7 @@ final class IntegrateNetworksBanner: UIView {
     func set(locale: Locale) {
         gradientBannerView.infoView.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        ).localizable().integrateNetworkBannerTitle()
+        ).localizable.integrateNetworkBannerTitle()
         gradientBannerView.infoView.subtitleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.integrateNetworkBannerMessage()
