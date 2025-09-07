@@ -79,7 +79,9 @@ enum DelegatedMessageSheetViewFactory {
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningNotEnoughPermissionsMessage(
+            let template = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.proxySigningNotEnoughPermissionsMessage(
                 marker,
                 marker,
                 marker
@@ -124,7 +126,9 @@ enum DelegatedMessageSheetViewFactory {
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionCreatedSheetMessage(
+            let template = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.multisigTransactionCreatedSheetMessage(
                 marker
             )
 
@@ -288,7 +292,9 @@ private extension DelegatedMessageSheetViewFactory {
 
         let message = LocalizableResource { locale in
             let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionRejectSheetMessage(
+            let template = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.multisigTransactionRejectSheetMessage(
                 marker
             )
 

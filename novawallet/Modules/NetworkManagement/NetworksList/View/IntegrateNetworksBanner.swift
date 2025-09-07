@@ -93,15 +93,15 @@ final class IntegrateNetworksBanner: UIView {
     }
 
     func set(locale: Locale) {
-        gradientBannerView.infoView.titleLabel.text = R.string.localizable.integrateNetworkBannerTitle(
+        gradientBannerView.infoView.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
-        gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.integrateNetworkBannerMessage(
+        ).localizable().integrateNetworkBannerTitle()
+        gradientBannerView.infoView.subtitleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
-        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.integrateNetworkBannerButtonLink(
+        ).localizable.integrateNetworkBannerMessage()
+        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.integrateNetworkBannerButtonLink()
     }
 
     @objc private func actionClose() {

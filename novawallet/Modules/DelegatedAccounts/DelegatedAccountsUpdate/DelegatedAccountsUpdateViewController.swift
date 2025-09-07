@@ -95,7 +95,9 @@ private extension DelegatedAccountsUpdateViewController {
 
     func setupDoneButton() {
         let preferredLanguages = selectedLocale.rLanguages
-        rootView.doneButton.imageWithTitleView?.title = R.string(preferredLanguages: preferredLanguages).localizable.commonDone()
+        rootView.doneButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: preferredLanguages
+        ).localizable.commonDone()
         rootView.doneButton.addTarget(self, action: #selector(didTapOnDoneButton), for: .touchUpInside)
     }
 
@@ -113,8 +115,12 @@ private extension DelegatedAccountsUpdateViewController {
     }
 
     func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegateUpdatesTitle()
-        rootView.doneButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.delegateUpdatesTitle()
+        rootView.doneButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonDone()
 
         let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegateUpdatesHint()
         let link = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLearnMore()
@@ -232,17 +238,17 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
 
         let title: String? = switch sectionType {
         case .delegated where currentMode == .proxied:
-            R.string.localizable.delegateUpdatesWalletTypeProxied(
+            R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.delegateUpdatesWalletTypeProxied()
         case .delegated where currentMode == .multisig:
-            R.string.localizable.commonMultisig(
+            R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonMultisig()
         case .revoked:
-            R.string.localizable.delegateUpdatesRevoked(
+            R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.delegateUpdatesRevoked()
         default:
             nil
         }

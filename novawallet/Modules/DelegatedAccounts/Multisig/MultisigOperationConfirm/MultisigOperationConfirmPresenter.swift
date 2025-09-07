@@ -69,9 +69,7 @@ private extension MultisigOperationConfirmPresenter {
             confirmClosure: { [weak self] in
                 self?.doConfirm()
             },
-            callDataAddClosure: {
-                [weak self] in
-
+            callDataAddClosure: { [weak self] in
                 self?.wireframe.showAddCallData(
                     from: self?.view,
                     for: pendingOperation.operation
