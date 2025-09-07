@@ -65,14 +65,14 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     ) -> String {
         switch (params.payChainAsset, params.receiveChainAsset) {
         case (nil, nil), (nil, _):
-            return R.string.localizable.swapsSetupAssetActionSelectPay(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionSelectPay()
         case (_, nil):
-            return R.string.localizable.swapsSetupAssetActionSelectReceive(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionSelectReceive()
         default:
             if params.payAmount == nil || params.receiveAmount == nil || hasIssues {
-                return R.string.localizable.swapsSetupAssetActionEnterAmount(preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionEnterAmount()
             } else {
-                return R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
             }
         }
     }
@@ -91,16 +91,16 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     private func emptyPayAssetViewModel(for locale: Locale) -> EmptySwapsAssetViewModel {
         EmptySwapsAssetViewModel(
             imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
-            title: R.string.localizable.swapsSetupAssetPayTitle(preferredLanguages: locale.rLanguages),
-            subtitle: R.string.localizable.swapsSetupAssetSelectSubtitle(preferredLanguages: locale.rLanguages)
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetPayTitle(),
+            subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectSubtitle()
         )
     }
 
     private func emptyReceiveAssetViewModel(for locale: Locale) -> EmptySwapsAssetViewModel {
         EmptySwapsAssetViewModel(
             imageViewModel: StaticImageViewModel(image: R.image.iconAddSwapAmount()!),
-            title: R.string.localizable.swapsSetupAssetReceiveTitle(preferredLanguages: locale.rLanguages),
-            subtitle: R.string.localizable.swapsSetupAssetSelectSubtitle(preferredLanguages: locale.rLanguages)
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetReceiveTitle(),
+            subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectSubtitle()
         )
     }
 
@@ -134,9 +134,8 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model {
-        let title = R.string.localizable.swapsSetupAssetSelectPayTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupAssetSelectPayTitle()
 
         if let assetDisplayInfo = assetDisplayInfo, let maxValue = maxValue {
             let maxValueString = balanceViewModelFactoryFacade.amountFromValue(
@@ -147,17 +146,15 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             return .init(
                 title: title,
                 subtitle:
-                R.string.localizable.swapsSetupAssetMax(
-                    preferredLanguages: locale.rLanguages
-                ),
+                R.string(preferredLanguages: locale.rLanguages
+                ).localizable.swapsSetupAssetMax(),
                 value: maxValueString
             )
         } else {
             return .init(
                 title:
-                R.string.localizable.swapsSetupAssetSelectPayTitle(
-                    preferredLanguages: locale.rLanguages
-                ),
+                R.string(preferredLanguages: locale.rLanguages
+                ).localizable.swapsSetupAssetSelectPayTitle(),
                 subtitle: "",
                 value: ""
             )
@@ -190,7 +187,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
     func receiveTitleViewModel(for locale: Locale) -> TitleHorizontalMultiValueView.Model {
         TitleHorizontalMultiValueView.Model(
             title:
-            R.string.localizable.swapsSetupAssetSelectReceiveTitle(preferredLanguages: locale.rLanguages),
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetSelectReceiveTitle(),
             subtitle: "",
             value: ""
         )

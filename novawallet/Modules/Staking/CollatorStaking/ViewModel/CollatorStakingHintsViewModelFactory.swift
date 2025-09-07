@@ -18,14 +18,14 @@ final class CollatorStakingHintsViewModelFactory: CollatorStakingHintsViewModelF
     }
 
     func unstakingRewards(for locale: Locale) -> String {
-        R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintNoRewards_v2_2_0()
     }
 
     func unstakingRedeem(for locale: Locale) -> String {
-        R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRedeem_v2_2_0()
     }
 
     func unstakingRebond(for locale: Locale) -> String {
-        R.string.localizable.parastkRebondHint(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.parastkRebondHint()
     }
 }

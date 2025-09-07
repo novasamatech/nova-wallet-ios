@@ -73,11 +73,11 @@ final class DAppAddFavoriteViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.dappFavoriteAddTitle(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.dappFavoriteAddTitle()
 
-        rootView.saveButton.title = R.string.localizable.commonSave(preferredLanguages: languages)
-        rootView.titleLabel.text = R.string.localizable.commonTitle(preferredLanguages: languages)
-        rootView.addressLabel.text = R.string.localizable.commonAddress(preferredLanguages: languages)
+        rootView.saveButton.title = R.string(preferredLanguages: languages).localizable.commonSave()
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonTitle()
+        rootView.addressLabel.text = R.string(preferredLanguages: languages).localizable.commonAddress()
     }
 
     private func updateSaveButton() {

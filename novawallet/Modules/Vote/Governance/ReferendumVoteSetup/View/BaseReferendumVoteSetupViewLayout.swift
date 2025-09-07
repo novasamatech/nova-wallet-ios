@@ -102,19 +102,15 @@ class BaseReferendumVoteSetupViewLayout: UIView {
         }
 
         if let governance = viewModel.governance {
-            govLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseGovernanceLocks(
-                governance,
-                preferredLanguages: locale.rLanguages
-            )
+            govLocksReuseButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govReuseGovernanceLocks(governance)
 
             govLocksReuseButton?.invalidateLayout()
         }
 
         if let all = viewModel.all {
-            allLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseAllLocks(
-                all,
-                preferredLanguages: locale.rLanguages
-            )
+            allLocksReuseButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govReuseAllLocks(all)
 
             allLocksReuseButton?.invalidateLayout()
         }

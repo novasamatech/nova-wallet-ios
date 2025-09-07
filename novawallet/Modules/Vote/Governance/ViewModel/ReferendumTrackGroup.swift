@@ -38,11 +38,11 @@ enum ReferendumTrackGroup {
     func title(for locale: Locale) -> String {
         switch self {
         case .treasury:
-            return R.string.localizable.govTrackGroupTreasury(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackGroupTreasury()
         case .fellowship:
-            return R.string.localizable.govTrackGroupFellowship(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackGroupFellowship()
         case .governance:
-            return R.string.localizable.govTrackGroupGovernance(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackGroupGovernance()
         }
     }
 }

@@ -9,9 +9,8 @@ struct GovernanceDelegateConfirmViewFactory {
         delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateConfirmViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.delegationsAddTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.delegationsAddTitle()
         }
 
         return createModule(
@@ -28,9 +27,8 @@ struct GovernanceDelegateConfirmViewFactory {
         delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateConfirmViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.govEditDelegation(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govEditDelegation()
         }
 
         return createModule(

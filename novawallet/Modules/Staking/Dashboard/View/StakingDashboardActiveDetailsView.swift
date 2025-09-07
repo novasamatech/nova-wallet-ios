@@ -131,18 +131,15 @@ final class StakingDashboardActiveDetailsView: UIView {
     }
 
     private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
-        internalStakeView.valueTop.text = R.string.localizable.stakingYourStake(
-            preferredLanguages: locale.rLanguages
-        )
+        internalStakeView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingYourStake()
 
         if hasEstimatedRewards {
-            estimatedEarningsView.valueTop.text = R.string.localizable.stakingEstimatedEarnings(
-                preferredLanguages: locale.rLanguages
-            )
+            estimatedEarningsView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingEstimatedEarnings()
 
-            estimatedEarningsView.valueBottom.sView.text = " " + R.string.localizable.commonPerYear(
-                preferredLanguages: locale.rLanguages
-            )
+            estimatedEarningsView.valueBottom.sView.text = " " + R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonPerYear()
         } else {
             estimatedEarningsView.valueTop.text = ""
             estimatedEarningsView.valueBottom.sView.text = ""

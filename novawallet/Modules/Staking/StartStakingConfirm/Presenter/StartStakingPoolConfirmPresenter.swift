@@ -34,15 +34,14 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingType() {
-        let stakingType = R.string.localizable.stakingTypeNominationPool(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let stakingType = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingTypeNominationPool()
 
         view?.didReceiveStakingType(viewModel: stakingType)
     }
 
     override func provideStakingDetails() {
-        let title = R.string.localizable.stakingPool(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingPool()
 
         let viewModel = addressViewModelFactory.createViewModel(from: model, chainAsset: chainAsset)
 

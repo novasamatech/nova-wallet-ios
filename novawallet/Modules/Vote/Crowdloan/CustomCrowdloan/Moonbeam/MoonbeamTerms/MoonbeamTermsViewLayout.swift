@@ -105,7 +105,7 @@ final class MoonbeamTermsViewLayout: UIView {
         descriptionLabel.text = R.string.localizable
             .crowdloanMoonbeamTermsDescription(preferredLanguages: locale.rLanguages)
 
-        let termsConditions = R.string.localizable.crowdloanTermsValue(preferredLanguages: locale.rLanguages)
+        let termsConditions = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanTermsValue()
         termsLabel.text = R.string.localizable
             .crowdloanTermsFormat(termsConditions, preferredLanguages: locale.rLanguages)
         learnMoreView.titleLabel.text = R.string.localizable

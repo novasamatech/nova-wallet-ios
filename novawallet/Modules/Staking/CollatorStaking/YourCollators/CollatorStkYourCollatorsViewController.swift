@@ -86,11 +86,10 @@ final class CollatorStkYourCollatorsViewController: UIViewController, ViewHolder
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.parachainStakingYourCollator(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingYourCollator()
 
-        navigationItem.rightBarButtonItem?.title = R.string.localizable.stakingManageTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingManageTitle()
     }
 
     private func setupNavigationItem() {
@@ -281,9 +280,8 @@ extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     }
 
     private func configureNoRewardsWarning(for headerView: YourValidatorListWarningSectionView) {
-        let text = R.string.localizable.parastkYourCollatorsWarning(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parastkYourCollatorsWarning()
 
         headerView.bind(warningText: text)
 
@@ -293,10 +291,8 @@ extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     private func configureElected(headerView: YourValidatorListStatusSectionView, collatorsCount: Int) {
         let icon = R.image.iconAlgoItem()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
-            R.string.localizable.stakingYourElectedFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingYourElectedFormat($0)
         } ?? ""
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextPrimary()
@@ -307,17 +303,15 @@ extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     }
 
     private func configureRewarded(headerView: YourValidatorListStatusSectionView) {
-        let description = R.string.localizable.parastkYourRewardedDescription(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let description = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parastkYourRewardedDescription()
 
         headerView.bind(description: description)
     }
 
     private func configureNotRewarded(headerView: YourValidatorListDescSectionView, section: Int) {
-        let description = R.string.localizable.parastkYourNotRewardedDescription(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let description = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parastkYourNotRewardedDescription()
 
         headerView.bind(description: description)
 
@@ -335,15 +329,12 @@ extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     ) {
         let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
-            R.string.localizable.stakingYourNotElectedFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingYourNotElectedFormat($0)
         } ?? ""
 
-        let description = R.string.localizable.parastkYourNotElectedDescription(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let description = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parastkYourNotElectedDescription()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -364,15 +355,12 @@ extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     ) {
         let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
-            R.string.localizable.parastkYourPendingFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parastkYourPendingFormat($0)
         } ?? ""
 
-        let description = R.string.localizable.parastkYourPendingDescription(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let description = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parastkYourPendingDescription()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -429,9 +417,8 @@ extension CollatorStkYourCollatorsViewController: EmptyStateDataSource {
             return errorView
         case .loading:
             let loadingView = ListLoadingView()
-            loadingView.titleLabel.text = R.string.localizable.commonLoadingCollators(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            loadingView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonLoadingCollators()
             loadingView.start()
             return loadingView
         case .loaded:

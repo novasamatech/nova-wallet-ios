@@ -31,12 +31,10 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             backgroundImage: R.image.bgCloudImport()!.resizableCenterImage(),
                             mainImage: R.image.iconCloudImport()!,
                             mainImagePosition: .center,
-                            title: R.string.localizable.commonCloudBackup(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
-                            subtitle: R.string.localizable.cloudImportDescription(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.commonCloudBackup(),
+                            subtitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.cloudImportDescription(),
                             onAction: { [weak self] in
                                 self?.view?.didStartLoading()
                                 self?.interactor.checkExistingBackup()
@@ -50,12 +48,10 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             backgroundImage: R.image.bgMnemonicImport()!.resizableCenterImage(),
                             mainImage: R.image.iconMnemonicImportRight()!,
                             mainImagePosition: .right,
-                            title: R.string.localizable.commonPassphrase(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
-                            subtitle: R.string.localizable.passphraseImportDescription(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.commonPassphrase(),
+                            subtitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.passphraseImportDescription(),
                             onAction: { [weak self] in
                                 self?.wireframe.showPassphraseImport(from: self?.view)
                             }
@@ -66,12 +62,10 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             backgroundImage: R.image.bgHardwareWalletImport()!.resizableCenterImage(),
                             mainImage: R.image.iconHardwareWalletImport()!,
                             mainImagePosition: .center,
-                            title: R.string.localizable.commonHardwareWallet(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
-                            subtitle: R.string.localizable.hardwareWalletImportDescription(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.commonHardwareWallet(),
+                            subtitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.hardwareWalletImportDescription(),
                             onAction: { [weak self] in
                                 guard let self else {
                                     return
@@ -88,12 +82,10 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             backgroundImage: R.image.bgTrustWalletImport()!.resizableCenterImage(),
                             mainImage: R.image.iconTrustWalletImport()!,
                             mainImagePosition: .center,
-                            title: R.string.localizable.commonTrustWallet(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
-                            subtitle: R.string.localizable.trustWalletImportDescription(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.commonTrustWallet(),
+                            subtitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.trustWalletImportDescription(),
                             onAction: { [weak self] in
                                 self?.wireframe.showTrustWalletImport(from: self?.view)
                             }
@@ -104,12 +96,10 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             backgroundImage: R.image.bgWatchOnlyImport()!.resizableCenterImage(),
                             mainImage: R.image.iconWatchOnlyImport()!,
                             mainImagePosition: .center,
-                            title: R.string.localizable.commonWatchOnly(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
-                            subtitle: R.string.localizable.createWatchOnlyDetails(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.commonWatchOnly(),
+                            subtitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.createWatchOnlyDetails(),
                             onAction: { [weak self] in
                                 self?.wireframe.showWatchOnlyImport(from: self?.view)
                             }
@@ -120,9 +110,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                     WalletImportOptionViewModel.RowItem.secondary(
                         .init(
                             image: R.image.iconSeed()!,
-                            title: R.string.localizable.importRawSeed(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.importRawSeed(),
                             onAction: { [weak self] in
                                 self?.wireframe.showSeedImport(from: self?.view)
                             }
@@ -131,9 +120,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                     WalletImportOptionViewModel.RowItem.secondary(
                         .init(
                             image: R.image.iconRestoreJson()!,
-                            title: R.string.localizable.importRecoveryJson(
-                                preferredLanguages: selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: selectedLocale.rLanguages
+                            ).localizable.importRecoveryJson(),
                             onAction: { [weak self] in
                                 self?.wireframe.showRestoreJsonImport(from: self?.view)
                             }

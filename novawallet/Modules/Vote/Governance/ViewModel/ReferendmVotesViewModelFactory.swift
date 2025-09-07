@@ -178,13 +178,13 @@ extension BaseReferendumVotesViewModelFactory {
         }
 
         let aye = createViewModel(
-            title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.governanceAye(),
             value: ayes,
             chain: chain,
             locale: locale
         )
         let nay = createViewModel(
-            title: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.governanceNay(),
             value: nays,
             chain: chain,
             locale: locale
@@ -193,7 +193,7 @@ extension BaseReferendumVotesViewModelFactory {
             guard offchainVotingAvailable else { return nil }
 
             return createViewModel(
-                title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.governanceAbstain(),
                 value: abstains,
                 chain: chain,
                 locale: locale
@@ -217,7 +217,7 @@ extension BaseReferendumVotesViewModelFactory {
         if vote.hasAyeVotes {
             let viewModel = createYourVoteRowViewModel(
                 vote: .init(balance: vote.ayeBalance, conviction: vote.convictionValue),
-                typeName: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
+                typeName: R.string(preferredLanguages: locale.rLanguages).localizable.governanceAye(),
                 style: .ayeInverse,
                 chain: chain,
                 locale: locale
@@ -229,7 +229,7 @@ extension BaseReferendumVotesViewModelFactory {
         if vote.hasNayVotes {
             let viewModel = createYourVoteRowViewModel(
                 vote: .init(balance: vote.nayBalance, conviction: vote.convictionValue),
-                typeName: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+                typeName: R.string(preferredLanguages: locale.rLanguages).localizable.governanceNay(),
                 style: .nayInverse,
                 chain: chain,
                 locale: locale
@@ -241,7 +241,7 @@ extension BaseReferendumVotesViewModelFactory {
         if vote.hasAbstainVotes {
             let viewModel = createYourVoteRowViewModel(
                 vote: .init(balance: vote.abstainBalance, conviction: vote.convictionValue),
-                typeName: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                typeName: R.string(preferredLanguages: locale.rLanguages).localizable.governanceAbstain(),
                 style: .abstainInverse,
                 chain: chain,
                 locale: locale
@@ -271,19 +271,17 @@ extension BaseReferendumVotesViewModelFactory {
         let voteSideStyle: YourVoteView.Style
 
         if vote.delegateVote.vote.aye {
-            voteSideString = R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages)
+            voteSideString = R.string(preferredLanguages: locale.rLanguages).localizable.governanceAye()
             voteSideStyle = .ayeInverse
         } else {
-            voteSideString = R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages)
+            voteSideString = R.string(preferredLanguages: locale.rLanguages).localizable.governanceNay()
             voteSideStyle = .nayInverse
         }
 
         let delegateName = delegateName ?? vote.delegateAddress
 
-        let voteDescription = R.string.localizable.delegatorVotesViaDelegate(
-            delegateName,
-            preferredLanguages: locale.rLanguages
-        )
+        let voteDescription = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.delegatorVotesViaDelegate(delegateName)
 
         let viewModel = YourVoteRow.Model(
             vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
@@ -313,7 +311,7 @@ extension BaseReferendumVotesViewModelFactory {
             locale: locale
         )
 
-        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: locale.rLanguages)
+        let voteDescription = R.string(preferredLanguages: locale.rLanguages).localizable.govYourVote()
 
         return YourVoteRow.Model(
             vote: .init(title: typeName.uppercased(), description: voteDescription, style: style),

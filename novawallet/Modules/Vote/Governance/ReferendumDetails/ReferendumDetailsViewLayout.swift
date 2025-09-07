@@ -63,9 +63,8 @@ final class ReferendumDetailsViewLayout: UIView {
     }
 
     func setTimeline(model: [ReferendumTimelineView.Model]?, locale: Locale) {
-        let title = R.string.localizable.govReferendumDetailsTimelineTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.govReferendumDetailsTimelineTitle()
 
         timelineView.titleLabel.text = title
 
@@ -78,9 +77,8 @@ final class ReferendumDetailsViewLayout: UIView {
         if let models = models, !models.isEmpty {
             dAppsTableView.isHidden = false
 
-            let title = R.string.localizable.commonUseDapp(
-                preferredLanguages: locale.rLanguages
-            )
+            let title = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonUseDapp()
 
             let headerView = createHeader(with: title)
             dAppsTableView.setCustomHeight(32, at: 0)
@@ -152,7 +150,7 @@ final class ReferendumDetailsViewLayout: UIView {
     func setFullDetails(hidden: Bool, locale: Locale) {
         fullDetailsView.isHidden = hidden
 
-        fullDetailsView.bind(title: R.string.localizable.govFullDetails(preferredLanguages: locale.rLanguages))
+        fullDetailsView.bind(title: R.string(preferredLanguages: locale.rLanguages).localizable.govFullDetails())
     }
 
     private func createHeader(with text: String) -> StackTableHeaderCell {

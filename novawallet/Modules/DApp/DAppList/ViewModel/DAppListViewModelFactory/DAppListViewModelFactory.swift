@@ -140,7 +140,7 @@ private extension DAppListViewModelFactory {
             dAppList: dAppList
         )
 
-        let name = R.string.localizable.commonFavorites(preferredLanguages: locale.rLanguages)
+        let name = R.string(preferredLanguages: locale.rLanguages).localizable.commonFavorites()
 
         return DAppListSection(
             title: name,
@@ -164,7 +164,7 @@ private extension DAppListViewModelFactory {
         let categoriesById: [String: DAppCategory] = dAppList.categories
             .reduce(into: [:]) { $0[$1.identifier] = $1 }
 
-        let categoryName = R.string.localizable.dappListSectionPopular(preferredLanguages: locale.rLanguages)
+        let categoryName = R.string(preferredLanguages: locale.rLanguages).localizable.dappListSectionPopular()
 
         return createCategorySection(
             categoryName: categoryName,

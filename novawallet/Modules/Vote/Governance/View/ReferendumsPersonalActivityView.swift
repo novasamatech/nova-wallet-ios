@@ -47,10 +47,10 @@ final class ReferendumsPersonalActivityView: GenericTitleValueView<
 extension ReferendumsPersonalActivityView {
     func bind(viewModel: ReferendumsUnlocksViewModel, locale: Locale) {
         titleView.sView.isHidden = false
-        titleLabel.text = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletBalanceLocked()
         valueLabel.text = viewModel.totalLock
         detailsLabel.text = viewModel.hasUnlock ?
-            R.string.localizable.commonUnlock(preferredLanguages: locale.rLanguages) : ""
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonUnlock() : ""
         titleView.fView.imageView.image = R.image.iconLockClosed()
     }
 }

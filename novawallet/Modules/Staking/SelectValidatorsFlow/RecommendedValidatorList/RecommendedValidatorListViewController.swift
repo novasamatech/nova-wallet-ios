@@ -55,11 +55,10 @@ final class RecommendedValidatorListViewController: UIViewController, ViewHolder
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        title = R.string.localizable.stakingRecommendedSectionTitle(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.stakingRecommendedSectionTitle()
 
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
+        rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonContinue()
     }
 
     @objc private func actionContinue() {
@@ -92,7 +91,7 @@ extension RecommendedValidatorListViewController: UITableViewDelegate, UITableVi
         let languages = selectedLocale.rLanguages
         let title = viewModel.itemsCountString.value(for: selectedLocale)
 
-        let details = R.string.localizable.stakingFilterTitleRewards(preferredLanguages: languages)
+        let details = R.string(preferredLanguages: languages).localizable.stakingFilterTitleRewards()
 
         headerView.bind(title: title, details: details)
 

@@ -49,11 +49,10 @@ final class CollatorStakingSelectSearchViewController: UIViewController, ViewHol
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.searchByAddressNamePlaceholder()
     }
 
     private func applyState() {

@@ -105,14 +105,13 @@ final class StakingRewardView: UIView {
     private func setupLocalization() {
         let languages = locale.rLanguages
 
-        totalRewardView.titleLabel.text = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
+        totalRewardView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
         setupClaimButtonLocalization()
     }
 
     private func setupClaimButtonLocalization() {
-        claimButton?.imageWithTitleView?.title = R.string.localizable.stakingClaimRewards(
-            preferredLanguages: locale.rLanguages
-        )
+        claimButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingClaimRewards()
         claimButton?.invalidateLayout()
     }
 

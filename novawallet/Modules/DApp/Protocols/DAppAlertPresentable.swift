@@ -31,11 +31,9 @@ extension DAppAlertPresentable {
         locale: Locale,
         handler: @escaping () -> Void
     ) {
-        let title = R.string.localizable.dappRemoveFavoritesTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.dappRemoveFavoritesMessage(
-            name,
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.dappRemoveFavoritesTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.dappRemoveFavoritesMessage(name)
 
         showRemoval(from: view, title: title, message: message, locale: locale, handler: handler)
     }
@@ -46,11 +44,9 @@ extension DAppAlertPresentable {
         locale: Locale,
         handler: @escaping () -> Void
     ) {
-        let title = R.string.localizable.dappRemoveAuthorizedTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.dappRemoveAuthorizedMessage(
-            name,
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.dappRemoveAuthorizedTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.dappRemoveAuthorizedMessage(name)
 
         showRemoval(from: view, title: title, message: message, locale: locale, handler: handler)
     }
@@ -62,18 +58,16 @@ extension DAppAlertPresentable {
         handler: @escaping () -> Void
     ) {
         let action = AlertPresentableAction(
-            title: R.string.localizable.dappUnknownWarningOpen(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.dappUnknownWarningOpen(),
             style: .destructive,
             handler: handler
         )
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.dappUnknownWarningTitle(preferredLanguages: locale.rLanguages),
-            message: R.string.localizable.dappUnknownWarningMessage(
-                email,
-                preferredLanguages: locale.rLanguages
-            ),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.dappUnknownWarningTitle(),
+            message: R.string(preferredLanguages: locale.rLanguages
+            ).localizable.dappUnknownWarningMessage(email),
             actions: [action],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         )
 
         present(
@@ -90,11 +84,11 @@ extension DAppAlertPresentable {
         locale: Locale,
         handler: @escaping () -> Void
     ) {
-        let removeTitle = R.string.localizable.commonRemove(preferredLanguages: locale.rLanguages)
+        let removeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonRemove()
 
         let removeAction = AlertPresentableAction(title: removeTitle, style: .destructive, handler: handler)
 
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
 
         let viewModel = AlertPresentableViewModel(
             title: title,

@@ -14,15 +14,13 @@ extension ParaStkUnstakePresenter: ModalPickerViewControllerDelegate {
             let displayName = delegationIdentities?[collatorId]?.displayName
             changeCollator(with: collatorId, name: displayName)
         } else {
-            let title = R.string.localizable.parastkCantUnstakeTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parastkCantUnstakeTitle()
 
-            let message = R.string.localizable.parastkCantUnstakeMessage(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let message = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parastkCantUnstakeMessage()
 
-            let close = R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+            let close = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
 
             wireframe.present(message: message, title: title, closeAction: close, from: view)
         }

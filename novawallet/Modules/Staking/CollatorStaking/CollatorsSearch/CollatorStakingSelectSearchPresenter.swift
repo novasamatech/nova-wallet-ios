@@ -45,12 +45,10 @@ final class CollatorStakingSelectSearchPresenter {
     private func createHeaderViewModel(for collatorsCount: Int) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
-        let title = R.string.localizable.commonSearchResultsNumber(
-            collatorsCount,
-            preferredLanguages: languages
-        )
+        let title = R.string(preferredLanguages: languages
+        ).localizable.commonSearchResultsNumber(collatorsCount)
 
-        let subtitle = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
+        let subtitle = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
 
         return TitleWithSubtitleViewModel(title: title, subtitle: subtitle)
     }
@@ -60,7 +58,7 @@ final class CollatorStakingSelectSearchPresenter {
     ) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
-        let title = R.string.localizable.commonMinStakeColumn(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.commonMinStakeColumn()
 
         let decimalAmount = Decimal.fromSubstrateAmount(
             collatorInfo.minRewardableStake,

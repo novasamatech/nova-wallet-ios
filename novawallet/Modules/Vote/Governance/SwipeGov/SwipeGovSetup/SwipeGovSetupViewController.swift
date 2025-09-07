@@ -41,17 +41,14 @@ final class SwipeGovSetupViewController: BaseReferendumVoteSetupViewController {
     override func setupLocalization() {
         super.setupLocalization()
 
-        rootView?.continueButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView?.continueButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
 
-        rootView?.detailsLabel.text = R.string.localizable.govVoteSetupDetailsSwipeGov(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView?.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govVoteSetupDetailsSwipeGov()
 
-        rootView?.titleLabel.text = R.string.localizable.govVotingPower(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView?.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govVotingPower()
     }
 
     @objc private func actionContinue() {

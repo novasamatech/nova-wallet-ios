@@ -107,62 +107,50 @@ final class ControllerAccountViewLayout: ScrollableContainerLayoutView {
     private func applyLocalization() {
         applyBannerLocalization()
 
-        bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonFindMore(
-            preferredLanguages: locale.rLanguages
-        )
+        bannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonFindMore()
 
-        stashHintView.valueTop.text = R.string.localizable.stakingStash(
-            preferredLanguages: locale.rLanguages
-        )
+        stashHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingStash()
 
-        stashHintView.valueBottom.text = R.string.localizable.stakingStashCanHint_v2_2_0(
-            preferredLanguages: locale.rLanguages
-        )
+        stashHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingStashCanHint_v2_2_0()
 
-        controllerHintView.valueTop.text = R.string.localizable.stakingController(
-            preferredLanguages: locale.rLanguages
-        )
+        controllerHintView.valueTop.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingController()
 
-        controllerHintView.valueBottom.text = R.string.localizable.stakingControllerCanHint_v2_2_0(
-            preferredLanguages: locale.rLanguages
-        )
+        controllerHintView.valueBottom.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingControllerCanHint_v2_2_0()
 
-        currentAccountIsControllerHint.contentView.detailsLabel.text = R.string.localizable.stakingSwitchAccountToStash(
-            preferredLanguages: locale.rLanguages
-        )
+        currentAccountIsControllerHint.contentView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingSwitchAccountToStash()
 
         applyActionButtonLocalization()
     }
 
     private func applyBannerLocalization() {
         if isDeprecated {
-            bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerDeprecatedTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingControllerDeprecatedTitle()
 
-            bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerDeprecatedDetails(
-                preferredLanguages: locale.rLanguages
-            )
+            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingControllerDeprecatedDetails()
         } else {
-            bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerBannerTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            bannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingControllerBannerTitle()
 
-            bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerBannerMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            bannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingControllerBannerMessage()
         }
     }
 
     private func applyActionButtonLocalization() {
         if isDeprecated {
-            actionButton.imageWithTitleView?.title = R.string.localizable.stakingControllerDeprecatedAction(
-                preferredLanguages: locale.rLanguages
-            )
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingControllerDeprecatedAction()
         } else {
-            actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: locale.rLanguages
-            )
+            actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonContinue()
         }
     }
 

@@ -36,21 +36,17 @@ final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHol
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingBondMore_v190(
-            preferredLanguages: languages
-        )
+        title = R.string(preferredLanguages: languages
+        ).localizable.stakingBondMore_v190()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: languages
-        )
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
-            preferredLanguages: languages
-        )
+        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages
+        ).localizable.commonAvailablePrefix()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonContinue()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -106,9 +102,8 @@ final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHol
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 }

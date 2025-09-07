@@ -49,9 +49,8 @@ struct StakingConfirmProxyViewFactory {
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             title: .init {
-                R.string.localizable.stakingAddProxyConfirmationTitle(
-                    preferredLanguages: $0.rLanguages
-                )
+                R.string(preferredLanguages: $0.rLanguages
+                ).localizable.stakingAddProxyConfirmationTitle()
             }
         )
 

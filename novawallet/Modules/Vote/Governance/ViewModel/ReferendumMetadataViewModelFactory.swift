@@ -43,10 +43,8 @@ extension ReferendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory
         } else {
             let index = indexFormatter.value(for: locale).string(from: referendum.index as NSNumber)
 
-            return R.string.localizable.govReferendumTitleFallback(
-                index ?? "",
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumTitleFallback(index ?? "")
         }
     }
 
@@ -58,7 +56,7 @@ extension ReferendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory
         if let description = metadata?.content, !description.isEmpty {
             return description
         } else {
-            return R.string.localizable.govReferendumDescriptionFallback(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govReferendumDescriptionFallback()
         }
     }
 }

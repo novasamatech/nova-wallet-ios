@@ -13,9 +13,8 @@ final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
             return
         }
 
-        let successAlertTitle = R.string.localizable.networkAddAlertSuccessTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let successAlertTitle = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.networkAddAlertSuccessTitle()
 
         view?.controller.navigationController?.popToViewController(
             networksListViewController,

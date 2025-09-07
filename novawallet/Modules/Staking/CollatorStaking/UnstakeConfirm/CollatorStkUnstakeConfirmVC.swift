@@ -34,24 +34,21 @@ final class CollatorStkUnstakeConfirmVC: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string.localizable.parachainStakingCollator(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parachainStakingCollator()
     }
 
     private func setupHandlers() {

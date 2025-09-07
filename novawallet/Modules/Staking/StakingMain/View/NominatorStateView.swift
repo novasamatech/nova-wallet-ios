@@ -84,9 +84,8 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
         statusView.glowingView.innerFillColor = R.color.colorTextPositive()!
         statusView.detailsLabel.textColor = R.color.colorTextPositive()!
 
-        statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusActive(
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusActive().uppercased()
     }
 
     private func presentInactiveStatus() {
@@ -94,9 +93,8 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
         statusView.glowingView.innerFillColor = R.color.colorTextNegative()!
         statusView.detailsLabel.textColor = R.color.colorTextNegative()!
 
-        statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusInactive(
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusInactive().uppercased()
     }
 
     private func presentWaitingStatus(remainingTime: TimeInterval?) {
@@ -117,10 +115,8 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
         if let statics = statics {
             return statics.waitingNextEra(for: timeString, locale: locale).uppercased()
         } else {
-            return R.string.localizable.stakingWaitingNextEraFormat(
-                timeString,
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingWaitingNextEraFormat(timeString).uppercased()
         }
     }
 }

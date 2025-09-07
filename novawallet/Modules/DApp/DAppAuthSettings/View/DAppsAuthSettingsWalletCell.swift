@@ -43,13 +43,11 @@ final class DAppsAuthSettingsWalletCell: UITableViewCell {
     }
 
     private func setupLocalization() {
-        infoLabel.text = R.string.localizable.dappAuthorizedInfo(
-            preferredLanguages: locale.rLanguages
-        )
+        infoLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.dappAuthorizedInfo()
 
-        walletView.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: locale.rLanguages
-        )
+        walletView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonWallet()
     }
 
     private func setupLayout() {

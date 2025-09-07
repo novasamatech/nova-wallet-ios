@@ -258,16 +258,14 @@ final class NetworkInfoView: UIView {
             activeNominatorsView.titleLabel.text = R.string.localizable
                 .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
 
-            titleControl.titleLabel.text = R.string.localizable.stakingNetworkInfoTitle(
-                preferredLanguages: languages
-            )
+            titleControl.titleLabel.text = R.string(preferredLanguages: languages
+            ).localizable.stakingNetworkInfoTitle()
         }
 
         titleControl.invalidateLayout()
 
-        stakingPeriodView.titleLabel.text = R.string.localizable.stakingNetworkInfoStakingPeriodTitle(
-            preferredLanguages: languages
-        )
+        stakingPeriodView.titleLabel.text = R.string(preferredLanguages: languages
+        ).localizable.stakingNetworkInfoStakingPeriodTitle()
         unstakingPeriodView.titleLabel.text = R.string.localizable
             .stakingMainLockupPeriodTitle_v190(preferredLanguages: languages)
 

@@ -53,9 +53,9 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         let languages = locale.rLanguages
 
         present(
-            message: R.string.localizable.multisigSelectionUnavailableMessage(preferredLanguages: languages),
-            title: R.string.localizable.multisigSelectionUnavailableTitle(preferredLanguages: languages),
-            closeAction: R.string.localizable.commonGotIt(preferredLanguages: languages),
+            message: R.string(preferredLanguages: languages).localizable.multisigSelectionUnavailableMessage(),
+            title: R.string(preferredLanguages: languages).localizable.multisigSelectionUnavailableTitle(),
+            closeAction: R.string(preferredLanguages: languages).localizable.commonGotIt(),
             from: view
         )
     }

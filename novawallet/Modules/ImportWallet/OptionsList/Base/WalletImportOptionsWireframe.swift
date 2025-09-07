@@ -74,7 +74,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     LocalizableResource { locale in
                         ActionManageViewModel(
                             icon: R.image.iconLedgerActionWarning(),
-                            title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
+                            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerLegacy(),
                             details: nil,
                             allowsIconModification: false
                         )
@@ -83,7 +83,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     LocalizableResource { locale in
                         ActionManageViewModel(
                             icon: R.image.iconLedgerAction(),
-                            title: R.string.localizable.commonLedgerNanoX(preferredLanguages: locale.rLanguages),
+                            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerNanoX(),
                             details: nil
                         )
                     }
@@ -92,11 +92,11 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                 LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerNanoGeneric(preferredLanguages: locale.rLanguages),
+                        title: R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerNanoGeneric(),
                         subtitle: [
-                            R.string.localizable.commonLedgerModelFlex(preferredLanguages: locale.rLanguages),
-                            R.string.localizable.commonLedgerModelStax(preferredLanguages: locale.rLanguages),
-                            R.string.localizable.commonLedgerModelNanoX(preferredLanguages: locale.rLanguages)
+                            R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerModelFlex(),
+                            R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerModelStax(),
+                            R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerModelNanoX()
                         ].joined(with: .commaSpace),
                         details: nil
                     )
@@ -105,7 +105,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         }
 
         let title = LocalizableResource { locale in
-            R.string.localizable.hardwareWalletOptionsTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.hardwareWalletOptionsTitle()
         }
 
         presentActionsManage(

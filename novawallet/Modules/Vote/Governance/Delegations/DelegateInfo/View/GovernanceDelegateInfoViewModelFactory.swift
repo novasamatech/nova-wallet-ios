@@ -71,10 +71,8 @@ final class GovernanceDelegateInfoViewModelFactory {
             return nil
         }
 
-        let periodInDays = R.string.localizable.commonDaysFormat(
-            format: recentVotesInDays,
-            preferredLanguages: locale.rLanguages
-        )
+        let periodInDays = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonDaysFormat(format: recentVotesInDays)
 
         return .init(period: periodInDays, value: votesString)
     }

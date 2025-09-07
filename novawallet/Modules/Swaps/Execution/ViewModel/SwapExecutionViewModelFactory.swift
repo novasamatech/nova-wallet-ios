@@ -35,11 +35,8 @@ final class SwapExecutionViewModelFactory {
     ) -> String {
         switch operation.label {
         case .transfer:
-            return R.string.localizable.swapsExecutionTransferDetails(
-                operation.assetIn.asset.symbol,
-                operation.assetOut.chain.name,
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.swapsExecutionTransferDetails(operation.assetIn.asset.symbol, operation.assetOut.chain.name)
         case .swap:
             return R.string.localizable.swapsExecutionSwapDetails(
                 operation.assetIn.asset.symbol,
@@ -60,7 +57,7 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel {
         let remainedTimeViewModel = CountdownLoadingView.ViewModel(
             duration: UInt(remainedTime.rounded(.up)),
-            units: R.string.localizable.secTimeUnits(preferredLanguages: locale.rLanguages)
+            units: R.string(preferredLanguages: locale.rLanguages).localizable.secTimeUnits()
         )
 
         let currentOperationString = createOperationDetails(
@@ -68,10 +65,8 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
             locale: locale
         )
 
-        let totalOperations = R.string.localizable.commonOperations(
-            format: quote.metaOperations.count,
-            preferredLanguages: locale.rLanguages
-        )
+        let totalOperations = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonOperations(format: quote.metaOperations.count)
 
         let details = R.string.localizable.commonOf(
             String(currentOperationIndex + 1),
@@ -120,10 +115,8 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: date)
 
-        let operationsString = R.string.localizable.commonOperations(
-            format: quote.metaOperations.count,
-            preferredLanguages: locale.rLanguages
-        )
+        let operationsString = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonOperations(format: quote.metaOperations.count)
 
         return .completed(.init(time: time, details: operationsString))
     }

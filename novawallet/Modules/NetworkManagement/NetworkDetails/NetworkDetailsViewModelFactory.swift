@@ -71,9 +71,8 @@ class NetworkDetailsViewModelFactory {
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Section {
         Section(
-            title: R.string.localizable.networkDetailsDefaultNodesSectionTitle(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ).uppercased(),
+            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.networkDetailsDefaultNodesSectionTitle().uppercased(),
             rows: createNodeViewModels(
                 for: nodes,
                 chain: chain,
@@ -100,9 +99,8 @@ class NetworkDetailsViewModelFactory {
         var rows: [NetworkDetailsViewLayout.Row] = [
             .addCustomNode(
                 .init(
-                    title: R.string.localizable.networkDetailsAddCustomNode(
-                        preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ),
+                    title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.networkDetailsAddCustomNode(),
                     icon: nil
                 )
             )
@@ -122,9 +120,8 @@ class NetworkDetailsViewModelFactory {
         rows.append(contentsOf: nodeRows)
 
         return Section(
-            title: R.string.localizable.networkDetailsCustomNodesSectionTitle(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ).uppercased(),
+            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.networkDetailsCustomNodesSectionTitle().uppercased(),
             rows: rows
         )
     }
@@ -140,9 +137,8 @@ private extension NetworkDetailsViewModelFactory {
                 .switcher(
                     .init(
                         underlyingViewModel: .init(
-                            title: R.string.localizable.networkDetailsEnableConnection(
-                                preferredLanguages: localizationManager.selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ).localizable.networkDetailsEnableConnection(),
                             icon: nil
                         ),
                         selectable: network.syncMode.enabled(),
@@ -152,9 +148,8 @@ private extension NetworkDetailsViewModelFactory {
                 .switcher(
                     .init(
                         underlyingViewModel: .init(
-                            title: R.string.localizable.networkDetailsAutoBalance(
-                                preferredLanguages: localizationManager.selectedLocale.rLanguages
-                            ),
+                            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ).localizable.networkDetailsAutoBalance(),
                             icon: nil
                         ),
                         selectable: network.connectionMode == .autoBalanced && network.syncMode.enabled(),
@@ -205,9 +200,8 @@ private extension NetworkDetailsViewModelFactory {
     ) -> Node {
         var connectionState: Node.ConnectionState = chain.syncMode.enabled()
             ? .connecting(
-                R.string.localizable.networkStatusConnecting(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ).uppercased()
+                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.networkStatusConnecting().uppercased()
             )
             : .disconnected
 
@@ -215,9 +209,8 @@ private extension NetworkDetailsViewModelFactory {
             connectionState = switch nodeConnectionState {
             case .connecting:
                 .connecting(
-                    R.string.localizable.networkStatusConnecting(
-                        preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ).uppercased()
+                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.networkStatusConnecting().uppercased()
                 )
             case .disconnected:
                 .disconnected
@@ -225,16 +218,14 @@ private extension NetworkDetailsViewModelFactory {
                 createConnectionState(for: ping)
             default:
                 .unknown(
-                    R.string.localizable.commonUnknown(
-                        preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ).uppercased()
+                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.commonUnknown().uppercased()
                 )
             }
         }
 
         let accessory: Node.Accessory = if node.source == .user, !deletionAllowed {
-            .edit(R.string.localizable.commonEdit(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages)
+            .edit(R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonEdit()
             )
         } else if node.source == .user, deletionAllowed {
             .more
@@ -257,10 +248,8 @@ private extension NetworkDetailsViewModelFactory {
     }
 
     func createConnectionState(for ping: Int) -> Node.ConnectionState {
-        let string = R.string.localizable.networkDetailsPingMilliseconds(
-            ping,
-            preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).uppercased()
+        let string = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.networkDetailsPingMilliseconds(ping).uppercased()
 
         return switch ping {
         case 0 ..< 100:

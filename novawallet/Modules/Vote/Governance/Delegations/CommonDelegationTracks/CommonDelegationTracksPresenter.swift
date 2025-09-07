@@ -68,7 +68,7 @@ final class CommonDelegationTracksPresenter {
             track: $0,
             delegation: delegations[$0.trackId]
         ) }
-        view?.didReceive(title: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages))
+        view?.didReceive(title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks())
         view?.didReceive(tracks: viewModels)
     }
 }

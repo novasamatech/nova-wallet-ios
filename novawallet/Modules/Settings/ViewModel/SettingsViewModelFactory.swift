@@ -158,8 +158,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         isOn: Bool,
         locale: Locale
     ) -> SettingsCellViewModel {
-        let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.commonOff(preferredLanguages: locale.rLanguages)
+        let accessory = isOn ? R.string(preferredLanguages: locale.rLanguages).localizable.commonOn() :
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOff()
 
         return SettingsCellViewModel(
             row: row,

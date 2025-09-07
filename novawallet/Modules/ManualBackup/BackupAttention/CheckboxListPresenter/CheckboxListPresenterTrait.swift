@@ -39,12 +39,10 @@ extension CheckboxListPresenterTrait {
     }
 
     private func makeViewModel() -> BackupAttentionViewLayout.Model {
-        let activeButtonTitle = R.string.localizable.commonContinue(
-            preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
-        let inactiveButtonTitle = R.string.localizable.backupAttentionAggreeButtonTitle(
-            preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
+        let activeButtonTitle = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.commonContinue()
+        let inactiveButtonTitle = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.backupAttentionAggreeButtonTitle()
 
         return BackupAttentionViewLayout.Model(
             rows: checkboxViewModels,

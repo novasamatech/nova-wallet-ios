@@ -14,7 +14,7 @@ enum LedgerMessageSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerReviewApprove(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerReviewApprove()
         }
 
         let message = LocalizableResource { locale in
@@ -68,7 +68,7 @@ enum LedgerMessageSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerReviewApprove(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerReviewApprove()
         }
 
         let message = LocalizableResource { locale in
@@ -120,7 +120,7 @@ enum LedgerMessageSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerReviewApprove(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerReviewApprove()
         }
 
         let message = LocalizableResource { locale in
@@ -245,19 +245,15 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonTransactionExpired(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonTransactionExpired()
         }
 
         let message = LocalizableResource<String> { locale in
-            let minutes = R.string.localizable.commonMinutesFormat(
-                format: expirationTimeInterval.minutesFromSeconds,
-                preferredLanguages: locale.rLanguages
-            )
+            let minutes = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonMinutesFormat(format: expirationTimeInterval.minutesFromSeconds)
 
-            return R.string.localizable.ledgerTransactionExpiredDetails(
-                minutes,
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.ledgerTransactionExpiredDetails(minutes)
         }
 
         return createLedgerWarningView(
@@ -275,13 +271,12 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerTransactionNotSupportedTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerTransactionNotSupportedTitle()
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string.localizable.ledgerTransactionNotSupportedMessage(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.ledgerTransactionNotSupportedMessage()
         }
 
         return createLedgerWarningView(
@@ -299,13 +294,12 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonSignatureInvalid(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatureInvalid()
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string.localizable.ledgerTransactionSignatureInvalid(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.ledgerTransactionSignatureInvalid()
         }
 
         return createLedgerWarningView(
@@ -324,14 +318,12 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonOutdatedMetadata(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOutdatedMetadata()
         }
 
         let message = LocalizableResource<String> { locale in
-            R.string.localizable.ledgerTransactionUpdateMetadata(
-                chainName,
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.ledgerTransactionUpdateMetadata(chainName)
         }
 
         return createLedgerWarningView(
@@ -349,11 +341,11 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationErrorTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationDeviceNotConnected(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationDeviceNotConnected()
         }
 
         return createLedgerWarningView(
@@ -373,11 +365,11 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationTitleCancelled(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationTitleCancelled()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationMessageCancelled(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationMessageCancelled()
         }
 
         return createLedgerWarningView(
@@ -398,11 +390,11 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerAppNotOpenTitle(chainName, preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerAppNotOpenTitle(chainName)
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerAppNotOpenMessage(chainName, preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerAppNotOpenMessage(chainName)
         }
 
         return createLedgerWarningView(
@@ -423,7 +415,7 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationErrorTitle()
         }
 
         return createLedgerWarningView(
@@ -442,11 +434,11 @@ enum LedgerMessageSheetViewFactory {
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationErrorTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerOperationMessageError(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerOperationMessageError()
         }
 
         return createLedgerWarningView(
@@ -468,15 +460,12 @@ enum LedgerMessageSheetViewFactory {
         let mainAction: MessageSheetAction = .okBackAction { cancelClosure?() }
 
         let title = LocalizableResource { locale in
-            R.string.localizable.ledgerNotSupportTokenTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerNotSupportTokenTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerNotSupportTokenMessage(
-                tokenName,
-                tokenName,
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages
+            ).localizable.ledgerNotSupportTokenMessage(tokenName, tokenName)
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(

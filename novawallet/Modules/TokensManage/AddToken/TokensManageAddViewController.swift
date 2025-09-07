@@ -98,11 +98,11 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.addTokenTitle(preferredLanguages: languages)
-        rootView.addressTitleLabel.text = R.string.localizable.commonContractAddress(preferredLanguages: languages)
-        rootView.symbolTitleLabel.text = R.string.localizable.commonTokenSymbol(preferredLanguages: languages)
-        rootView.decimalsTitleLabel.text = R.string.localizable.commonTokenDecimals(preferredLanguages: languages)
-        rootView.priceIdTitleLabel.text = R.string.localizable.addTokenPriceTitle(preferredLanguages: languages)
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.addTokenTitle()
+        rootView.addressTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonContractAddress()
+        rootView.symbolTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonTokenSymbol()
+        rootView.decimalsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonTokenDecimals()
+        rootView.priceIdTitleLabel.text = R.string(preferredLanguages: languages).localizable.addTokenPriceTitle()
 
         rootView.addressInputView.locale = selectedLocale
         rootView.priceIdInputView.locale = selectedLocale
@@ -117,9 +117,8 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.addTokenEnterContractAddress(
-                preferredLanguages: languages
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+            ).localizable.addTokenEnterContractAddress()
 
             return
         }
@@ -128,9 +127,8 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.addTokenEnterSymbol(
-                preferredLanguages: languages
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+            ).localizable.addTokenEnterSymbol()
 
             return
         }
@@ -139,9 +137,8 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.addTokenEnterDecimals(
-                preferredLanguages: languages
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+            ).localizable.addTokenEnterDecimals()
 
             return
         }
@@ -149,9 +146,8 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.addTokenAction(
-            preferredLanguages: languages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.addTokenAction()
     }
 
     private func applyPlaceholder(_ placeholder: String, inputView: TextInputView) {

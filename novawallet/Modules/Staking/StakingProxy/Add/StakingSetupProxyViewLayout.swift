@@ -22,7 +22,7 @@ final class StakingSetupProxyViewLayout: ScrollableContainerLayoutView {
 
     let accountInputView: AccountInputView = .create {
         $0.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.transferSetupRecipientInputPlaceholder(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferSetupRecipientInputPlaceholder()
         }
     }
 

@@ -14,9 +14,8 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
             presenter: presenter,
             localizationManager: localizationManager,
             navigationItemTitle: .init {
-                R.string.localizable.tabbarGovernanceTitle(
-                    preferredLanguages: $0.rLanguages
-                )
+                R.string(preferredLanguages: $0.rLanguages
+                ).localizable.tabbarGovernanceTitle()
             }
         )
     }
@@ -38,15 +37,12 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
     }
 
     private func createSection(from model: GovernanceNotificationsViewModel) -> Section {
-        let newRefendumTitle = R.string.localizable.notificationsManagementGovNewReferendum(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let referendumUpdate = R.string.localizable.notificationsManagementGovReferendumUpdate(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let tracks = R.string.localizable.govTracks(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let newRefendumTitle = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsManagementGovNewReferendum()
+        let referendumUpdate = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsManagementGovReferendumUpdate()
+        let tracks = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govTracks()
         return .collapsable([
             .switchCell(.init(
                 title: model.name,
@@ -92,15 +88,11 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
         from selectedTracks: GovernanceNotificationsViewModel.SelectedTracks
     ) -> String {
         if selectedTracks.allSelected {
-            return R.string.localizable.commonAll(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonAll()
         } else {
-            return R.string.localizable.notificationsManagementGovSelectedTracks(
-                selectedTracks.tracks.count,
-                selectedTracks.totalTracksCount,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.notificationsManagementGovSelectedTracks(selectedTracks.tracks.count, selectedTracks.totalTracksCount)
         }
     }
 }

@@ -106,10 +106,8 @@ final class StakingNPoolsPresenter {
             let poolNumber = quantityFormatter.value(
                 for: selectedLocale
             ).string(from: NSNumber(value: poolMember.poolId))
-            let title = R.string.localizable.stakingYourPoolFormat(
-                poolNumber ?? "",
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingYourPoolFormat(poolNumber ?? "")
 
             let selectedPool = NominationPools.SelectedPool(
                 poolId: poolMember.poolId,
@@ -125,9 +123,8 @@ final class StakingNPoolsPresenter {
 
         } else {
             let entity = StakingSelectedEntityViewModel(
-                title: R.string.localizable.stakingYourPoolTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingYourPoolTitle(),
                 loadingAddress: .loading
             )
 

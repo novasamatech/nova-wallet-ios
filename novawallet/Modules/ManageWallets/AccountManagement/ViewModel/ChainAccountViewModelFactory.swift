@@ -168,7 +168,7 @@ final class ChainAccountViewModelFactory {
                     chainId: chainModel.chainId,
                     name: chainModel.name,
                     address: nil,
-                    warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                    warning: R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundCaption(),
                     chainIconViewModel: imageViewModel,
                     accountIcon: nil,
                     hasAction: false

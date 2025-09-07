@@ -51,19 +51,15 @@ private extension AssetReceiveViewController {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
-            preferredLanguages: languages
-        )
-        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string.localizable.commonCopyAddress(
-            preferredLanguages: languages
-        ).capitalized
-        rootView.legacyAddressMessageLabel.text = R.string.localizable.assetReceiveLookingForAddressMessage(
-            preferredLanguages: languages
-        )
+        rootView.shareButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.walletReceiveShareTitle()
+        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonCopyAddress().capitalized
+        rootView.legacyAddressMessageLabel.text = R.string(preferredLanguages: languages
+        ).localizable.assetReceiveLookingForAddressMessage()
         rootView.viewAddressFormatsButton.setTitle(
-            R.string.localizable.assetReceiveViewAddressFormat(
-                preferredLanguages: languages
-            )
+            R.string(preferredLanguages: languages
+            ).localizable.assetReceiveViewAddressFormat()
         )
     }
 
@@ -91,16 +87,11 @@ private extension AssetReceiveViewController {
     ) {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.walletReceiveTitleFormat(
-            token,
-            preferredLanguages: languages
-        )
+        rootView.titleLabel.text = R.string(preferredLanguages: languages
+        ).localizable.walletReceiveTitleFormat(token)
 
-        rootView.detailsLabel.text = R.string.localizable.walletReceiveDetailsFormat(
-            token,
-            chainName,
-            preferredLanguages: languages
-        )
+        rootView.detailsLabel.text = R.string(preferredLanguages: languages
+        ).localizable.walletReceiveDetailsFormat(token, chainName)
     }
 
     func updateNavigationBar() {

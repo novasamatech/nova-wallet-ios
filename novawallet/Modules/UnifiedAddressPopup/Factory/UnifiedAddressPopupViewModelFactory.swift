@@ -25,10 +25,10 @@ extension UnifiedAddressPopup.ViewModelFactory {
     ) -> UnifiedAddressPopup.ViewModel {
         let languages = locale.rLanguages
 
-        let title = R.string.localizable.unifiedAddressPopupTitle(preferredLanguages: languages)
-        let subtitle = R.string.localizable.unifiedAddressPopupSubtitle(preferredLanguages: languages)
-        let wikiText = R.string.localizable.commonLearnMore(preferredLanguages: languages)
-        let checkboxText = R.string.localizable.unifiedAddressPopupCheckboxText(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.unifiedAddressPopupTitle()
+        let subtitle = R.string(preferredLanguages: languages).localizable.unifiedAddressPopupSubtitle()
+        let wikiText = R.string(preferredLanguages: languages).localizable.commonLearnMore()
+        let checkboxText = R.string(preferredLanguages: languages).localizable.unifiedAddressPopupCheckboxText()
 
         let newFormatText = R.string.localizable
             .unifiedAddressNewFormat(preferredLanguages: languages)
@@ -46,7 +46,7 @@ extension UnifiedAddressPopup.ViewModelFactory {
             addressText: legacyAddress
         )
 
-        let buttonText = R.string.localizable.commonOk(preferredLanguages: languages).uppercased()
+        let buttonText = R.string(preferredLanguages: languages).localizable.commonOk().uppercased()
         let wikiURL = applicationConfig.unifiedAddressWikiURL
 
         return UnifiedAddressPopup.ViewModel(

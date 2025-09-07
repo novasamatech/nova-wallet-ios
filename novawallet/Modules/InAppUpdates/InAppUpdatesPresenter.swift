@@ -67,10 +67,8 @@ final class InAppUpdatesPresenter {
     }
 
     private func title(for release: Release) -> String {
-        R.string.localizable.inAppUpdatesVersionTitle(
-            release.version.id,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.inAppUpdatesVersionTitle(release.version.id)
     }
 
     private func handle(error: Error, retryAction: @escaping () -> Void) {
@@ -78,10 +76,9 @@ final class InAppUpdatesPresenter {
         loadMoreReleaseChangeLogsTitle = .cached(value: loadMoreButtonText)
         updateView()
 
-        let message = R.string.localizable.inAppUpdatesFetchChangeLogsError(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let cancelAction = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
+        let message = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.inAppUpdatesFetchChangeLogsError()
+        let cancelAction = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel()
 
         wireframe.presentRequestStatus(
             on: view,
@@ -94,8 +91,7 @@ final class InAppUpdatesPresenter {
     }
 
     private var loadMoreButtonText: String {
-        R.string.localizable.inAppUpdatesButtonShowMoreTitle(
-            preferredLanguages: selectedLocale.rLanguages)
+        R.string(preferredLanguages: selectedLocale.rLanguages).localizable.inAppUpdatesButtonShowMoreTitle()
     }
 }
 

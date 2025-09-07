@@ -43,31 +43,27 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
         removeVotesClosure: @escaping () -> Void
     ) {
         let title = LocalizableResource { locale in
-            R.string.localizable.govRemoveVotesAskTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.govRemoveVotesAskTitle()
         }
 
         let message = LocalizableResource { locale in
-            let tracksString = R.string.localizable.commonInTracks(
-                format: tracksCount,
-                preferredLanguages: locale.rLanguages
-            )
+            let tracksString = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonInTracks(format: tracksCount)
 
-            return R.string.localizable.govRemoveVotesAskDetails(
-                tracksString,
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govRemoveVotesAskDetails(tracksString)
         }
 
         let skipAction = MessageSheetAction(
             title: LocalizableResource { locale in
-                R.string.localizable.commonSkip(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonSkip()
             },
             handler: skipClosure
         )
 
         let removeVotesAction = MessageSheetAction(
             title: LocalizableResource { locale in
-                R.string.localizable.govRemoveVotes(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govRemoveVotes()
             },
             handler: removeVotesClosure
         )

@@ -80,33 +80,29 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         switch purpose {
         case .addChainAccount:
             wireframe.presentMultilineSuccessNotification(
-                R.string.localizable.commonAccountHasChanged(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.commonAccountHasChanged(),
                 from: view?.controller.topModalViewController,
                 completion: nil
             )
         case .createWallet:
             wireframe.presentMultilineSuccessNotification(
-                R.string.localizable.commonWalletCreated(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.commonWalletCreated(),
                 from: view?.controller.topModalViewController,
                 completion: nil
             )
         case .importWallet:
             wireframe.presentMultilineSuccessNotification(
-                R.string.localizable.commonWalletImported(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.commonWalletImported(),
                 from: view?.controller.topModalViewController,
                 completion: nil
             )
         case .removeWallet:
             wireframe.presentMultilineSuccessNotification(
-                R.string.localizable.commonWalletRemoved(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.commonWalletRemoved(),
                 from: view?.controller.topModalViewController,
                 completion: nil
             )

@@ -53,18 +53,16 @@ final class TransferNetworkContainerView: UIView {
 
         let languages = locale.rLanguages
 
-        tokenLabel.text = R.string.localizable.walletTransferTokenFormat_v2_9_1(
-            viewModel.assetSymbol,
-            preferredLanguages: languages
-        )
+        tokenLabel.text = R.string(preferredLanguages: languages
+        ).localizable.walletTransferTokenFormat_v2_9_1(viewModel.assetSymbol)
 
         if isCrossChain {
-            fromLabel.text = R.string.localizable.walletTransferCrossChainFrom(preferredLanguages: languages)
+            fromLabel.text = R.string(preferredLanguages: languages).localizable.walletTransferCrossChainFrom()
         } else {
-            fromLabel.text = R.string.localizable.walletTransferOn(preferredLanguages: languages)
+            fromLabel.text = R.string(preferredLanguages: languages).localizable.walletTransferOn()
         }
 
-        toLabel?.text = R.string.localizable.walletTransferCrossChainTo(preferredLanguages: languages)
+        toLabel?.text = R.string(preferredLanguages: languages).localizable.walletTransferCrossChainTo()
 
         setNeedsLayout()
     }

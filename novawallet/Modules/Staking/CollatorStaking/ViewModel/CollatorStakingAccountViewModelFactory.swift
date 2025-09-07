@@ -46,9 +46,8 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
         let details: TitleWithSubtitleViewModel?
 
         if let stakedAmount {
-            let detailsName = R.string.localizable.commonStakedPrefix(
-                preferredLanguages: locale.rLanguages
-            )
+            let detailsName = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.commonStakedPrefix()
 
             let stakedDecimal = stakedAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
@@ -91,7 +90,7 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
             let selectable = !disabled.contains(stake.collator)
 
             return LocalizableResource { locale in
-                let detailsTitle = R.string.localizable.commonStakedPrefix(preferredLanguages: locale.rLanguages)
+                let detailsTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonStakedPrefix()
                 let detailsSubtitle = localizedAmountString.value(for: locale)
 
                 let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)
@@ -131,7 +130,7 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
             }
 
             return LocalizableResource { locale in
-                let detailsTitle = R.string.localizable.commonUnstakingPrefix(preferredLanguages: locale.rLanguages)
+                let detailsTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonUnstakingPrefix()
                 let detailsSubtitle = localizedAmountString.value(for: locale)
 
                 let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)

@@ -31,13 +31,13 @@ final class DelegationListPresenter {
 
     private var title: LocalizableResource<String> {
         LocalizableResource<String> { locale in
-            R.string.localizable.delegationsDelegations(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegationsDelegations()
         }
     }
 
     private var emptyStateTitle: LocalizableResource<String> {
         LocalizableResource<String> { locale in
-            R.string.localizable.delegationsListEmpty(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.delegationsListEmpty()
         }
     }
 

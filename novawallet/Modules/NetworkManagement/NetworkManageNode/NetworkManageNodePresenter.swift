@@ -29,9 +29,8 @@ final class NetworkManageNodePresenter {
     private func provideViewModel() {
         let actions: [NetworkManageNodeViewModel.Action] = [
             .init(
-                title: R.string.localizable.networkManageNodeEdit(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages
+                ).localizable.networkManageNodeEdit(),
                 icon: R.image.iconPencil(),
                 negative: false,
                 onSelection: { [weak self] in
@@ -42,9 +41,8 @@ final class NetworkManageNodePresenter {
                 }
             ),
             .init(
-                title: R.string.localizable.networkManageNodeDelete(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages
+                ).localizable.networkManageNodeDelete(),
                 icon: R.image.iconDelete(),
                 negative: true,
                 onSelection: { [weak self] in
@@ -57,9 +55,8 @@ final class NetworkManageNodePresenter {
         ]
 
         let viewModel = NetworkManageNodeViewModel(
-            title: R.string.localizable.networkManageNodeManageAddedNode(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.networkManageNodeManageAddedNode(),
             nodeName: node.name,
             actions: actions
         )

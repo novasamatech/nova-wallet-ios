@@ -182,34 +182,29 @@ final class NftDetailsViewLayout: UIView {
     private func setupLocalization() {
         setupPriceLocalization()
 
-        ownerCell.titleLabel.text = R.string.localizable.nftOwnerTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        ownerCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.nftOwnerTitle()
 
-        networkCell.titleLabel.text = R.string.localizable.commonNetwork(
-            preferredLanguages: locale.rLanguages
-        )
+        networkCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonNetwork()
 
         setupIssuerLocalization()
         setupCollectionLocalization()
     }
 
     private func setupPriceLocalization() {
-        priceView?.titleLabel.text = R.string.localizable.commonPrice(
-            preferredLanguages: locale.rLanguages
-        )
+        priceView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonPrice()
     }
 
     private func setupIssuerLocalization() {
-        issuerCell?.titleLabel.text = R.string.localizable.nftIssuerTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        issuerCell?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.nftIssuerTitle()
     }
 
     private func setupCollectionLocalization() {
-        collectionCell?.titleLabel.text = R.string.localizable.nftCollectionTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        collectionCell?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.nftCollectionTitle()
     }
 
     private func setupLayout() {

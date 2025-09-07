@@ -36,7 +36,7 @@ final class StakingSelectPoolViewModelFactory: StakingSelectPoolViewModelFactory
         let apy = selectedPool.maxApy.map {
             apyFormatter.value(for: locale).stringFromDecimal($0)
         } ?? nil
-        let period = R.string.localizable.commonPerYear(preferredLanguages: locale.rLanguages)
+        let period = R.string(preferredLanguages: locale.rLanguages).localizable.commonPerYear()
         let members = membersFormatter.value(for: locale).string(from: .init(value: poolStats.membersCount)) ?? ""
         let imageViewModel = selectedPoolId != poolStats.poolId ? poolIconFactory.createIconViewModel(
             for: chainAsset,

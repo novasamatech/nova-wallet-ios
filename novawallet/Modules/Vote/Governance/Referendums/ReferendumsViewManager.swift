@@ -107,10 +107,10 @@ extension ReferendumsViewManager: UITableViewDataSource {
 
         switch emptyModel {
         case .referendumsNotFound:
-            text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
+            text = R.string(preferredLanguages: locale.rLanguages).localizable.govEmptyList()
             image = R.image.iconEmptyHistory()
         case .filteredListEmpty:
-            text = R.string.localizable.governanceReferendumsFilterEmpty(preferredLanguages: locale.rLanguages)
+            text = R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsFilterEmpty()
             image = R.image.iconEmptySearch()?
                 .withRenderingMode(.alwaysTemplate)
                 .tinted(with: R.color.colorIconSecondary()!)
@@ -128,7 +128,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
         isFilterOn: Bool
     ) -> UITableViewCell {
         let settingsCell: ReferendumsSettingsCell = tableView.dequeueReusableCell(for: indexPath)
-        let title = R.string.localizable.governanceReferendumsSettingsTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsSettingsTitle()
         settingsCell.bind(title: title, isFilterOn: isFilterOn)
         settingsCell.filterButton.addTarget(self, action: #selector(filterAction), for: .touchUpInside)
         settingsCell.searchButton.addTarget(self, action: #selector(searchAction), for: .touchUpInside)

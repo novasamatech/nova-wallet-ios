@@ -117,15 +117,13 @@ final class StakingUnbondingsView: UIView {
     private func setupLocalization() {
         let languages = locale.rLanguages
 
-        titleLabel.text = R.string.localizable.walletBalanceUnbonding_v190(preferredLanguages: languages)
+        titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceUnbonding_v190()
 
-        cancelButton.imageWithTitleView?.title = R.string.localizable.commonCancel(
-            preferredLanguages: languages
-        )
+        cancelButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonCancel()
 
-        redeemButton.imageWithTitleView?.title = R.string.localizable.stakingRedeem(
-            preferredLanguages: languages
-        )
+        redeemButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.stakingRedeem()
     }
 
     private func setupLayout() {

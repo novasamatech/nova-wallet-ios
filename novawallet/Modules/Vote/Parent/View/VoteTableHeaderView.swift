@@ -91,11 +91,11 @@ final class VoteTableHeaderView: UIView {
     private func setupLocalization() {
         let languages = locale.rLanguages
 
-        titleLabel.text = R.string.localizable.tabbarVoteTitle(preferredLanguages: languages)
+        titleLabel.text = R.string(preferredLanguages: languages).localizable.tabbarVoteTitle()
 
         votingTypeSwitch.titles = [
-            R.string.localizable.tabbarGovernanceTitle(preferredLanguages: languages),
-            R.string.localizable.tabbarCrowdloanTitle_v190(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.tabbarGovernanceTitle(),
+            R.string(preferredLanguages: languages).localizable.tabbarCrowdloanTitle_v190()
         ]
     }
 }

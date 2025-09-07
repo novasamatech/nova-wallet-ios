@@ -82,10 +82,8 @@ class GovYourDelegationsViewModelFactory: GovernanceDelegateViewModelFactory {
             let tracksCount = quantityFormatter.value(for: locale).string(
                 from: NSNumber(value: group.delegations.count)
             ) ?? ""
-            votesDetails = R.string.localizable.delegationsListMultipleTracks(
-                tracksCount,
-                preferredLanguages: locale.rLanguages
-            )
+            votesDetails = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.delegationsListMultipleTracks(tracksCount)
         }
 
         return .init(votesTitle: votesTitle, votesDetails: votesDetails)

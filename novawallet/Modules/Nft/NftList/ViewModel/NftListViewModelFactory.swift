@@ -64,15 +64,12 @@ final class NftListViewModelFactory {
         let unitsViewModelFactory = getUnitsBalanceViewModelFactory()
         let totalNumberString = unitsViewModelFactory.unitsFromValue(totalNumber.decimal()).value(for: locale)
 
-        return R.string.localizable.nftListItemLimitedFormat(
-            serialNumberString,
-            totalNumberString,
-            preferredLanguages: locale.rLanguages
-        )
+        return R.string(preferredLanguages: locale.rLanguages
+        ).localizable.nftListItemLimitedFormat(serialNumberString, totalNumberString)
     }
 
     private func createUnlimitedIssuanceLabel(for locale: Locale) -> String {
-        R.string.localizable.nftListItemUnlimited(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.nftListItemUnlimited()
     }
 
     private func createNonFungiblePrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
@@ -99,11 +96,8 @@ final class NftListViewModelFactory {
 
         let priceUnitsString = viewModelFactory.unitsFromValue(priceUnits).value(for: locale)
 
-        let amount = R.string.localizable.nftFungiblePrice(
-            priceUnitsString,
-            viewModel.amount,
-            preferredLanguages: locale.rLanguages
-        )
+        let amount = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.nftFungiblePrice(priceUnitsString, viewModel.amount)
 
         return BalanceViewModel(amount: amount, price: viewModel.price)
     }
@@ -252,11 +246,8 @@ final class NftListViewModelFactory {
             let amountString = viewModelFactory.unitsFromValue(amount.decimal()).value(for: locale)
             let totalSupplyString = viewModelFactory.unitsFromValue(totalSupply.decimal()).value(for: locale)
 
-            label = R.string.localizable.nftIssuanceFungibleFormat(
-                amountString,
-                totalSupplyString,
-                preferredLanguages: locale.rLanguages
-            )
+            label = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.nftIssuanceFungibleFormat(amountString, totalSupplyString)
         } else {
             label = model.issuanceMyAmount.map { String($0) }
         }

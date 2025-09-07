@@ -205,11 +205,10 @@ extension ValidatorSearchViewController: CustomValidatorCellDelegate {
 extension ValidatorSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-            rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.searchByAddressNamePlaceholder()
 
             navigationItem.rightBarButtonItem?.title = R.string.localizable
                 .commonDone(preferredLanguages: selectedLocale.rLanguages)

@@ -30,15 +30,13 @@ final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
     }
 
     override func completeButtonTitle() -> String {
-        R.string.localizable.commonSave(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonSave()
     }
 
     override func provideTitle() {
-        let title = R.string.localizable.networkNodeEditTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.networkNodeEditTitle()
         view?.didReceiveTitle(text: title)
     }
 }

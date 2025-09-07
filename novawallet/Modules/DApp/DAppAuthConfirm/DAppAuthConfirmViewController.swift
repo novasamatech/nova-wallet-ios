@@ -45,30 +45,26 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
 
         applyTitle()
 
-        rootView.subtitleLabel.text = R.string.localizable.dappAuthSubtitle(preferredLanguages: languages)
+        rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.dappAuthSubtitle()
 
-        rootView.walletView.rowContentView.titleView.text = R.string.localizable.commonWallet(
-            preferredLanguages: languages
-        )
+        rootView.walletView.rowContentView.titleView.text = R.string(preferredLanguages: languages
+        ).localizable.commonWallet()
 
-        rootView.dappView.titleLabel.text = R.string.localizable.commonDapp(
-            preferredLanguages: languages
-        )
+        rootView.dappView.titleLabel.text = R.string(preferredLanguages: languages
+        ).localizable.commonDapp()
 
-        rootView.allowButton.imageWithTitleView?.title = R.string.localizable.commonAllow(
-            preferredLanguages: languages
-        )
-        rootView.denyButton.imageWithTitleView?.title = R.string.localizable.commonReject(
-            preferredLanguages: languages
-        )
+        rootView.allowButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonAllow()
+        rootView.denyButton.imageWithTitleView?.title = R.string(preferredLanguages: languages
+        ).localizable.commonReject()
     }
 
     private func applyTitle() {
         let languages = selectedLocale.rLanguages
 
-        let name = dAppName ?? R.string.localizable.commonDapp(preferredLanguages: languages)
+        let name = dAppName ?? R.string(preferredLanguages: languages).localizable.commonDapp()
 
-        let title = R.string.localizable.dappAuthTitle(name, preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.dappAuthTitle(name)
 
         rootView.titleLabel.text = title
     }

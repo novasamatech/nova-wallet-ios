@@ -14,13 +14,13 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
         switch stakingType {
         case .direct:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeDirect(),
+                subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonRecommended()
             )
         case .pool:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool(),
+                subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonRecommended()
             )
         }
     }
@@ -69,9 +69,8 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
 
         let title = pool.title(for: chainAsset.chain.chainFormat) ?? ""
 
-        let subtitle = displaysRecommended ? R.string.localizable.commonRecommended(
-            preferredLanguages: locale.rLanguages
-        ) : nil
+        let subtitle = displaysRecommended ? R.string(preferredLanguages: locale.rLanguages
+        ).localizable.commonRecommended() : nil
 
         return PoolStakingTypeViewModel.PoolAccountModel(
             icon: iconViewModel,

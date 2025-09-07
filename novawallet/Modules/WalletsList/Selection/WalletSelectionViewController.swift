@@ -24,7 +24,7 @@ final class WalletSelectionViewController: WalletsListViewController<
     }
 
     override func setupLocalization() {
-        title = R.string.localizable.commonSelectWallet(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSelectWallet()
     }
 
     private func setupSettingsItems() {

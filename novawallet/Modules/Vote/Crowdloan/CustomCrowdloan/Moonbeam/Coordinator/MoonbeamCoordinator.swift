@@ -60,11 +60,13 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 } catch {
                     let locale = self?.localizationManager.selectedLocale ?? .current
                     self?.previousView?.present(
-                        message: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
-                        title: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
-                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
+                        message: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionMessage(),
+                        title: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionTitle(),
+                        closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonOk(),
                         from: nil
                     )
                 }
@@ -84,11 +86,11 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 .crowdloanMoonbeamMissingAccountMessage(preferredLanguages: locale.rLanguages),
             actions: [
                 .init(
-                    title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel(),
                     style: .destructive
                 ),
                 .init(
-                    title: R.string.localizable.commonAdd(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonAdd(),
                     style: .normal,
                     handler: { [weak self] in
                         self?.showAccountActions()
@@ -186,7 +188,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
                             .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
                         title: R.string.localizable
                             .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
-                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
+                        closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonOk(),
                         with: controller
                     )
                 }

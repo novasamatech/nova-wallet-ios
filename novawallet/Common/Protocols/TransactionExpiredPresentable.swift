@@ -18,7 +18,7 @@ extension TransactionExpiredPresentable where Self: AlertPresentable {
         locale: Locale,
         completingClosure: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonQrCodeExpired()
         let minutes = validInMinutes.map { value in
             R.string(preferredLanguages: locale.rLanguages).localizable.commonMinutesFormat(
                 format: value

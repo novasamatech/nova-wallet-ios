@@ -184,9 +184,8 @@ private extension DAppListViewController {
                 title: title,
                 icon: R.image.iconFavButtonSel()
             )
-            header?.button.imageWithTitleView?.title = R.string.localizable.commonSeeAll(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            header?.button.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonSeeAll()
 
             header?.apply(style: .titleWithButton)
             header?.button.addTarget(

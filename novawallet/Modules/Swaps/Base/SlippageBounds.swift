@@ -28,14 +28,12 @@ extension SlippageBounds {
             return nil
         }
         if value < recommendation.lower {
-            let warning = R.string.localizable.swapsSetupSlippageWarningLowAmount(
-                preferredLanguages: locale.rLanguages
-            )
+            let warning = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupSlippageWarningLowAmount()
             return warning
         } else if value > recommendation.upper {
-            let warning = R.string.localizable.swapsSetupSlippageWarningHighAmount(
-                preferredLanguages: locale.rLanguages
-            )
+            let warning = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupSlippageWarningHighAmount()
             return warning
         } else {
             return nil
@@ -47,11 +45,8 @@ extension SlippageBounds {
            value < restriction.lower || value > restriction.upper {
             let minAmountString = stringAmountClosure(restriction.lower)
             let maxAmountString = stringAmountClosure(restriction.upper)
-            let error = R.string.localizable.swapsSetupSlippageErrorAmountBounds(
-                minAmountString,
-                maxAmountString,
-                preferredLanguages: locale.rLanguages
-            )
+            let error = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupSlippageErrorAmountBounds(minAmountString, maxAmountString)
             return error
         } else {
             return nil

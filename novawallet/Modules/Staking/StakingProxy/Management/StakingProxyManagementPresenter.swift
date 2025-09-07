@@ -96,9 +96,8 @@ final class StakingProxyManagementPresenter {
         }
         let revokeAccess = AccountAdditionalOption(
             title: .init {
-                R.string.localizable.stakingProxyManagementRevokeAccess(
-                    preferredLanguages: $0.rLanguages
-                )
+                R.string(preferredLanguages: $0.rLanguages
+                ).localizable.stakingProxyManagementRevokeAccess()
             },
             icon: R.image.iconDelete(),
             indicator: .navigation

@@ -20,11 +20,10 @@ final class WalletManageViewController: WalletsListViewController<
     }
 
     override func setupLocalization() {
-        title = R.string.localizable.profileWalletsTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.profileWalletsTitle()
 
-        rootView.addWalletButton.imageWithTitleView?.title = R.string.localizable.walletAddButtonTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.addWalletButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletAddButtonTitle()
 
         rootView.addWalletButton.invalidateLayout()
 
@@ -35,13 +34,11 @@ final class WalletManageViewController: WalletsListViewController<
         let languages = selectedLocale.rLanguages
 
         if rootView.tableView.isEditing {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable.commonDone(
-                preferredLanguages: languages
-            )
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: languages
+            ).localizable.commonDone()
         } else {
-            navigationItem.rightBarButtonItem?.title = R.string.localizable.commonEdit(
-                preferredLanguages: languages
-            )
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: languages
+            ).localizable.commonEdit()
         }
     }
 

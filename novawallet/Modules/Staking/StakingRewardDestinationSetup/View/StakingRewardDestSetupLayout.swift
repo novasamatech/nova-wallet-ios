@@ -45,13 +45,11 @@ final class StakingRewardDestSetupLayout: UIView {
     private func applyLocalization() {
         networkFeeView.locale = locale
 
-        learnMoreView.titleView.text = R.string.localizable.stakingRewardsDestinationTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        learnMoreView.titleView.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardsDestinationTitle()
 
-        learnMoreView.actionButton.imageWithTitleView?.title = R.string.localizable.stakingAboutRewards(
-            preferredLanguages: locale.rLanguages
-        )
+        learnMoreView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingAboutRewards()
 
         restakeOptionView.titleLabel.text = R.string.localizable
             .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
@@ -59,9 +57,8 @@ final class StakingRewardDestSetupLayout: UIView {
         payoutOptionView.titleLabel.text = R.string.localizable
             .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
-        accountView.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
-            preferredLanguages: locale.rLanguages
-        )
+        accountView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardPayoutAccount()
 
         actionButton.imageWithTitleView?.title = R.string.localizable
             .commonContinue(preferredLanguages: locale.rLanguages)

@@ -252,16 +252,13 @@ private extension TransferSetupViewFactory {
         let title = switch flowType {
         case .offRamp:
             LocalizableResource { locale in
-                R.string.localizable.sellNamedToken(
-                    chainAsset.asset.symbol,
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages
+                ).localizable.sellNamedToken(chainAsset.asset.symbol)
             }
         case .cardTopUp:
             LocalizableResource { locale in
-                R.string.localizable.cardTopUpDotSetupTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages
+                ).localizable.cardTopUpDotSetupTitle()
             }
         }
 

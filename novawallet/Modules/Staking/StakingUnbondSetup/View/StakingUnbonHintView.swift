@@ -40,25 +40,22 @@ final class StakingUnbondHintView: HintListView {
         var hints: [String] = []
 
         if let bondingDuration = bondingDuration {
-            let bondingDurationHint = R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                bondingDuration,
-                preferredLanguages: locale.rLanguages
-            )
+            let bondingDurationHint = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingHintUnstakeFormat_v2_2_0(bondingDuration)
 
             hints.append(bondingDurationHint)
         }
 
         if shouldResetRewardDestination {
-            let killStashHint = R.string.localizable.stakingHintUnbondKillsStash(
-                preferredLanguages: locale.rLanguages
-            )
+            let killStashHint = R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingHintUnbondKillsStash()
 
             hints.append(killStashHint)
         }
 
         hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages),
-            R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintNoRewards_v2_2_0(),
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRedeem_v2_2_0()
         ])
 
         bind(texts: hints)

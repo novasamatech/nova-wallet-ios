@@ -26,18 +26,16 @@ final class ExportViewModelFactory {
 
             sections.append(
                 .headerTitle(
-                    text: R.string.localizable.manualBackupCustomKey(
-                        preferredLanguages: selectedLocale.rLanguages
-                    )
+                    text: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.manualBackupCustomKey()
                 )
             )
         }
 
         sections.append(
             .headerMessage(
-                text: R.string.localizable.advancedExportHeaderMessage(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                text: R.string(preferredLanguages: selectedLocale.rLanguages
+                ).localizable.advancedExportHeaderMessage()
             )
         )
 
@@ -92,24 +90,20 @@ final class ExportViewModelFactory {
         var blocks: [ExportViewLayout.NetworkModel.Block] = []
 
         let secretTitle = secretType == .seed
-            ? R.string.localizable.secretTypeSeedTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            : R.string.localizable.secretTypePrivateKeyTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            ? R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.secretTypeSeedTitle()
+            : R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.secretTypePrivateKeyTitle()
 
         if showSecret {
             blocks.append(
                 .secret(model: .init(
                     blockLeftTitle: secretTitle,
-                    blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    blockRightTitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(),
                     hidden: true,
-                    coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    coverText: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.mnemonicCardCoverMessageTitle(),
                     onCoverTap: onTapSecret,
                     secret: nil,
                     chainName: model.name
@@ -120,12 +114,10 @@ final class ExportViewModelFactory {
         if showJSONExport {
             blocks.append(
                 .jsonExport(model: .init(
-                    blockLeftTitle: R.string.localizable.importRecoveryJson(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    buttonTitle: R.string.localizable.advancedExportJsonButtonTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    blockLeftTitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.importRecoveryJson(),
+                    buttonTitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.advancedExportJsonButtonTitle(),
                     action: onTapExportJSON
                 ))
             )
@@ -133,9 +125,8 @@ final class ExportViewModelFactory {
 
         blocks.append(
             .cryptoType(model: .init(
-                blockLeftTitle: R.string.localizable.commonCryptoType(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                blockLeftTitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                ).localizable.commonCryptoType(),
                 contentMainText: model.cryptoType.titleForLocale(selectedLocale),
                 contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
             ))
@@ -144,9 +135,8 @@ final class ExportViewModelFactory {
         if let derivationPath = model.derivationPath {
             blocks.append(
                 .derivationPath(model: .init(
-                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    blockLeftTitle: R.string(preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.commonSecretDerivationPath(),
                     content: derivationPath
                 ))
             )

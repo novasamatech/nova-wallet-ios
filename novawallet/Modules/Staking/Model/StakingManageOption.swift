@@ -16,31 +16,30 @@ enum StakingManageOption {
     func titleForLocale(_ locale: Locale, statics: StakingMainStaticViewModelProtocol?) -> String {
         switch self {
         case .stakeMore:
-            return R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondMore_v190()
         case .unstake:
-            return R.string.localizable.stakingUnbond_v190(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnbond_v190()
         case .pendingRewards:
-            return R.string.localizable.stakingPendingRewards_v2_0_0(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingPendingRewards_v2_0_0()
         case .rewardDestination:
-            return R.string.localizable.stakingRewardsDestinationTitle_v2_0_0(
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.stakingRewardsDestinationTitle_v2_0_0()
         case .changeValidators, .setupValidators:
             if let statics = statics {
                 return statics.actionsYourValidators(for: locale)
             } else {
-                return R.string.localizable.stakingYourValidatorsTitle(preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourValidatorsTitle()
             }
         case .controllerAccount:
-            return R.string.localizable.stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerAccountTitle()
         case .yourValidator:
-            return R.string.localizable.stakingYourValidatorTitle(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourValidatorTitle()
         case .yieldBoost:
-            return R.string.localizable.commonYieldBoost(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonYieldBoost()
         case .addProxy:
-            return R.string.localizable.stakingSetupAddYourProxy(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupAddYourProxy()
         case .editProxies:
-            return R.string.localizable.stakingSetupYourProxies(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupYourProxies()
         }
     }
 
@@ -56,9 +55,9 @@ enum StakingManageOption {
 
         if case let .yieldBoost(enabled) = self {
             if enabled {
-                return R.string.localizable.commonOn(preferredLanguages: locale.rLanguages).capitalized
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonOn().capitalized
             } else {
-                return R.string.localizable.commonOff(preferredLanguages: locale.rLanguages).capitalized
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonOff().capitalized
             }
         }
 

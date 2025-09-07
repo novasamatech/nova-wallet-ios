@@ -55,14 +55,14 @@ final class CloudBackupSettingsPresenter {
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconPincode(),
-                        title: R.string.localizable.commonChangePassword(preferredLanguages: locale.rLanguages)
+                        title: R.string(preferredLanguages: locale.rLanguages).localizable.commonChangePassword()
                     )
                 }
             case .delete:
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconDelete(),
-                        title: R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages),
+                        title: R.string(preferredLanguages: locale.rLanguages).localizable.commonDeleteBackup(),
                         style: .destructive
                     )
                 }
@@ -92,7 +92,7 @@ final class CloudBackupSettingsPresenter {
             from: view,
             actions: actionViewModels,
             title: LocalizableResource { locale in
-                R.string.localizable.commonManageBackup(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonManageBackup()
             },
             delegate: self,
             context: onAction
@@ -333,9 +333,8 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
     func didDeleteBackup() {
         wireframe.presentMultilineSuccessNotification(
-            R.string.localizable.cloudBackupDeleted(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
+            R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.cloudBackupDeleted(),
             from: view
         )
     }
@@ -345,9 +344,9 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             wireframe.showManualBackup(from: view)
         } else {
             wireframe.present(
-                message: R.string.localizable.noManualBackupAlertMessage(preferredLanguages: selectedLocale.rLanguages),
-                title: R.string.localizable.noManualBackupAlertTitle(preferredLanguages: selectedLocale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.noManualBackupAlertMessage(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.noManualBackupAlertTitle(),
+                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view
             )
         }
