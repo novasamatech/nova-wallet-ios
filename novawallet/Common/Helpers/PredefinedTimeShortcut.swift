@@ -12,6 +12,6 @@ final class EverydayShortcut: PredefinedTimeShortcutProtocol {
             return nil
         }
 
-        return R.string.localizable.commonDaysEveryday(preferredLanguages: locale.rLanguages)
+        return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysEveryday()
     }
 }

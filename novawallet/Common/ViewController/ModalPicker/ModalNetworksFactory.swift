@@ -106,9 +106,8 @@ enum ModalNetworksFactory {
         let viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonNetworksTitle(
-                networks.count,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworksTitle(
+                networks.count
             )
         }
 
@@ -136,9 +135,8 @@ enum ModalNetworksFactory {
         let networksCount = requiredResolution.totalChainsCount + (optionalResolution?.totalChainsCount ?? 0)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonNetworksTitle(
-                networksCount,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworksTitle(
+                networksCount
             )
         }
 
@@ -205,9 +203,10 @@ enum ModalNetworksFactory {
 
         if resolution.hasUnresolved {
             sectionFooter = LocalizableResource { locale in
-                R.string.localizable.dappsUnsupportedNetworksFormat(
-                    format: resolution.unresolved.count,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.dappsUnsupportedNetworksFormat(
+                    format: resolution.unresolved.count
                 )
             }
         } else {

@@ -253,3 +253,4 @@ private final class Spacer: UIView {
     extension NSObject: Then {}
 
 #endif
+// swiftlint:enable all

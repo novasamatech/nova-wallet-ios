@@ -6,17 +6,17 @@ extension FormattedCall.Batch.BatchType {
         .init {
             switch self {
             case .batch:
-                R.string.localizable.batchOperationDescription(
+                R.string(
                     preferredLanguages: $0.rLanguages
-                )
+                ).localizable.batchOperationDescription()
             case .batchAll:
-                R.string.localizable.batchAllOperationDescription(
+                R.string(
                     preferredLanguages: $0.rLanguages
-                )
+                ).localizable.batchAllOperationDescription()
             case .forceBatch:
-                R.string.localizable.forceBatchOperationDescription(
+                R.string(
                     preferredLanguages: $0.rLanguages
-                )
+                ).localizable.forceBatchOperationDescription()
             }
         }
     }

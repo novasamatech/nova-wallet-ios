@@ -4,11 +4,6 @@ import SubstrateSdk
 struct EventCodingPath: Equatable, Hashable {
     let moduleName: String
     let eventName: String
-
-    init(moduleName: String, eventName: String) {
-        self.moduleName = moduleName
-        self.eventName = eventName
-    }
 }
 
 extension EventCodingPath {

@@ -485,9 +485,8 @@ extension ModalPickerFactory {
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = .init {
-            R.string.localizable.swapsSetupDepositTitle(
-                token,
-                preferredLanguages: $0.rLanguages
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupDepositTitle(
+                token
             )
         }
 

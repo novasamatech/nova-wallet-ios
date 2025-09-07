@@ -20,20 +20,18 @@ extension TransactionExpiredPresentable where Self: AlertPresentable {
     ) {
         let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: locale.rLanguages)
         let minutes = validInMinutes.map { value in
-            R.string.localizable.commonMinutesFormat(
-                format: value,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonMinutesFormat(
+                format: value
             )
         } ?? ""
 
-        let message = R.string.localizable.commonTxQrExpiredMessage(
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxQrExpiredMessage(
             minutes,
-            typeName,
-            preferredLanguages: locale.rLanguages
+            typeName
         )
 
         let action = AlertPresentableAction(
-            title: R.string.localizable.commonOkBack(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonOkBack(),
             handler: completingClosure
         )
 

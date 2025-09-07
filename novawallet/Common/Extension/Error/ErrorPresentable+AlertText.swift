@@ -48,7 +48,7 @@ extension ErrorPresentable where Self: AlertPresentable {
             return contentConvertibleError.toErrorContent(for: locale)
         }
 
-        if error as? BaseOperationError != nil {
+        if error is BaseOperationError {
             let title = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorTitle()
             let message = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorMessage()
 

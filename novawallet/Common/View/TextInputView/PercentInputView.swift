@@ -188,7 +188,7 @@ extension PercentInputView: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         updateViewsVisibility(for: "")
         if let text = textField.text {
-            inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
+            _ = inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
             textField.text = ""
             return false
         }

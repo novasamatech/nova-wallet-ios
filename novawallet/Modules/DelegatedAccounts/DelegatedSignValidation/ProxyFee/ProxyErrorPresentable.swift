@@ -48,8 +48,13 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         balance: String,
         locale: Locale?
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInsufficientBalanceTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInsufficientBalanceTitle()
+
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
             deposit,
             balance
         )
@@ -64,8 +69,13 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         networkName: String,
         locale: Locale
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInvalidMaximumProxiesTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorInvalidMaximumProxiesMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInvalidMaximumProxiesTitle()
+
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorInvalidMaximumProxiesMessage(
             limit,
             networkName
         )
@@ -79,8 +89,13 @@ extension ProxyErrorPresentable where Self: AlertPresentable & ErrorPresentable 
         account: String,
         locale: Locale
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorProxyAlreadyExistsTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupProxyErrorProxyAlreadyExistsMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorProxyAlreadyExistsTitle()
+
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSetupProxyErrorProxyAlreadyExistsMessage(
             account
         )
         let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()

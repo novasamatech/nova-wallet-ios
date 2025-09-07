@@ -99,7 +99,6 @@ extension UIFactoryProtocol {
     }
 }
 
-// swiftlint:disable:next type_body_length
 final class UIFactory: UIFactoryProtocol {
     static let `default` = UIFactory()
 

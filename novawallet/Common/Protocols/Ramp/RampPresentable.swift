@@ -84,9 +84,9 @@ extension RampPresentable {
 
         let message = switch action {
         case .onRamp:
-            R.string.localizable.buyCompleted(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.buyCompleted()
         case .offRamp:
-            R.string.localizable.sellCompleted(preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.sellCompleted()
         }
 
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)

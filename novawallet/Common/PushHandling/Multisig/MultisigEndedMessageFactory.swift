@@ -67,13 +67,12 @@ private extension MultisigEndedMessageFactory {
     func createUnformattedExecutedBody(for chain: ChainModel) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationExecutedNoFormat(
-                    chain.name.capitalized,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationExecutedNoFormat(
+                    chain.name.capitalized
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
@@ -84,39 +83,42 @@ private extension MultisigEndedMessageFactory {
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationCancelledNoFormat(
-                    chain.name.capitalized,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationCancelledNoFormat(
+                    chain.name.capitalized
                 ),
-                R.string.localizable.multisigOperationFormatCancelledText(
-                    canceller,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationFormatCancelledText(
+                    canceller
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
+                R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
 
     func createExecutedBodySpecificPart() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationNoActionsRequired(
+            R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.multisigOperationNoActionsRequired()
         }
     }
 
     func createRejectedBodySpecificPart(canceller: String) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationFormatCancelledText(
-                    canceller,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationFormatCancelledText(
+                    canceller
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
+                R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
