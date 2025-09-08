@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/mint
-          key: ${{ runner.os }}-mint-${{ hashFiles('CIMintfile') }}
+          key: ${{ runner.os }}-mint-${{ hashFiles('**/CIMintfile') }}
           restore-keys: ${{ runner.os }}-mint-
 
       - name: Install Mint
@@ -127,7 +127,7 @@ jobs:
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
           DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -skipPackagePluginValidation
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -project novawallet.xcodeproj -configuration ${{ github.event.inputs.config }} -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -skipPackagePluginValidation
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}

@@ -16,17 +16,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
+      - name: Cache Mint packages
         uses: actions/cache@v4
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          path: ${{ github.workspace }}/mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('**/CIMintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap --mintfile CIMintfile
 
       - name: Test
         env:
@@ -34,7 +36,7 @@ jobs:
           platform: ${{ 'iOS Simulator' }}
           device: ${{ 'iPhone 14' }}
           os_version: ${{ '15.2' }}
-        run: set -o pipefail && xcodebuild test -workspace novawallet.xcworkspace -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" build test | xcpretty --test
+        run: set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" -skipPackagePluginValidation build test | xcpretty --test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
