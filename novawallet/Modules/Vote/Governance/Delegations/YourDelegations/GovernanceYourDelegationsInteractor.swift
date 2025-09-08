@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
+final class GovernanceYourDelegationsInteractor {
     weak var presenter: GovernanceYourDelegationsInteractorOutputProtocol?
 
     let selectedAccountId: AccountId
@@ -22,10 +22,8 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
     private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var blockTimeCancellable: CancellableCall?
-    private var tracksCancellable: CancellableCall?
-    private var delegatesCancellable: CancellableCall?
 
+    private let tracksCallStore = CancellableCallStore()
     private let delegatesCallStore = CancellableCallStore()
 
     init(
@@ -113,30 +111,21 @@ private extension GovernanceYourDelegationsInteractor {
     }
 
     func fetchTracks() {
-        clear(cancellable: &tracksCancellable)
-
         let wrapper = referendumsOperationFactory.fetchAllTracks(runtimeProvider: runtimeService)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.tracksCancellable === wrapper else {
-                    return
-                }
-
-                self?.tracksCancellable = nil
-
-                do {
-                    let tracks = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveTracks(tracks)
-                } catch {
-                    self?.presenter?.didReceiveError(.tracksFetchFailed(error))
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: tracksCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(tracks):
+                self?.presenter?.didReceiveTracks(tracks)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.tracksFetchFailed(error))
             }
         }
-
-        tracksCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     func handleDelegations(from voting: ReferendumTracksVotingDistribution?) {
