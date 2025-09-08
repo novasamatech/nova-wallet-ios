@@ -51,8 +51,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
             }
 
         let saveOperation = storage.saveOperation({
-            guard let update = try processingOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            guard let update = try processingOperation.extractNoCancellableResultData()
             else {
                 return []
             }
@@ -63,8 +62,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
                 return []
             }
         }, {
-            guard let update = try processingOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            guard let update = try processingOperation.extractNoCancellableResultData()
             else {
                 return []
             }
