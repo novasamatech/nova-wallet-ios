@@ -359,7 +359,7 @@ final class UIFactory: UIFactoryProtocol {
             )
             barItem.setTitleTextAttributes(actionAttributes, for: .normal)
             barItem.setTitleTextAttributes(actionAttributes, for: .highlighted)
-            barItem.applyLiquidGlassStyle()
+            barItem.applyNoLiquidGlassStyle()
 
             if result.isEmpty {
                 return [barItem]
@@ -388,7 +388,7 @@ final class UIFactory: UIFactoryProtocol {
             action: doneAction.selector
         )
 
-        doneItem.applyLiquidGlassStyle()
+        doneItem.applyNoLiquidGlassStyle()
 
         let doneAttributes = style.doneAttributes
 

@@ -18,7 +18,7 @@ fi
 OUT_FILE="$WORK_DIR/CIKeys.generated.swift"
 echo "Sourcery Output File = $OUT_FILE"
 
-mint run krzysztofzablocki/Sourcery@2.2.0 sourcery \
+mint run krzysztofzablocki/Sourcery@2.2.7 sourcery \
  --templates $WORK_DIR \
  --sources $WORK_DIR \
  --output $OUT_FILE \

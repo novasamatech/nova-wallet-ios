@@ -45,6 +45,7 @@ final class DAppBrowserTabListViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorTextPrimary()
+        item.applyNoLiquidGlassStyle()
 
         return item
     }()
@@ -57,6 +58,7 @@ final class DAppBrowserTabListViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorIconPrimary()
+        item.applyNoLiquidGlassStyle()
 
         return item
     }()
@@ -69,6 +71,7 @@ final class DAppBrowserTabListViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorTextPrimary()
+        item.applyNoLiquidGlassStyle()
 
         return item
     }()

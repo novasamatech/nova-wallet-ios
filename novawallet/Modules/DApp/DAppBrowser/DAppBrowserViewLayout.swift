@@ -18,6 +18,7 @@ final class DAppBrowserViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorIconPrimary()!
+
         return item
     }()
 
@@ -43,6 +44,7 @@ final class DAppBrowserViewLayout: UIView {
         )
 
         item.tintColor = R.color.colorIconPrimary()
+        item.applyNoLiquidGlassStyle()
 
         return item
     }()
@@ -55,6 +57,8 @@ final class DAppBrowserViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorIconPrimary()
+        item.applyNoLiquidGlassStyle()
+
         return item
     }()
 
@@ -66,6 +70,8 @@ final class DAppBrowserViewLayout: UIView {
             action: nil
         )
         item.tintColor = R.color.colorIconPrimary()
+        item.applyNoLiquidGlassStyle()
+
         return item
     }()
 
@@ -97,6 +103,7 @@ final class DAppBrowserViewLayout: UIView {
         }
 
         let item = UIBarButtonItem(customView: containerView)
+        item.applyNoLiquidGlassStyle()
         return item
     }()
 
@@ -109,6 +116,7 @@ final class DAppBrowserViewLayout: UIView {
         )
         item.tintColor = R.color.colorIconPrimary()
         item.isEnabled = false
+        item.applyNoLiquidGlassStyle()
         return item
     }()
 
