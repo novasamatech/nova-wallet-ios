@@ -16,12 +16,12 @@ env:
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-15
+    runs-on: macos-14
 
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.2
+          xcode-version: 16.1
 
       - name: Checkout
         uses: actions/checkout@v4
