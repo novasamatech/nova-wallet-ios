@@ -5,6 +5,7 @@ protocol ChainTimelineFacadeProtocol {
     var timelineChainId: ChainModel.Id { get }
 
     func createBlockTimeOperation() -> CompoundOperationWrapper<BlockTime>
+    func createTimepointThreshold(for days: Int) -> CompoundOperationWrapper<RecentVotesDateThreshold?>
 }
 
 final class ChainTimelineFacade {
@@ -37,6 +38,44 @@ extension ChainTimelineFacade: ChainTimelineFacadeProtocol {
                 from: runtimeService,
                 blockTimeEstimationService: estimationService
             )
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func createTimepointThreshold(for days: Int) -> CompoundOperationWrapper<RecentVotesDateThreshold?> {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chainId)
+
+            if chain.separateTimelineChain {
+                let timestamp = Date().addingTimeInterval(-(.secondsInDay * Double(days))).timeIntervalSince1970
+
+                return .createWithResult(.timestamp(Int64(timestamp)))
+            } else {
+                let blockTimeWrapper = createBlockTimeOperation()
+
+                let blockInDaysOperation = ClosureOperation<RecentVotesDateThreshold?> { [weak self] in
+                    guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+                    let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+
+                    let activityBlockNumber = self.estimationService.currentBlockNumber?.blockBackInDays(
+                        days,
+                        blockTime: blockTime
+                    )
+
+                    guard let activityBlockNumber else { return nil }
+
+                    return .blockNumber(activityBlockNumber)
+                }
+
+                blockInDaysOperation.addDependency(blockTimeWrapper.targetOperation)
+
+                return CompoundOperationWrapper(
+                    targetOperation: blockInDaysOperation,
+                    dependencies: blockTimeWrapper.allOperations
+                )
+            }
         } catch {
             return .createWithError(error)
         }

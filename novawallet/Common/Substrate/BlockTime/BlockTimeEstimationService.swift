@@ -3,6 +3,8 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol BlockTimeEstimationServiceProtocol: ApplicationServiceProtocol {
+    var currentBlockNumber: BlockNumber? { get }
+
     func createEstimatedBlockTimeOperation() -> BaseOperation<EstimatedBlockTime>
 }
 
@@ -58,6 +60,10 @@ final class BlockTimeEstimationService {
     private struct PendingRequest {
         let resultClosure: (EstimatedBlockTime) -> Void
         let queue: DispatchQueue?
+    }
+
+    var currentBlockNumber: BlockNumber? {
+        snapshot?.lastBlock
     }
 
     let chainId: ChainModel.Id

@@ -65,27 +65,27 @@ protocol GovernanceLockStateFactoryProtocol {
 }
 
 protocol GovernanceDelegateStatsFactoryProtocol {
-    func fetchStatsWrapper(for activityStartBlock: BlockNumber) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+    func fetchStatsWrapper(for threshold: RecentVotesDateThreshold) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
 
     func fetchStatsByIdsWrapper(
         from delegateIds: Set<AccountAddress>,
-        activityStartBlock: BlockNumber
+        threshold: RecentVotesDateThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
 
     func fetchDetailsWrapper(
         for delegate: AccountAddress,
-        activityStartBlock: BlockNumber
+        threshold: RecentVotesDateThreshold
     ) -> CompoundOperationWrapper<GovernanceDelegateDetails?>
 }
 
 protocol GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for activityStartBlock: BlockNumber
+        for threshold: RecentVotesDateThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        activityStartBlock: BlockNumber
+        threshold: RecentVotesDateThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 }
 
