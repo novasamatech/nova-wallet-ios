@@ -369,7 +369,7 @@ extension MythosStakingDetailsInteractor: StakingRewardsLocalSubscriber, Staking
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         switch result {
         case let .success(rewardItem):

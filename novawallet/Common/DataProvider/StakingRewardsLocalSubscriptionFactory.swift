@@ -25,7 +25,7 @@ final class StakingRewardsLocalSubscriptionFactory: SubstrateLocalSubscriptionFa
         let timeIdentifier = [
             startTimestamp.map { "\($0)" } ?? "nil",
             endTimestamp.map { "\($0)" } ?? "nil"
-        ].joined(separator: "-")
+        ].joined(with: .dash)
 
         let identifier = ("reward" + api.map(\.url.absoluteString).joined(with: .dash))
             + address

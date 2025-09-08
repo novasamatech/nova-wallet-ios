@@ -179,7 +179,7 @@ extension StakingParachainInteractor: StakingRewardsLocalSubscriber, StakingRewa
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         guard selectedAccount?.chainAccount.toChecksumedAddress() == address else {
             return
