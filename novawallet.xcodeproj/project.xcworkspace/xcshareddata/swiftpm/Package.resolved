@@ -186,7 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/hydra-math-swift",
       "state" : {
-        "revision" : "fa666072fbd9bc7829e49a38c4c462869823103e"
+        "revision" : "ad014506a6268b5e90ff25c64ee72d0a3bd7de8b",
+        "version" : "0.4.0"
       }
     },
     {
@@ -473,8 +474,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/SwiftRLP",
       "state" : {
-        "branch" : "bump/dependencies",
-        "revision" : "792e3bb7de5adf1462269060a3a4eaf59797c0c0"
+        "revision" : "1ec4eccce8367fc200961364613af3043d9239df",
+        "version" : "1.2.0"
       }
     },
     {
@@ -518,8 +519,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/WalletConnectSwiftV2.git",
       "state" : {
-        "branch" : "release/1_9_8",
-        "revision" : "34499d769a12796c622a25c7d265d0d4153a375b"
+        "revision" : "167de9777cbd0efdb7956dda1ca6f8675098292b",
+        "version" : "1.9.8"
       }
     },
     {
@@ -527,7 +528,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/web3swift",
       "state" : {
-        "revision" : "3f16f980d1ff4a576cb8530688770ee74087fe4d"
+        "revision" : "d70a03dfa19e69ac7400a675df8a6ecc25ea43eb",
+        "version" : "3.3.1"
       }
     },
     {

@@ -36938,16 +36938,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/web3swift";
 			requirement = {
-				kind = revision;
-				revision = 3f16f980d1ff4a576cb8530688770ee74087fe4d;
+				kind = exactVersion;
+				version = 3.3.1;
 			};
 		};
 		0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/hydra-math-swift";
 			requirement = {
-				kind = revision;
-				revision = fa666072fbd9bc7829e49a38c4c462869823103e;
+				kind = exactVersion;
+				version = 0.4.0;
 			};
 		};
 		0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */ = {
@@ -36962,8 +36962,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/WalletConnectSwiftV2.git";
 			requirement = {
-				branch = release/1_9_8;
-				kind = branch;
+				kind = exactVersion;
+				version = 1.9.8;
 			};
 		};
 		0C8FCE742E65ED3400034ED3 /* XCRemoteSwiftPackageReference "Charts" */ = {
@@ -37090,8 +37090,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/SwiftRLP";
 			requirement = {
-				branch = bump/dependencies;
-				kind = branch;
+				kind = exactVersion;
+				version = 1.2.0;
 			};
 		};
 		0C8FCEBB2E67331300034ED3 /* XCRemoteSwiftPackageReference "Starscream" */ = {
