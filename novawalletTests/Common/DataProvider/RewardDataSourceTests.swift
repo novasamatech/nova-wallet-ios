@@ -18,13 +18,14 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let url = chain.externalApis?.staking()?.first?.url,
+                let urls = chain.externalApis?.stakingRewards()?.compactMap({ $0.url }),
+                !urls.isEmpty,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
                 return
             }
 
-            TotalRewardMock.register(mock: .westend, url: url)
+            urls.forEach { TotalRewardMock.register(mock: .error, url: $0) }
 
             let expectedReward: Decimal = 5.0
 
@@ -36,7 +37,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             let actualRewardItem = try performRewardRequest(
                 for: AnyDataProviderRepository(repository),
                 address: WestendStub.address,
-                url: url,
+                urls: urls,
                 assetPrecision: assetPrecision
             ).get()
 
@@ -63,13 +64,14 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let url = chain.externalApis?.staking()?.first?.url,
+                let urls = chain.externalApis?.stakingRewards()?.compactMap({ $0.url }),
+                !urls.isEmpty,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
                 return
             }
 
-            TotalRewardMock.register(mock: .error, url: url)
+            urls.forEach { TotalRewardMock.register(mock: .error, url: $0) }
 
             // when
 
@@ -79,7 +81,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             let result = try performRewardRequest(
                 for: AnyDataProviderRepository(repository),
                 address: WestendStub.address,
-                url: url,
+                urls: urls,
                 assetPrecision: assetPrecision
             )
 
@@ -98,10 +100,12 @@ class RewardDataSourceTests: NetworkBaseTests {
 
     func performRewardRequest(for repository: AnyDataProviderRepository<SingleValueProviderObject>,
                               address: String,
-                              url: URL,
+                              urls: [URL],
                               assetPrecision: Int16
     ) throws -> Result<TotalRewardItem?, Error> {
-        let operationFactory = SubqueryRewardOperationFactory(url: url)
+        let operationFactory = SubqueryRewardAggregatingWrapperFactory(
+            factories: urls.map { SubqueryRewardOperationFactory(url: $0) }
+        )
 
         let source = SubqueryTotalRewardSource(
             address: address,
