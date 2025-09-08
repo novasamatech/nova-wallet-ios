@@ -41,17 +41,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
+      - name: Cache Mint packages
         uses: actions/cache@v4
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          path: ${{ github.workspace }}/mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('CIMintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap --mintfile CIMintfile
 
       - name: Set env BUILD_PROVISION_PROFILE_BASE64
         run: |
@@ -123,6 +125,8 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
+          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
+          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -skipPackagePluginValidation
 
       - name: Export Staging archive

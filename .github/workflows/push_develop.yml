@@ -25,6 +25,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Mint packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('CIMintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap --mintfile CIMintfile
+
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -88,6 +102,8 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
+          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
+          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: |
           xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
 
