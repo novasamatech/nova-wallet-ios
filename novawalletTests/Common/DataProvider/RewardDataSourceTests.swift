@@ -25,7 +25,7 @@ class RewardDataSourceTests: NetworkBaseTests {
                 return
             }
 
-            urls.forEach { TotalRewardMock.register(mock: .error, url: $0) }
+            urls.forEach { TotalRewardMock.register(mock: .westend, url: $0) }
 
             let expectedReward: Decimal = 5.0
 
