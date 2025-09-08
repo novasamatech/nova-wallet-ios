@@ -114,7 +114,8 @@ class NovaNavigationController: UINavigationController, UINavigationControllerDe
 
     private func setupBackButtonItem(for viewController: UIViewController) {
         let backButtonItem = viewController.navigationItem.backBarButtonItem ?? UIBarButtonItem()
-        backButtonItem.title = " "
+        backButtonItem.title = ""
+
         viewController.navigationItem.backBarButtonItem = backButtonItem
     }
 

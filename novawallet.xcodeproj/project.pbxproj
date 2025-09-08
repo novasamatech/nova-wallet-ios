@@ -1343,6 +1343,7 @@
 		0CF606CD2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF606CC2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
+		0CF65A8C2E6F5C3F000C007F /* UIBarButtonItem+LiquidGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF65A8B2E6F5C3F000C007F /* UIBarButtonItem+LiquidGlass.swift */; };
 		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
 		0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */; };
 		0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */; };
@@ -7808,6 +7809,7 @@
 		0CF606CC2D7B14370041B7AE /* CollatorStkUnstakeConfirmLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkUnstakeConfirmLayout.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
+		0CF65A8B2E6F5C3F000C007F /* UIBarButtonItem+LiquidGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+LiquidGlass.swift"; sourceTree = "<group>"; };
 		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
 		0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStatusView.swift; sourceTree = "<group>"; };
 		0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSyncStatus.swift; sourceTree = "<group>"; };
@@ -23261,6 +23263,7 @@
 				0CD846262BDDF43A0026B5CA /* UIImage+Resize.swift */,
 				0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */,
 				0CBABFF52CEEACB60047F29E /* RoundedButton+Set.swift */,
+				0CF65A8B2E6F5C3F000C007F /* UIBarButtonItem+LiquidGlass.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -35388,6 +35391,7 @@
 				0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */,
 				2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */,
 				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
+				0CF65A8C2E6F5C3F000C007F /* UIBarButtonItem+LiquidGlass.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
 				0C0F6E0B2D43C81000943A7C /* CollatorStakingInfoViewFactory+ParachainStaking.swift in Sources */,
 				A8515273213D048B0F9AFD15 /* StakingSetupProxyProtocols.swift in Sources */,
