@@ -12,8 +12,7 @@ class BaseChainAccountConfirmInteractor {
     let mnemonic: IRMnemonicProtocol
     let shuffledWords: [String]
     let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
-    let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     init(
         request: ChainAccountImportMnemonicRequest,
@@ -21,8 +20,7 @@ class BaseChainAccountConfirmInteractor {
         chainModelId: ChainModel.Id,
         mnemonic: IRMnemonicProtocol,
         metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
-        metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.request = request
         self.metaAccountModel = metaAccountModel
@@ -30,8 +28,7 @@ class BaseChainAccountConfirmInteractor {
         self.mnemonic = mnemonic
         shuffledWords = mnemonic.allWords().shuffled()
         self.metaAccountOperationFactory = metaAccountOperationFactory
-        self.metaAccountRepository = metaAccountRepository
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 
     internal func createAccountUsingOperation(_: BaseOperation<MetaAccountModel>) {

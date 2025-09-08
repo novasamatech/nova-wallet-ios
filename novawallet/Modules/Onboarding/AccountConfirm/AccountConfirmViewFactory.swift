@@ -154,7 +154,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
             accountOperationFactory: accountOperationFactory,
             accountRepository: accountRepository,
             settings: settings,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             eventCenter: EventCenter.shared
         )
 
@@ -183,7 +183,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
                 mnemonic: mnemonic,
                 accountOperationFactory: accountOperationFactory,
                 accountRepository: accountRepository,
-                operationManager: OperationManagerFacade.sharedManager,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
                 settings: SelectedWalletSettings.shared,
                 eventCenter: EventCenter.shared
             )
@@ -203,10 +203,23 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         }
 
         let keychain = Keychain()
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let accountOperationFactory = MetaAccountOperationFactory(keystore: keychain)
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
+        let walletRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let walletRepository = walletRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
+            using: operationQueue
+        )
+        let walletsUpdater = WalletUpdateMediator(
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            repository: walletRepository,
+            walletsCleaner: walletStorageCleaner,
+            operationQueue: operationQueue
+        )
 
         let interactor = AddChainAccount
             .AccountConfirmInteractor(
@@ -215,8 +228,9 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
                 chainModelId: chainModelId,
                 mnemonic: mnemonic,
                 metaAccountOperationFactory: accountOperationFactory,
-                metaAccountRepository: accountRepository,
-                operationManager: OperationManagerFacade.sharedManager,
+                walletRepository: walletRepository,
+                walletUpdateMediator: walletsUpdater,
+                operationQueue: operationQueue,
                 settings: SelectedWalletSettings.shared,
                 eventCenter: EventCenter.shared
             )

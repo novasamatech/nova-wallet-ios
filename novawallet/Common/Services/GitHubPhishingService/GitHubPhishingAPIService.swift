@@ -57,8 +57,7 @@ class GitHubPhishingAPIService: ApplicationServiceProtocol {
         networkOperation = GitHubOperationFactory().fetchPhishingListOperation(url)
 
         let replaceOperation = storage.replaceOperation {
-            let phishingItem = try self.networkOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            let phishingItem = try self.networkOperation.extractNoCancellableResultData()
             return phishingItem
         }
 
