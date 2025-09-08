@@ -25,17 +25,18 @@ env:
   platform: "iOS Simulator"
   device: "iPhone 16"
   os_version: "latest"
-  xcode-version: "16.0"
+  xcode-version: "16.2"
+  RUN_IN_CI: true
 
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.1
+          xcode-version: 16.2
 
       - name: Checkout
         uses: actions/checkout@v4

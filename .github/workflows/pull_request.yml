@@ -11,34 +11,23 @@ env:
   scheme: default
   platform: iOS Simulator
   device: iPhone 16
+  RUN_IN_CI: true
 
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.1
+          xcode-version: 16.2
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-
-      - name: Cache Cocoapods
-        id: cache-cocoapods
-        uses: actions/cache@v4
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Install Cocoapods
-        run: pod install --repo-update
 
       - name: Set Default Scheme
         run: |
@@ -55,7 +44,7 @@ jobs:
 
           echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
-      - name: Build
+      - name: Build app
         env:
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
           MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
@@ -76,7 +65,7 @@ jobs:
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
           xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
 
-      - name: Test
+      - name: Run tests
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`

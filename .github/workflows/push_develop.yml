@@ -9,32 +9,21 @@ env:
   platform: "iOS Simulator"
   device: "iPhone 16"
   os_version: "latest"
-  xcode-version: "16.0"
+  xcode-version: "16.2"
+  RUN_IN_CI: true
 
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.1
+          xcode-version: 16.2
 
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Cache Cocoapods
-        id: cache-cocoapods
-        uses: actions/cache@v4
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Install Cocoapods
-        run: pod install --repo-update
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
       - name: Install the Apple certificate and provisioning profile
@@ -100,7 +89,7 @@ jobs:
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
         run: |
-          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -workspace novawallet.xcworkspace -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
+          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
 
       - name: Export archive
         run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
