@@ -344,7 +344,7 @@ extension StakingNPoolsInteractor: StakingNPoolsInteractorInputProtocol {
         totalRewardsPeriod = filter
 
         if let address = try? accountId.toAddress(using: chain.chainFormat) {
-            if let rewardApi = chain.externalApis?.staking()?.first {
+            if let rewardApi = chain.externalApis?.stakingRewards() {
                 let totalRewardInterval = filter.interval
                 totalRewardProvider = subscribePoolTotalReward(
                     for: address,
@@ -514,7 +514,7 @@ extension StakingNPoolsInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubs
         for _: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         guard
             let interval = totalRewardsPeriod?.interval,

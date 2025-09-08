@@ -7,11 +7,11 @@ final class WeaklyAnalyticsRewardSource {
     typealias Model = [SubqueryRewardItemData]
 
     let address: AccountAddress
-    let operationFactory: SubqueryRewardOperationFactoryProtocol
+    let operationFactory: SubqueryRewardWrapperFactoryProtocol
 
     init(
         address: AccountAddress,
-        operationFactory: SubqueryRewardOperationFactoryProtocol
+        operationFactory: SubqueryRewardWrapperFactoryProtocol
     ) {
         self.address = address
         self.operationFactory = operationFactory
@@ -30,7 +30,7 @@ extension WeaklyAnalyticsRewardSource: SingleValueProviderSourceProtocol {
         )
 
         let mappingOperation = ClosureOperation<[SubqueryRewardItemData]?> {
-            let rewards = try rewardOperation.extractNoCancellableResultData()
+            let rewards = try rewardOperation.targetOperation.extractNoCancellableResultData()
             return rewards.historyElements.nodes.compactMap { wrappedReward in
                 guard
                     let reward = wrappedReward.reward,
@@ -54,8 +54,11 @@ extension WeaklyAnalyticsRewardSource: SingleValueProviderSourceProtocol {
             }
         }
 
-        mappingOperation.addDependency(rewardOperation)
+        mappingOperation.addDependency(rewardOperation.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [rewardOperation])
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: rewardOperation.allOperations
+        )
     }
 }

@@ -65,7 +65,7 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem>
 }
@@ -258,7 +258,7 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         clearIfNeeded()
@@ -268,7 +268,9 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
             endTimestamp.map { "\($0)" } ?? "nil"
         ].joined(separator: "-")
 
-        let identifier = ("poolReward" + api.url.absoluteString) + address + timeIdentifier
+        let identifier = ("poolReward" + api.map(\.url.absoluteString).joined(with: .dash))
+            + address
+            + timeIdentifier
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
             return AnySingleValueProvider(provider)
@@ -278,7 +280,9 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
             storageFacade: storageFacade
         ).createSingleValueRepository()
 
-        let operationFactory = SubqueryRewardOperationFactory(url: api.url)
+        let operationFactory = SubqueryRewardAggregatingWrapperFactory(
+            factories: api.map { SubqueryRewardOperationFactory(url: $0.url) }
+        )
 
         let source = SubqueryTotalRewardSource(
             address: address,

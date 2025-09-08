@@ -257,7 +257,7 @@ extension MythosStakingDetailsInteractor {
 
         if
             let address = selectedAccount.chainAccount.toChecksumedAddress(),
-            let rewardApi = chain.externalApis?.staking()?.first {
+            let rewardApi = chain.externalApis?.stakingRewards() {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
                 startTimestamp: totalRewardInterval?.startTimestamp,
