@@ -65,27 +65,27 @@ protocol GovernanceLockStateFactoryProtocol {
 }
 
 protocol GovernanceDelegateStatsFactoryProtocol {
-    func fetchStatsWrapper(for threshold: RecentVotesDateThreshold) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+    func fetchStatsWrapper(for threshold: TimepointThreshold) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
 
     func fetchStatsByIdsWrapper(
         from delegateIds: Set<AccountAddress>,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
 
     func fetchDetailsWrapper(
         for delegate: AccountAddress,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<GovernanceDelegateDetails?>
 }
 
 protocol GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for threshold: RecentVotesDateThreshold
+        for threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 }
 

@@ -8,7 +8,7 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
 // MARK: - Private
 
 private extension SubqueryDelegateStatsOperationFactory {
-    func prepareListQuery(for threshold: RecentVotesDateThreshold) -> String {
+    func prepareListQuery(for threshold: TimepointThreshold) -> String {
         """
         {
            delegates {
@@ -28,7 +28,7 @@ private extension SubqueryDelegateStatsOperationFactory {
 
     func prepareListByIdsQuery(
         from addresses: String,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> String {
         """
         {
@@ -49,7 +49,7 @@ private extension SubqueryDelegateStatsOperationFactory {
 
     func prepareDetailsQuery(
         for delegate: AccountAddress,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> String {
         """
         {
@@ -89,7 +89,7 @@ private extension SubqueryDelegateStatsOperationFactory {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    func createFilter(for threshold: RecentVotesDateThreshold) -> String {
+    func createFilter(for threshold: TimepointThreshold) -> String {
         switch threshold {
         case let .blockNumber(blockNumber):
             "{at: {greaterThanOrEqualTo: \(blockNumber)}}"
@@ -103,7 +103,7 @@ private extension SubqueryDelegateStatsOperationFactory {
 
 extension SubqueryDelegateStatsOperationFactory: GovernanceDelegateStatsFactoryProtocol {
     func fetchStatsWrapper(
-        for threshold: RecentVotesDateThreshold
+        for threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
         let query = prepareListQuery(for: threshold)
         return internalFetchStatsWrapper(from: query)
@@ -111,7 +111,7 @@ extension SubqueryDelegateStatsOperationFactory: GovernanceDelegateStatsFactoryP
 
     func fetchStatsByIdsWrapper(
         from delegateIds: Set<AccountAddress>,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
         let addresses = String(delegateIds.map { "\"\($0)\"" }.joined(separator: ","))
         let query = prepareListByIdsQuery(from: addresses, threshold: threshold)
@@ -121,7 +121,7 @@ extension SubqueryDelegateStatsOperationFactory: GovernanceDelegateStatsFactoryP
 
     func fetchDetailsWrapper(
         for delegate: AccountAddress,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<GovernanceDelegateDetails?> {
         let query = prepareDetailsQuery(for: delegate, threshold: threshold)
 

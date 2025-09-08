@@ -117,7 +117,7 @@ private extension GovernanceDelegateInfoInteractor {
         guard !delegateDetailsCallStore.hasCall else { return }
 
         let thresholdWrapper = timelineService.createTimepointThreshold(
-            for: lastVotedDays
+            backIn: lastVotedDays
         )
 
         let delegateListWrapper: CompoundOperationWrapper<GovernanceDelegateDetails?>

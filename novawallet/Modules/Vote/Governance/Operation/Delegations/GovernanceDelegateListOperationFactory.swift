@@ -86,7 +86,7 @@ final class GovernanceDelegateListOperationFactory {
 
 extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for threshold: RecentVotesDateThreshold
+        for threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let statsWrapper = statsOperationFactory.fetchStatsWrapper(for: threshold)
 
@@ -95,7 +95,7 @@ extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryP
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        threshold: RecentVotesDateThreshold
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let addresses = delegateIds.compactMap { accountId in
             try? accountId.toAddress(using: chain.chainFormat)

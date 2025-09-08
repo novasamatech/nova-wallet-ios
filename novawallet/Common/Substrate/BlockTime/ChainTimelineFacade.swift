@@ -5,7 +5,7 @@ protocol ChainTimelineFacadeProtocol {
     var timelineChainId: ChainModel.Id { get }
 
     func createBlockTimeOperation() -> CompoundOperationWrapper<BlockTime>
-    func createTimepointThreshold(for days: Int) -> CompoundOperationWrapper<RecentVotesDateThreshold?>
+    func createTimepointThreshold(backIn days: Int) -> CompoundOperationWrapper<TimepointThreshold?>
 }
 
 final class ChainTimelineFacade {
@@ -43,41 +43,35 @@ extension ChainTimelineFacade: ChainTimelineFacadeProtocol {
         }
     }
 
-    func createTimepointThreshold(for days: Int) -> CompoundOperationWrapper<RecentVotesDateThreshold?> {
-        do {
-            let chain = try chainRegistry.getChainOrError(for: chainId)
+    func createTimepointThreshold(backIn days: Int) -> CompoundOperationWrapper<TimepointThreshold?> {
+        if chainId != timelineChainId {
+            let timestamp = Date().addingTimeInterval(-(.secondsInDay * Double(days))).timeIntervalSince1970
 
-            if chain.separateTimelineChain {
-                let timestamp = Date().addingTimeInterval(-(.secondsInDay * Double(days))).timeIntervalSince1970
+            return .createWithResult(.timestamp(Int64(timestamp)))
+        } else {
+            let blockTimeWrapper = createBlockTimeOperation()
 
-                return .createWithResult(.timestamp(Int64(timestamp)))
-            } else {
-                let blockTimeWrapper = createBlockTimeOperation()
+            let blockInDaysOperation = ClosureOperation<TimepointThreshold?> { [weak self] in
+                guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-                let blockInDaysOperation = ClosureOperation<RecentVotesDateThreshold?> { [weak self] in
-                    guard let self else { throw BaseOperationError.parentOperationCancelled }
+                let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
 
-                    let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-
-                    let activityBlockNumber = self.estimationService.currentBlockNumber?.blockBackInDays(
-                        days,
-                        blockTime: blockTime
-                    )
-
-                    guard let activityBlockNumber else { return nil }
-
-                    return .blockNumber(activityBlockNumber)
-                }
-
-                blockInDaysOperation.addDependency(blockTimeWrapper.targetOperation)
-
-                return CompoundOperationWrapper(
-                    targetOperation: blockInDaysOperation,
-                    dependencies: blockTimeWrapper.allOperations
+                let activityBlockNumber = estimationService.currentBlockNumber?.blockBackInDays(
+                    days,
+                    blockTime: blockTime
                 )
+
+                guard let activityBlockNumber else { return nil }
+
+                return .blockNumber(activityBlockNumber)
             }
-        } catch {
-            return .createWithError(error)
+
+            blockInDaysOperation.addDependency(blockTimeWrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: blockInDaysOperation,
+                dependencies: blockTimeWrapper.allOperations
+            )
         }
     }
 }

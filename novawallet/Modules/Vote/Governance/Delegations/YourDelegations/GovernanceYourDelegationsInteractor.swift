@@ -65,7 +65,7 @@ private extension GovernanceYourDelegationsInteractor {
 
         if !delegateIds.isEmpty {
             let thresholdWrapper = timelineService.createTimepointThreshold(
-                for: GovernanceDelegationConstants.recentVotesInDays
+                backIn: lastVotedDays
             )
 
             let delegateListWrapper: CompoundOperationWrapper<[GovernanceDelegateLocal]>

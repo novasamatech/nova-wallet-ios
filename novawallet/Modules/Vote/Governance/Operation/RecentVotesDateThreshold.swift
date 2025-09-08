@@ -1,6 +1,6 @@
 import SubstrateSdk
 
-enum RecentVotesDateThreshold {
+enum TimepointThreshold {
     case blockNumber(BlockNumber)
     case timestamp(Int64)
 }
