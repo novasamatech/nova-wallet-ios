@@ -29653,7 +29653,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$RUN_IN_CI\" == \"true\" ]; then\n    echo \"Skipping secrets injection in CI environment\"\n    exit 0\nfi\n\n$PROJECT_DIR/Scripts/inject-keys.sh\n";
+			shellScript = "$PROJECT_DIR/Scripts/inject-keys.sh\n";
 		};
 		F472A8D6261758DE003C58BC /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
