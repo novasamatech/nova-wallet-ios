@@ -123,15 +123,15 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -skipPackagePluginValidation
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsStaging.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsStaging.plist -skipPackagePluginValidation
 
       - name: Export Dev archive
         if: ${{ github.event.inputs.config == 'Dev' }}
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist -skipPackagePluginValidation
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

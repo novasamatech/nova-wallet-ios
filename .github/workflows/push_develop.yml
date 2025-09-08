@@ -92,7 +92,7 @@ jobs:
           xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist -skipPackagePluginValidation
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
