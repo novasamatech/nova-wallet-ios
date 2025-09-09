@@ -5,5 +5,4 @@ struct XcmDynamicAssetTransfer: Decodable {
     let assetId: AssetModel.Id
     let hasDeliveryFee: Bool?
     let supportsXcmExecute: Bool?
-    let usesTeleport: Bool?
 }

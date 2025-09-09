@@ -1,10 +1,10 @@
 import Foundation
 
-enum XcmTransferTypeError: Error {
+enum XcmCallTypeError: Error {
     case unknownType
 }
 
-enum XcmTransferType: String, Decodable {
+enum XcmCallType: String, Decodable {
     case xtokens
     case xcmpallet
     case teleport = "xcmpallet-teleport"
