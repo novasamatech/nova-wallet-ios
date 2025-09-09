@@ -27,8 +27,9 @@ private extension MultisigSingleChainAccountFactory {
             return wallet.info
         }
 
-        // ensure there is at least one signatory and multisig can't be created as universal
-        return !signatoryWallets.isEmpty && !signatoryWallets.allSupportUniversalMultisig()
+        // create single chain multisig if no wallet that supports universal multisig
+
+        return !signatoryWallets.isEmpty && !signatoryWallets.containsWalletForUniMultisig()
     }
 
     func createWallet(
