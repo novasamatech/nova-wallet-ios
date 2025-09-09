@@ -5815,7 +5815,6 @@
 		AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1000F326679946004753B7 /* InitiatedBondingRecommendationWireframe.swift */; };
 		AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22DAB1222A253F4ADAD9169 /* ParaStkYieldBoostSetupViewController.swift */; };
 		AE20602C2636EA5800357578 /* MercuryoKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE20602B2636EA5800357578 /* MercuryoKeys.swift */; };
-		AE2060B02637068700357578 /* CIKeys.stencil in Resources */ = {isa = PBXBuildFile; fileRef = AE2060AF2637068700357578 /* CIKeys.stencil */; };
 		AE2C32DC271D90DD00D57C91 /* MetaAccountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */; };
 		AE2C84CA25EF986E00986716 /* ValidatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2C84C925EF986E00986716 /* ValidatorInfoProtocols.swift */; };
 		AE2C84D525EF989A00986716 /* ValidatorInfoWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2C84D425EF989A00986716 /* ValidatorInfoWireframe.swift */; };
@@ -11980,7 +11979,6 @@
 		AE1000F126679886004753B7 /* ChangeTargetsRecommendationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeTargetsRecommendationWireframe.swift; sourceTree = "<group>"; };
 		AE1000F326679946004753B7 /* InitiatedBondingRecommendationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitiatedBondingRecommendationWireframe.swift; sourceTree = "<group>"; };
 		AE20602B2636EA5800357578 /* MercuryoKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoKeys.swift; sourceTree = "<group>"; };
-		AE2060AF2637068700357578 /* CIKeys.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = CIKeys.stencil; sourceTree = "<group>"; };
 		AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactory.swift; sourceTree = "<group>"; };
 		AE2C84C925EF986E00986716 /* ValidatorInfoProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoProtocols.swift; sourceTree = "<group>"; };
 		AE2C84D425EF989A00986716 /* ValidatorInfoWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoWireframe.swift; sourceTree = "<group>"; };
@@ -22816,7 +22814,6 @@
 				849013E324A92915008F705E /* Configs */,
 				849013D124A92686008F705E /* Common */,
 				849013D224A9268D008F705E /* Modules */,
-				AE2060AF2637068700357578 /* CIKeys.stencil */,
 				849013AB24A80984008F705E /* AppDelegate.swift */,
 				0CA647E52E6F1383000FDD31 /* CIKeys.generated.swift */,
 				0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */,
@@ -29561,7 +29558,6 @@
 				842876A924AE049B00D91AD8 /* SelectionSubtitleTableViewCell.xib in Resources */,
 				84AE11CB273C007E00B294B7 /* novawallet.staging.xcconfig in Resources */,
 				0C1A10572E6AEA3300254E20 /* westend-metadata in Resources */,
-				AE2060B02637068700357578 /* CIKeys.stencil in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
