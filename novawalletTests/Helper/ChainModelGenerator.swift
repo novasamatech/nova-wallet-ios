@@ -208,6 +208,7 @@ enum ChainModelGenerator {
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans,
             hasSubstrateRuntime: hasSubstrateRuntime,
+            isEthereumBased: isEthereumBased,
             hasProxy: hasProxy,
             hasMultisig: hasMultisig,
             enabled: enabled

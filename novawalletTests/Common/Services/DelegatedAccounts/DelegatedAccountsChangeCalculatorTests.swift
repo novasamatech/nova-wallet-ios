@@ -539,6 +539,70 @@ final class DelegatedAccountsChangeCalculatorTests: XCTestCase {
         XCTAssertEqual(changes.removedItems.count, 0)
     }
     
+    func testNoSingleChainMultisigIfChainNotSupported() {
+        // given
+        
+        let substrateChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: false,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let evmChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: true,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let secretsWallet = AccountGenerator.generateMetaAccount()
+        
+        let multisigMultisigSignatory = generateMultisig(for: secretsWallet.ethereumAddress!, isEthereumBased: true)
+        let multisigEvm = generateMultisig(for: multisigMultisigSignatory.accountId, isEthereumBased: true)
+        
+        let calculator = setupCalculator(chains: [substrateChain, evmChain])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [multisigMultisigSignatory, multisigEvm],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: secretsWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 2 else {
+            XCTFail("Expected 2 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[0].info,
+                multisigModel: multisigMultisigSignatory,
+                multisigType: .uniEvm
+            )
+        )
+        
+        // ensure that multisig is created only for evm and not for substrate chain
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[1].info,
+                multisigModel: multisigEvm,
+                multisigType: .singleChain(evmChain.chainId)
+            )
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
     private func verifyProxy(
         wallet: MetaAccountModel,
         proxiedModel: DiscoveredAccount.ProxiedModel
@@ -592,10 +656,13 @@ final class DelegatedAccountsChangeCalculatorTests: XCTestCase {
     private func generateMultisig(
         for signatory: AccountId,
         threshold: Int = 2,
-        totalSignatories: Int = 3
+        totalSignatories: Int = 3,
+        isEthereumBased: Bool = false
     ) -> DiscoveredAccount.MultisigModel {
-        let signatories = (0..<totalSignatories - 1).map { _ in AccountId.random(of: 32)! }
-        let multisigAccountId = AccountId.random(of: 32)!
+        let accountSize = isEthereumBased ? 20 : 32
+        
+        let signatories = (0..<totalSignatories - 1).map { _ in AccountId.random(of: accountSize)! }
+        let multisigAccountId = AccountId.random(of: accountSize)!
         
         return DiscoveredAccount.MultisigModel(
             accountId: multisigAccountId,
