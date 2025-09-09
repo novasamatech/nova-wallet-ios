@@ -44,7 +44,7 @@ extension Xcm {
             case customXcmOnDest = "custom_xcm_on_dest"
             case weightLimit = "weight_limit"
         }
-        
+
         let destination: XcmUni.VersionedLocation
         let assets: XcmUni.VersionedAssets
         let assetsTransferType: TransferType
