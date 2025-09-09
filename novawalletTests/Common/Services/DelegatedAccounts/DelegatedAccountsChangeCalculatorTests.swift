@@ -332,6 +332,81 @@ final class DelegatedAccountsChangeCalculatorTests: XCTestCase {
         XCTAssertEqual(changes.removedItems.count, 0)
     }
     
+    func testMultipleSingleChainsMultisigsForProxyAndWithSecretWallets() {
+        // given
+        
+        let chain1 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let chain2 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let proxyWallet = AccountGenerator.generateMetaAccount()
+        let normalWallet = AccountGenerator.generateMetaAccount()
+        
+        let proxied = DiscoveredAccount.ProxiedModel(
+            proxyAccountId: proxyWallet.substrateAccountId!,
+            proxiedAccountId: normalWallet.substrateAccountId!,
+            type: .any,
+            chainId: chain1.chainId
+        )
+        
+        let multisig = generateMultisig(for: normalWallet.substrateAccountId!)
+        
+        let calculator = setupCalculator(chains: [chain1, chain2])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [proxied, multisig],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: proxyWallet),
+                ManagedMetaAccountModel(info: normalWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 3 else {
+            XCTFail("Expected 3 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            verifyProxy(
+                wallet: changes.newOrUpdatedItems[0].info,
+                proxiedModel: proxied
+            )
+        )
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[1].info,
+                multisigModel: multisig,
+                multisigType: .singleChain(chain1.chainId)
+            )
+        )
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[2].info,
+                multisigModel: multisig,
+                multisigType: .singleChain(chain2.chainId)
+            )
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
     private func verifyProxy(
         wallet: MetaAccountModel,
         proxiedModel: DiscoveredAccount.ProxiedModel
