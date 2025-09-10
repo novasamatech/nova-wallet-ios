@@ -16,15 +16,7 @@ extension MetaAccountModel {
 }
 
 extension Array where Element == MetaAccountModel {
-    func allSupportUniversalMultisig() -> Bool {
-        allSatisfy(\.supportsUniversalMultisig)
-    }
-
-    func allMatchSubstrateAccount(_ accountId: AccountId) -> Bool {
-        allSatisfy { $0.substrateAccountId == accountId }
-    }
-
-    func allMatchEthereumAccount(_ accountId: AccountId) -> Bool {
-        allSatisfy { $0.ethereumAddress == accountId }
+    func containsWalletForUniMultisig() -> Bool {
+        contains { $0.supportsUniversalMultisig }
     }
 }
