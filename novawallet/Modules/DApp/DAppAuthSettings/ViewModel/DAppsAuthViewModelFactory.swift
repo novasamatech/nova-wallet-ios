@@ -18,12 +18,12 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
             }
         } ?? [:]
 
-        return authorizationStore.keys.map { dAppId in
+        return authorizationStore.values.map { auth in
             let title: String
             let subtitle: String?
 
-            let path = URL(string: dAppId)?.path
-            let optDApp = dAppsStore[dAppId]
+            let path = URL(string: auth.dAppId)?.path
+            let optDApp = dAppsStore[auth.dAppId]
 
             if let dApp = optDApp {
                 title = dApp.name
@@ -46,7 +46,7 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
                 title: title,
                 subtitle: subtitle,
                 iconViewModel: imageViewModel,
-                identifier: dAppId
+                identifier: auth.dAppId
             )
         }.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
     }
