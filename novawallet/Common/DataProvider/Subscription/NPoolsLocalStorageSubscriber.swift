@@ -65,7 +65,7 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>?
 }
@@ -452,7 +452,7 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>? {
         guard let provider = try? npoolsLocalSubscriptionFactory.getTotalReward(

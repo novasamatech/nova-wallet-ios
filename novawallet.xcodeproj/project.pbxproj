@@ -987,17 +987,17 @@
 		0CB261F52A9E188300287305 /* NominationPoolsBondExtraCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F42A9E188300287305 /* NominationPoolsBondExtraCall.swift */; };
 		0CB261F72A9E2D8400287305 /* StackSwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F62A9E2D8400287305 /* StackSwitchCell.swift */; };
 		0CB261F92A9F1F2200287305 /* NPoolsRedeemError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F82A9F1F2200287305 /* NPoolsRedeemError.swift */; };
+		0CB2E88E2E5DC3100067DE12 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
+		0CB2E88F2E5DC3170067DE12 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
+		0CB2E8902E5DC3200067DE12 /* NominationPools+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB06E722A6800F500C7EC99 /* NominationPools+Functions.swift */; };
+		0CB2E8912E5DC34B0067DE12 /* Staking+Era.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF19FE2E435EE8009EE38D /* Staking+Era.swift */; };
+		0CB2E8932E5DC3B20067DE12 /* AssetStorageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E8922E5DC3B20067DE12 /* AssetStorageInfo.swift */; };
 		0CB2E8972E5EF9EB0067DE12 /* DiscoverProxiesAccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E8962E5EF9EB0067DE12 /* DiscoverProxiesAccountsRepository.swift */; };
 		0CB2E8992E5EFC2D0067DE12 /* DelegatedAccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E8982E5EFC2D0067DE12 /* DelegatedAccountsRepository.swift */; };
 		0CB2E89B2E5EFE250067DE12 /* AccountIdKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E89A2E5EFE250067DE12 /* AccountIdKey.swift */; };
 		0CB2E89D2E5EFE6F0067DE12 /* ProxyFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E89C2E5EFE6F0067DE12 /* ProxyFilter.swift */; };
 		0CB2E8A02E5EFEC20067DE12 /* ProxyDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E89F2E5EFEC20067DE12 /* ProxyDefinitions.swift */; };
 		0CB2E8A32E5F0CA80067DE12 /* Proxy+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E8A22E5F0CA80067DE12 /* Proxy+Account.swift */; };
-		0CB2E88E2E5DC3100067DE12 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
-		0CB2E88F2E5DC3170067DE12 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
-		0CB2E8902E5DC3200067DE12 /* NominationPools+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB06E722A6800F500C7EC99 /* NominationPools+Functions.swift */; };
-		0CB2E8912E5DC34B0067DE12 /* Staking+Era.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF19FE2E435EE8009EE38D /* Staking+Era.swift */; };
-		0CB2E8932E5DC3B20067DE12 /* AssetStorageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB2E8922E5DC3B20067DE12 /* AssetStorageInfo.swift */; };
 		0CB3135F2C0F051700353724 /* EnterCloudPasswordFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB3135E2C0F051700353724 /* EnterCloudPasswordFlow.swift */; };
 		0CB313622C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313612C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift */; };
 		0CB313652C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313642C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift */; };
@@ -1582,6 +1582,7 @@
 		2D0A82F12CB573BB0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
+		2D1210002E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */; };
 		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
 		2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */; };
 		2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */; };
@@ -7473,13 +7474,13 @@
 		0CB261F42A9E188300287305 /* NominationPoolsBondExtraCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsBondExtraCall.swift; sourceTree = "<group>"; };
 		0CB261F62A9E2D8400287305 /* StackSwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSwitchCell.swift; sourceTree = "<group>"; };
 		0CB261F82A9F1F2200287305 /* NPoolsRedeemError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsRedeemError.swift; sourceTree = "<group>"; };
+		0CB2E8922E5DC3B20067DE12 /* AssetStorageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfo.swift; sourceTree = "<group>"; };
 		0CB2E8962E5EF9EB0067DE12 /* DiscoverProxiesAccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverProxiesAccountsRepository.swift; sourceTree = "<group>"; };
 		0CB2E8982E5EFC2D0067DE12 /* DelegatedAccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsRepository.swift; sourceTree = "<group>"; };
 		0CB2E89A2E5EFE250067DE12 /* AccountIdKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountIdKey.swift; sourceTree = "<group>"; };
 		0CB2E89C2E5EFE6F0067DE12 /* ProxyFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyFilter.swift; sourceTree = "<group>"; };
 		0CB2E89F2E5EFEC20067DE12 /* ProxyDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyDefinitions.swift; sourceTree = "<group>"; };
 		0CB2E8A22E5F0CA80067DE12 /* Proxy+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Proxy+Account.swift"; sourceTree = "<group>"; };
-		0CB2E8922E5DC3B20067DE12 /* AssetStorageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfo.swift; sourceTree = "<group>"; };
 		0CB3135E2C0F051700353724 /* EnterCloudPasswordFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterCloudPasswordFlow.swift; sourceTree = "<group>"; };
 		0CB313612C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseBackupEnterPasswordInteractor.swift; sourceTree = "<group>"; };
 		0CB313642C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnterPasswordSetInteractor.swift; sourceTree = "<group>"; };
@@ -8073,6 +8074,7 @@
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
+		2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryRewardAggregatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
 		2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFactory.swift; sourceTree = "<group>"; };
@@ -24070,6 +24072,7 @@
 				8455F1942A1DD6BD003F072D /* Filter */,
 				849AFEBB26DCCDDD00B65924 /* Models */,
 				84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */,
+				2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */,
 				843461D026E2641500DCE0CD /* SubqueryRewardOperationFactory.swift */,
 				84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */,
 				84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */,
@@ -33815,6 +33818,7 @@
 				0CEB6B4F2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift in Sources */,
 				0C13DFD12AF8AE3E00E5F355 /* SwapBasePresenter.swift in Sources */,
 				88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */,
+				2D1210002E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift in Sources */,
 				840AE2E529C9AF9C008FF665 /* EtherscanWalletHistoryDecodable.swift in Sources */,
 				772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */,
 				0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */,

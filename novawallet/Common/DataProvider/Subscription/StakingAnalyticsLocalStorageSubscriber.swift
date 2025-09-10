@@ -8,24 +8,24 @@ protocol StakingAnalyticsLocalStorageSubscriber where Self: AnyObject {
 
     func subscribeWeaklyRewardAnalytics(
         for address: AccountAddress,
-        url: URL
+        urls: [URL]
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]>?
 }
 
 extension StakingAnalyticsLocalStorageSubscriber {
     func subscribeWeaklyRewardAnalytics(
         for address: AccountAddress,
-        url: URL
+        urls: [URL]
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]>? {
         let provider = stakingAnalyticsLocalSubscriptionFactory
-            .getWeaklyAnalyticsProvider(for: address, url: url)
+            .getWeaklyAnalyticsProvider(for: address, urls: urls)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<[SubqueryRewardItemData]>]) in
             let result = changes.reduceToLastChange()
             self?.stakingAnalyticsLocalSubscriptionHandler.handleWeaklyRewardAnalytics(
                 result: .success(result),
                 address: address,
-                url: url
+                urls: urls
             )
         }
 
@@ -33,7 +33,7 @@ extension StakingAnalyticsLocalStorageSubscriber {
             self?.stakingAnalyticsLocalSubscriptionHandler.handleWeaklyRewardAnalytics(
                 result: .failure(error),
                 address: address,
-                url: url
+                urls: urls
             )
             return
         }

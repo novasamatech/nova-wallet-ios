@@ -68,7 +68,8 @@ class PayoutRewardsServiceTests: XCTestCase {
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let chainAsset = chain.utilityChainAsset(),
-            let rewardUrl = chain.externalApis?.staking()?.first?.url else {
+            let rewardUrls = chainAsset.chain.externalApis?.stakingRewards()?.map(\.url)
+        else {
             throw ChainRegistryError.connectionUnavailable
         }
 
@@ -77,7 +78,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             operationManager: operationManager
         )
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardUrl
+            urls: rewardUrls
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)

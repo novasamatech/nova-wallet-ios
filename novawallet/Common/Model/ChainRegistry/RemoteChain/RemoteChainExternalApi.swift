@@ -10,6 +10,7 @@ struct RemoteChainExternalApi: Equatable, Codable {
 struct RemoteChainExternalApiSet: Equatable, Codable {
     enum CodingKeys: String, CodingKey {
         case staking
+        case stakingRewards = "staking-rewards"
         case history
         case crowdloans
         case governance
@@ -19,6 +20,7 @@ struct RemoteChainExternalApiSet: Equatable, Codable {
     }
 
     let staking: [RemoteChainExternalApi]?
+    let stakingRewards: [RemoteChainExternalApi]?
     let history: [RemoteChainExternalApi]?
     let crowdloans: [RemoteChainExternalApi]?
     let governance: [RemoteChainExternalApi]?
