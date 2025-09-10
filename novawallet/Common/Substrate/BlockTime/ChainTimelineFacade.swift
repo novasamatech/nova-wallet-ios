@@ -5,7 +5,6 @@ protocol ChainTimelineFacadeProtocol {
     var timelineChainId: ChainModel.Id { get }
 
     func createBlockTimeOperation() -> CompoundOperationWrapper<BlockTime>
-    func createTimepointThreshold(backIn days: Int) -> CompoundOperationWrapper<TimepointThreshold?>
 }
 
 final class ChainTimelineFacade {
@@ -40,38 +39,6 @@ extension ChainTimelineFacade: ChainTimelineFacadeProtocol {
             )
         } catch {
             return .createWithError(error)
-        }
-    }
-
-    func createTimepointThreshold(backIn days: Int) -> CompoundOperationWrapper<TimepointThreshold?> {
-        if chainId != timelineChainId {
-            let timestamp = Date().addingTimeInterval(-(.secondsInDay * Double(days))).timeIntervalSince1970
-
-            return .createWithResult(.timestamp(Int64(timestamp)))
-        } else {
-            let blockTimeWrapper = createBlockTimeOperation()
-
-            let blockInDaysOperation = ClosureOperation<TimepointThreshold?> { [weak self] in
-                guard let self else { throw BaseOperationError.parentOperationCancelled }
-
-                let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-
-                let activityBlockNumber = estimationService.currentBlockNumber?.blockBackInDays(
-                    days,
-                    blockTime: blockTime
-                )
-
-                guard let activityBlockNumber else { return nil }
-
-                return .blockNumber(activityBlockNumber)
-            }
-
-            blockInDaysOperation.addDependency(blockTimeWrapper.targetOperation)
-
-            return CompoundOperationWrapper(
-                targetOperation: blockInDaysOperation,
-                dependencies: blockTimeWrapper.allOperations
-            )
         }
     }
 }

@@ -13,6 +13,11 @@ final class GovernanceSharedState {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
+    var timepointThresholdStore: TimepointThresholdStoreProtocol? {
+        thresholdStore ?? createAndSaveThresholdStateStore()
+    }
+
+    private var thresholdStore: TimepointThresholdStoreProtocol?
     private(set) var subscriptionFactory: GovernanceSubscriptionFactoryProtocol?
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
@@ -63,7 +68,35 @@ final class GovernanceSharedState {
         self.requestFactory = requestFactory
         self.operationQueue = operationQueue
     }
+}
 
+// MARK: - Private
+
+private extension GovernanceSharedState {
+    func createAndSaveThresholdStateStore() -> TimepointThresholdStore? {
+        guard
+            let chain = settings.value?.chain,
+            let blockTimeService
+        else { return nil }
+
+        let store = TimepointThresholdStore(
+            chain: chain,
+            chainRegistry: chainRegistry,
+            estimationService: blockTimeService,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
+            operationQueue: operationQueue,
+            workingQueue: .main
+        )
+
+        thresholdStore = store
+
+        return store
+    }
+}
+
+// MARK: - Internal
+
+extension GovernanceSharedState {
     func replaceBlockTimeService(_ newService: BlockTimeEstimationServiceProtocol?) {
         blockTimeService = newService
     }

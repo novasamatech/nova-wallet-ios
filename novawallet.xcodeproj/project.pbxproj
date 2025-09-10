@@ -1545,6 +1545,7 @@
 		2D039DE62BFC8D4000A928E5 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */; };
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D039DEA2BFCAB9000A928E5 /* ExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */; };
+		2D04CE8C2E715C0E00EB405E /* TimepointThresholdStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D04CE8B2E715C0E00EB405E /* TimepointThresholdStore.swift */; };
 		2D0673842E13086D006392EB /* MultisigDefinition+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673832E13086D006392EB /* MultisigDefinition+Helpers.swift */; };
 		2D0673862E134423006392EB /* MultisigOperationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673852E134423006392EB /* MultisigOperationsViewFactory.swift */; };
 		2D0673882E134462006392EB /* MultisigOperationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673872E134462006392EB /* MultisigOperationsWireframe.swift */; };
@@ -8038,6 +8039,7 @@
 		2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModelFactory.swift; sourceTree = "<group>"; };
+		2D04CE8B2E715C0E00EB405E /* TimepointThresholdStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimepointThresholdStore.swift; sourceTree = "<group>"; };
 		2D0673832E13086D006392EB /* MultisigDefinition+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigDefinition+Helpers.swift"; sourceTree = "<group>"; };
 		2D0673852E134423006392EB /* MultisigOperationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewFactory.swift; sourceTree = "<group>"; };
 		2D0673872E134462006392EB /* MultisigOperationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsWireframe.swift; sourceTree = "<group>"; };
@@ -20049,6 +20051,7 @@
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
 				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
 				848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */,
+				2D04CE8B2E715C0E00EB405E /* TimepointThresholdStore.swift */,
 				844304642A28EB0D00DE36DE /* ObservableSyncService.swift */,
 				0C7A3FCF2B6A93B500764603 /* ObservableSubscriptionSyncService.swift */,
 				0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */,
@@ -33987,6 +33990,7 @@
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				77AAE2262AFC10EE006872CC /* PriceHistoryCalculatorFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
+				2D04CE8C2E715C0E00EB405E /* TimepointThresholdStore.swift in Sources */,
 				849C7BDB2A1B236900434621 /* GladingBaseView.swift in Sources */,
 				84EE2FB32891442F00A98816 /* WalletManageViewFactory.swift in Sources */,
 				2DFF39E02E18106300529984 /* MultisigCallDataImportPresenter.swift in Sources */,

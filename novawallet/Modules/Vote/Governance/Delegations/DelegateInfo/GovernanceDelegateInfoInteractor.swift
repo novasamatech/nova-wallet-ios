@@ -12,16 +12,14 @@ final class GovernanceDelegateInfoInteractor {
     let referendumOperationFactory: ReferendumsOperationFactoryProtocol
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
+    let timepointThresholdStore: TimepointThresholdStoreProtocol
     let runtimeService: RuntimeProviderProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
-    let timelineService: ChainTimelineFacadeProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
     private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
-    private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var currentBlockNumber: BlockNumber?
+    private var currentThreshold: TimepointThreshold?
 
     private var delegateDetailsCallStore = CancellableCallStore()
 
@@ -33,10 +31,9 @@ final class GovernanceDelegateInfoInteractor {
         referendumOperationFactory: ReferendumsOperationFactoryProtocol,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
+        timepointThresholdStore: TimepointThresholdStoreProtocol,
         runtimeService: RuntimeProviderProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
-        timelineService: ChainTimelineFacadeProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -45,12 +42,11 @@ final class GovernanceDelegateInfoInteractor {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
         self.detailsOperationFactory = detailsOperationFactory
+        self.timepointThresholdStore = timepointThresholdStore
         self.referendumOperationFactory = referendumOperationFactory
         self.subscriptionFactory = subscriptionFactory
         self.runtimeService = runtimeService
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.identityProxyFactory = identityProxyFactory
-        self.timelineService = timelineService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
     }
@@ -114,38 +110,21 @@ private extension GovernanceDelegateInfoInteractor {
     }
 
     func fetchAndUpdateDetails() {
-        guard !delegateDetailsCallStore.hasCall else { return }
+        guard
+            !delegateDetailsCallStore.hasCall,
+            let currentThreshold,
+            let delegateAddress = try? delegateId.toAddress(using: chain.chainFormat)
+        else { return }
 
-        let thresholdWrapper = timelineService.createTimepointThreshold(
-            backIn: lastVotedDays
+        let threshold = currentThreshold.backIn(days: lastVotedDays)
+
+        let wrapper = detailsOperationFactory.fetchDetailsWrapper(
+            for: delegateAddress,
+            threshold: threshold
         )
 
-        let delegateListWrapper: CompoundOperationWrapper<GovernanceDelegateDetails?>
-        delegateListWrapper = OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            let threshold = try thresholdWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let threshold else { return nil }
-
-            let delegateAddress = try delegateId.toAddress(using: chain.chainFormat)
-
-            return detailsOperationFactory.fetchDetailsWrapper(
-                for: delegateAddress,
-                threshold: threshold
-            )
-        }
-
-        delegateListWrapper.addDependency(wrapper: thresholdWrapper)
-
-        let finalWrapper = delegateListWrapper.insertingHead(operations: thresholdWrapper.allOperations)
-
         executeCancellable(
-            wrapper: finalWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: delegateDetailsCallStore,
             runningCallbackIn: .main
@@ -159,8 +138,24 @@ private extension GovernanceDelegateInfoInteractor {
         }
     }
 
-    func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
+    func subscribeTimepointThreshold() {
+        timepointThresholdStore.remove(observer: self)
+
+        timepointThresholdStore.add(
+            observer: self,
+            sendStateOnSubscription: true
+        ) { [weak self] _, timepointThreshold in
+            guard let self, let timepointThreshold else { return }
+
+            if
+                case let .block(newBlockNumber, _) = timepointThreshold,
+                case let .block(currentBlockNumber, _) = currentThreshold,
+                newBlockNumber.isNext(to: currentBlockNumber) {
+                return
+            }
+
+            fetchAndUpdateDetails()
+        }
     }
 
     func subscribeToDelegatesMetadata() {
@@ -190,7 +185,7 @@ private extension GovernanceDelegateInfoInteractor {
 
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
-        subscribeBlockNumber()
+        subscribeTimepointThreshold()
         provideIdentity(for: delegateId)
         subscribeAccountVotes()
         subscribeToDelegatesMetadata()
@@ -198,13 +193,13 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
     }
 
     func refreshDetails() {
-        if currentBlockNumber != nil {
-            fetchAndUpdateDetails()
-        }
+        guard currentThreshold != nil else { return }
+
+        fetchAndUpdateDetails()
     }
 
     func remakeSubscriptions() {
-        subscribeBlockNumber()
+        subscribeTimepointThreshold()
 
         subscribeToDelegatesMetadata()
 
@@ -217,28 +212,6 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
 
     func refreshTracks() {
         provideTracks()
-    }
-}
-
-// MARK: - GeneralLocalStorageSubscriber
-
-extension GovernanceDelegateInfoInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber = blockNumber {
-                let optLastBlockNumber = currentBlockNumber
-                currentBlockNumber = blockNumber
-
-                if let lastBlockNumber = optLastBlockNumber, blockNumber.isNext(to: lastBlockNumber) {
-                    return
-                }
-
-                fetchAndUpdateDetails()
-            }
-        case let .failure(error):
-            presenter?.didReceiveError(.blockSubscriptionFailed(error))
-        }
     }
 }
 

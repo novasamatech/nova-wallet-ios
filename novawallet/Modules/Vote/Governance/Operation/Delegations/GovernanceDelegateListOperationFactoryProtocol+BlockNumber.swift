@@ -29,7 +29,7 @@ extension GovernanceDelegateListFactoryProtocol {
             }
 
             return self.fetchDelegateListWrapper(
-                for: .blockNumber(activityBlockNumber)
+                for: .block(blockNumber: activityBlockNumber, blockTime: blockTime)
             )
         }
 
