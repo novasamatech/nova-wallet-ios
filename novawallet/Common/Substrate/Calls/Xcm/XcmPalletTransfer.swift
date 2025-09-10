@@ -36,10 +36,10 @@ extension Xcm {
 
     struct TransferAssetsUsingTypeAndThen: Codable {
         enum CodingKeys: String, CodingKey {
-            case destination
+            case destination = "dest"
             case assets
             case assetsTransferType = "assets_transfer_type"
-            case remoteFeesId = "remote_fees_Id"
+            case remoteFeesId = "remote_fees_id"
             case feesTransferType = "fees_transfer_type"
             case customXcmOnDest = "custom_xcm_on_dest"
             case weightLimit = "weight_limit"
