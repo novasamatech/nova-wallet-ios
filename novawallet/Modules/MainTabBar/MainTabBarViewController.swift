@@ -141,17 +141,13 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
             sharedStatusBarPresenter.hide()
         case .syncing:
             sharedStatusBarPresenter.showPending(
-                for: R.string.localizable.commonStatusBackupSyncing(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonStatusBackupSyncing(),
                 on: view
             )
         case .synced:
             if wasSyncing {
                 sharedStatusBarPresenter.complete(
-                    with: R.string.localizable.commonStatusBackupSynced(
-                        preferredLanguages: selectedLocale.rLanguages
-                    )
+                    with: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonStatusBackupSynced()
                 )
             }
         }
@@ -184,9 +180,7 @@ extension MainTabBarViewController: Localizable {
                 break
             case .syncing:
                 sharedStatusBarPresenter.showPending(
-                    for: R.string.localizable.commonStatusBackupSyncing(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonStatusBackupSyncing(),
                     on: view
                 )
             }

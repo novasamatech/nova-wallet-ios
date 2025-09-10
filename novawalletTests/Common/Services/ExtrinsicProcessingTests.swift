@@ -29,10 +29,10 @@ class ExtrinsicProcessingTests: XCTestCase {
             let extrinsicData = try Data(hexString: transferExtrinsicHex)
 
             guard let result = processor.process(
-                    extrinsicIndex: extrinsicIndex,
-                    extrinsicData: extrinsicData,
-                    eventRecords: eventRecords,
-                    coderFactory: coderFactory
+                extrinsicIndex: extrinsicIndex,
+                extrinsicData: extrinsicData,
+                eventRecords: eventRecords,
+                coderFactory: coderFactory
             ) else {
                 XCTFail("Unexpected empty result")
                 return

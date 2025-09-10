@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 
 class BaseAssetAccountSubscription {

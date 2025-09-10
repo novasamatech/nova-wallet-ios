@@ -136,12 +136,8 @@ private extension KnownNetworksListViewController {
     }
 
     func setupLocalization() {
-        navigationItem.title = R.string.localizable.networksListAddNetworkButtonTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.searchTextField.placeholder = R.string.localizable.networkKnownListSearchPlaceholder(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        navigationItem.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networksListAddNetworkButtonTitle()
+        rootView.searchTextField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkKnownListSearchPlaceholder()
     }
 
     func cellFor(

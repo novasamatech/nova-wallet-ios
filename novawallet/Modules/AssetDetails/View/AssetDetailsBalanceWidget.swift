@@ -195,15 +195,9 @@ extension AssetDetailsBalanceWidget {
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
-        headerCell.titleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
-            preferredLanguages: languages
-        )
-        transferrableCell.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
-        lockCell.titleLabel.text = R.string.localizable.walletBalanceLocked(
-            preferredLanguages: languages
-        )
+        headerCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalancesWidgetTitle()
+        transferrableCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
+        lockCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceLocked()
     }
 }
 

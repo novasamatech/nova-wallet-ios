@@ -10,7 +10,7 @@ extension Result where Success == ExtrinsicMonitorSubmission {
         let submission = try get()
 
         switch submission.status {
-        case let .success:
+        case .success:
             return submission.extrinsicSubmittedModel
         case let .failure(failureStature):
             throw failureStature.error

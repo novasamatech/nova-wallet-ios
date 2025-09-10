@@ -90,9 +90,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
     private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
         if hasEstimatedRewards {
-            valueView.detailsView.sView.text = R.string.localizable.commonPerYearLong(
-                preferredLanguages: locale.rLanguages
-            )
+            valueView.detailsView.sView.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonPerYearLong()
         } else {
             valueView.detailsView.sView.text = ""
         }
@@ -126,7 +124,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         titleView.bind(imageViewModel: viewModel.icon)
 
         let balanceString = balance.map {
-            R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonAvailableFormat($0)
         }
 
         networkLabel.text = viewModel.name

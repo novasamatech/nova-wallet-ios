@@ -12,7 +12,7 @@ final class WalletsChooseViewController: WalletsListViewController<
     }
 
     override func setupLocalization() {
-        title = R.string.localizable.commonSelectWallet(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSelectWallet()
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

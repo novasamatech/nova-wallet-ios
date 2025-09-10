@@ -16,9 +16,9 @@ enum AccountGenerator {
             multisig: nil
         )
     }
-    
+
     static func generateMetaAccount(generatingChainAccounts count: Int) -> MetaAccountModel {
-        let chainAccounts = (0..<count).map { _ in generateChainAccount() }
+        let chainAccounts = (0 ..< count).map { _ in generateChainAccount() }
         return generateMetaAccount(with: Set(chainAccounts))
     }
 
@@ -50,7 +50,7 @@ enum AccountGenerator {
             multisig: nil
         )
     }
-    
+
     static func generateProxiedChainAccount(
         for model: DelegatedAccount.ProxyAccountModel,
         chainId: ChainModel.Id
@@ -64,7 +64,7 @@ enum AccountGenerator {
             multisig: nil
         )
     }
-    
+
     static func generateMultisigChainAccount(
         for model: DelegatedAccount.MultisigAccountModel,
         chainId: ChainModel.Id
@@ -78,7 +78,7 @@ enum AccountGenerator {
             multisig: model
         )
     }
-    
+
     static func generateSubstrateChainAccountResponse(
         for chainId: ChainModel.Id
     ) -> ChainAccountResponse {

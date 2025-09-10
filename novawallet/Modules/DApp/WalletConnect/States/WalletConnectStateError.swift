@@ -7,19 +7,23 @@ enum WalletConnectStateError: Error {
 
 extension WalletConnectStateError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
-        let title = R.string.localizable.commonWalletConnect(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonWalletConnect()
         let message: String
 
         switch self {
         case let .unexpectedData(details, _):
-            message = R.string.localizable.dappUnexpectedErrorFormat(
-                details,
-                preferredLanguages: locale?.rLanguages
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappUnexpectedErrorFormat(
+                details
             )
         case .unexpectedMessage:
-            message = R.string.localizable.dappUnexpectedErrorFormat(
-                "unexpected message received",
-                preferredLanguages: locale?.rLanguages
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappUnexpectedErrorFormat(
+                "unexpected message received"
             )
         }
 

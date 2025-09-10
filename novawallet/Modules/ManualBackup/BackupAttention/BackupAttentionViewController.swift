@@ -33,8 +33,8 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let title = R.string.localizable.backupAttentionTitle(preferredLanguages: selectedLocale.rLanguages)
-        let description = R.string.localizable.backupAttentionDescription(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.backupAttentionTitle()
+        let description = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.backupAttentionDescription()
 
         rootView.titleView.titleLabel.text = title
         rootView.titleView.descriptionLabel.text = description

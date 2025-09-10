@@ -33,10 +33,10 @@ private extension DAppBrowserPresenter {
         let locale = localizationManager.selectedLocale
         let errorContent = error.toErrorContent(for: locale)
 
-        let skipAction = R.string.localizable.commonSkip(preferredLanguages: locale.rLanguages)
+        let skipAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonSkip()
 
         let reloadViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonReload(preferredLanguages: locale.rLanguages)
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonReload()
         ) { [weak self] in
             self?.interactor.reload()
         }

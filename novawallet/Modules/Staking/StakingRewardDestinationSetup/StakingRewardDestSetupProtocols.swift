@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol StakingRewardDestSetupViewProtocol: ControllerBackedProtocol, Localizable {
+protocol StakingRewardDestSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveRewardDestination(viewModel: ChangeRewardDestinationViewModel?)
     func didCompletionAccountSelection()

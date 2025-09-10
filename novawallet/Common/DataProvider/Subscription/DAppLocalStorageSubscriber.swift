@@ -19,8 +19,7 @@ extension DAppLocalStorageSubscriber {
     ) -> StreamableProvider<DAppFavorite> {
         let provider = dAppsLocalSubscriptionFactory.getFavoritesProvider(identifier)
 
-        let updateClosure = {
-            [weak self] (changes: [DataProviderChange<DAppFavorite>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DAppFavorite>]) in
             self?.dappsLocalSubscriptionHandler.handleFavoriteDApps(result: .success(changes))
             return
         }
@@ -51,8 +50,7 @@ extension DAppLocalStorageSubscriber {
     func subscribeToAuthorizedDApps(by metaId: String) -> StreamableProvider<DAppSettings> {
         let provider = dAppsLocalSubscriptionFactory.getAuthorizedProvider(for: metaId)
 
-        let updateClosure = {
-            [weak self] (changes: [DataProviderChange<DAppSettings>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DAppSettings>]) in
             self?.dappsLocalSubscriptionHandler.handleAuthorizedDApps(result: .success(changes), for: metaId)
             return
         }

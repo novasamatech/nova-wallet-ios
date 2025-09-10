@@ -104,30 +104,20 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonAdvanced(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAdvanced()
 
         let substrateCryptoView = rootView.substrateCryptoTypeView.actionControl.contentView
-        substrateCryptoView?.titleLabel.text = R.string.localizable.commonCryptoTypeSubstrate(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        substrateCryptoView?.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCryptoTypeSubstrate()
 
-        rootView.substrateTitleLabel.text = R.string.localizable.commonSecretDerivationPathSubstrate(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.substrateTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSecretDerivationPathSubstrate()
 
         let ethereumCryptoView = rootView.ethereumCryptoTypeView.actionControl.contentView
-        ethereumCryptoView?.titleLabel.text = R.string.localizable.commonCryptoTypeEthereum(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        ethereumCryptoView?.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCryptoTypeEthereum()
 
-        rootView.ethereumTitleLabel.text = R.string.localizable.commonSecretDerivationPathEthereum(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.ethereumTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSecretDerivationPathEthereum()
 
         if let applyButton = rootView.applyButton {
-            applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply()
         }
     }
 

@@ -54,7 +54,7 @@ final class YourWalletsPresenter {
             )
         }
 
-        let title = R.string.localizable.assetsSelectSendYourWallets(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.assetsSelectSendYourWallets()
         view?.update(viewModel: sections)
         view?.update(header: title)
     }
@@ -83,30 +83,22 @@ final class YourWalletsPresenter {
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
-                title: R.string.localizable.commonLedgerLegacy(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedgerLegacy().uppercased(),
                 icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
-                title: R.string.localizable.commonProxieds(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonProxieds().uppercased(),
                 icon: R.image.iconProxy()
             )
         case .multisig:
             return .init(
-                title: R.string.localizable.commonMultisig(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonMultisig().uppercased(),
                 icon: R.image.iconMultisig()
             )
         case .genericLedger:
             return .init(
-                title: R.string.localizable.commonLedger(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedger().uppercased(),
                 icon: R.image.iconLedger()
             )
         }
@@ -121,7 +113,7 @@ final class YourWalletsPresenter {
         let metaId = response.metaAccount.metaId
         guard let chainAccountResponse = response.chainAccountResponse,
               let displayAddress = try? chainAccountResponse.chainAccount.toDisplayAddress() else {
-            let message = R.string.localizable.accountNotFoundCaption(preferredLanguages: selectedLocale.rLanguages)
+            let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountNotFoundCaption()
             return .warning(.init(metaId: metaId, accountName: name, warning: message, imageViewModel: imageViewModel))
         }
 

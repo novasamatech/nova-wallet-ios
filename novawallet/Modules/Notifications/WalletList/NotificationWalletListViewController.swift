@@ -38,9 +38,7 @@ final class NotificationWalletListViewController: WalletsListViewController<
     override func setupLocalization() {
         super.setupLocalization()
 
-        rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
         updateActionView()
     }
 
@@ -65,16 +63,11 @@ final class NotificationWalletListViewController: WalletsListViewController<
     private func updateActionView() {
         if isActionEnabled {
             rootView.actionView.actionButton.applyDefaultStyle()
-            rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.actionView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
         } else {
             rootView.actionView.actionButton.applyDisabledStyle()
 
-            let title = R.string.localizable.notificationsWalletListSelectionHint(
-                format: 1,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsWalletListSelectionHint(format: 1)
 
             rootView.actionView.actionButton.imageWithTitleView?.title = title
         }

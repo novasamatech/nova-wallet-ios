@@ -135,24 +135,15 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        detailsView.titleControl.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsTitle()
 
-        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
-            preferredLanguages: locale.rLanguages)
+        rateCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
 
-        routeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsRoute(
-            preferredLanguages: locale.rLanguages
-        )
+        routeCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()
 
-        execTimeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsExecTime(
-            preferredLanguages: locale.rLanguages
-        )
+        execTimeCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsExecTime()
 
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
-            preferredLanguages: locale.rLanguages
-        )
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsTotalFee()
 
         rateCell.titleButton.invalidateLayout()
         routeCell.titleButton.invalidateLayout()

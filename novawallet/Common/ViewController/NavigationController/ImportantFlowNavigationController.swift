@@ -38,7 +38,7 @@ extension ImportantFlowNavigationController: ModalCardPresentationControllerDele
         let languages = localizationManager.selectedLocale.rLanguages
 
         let action = AlertPresentableAction(
-            title: R.string.localizable.commonCancelOperationAction(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonCancelOperationAction(),
             style: .destructive
         ) { [weak self] in
             self?.dismiss(animated: true, completion: nil)
@@ -46,10 +46,10 @@ extension ImportantFlowNavigationController: ModalCardPresentationControllerDele
         }
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.commonCancelOperationMessage(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonCancelOperationMessage(),
             message: nil,
             actions: [action],
-            closeAction: R.string.localizable.commonKeepEditingAction(preferredLanguages: languages)
+            closeAction: R.string(preferredLanguages: languages).localizable.commonKeepEditingAction()
         )
 
         present(viewModel: viewModel, style: .actionSheet, from: self)

@@ -37,39 +37,59 @@ protocol BaseErrorPresentable {
 
 extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentAmountTooHigh(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable
-            .commonNotEnoughBalanceMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNotEnoughBalanceMessage()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentFeeNotReceived(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.feeNotYetLoadedMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.feeNotYetLoadedTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.feeNotYetLoadedMessage()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.feeNotYetLoadedTitle()
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentExtrinsicFailed(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.commonTransactionFailed(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonTransactionFailed()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentFeeTooHigh(from view: ControllerBackedProtocol, balance: String, fee: String, locale: Locale?) {
-        let message = R.string.localizable.commonNotEnoughFeeMessage_v380(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNotEnoughFeeMessage_v380(
             fee,
-            balance,
-            preferredLanguages: locale?.rLanguages
+            balance
         )
 
-        let title = R.string.localizable.commonNotEnoughFeeTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNotEnoughFeeTitle()
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -81,22 +101,25 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         maxClosure: (() -> Void)?,
         locale: Locale?
     ) {
-        let message = R.string.localizable.commonUseMaxDueFeeMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonUseMaxDueFeeMessage(
             available,
-            fee,
-            preferredLanguages: locale?.rLanguages
+            fee
         )
 
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonInsufficientBalance()
 
         if let maxClosure {
-            let cancelTitle = R.string.localizable.commonCancel(
-                preferredLanguages: locale?.rLanguages
-            )
+            let cancelTitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonCancel()
 
-            let maxTitle = R.string.localizable.swipeGovAmountAlertUseMax(
-                preferredLanguages: locale?.rLanguages
-            )
+            let maxTitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swipeGovAmountAlertUseMax()
 
             let viewModel = AlertPresentableViewModel(
                 title: title,
@@ -110,7 +133,9 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
 
             present(viewModel: viewModel, style: .alert, from: view)
         } else {
-            let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+            let closeAction = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonClose()
 
             present(message: message, title: title, closeAction: closeAction, from: view)
         }
@@ -121,10 +146,12 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable
-            .commonExistentialWarningTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .commonExistentialWarningMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonExistentialWarningTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonExistentialWarningMessage_v2_2_0()
 
         presentWarning(
             for: title,
@@ -142,14 +169,16 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let proceedTitle = R.string.localizable
-            .commonProceed(preferredLanguages: locale?.rLanguages)
+        let proceedTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonProceed()
         let proceedAction = AlertPresentableAction(title: proceedTitle) {
             action()
         }
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale?.rLanguages)
+        let closeTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonCancel()
 
         let viewModel = AlertPresentableViewModel(
             title: title,
@@ -166,16 +195,17 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     }
 
     func presentInvalidAddress(from view: ControllerBackedProtocol, chainName: String, locale: Locale?) {
-        let title = R.string.localizable.commonValidationInvalidAddressTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonValidationInvalidAddressTitle()
 
-        let message = R.string.localizable.commonInvalidAddressFormat(
-            chainName,
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonInvalidAddressFormat(chainName)
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -185,11 +215,17 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         onContinue: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.sendSystemAccountTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.sendSystemAccountMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.sendSystemAccountTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.sendSystemAccountMessage()
 
         let continueAction = AlertPresentableAction(
-            title: R.string.localizable.commonContinue(preferredLanguages: locale?.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonContinue(),
             style: .destructive
         ) {
             onContinue()
@@ -199,7 +235,9 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
             title: title,
             message: message,
             actions: [continueAction],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+            closeAction: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonCancel()
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
@@ -212,15 +250,20 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         needToAddBalance: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.transactionMinBalanceViolationMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.amountTooLow()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.transactionMinBalanceViolationMessage(
             minBalanceForOperation,
             currentBalance,
-            needToAddBalance,
-            preferredLanguages: locale?.rLanguages
+            needToAddBalance
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

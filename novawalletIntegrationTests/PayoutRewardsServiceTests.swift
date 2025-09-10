@@ -6,11 +6,10 @@ import Operation_iOS
 @testable import novawallet
 
 class PayoutRewardsServiceTests: XCTestCase {
-    
     func testPayoutsForAzero() throws {
         let selectedAccount = "5HKcmzDLApS5xERzruR6qwiLWjeVyg1RVQmFNoM44Gtni7SX"
         let chainId = KnowChainId.alephZero
-        
+
         do {
             let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
             Logger.shared.info("Payouts: \(payouts)")
@@ -18,11 +17,11 @@ class PayoutRewardsServiceTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testWestendNominator() throws {
         let selectedAccount = "5HKPqdbQGZePdoFKzcjXXHEbFhfGCjFpmGDmcBLnGMXSKAnN"
         let chainId = KnowChainId.westend
-        
+
         do {
             let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
             Logger.shared.info("Payouts: \(payouts)")
@@ -30,11 +29,11 @@ class PayoutRewardsServiceTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testWestendValidator() throws {
         let selectedAccount = "5CFPcUJgYgWryPaV1aYjSbTpbTLu42V32Ytw1L9rfoMAsfGh"
         let chainId = KnowChainId.westend
-        
+
         do {
             let payouts = try fetchValidatorPayout(for: selectedAccount, chainId: chainId)
             Logger.shared.info("Payouts: \(payouts)")
@@ -42,11 +41,11 @@ class PayoutRewardsServiceTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testPolkadotNominator() throws {
         let selectedAccount = "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD"
         let chainId = KnowChainId.polkadot
-        
+
         do {
             let payouts = try fetchNominatorPayout(for: selectedAccount, chainId: chainId)
             Logger.shared.info("Payouts: \(payouts)")
@@ -54,7 +53,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     private func fetchNominatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
         let operationQueue = OperationQueue()
         let operationManager = OperationManager(operationQueue: operationQueue)
@@ -83,7 +82,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
         )
-        
+
         let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
@@ -91,12 +90,12 @@ class PayoutRewardsServiceTests: XCTestCase {
             requestFactory: storageRequestFactory,
             operationQueue: operationQueue
         )
-        
+
         let exposureFacade = StakingValidatorExposureFacade(
             operationQueue: operationQueue,
             requestFactory: storageRequestFactory
         )
-        
+
         let service = PayoutRewardsService(
             selectedAccountAddress: selectedAccount,
             chainFormat: chainAsset.chain.chainFormat,
@@ -113,12 +112,12 @@ class PayoutRewardsServiceTests: XCTestCase {
         )
 
         let wrapper = service.fetchPayoutsOperationWrapper()
-        
+
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-        
+
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
-    
+
     private func fetchValidatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -144,7 +143,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
         )
-        
+
         let payoutInfoFactory = ValidatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
@@ -152,12 +151,12 @@ class PayoutRewardsServiceTests: XCTestCase {
             requestFactory: storageRequestFactory,
             operationQueue: operationQueue
         )
-        
+
         let exposureFacade = StakingValidatorExposureFacade(
             operationQueue: operationQueue,
             requestFactory: storageRequestFactory
         )
-        
+
         let service = PayoutRewardsService(
             selectedAccountAddress: selectedAccount,
             chainFormat: chainAsset.chain.chainFormat,
@@ -174,9 +173,9 @@ class PayoutRewardsServiceTests: XCTestCase {
         )
 
         let wrapper = service.fetchPayoutsOperationWrapper()
-        
+
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-        
+
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

@@ -81,10 +81,8 @@ final class StakingSetupAmountPresenter {
     }
 
     private func provideTitle() {
-        let title = R.string.localizable.stakingStakeFormat(
-            chainAsset.assetDisplayInfo.symbol,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingStakeFormat(chainAsset.assetDisplayInfo.symbol)
         view?.didReceive(title: title)
     }
 

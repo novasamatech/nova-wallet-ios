@@ -49,21 +49,22 @@ extension ReferendumsModelFactory {
             let positionString = formatter.string(from: (position.index + 1) as NSNumber) ?? ""
             let totalString = formatter.string(from: position.total as NSNumber) ?? ""
 
-            let queueString = R.string.localizable.govInQueueCounter(
-                positionString,
-                totalString,
+            let queueString = R.string(
                 preferredLanguages: locale.rLanguages
+            ).localizable.govInQueueCounter(
+                positionString,
+                totalString
             )
 
-            let prefixTitle = R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+            let prefixTitle = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.governanceReferendumsStatusPreparingInqueue()
 
             return prefixTitle + " " + queueString
         } else {
-            return R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.governanceReferendumsStatusPreparingInqueue()
         }
     }
 
@@ -71,9 +72,13 @@ extension ReferendumsModelFactory {
         if model.inQueue {
             return createInQueueFormatting(for: model.inQueuePosition, locale: locale)
         } else if model.deposit == nil {
-            return Strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsTimeWaitingDeposit()
         } else {
-            return Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusPreparing()
         }
     }
 
@@ -172,8 +177,12 @@ extension ReferendumsModelFactory {
         )
 
         let statusName = isPassing ?
-            Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-            Strings.governanceReferendumsStatusDeciding(preferredLanguages: locale.rLanguages)
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusPassing() :
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusDeciding()
 
         let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .neutral
         let yourVotesModel = createVotesViewModel(
@@ -220,7 +229,9 @@ extension ReferendumsModelFactory {
             locale: locale
         )
 
-        let title = Strings.governanceReferendumsStatusApproved(preferredLanguages: locale.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.governanceReferendumsStatusApproved()
 
         let yourVotesModel = createVotesViewModel(
             from: params.onchainVotes,

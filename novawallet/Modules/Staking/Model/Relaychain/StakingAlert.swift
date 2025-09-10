@@ -38,17 +38,17 @@ extension StakingAlert {
         case let .nominatorChangeValidators(localizedTitle, _):
             return localizedTitle.value(for: locale)
         case .nominatorAllOversubscribed:
-            return R.string.localizable.stakingChangeYourValidators(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingChangeYourValidators()
         case .nominatorLowStake:
-            return R.string.localizable.stakingBondMoreTokens(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondMoreTokens()
         case .redeemUnbonded:
-            return R.string.localizable.stakingRedeemUnbondedTokens(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingRedeemUnbondedTokens()
         case .bondedSetValidators:
-            return R.string.localizable.stakingSetValidatorsTitle(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetValidatorsTitle()
         case .waitingNextEra:
-            return R.string.localizable.stakingNominatorStatusAlertWaitingMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingNominatorStatusAlertWaitingMessage()
         case .rebag:
-            return R.string.localizable.stakingImprovements(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingImprovements()
         }
     }
 
@@ -57,18 +57,17 @@ extension StakingAlert {
         case let .nominatorChangeValidators(_, localizedString):
             return localizedString.value(for: locale)
         case .nominatorAllOversubscribed:
-            return R.string.localizable
-                .stakingYourOversubscribedMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourOversubscribedMessage()
         case let .nominatorLowStake(localizedString):
             return localizedString.value(for: locale)
         case let .redeemUnbonded(localizedString):
             return localizedString.value(for: locale)
         case .bondedSetValidators:
-            return R.string.localizable.stakingSetValidatorsMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetValidatorsMessage()
         case .waitingNextEra:
-            return R.string.localizable.stakingAlertStartNextEraMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingAlertStartNextEraMessage()
         case .rebag:
-            return R.string.localizable.stakingRebagAlertMessage(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebagAlertMessage()
         }
     }
 }

@@ -47,9 +47,7 @@ class NetworkNodeBasePresenter {
         let title: String = if completed {
             completeButtonTitle()
         } else {
-            R.string.localizable.networkNodeAddButtonEnterDetails(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeAddButtonEnterDetails()
         }
 
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
@@ -72,7 +70,7 @@ class NetworkNodeBasePresenter {
     func provideNameViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialName ?? "",
-            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages),
+            placeholder: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonName(),
             spacesAllowed: true
         )
         view?.didReceiveName(viewModel: inputViewModel)
@@ -114,9 +112,7 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
     }
 
     func didReceive(_ error: NetworkNodeBaseInteractorError) {
-        let close = R.string.localizable.commonClose(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let close = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
 
         let errorContent = error.toErrorContent(for: selectedLocale)
 

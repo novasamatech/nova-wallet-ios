@@ -159,12 +159,10 @@ extension ValidatorSearchViewController: EmptyStateDataSource {
 
         if viewModel != nil {
             emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable
-                .stakingValidatorSearchEmptyTitle(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorSearchEmptyTitle()
         } else {
             emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable
-                .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchStartTitle_v2_2_0()
         }
 
         emptyView.titleColor = R.color.colorTextSecondary()!
@@ -205,14 +203,11 @@ extension ValidatorSearchViewController: CustomValidatorCellDelegate {
 extension ValidatorSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-            rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.searchByAddressNamePlaceholder()
 
-            navigationItem.rightBarButtonItem?.title = R.string.localizable
-                .commonDone(preferredLanguages: selectedLocale.rLanguages)
+            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
         }
     }
 }

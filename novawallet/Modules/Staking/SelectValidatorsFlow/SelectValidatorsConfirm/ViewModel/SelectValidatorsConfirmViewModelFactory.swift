@@ -18,28 +18,17 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
 
     func createStartStakingHints(from duration: StakingDuration) -> LocalizableResource<[String]> {
         LocalizableResource { locale in
-            let eraDurationString = R.string.localizable.commonHoursFormat(
-                format: duration.era.hoursFromSeconds,
-                preferredLanguages: locale.rLanguages
-            )
+            let eraDurationString = R.string(preferredLanguages: locale.rLanguages).localizable.commonHoursFormat(format: duration.era.hoursFromSeconds)
 
             let unlockingDurationString = duration.unlocking.localizedDaysHours(for: locale)
 
             return [
-                R.string.localizable.stakingHintRewardsFormat_v2_2_0(
-                    eraDurationString,
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRewardsFormat_v2_2_0(eraDurationString),
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintUnstakeFormat_v2_2_0(
+                    "~\(unlockingDurationString)"
                 ),
-                R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                    "~\(unlockingDurationString)",
-                    preferredLanguages: locale.rLanguages
-                ),
-                R.string.localizable.stakingHintNoRewards_v2_2_0(
-                    preferredLanguages: locale.rLanguages
-                ),
-                R.string.localizable.stakingHintRedeem_v2_2_0(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintNoRewards_v2_2_0(),
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRedeem_v2_2_0()
             ]
         }
     }
@@ -47,9 +36,7 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
     func createChangeValidatorsHints() -> LocalizableResource<[String]> {
         LocalizableResource { locale in
             [
-                R.string.localizable.stakingYourValidatorsChangingTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourValidatorsChangingTitle()
             ]
         }
     }

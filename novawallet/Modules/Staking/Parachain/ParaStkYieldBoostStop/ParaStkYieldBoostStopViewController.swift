@@ -48,26 +48,22 @@ final class ParaStkYieldBoostStopViewController: UIViewController, ViewHolder, I
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonYieldBoost(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.commonYieldBoost()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.senderCell.titleLabel.text = R.string.localizable.commonSender(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.senderCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonSender()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string.localizable.parachainStakingCollator(
-            preferredLanguages: languages
-        )
+        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.parachainStakingCollator()
 
-        rootView.stakingTypeCell.titleLabel.text = R.string.localizable.stakingTitle(
-            preferredLanguages: languages
-        )
+        rootView.stakingTypeCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingTitle()
 
         rootView.stakingTypeCell.bind(
-            details: R.string.localizable.withoutYieldBoost(preferredLanguages: languages)
+            details: R.string(preferredLanguages: languages).localizable.withoutYieldBoost()
         )
 
-        let title = R.string.localizable.commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
 
         rootView.actionLoadableView.actionButton.applyState(title: title, enabled: true)
     }

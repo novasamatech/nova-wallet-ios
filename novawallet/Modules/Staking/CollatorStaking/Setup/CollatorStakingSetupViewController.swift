@@ -49,27 +49,17 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
 
         setupAmountInputAccessoryView()
 
-        rootView.collatorTitleLabel.text = R.string.localizable.parachainStakingCollator(
-            preferredLanguages: languages
-        )
+        rootView.collatorTitleLabel.text = R.string(preferredLanguages: languages).localizable.parachainStakingCollator()
 
         applyCollator(viewModel: collatorViewModel)
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: languages
-        )
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
-            preferredLanguages: languages
-        )
+        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonAvailablePrefix()
 
-        rootView.rewardsView.titleLabel.text = R.string.localizable.stakingEstimatedEarnings(
-            preferredLanguages: languages
-        )
+        rootView.rewardsView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingEstimatedEarnings()
 
-        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
-            preferredLanguages: languages
-        )
+        rootView.minStakeView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainMinimumStakeTitle()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -81,8 +71,7 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .parachainStakingHintSelectCollator(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingHintSelectCollator()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -92,8 +81,7 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAmount()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -102,9 +90,7 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 
@@ -127,9 +113,7 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             let emptyViewModel = AccountDetailsSelectionViewModel(
                 displayAddress: DisplayAddressViewModel(
                     address: "",
-                    name: R.string.localizable.parachainStakingSelectCollator(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    name: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingSelectCollator(),
                     imageViewModel: nil
                 ),
                 details: nil
@@ -142,10 +126,8 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
     private func applyRewards(viewModel: StakingRewardInfoViewModel) {
         rootView.rewardsView.priceLabel.text = viewModel.amountViewModel.price
         rootView.rewardsView.incomeLabel.text = viewModel.returnPercentage
-        rootView.rewardsView.amountLabel.text = R.string.localizable.parachainStakingRewardsFormat(
-            viewModel.amountViewModel.amount,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.rewardsView.amountLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parachainStakingRewardsFormat(viewModel.amountViewModel.amount)
 
         rootView.rewardsView.setNeedsLayout()
     }

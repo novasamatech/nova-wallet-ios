@@ -50,22 +50,19 @@ final class CollatorStakingSelectPresenter {
 
         let languages = selectedLocale.rLanguages
 
-        let title = R.string.localizable.commonParastkCollatorsCount(
-            countString ?? "",
-            preferredLanguages: languages
-        )
+        let title = R.string(preferredLanguages: languages).localizable.commonParastkCollatorsCount(countString ?? "")
 
         let subtitle: String
 
         switch sorting {
         case .rewards:
-            subtitle = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
+            subtitle = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
         case .minStake:
-            subtitle = R.string.localizable.stakingMainMinimumStakeTitle(preferredLanguages: languages)
+            subtitle = R.string(preferredLanguages: languages).localizable.stakingMainMinimumStakeTitle()
         case .totalStake:
-            subtitle = R.string.localizable.stakingValidatorTotalStake(preferredLanguages: languages)
+            subtitle = R.string(preferredLanguages: languages).localizable.stakingValidatorTotalStake()
         case .ownStake:
-            subtitle = R.string.localizable.commonStakingOwnStake(preferredLanguages: languages)
+            subtitle = R.string(preferredLanguages: languages).localizable.commonStakingOwnStake()
         }
 
         return TitleWithSubtitleViewModel(title: title, subtitle: subtitle)
@@ -111,7 +108,7 @@ final class CollatorStakingSelectPresenter {
 
         switch sorting {
         case .rewards:
-            let title = R.string.localizable.commonMinStakeColumn(preferredLanguages: languages)
+            let title = R.string(preferredLanguages: languages).localizable.commonMinStakeColumn()
             let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
 
             return TitleWithSubtitleViewModel(
@@ -119,7 +116,7 @@ final class CollatorStakingSelectPresenter {
                 subtitle: amount
             )
         case .minStake, .ownStake, .totalStake:
-            let title = R.string.localizable.commonRewardsColumn(preferredLanguages: languages)
+            let title = R.string(preferredLanguages: languages).localizable.commonRewardsColumn()
 
             let rewards = collatorInfo.apr.flatMap {
                 percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
@@ -196,9 +193,7 @@ final class CollatorStakingSelectPresenter {
 
             view?.didReceive(state: .loaded(viewModel: viewModel))
         } catch {
-            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorNoDataRetrieved()
 
             view?.didReceive(state: .error(errorDescription))
 

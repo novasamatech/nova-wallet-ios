@@ -22,7 +22,7 @@ final class DAppSettingsPresenter {
             return
         }
 
-        let title = R.string.localizable.dappSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappSettingsTitle()
         view.update(title: title)
         view.update(viewModels: [
             .desktopModel(.init(title: desktopTitleModel, isOn: state.desktopMode))
@@ -30,7 +30,7 @@ final class DAppSettingsPresenter {
     }
 
     private var desktopTitleModel: TitleIconViewModel {
-        let title = R.string.localizable.dappSettingsModeDesktop(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappSettingsModeDesktop()
         let icon = R.image.iconDesktopMode()
 
         return .init(title: title, icon: icon)

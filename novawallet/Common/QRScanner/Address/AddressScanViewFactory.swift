@@ -7,15 +7,15 @@ struct AddressScanViewFactory {
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonAddressScanTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonAddressScanTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.commonAddressScanMessage(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonAddressScanMessage()
         }
 
         let qrExtractionError = LocalizableResource { locale in
-            R.string.localizable.commonAddressScanError(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonAddressScanError()
         }
 
         return createView(
@@ -32,15 +32,15 @@ struct AddressScanViewFactory {
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.recepientScanTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.recepientScanTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.recepientScanMessage(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.recepientScanMessage()
         }
 
         let qrExtractionError = LocalizableResource { locale in
-            R.string.localizable.recepientScanError(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.recepientScanError()
         }
 
         return createView(

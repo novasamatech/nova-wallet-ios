@@ -148,9 +148,8 @@ private extension CommonMultisigHandler {
 
         guard let callData = payload.callData else {
             let mapOperation = ClosureOperation<NotificationContentResult> {
-                let unknownOperationBody = R.string.localizable.pushNotificationMultisigUnknownBody(
-                    chain.name.capitalized,
-                    preferredLanguages: self.locale.rLanguages
+                let unknownOperationBody = R.string(preferredLanguages: self.locale.rLanguages).localizable.pushNotificationMultisigUnknownBody(
+                    chain.name.capitalized
                 )
                 let params = try notificationParamsOperation.extractNoCancellableResultData()
                 let title = self.createTitle(params: params)
@@ -197,9 +196,8 @@ private extension CommonMultisigHandler {
 
     func createSubtitle(with walletName: String?) -> String {
         if let walletName {
-            R.string.localizable.pushNotificationCommonMultisigSubtitle(
-                walletName,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationCommonMultisigSubtitle(
+                walletName
             )
         } else {
             ""
@@ -231,7 +229,7 @@ private extension CommonMultisigHandler {
         }
 
         let delegatedAccountPart = [
-            R.string.localizable.pushNotificationOnBehalfOf(preferredLanguages: locale.rLanguages),
+            R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationOnBehalfOf(),
             delegatedNameOrAddress
         ].joined(with: .space)
 
@@ -296,11 +294,10 @@ private extension CommonMultisigHandler {
             let destination
         else { return "" }
 
-        return R.string.localizable.pushNotificationMultisigTransferBody(
+        return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationMultisigTransferBody(
             amount,
             destination,
-            transfer.asset.chain.name.capitalized,
-            preferredLanguages: locale.rLanguages
+            transfer.asset.chain.name.capitalized
         )
     }
 
@@ -308,10 +305,9 @@ private extension CommonMultisigHandler {
         for batch: FormattedCall.Batch,
         chain: ChainModel
     ) -> String {
-        R.string.localizable.pushNotificationMultisigGeneralBody(
+        R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationMultisigGeneralBody(
             batch.type.fullModuleCallDescription.value(for: locale),
-            chain.name.capitalized,
-            preferredLanguages: locale.rLanguages
+            chain.name.capitalized
         )
     }
 
@@ -319,10 +315,9 @@ private extension CommonMultisigHandler {
         for generalDefinition: FormattedCall.General,
         chain: ChainModel
     ) -> String {
-        R.string.localizable.pushNotificationMultisigGeneralBody(
+        R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationMultisigGeneralBody(
             createModuleCallInfo(for: generalDefinition.callPath),
-            chain.name.capitalized,
-            preferredLanguages: locale.rLanguages
+            chain.name.capitalized
         )
     }
 

@@ -14,19 +14,20 @@ extension AccountCreationError: ErrorContentConvertible {
     private func getTitle(for locale: Locale?) -> String {
         switch self {
         case .unsupportedNetwork:
-            return R.string.localizable
-                .commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
         default:
-            return R.string.localizable
-                .commonInvalidPathTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonInvalidPathTitle_v2_2_0()
         }
     }
 
     private func getMessage(for locale: Locale?) -> String {
         switch self {
         case .unsupportedNetwork:
-            return R.string.localizable
-                .commonUnsupportedNetworkMessage(preferredLanguages: locale?.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonUnsupportedNetworkMessage()
 
         case .invalidDerivationHardSoftNumericPassword,
              .invalidDerivationHardSoftPassword,
@@ -34,8 +35,9 @@ extension AccountCreationError: ErrorContentConvertible {
              .invalidDerivationHardSoftNumeric,
              .invalidDerivationHardSoft,
              .invalidDerivationHard:
-            return R.string.localizable
-                .commonInvalidDerivationPathMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonInvalidDerivationPathMessage_v2_2_0()
         }
     }
 

@@ -35,20 +35,18 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
 
-        rootView.titleLabel.text = strings.stakingSetupProxyTitle(token, preferredLanguages: languages)
-        rootView.proxyTitleLabel.text = strings.stakingSetupProxyAuthority(preferredLanguages: languages)
+        rootView.titleLabel.text = strings.stakingSetupProxyTitle(token)
+        rootView.proxyTitleLabel.text = strings.stakingSetupProxyAuthority()
 
-        let selectYourWalletTitle = strings.assetsSelectSendYourWallets(preferredLanguages: languages)
+        let selectYourWalletTitle = strings.assetsSelectSendYourWallets()
         rootView.yourWalletsControl.bind(model: .init(
             name: selectYourWalletTitle,
             image: R.image.iconUsers()
         ))
 
-        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = strings.stakingSetupProxyDeposit(
-            preferredLanguages: languages
-        )
+        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = strings.stakingSetupProxyDeposit()
         rootView.feeView.locale = selectedLocale
         rootView.accountInputView.locale = selectedLocale
     }
@@ -104,8 +102,9 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAddress(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAddress()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -114,9 +113,9 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 
@@ -151,9 +150,10 @@ extension StakingSetupProxyViewController: StakingSetupProxyViewProtocol {
 
     func didReceive(token: String) {
         self.token = token
-        rootView.titleLabel.text = R.string.localizable.stakingSetupProxyTitle(
-            token,
+        rootView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingSetupProxyTitle(
+            token
         )
     }
 

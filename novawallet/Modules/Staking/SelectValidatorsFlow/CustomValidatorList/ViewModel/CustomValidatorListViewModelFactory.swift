@@ -19,24 +19,17 @@ final class CustomValidatorListViewModelFactory {
         filter: CustomValidatorListFilter,
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
-        let title = R.string.localizable
-            .stakingCustomHeaderValidatorsTitle(
-                displayValidatorsCount,
-                totalValidatorsCount,
-                preferredLanguages: locale.rLanguages
-            )
+        let title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingCustomHeaderValidatorsTitle(displayValidatorsCount, totalValidatorsCount)
 
         let subtitle: String
         switch filter.sortedBy {
         case .estimatedReward:
-            subtitle = R.string.localizable
-                .stakingFilterTitleRewards(preferredLanguages: locale.rLanguages)
+            subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleRewards()
         case .ownStake:
-            subtitle = R.string.localizable
-                .stakingFilterTitleOwnStake(preferredLanguages: locale.rLanguages)
+            subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleOwnStake()
         case .totalStake:
-            subtitle = R.string.localizable
-                .stakingValidatorTotalStake(preferredLanguages: locale.rLanguages)
+            subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorTotalStake()
         }
 
         return TitleWithSubtitleViewModel(title: title, subtitle: subtitle)

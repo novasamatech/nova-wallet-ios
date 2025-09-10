@@ -127,19 +127,19 @@ final class CollatorStakingInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
     private func createOwnStakeTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.stakingValidatorOwnStake(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorOwnStake()
         }
     }
 
     private func createDelegatorsStakeTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonParastkDelegators(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonParastkDelegators()
         }
     }
 
     private func createTotalTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletTransferTotalTitle()
         }
     }
 

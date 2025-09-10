@@ -12,7 +12,7 @@ final class PushNotificationParsingTests: XCTestCase {
         XCTAssertEqual(settings.pushToken, "test-token")
         XCTAssertEqual(settings.wallets.count, 1)
     }
-    
+
     private func json(_ name: String) -> URL? {
         guard let path = Bundle(for: Self.self).path(forResource: name, ofType: "json") else {
             return nil

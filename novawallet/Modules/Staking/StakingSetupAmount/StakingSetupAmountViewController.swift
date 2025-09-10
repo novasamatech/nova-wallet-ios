@@ -54,13 +54,9 @@ final class StakingSetupAmountViewController: UIViewController, ViewHolder, Impo
     private func setupLocalization() {
         setupAmountInputAccessoryView(for: selectedLocale)
 
-        rootView.estimatedRewardsView.titleView.text = R.string.localizable.stakingEstimatedEarnings(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.estimatedRewardsView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingEstimatedEarnings()
 
-        rootView.estimatedRewardsView.detailsValueLabel.text = R.string.localizable.commonPerYear(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.estimatedRewardsView.detailsValueLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonPerYear()
     }
 
     private func setupHandlers() {

@@ -88,13 +88,9 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
 
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.searchBar.textField.placeholder = R.string.localizable.assetsSearchPlaceholder(
-            preferredLanguages: languages
-        )
+        rootView.searchBar.textField.placeholder = R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()
 
-        rootView.cancelButton?.imageWithTitleView?.title = R.string.localizable.commonCancel(
-            preferredLanguages: languages
-        )
+        rootView.cancelButton?.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonCancel()
 
         rootView.cancelButton?.invalidateLayout()
         localizableTitle.map {

@@ -5,15 +5,17 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     let feeResult: Result<ExtrinsicFeeProtocol, Error>
     let submittedModelResult: Result<ExtrinsicSubmittedModel, Error>
 
-    init(feeResult: Result<ExtrinsicFeeProtocol, Error>,
-         submittedModelResult: Result<ExtrinsicSubmittedModel, Error>) {
+    init(
+        feeResult: Result<ExtrinsicFeeProtocol, Error>,
+        submittedModelResult: Result<ExtrinsicSubmittedModel, Error>
+    ) {
         self.feeResult = feeResult
         self.submittedModelResult = submittedModelResult
     }
 
     func estimateFee(
-        _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn chainAssetId: ChainAssetId?,
+        _: @escaping ExtrinsicBuilderClosure,
+        payingIn _: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeClosure
     ) {
@@ -24,8 +26,8 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        payingIn chainAssetId: ChainAssetId?,
-        runningIn queue: DispatchQueue,
+        payingIn _: ChainAssetId?,
+        runningIn _: DispatchQueue,
         indexes: IndexSet,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
@@ -39,9 +41,9 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func estimateFeeWithSplitter(
-        _ splitter: ExtrinsicSplitting,
-        payingIn chainAssetId: ChainAssetId?,
-        runningIn queue: DispatchQueue,
+        _: ExtrinsicSplitting,
+        payingIn _: ChainAssetId?,
+        runningIn _: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
         let result = FeeIndexedExtrinsicResult.IndexedResult(index: 0, result: self.feeResult)
@@ -51,9 +53,9 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func submit(
-        _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn chainAssetId: ChainAssetId?,
-        signer: SigningWrapperProtocol,
+        _: @escaping ExtrinsicBuilderClosure,
+        payingIn _: ChainAssetId?,
+        signer _: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     ) {
@@ -63,27 +65,27 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func buildExtrinsic(
-        _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn chainAssetId: ChainAssetId?,
-        signer: SigningWrapperProtocol,
+        _: @escaping ExtrinsicBuilderClosure,
+        payingIn _: ChainAssetId?,
+        signer _: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicBuiltClosure
     ) {
         let builtResult = submittedModelResult.map { model in
             ExtrinsicBuiltModel(extrinsic: model.txHash, sender: model.sender)
         }
-        
+
         queue.async {
             completionClosure(builtResult)
         }
     }
 
     func submit(
-        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        payingIn chainAssetId: ChainAssetId?,
-        indexes: IndexSet,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
+        _: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn _: ChainAssetId?,
+        indexes _: IndexSet,
+        signer _: SigningWrapperProtocol,
+        runningIn _: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
         let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: submittedModelResult)
@@ -93,10 +95,10 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func submitWithTxSplitter(
-        _ txSplitter: ExtrinsicSplitting,
-        payingIn chainAssetId: ChainAssetId?,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
+        _: ExtrinsicSplitting,
+        payingIn _: ChainAssetId?,
+        signer _: SigningWrapperProtocol,
+        runningIn _: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
         let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: submittedModelResult)
@@ -106,10 +108,10 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func submitAndWatch(
-        _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn chainAssetId: ChainAssetId?,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
+        _: @escaping ExtrinsicBuilderClosure,
+        payingIn _: ChainAssetId?,
+        signer _: SigningWrapperProtocol,
+        runningIn _: DispatchQueue,
         subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
         notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
     ) {
@@ -128,27 +130,26 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         case let .failure(error):
             notificationClosure(.failure(error))
         }
-
     }
 
-    func cancelExtrinsicWatch(for identifier: UInt16) {}
+    func cancelExtrinsicWatch(for _: UInt16) {}
 }
 
 extension ExtrinsicServiceStub {
     static func dummy() -> ExtrinsicServiceStub {
-        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: .init(refTime: 10005000, proofSize: 0))
+        let fee = ExtrinsicFee(amount: 10_000_000_000, payer: nil, weight: .init(refTime: 10_005_000, proofSize: 0))
 
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
-        
+
         let chainAccount = AccountGenerator.generateSubstrateChainAccountResponse(
             for: KnowChainId.westend
         )
-        
+
         let submittedModel = ExtrinsicSubmittedModel(
             txHash: txHash,
             sender: .current(chainAccount)
         )
-        
+
         return ExtrinsicServiceStub(feeResult: .success(fee), submittedModelResult: .success(submittedModel))
     }
 }

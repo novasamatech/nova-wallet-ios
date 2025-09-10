@@ -6,7 +6,6 @@ import Cuckoo
 import Foundation_iOS
 
 class AccountImportTests: XCTestCase {
-
     func testMnemonicRestore() {
         // given
 
@@ -45,7 +44,7 @@ class AccountImportTests: XCTestCase {
             secretSource: .mnemonic(.appDefault),
             metadataFactory: WalletImportMetadataFactory()
         )
-        
+
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor
@@ -58,29 +57,29 @@ class AccountImportTests: XCTestCase {
         var usernameViewModel: InputViewModelProtocol?
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub).setSource(viewModel: any()).then { viewModel in
+            when(stub.setSource(viewModel: any())).then { viewModel in
                 sourceInputViewModel = viewModel
 
                 setupExpectation.fulfill()
             }
 
-            when(stub).setName(viewModel: any()).then { viewModel in
+            when(stub.setName(viewModel: any())).then { viewModel in
                 usernameViewModel = viewModel
 
                 setupExpectation.fulfill()
             }
 
-            when(stub).setSource(type: any()).thenDoNothing()
+            when(stub.setSource(type: any())).thenDoNothing()
 
-            when(stub).setShouldShowAdvancedSettings(any()).then { _ in }
+            when(stub.setShouldShowAdvancedSettings(any())).then { _ in }
         }
 
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).proceed(from: any()).then { _ in
+            when(stub.proceed(from: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -101,11 +100,15 @@ class AccountImportTests: XCTestCase {
 
         wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
 
-        _ = sourceInputViewModel?.inputHandler.didReceiveReplacement(expetedMnemonic,
-                                                                     for: NSRange(location: 0, length: 0));
+        _ = sourceInputViewModel?.inputHandler.didReceiveReplacement(
+            expetedMnemonic,
+            for: NSRange(location: 0, length: 0)
+        )
 
-        _ = usernameViewModel?.inputHandler.didReceiveReplacement(expectedUsername,
-                                                                  for: NSRange(location: 0, length: 0))
+        _ = usernameViewModel?.inputHandler.didReceiveReplacement(
+            expectedUsername,
+            for: NSRange(location: 0, length: 0)
+        )
 
         presenter.proceed()
 

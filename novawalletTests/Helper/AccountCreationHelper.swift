@@ -27,7 +27,8 @@ final class AccountCreationHelper {
             username: name,
             derivationPath: derivationPath,
             ethereumDerivationPath: ethereumPath,
-            cryptoType: cryptoType)
+            cryptoType: cryptoType
+        )
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
             .newSecretsMetaAccountOperation(request: request, mnemonic: mnemonic)
@@ -39,7 +40,7 @@ final class AccountCreationHelper {
 
         try selectMetaAccount(accountItem, settings: settings)
     }
-    
+
     static func addMnemonicChainAccount(
         to wallet: MetaAccountModel,
         chainId: ChainModel.Id,
@@ -56,13 +57,13 @@ final class AccountCreationHelper {
         } else {
             mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
         }
-        
+
         let request = ChainAccountImportMnemonicRequest(
             mnemonic: mnemonic.toString(),
             derivationPath: derivationPath,
             cryptoType: cryptoType
         )
-        
+
         let operation = MetaAccountOperationFactory(keystore: keychain)
             .replaceChainAccountOperation(
                 for: wallet,
@@ -71,13 +72,13 @@ final class AccountCreationHelper {
             )
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
-        
+
         let accountItem = try operation
             .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
         try selectMetaAccount(accountItem, settings: settings)
     }
-    
+
     static func addSeedChainAccount(
         to wallet: MetaAccountModel,
         chainId: ChainModel.Id,
@@ -92,7 +93,7 @@ final class AccountCreationHelper {
             derivationPath: derivationPath,
             cryptoType: cryptoType
         )
-        
+
         let operation = MetaAccountOperationFactory(keystore: keychain)
             .replaceChainAccountOperation(
                 for: wallet,
@@ -101,7 +102,7 @@ final class AccountCreationHelper {
             )
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
-        
+
         let accountItem = try operation
             .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
@@ -129,7 +130,7 @@ final class AccountCreationHelper {
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
         let accountItem = try operation
-        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -141,7 +142,7 @@ final class AccountCreationHelper {
         settings: SelectedWalletSettings
     ) throws {
         guard let url = Bundle(for: AccountCreationHelper.self)
-                .url(forResource: filename, withExtension: "json") else { return }
+            .url(forResource: filename, withExtension: "json") else { return }
 
         let data = try Data(contentsOf: url)
 
@@ -182,7 +183,7 @@ final class AccountCreationHelper {
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
         let accountItem = try operation
-        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -195,12 +196,12 @@ final class AccountCreationHelper {
         accountIndex: UInt32 = 0
     ) throws {
         let accountId = AccountId.random(of: 32)!
-        
+
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
             coin: app.coin,
             accountIndex: accountIndex
         ).build()
-        
+
         let chainAccount = ChainAccountModel(
             chainId: app.chainId,
             accountId: accountId,
@@ -209,7 +210,7 @@ final class AccountCreationHelper {
             proxy: nil,
             multisig: nil
         )
-        
+
         let metaAccount = MetaAccountModel(
             metaId: UUID().uuidString,
             name: username,
@@ -222,17 +223,17 @@ final class AccountCreationHelper {
             type: .ledger,
             multisig: nil
         )
-        
+
         let derivPathTag = KeystoreTagV2.substrateDerivationTagForMetaId(
             metaAccount.identifier,
             accountId: accountId
         )
-        
+
         try keychain.saveKey(derivationPath, with: derivPathTag)
-        
+
         try selectMetaAccount(metaAccount, settings: settings)
     }
-    
+
     static func createGenericLedgerWallet(
         keychain: KeystoreProtocol,
         settings: SelectedWalletSettings,
@@ -241,23 +242,23 @@ final class AccountCreationHelper {
         accountIndex: UInt32 = 0
     ) throws {
         let accountId = AccountId.random(of: 32)!
-        
+
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
             coin: GenericLedgerPolkadotApplication.coin,
             accountIndex: accountIndex
         ).build()
-        
+
         let factory = GenericLedgerWalletOperationFactory()
-        
+
         let substrate = PolkadotLedgerWalletModel.Substrate(
             accountId: accountId,
             publicKey: accountId,
             cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
             derivationPath: derivationPath
         )
-        
+
         let evm: PolkadotLedgerWalletModel.EVM?
-        
+
         if includesEvm {
             let evmPublicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
             let evmAddress = try evmPublicKey.ethereumAddressFromPublicKey()
@@ -269,7 +270,7 @@ final class AccountCreationHelper {
         } else {
             evm = nil
         }
-        
+
         let operation = factory.createSaveOperation(
             for: PolkadotLedgerWalletModel(
                 substrate: substrate,
@@ -279,14 +280,14 @@ final class AccountCreationHelper {
             keystore: keychain,
             settings: settings
         )
-        
+
         let operationQueue = OperationQueue()
-        
+
         operationQueue.addOperations([operation], waitUntilFinished: true)
-        
+
         _ = try operation.extractNoCancellableResultData()
     }
-    
+
     static func addGenericLedgerEvmAccountsInWallet(
         wallet: MetaAccountModel,
         keychain: KeystoreProtocol,
@@ -295,36 +296,36 @@ final class AccountCreationHelper {
         accountIndex: UInt32 = 0
     ) throws {
         let factory = GenericLedgerWalletOperationFactory()
-        
+
         let publicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
-        
+
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
             coin: GenericLedgerPolkadotApplication.coin,
             accountIndex: accountIndex
         ).build()
-        
+
         let ledgerAccount = try LedgerEvmAccount(ledgerData: publicKey)
-        
+
         let response = LedgerEvmAccountResponse(account: ledgerAccount, derivationPath: derivationPath)
-        
+
         let wrapper = factory.createUpdateEvmWrapper(
             for: response,
             wallet: wallet,
             keystore: keychain,
             repository: repository
         )
-        
+
         let operationQueue = OperationQueue()
-        
+
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-        
+
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
-        
+
         if wallet.metaId == settings.value?.metaId {
             settings.setup()
         }
     }
-    
+
     static func createWatchOnlyMetaAccount(
         from substrateAddress: AccountAddress,
         ethereumAddress: AccountAddress?,
@@ -336,20 +337,20 @@ final class AccountCreationHelper {
             substrateAddress: substrateAddress,
             evmAddress: ethereumAddress
         )
-        
+
         let factory = WatchOnlyWalletOperationFactory()
-        
+
         let operation = factory.newWatchOnlyWalletOperation(for: request)
-        
+
         let operationQueue = OperationQueue()
-        
+
         operationQueue.addOperation(operation)
-        
+
         let wallet = try operation.extractNoCancellableResultData()
-        
+
         try selectMetaAccount(wallet, settings: settings)
     }
-    
+
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {
         settings.save(value: accountItem)
         settings.setup()

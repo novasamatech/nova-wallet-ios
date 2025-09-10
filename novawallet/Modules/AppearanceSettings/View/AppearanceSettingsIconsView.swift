@@ -106,17 +106,11 @@ class AppearanceSettingsIconsView: UIView {
     func applyLocalization(for locale: Locale) {
         let languages = locale.rLanguages
 
-        tokenIconsSectionTitle.text = R.string.localizable.settingsAppearanceTokenIconsTitle(
-            preferredLanguages: languages
-        ).uppercased()
+        tokenIconsSectionTitle.text = R.string(preferredLanguages: languages).localizable.settingsAppearanceTokenIconsTitle().uppercased()
 
-        whiteOption.sView.text = R.string.localizable.settingsAppearanceTokenIconsOptionWhite(
-            preferredLanguages: languages
-        )
+        whiteOption.sView.text = R.string(preferredLanguages: languages).localizable.settingsAppearanceTokenIconsOptionWhite()
 
-        coloredOption.sView.text = R.string.localizable.settingsAppearanceTokenIconsOptionColored(
-            preferredLanguages: languages
-        )
+        coloredOption.sView.text = R.string(preferredLanguages: languages).localizable.settingsAppearanceTokenIconsOptionColored()
     }
 }
 

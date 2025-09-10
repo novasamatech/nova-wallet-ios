@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 final class MultistakingSyncTests: XCTestCase {
-
     func testAllStakableChainsSync() throws {
         let result = try performAllStakableOptionsSync(
             for: "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
@@ -12,7 +11,7 @@ final class MultistakingSyncTests: XCTestCase {
 
         Logger.shared.info("Result: \(result)")
     }
-    
+
     func testAllStakableChainsForPoolSync() throws {
         let result = try performAllStakableOptionsSync(
             for: "1SohJrC8gHwHeJT1nkSonEbMd6yrkJgw8PwGsXUrKw3YrEK",
@@ -56,7 +55,7 @@ final class MultistakingSyncTests: XCTestCase {
             repositoryFactory: multistakingRepositoryFactory,
             operationQueue: operationQueue
         )
-        
+
         let subqueryFactory = SubqueryMultistakingProxy(
             configProvider: GlobalConfigProvider(configUrl: ApplicationConfig.shared.globalConfigURL),
             operationQueue: operationQueue
@@ -74,7 +73,7 @@ final class MultistakingSyncTests: XCTestCase {
         // when
 
         let allStakableAssets = ChainsStore(chainRegistry: chainRegistry).getAllStakebleAssets()
-        let expectedOptions = Set(allStakableAssets.flatMap({ $0.chain.getAllStakingChainAssetOptions().map { $0.option } }))
+        let expectedOptions = Set(allStakableAssets.flatMap { $0.chain.getAllStakingChainAssetOptions().map(\.option) })
 
         let completionExpectation = XCTestExpectation()
 
@@ -83,8 +82,8 @@ final class MultistakingSyncTests: XCTestCase {
         syncService.subscribeSyncState(
             self,
             queue: nil
-        ) { (_, state) in
-            let allSynced = !state.isOffchainSyncing && state.isOnchainSyncing.values.allSatisfy({ !$0 })
+        ) { _, state in
+            let allSynced = !state.isOffchainSyncing && state.isOnchainSyncing.values.allSatisfy { !$0 }
             let allOptions = Set(state.isOnchainSyncing.keys)
 
             Logger.shared.info("State change: \(state)")
@@ -106,5 +105,4 @@ final class MultistakingSyncTests: XCTestCase {
 
         return try fetchOperation.extractNoCancellableResultData()
     }
-
 }

@@ -74,22 +74,16 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         switch viewModel.status {
         case .completed:
             detailsLabel.textColor = R.color.colorTextPositive()
-            detailsLabel.text = R.string.localizable.transactionStatusCompleted(
-                preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transactionStatusCompleted().uppercased()
             iconView.image = R.image.iconAlgoItem()
         case .pending:
             detailsLabel.textColor = R.color.colorTextSecondary()
-            detailsLabel.text = R.string.localizable.transactionStatusPending(
-                preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transactionStatusPending().uppercased()
             iconView.image = R.image.iconPending()?.withRenderingMode(.alwaysTemplate)
                 .tinted(with: R.color.colorIconSecondary()!)
         case .failed:
             detailsLabel.textColor = R.color.colorTextNegative()
-            detailsLabel.text = R.string.localizable.transactionStatusFailed(
-                preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transactionStatusFailed().uppercased()
             iconView.image = R.image.iconErrorFilled()
         }
     }
@@ -103,9 +97,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         transferView.bind(viewModel: viewModel, networkViewModel: networkViewModel)
 
         let sendButton = rootView.setupActionButton()
-        sendButton.imageWithTitleView?.title = R.string.localizable.txDetailsSendTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        sendButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.txDetailsSendTitle()
 
         transferView.senderView.addTarget(
             self,
@@ -272,9 +264,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         swapView.bind(viewModel: viewModel)
 
         let repeatOperationButton = rootView.setupActionButton()
-        repeatOperationButton.imageWithTitleView?.title = R.string.localizable.commonActionRepeatOperation(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        repeatOperationButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonActionRepeatOperation()
         swapView.rateCell.addTarget(
             self,
             action: #selector(actionRate),

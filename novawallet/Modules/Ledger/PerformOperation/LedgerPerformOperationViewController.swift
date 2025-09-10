@@ -37,16 +37,15 @@ class LedgerPerformOperationViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.headerView.valueTop.text = R.string.localizable.ledgerDiscoverTitle(preferredLanguages: languages)
+        rootView.headerView.valueTop.text = R.string(preferredLanguages: languages).localizable.ledgerDiscoverTitle()
 
         updateSubtitleLocalization()
     }
 
     private func updateSubtitleLocalization() {
         if let networkName = networkName {
-            rootView.headerView.valueBottom.text = R.string.localizable.ledgerDiscoverDetails(
-                networkName,
-                preferredLanguages: selectedLocale.rLanguages
+            rootView.headerView.valueBottom.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerDiscoverDetails(
+                networkName
             )
         }
     }

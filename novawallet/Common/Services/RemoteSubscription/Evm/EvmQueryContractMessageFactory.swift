@@ -1,6 +1,6 @@
 import Foundation
 import web3swift
-import Core
+import Web3Core
 
 protocol EvmQueryContractMessageFactoryProtocol: AnyObject {
     func erc20Balance(of holder: AccountAddress, contractAddress: AccountAddress) throws -> EthereumTransaction

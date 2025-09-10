@@ -31,30 +31,26 @@ final class ExportSeedViewFactory {
             presenter: presenter,
             localizationManager: localizationManager,
             exportTitle: LocalizableResource { locale in
-                R.string.localizable.exportSeedTitle(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.exportSeedTitle()
             },
             exportSubtitle: LocalizableResource { locale in
-                R.string.localizable.accountCreateDetails_v2_2_0(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.accountCreateDetails_v2_2_0()
             },
             exportHint: LocalizableResource { locale in
-                R.string.localizable.exportSeedHint(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.exportSeedHint()
             },
             sourceTitle: LocalizableResource { locale in
                 if chain.isEthereumBased {
-                    return R.string.localizable.secretTypePrivateKeyTitle(preferredLanguages: locale.rLanguages)
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypePrivateKeyTitle()
                 } else {
-                    return R.string.localizable.importRawSeed(preferredLanguages: locale.rLanguages)
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.importRawSeed()
                 }
             },
             sourceHint: LocalizableResource { locale in
                 if chain.isEthereumBased {
-                    return R.string.localizable.accountExportEthereumPrivateKeyPlaceholder(
-                        preferredLanguages: locale.rLanguages
-                    )
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.accountExportEthereumPrivateKeyPlaceholder()
                 } else {
-                    return R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                        preferredLanguages: locale.rLanguages
-                    )
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0()
                 }
             },
             actionTitle: nil,

@@ -13,17 +13,17 @@ extension SettingsSection {
     func title(for locale: Locale) -> String {
         switch self {
         case .general:
-            return R.string.localizable.settingsGeneral(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsGeneral().uppercased()
         case .preferences:
-            return R.string.localizable.settingsPreferences(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsPreferences().uppercased()
         case .security:
-            return R.string.localizable.settingsSecurity(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsSecurity().uppercased()
         case .community:
-            return R.string.localizable.settingsCommunity(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsCommunity().uppercased()
         case .support:
-            return R.string.localizable.settingsSupport(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.settingsSupport().uppercased()
         case .about:
-            return R.string.localizable.aboutTitle(preferredLanguages: locale.rLanguages).uppercased()
+            return R.string(preferredLanguages: locale.rLanguages).localizable.aboutTitle().uppercased()
         }
     }
 }

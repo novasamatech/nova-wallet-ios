@@ -20,7 +20,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
@@ -47,7 +47,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
@@ -68,7 +68,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
@@ -92,7 +92,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
@@ -120,7 +120,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
@@ -129,7 +129,7 @@ class CustomValidatorListComposerTests: XCTestCase {
         // given
         let generator = CustomValidatorListTestDataGenerator.self
         let allValidators = generator.createSelectedValidators(
-            from:  generator.goodValidators +
+            from: generator.goodValidators +
                 generator.badValidators +
                 generator.clusterValidators
         )
@@ -153,11 +153,11 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: [])
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
-    
+
     func testDefaultFilterWithPreferrences() {
         // given
         let generator = CustomValidatorListTestDataGenerator.self
@@ -165,9 +165,9 @@ class CustomValidatorListComposerTests: XCTestCase {
             from: generator.goodValidators +
                 generator.badValidators
         )
-        
+
         let preferences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
-        
+
         let expectedResult = (allValidators + preferences).sorted {
             $0.stakeReturn >= $1.stakeReturn
         }
@@ -179,11 +179,11 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: preferences)
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }
-    
+
     func testRecommendedFilterWithPreferrences() {
         // given
         let generator = CustomValidatorListTestDataGenerator.self
@@ -196,7 +196,7 @@ class CustomValidatorListComposerTests: XCTestCase {
         let goodValidators = generator.createSelectedValidators(from: generator.goodValidators)
 
         let preferrences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
-        
+
         let expectedResult = (goodValidators + preferrences).sorted {
             $0.stakeReturn >= $1.stakeReturn
         }
@@ -208,7 +208,7 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let result = composer.compose(from: allValidators, preferrences: preferrences)
 
-        //then
+        // then
 
         XCTAssertEqual(result, expectedResult)
     }

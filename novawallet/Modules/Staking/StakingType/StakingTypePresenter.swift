@@ -119,20 +119,16 @@ final class StakingTypePresenter {
 
     private func showDirectStakingNotAvailableAlert(minStake: String) {
         let languages = selectedLocale.rLanguages
-        let cancelActionTitle = R.string.localizable.commonBack(preferredLanguages: languages)
+        let cancelActionTitle = R.string(preferredLanguages: languages).localizable.commonBack()
         let cancelAction = AlertPresentableAction(title: cancelActionTitle, style: .cancel) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
 
-        let directStaking = R.string.localizable.stakingTypeDirect(preferredLanguages: languages)
+        let directStaking = R.string(preferredLanguages: languages).localizable.stakingTypeDirect()
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.stakingTypeDirectStakingAlertTitle(preferredLanguages: languages),
-            message: R.string.localizable.stakingTypeDirectStakingAlertMessage(
-                minStake,
-                directStaking,
-                preferredLanguages: languages
-            ),
+            title: R.string(preferredLanguages: languages).localizable.stakingTypeDirectStakingAlertTitle(),
+            message: R.string(preferredLanguages: languages).localizable.stakingTypeDirectStakingAlertMessage(minStake, directStaking),
             actions: [cancelAction],
             closeAction: nil
         )
@@ -142,15 +138,15 @@ final class StakingTypePresenter {
 
     private func showSaveChangesAlert() {
         let languages = selectedLocale.rLanguages
-        let closeActionTitle = R.string.localizable.commonClose(preferredLanguages: languages)
-        let cancelActionTitle = R.string.localizable.commonCancel(preferredLanguages: languages)
+        let closeActionTitle = R.string(preferredLanguages: languages).localizable.commonClose()
+        let cancelActionTitle = R.string(preferredLanguages: languages).localizable.commonCancel()
         let closeAction = AlertPresentableAction(title: closeActionTitle, style: .destructive) { [weak self] in
             self?.wireframe.complete(from: self?.view)
         }
 
         let viewModel = AlertPresentableViewModel(
             title: nil,
-            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            message: R.string(preferredLanguages: languages).localizable.commonCloseWhenChangesConfirmation(),
             actions: [closeAction],
             closeAction: cancelActionTitle
         )
@@ -160,7 +156,7 @@ final class StakingTypePresenter {
 
     private func presentAlreadyStakingAlert(for type: StakingTypeSelection) {
         let backAction = AlertPresentableAction(
-            title: R.string.localizable.commonBack(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBack(),
             style: .normal
         ) { [weak self] in
             self?.wireframe.complete(from: self?.view)
@@ -170,17 +166,13 @@ final class StakingTypePresenter {
 
         switch type {
         case .direct:
-            message = R.string.localizable.stakingStartAlreadyStakingDirect(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingDirect()
         case .nominationPool:
-            message = R.string.localizable.stakingStartAlreadyStakingPool(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingPool()
         }
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.stakingStartAlreadyStakingTitle(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingTitle(),
             message: message,
             actions: [backAction],
             closeAction: nil

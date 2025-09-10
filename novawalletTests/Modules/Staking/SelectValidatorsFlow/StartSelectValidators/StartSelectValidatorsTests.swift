@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import Cuckoo
 import Operation_iOS
+import Foundation_iOS
 
 class SelectValidatorsStartTests: XCTestCase {
     func testSetupValidators() throws {
@@ -52,10 +53,10 @@ class SelectValidatorsStartTests: XCTestCase {
         let wireframe = MockSelectValidatorsStartWireframeProtocol()
         let operationFactory = MockValidatorOperationFactoryProtocol()
 
-        let connection = JSONRPCEngineStub()
+        let connection = MockConnection()
         let runtimeService = try RuntimeCodingServiceStub.createWestendService()
         let operationQueue = OperationQueue()
-        
+
         let interactor = SelectValidatorsStartInteractor(
             chain: chain,
             runtimeService: runtimeService,
@@ -72,7 +73,8 @@ class SelectValidatorsStartTests: XCTestCase {
             wireframe: wireframe,
             existingStashAddress: nil,
             initialTargets: selectedTargets,
-            applicationConfig: ApplicationConfig.shared
+            applicationConfig: ApplicationConfig.shared,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -81,7 +83,7 @@ class SelectValidatorsStartTests: XCTestCase {
         // when
 
         stub(operationFactory) { stub in
-            when(stub).allPreferred(for: any()).then { _ in
+            when(stub.allPreferred(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(
                     .init(
                         allElectedValidators: allValidators,
@@ -95,7 +97,7 @@ class SelectValidatorsStartTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 XCTAssertEqual(viewModel, expectedViewModel)
                 setupExpectation.fulfill()
             }
@@ -107,23 +109,29 @@ class SelectValidatorsStartTests: XCTestCase {
             .createSelectedValidators(from: expectedRecommendedValidators)
 
         stub(wireframe) { stub in
-            when(stub).proceedToCustomList(
-                from: any(),
-                selectionValidatorGroups: any(),
-                selectedValidatorList: any(),
-                validatorsSelectionParams: any()).then { (_, selectionValidatorGroups, _ , _) in
-                    XCTAssertEqual(
-                        expectedCustomValidators.sorted {
-                            $0.address.lexicographicallyPrecedes($1.address)
-                        },
-                        selectionValidatorGroups.fullValidatorList.distinctAll().sorted {
-                            $0.address.lexicographicallyPrecedes($1.address)
-                        })
+            when(
+                stub.proceedToCustomList(
+                    from: any(),
+                    selectionValidatorGroups: any(),
+                    selectedValidatorList: any(),
+                    validatorsSelectionParams: any()
+                )
+            ).then { _, selectionValidatorGroups, _, _ in
+                XCTAssertEqual(
+                    expectedCustomValidators.sorted {
+                        $0.address.lexicographicallyPrecedes($1.address)
+                    },
+                    selectionValidatorGroups.fullValidatorList.distinctAll().sorted {
+                        $0.address.lexicographicallyPrecedes($1.address)
+                    }
+                )
             }
 
-            when(stub).proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any()).then { (_, targets, _) in
-                XCTAssertEqual(Set(recommended.map({ $0.address })),
-                               Set(targets.map({ $0.address })))
+            when(stub.proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any())).then { _, targets, _ in
+                XCTAssertEqual(
+                    Set(recommended.map(\.address)),
+                    Set(targets.map(\.address))
+                )
             }
         }
 
@@ -136,7 +144,7 @@ class SelectValidatorsStartTests: XCTestCase {
         presenter.selectRecommendedValidators()
         presenter.selectCustomValidators()
 
-        verify(wireframe, times(1)).proceedToCustomList(from: any(), selectionValidatorGroups: any(),  selectedValidatorList: any(), validatorsSelectionParams: any())
+        verify(wireframe, times(1)).proceedToCustomList(from: any(), selectionValidatorGroups: any(), selectedValidatorList: any(), validatorsSelectionParams: any())
         verify(wireframe, times(1)).proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any())
     }
 }

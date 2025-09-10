@@ -34,7 +34,7 @@ class Gov2OperationFactoryTests: XCTestCase {
         let operationQueue = OperationQueue()
         self.operationQueue = operationQueue
 
-        self.requestFactory = StorageRequestFactory(
+        requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
@@ -116,7 +116,7 @@ class Gov2OperationFactoryTests: XCTestCase {
             guard let chain = chainRegistry.getChain(for: chainId) else {
                 throw ChainRegistryError.noChain(chainId)
             }
-            
+
             let referendums = try fetchAllReferendums(for: chainRegistry)
 
             let operationFactory = Gov2ActionOperationFactory(
@@ -137,7 +137,7 @@ class Gov2OperationFactoryTests: XCTestCase {
                 )
             }
 
-            let operations = wrappers.flatMap { $0.allOperations }
+            let operations = wrappers.flatMap(\.allOperations)
 
             operationQueue.addOperations(operations, waitUntilFinished: true)
 

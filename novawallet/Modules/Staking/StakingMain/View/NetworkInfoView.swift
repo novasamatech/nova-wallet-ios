@@ -245,31 +245,23 @@ final class NetworkInfoView: UIView {
     private func applyLocalization() {
         let languages = locale.rLanguages
 
-        totalStakedView.titleLabel.text = R.string.localizable
-            .stakingMainTotalStakedTitle(preferredLanguages: languages)
-        minimumStakedView.titleLabel.text = R.string.localizable
-            .stakingMainMinimumStakeTitle(preferredLanguages: languages)
+        totalStakedView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainTotalStakedTitle()
+        minimumStakedView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainMinimumStakeTitle()
 
         if let statics = statics {
             activeNominatorsView.titleLabel.text = statics.networkInfoActiveNominators(for: locale)
 
             titleControl.titleLabel.text = statics.networkInfoTitle(for: locale)
         } else {
-            activeNominatorsView.titleLabel.text = R.string.localizable
-                .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
+            activeNominatorsView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainActiveNominatorsTitle()
 
-            titleControl.titleLabel.text = R.string.localizable.stakingNetworkInfoTitle(
-                preferredLanguages: languages
-            )
+            titleControl.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingNetworkInfoTitle()
         }
 
         titleControl.invalidateLayout()
 
-        stakingPeriodView.titleLabel.text = R.string.localizable.stakingNetworkInfoStakingPeriodTitle(
-            preferredLanguages: languages
-        )
-        unstakingPeriodView.titleLabel.text = R.string.localizable
-            .stakingMainLockupPeriodTitle_v190(preferredLanguages: languages)
+        stakingPeriodView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingNetworkInfoStakingPeriodTitle()
+        unstakingPeriodView.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingMainLockupPeriodTitle_v190()
 
         setNeedsLayout()
     }

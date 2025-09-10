@@ -10,7 +10,7 @@ final class JsonDataProviderFactoryStub: JsonDataProviderFactoryProtocol {
 
     func getJson<T>(
         for url: URL
-    ) -> AnySingleValueProvider<T> where T : Decodable, T : Encodable, T : Equatable {
+    ) -> AnySingleValueProvider<T> where T: Decodable, T: Encodable, T: Equatable {
         let model: T?
 
         if let value = sources[url] as? T {

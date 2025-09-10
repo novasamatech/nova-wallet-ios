@@ -101,7 +101,7 @@ class CrowdloadSettingsTests: XCTestCase {
         let prefs = InMemorySettingsManager()
         let operationQueue = OperationQueue()
 
-        let chains: [ChainModel] = (0..<10).map { index in
+        let chains: [ChainModel] = (0 ..< 10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: 2,
                 addressPrefix: ChainModel.AddressPrefix(index),

@@ -73,9 +73,7 @@ private extension AssetDetailsViewController {
     }
 
     func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
-        let title = R.string.localizable.walletAssetBuySell(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletAssetBuySell()
 
         let image = R.image.iconBuy()
 

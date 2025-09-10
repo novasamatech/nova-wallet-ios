@@ -138,8 +138,6 @@ extension ReferendumDetailsTitleView {
             }
         }
 
-        moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
-            preferredLanguages: locale.rLanguages
-        )
+        moreButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonReadMore()
     }
 }

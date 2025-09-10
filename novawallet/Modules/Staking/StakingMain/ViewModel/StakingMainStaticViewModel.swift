@@ -9,25 +9,18 @@ protocol StakingMainStaticViewModelProtocol {
 
 extension StakingMainStaticViewModelProtocol {
     func networkInfoActiveNominators(for locale: Locale) -> String {
-        R.string.localizable.stakingMainActiveNominatorsTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingMainActiveNominatorsTitle()
     }
 
     func actionsYourValidators(for locale: Locale) -> String {
-        R.string.localizable.stakingYourValidatorsTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourValidatorsTitle()
     }
 
     func waitingNextEra(for timeString: String, locale: Locale) -> String {
-        R.string.localizable.stakingWaitingNextEraFormat(
-            timeString,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingWaitingNextEraFormat(timeString).uppercased()
     }
 
     func networkInfoTitle(for locale: Locale) -> String {
-        R.string.localizable.stakingNetworkInfoTitle(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingNetworkInfoTitle()
     }
 }

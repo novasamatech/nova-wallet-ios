@@ -46,7 +46,7 @@ class LedgerTransportTests: XCTestCase {
 
             XCTAssertEqual(chunks.count, packetsCount)
 
-            let optReceivedMessage: Data? = try chunks.reduce(nil) { result, chunk in
+            let optReceivedMessage: Data? = try chunks.reduce(nil) { _, chunk in
                 try transport.receive(partialResponseData: chunk)
             }
 

@@ -96,7 +96,7 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSwapTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSwapTitle()
         rootView.setup(locale: selectedLocale)
         setupAccessoryView()
     }
@@ -200,10 +200,7 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         switch viewModel {
         case let .asset(assetViewModel):
             rootView.payAmountInputView.bind(assetViewModel: assetViewModel)
-            rootView.depositTokenButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDepositButtonTitle(
-                assetViewModel.symbol,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.depositTokenButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.swapsSetupDepositButtonTitle(assetViewModel.symbol)
         case let .empty(emptySwapsAssetViewModel):
             rootView.payAmountInputView.bind(emptyViewModel: emptySwapsAssetViewModel)
             rootView.depositTokenButton.imageWithTitleView?.title = nil
@@ -292,30 +289,21 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
             case .zeroBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
             case .zeroReceiveAmount:
-                let message = R.string.localizable.commonPositiveAmount(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonPositiveAmount()
 
                 rootView.displayReceiveIssue(with: message)
             case .insufficientBalance:
                 rootView.changeDepositTokenButtonVisibility(hidden: false)
 
-                let message = R.string.localizable.swapsNotEnoughTokens(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.swapsNotEnoughTokens()
 
                 rootView.displayPayIssue(with: message)
             case let .minBalanceViolation(minBalance):
-                let message = R.string.localizable.commonReceiveAtLeastEdError(
-                    minBalance,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReceiveAtLeastEdError(minBalance)
 
                 rootView.displayReceiveIssue(with: message)
             case .noLiqudity:
-                let message = R.string.localizable.swapsNotEnoughLiquidity(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.swapsNotEnoughLiquidity()
 
                 rootView.displayPayIssue(with: message)
             }

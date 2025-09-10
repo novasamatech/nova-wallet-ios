@@ -1,7 +1,8 @@
+import Foundation
 import Foundation_iOS
 import UIKit_iOS
 
-protocol StakingRewardPayoutsViewProtocol: ControllerBackedProtocol, Localizable {
+protocol StakingRewardPayoutsViewProtocol: ControllerBackedProtocol {
     func reload(with state: StakingRewardPayoutsViewState)
 }
 

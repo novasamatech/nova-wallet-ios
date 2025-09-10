@@ -31,9 +31,9 @@ final class VoteCardView: RoundedView {
         view.fView.stackView.alignment = .leading
         view.fView.valueTop.apply(style: .footnoteSecondary)
 
-        view.fView.valueTop.text = R.string.localizable.voteCardRequested(
-            preferredLanguages: viewModel?.locale.rLanguages
-        )
+        view.fView.valueTop.text = R.string(
+            preferredLanguages: viewModel?.locale.rLanguages ?? []
+        ).localizable.voteCardRequested()
 
         view.fView.valueBottom.apply(style: .title3Primary)
         view.sView.apply(style: .caption1Secondary)
@@ -55,9 +55,9 @@ final class VoteCardView: RoundedView {
 
     private lazy var readMoreButton: LoadableActionView = .create { view in
         view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
-        view.actionButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
-            preferredLanguages: viewModel?.locale.rLanguages
-        )
+        view.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: viewModel?.locale.rLanguages ?? []
+        ).localizable.commonReadMore()
     }
 
     private(set) var viewModel: VoteCardViewModel?

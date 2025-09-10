@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 import SubstrateSdk
 
@@ -74,13 +75,14 @@ struct NetworkNodeCorrespondingError: Error {
 extension NetworkNodeCorrespondingError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         ErrorContent(
-            title: R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
-                preferredLanguages: locale?.rLanguages
-            ),
-            message: R.string.localizable.networkNodeAddAlertWrongNetworkMessage(
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertWrongNetworkTitle(),
+            message: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertWrongNetworkMessage(
                 networkName,
-                networkName,
-                preferredLanguages: locale?.rLanguages
+                networkName
             )
         )
     }

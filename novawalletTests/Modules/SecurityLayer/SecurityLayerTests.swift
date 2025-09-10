@@ -28,7 +28,7 @@ final class SecurityLayerTests: XCTestCase {
         let showOverlayExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showSecuringOverlay().then {
+            when(stub.showSecuringOverlay()).then {
                 showOverlayExpectation.fulfill()
             }
         }
@@ -46,7 +46,7 @@ final class SecurityLayerTests: XCTestCase {
         let hideOverlayExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).hideSecuringOverlay().then {
+            when(stub.hideSecuringOverlay()).then {
                 hideOverlayExpectation.fulfill()
             }
         }
@@ -86,9 +86,9 @@ final class SecurityLayerTests: XCTestCase {
         let showPincodeExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showSecuringOverlay().thenDoNothing()
+            when(stub.showSecuringOverlay()).thenDoNothing()
 
-            when(stub).showAuthorization().then {
+            when(stub.showAuthorization()).then {
                 showPincodeExpectation.fulfill()
             }
         }
@@ -130,7 +130,7 @@ final class SecurityLayerTests: XCTestCase {
         // when
 
         stub(wireframe) { stub in
-            when(stub).isAuthorizing.get.thenReturn(false)
+            when(stub.isAuthorizing.get).thenReturn(false)
         }
 
         interactor.setup()
@@ -174,7 +174,7 @@ final class SecurityLayerTests: XCTestCase {
         interactor.setup()
 
         stub(wireframe) { stub in
-            when(stub).isAuthorizing.get.thenReturn(true)
+            when(stub.isAuthorizing.get).thenReturn(true)
         }
 
         interactor.setup()
@@ -224,7 +224,7 @@ final class SecurityLayerTests: XCTestCase {
         // when
 
         stub(wireframe) { stub in
-            when(stub).isAuthorizing.get.thenReturn(true)
+            when(stub.isAuthorizing.get).thenReturn(true)
         }
 
         interactor.setup()

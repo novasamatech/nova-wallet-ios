@@ -179,10 +179,8 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
                 return
             }
             let locale = localizationManager.selectedLocale
-            let message = R.string.localizable.walletReceiveErrorGenerateQRCodeMessage(
-                preferredLanguages: locale.rLanguages
-            )
-            let cancelAction = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+            let message = R.string(preferredLanguages: locale.rLanguages).localizable.walletReceiveErrorGenerateQRCodeMessage()
+            let cancelAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
 
             wireframe.presentRequestStatus(
                 on: view,

@@ -52,14 +52,8 @@ final class GovernanceDelegateBanner: UIView {
     }
 
     func set(locale: Locale) {
-        gradientBannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(
-            preferredLanguages: locale.rLanguages
-        )
-        gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(
-            preferredLanguages: locale.rLanguages
-        )
-        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(
-            preferredLanguages: locale.rLanguages
-        )
+        gradientBannerView.infoView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddBannerTitle()
+        gradientBannerView.infoView.subtitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddBannerSubtitle()
+        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddBannerLink()
     }
 }

@@ -50,8 +50,8 @@ enum AssetOperationViewFactory {
         )
 
         let title: LocalizableResource<String> = switch action {
-        case .offRamp: .init { R.string.localizable.assetOperationSellTitle(preferredLanguages: $0.rLanguages) }
-        case .onRamp: .init { R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages) }
+        case .offRamp: .init { R.string(preferredLanguages: $0.rLanguages).localizable.assetOperationSellTitle() }
+        case .onRamp: .init { R.string(preferredLanguages: $0.rLanguages).localizable.assetOperationBuyTitle() }
         }
 
         let view = AssetOperationViewController(
@@ -97,7 +97,7 @@ enum AssetOperationViewFactory {
         )
 
         let title: LocalizableResource<String> = .init {
-            R.string.localizable.assetOperationReceiveTitle(preferredLanguages: $0.rLanguages)
+            R.string(preferredLanguages: $0.rLanguages).localizable.assetOperationReceiveTitle()
         }
 
         let view = AssetOperationViewController(
@@ -142,7 +142,7 @@ enum AssetOperationViewFactory {
         )
 
         let title: LocalizableResource<String> = .init {
-            R.string.localizable.assetOperationSendTitle(preferredLanguages: $0.rLanguages)
+            R.string(preferredLanguages: $0.rLanguages).localizable.assetOperationSendTitle()
         }
 
         let view = SendAssetOperationViewController(

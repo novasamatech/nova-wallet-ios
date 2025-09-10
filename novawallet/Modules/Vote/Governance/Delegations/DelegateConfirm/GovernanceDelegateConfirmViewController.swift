@@ -64,31 +64,21 @@ final class GovernanceDelegateConfirmViewController: UIViewController, ViewHolde
 
         title = delegateTitle.value(for: selectedLocale)
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.delegateCell.titleLabel.text = R.string.localizable.govDelegate(
-            preferredLanguages: languages
-        )
+        rootView.delegateCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govDelegate()
 
-        rootView.yourDelegationCell.titleLabel.text = R.string.localizable.govYourDelegation(
-            preferredLanguages: languages
-        )
+        rootView.yourDelegationCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govYourDelegation()
 
-        rootView.transferableTitleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
+        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
 
-        rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
-        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(
-            preferredLanguages: languages
-        )
+        rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
+        rootView.undelegatingPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.govUndelegatingPeriod()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {
@@ -132,7 +122,7 @@ extension GovernanceDelegateConfirmViewController: GovernanceDelegateConfirmView
     func didReceiveTracks(viewModel: GovernanceTracksViewModel) {
         if
             let cell = rootView.addTracksCell(
-                for: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks(),
                 viewModel: viewModel
             ) {
             cell.addTarget(self, action: #selector(actionTracks), for: .touchUpInside)

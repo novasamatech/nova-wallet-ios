@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import UIKit
 
 protocol PayoutTimeViewModelFactoryProtocol {
     func timeLeftAttributedString(
@@ -38,17 +39,13 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
 
         let timeLeftText: String = {
             if eraCompletionTime <= .leastNormalMagnitude {
-                return R.string.localizable.stakingPayoutExpired(preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.stakingPayoutExpired()
             }
             if daysLeft == 0 {
                 let formattedTime = (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
-                return R.string.localizable.commonTimeLeftFormat(
-                    formattedTime,
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonTimeLeftFormat(formattedTime)
             } else {
-                return R.string.localizable
-                    .commonDaysLeftFormat(format: daysLeft, preferredLanguages: locale.rLanguages)
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysLeftFormat(format: daysLeft)
             }
         }()
 

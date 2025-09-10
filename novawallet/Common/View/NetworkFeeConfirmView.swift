@@ -33,8 +33,9 @@ final class NetworkFeeConfirmView: UIView {
 
     private func applyLocalization() {
         networkFeeView.locale = locale
-        actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: locale.rLanguages)
+        actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     private func setupLayout() {

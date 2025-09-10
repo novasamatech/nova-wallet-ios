@@ -20,14 +20,12 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
 
         let title = switch providerType {
         case .offRamp:
-            R.string.localizable.selectSellProviderTitle(
-                assetSymbol,
-                preferredLanguages: languages
+            R.string(preferredLanguages: languages).localizable.selectSellProviderTitle(
+                assetSymbol
             )
         case .onRamp:
-            R.string.localizable.selectBuyProviderTitle(
-                assetSymbol,
-                preferredLanguages: languages
+            R.string(preferredLanguages: languages).localizable.selectBuyProviderTitle(
+                assetSymbol
             )
         }
 
@@ -50,7 +48,7 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
             )
         }
 
-        let footerText = R.string.localizable.selectProviderDisclaimerText(preferredLanguages: languages)
+        let footerText = R.string(preferredLanguages: languages).localizable.selectProviderDisclaimerText()
 
         return SelectRampProvider.ViewModel(
             titleText: title,

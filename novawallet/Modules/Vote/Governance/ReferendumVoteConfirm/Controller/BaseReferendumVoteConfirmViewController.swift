@@ -52,23 +52,20 @@ class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transferableTitleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
+        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
 
-        rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
-        rootView.lockPeriodTitleLabel.text = R.string.localizable.commonLockingPeriod(preferredLanguages: languages)
+        rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
+        rootView.lockPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonLockingPeriod()
 
-        let hint = R.string.localizable.govVoteSetupHint(preferredLanguages: languages)
+        let hint = R.string(preferredLanguages: languages).localizable.govVoteSetupHint()
         rootView.hintsView.bind(texts: [hint])
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

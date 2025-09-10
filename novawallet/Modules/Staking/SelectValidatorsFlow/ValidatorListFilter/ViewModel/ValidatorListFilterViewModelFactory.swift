@@ -57,9 +57,7 @@ struct ValidatorListFilterViewModelFactory {
             return ValidatorListFilterCellViewModel(type: row, viewModel: internalViewModel)
         }
 
-        let title = R.string.localizable.walletFiltersHeader(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.walletFiltersHeader()
 
         return ValidatorListFilterViewModelSection(
             title: title,
@@ -80,9 +78,7 @@ struct ValidatorListFilterViewModelFactory {
             switch row {
             case .estimatedReward:
                 let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                    title: R.string.localizable.stakingValidatorApyPercent(
-                        preferredLanguages: locale.rLanguages
-                    )
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorApyPercent()
                 )
 
                 internalViewModel = SelectableViewModel(
@@ -92,11 +88,7 @@ struct ValidatorListFilterViewModelFactory {
 
             case .ownStake:
                 let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingFilterTitleOwnStakeToken(
-                            token,
-                            preferredLanguages: locale.rLanguages
-                        )
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleOwnStakeToken(token)
                 )
 
                 internalViewModel = SelectableViewModel(
@@ -106,11 +98,7 @@ struct ValidatorListFilterViewModelFactory {
 
             case .totalStake:
                 let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingValidatorTotalStakeToken(
-                            token,
-                            preferredLanguages: locale.rLanguages
-                        )
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorTotalStakeToken(token)
                 )
 
                 internalViewModel = SelectableViewModel(
@@ -122,9 +110,7 @@ struct ValidatorListFilterViewModelFactory {
             return ValidatorListFilterCellViewModel(type: row, viewModel: internalViewModel)
         }
 
-        let sectionTitle = R.string.localizable.commonFilterSortHeader(
-            preferredLanguages: locale.rLanguages
-        )
+        let sectionTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonFilterSortHeader()
 
         return ValidatorListFilterViewModelSection(
             title: sectionTitle,

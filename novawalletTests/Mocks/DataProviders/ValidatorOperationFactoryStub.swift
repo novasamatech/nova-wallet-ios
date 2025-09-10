@@ -17,31 +17,31 @@ class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
         CompoundOperationWrapper.createWithResult(electedValidatorList)
     }
 
-    func allSelectedOperation(by nomination: Nomination, nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+    func allSelectedOperation(by _: Nomination, nominatorAddress _: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
 
-    func activeValidatorsOperation(for nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+    func activeValidatorsOperation(for _: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
 
-    func pendingValidatorsOperation(for accountIds: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+    func pendingValidatorsOperation(for _: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
 
-    func wannabeValidatorsOperation(for accountIdList: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+    func wannabeValidatorsOperation(for _: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
-    
+
     func allPreferred(
-        for preferrence: PreferredValidatorsProviderModel?
+        for _: PreferredValidatorsProviderModel?
     ) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
         let electedAndPrefValidators = ElectedAndPrefValidators(
             allElectedValidators: electedValidatorList,
             notExcludedElectedValidators: electedValidatorList,
             preferredValidators: selectedValidatorList
         )
-        
+
         return .createWithResult(electedAndPrefValidators)
     }
 }

@@ -49,9 +49,7 @@ private extension MythosStkYourCollatorsPresenter {
             view?.reload(state: .loaded(viewModel: viewModel))
 
         } catch {
-            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorNoDataRetrieved()
 
             view?.reload(state: .error(errorDescription))
         }
@@ -113,9 +111,7 @@ extension MythosStkYourCollatorsPresenter: MythosStkYourCollatorsInteractorOutpu
 
             collators = nil
 
-            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorNoDataRetrieved()
 
             view?.reload(state: .error(errorDescription))
         }

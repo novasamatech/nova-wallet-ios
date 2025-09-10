@@ -118,15 +118,10 @@ private extension BackupMnemonicCardPresenter {
     func createCardTitle() -> NSAttributedString {
         NSAttributedString.coloredItems(
             [
-                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.mnemonicCardRevealedHeaderMessageHighlighted()
             ],
             formattingClosure: { items in
-                R.string.localizable.mnemonicCardRevealedHeaderMessage(
-                    items[0],
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.mnemonicCardRevealedHeaderMessage(items[0])
             },
             color: R.color.colorTextPrimary()!
         )

@@ -89,37 +89,28 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     func setup(locale: Locale) {
         slippageCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupSlippage(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippage()
         )
         priceDifferenceCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupPriceDifference(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupPriceDifference()
         )
         rateCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupDetailsRate(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
         )
         routeCell.titleButton.setTitle(
-            R.string.localizable.swapsDetailsRoute(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()
         )
         execTimeCell.titleButton.setTitle(
-            R.string.localizable.swapsDetailsExecTime(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsExecTime()
         )
         networkFeeCell.titleButton.setTitle(
-            R.string.localizable.swapsDetailsTotalFee(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsTotalFee()
         )
 
-        walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: locale.rLanguages)
-        accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: locale.rLanguages)
+        walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
+        accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
 
-        loadableActionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: locale.rLanguages)
+        loadableActionView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirm()
     }
 
     func set(warning: String?) {

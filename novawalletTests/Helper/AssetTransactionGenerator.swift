@@ -1,7 +1,6 @@
 import Foundation
 @testable import novawallet
 
-
 enum AssetTransactionGenerator {
     static func generateExtrinsic(
         for wallet: MetaAccountModel,
@@ -9,7 +8,7 @@ enum AssetTransactionGenerator {
     ) -> TransactionHistoryItem {
         let hash = Data.random(of: 32)!.toHexWithPrefix()
         let source = TransactionHistoryItemSource.substrate
-        
+
         return TransactionHistoryItem(
             identifier: TransactionHistoryItem.createIdentifier(from: hash, source: source),
             source: source,

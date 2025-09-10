@@ -36,8 +36,7 @@ final class YourValidatorListPresenter {
 
     private func updateView() {
         guard lastError == nil else {
-            let errorDescription = R.string.localizable
-                .commonErrorNoDataRetrieved(preferredLanguages: selectedLocale.rLanguages)
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorNoDataRetrieved()
             view?.reload(state: .error(errorDescription))
             return
         }
@@ -53,9 +52,7 @@ final class YourValidatorListPresenter {
         } catch {
             logger?.error("Did receive error: \(error)")
 
-            let errorDescription = R.string.localizable.commonErrorGeneralTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle()
 
             view?.reload(state: .error(errorDescription))
         }

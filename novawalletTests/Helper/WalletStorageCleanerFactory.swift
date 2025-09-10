@@ -22,7 +22,7 @@ extension WalletStorageCleanerFactory {
 
         return mainCleaner
     }
-    
+
     private static func createBrowserStateCleaner(
         operationQueue: OperationQueue,
         storageFacade: StorageFacadeProtocol
@@ -62,16 +62,16 @@ extension WalletStorageCleanerFactory {
             operationQueue: operationQueue,
             logger: logger
         )
-        
+
         let browserStateCleaner = RemovedWalletBrowserStateCleaner(
             browserTabManager: tabManager,
             webViewPoolEraser: WebViewPool.shared,
             operationQueue: operationQueue
         )
-        
+
         return browserStateCleaner
     }
-    
+
     private static func createDAppSettingsCleaner(storageFacade: StorageFacadeProtocol) -> WalletStorageCleaning {
         let mapper = DAppSettingsMapper()
 
@@ -81,11 +81,11 @@ extension WalletStorageCleanerFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
         let authorizedDAppRepository = AnyDataProviderRepository(repository)
-        
+
         let dappSettingsCleaner = RemovedWalletDAppSettingsCleaner(
             authorizedDAppRepository: authorizedDAppRepository
         )
-        
+
         return dappSettingsCleaner
     }
 }

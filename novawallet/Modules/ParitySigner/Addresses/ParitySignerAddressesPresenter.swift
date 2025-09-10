@@ -30,7 +30,7 @@ final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
     func provideDescriptionViewModel() {
         let languages = selectedLocale.rLanguages
         let viewModel = TitleWithSubtitleViewModel(
-            title: R.string.localizable.paritySignerAddressesTitle(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.paritySignerAddressesTitle(),
             subtitle: R.string.localizable.paritySignerAddressesSubtitle(
                 type.getName(for: selectedLocale),
                 preferredLanguages: languages

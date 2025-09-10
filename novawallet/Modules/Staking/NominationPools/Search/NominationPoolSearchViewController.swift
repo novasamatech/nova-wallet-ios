@@ -64,9 +64,8 @@ final class NominationPoolSearchViewController: BaseTableSearchViewController {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
-        rootView.searchField.placeholder = R.string.localizable.stakingSearchPoolPlaceholder(
-            preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
+        rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSearchPoolPlaceholder()
         rootView.tableView.reloadData()
     }
 }
@@ -141,11 +140,8 @@ extension NominationPoolSearchViewController: UITableViewDelegate {
             return nil
         }
         let header: StakingSelectPoolListHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let title = R.string.localizable.commonSearchResultsNumber(
-            viewModels.count,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let details = R.string.localizable.stakingSelectPoolMembers(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchResultsNumber(viewModels.count)
+        let details = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectPoolMembers()
 
         header.bind(
             title: title,
@@ -173,8 +169,7 @@ extension NominationPoolSearchViewController: EmptyStateDataSource {
             emptyView.title = text
         case .loaded:
             emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable
-                .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchStartTitle_v2_2_0()
         case .loading:
             return nil
         }

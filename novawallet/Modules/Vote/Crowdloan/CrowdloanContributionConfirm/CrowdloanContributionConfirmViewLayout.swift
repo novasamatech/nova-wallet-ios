@@ -59,10 +59,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         amountInputView.priceText = assetViewModel.price
 
         if let balance = assetViewModel.balance {
-            amountInputView.balanceText = R.string.localizable.commonAvailableFormat(
-                balance,
-                preferredLanguages: locale.rLanguages
-            )
+            amountInputView.balanceText = R.string(preferredLanguages: locale.rLanguages).localizable.commonAvailableFormat(balance)
         } else {
             amountInputView.balanceText = nil
         }
@@ -117,22 +114,17 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
     }
 
     private func applyLocalization() {
-        accountView.title = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
+        accountView.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
 
         networkFeeConfirmView.locale = locale
 
-        leasingPeriodView.titleLabel.text = R.string.localizable.crowdloanLeasingPeriod(
-            preferredLanguages: locale.rLanguages
-        )
+        leasingPeriodView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanLeasingPeriod()
 
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
+        amountInputView.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendAmountTitle()
 
-        estimatedRewardView?.titleLabel.text = R.string.localizable.crowdloanReward(
-            preferredLanguages: locale.rLanguages
-        )
+        estimatedRewardView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanReward()
 
-        bonusView?.titleLabel.text = R.string.localizable.commonBonus(preferredLanguages: locale.rLanguages)
+        bonusView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonBonus()
     }
 
     private func setupLayout() {
@@ -185,7 +177,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         let view = TitleValueView()
         view.titleLabel.apply(style: .footnotePrimary)
         view.valueLabel.apply(style: .footnotePrimary)
-        view.titleLabel.text = R.string.localizable.crowdloanReward(preferredLanguages: locale.rLanguages)
+        view.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanReward()
 
         contentView.stackView.insertArrangedSubview(view, at: leasingPeriodIndex + 1)
         view.snp.makeConstraints { make in
@@ -247,7 +239,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         }
 
         let view = TitleValueView()
-        view.titleLabel.text = R.string.localizable.commonBonus(preferredLanguages: locale.rLanguages)
+        view.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonBonus()
         view.valueLabel.textColor = R.color.colorIconAccent()
 
         contentView.stackView.insertArrangedSubview(view, at: lastIndex + 1)

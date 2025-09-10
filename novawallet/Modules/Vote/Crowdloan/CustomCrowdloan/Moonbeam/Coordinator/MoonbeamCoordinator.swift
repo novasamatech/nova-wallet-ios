@@ -1,3 +1,5 @@
+import Foundation
+import UIKit
 import Operation_iOS
 import Foundation_iOS
 
@@ -58,11 +60,13 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 } catch {
                     let locale = self?.localizationManager.selectedLocale ?? .current
                     self?.previousView?.present(
-                        message: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
-                        title: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
-                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
+                        message: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionMessage(),
+                        title: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionTitle(),
+                        closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonOk(),
                         from: nil
                     )
                 }
@@ -76,17 +80,15 @@ final class MoonbeamFlowCoordinator: Coordinator {
         let locale = localizationManager.selectedLocale
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable
-                .crowdloanMoonbeamMissingAccountTitle(preferredLanguages: locale.rLanguages),
-            message: R.string.localizable
-                .crowdloanMoonbeamMissingAccountMessage(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamMissingAccountTitle(),
+            message: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamMissingAccountMessage(),
             actions: [
                 .init(
-                    title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel(),
                     style: .destructive
                 ),
                 .init(
-                    title: R.string.localizable.commonAdd(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonAdd(),
                     style: .normal,
                     handler: { [weak self] in
                         self?.showAccountActions()
@@ -105,8 +107,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
 
         let locale = localizationManager.selectedLocale
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
 
         let actionsViewModel = AlertPresentableViewModel(
             title: crowdloanDisplayName,
@@ -124,8 +125,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     private func createAccountCreateAction() -> AlertPresentableAction {
         let locale = localizationManager.selectedLocale
-        let createAccountTitle = R.string.localizable
-            .accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
+        let createAccountTitle = R.string(preferredLanguages: locale.rLanguages).localizable.accountCreateOptionTitle()
         return AlertPresentableAction(title: createAccountTitle) { [weak self] in
             self?.activateCreateAccount()
         }
@@ -133,8 +133,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     private func createAccountImportAction() -> AlertPresentableAction {
         let locale = localizationManager.selectedLocale
-        let importAccountTitle = R.string.localizable
-            .accountImportOptionTitle(preferredLanguages: locale.rLanguages)
+        let importAccountTitle = R.string(preferredLanguages: locale.rLanguages).localizable.accountImportOptionTitle()
         return AlertPresentableAction(title: importAccountTitle) { [weak self] in
             self?.activateImportAccount()
         }
@@ -180,11 +179,9 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 } catch {
                     guard let controller = self?.previousView?.controller else { return }
                     UIAlertController.present(
-                        message: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
-                        title: R.string.localizable
-                            .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
-                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
+                        message: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamRegionRestrictionMessage(),
+                        title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamRegionRestrictionTitle(),
+                        closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonOk(),
                         with: controller
                     )
                 }

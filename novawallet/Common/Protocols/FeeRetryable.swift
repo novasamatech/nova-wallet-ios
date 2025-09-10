@@ -15,18 +15,20 @@ extension FeeRetryable where Self: AlertPresentable {
         retryAction: @escaping () -> Void
     ) {
         let retryViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonRetry(preferredLanguages: locale?.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonRetry(),
             handler: retryAction
         )
 
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonFeeRetryFailed(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonFeeRetryFailed()
 
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: message,
             actions: [retryViewModel],
-            closeAction: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonSkip()
         )
 
         present(viewModel: viewModel, style: .alert, from: view)

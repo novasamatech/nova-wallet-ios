@@ -32,7 +32,7 @@ final class CardTopUpTransferSetupViewLayout: UIView {
         view.clearButton.removeFromSuperview()
         view.isUserInteractionEnabled = false
         view.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.transferSetupRecipientInputPlaceholder(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferSetupRecipientInputPlaceholder()
         }
     }
 

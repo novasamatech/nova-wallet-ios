@@ -7,19 +7,19 @@ final class MockBranchService {
 }
 
 extension MockBranchService: BranchLinkServiceProtocol {
-    func canHandle(url: URL) -> Bool {
+    func canHandle(url _: URL) -> Bool {
         true
     }
-    
+
     func setup() {
         isActive = true
     }
-    
+
     func handle(url: URL) {
         guard isActive else {
             return
         }
-        
+
         lastHandledURL = url
     }
 }

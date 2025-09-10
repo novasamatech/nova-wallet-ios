@@ -27,7 +27,7 @@ struct ParitySignerScanViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let qrExtractionError = LocalizableResource { locale in
-            R.string.localizable.paritySignerAddressScanError(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerAddressScanError()
         }
 
         let presenter = ParitySignerScanPresenter(

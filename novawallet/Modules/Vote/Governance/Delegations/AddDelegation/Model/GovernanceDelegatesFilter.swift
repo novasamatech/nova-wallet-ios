@@ -8,17 +8,17 @@ enum GovernanceDelegatesFilter {
 
 extension GovernanceDelegatesFilter {
     static func title(for locale: Locale) -> String {
-        R.string.localizable.delegationsShowTitle(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.delegationsShowTitle()
     }
 
     func value(for locale: Locale) -> String {
         switch self {
         case .individuals:
-            return R.string.localizable.delegationsShowIndividuals(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsShowIndividuals()
         case .organizations:
-            return R.string.localizable.delegationsShowOrganizations(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsShowOrganizations()
         case .all:
-            return R.string.localizable.delegationsShowAll(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsShowAll()
         }
     }
 }

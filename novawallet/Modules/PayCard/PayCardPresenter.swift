@@ -28,11 +28,11 @@ final class PayCardPresenter {
     private func showFailAlert() {
         let languages = localizationManager.selectedLocale.rLanguages
 
-        let title = R.string.localizable.cardOpenFailedAlertTitle(preferredLanguages: languages)
-        let message = R.string.localizable.cardOpenFailedAlertMessage(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.cardOpenFailedAlertTitle()
+        let message = R.string(preferredLanguages: languages).localizable.cardOpenFailedAlertMessage()
 
         let closeAction = AlertPresentableAction(
-            title: R.string.localizable.commonOk(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonOk(),
             handler: {}
         )
 

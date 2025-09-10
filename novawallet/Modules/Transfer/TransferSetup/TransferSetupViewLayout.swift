@@ -34,7 +34,7 @@ final class TransferSetupViewLayout: UIView {
     let recepientInputView: AccountInputView = {
         let view = AccountInputView()
         view.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.transferSetupRecipientInputPlaceholder(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferSetupRecipientInputPlaceholder()
         }
         return view
     }()
@@ -72,7 +72,7 @@ final class TransferSetupViewLayout: UIView {
         let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         view.title = LocalizableResource { locale in
-            R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChainFee()
         }
 
         containerView.stackView.addArrangedSubview(view)

@@ -1,3 +1,4 @@
+import UIKit
 import UIKit_iOS
 
 final class SwapNetworkFeeViewCell: RowView<NetworkFeeInfoView>, StackTableViewCellProtocol {

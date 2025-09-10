@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingRewardDestConfirmPresenter {
@@ -10,6 +11,7 @@ final class StakingRewardDestConfirmPresenter {
     let confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let localizationManager: LocalizationManagerProtocol
     let chain: ChainModel
     let logger: LoggerProtocol?
 
@@ -28,6 +30,7 @@ final class StakingRewardDestConfirmPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,6 +41,7 @@ final class StakingRewardDestConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -87,7 +91,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
     }
 
     func confirm() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 controller: controllerAccount?.chainAccount,
@@ -117,8 +121,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
     func presentSenderAccountOptions() {
         guard
             let address = controllerAccount?.chainAccount.toAddress(),
-            let view = view,
-            let locale = view.localizationManager?.selectedLocale else {
+            let view = view else {
             return
         }
 
@@ -126,15 +129,14 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             from: view,
             address: address,
             chain: chain,
-            locale: locale
+            locale: localizationManager.selectedLocale
         )
     }
 
     func presentPayoutAccountOptions() {
         guard
             let address = rewardDestination.payoutAccount?.chainAccount.toAddress(),
-            let view = view,
-            let locale = view.localizationManager?.selectedLocale else {
+            let view = view else {
             return
         }
 
@@ -142,7 +144,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             from: view,
             address: address,
             chain: chain,
-            locale: locale
+            locale: localizationManager.selectedLocale
         )
     }
 }
@@ -218,14 +220,14 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
                 from: view,
                 sender: model.sender,
                 completionAction: .dismiss,
-                locale: view.selectedLocale
+                locale: localizationManager.selectedLocale
             )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,
                 closeAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale,
+                locale: localizationManager.selectedLocale,
                 completionClosure: nil
             )
         }

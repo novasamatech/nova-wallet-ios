@@ -1,5 +1,5 @@
 import Foundation
-import Core
+import Web3Core
 import SubstrateSdk
 import Operation_iOS
 

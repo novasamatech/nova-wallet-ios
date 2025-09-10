@@ -99,17 +99,14 @@ final class StakingNPoolsPresenter {
             return
         }
 
-        let locale = view.selectedLocale
-
         if
             let poolMember = poolMember,
             let poolBondedAccountId = poolBondedAccountId,
             case let .defined(poolMetadata) = poolMetadata {
-            let poolNumber = quantityFormatter.value(for: locale).string(from: NSNumber(value: poolMember.poolId))
-            let title = R.string.localizable.stakingYourPoolFormat(
-                poolNumber ?? "",
-                preferredLanguages: locale.rLanguages
-            )
+            let poolNumber = quantityFormatter.value(
+                for: selectedLocale
+            ).string(from: NSNumber(value: poolMember.poolId))
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourPoolFormat(poolNumber ?? "")
 
             let selectedPool = NominationPools.SelectedPool(
                 poolId: poolMember.poolId,
@@ -125,7 +122,7 @@ final class StakingNPoolsPresenter {
 
         } else {
             let entity = StakingSelectedEntityViewModel(
-                title: R.string.localizable.stakingYourPoolTitle(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourPoolTitle(),
                 loadingAddress: .loading
             )
 

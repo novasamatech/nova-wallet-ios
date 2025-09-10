@@ -17,7 +17,7 @@ extension CopyAddressPresentable where Self: ModalAlertPresenting {
     ) {
         UIPasteboard.general.string = address
 
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonCopied()
 
         presentSuccessNotification(
             title,

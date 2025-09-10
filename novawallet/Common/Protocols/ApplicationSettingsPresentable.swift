@@ -28,10 +28,10 @@ extension ApplicationSettingsPresentable {
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        let closeTitle = R.string.localizable.commonNotNow(preferredLanguages: locale?.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonNotNow()
         let closeAction = UIAlertAction(title: closeTitle, style: .cancel, handler: nil)
 
-        let settingsTitle = R.string.localizable.commonOpenSettings(preferredLanguages: locale?.rLanguages)
+        let settingsTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonOpenSettings()
         let settingsAction = UIAlertAction(title: settingsTitle, style: .default) { _ in
             if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)

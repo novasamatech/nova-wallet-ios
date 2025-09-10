@@ -1,3 +1,4 @@
+import UIKit
 import UIKit_iOS
 
 final class ProxyInfoTableViewCell: PlainBaseTableViewCell<ProxyInfoView> {

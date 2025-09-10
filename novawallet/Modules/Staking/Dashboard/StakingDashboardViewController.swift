@@ -130,9 +130,7 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
                 for: .touchUpInside
             )
 
-            let title = R.string.localizable.stakingTitle(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            )
+            let title = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.stakingTitle()
 
             cell.bind(title: title)
 
@@ -189,9 +187,7 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
                 for: indexPath
             )!
 
-            let title = R.string.localizable.multistakingInactiveHeader(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            )
+            let title = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.multistakingInactiveHeader()
 
             header.bind(title: title)
 

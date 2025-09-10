@@ -1,6 +1,7 @@
+import Foundation
 import Foundation_iOS
 
-protocol CustomValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
+protocol CustomValidatorListViewProtocol: ControllerBackedProtocol {
     func reload(_ viewModel: CustomValidatorListViewModel, at indexes: [Int]?)
     func setFilterAppliedState(to state: Bool)
 }

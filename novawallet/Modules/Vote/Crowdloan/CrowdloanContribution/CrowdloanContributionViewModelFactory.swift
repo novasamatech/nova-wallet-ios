@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Foundation_iOS
 import SubstrateSdk
 
@@ -83,10 +84,8 @@ final class CrowdloanContributionViewModelFactory {
 
         if let leasingTimeInterval = maybeLeasingTimeInterval {
             if leasingTimeInterval.duration.daysFromSeconds > 0 {
-                leasingPeriodTitle = R.string.localizable.commonDaysFormat(
-                    format: leasingTimeInterval.duration.daysFromSeconds,
-                    preferredLanguages: locale.rLanguages
-                )
+                leasingPeriodTitle = R.string(preferredLanguages: locale.rLanguages
+                ).localizable.commonDaysFormat(format: leasingTimeInterval.duration.daysFromSeconds)
             } else {
                 let time = try? TotalTimeFormatter().string(from: leasingTimeInterval.duration)
                 leasingPeriodTitle = time ?? ""
@@ -94,7 +93,7 @@ final class CrowdloanContributionViewModelFactory {
 
             let dateFormatter = DateFormatter.shortDate.value(for: locale)
             let dateString = dateFormatter.string(from: leasingTimeInterval.tillDate)
-            leasingEndDateTitle = R.string.localizable.commonTillDate(dateString, preferredLanguages: locale.rLanguages)
+            leasingEndDateTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonTillDate(dateString)
 
         } else {
             leasingPeriodTitle = ""
@@ -125,10 +124,7 @@ final class CrowdloanContributionViewModelFactory {
         let iconViewModel: ImageViewModelProtocol? = URL(string: displayInfo.icon).map { RemoteImageViewModel(url: $0)
         }
 
-        let title = R.string.localizable.crowdloanLearn_v2_2_0(
-            displayInfo.name,
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanLearn_v2_2_0(displayInfo.name)
         return LearnMoreViewModel(iconViewModel: iconViewModel, title: title)
     }
 }
@@ -208,9 +204,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         locale: Locale
     ) -> String? {
         guard let bonusRate = bonusRate else {
-            return R.string.localizable.crowdloanEmptyBonusTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanEmptyBonusTitle()
         }
 
         let tokenInfo = AssetBalanceDisplayInfo.fromCrowdloan(info: displayInfo)
@@ -247,8 +241,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         }()
 
         return CrowdloanRewardDestinationVM(
-            title: R.string.localizable
-                .crowdloanRewardDestinationFormat(displayInfo.token, preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanRewardDestinationFormat(displayInfo.token),
             accountName: displayInfo.name,
             accountAddress: address,
             crowdloanIcon: displayInfo.icon,

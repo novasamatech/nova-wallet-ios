@@ -39,22 +39,12 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
-            preferredLanguages: languages
-        )
-        rootView.proxiedWalletCell.titleLabel.text = R.string.localizable.stakingConfirmProxyWallet(
-            preferredLanguages: languages
-        )
-        rootView.proxiedAddressCell.titleLabel.text = R.string.localizable.stakingConfirmProxyAccountProxied(
-            preferredLanguages: languages
-        )
-        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = R.string.localizable.stakingSetupProxyDeposit(
-            preferredLanguages: languages
-        )
+        rootView.networkCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonNetwork()
+        rootView.proxiedWalletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingConfirmProxyWallet()
+        rootView.proxiedAddressCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingConfirmProxyAccountProxied()
+        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.stakingSetupProxyDeposit()
         rootView.feeCell.rowContentView.locale = selectedLocale
-        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: languages
-        )
+        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
         title = localizableTitle.value(for: selectedLocale)
     }
 

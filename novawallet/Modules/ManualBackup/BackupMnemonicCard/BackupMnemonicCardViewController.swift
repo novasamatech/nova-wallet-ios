@@ -98,17 +98,11 @@ private extension BackupMnemonicCardViewController {
     func setupLocalization() {
         switch keyType {
         case .defaultKey:
-            rootView.titleView.text = R.string.localizable.commonPassphrase(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonPassphrase()
         case .commonKey:
-            rootView.titleView.text = R.string.localizable.manualBackupCommonKey(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.manualBackupCommonKey()
         case .customKey:
-            rootView.titleView.text = R.string.localizable.manualBackupCustomKey(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.manualBackupCustomKey()
         }
     }
 

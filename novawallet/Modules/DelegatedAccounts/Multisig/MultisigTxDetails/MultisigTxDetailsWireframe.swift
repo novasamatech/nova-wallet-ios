@@ -6,8 +6,13 @@ final class MultisigTxDetailsWireframe: MultisigTxDetailsWireframeProtocol {
         value: String,
         locale: Locale
     ) {
-        let copyTitle = R.string.localizable.multisigCallHashCopy(preferredLanguages: locale.rLanguages)
-        let shareTitle = R.string.localizable.multisigCallHashShare(preferredLanguages: locale.rLanguages)
+        let copyTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.multisigCallHashCopy()
+
+        let shareTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.multisigCallHashShare()
 
         presentCopyShare(
             from: view,
@@ -23,8 +28,8 @@ final class MultisigTxDetailsWireframe: MultisigTxDetailsWireframeProtocol {
         value: String,
         locale: Locale
     ) {
-        let copyTitle = R.string.localizable.multisigCallDataCopy(preferredLanguages: locale.rLanguages)
-        let shareTitle = R.string.localizable.multisigCallDataShare(preferredLanguages: locale.rLanguages)
+        let copyTitle = R.string(preferredLanguages: locale.rLanguages).localizable.multisigCallDataCopy()
+        let shareTitle = R.string(preferredLanguages: locale.rLanguages).localizable.multisigCallDataShare()
 
         presentCopyShare(
             from: view,
@@ -66,7 +71,7 @@ private extension MultisigTxDetailsWireframe {
             title: title,
             message: nil,
             actions: [copyAction, shareAction],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         )
 
         present(viewModel: viewModel, style: .actionSheet, from: view)

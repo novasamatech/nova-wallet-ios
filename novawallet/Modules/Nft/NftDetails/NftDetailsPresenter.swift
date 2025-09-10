@@ -56,15 +56,10 @@ final class NftDetailsPresenter {
 
             let totalIssuanceString = String(totalIssuance)
 
-            labelString = R.string.localizable.nftListItemLimitedFormat(
-                snString,
-                totalIssuanceString,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            labelString = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.nftListItemLimitedFormat(snString, totalIssuanceString)
         case .unlimited:
-            labelString = R.string.localizable.nftListItemUnlimited(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            labelString = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.nftListItemUnlimited()
         case let .fungible(amount, totalSupply):
             let amountString = balanceViewModelFactory.unitsFromValue(amount.decimal()).value(
                 for: selectedLocale
@@ -74,11 +69,8 @@ final class NftDetailsPresenter {
                 for: selectedLocale
             )
 
-            labelString = R.string.localizable.nftIssuanceFungibleFormat(
-                amountString,
-                totalSupplyString,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            labelString = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.nftIssuanceFungibleFormat(amountString, totalSupplyString)
         case let .custom(string):
             labelString = string
         case .none:
@@ -108,11 +100,7 @@ final class NftDetailsPresenter {
 
         if let unitsDecimal = price.units?.decimal() {
             let unitsString = balanceViewModelFactory.unitsFromValue(unitsDecimal).value(for: selectedLocale)
-            let amount = R.string.localizable.nftFungiblePrice(
-                unitsString,
-                viewModel.amount,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let amount = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.nftFungiblePrice(unitsString, viewModel.amount)
 
             let viewModelWithUnits = BalanceViewModel(amount: amount, price: viewModel.price)
 

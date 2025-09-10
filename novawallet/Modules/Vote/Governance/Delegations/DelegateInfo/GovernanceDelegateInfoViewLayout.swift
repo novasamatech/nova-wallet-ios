@@ -143,9 +143,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         if viewModel.hasFullDescription {
             optReadMoreButton = RoundedButton()
             optReadMoreButton?.applyLinkStyle()
-            optReadMoreButton?.imageWithTitleView?.title = R.string.localizable.commonReadMore(
-                preferredLanguages: locale.rLanguages
-            )
+            optReadMoreButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonReadMore()
         } else {
             optReadMoreButton = nil
         }
@@ -190,7 +188,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         }
 
         let table = createStackTableView(
-            with: R.string.localizable.delegationsDelegations(preferredLanguages: locale.rLanguages)
+            with: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsDelegations()
         )
 
         if let identityTable = identityTable {
@@ -214,7 +212,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         }
 
         let table = createStackTableView(
-            with: R.string.localizable.identityTitle(preferredLanguages: locale.rLanguages)
+            with: R.string(preferredLanguages: locale.rLanguages).localizable.identityTitle()
         )
 
         stackView.addArrangedSubview(table)
@@ -229,7 +227,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         removeYourDelegationTable()
 
         let table = createStackTableView(
-            with: R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+            with: R.string(preferredLanguages: locale.rLanguages).localizable.govYourDelegation()
         )
 
         if let nextView = statsTable ?? identityTable {
@@ -251,7 +249,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     }
 
     func addTracksCell(for viewModel: GovernanceTracksViewModel, locale: Locale) -> StackInfoTableCell? {
-        let title = R.string.localizable.govTracks(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govTracks()
 
         if viewModel.canExpand {
             return yourDelegationTable?.addInfoCell(for: title, value: viewModel.details)
@@ -262,7 +260,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     }
 
     func addYourDelegationCell(for viewModel: GovernanceYourDelegationViewModel, locale: Locale) {
-        let title = R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govYourDelegation()
 
         let cell = yourDelegationTable?.addTitleMultiValue(
             for: title,
@@ -276,13 +274,9 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     func addYourDelegationActions(for locale: Locale) -> StackButtonsCell {
         let cell = StackButtonsCell()
 
-        cell.mainButton.imageWithTitleView?.title = R.string.localizable.commonEdit(
-            preferredLanguages: locale.rLanguages
-        )
+        cell.mainButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonEdit()
 
-        cell.secondaryButton.imageWithTitleView?.title = R.string.localizable.commonRevoke(
-            preferredLanguages: locale.rLanguages
-        )
+        cell.secondaryButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonRevoke()
 
         yourDelegationTable?.addArrangedSubview(cell)
 
@@ -317,9 +311,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             addDelegationButton = button
         }
 
-        addDelegationButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        addDelegationButton?.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.delegationsAddTitle()
 
         updateContentInsets()
 

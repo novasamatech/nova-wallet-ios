@@ -64,11 +64,7 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
                 from: NSNumber(value: tracks.count - 1)
             )
 
-            let details = R.string.localizable.commonMoreFormat(
-                trackName,
-                otherTracks ?? "",
-                preferredLanguages: locale.rLanguages
-            )
+            let details = R.string(preferredLanguages: locale.rLanguages).localizable.commonMoreFormat(trackName, otherTracks ?? "")
 
             return .init(details: details, canExpand: true)
         } else {

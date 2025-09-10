@@ -7,25 +7,33 @@ extension CommonError: ErrorContentConvertible {
 
         switch self {
         case .undefined:
-            title = R.string.localizable
-                .commonUndefinedErrorTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable
-                .commonUndefinedErrorMessage(preferredLanguages: locale?.rLanguages)
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonUndefinedErrorTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonUndefinedErrorMessage()
         case .dataCorruption:
-            title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable.commonDataCorruptionError(
-                preferredLanguages: locale?.rLanguages
-            )
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonErrorGeneralTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonDataCorruptionError()
         case .databaseSubscription:
-            title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable.commonDbSubscriptionError(
-                preferredLanguages: locale?.rLanguages
-            )
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonErrorGeneralTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonDbSubscriptionError()
         case .noDataRetrieved:
-            title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable.commonErrorNoDataRetrieved(
-                preferredLanguages: locale?.rLanguages
-            )
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonErrorGeneralTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonErrorNoDataRetrieved()
         }
 
         return ErrorContent(title: title, message: message)

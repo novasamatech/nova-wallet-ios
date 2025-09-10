@@ -47,9 +47,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
     }
 
     func applyTitle() {
-        title = R.string.localizable.stakingValidatorInfoTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorInfoTitle()
     }
 
     func applyState() {
@@ -82,9 +80,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
     }
 
     func applyNominatorsView(from exposure: ValidatorInfoViewModel.Exposure) {
-        let nominatorsTitle = R.string.localizable.stakingValidatorNominators(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let nominatorsTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorNominators()
 
         rootView.addNominatorsView(exposure, title: nominatorsTitle)
     }
@@ -92,9 +88,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
     func applyEstimatedReward(_ estimatedReward: String) {
         if let stakingTableView = rootView.stakingTableView {
             rootView.addTitleValueView(
-                for: R.string.localizable.stakingValidatorEstimatedReward(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorEstimatedReward(),
                 value: estimatedReward,
                 to: stakingTableView
             )
@@ -112,7 +106,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
         addOversubscriptionAlertIfNeeded(for: viewModel.staking)
 
         rootView.addStakingSection(
-            with: R.string.localizable.stakingTitle(preferredLanguages: selectedLocale.rLanguages)
+            with: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingTitle()
         )
 
         rootView.addStakingStatusView(viewModel.staking, locale: selectedLocale)
@@ -132,7 +126,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
 
         if let identityItems = viewModel.identity, !identityItems.isEmpty {
             rootView.addIdentitySection(
-                with: R.string.localizable.identityTitle(preferredLanguages: selectedLocale.rLanguages)
+                with: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.identityTitle()
             )
 
             identityItems.forEach { item in
@@ -150,9 +144,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
 
     private func addSlashedAlertIfNeeded(for model: ValidatorInfoViewModel) {
         if model.staking.slashed {
-            let text = R.string.localizable.stakingValidatorSlashedDesc(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorSlashedDesc()
 
             rootView.addErrorView(message: text)
         }
@@ -162,13 +154,9 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
         if case let .elected(exposure) = model.status, exposure.oversubscribed {
             let message: String = {
                 if let myNomination = exposure.myNomination, !myNomination.isRewarded {
-                    return R.string.localizable.stakingValidatorMyOversubscribedMessage(
-                        preferredLanguages: selectedLocale.rLanguages
-                    )
+                    return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorMyOversubscribedMessage()
                 } else {
-                    return R.string.localizable.stakingValidatorOtherOversubscribedMessage(
-                        preferredLanguages: selectedLocale.rLanguages
-                    )
+                    return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorOtherOversubscribedMessage()
                 }
             }()
 

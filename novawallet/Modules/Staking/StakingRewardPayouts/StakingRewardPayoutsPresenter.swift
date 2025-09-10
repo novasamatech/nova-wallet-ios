@@ -95,7 +95,7 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsInteractorOutputPro
         case .failure:
             payoutsInfo = nil
             let errorDescription = LocalizableResource { locale in
-                R.string.localizable.commonErrorNoDataRetrieved(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorNoDataRetrieved()
             }
             view?.reload(with: .error(errorDescription))
         }

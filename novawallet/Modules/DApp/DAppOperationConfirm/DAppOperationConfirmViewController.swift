@@ -42,33 +42,21 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.dappsRequestSignTitle(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.dappsRequestSignTitle()
 
-        rootView.titleLabel.text = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
-        rootView.subtitleLabel.text = R.string.localizable.dappConfirmSubtitle(preferredLanguages: languages)
-        rootView.dAppCell.titleLabel.text = R.string.localizable.commonDapp(preferredLanguages: languages)
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: languages
-        )
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccountAddress(
-            preferredLanguages: languages
-        )
-        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
-            preferredLanguages: languages
-        )
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonConfirmTitle()
+        rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.dappConfirmSubtitle()
+        rootView.dAppCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonDapp()
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccountAddress()
+        rootView.networkCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonNetwork()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transactionDetailsCell.titleLabel.text = R.string.localizable.commonTxDetails(
-            preferredLanguages: languages
-        )
+        rootView.transactionDetailsCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonTxDetails()
 
-        rootView.confirmButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: languages
-        )
-        rootView.rejectButton.imageWithTitleView?.title = R.string.localizable.commonReject(
-            preferredLanguages: languages
-        )
+        rootView.confirmButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
+        rootView.rejectButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonReject()
     }
 
     @objc private func actionConfirm() {

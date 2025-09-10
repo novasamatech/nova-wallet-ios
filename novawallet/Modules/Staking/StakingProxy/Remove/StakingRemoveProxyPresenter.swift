@@ -91,9 +91,7 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideProxyTypeViewModel() {
-        let type = R.string.localizable.stakingConfirmProxyTypeSubtitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let type = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingConfirmProxyTypeSubtitle()
 
         view?.didReceiveProxyType(viewModel: type)
     }
@@ -122,12 +120,8 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideTitles() {
-        let typeTitle = R.string.localizable.stakingProxyRevokeAccessType(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        let proxyAddressTitle = R.string.localizable.stakingProxyRevokeAccessProxyAddress(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let typeTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingProxyRevokeAccessType()
+        let proxyAddressTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingProxyRevokeAccessProxyAddress()
         view?.didReceiveProxyType(title: typeTitle)
         view?.didReceiveProxyAddress(title: proxyAddressTitle)
     }

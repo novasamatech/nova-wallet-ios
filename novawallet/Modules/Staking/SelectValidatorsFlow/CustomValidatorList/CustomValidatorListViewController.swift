@@ -139,21 +139,14 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         if selectedValidatorsCount == 0 {
             isEnabled = false
 
-            buttonTitle = R.string.localizable
-                .stakingCustomProceedButtonDisabledTitle(
-                    selectedValidatorsLimit,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomProceedButtonDisabledTitle(selectedValidatorsLimit)
 
         } else {
             isEnabled = true
 
-            buttonTitle = R.string.localizable
-                .stakingCustomProceedButtonEnabledTitle(
-                    selectedValidatorsCount,
-                    selectedValidatorsLimit,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+            buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomProceedButtonEnabledTitle(selectedValidatorsCount, selectedValidatorsLimit)
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle
@@ -196,15 +189,11 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
 extension CustomValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .stakingCustomValidatorsListTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomValidatorsListTitle()
 
-            rootView.fillRestButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomFillButtonTitle(preferredLanguages: selectedLocale.rLanguages)
-            rootView.clearButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomClearButtonTitle(preferredLanguages: selectedLocale.rLanguages)
-            rootView.deselectButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomDeselectButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+            rootView.fillRestButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomFillButtonTitle()
+            rootView.clearButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomClearButtonTitle()
+            rootView.deselectButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomDeselectButtonTitle()
 
             updateProceedButton()
         }

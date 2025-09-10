@@ -97,26 +97,32 @@ class DAppOperationConfirmTests: XCTestCase {
         let connection = MockConnection()
 
         stub(connection.internalConnection) { stub in
-            when(stub).callMethod(any(), params: any(), options: any(), completion: any())
-                .then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
+            when(
+                stub.callMethod(
+                    any(),
+                    params: any(),
+                    options: any(),
+                    completion: any()
+                )
+            ).then { (_, _: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
 
-                    let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
+                let fee = RuntimeDispatchInfo(fee: "1", weight: .init(refTime: 32, proofSize: 0))
 
-                    DispatchQueue.global().async {
-                        completion?(.success(fee))
-                    }
-
-                    return 0
+                DispatchQueue.global().async {
+                    completion?(.success(fee))
                 }
+
+                return 0
+            }
         }
 
         let signingWrapperFactory = DummySigningWrapperFactory()
         let priceProvider = PriceProviderFactoryStub(priceData: nil)
-        
+
         let operationQueue = OperationQueue()
-        
-        let  storageFacade = SubstrateStorageTestFacade()
-        
+
+        let storageFacade = SubstrateStorageTestFacade()
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: wallet.fetch(for: chain.accountRequest())!,
             chain: chain,
@@ -126,7 +132,7 @@ class DAppOperationConfirmTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -135,7 +141,7 @@ class DAppOperationConfirmTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         let metadataHashFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
                 storageFacade: storageFacade
@@ -149,7 +155,7 @@ class DAppOperationConfirmTests: XCTestCase {
             runtimeProvider: runtimeProvider,
             feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
-            signingWrapperFactory: signingWrapperFactory, 
+            signingWrapperFactory: signingWrapperFactory,
             metadataHashFactory: metadataHashFactory,
             userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
@@ -182,7 +188,7 @@ class DAppOperationConfirmTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(feeViewModel: any()).then { viewModel in
+            when(stub.didReceive(feeViewModel: any())).then { viewModel in
                 switch viewModel {
                 case .loaded:
                     feeExpectation.fulfill()
@@ -191,7 +197,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confirmationViewModel: any()).then { _ in
+            when(stub.didReceive(confirmationViewModel: any())).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -208,13 +214,13 @@ class DAppOperationConfirmTests: XCTestCase {
         let confirmationExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).close(view: any()).then { _ in
+            when(stub.close(view: any())).then { _ in
                 closeExpectation.fulfill()
             }
         }
 
         stub(delegate) { stub in
-            when(stub).didReceiveConfirmationResponse(any(), for: any()).then { _ in
+            when(stub.didReceiveConfirmationResponse(any(), for: any())).then { _ in
                 confirmationExpectation.fulfill()
             }
         }
@@ -269,7 +275,7 @@ class DAppOperationConfirmTests: XCTestCase {
             dAppIcon: nil,
             operationData: jsonRequest
         )
-        
+
         let serializationFactory = PolkadotExtensionMessageSignFactory()
 
         let interactor = DAppSignBytesConfirmInteractor(
@@ -305,7 +311,7 @@ class DAppOperationConfirmTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(feeViewModel: any()).then { viewModel in
+            when(stub.didReceive(feeViewModel: any())).then { viewModel in
                 switch viewModel {
                 case .empty:
                     feeExpectation.fulfill()
@@ -314,7 +320,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(confirmationViewModel: any()).then { _ in
+            when(stub.didReceive(confirmationViewModel: any())).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -331,13 +337,13 @@ class DAppOperationConfirmTests: XCTestCase {
         let confirmationExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).close(view: any()).then { _ in
+            when(stub.close(view: any())).then { _ in
                 closeExpectation.fulfill()
             }
         }
 
         stub(delegate) { stub in
-            when(stub).didReceiveConfirmationResponse(any(), for: any()).then { _ in
+            when(stub.didReceiveConfirmationResponse(any(), for: any())).then { _ in
                 confirmationExpectation.fulfill()
             }
         }

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import SubstrateSdk
 
 class YourValidatorTableCell: UITableViewCell {
@@ -153,9 +154,7 @@ class YourValidatorTableCell: UITableViewCell {
         }
 
         if let amount = viewModel.amount {
-            let prefixString = R.string.localizable.stakingYourNominatedPrefix(
-                preferredLanguages: locale.rLanguages
-            )
+            let prefixString = R.string(preferredLanguages: locale.rLanguages).localizable.stakingYourNominatedPrefix()
 
             let details = NSMutableAttributedString()
 

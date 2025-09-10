@@ -54,21 +54,20 @@ private extension WalletMigrateAcceptViewController {
     }
 
     func setupLocalization() {
-        rootView.skipButton.imageWithTitleView?.title = R.string.localizable.commonSkip(
+        rootView.skipButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonSkip()
 
-        rootView.titleView.valueTop.text = R.string.localizable.walletMigrateAcceptTitle(
+        rootView.titleView.valueTop.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletMigrateAcceptTitle()
 
-        rootView.titleView.valueBottom.text = R.string.localizable.walletMigrateAcceptMessage(
+        rootView.titleView.valueBottom.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletMigrateAcceptMessage()
 
-        rootView.genericActionView.actionButton.setTitle(R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        ))
+        rootView.genericActionView.actionButton.setTitle(
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue())
     }
 
     @objc func actionAccept() {

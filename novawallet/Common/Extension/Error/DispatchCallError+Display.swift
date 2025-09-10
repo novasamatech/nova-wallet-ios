@@ -2,7 +2,7 @@ import Foundation
 
 extension DispatchCallError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
-        let title = R.string.localizable.operationErrorTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorTitle()
         let details: String
 
         switch self {

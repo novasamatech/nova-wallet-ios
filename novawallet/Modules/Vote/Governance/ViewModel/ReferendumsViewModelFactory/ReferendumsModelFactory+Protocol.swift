@@ -65,11 +65,15 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         var sections: [ReferendumsSection] = []
 
         if !referendumsCellViewModels.active.isEmpty {
-            let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
+            let title = R.string(
+                preferredLanguages: input.locale.rLanguages
+            ).localizable.governanceReferendumsActive()
             sections.append(.active(.loaded(value: title), referendumsCellViewModels.active))
         }
         if !referendumsCellViewModels.completed.isEmpty {
-            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
+            let title = R.string(
+                preferredLanguages: input.locale.rLanguages
+            ).localizable.commonCompleted()
             sections.append(.completed(.loaded(value: title), referendumsCellViewModels.completed))
         }
 
@@ -164,19 +168,29 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         case .approved:
             return provideApprovedReferendumCellViewModel(params: params, voterName: voterName, locale: locale)
         case .rejected:
-            let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
+            let statusName = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusRejected()
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .cancelled:
-            let statusName = Strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
+            let statusName = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusCancelled()
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .timedOut:
-            let statusName = Strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
+            let statusName = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusTimedOut()
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .killed:
-            let statusName = Strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
+            let statusName = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusKilled()
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .executed:
-            let statusName = Strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
+            let statusName = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceReferendumsStatusExecuted()
             status = .init(name: statusName.uppercased(), kind: .positive)
         }
 

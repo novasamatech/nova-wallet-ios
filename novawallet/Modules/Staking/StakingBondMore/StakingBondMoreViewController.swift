@@ -44,25 +44,15 @@ final class StakingBondMoreViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingBondMore_v190(
-            preferredLanguages: languages
-        )
+        title = R.string(preferredLanguages: languages).localizable.stakingBondMore_v190()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: languages
-        )
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
-            preferredLanguages: languages
-        )
+        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonAvailablePrefix()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
+        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
 
-        rootView.hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore_v2_2_0(
-            preferredLanguages: languages
-        )
+        rootView.hintView.detailsLabel.text = R.string(preferredLanguages: languages).localizable.stakingHintRewardBondMore_v2_2_0()
 
         rootView.networkFeeView.locale = selectedLocale
     }

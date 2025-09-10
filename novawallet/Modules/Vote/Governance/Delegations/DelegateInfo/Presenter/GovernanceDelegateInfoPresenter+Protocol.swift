@@ -103,10 +103,7 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
 
                     self?.wireframe.showWalletDetails(from: view, wallet: wallet)
                 },
-                addAccountAskMessage: R.string.localizable.delegationsAccountMissingMessage(
-                    chain.name,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                addAccountAskMessage: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsAccountMissingMessage(chain.name)
             ),
             view: view,
             wireframe: wireframe,

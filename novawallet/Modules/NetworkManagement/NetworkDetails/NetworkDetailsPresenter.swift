@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 private typealias ModalActionsContext = (
@@ -243,7 +244,7 @@ private extension NetworkDetailsPresenter {
             from: view,
             actions: modalActionsContext.actions,
             title: LocalizableResource { locale in
-                R.string.localizable.networkManageTitle(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.networkManageTitle()
             },
             delegate: self,
             context: modalActionsContext.context
@@ -252,24 +253,15 @@ private extension NetworkDetailsPresenter {
 
     func openDeleteNodeAlert(for node: ChainNodeModel) {
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.networkNodeDeleteAlertTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
-            message: R.string.localizable.networkNodeDeleteAlertDescription(
-                node.name,
-                preferredLanguages: selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertTitle(),
+            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertDescription(node.name),
             actions: [
                 .init(
-                    title: R.string.localizable.commonCancel(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),
                     style: .cancel
                 ),
                 .init(
-                    title: R.string.localizable.commonDelete(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDelete(),
                     style: .destructive,
                     handler: {
                         [weak self] in self?.interactor.deleteNode(node)
@@ -287,23 +279,15 @@ private extension NetworkDetailsPresenter {
 
     func openDeleteNetworkAlert() {
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.networkManageDeleteAlertTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
-            message: R.string.localizable.networkManageDeleteAlertDescription(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertTitle(),
+            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertDescription(),
             actions: [
                 .init(
-                    title: R.string.localizable.commonCancel(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),
                     style: .cancel
                 ),
                 .init(
-                    title: R.string.localizable.commonDelete(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDelete(),
                     style: .destructive,
                     handler: {
                         [weak self] in self?.interactor.deleteNetwork()
@@ -324,13 +308,13 @@ private extension NetworkDetailsPresenter {
             LocalizableResource { locale in
                 ActionManageViewModel(
                     icon: R.image.iconPencil(),
-                    title: R.string.localizable.networkManageEdit(preferredLanguages: locale.rLanguages)
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.networkManageEdit()
                 )
             },
             LocalizableResource { locale in
                 ActionManageViewModel(
                     icon: R.image.iconDelete(),
-                    title: R.string.localizable.networkManageDelete(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.networkManageDelete(),
                     style: .destructive
                 )
             }

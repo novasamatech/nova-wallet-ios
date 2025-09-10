@@ -4,10 +4,6 @@ struct ChainPollingState: Equatable {
     typealias TChange = BatchSubscriptionHandler
 
     let blockHash: BlockHashData?
-
-    init(blockHash: BlockHashData?) {
-        self.blockHash = blockHash
-    }
 }
 
 extension ChainPollingState: ObservableSubscriptionStateProtocol {
