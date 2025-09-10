@@ -4,18 +4,56 @@ import SubstrateSdk
 import NovaCrypto
 
 final class PayoutValidatorsForNominatorFactory {
-    let url: URL
+    let urls: [URL]
 
-    init(url: URL) {
-        self.url = url
+    init(urls: [URL]) {
+        self.urls = urls
+    }
+}
+
+// MARK: - Private
+
+private extension PayoutValidatorsForNominatorFactory {
+    func createWrapper(
+        address: AccountAddress,
+        historyRange: @escaping () throws -> Staking.EraRange
+    ) -> CompoundOperationWrapper<Set<ResolvedValidatorEra>> {
+        let networkOperations = urls.map {
+            let requestFactory = createRequestFactory(
+                for: $0,
+                address: address,
+                historyRange: historyRange
+            )
+
+            let resultFactory = createResultFactory()
+
+            return NetworkOperation(
+                requestFactory: requestFactory,
+                resultFactory: resultFactory
+            )
+        }
+
+        let resultOperation = ClosureOperation<Set<ResolvedValidatorEra>> {
+            try networkOperations
+                .map { try $0.extractNoCancellableResultData() }
+                .reduce(Set<ResolvedValidatorEra>()) { $0.union($1) }
+        }
+
+        networkOperations.forEach { resultOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: networkOperations
+        )
     }
 
-    private func createRequestFactory(
+    func createRequestFactory(
+        for url: URL,
         address: AccountAddress,
         historyRange: @escaping () throws -> Staking.EraRange
     ) -> NetworkRequestFactoryProtocol {
         BlockNetworkRequestFactory {
-            var request = URLRequest(url: self.url)
+            var request = URLRequest(url: url)
 
             let eraRange = try historyRange()
             let params = self.requestParams(accountAddress: address, eraRange: eraRange)
@@ -30,7 +68,7 @@ final class PayoutValidatorsForNominatorFactory {
         }
     }
 
-    private func createResultFactory() -> AnyNetworkResultFactory<Set<ResolvedValidatorEra>> {
+    func createResultFactory() -> AnyNetworkResultFactory<Set<ResolvedValidatorEra>> {
         AnyNetworkResultFactory<Set<ResolvedValidatorEra>> { data in
             guard
                 let resultData = try? JSONDecoder().decode(JSON.self, from: data),
@@ -53,7 +91,7 @@ final class PayoutValidatorsForNominatorFactory {
         }
     }
 
-    private func requestParams(accountAddress: AccountAddress, eraRange: Staking.EraRange) -> String {
+    func requestParams(accountAddress: AccountAddress, eraRange: Staking.EraRange) -> String {
         let start = eraRange.start
         let end = eraRange.end
         let eraFilter: String = "era:{greaterThanOrEqualTo: \(start), lessThanOrEqualTo: \(end)},"
@@ -79,15 +117,16 @@ final class PayoutValidatorsForNominatorFactory {
     }
 }
 
+// MARK: - PayoutValidatorsFactoryProtocol
+
 extension PayoutValidatorsForNominatorFactory: PayoutValidatorsFactoryProtocol {
     func createResolutionOperation(
         for address: AccountAddress,
         eraRangeClosure: @escaping () throws -> Staking.EraRange
     ) -> CompoundOperationWrapper<Set<ResolvedValidatorEra>> {
-        let requestFactory = createRequestFactory(address: address, historyRange: { try eraRangeClosure() })
-        let resultFactory = createResultFactory()
-
-        let networkOperation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        return CompoundOperationWrapper(targetOperation: networkOperation)
+        createWrapper(
+            address: address,
+            historyRange: { try eraRangeClosure() }
+        )
     }
 }

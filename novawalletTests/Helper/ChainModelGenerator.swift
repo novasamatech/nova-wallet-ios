@@ -337,6 +337,7 @@ enum ChainModelGenerator {
 
         return .init(
             staking: externalApis.staking()?.map(generateRemoteExternal(from:)),
+            stakingRewards: externalApis.stakingRewards()?.map(generateRemoteExternal(from:)),
             history: externalApis.history()?.map(generateRemoteExternal(from:)),
             crowdloans: externalApis.crowdloans()?.map(generateRemoteExternal(from:)),
             governance: externalApis.governance()?.map(generateRemoteExternal(from:)),
@@ -375,8 +376,15 @@ enum ChainModelGenerator {
                 url: URL(string: "https://staking.io/\(chainId)-\(UUID().uuidString).json")!,
                 parameters: nil
             )
+            let stakingRewardsApi = LocalChainExternalApi(
+                apiType: LocalChainApiExternalType.stakingRewards.rawValue,
+                serviceType: "test",
+                url: URL(string: "https://staking.io/\(chainId)-\(UUID().uuidString).json")!,
+                parameters: nil
+            )
 
             apis.insert(stakingApi)
+            apis.insert(stakingRewardsApi)
         }
 
         if !apis.isEmpty {

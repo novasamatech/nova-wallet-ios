@@ -52,7 +52,7 @@ extension StakingRelaychainInteractor {
         if
             let stashItem = stashItem,
             let chainAsset = selectedChainAsset {
-            if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
+            if let rewardApi = chainAsset.chain.externalApis?.stakingRewards() {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
                     startTimestamp: totalRewardInterval?.startTimestamp,
@@ -262,7 +262,7 @@ extension StakingRelaychainInteractor: StakingRewardsLocalSubscriber, StakingRew
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         switch result {
         case let .success(totalReward):
