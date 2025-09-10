@@ -82,8 +82,14 @@ private extension NPoolsLocalSubscriptionFactory {
         var hasher = Hasher()
 
         hasher.combine(address)
-        hasher.combine(startTimestamp ?? 0)
-        hasher.combine(endTimestamp ?? 0)
+
+        if let startTimestamp {
+            hasher.combine(startTimestamp)
+        }
+
+        if let endTimestamp {
+            hasher.combine(endTimestamp)
+        }
 
         api
             .map(\.url.absoluteString)
