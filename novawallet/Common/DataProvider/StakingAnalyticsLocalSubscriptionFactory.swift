@@ -28,6 +28,24 @@ final class StakingAnalyticsLocalSubscriptionFactory {
     }
 }
 
+private extension StakingAnalyticsLocalSubscriptionFactory {
+    func createHash(
+        for address: AccountAddress,
+        urls: [URL]
+    ) -> Int {
+        var hasher = Hasher()
+
+        hasher.combine(address)
+
+        urls
+            .map(\.absoluteString)
+            .sorted()
+            .forEach { hasher.combine($0) }
+
+        return hasher.finalize()
+    }
+}
+
 extension StakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol {
     func getWeaklyAnalyticsProvider(
         for address: AccountAddress,
@@ -35,7 +53,8 @@ extension StakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscri
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]> {
         clearIfNeeded()
 
-        let identifier = "weaklyAnalytics" + address + urls.map(\.absoluteString).joined(with: .dash)
+        let hash = createHash(for: address, urls: urls)
+        let identifier = "weaklyAnalytics_\(hash)"
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<[SubqueryRewardItemData]> {
             return AnySingleValueProvider(provider)

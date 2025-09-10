@@ -72,6 +72,28 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
 
 final class NPoolsLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory {}
 
+private extension NPoolsLocalSubscriptionFactory {
+    func createHash(
+        for address: AccountAddress,
+        startTimestamp: Int64?,
+        endTimestamp: Int64?,
+        api: Set<LocalChainExternalApi>
+    ) -> Int {
+        var hasher = Hasher()
+
+        hasher.combine(address)
+        hasher.combine(startTimestamp ?? 0)
+        hasher.combine(endTimestamp ?? 0)
+
+        api
+            .map(\.url.absoluteString)
+            .sorted()
+            .forEach { hasher.combine($0) }
+
+        return hasher.finalize()
+    }
+}
+
 extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol {
     func getMinJoinBondProvider(
         for chainId: ChainModel.Id
@@ -263,14 +285,14 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         clearIfNeeded()
 
-        let timeIdentifier = [
-            startTimestamp.map { "\($0)" } ?? "nil",
-            endTimestamp.map { "\($0)" } ?? "nil"
-        ].joined(separator: "-")
+        let hash = createHash(
+            for: address,
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            api: api
+        )
 
-        let identifier = ("poolReward" + api.map(\.url.absoluteString).joined(with: .dash))
-            + address
-            + timeIdentifier
+        let identifier = "poolReward_\(hash)"
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
             return AnySingleValueProvider(provider)
