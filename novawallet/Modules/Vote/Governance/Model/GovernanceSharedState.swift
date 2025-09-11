@@ -13,11 +13,11 @@ final class GovernanceSharedState {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
-    var timepointThresholdStore: TimepointThresholdStoreProtocol? {
-        thresholdStore ?? createAndSaveThresholdStateStore()
+    var timepointThresholdService: TimepointThresholdServiceProtocol? {
+        thresholdService ?? setupThresholdService()
     }
 
-    private var thresholdStore: TimepointThresholdStoreProtocol?
+    private weak var thresholdService: TimepointThresholdServiceProtocol?
     private(set) var subscriptionFactory: GovernanceSubscriptionFactoryProtocol?
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
@@ -73,13 +73,13 @@ final class GovernanceSharedState {
 // MARK: - Private
 
 private extension GovernanceSharedState {
-    func createAndSaveThresholdStateStore() -> TimepointThresholdStore? {
+    func setupThresholdService() -> TimepointThresholdService? {
         guard
             let chain = settings.value?.chain,
             let blockTimeService
         else { return nil }
 
-        let store = TimepointThresholdStore(
+        let service = TimepointThresholdService(
             chain: chain,
             chainRegistry: chainRegistry,
             estimationService: blockTimeService,
@@ -88,9 +88,9 @@ private extension GovernanceSharedState {
             workingQueue: .main
         )
 
-        thresholdStore = store
+        thresholdService = service
 
-        return store
+        return service
     }
 }
 

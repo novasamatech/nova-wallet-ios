@@ -90,11 +90,13 @@ private extension SubqueryDelegateStatsOperationFactory {
     }
 
     func createFilter(for threshold: TimepointThreshold) -> String {
-        switch threshold {
-        case let .block(blockNumber, _):
-            "{at: {greaterThanOrEqualTo: \(blockNumber)}}"
-        case let .timestamp(timestamp):
-            "{timestamp: {greaterThanOrEqualTo: \(timestamp)}}"
+        let value = threshold.value
+
+        return switch threshold.type {
+        case .block:
+            "{at: {greaterThanOrEqualTo: \(value)}}"
+        case .timestamp:
+            "{timestamp: {greaterThanOrEqualTo: \(value)}}"
         }
     }
 }

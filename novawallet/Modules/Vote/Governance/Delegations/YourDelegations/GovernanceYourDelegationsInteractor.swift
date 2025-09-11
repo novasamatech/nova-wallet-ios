@@ -11,7 +11,7 @@ final class GovernanceYourDelegationsInteractor {
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let offchainOperationFactory: GovernanceDelegateListFactoryProtocol
-    let timepointThresholdStore: TimepointThresholdStoreProtocol
+    let timepointThresholdService: TimepointThresholdServiceProtocol
     let runtimeService: RuntimeProviderProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
@@ -31,7 +31,7 @@ final class GovernanceYourDelegationsInteractor {
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         offchainOperationFactory: GovernanceDelegateListFactoryProtocol,
-        timepointThresholdStore: TimepointThresholdStoreProtocol,
+        timepointThresholdService: TimepointThresholdServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
@@ -42,7 +42,7 @@ final class GovernanceYourDelegationsInteractor {
         self.subscriptionFactory = subscriptionFactory
         self.referendumsOperationFactory = referendumsOperationFactory
         self.offchainOperationFactory = offchainOperationFactory
-        self.timepointThresholdStore = timepointThresholdStore
+        self.timepointThresholdService = timepointThresholdService
         self.runtimeService = runtimeService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
@@ -60,7 +60,8 @@ private extension GovernanceYourDelegationsInteractor {
         guard !delegatesCallStore.hasCall else { return }
 
         if !delegateIds.isEmpty, let currentThreshold {
-            let thresholdBackInDays = currentThreshold.backIn(days: lastVotedDays)
+            let thresholdBackInDays = currentThreshold
+                .backIn(seconds: TimeInterval(lastVotedDays).secondsFromDays)
 
             let wrapper = offchainOperationFactory.fetchDelegateListByIdsWrapper(
                 from: delegateIds,
@@ -138,9 +139,9 @@ private extension GovernanceYourDelegationsInteractor {
     }
 
     func subscribeTimepointThreshold() {
-        timepointThresholdStore.remove(observer: self)
+        timepointThresholdService.remove(observer: self)
 
-        timepointThresholdStore.add(
+        timepointThresholdService.add(
             observer: self,
             sendStateOnSubscription: true
         ) { [weak self] _, timepointThreshold in
@@ -149,8 +150,8 @@ private extension GovernanceYourDelegationsInteractor {
             currentThreshold = timepointThreshold
 
             if
-                case let .block(newBlockNumber, _) = timepointThreshold,
-                case let .block(previousBlockNumber, _) = previousThreshold,
+                case let .block(newBlockNumber, _) = timepointThreshold.type,
+                case let .block(previousBlockNumber, _) = previousThreshold?.type,
                 newBlockNumber.isNext(to: previousBlockNumber) {
                 return
             }
@@ -169,6 +170,8 @@ private extension GovernanceYourDelegationsInteractor {
 
 extension GovernanceYourDelegationsInteractor: GovernanceYourDelegationsInteractorInputProtocol {
     func setup() {
+        timepointThresholdService.setup()
+
         subscribeAccountVotes()
         subscribeTimepointThreshold()
         subscribeToDelegatesMetadata()

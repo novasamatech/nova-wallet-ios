@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol TimepointThresholdStoreProtocol {
+protocol TimepointThresholdServiceProtocol: AnyObject {
     func add(
         observer: AnyObject,
         sendStateOnSubscription: Bool,
@@ -9,9 +9,10 @@ protocol TimepointThresholdStoreProtocol {
     )
     func remove(observer: AnyObject)
     func reset()
+    func setup()
 }
 
-final class TimepointThresholdStore: BaseObservableStateStore<TimepointThreshold>, AnyProviderAutoCleaning {
+final class TimepointThresholdService: BaseObservableStateStore<TimepointThreshold>, AnyProviderAutoCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
 
     private let chain: ChainModel
@@ -42,31 +43,12 @@ final class TimepointThresholdStore: BaseObservableStateStore<TimepointThreshold
         self.workingQueue = workingQueue
 
         super.init(logger: Logger.shared)
-
-        setup()
     }
 }
 
 // MARK: - Private
 
-private extension TimepointThresholdStore {
-    func setup() {
-        guard chain.separateTimelineChain else {
-            blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
-            return
-        }
-
-        updateState(with: Int64(Date().timeIntervalSince1970))
-    }
-
-    func throttle() {
-        clear(dataProvider: &blockNumberProvider)
-    }
-
-    func updateState(with timestamp: Int64) {
-        stateObservable.state = .timestamp(timestamp)
-    }
-
+private extension TimepointThresholdService {
     func updateState(with blockNumber: BlockNumber) {
         do {
             let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
@@ -83,7 +65,9 @@ private extension TimepointThresholdStore {
             ) { [weak self] result in
                 switch result {
                 case let .success(blockTime):
-                    self?.stateObservable.state = .block(blockNumber: blockNumber, blockTime: blockTime)
+                    self?.stateObservable.state = TimepointThreshold(
+                        type: .block(blockNumber: blockNumber, blockTime: blockTime)
+                    )
                 case let .failure(error):
                     self?.logger.error("Did receive block time error: \(error)")
                 }
@@ -96,7 +80,7 @@ private extension TimepointThresholdStore {
 
 // MARK: - GeneralLocalStorageSubscriber
 
-extension TimepointThresholdStore: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+extension TimepointThresholdService: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(
         result: Result<BlockNumber?, Error>,
         chainId _: ChainModel.Id
@@ -104,34 +88,43 @@ extension TimepointThresholdStore: GeneralLocalStorageSubscriber, GeneralLocalSt
         switch result {
         case let .success(blockNumber):
             guard let blockNumber else { return }
+            mutex.lock()
             updateState(with: blockNumber)
+            mutex.unlock()
         case let .failure(error):
             logger.error("Did receive block number error: \(error)")
         }
-
-        guard observers.isEmpty else { return }
-
-        throttle()
     }
 }
 
-// MARK: - TimepointThresholdStoreProtocol
+// MARK: - TimepointThresholdServiceProtocol
 
-extension TimepointThresholdStore: TimepointThresholdStoreProtocol {
+extension TimepointThresholdService: TimepointThresholdServiceProtocol {
     func add(
         observer: AnyObject,
         sendStateOnSubscription: Bool,
         closure: @escaping Observable<TimepointThreshold?>.StateChangeClosure
     ) {
-        if observers.isEmpty {
-            setup()
-        }
-
         add(
             observer: observer,
             sendStateOnSubscription: sendStateOnSubscription,
             queue: workingQueue,
             closure: closure
         )
+    }
+
+    func setup() {
+        let alreadySetUp: Bool = stateObservable.state != nil || blockNumberProvider != nil
+
+        guard !alreadySetUp else {
+            return
+        }
+
+        guard chain.separateTimelineChain else {
+            blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+            return
+        }
+
+        stateObservable.state = TimepointThreshold(type: .timestamp)
     }
 }

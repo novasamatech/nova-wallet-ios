@@ -63,7 +63,7 @@ struct GovernanceDelegateInfoViewFactory {
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let referendumsOperationFactory = state.referendumsOperationFactory,
             let subscriptionFactory = state.subscriptionFactory,
-            let thresholdStore = state.timepointThresholdStore
+            let thresholdService = state.timepointThresholdService
         else {
             return nil
         }
@@ -93,7 +93,7 @@ struct GovernanceDelegateInfoViewFactory {
             referendumOperationFactory: referendumsOperationFactory,
             subscriptionFactory: subscriptionFactory,
             detailsOperationFactory: statsOperationFactory,
-            timepointThresholdStore: thresholdStore,
+            timepointThresholdService: thresholdService,
             runtimeService: runtimeProvider,
             identityProxyFactory: identityProxyFactory,
             govJsonProviderFactory: JsonDataProviderFactory.shared,

@@ -12,7 +12,7 @@ final class GovernanceDelegateInfoInteractor {
     let referendumOperationFactory: ReferendumsOperationFactoryProtocol
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
-    let timepointThresholdStore: TimepointThresholdStoreProtocol
+    let timepointThresholdService: TimepointThresholdServiceProtocol
     let runtimeService: RuntimeProviderProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
@@ -31,7 +31,7 @@ final class GovernanceDelegateInfoInteractor {
         referendumOperationFactory: ReferendumsOperationFactoryProtocol,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
-        timepointThresholdStore: TimepointThresholdStoreProtocol,
+        timepointThresholdService: TimepointThresholdServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
@@ -42,7 +42,7 @@ final class GovernanceDelegateInfoInteractor {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
         self.detailsOperationFactory = detailsOperationFactory
-        self.timepointThresholdStore = timepointThresholdStore
+        self.timepointThresholdService = timepointThresholdService
         self.referendumOperationFactory = referendumOperationFactory
         self.subscriptionFactory = subscriptionFactory
         self.runtimeService = runtimeService
@@ -116,7 +116,9 @@ private extension GovernanceDelegateInfoInteractor {
             let delegateAddress = try? delegateId.toAddress(using: chain.chainFormat)
         else { return }
 
-        let threshold = currentThreshold.backIn(days: lastVotedDays)
+        let threshold = currentThreshold.backIn(
+            seconds: TimeInterval(lastVotedDays).secondsFromDays
+        )
 
         let wrapper = detailsOperationFactory.fetchDetailsWrapper(
             for: delegateAddress,
@@ -139,18 +141,20 @@ private extension GovernanceDelegateInfoInteractor {
     }
 
     func subscribeTimepointThreshold() {
-        timepointThresholdStore.remove(observer: self)
+        timepointThresholdService.remove(observer: self)
 
-        timepointThresholdStore.add(
+        timepointThresholdService.add(
             observer: self,
             sendStateOnSubscription: true
         ) { [weak self] _, timepointThreshold in
             guard let self, let timepointThreshold else { return }
+            let previousThreshold = currentThreshold
+            currentThreshold = timepointThreshold
 
             if
-                case let .block(newBlockNumber, _) = timepointThreshold,
-                case let .block(currentBlockNumber, _) = currentThreshold,
-                newBlockNumber.isNext(to: currentBlockNumber) {
+                case let .block(newBlockNumber, _) = timepointThreshold.type,
+                case let .block(previousBlockNumber, _) = previousThreshold?.type,
+                newBlockNumber.isNext(to: previousBlockNumber) {
                 return
             }
 
@@ -185,6 +189,8 @@ private extension GovernanceDelegateInfoInteractor {
 
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
+        timepointThresholdService.setup()
+
         subscribeTimepointThreshold()
         provideIdentity(for: delegateId)
         subscribeAccountVotes()
