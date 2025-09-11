@@ -220,6 +220,11 @@ private extension XcmTransfers {
             throw XcmTransfersError.noReserve(chainAsset.chainAssetId)
         }
 
+        let usesTeleport = dynamicTransfers.getUsesCustomTeleport(
+            from: chainAsset.chainAssetId,
+            destination: destinationChain.chainId
+        )
+
         return XcmTransferMetadata(
             callType: transfer.type,
             reserve: XcmTransferMetadata.Reserve(
@@ -229,7 +234,7 @@ private extension XcmTransfers {
             fee: .dynamic,
             paysDeliveryFee: transfer.hasDeliveryFee ?? false,
             supportsXcmExecute: transfer.supportsXcmExecute ?? false,
-            usesTeleport: transfer.usesTeleport ?? false
+            usesTeleport: usesTeleport
         )
     }
 }
@@ -303,7 +308,7 @@ struct XcmTransferMetadata {
         }
     }
 
-    let callType: XcmTransferType
+    let callType: XcmCallType
     let reserve: Reserve
     let fee: Fee
     let paysDeliveryFee: Bool

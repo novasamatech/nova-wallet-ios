@@ -26,13 +26,17 @@ private extension MultisigUniMetaAccountFactory {
             return wallet.info
         }
 
-        guard !signatoryWallets.isEmpty, signatoryWallets.allSupportUniversalMultisig() else {
+        // create universal multisig if there is a wallet that supports it
+        guard let wallet = signatoryWallets.first(where: { $0.supportsUniversalMultisig }) else {
             return nil
         }
 
-        if signatoryWallets.allMatchSubstrateAccount(multisig.signatory) {
+        // substrate account id and ethereum address never equal but still can be signatories of
+        // different multisigs
+
+        if wallet.substrateAccountId == multisig.signatory {
             return .substrate
-        } else if signatoryWallets.allMatchEthereumAccount(multisig.signatory) {
+        } else if wallet.ethereumAddress == multisig.signatory {
             return .evm
         } else {
             return nil

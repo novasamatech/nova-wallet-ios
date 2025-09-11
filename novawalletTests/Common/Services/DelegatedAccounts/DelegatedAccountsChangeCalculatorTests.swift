@@ -332,6 +332,277 @@ final class DelegatedAccountsChangeCalculatorTests: XCTestCase {
         XCTAssertEqual(changes.removedItems.count, 0)
     }
     
+    func testMultipleSingleChainsMultisigsForProxyAndParitySignerWallet() {
+        // given
+        
+        let chain1 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let chain2 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let proxyWallet = AccountGenerator.generateMetaAccount()
+        let paritySignerWallet = AccountGenerator.generateMetaAccount(type: .paritySigner)
+        
+        let proxied = DiscoveredAccount.ProxiedModel(
+            proxyAccountId: proxyWallet.substrateAccountId!,
+            proxiedAccountId: paritySignerWallet.substrateAccountId!,
+            type: .any,
+            chainId: chain1.chainId
+        )
+        
+        let multisig = generateMultisig(for: paritySignerWallet.substrateAccountId!)
+        
+        let calculator = setupCalculator(chains: [chain1, chain2])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [proxied, multisig],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: proxyWallet),
+                ManagedMetaAccountModel(info: paritySignerWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 3 else {
+            XCTFail("Expected 3 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            verifyProxy(
+                wallet: changes.newOrUpdatedItems[0].info,
+                proxiedModel: proxied
+            )
+        )
+        
+        let onlyMultisigsExpected = changes.newOrUpdatedItems.dropFirst()
+        
+        // make sure there are single chain multisigs for each chain
+        XCTAssert(
+            [chain1, chain2].allSatisfy { chain in
+                onlyMultisigsExpected.contains { change in
+                    verifyMultisig(
+                        wallet: change.info,
+                        multisigModel: multisig,
+                        multisigType: .singleChain(chain.chainId)
+                    )
+                }
+            }
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
+    func testUniversalMultisigForProxidAndWithSecretsWallets() {
+        // given
+        
+        let chain1 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let chain2 = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let proxyWallet = AccountGenerator.generateMetaAccount()
+        let secretsWallet = AccountGenerator.generateMetaAccount()
+        
+        let proxied = DiscoveredAccount.ProxiedModel(
+            proxyAccountId: proxyWallet.substrateAccountId!,
+            proxiedAccountId: secretsWallet.substrateAccountId!,
+            type: .any,
+            chainId: chain1.chainId
+        )
+        
+        let multisig = generateMultisig(for: secretsWallet.substrateAccountId!)
+        
+        let calculator = setupCalculator(chains: [chain1, chain2])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [proxied, multisig],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: proxyWallet),
+                ManagedMetaAccountModel(info: secretsWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 2 else {
+            XCTFail("Expected 3 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            verifyProxy(
+                wallet: changes.newOrUpdatedItems[0].info,
+                proxiedModel: proxied
+            )
+        )
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[1].info,
+                multisigModel: multisig,
+                multisigType: .uniSubstrate
+            )
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
+    func testSeparateUniMultisigsForSubstrateAndEvm() {
+        // given
+        
+        let substrateChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: false,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let evmChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: true,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let secretsWallet = AccountGenerator.generateMetaAccount()
+        
+        let multisigSubstrate = generateMultisig(for: secretsWallet.substrateAccountId!)
+        let multisigEvm = generateMultisig(for: secretsWallet.ethereumAddress!)
+        
+        let calculator = setupCalculator(chains: [substrateChain, evmChain])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [multisigSubstrate, multisigEvm],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: secretsWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 2 else {
+            XCTFail("Expected 3 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            changes.newOrUpdatedItems.contains { change in
+                verifyMultisig(
+                    wallet: change.info,
+                    multisigModel: multisigSubstrate,
+                    multisigType: .uniSubstrate
+                )
+            }
+        )
+        
+        XCTAssert(
+            changes.newOrUpdatedItems.contains { change in
+                verifyMultisig(
+                    wallet: change.info,
+                    multisigModel: multisigEvm,
+                    multisigType: .uniEvm
+                )
+            }
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
+    func testNoSingleChainMultisigIfChainNotSupported() {
+        // given
+        
+        let substrateChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: false,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let evmChain = ChainModelGenerator.generateChain(
+            generatingAssets: 1,
+            addressPrefix: 0,
+            isEthereumBased: true,
+            hasProxy: true,
+            hasMultisig: true
+        )
+        
+        let secretsWallet = AccountGenerator.generateMetaAccount()
+        
+        let multisigMultisigSignatory = generateMultisig(for: secretsWallet.ethereumAddress!, isEthereumBased: true)
+        let multisigEvm = generateMultisig(for: multisigMultisigSignatory.accountId, isEthereumBased: true)
+        
+        let calculator = setupCalculator(chains: [substrateChain, evmChain])
+        
+        // when
+        
+        let changes = calculator.calculateUpdates(
+            from: [multisigMultisigSignatory, multisigEvm],
+            initialMetaAccounts: [
+                ManagedMetaAccountModel(info: secretsWallet)
+            ],
+            identities: [:]
+        )
+        
+        // then
+        
+        guard changes.newOrUpdatedItems.count == 2 else {
+            XCTFail("Expected 2 changes, got \(changes.newOrUpdatedItems.count)")
+            return
+        }
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[0].info,
+                multisigModel: multisigMultisigSignatory,
+                multisigType: .uniEvm
+            )
+        )
+        
+        // ensure that multisig is created only for evm and not for substrate chain
+        
+        XCTAssert(
+            verifyMultisig(
+                wallet: changes.newOrUpdatedItems[1].info,
+                multisigModel: multisigEvm,
+                multisigType: .singleChain(evmChain.chainId)
+            )
+        )
+        
+        XCTAssertEqual(changes.removedItems.count, 0)
+    }
+    
     private func verifyProxy(
         wallet: MetaAccountModel,
         proxiedModel: DiscoveredAccount.ProxiedModel
@@ -385,10 +656,13 @@ final class DelegatedAccountsChangeCalculatorTests: XCTestCase {
     private func generateMultisig(
         for signatory: AccountId,
         threshold: Int = 2,
-        totalSignatories: Int = 3
+        totalSignatories: Int = 3,
+        isEthereumBased: Bool = false
     ) -> DiscoveredAccount.MultisigModel {
-        let signatories = (0..<totalSignatories - 1).map { _ in AccountId.random(of: 32)! }
-        let multisigAccountId = AccountId.random(of: 32)!
+        let accountSize = isEthereumBased ? 20 : 32
+        
+        let signatories = (0..<totalSignatories - 1).map { _ in AccountId.random(of: accountSize)! }
+        let multisigAccountId = AccountId.random(of: accountSize)!
         
         return DiscoveredAccount.MultisigModel(
             accountId: multisigAccountId,
