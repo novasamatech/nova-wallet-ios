@@ -18,12 +18,14 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
             }
         } ?? [:]
 
-        return authorizationStore.values.map { auth in
+        return authorizationStore.values.compactMap { auth in
+            guard let dappId = auth.dAppId else { return nil }
+
             let title: String
             let subtitle: String?
 
-            let path = URL(string: auth.dAppId)?.path
-            let optDApp = dAppsStore[auth.dAppId]
+            let path = URL(string: dappId)?.path
+            let optDApp = dAppsStore[dappId]
 
             if let dApp = optDApp {
                 title = dApp.name
@@ -46,7 +48,7 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
                 title: title,
                 subtitle: subtitle,
                 iconViewModel: imageViewModel,
-                identifier: auth.dAppId
+                identifier: dappId
             )
         }.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
     }
