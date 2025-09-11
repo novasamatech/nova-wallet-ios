@@ -7,13 +7,6 @@ enum XcmExecuteDerivatorError: Error {
 }
 
 final class XcmExecuteDerivator {
-    enum TransferType {
-        case teleport
-        case localReserve
-        case destinationReserve
-        case remoteReserve(XcmUni.AbsoluteLocation)
-    }
-
     let chainRegistry: ChainRegistryProtocol
     let xcmPaymentFactory: XcmPaymentOperationFactoryProtocol
     let metadataFactory: XcmPalletMetadataQueryFactoryProtocol
@@ -36,29 +29,6 @@ private extension XcmExecuteDerivator {
             XcmUni.Asset(assetId: asset.assetId, amount: amount / 2)
         case .nonFungible:
             asset
-        }
-    }
-
-    func isTeleport(request: XcmUnweightedTransferRequest) -> Bool {
-        let systemToRelay = request.origin.parachainId.isSystemParachain && request.destination.parachainId.isRelay
-        let relayToSystem = request.origin.parachainId.isRelay && request.destination.parachainId.isSystemParachain
-        let systemToSystem = request.origin.parachainId.isSystemParachain &&
-            request.destination.parachainId.isSystemParachain
-
-        return systemToRelay || relayToSystem || systemToSystem || request.metadata.usesTeleport
-    }
-
-    func determineTransferType(
-        for request: XcmUnweightedTransferRequest
-    ) -> TransferType {
-        if isTeleport(request: request) {
-            .teleport
-        } else if request.origin.chainAsset.chainAssetId.chainId == request.reserve.chain.chainId {
-            .localReserve
-        } else if request.destination.chain.chainId == request.reserve.chain.chainId {
-            .destinationReserve
-        } else {
-            .remoteReserve(XcmUni.AbsoluteLocation(paraId: request.reserve.parachainId))
         }
     }
 
@@ -319,7 +289,7 @@ extension XcmExecuteDerivator: XcmCallDerivating {
         for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         do {
-            let transferType = determineTransferType(for: transferRequest)
+            let transferType = transferRequest.deriveXcmTransferType()
 
             let program: XcmUni.Instructions = switch transferType {
             case .localReserve:

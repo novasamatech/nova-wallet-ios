@@ -11,6 +11,7 @@ extension XcmUni {
     typealias VersionedAssets = Versioned<XcmUni.Assets>
     typealias VersionedLocation = Versioned<XcmUni.RelativeLocation>
     typealias VersionedLocatableAsset = Versioned<XcmUni.LocatableAsset>
+    typealias VersionedAssetId = Versioned<XcmUni.AssetId>
 }
 
 extension XcmUni.Versioned: Equatable where Entity: Equatable {}
