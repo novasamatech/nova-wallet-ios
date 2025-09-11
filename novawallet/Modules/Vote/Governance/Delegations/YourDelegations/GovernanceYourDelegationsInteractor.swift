@@ -143,7 +143,8 @@ private extension GovernanceYourDelegationsInteractor {
 
         timepointThresholdService.add(
             observer: self,
-            sendStateOnSubscription: true
+            sendStateOnSubscription: true,
+            queue: .main
         ) { [weak self] _, timepointThreshold in
             guard let self, let timepointThreshold else { return }
             let previousThreshold = currentThreshold

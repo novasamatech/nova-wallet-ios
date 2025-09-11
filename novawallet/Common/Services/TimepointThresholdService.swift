@@ -5,6 +5,7 @@ protocol TimepointThresholdServiceProtocol: AnyObject {
     func add(
         observer: AnyObject,
         sendStateOnSubscription: Bool,
+        queue: DispatchQueue?,
         closure: @escaping Observable<TimepointThreshold?>.StateChangeClosure
     )
     func remove(observer: AnyObject)
@@ -104,19 +105,6 @@ extension TimepointThresholdService: GeneralLocalStorageSubscriber, GeneralLocal
 // MARK: - TimepointThresholdServiceProtocol
 
 extension TimepointThresholdService: TimepointThresholdServiceProtocol {
-    func add(
-        observer: AnyObject,
-        sendStateOnSubscription: Bool,
-        closure: @escaping Observable<TimepointThreshold?>.StateChangeClosure
-    ) {
-        add(
-            observer: observer,
-            sendStateOnSubscription: sendStateOnSubscription,
-            queue: workingQueue,
-            closure: closure
-        )
-    }
-
     func setup() {
         mutex.lock()
         defer { mutex.unlock() }
