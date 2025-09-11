@@ -1927,7 +1927,6 @@
 "swap.dry.run.failed.inline.message" = "Simulation of swap step failed";
 "common.dry.run.failed.title" = "Transaction simulation failed";
 "common.dry.run.failed.message" = "Nova simulates the transaction beforehand to prevent errors. This simulation didn’t succeed. Try again later or with a higher amount. If the issue persists, please contact Nova Wallet Support in Settings.";
-"multisig.wallet.details.other.signatories" = "Other signatories";
 "notifications.management.multisig.transactions" = "Multisig transactions";
 "notifications.management.multisig.signature.requested" = "Your signature requested";
 "notifications.management.multisig.signed.by.signatory" = "Signed by signatory";

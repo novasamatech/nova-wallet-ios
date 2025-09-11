@@ -8,6 +8,7 @@ struct XcmDynamicTransfers: Decodable {
 
     let assetsLocation: [AssetLocationId: AssetLocation]
     let reserveIdOverrides: [ChainModel.Id: [AssetIdKey: AssetLocationId]]
+    let customTeleports: Set<XcmCustomTeleport>?
     let chains: [XcmDynamicChain]
 
     func transfer(
@@ -44,5 +45,19 @@ struct XcmDynamicTransfers: Decodable {
         let assetLocationId = reserveIdOverrides[chainId]?[assetIdKey] ?? chainAsset.asset.symbol
 
         return assetsLocation[assetLocationId]?.chainId?.stringValue
+    }
+
+    func getUsesCustomTeleport(from origin: ChainAssetId, destination: ChainModel.Id) -> Bool {
+        guard let customTeleports else {
+            return false
+        }
+
+        let model = XcmCustomTeleport(
+            originChain: origin.chainId,
+            destChain: destination,
+            originAsset: origin.assetId
+        )
+
+        return customTeleports.contains(model)
     }
 }

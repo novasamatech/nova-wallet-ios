@@ -19,16 +19,19 @@ private extension MultisigSingleChainAccountFactory {
         for multisig: DiscoveredAccount.MultisigModel,
         context: DelegatedMetaAccountFactoryContext
     ) -> Bool {
+        let request = chainModel.accountRequest()
+
         let signatoryWallets: [MetaAccountModel] = context.metaAccounts.compactMap { wallet in
-            guard wallet.info.has(accountId: multisig.signatory, chainId: chainModel.chainId) else {
+            guard wallet.info.fetch(for: request)?.accountId == multisig.signatory else {
                 return nil
             }
 
             return wallet.info
         }
 
-        // ensure there is at least one signatory and multisig can't be created as universal
-        return !signatoryWallets.isEmpty && !signatoryWallets.allSupportUniversalMultisig()
+        // create single chain multisig if no wallet that supports universal multisig
+
+        return !signatoryWallets.isEmpty && !signatoryWallets.containsWalletForUniMultisig()
     }
 
     func createWallet(

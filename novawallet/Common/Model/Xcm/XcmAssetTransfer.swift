@@ -2,7 +2,7 @@ import Foundation
 
 struct XcmAssetTransfer: Decodable {
     let destination: XcmAssetTransfer.Destination
-    let type: XcmTransferType
+    let type: XcmCallType
 }
 
 extension XcmAssetTransfer {

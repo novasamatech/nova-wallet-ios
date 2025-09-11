@@ -147,7 +147,7 @@ final class XcmLegacyCrosschainFeeCalculator {
 
 private extension XcmLegacyCrosschainFeeCalculator {
     func createModuleResolutionWrapper(
-        for transferType: XcmTransferType,
+        for transferType: XcmCallType,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String> {
         switch transferType {
@@ -156,7 +156,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
         case .xcmpallet, .teleport, .xcmpalletTransferAssets:
             return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
         case .unknown:
-            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
+            return CompoundOperationWrapper.createWithError(XcmCallTypeError.unknownType)
         }
     }
 

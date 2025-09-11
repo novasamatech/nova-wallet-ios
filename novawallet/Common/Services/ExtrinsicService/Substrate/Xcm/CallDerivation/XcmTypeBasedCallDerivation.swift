@@ -16,6 +16,54 @@ final class XcmTypeBasedCallDerivator {
 }
 
 private extension XcmTypeBasedCallDerivator {
+    func createTransferAssetsUsingTypeAndThen(
+        for request: XcmUnweightedTransferRequest,
+        dependingOn moduleResolutionOperation: BaseOperation<String>,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
+        let mapOperation = ClosureOperation<RuntimeCallCollecting> {
+            let module = try moduleResolutionOperation.extractNoCancellableResultData()
+            let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
+            let xcmVersion = destinationAsset.beneficiary.version
+
+            let beneficiaryAccount = destinationAsset.beneficiary.map { $0.lastItemLocation() }
+            let destination = destinationAsset.beneficiary.map { $0.dropingLastItem() }
+
+            let transferType = Xcm.TransferType(
+                transferTypeWithRelativeLocation: request.deriveXcmTransferType(),
+                version: xcmVersion
+            )
+
+            let feeAssetId = destinationAsset.asset.map(\.assetId)
+
+            let xcmOnDestination = XcmUni.VersionedMessage(
+                entity: [
+                    XcmUni.Instruction.depositAsset(
+                        XcmUni.DepositAssetValue(
+                            assets: .wild(.singleCounted),
+                            beneficiary: beneficiaryAccount.entity
+                        )
+                    )
+                ],
+                version: xcmVersion
+            )
+
+            let call = Xcm.TransferAssetsUsingTypeAndThen(
+                destination: destination,
+                assets: destinationAsset.asset.toVersionedAssets(),
+                assetsTransferType: transferType,
+                remoteFeesId: feeAssetId,
+                feesTransferType: transferType,
+                customXcmOnDest: xcmOnDestination,
+                weightLimit: .unlimited
+            ).runtimeCall(for: module)
+
+            return RuntimeCallCollector(call: call)
+        }
+
+        return CompoundOperationWrapper(targetOperation: mapOperation)
+    }
+
     func createPalletXcmTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         callPathFactory: @escaping (String) -> CallCodingPath,
@@ -77,15 +125,15 @@ private extension XcmTypeBasedCallDerivator {
     func createTransferMappingWrapper(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        transferMetadata: XcmTransferMetadata,
+        transferRequest: XcmUnweightedTransferRequest,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
-        switch transferMetadata.callType {
+        switch transferRequest.metadata.callType {
         case .xtokens:
             return createOrmlTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 destinationAssetOperation: destinationAssetOperation,
-                transferMetadata: transferMetadata,
+                transferMetadata: transferRequest.metadata,
                 runtimeProvider: runtimeProvider
             )
         case .xcmpallet:
@@ -101,18 +149,18 @@ private extension XcmTypeBasedCallDerivator {
                 destinationAssetOperation: destinationAssetOperation
             )
         case .xcmpalletTransferAssets:
-            return createPalletXcmTransferMapping(
+            return createTransferAssetsUsingTypeAndThen(
+                for: transferRequest,
                 dependingOn: moduleResolutionOperation,
-                callPathFactory: { Xcm.transferAssetsPath(for: $0) },
                 destinationAssetOperation: destinationAssetOperation
             )
         case .unknown:
-            return .createWithError(XcmTransferTypeError.unknownType)
+            return .createWithError(XcmCallTypeError.unknownType)
         }
     }
 
     func createModuleResolutionWrapper(
-        for transferType: XcmTransferType,
+        for transferType: XcmCallType,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String> {
         switch transferType {
@@ -121,7 +169,7 @@ private extension XcmTypeBasedCallDerivator {
         case .xcmpallet, .teleport, .xcmpalletTransferAssets:
             return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
         case .unknown:
-            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
+            return CompoundOperationWrapper.createWithError(XcmCallTypeError.unknownType)
         }
     }
 
@@ -173,7 +221,7 @@ extension XcmTypeBasedCallDerivator: XcmCallDerivating {
             let mapWrapper = createTransferMappingWrapper(
                 dependingOn: moduleResolutionWrapper.targetOperation,
                 destinationAssetOperation: destinationAssetWrapper.targetOperation,
-                transferMetadata: transferRequest.metadata,
+                transferRequest: transferRequest,
                 runtimeProvider: runtimeProvider
             )
 

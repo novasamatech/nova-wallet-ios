@@ -19,5 +19,5 @@ extension XcmDynamicAsset: XcmTransferAssetProtocol {
 }
 
 extension XcmDynamicAssetTransfer: XcmTransferDestinationProtocol {
-    var type: XcmTransferType { .xcmpalletTransferAssets }
+    var type: XcmCallType { .xcmpalletTransferAssets }
 }
