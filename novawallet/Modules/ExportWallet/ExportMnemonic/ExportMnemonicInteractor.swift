@@ -71,8 +71,7 @@ extension ExportMnemonicInteractor: ExportMnemonicInteractorInputProtocol {
         exportOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let model = try exportOperation
-                        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                    let model = try exportOperation.extractNoCancellableResultData()
 
                     self?.presenter?.didReceive(exportData: model)
                 } catch {

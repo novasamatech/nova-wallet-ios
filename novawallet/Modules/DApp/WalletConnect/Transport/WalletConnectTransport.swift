@@ -75,9 +75,8 @@ final class WalletConnectTransport {
                 let wallet: MetaAccountModel?
 
                 if
-                    let settings = allSettings[wcSession.pairingTopic],
-                    let metaId = settings.metaId {
-                    wallet = allWallets[metaId]
+                    let settings = allSettings[wcSession.pairingTopic] {
+                    wallet = allWallets[settings.metaId]
                 } else {
                     wallet = nil
                 }

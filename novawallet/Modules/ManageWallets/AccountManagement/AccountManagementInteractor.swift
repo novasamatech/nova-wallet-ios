@@ -188,8 +188,7 @@ final class AccountManagementInteractor {
         )
 
         let saveOperation = walletRepository.saveOperation({
-            guard let currentItem = try fetchOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            guard let currentItem = try fetchOperation.extractNoCancellableResultData()
             else {
                 throw AccountManagementError.missingAccount
             }

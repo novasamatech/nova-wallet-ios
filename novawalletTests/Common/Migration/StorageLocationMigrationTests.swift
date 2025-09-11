@@ -50,7 +50,7 @@ final class StorageLocationMigrationTests: XCTestCase {
             try migrator.migrate()
             
             let fetchedMetaIds = try fetchNewEntities(
-                for: .version18,
+                for: .version19,
                 persistentSettings: newSettings
             )
             

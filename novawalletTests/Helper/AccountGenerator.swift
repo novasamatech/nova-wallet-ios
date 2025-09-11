@@ -39,10 +39,10 @@ enum AccountGenerator {
             multisig: nil
         )
     }
-    
-    static func generateChainAccount() -> ChainAccountModel {
+
+    static func generateChainAccount(with chainId: ChainModel.Id? = nil) -> ChainAccountModel {
         ChainAccountModel(
-            chainId: Data.random(of: 32)!.toHex(),
+            chainId: chainId ?? Data.random(of: 32)!.toHex(),
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
