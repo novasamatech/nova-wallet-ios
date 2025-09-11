@@ -61,9 +61,10 @@ struct GovernanceDelegateInfoViewFactory {
             let delegateAccountId = try? delegate.stats.address.toAccountId(),
             let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let timelineService = state.createChainTimelineFacade(),
             let referendumsOperationFactory = state.referendumsOperationFactory,
-            let subscriptionFactory = state.subscriptionFactory else {
+            let subscriptionFactory = state.subscriptionFactory,
+            let thresholdService = state.timepointThresholdService
+        else {
             return nil
         }
 
@@ -92,10 +93,9 @@ struct GovernanceDelegateInfoViewFactory {
             referendumOperationFactory: referendumsOperationFactory,
             subscriptionFactory: subscriptionFactory,
             detailsOperationFactory: statsOperationFactory,
+            timepointThresholdService: thresholdService,
             runtimeService: runtimeProvider,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             identityProxyFactory: identityProxyFactory,
-            timelineService: timelineService,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

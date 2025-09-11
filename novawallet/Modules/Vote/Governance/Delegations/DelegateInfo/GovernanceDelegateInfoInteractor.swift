@@ -12,16 +12,16 @@ final class GovernanceDelegateInfoInteractor {
     let referendumOperationFactory: ReferendumsOperationFactoryProtocol
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
+    let timepointThresholdService: TimepointThresholdServiceProtocol
     let runtimeService: RuntimeProviderProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
-    let timelineService: ChainTimelineFacadeProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
     private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
-    private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var currentBlockNumber: BlockNumber?
+    private var currentThreshold: TimepointThreshold?
+
+    private var delegateDetailsCallStore = CancellableCallStore()
 
     init(
         selectedAccountId: AccountId?,
@@ -31,10 +31,9 @@ final class GovernanceDelegateInfoInteractor {
         referendumOperationFactory: ReferendumsOperationFactoryProtocol,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
+        timepointThresholdService: TimepointThresholdServiceProtocol,
         runtimeService: RuntimeProviderProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
-        timelineService: ChainTimelineFacadeProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -43,12 +42,11 @@ final class GovernanceDelegateInfoInteractor {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
         self.detailsOperationFactory = detailsOperationFactory
+        self.timepointThresholdService = timepointThresholdService
         self.referendumOperationFactory = referendumOperationFactory
         self.subscriptionFactory = subscriptionFactory
         self.runtimeService = runtimeService
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.identityProxyFactory = identityProxyFactory
-        self.timelineService = timelineService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
     }
@@ -56,27 +54,29 @@ final class GovernanceDelegateInfoInteractor {
     deinit {
         unsubscribeAccountVotes()
     }
+}
 
-    private func provideTracks() {
+// MARK: - Private
+
+private extension GovernanceDelegateInfoInteractor {
+    func provideTracks() {
         let wrapper = referendumOperationFactory.fetchAllTracks(runtimeProvider: runtimeService)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let tracks = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveTracks(tracks)
-                } catch {
-                    self?.presenter?.didReceiveError(
-                        GovernanceDelegateInfoError.tracksFetchFailed(error)
-                    )
-                }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(tracks):
+                self?.presenter?.didReceiveTracks(tracks)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(GovernanceDelegateInfoError.tracksFetchFailed(error))
             }
         }
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func unsubscribeAccountVotes() {
+    func unsubscribeAccountVotes() {
         guard let selectedAccountId = selectedAccountId else {
             return
         }
@@ -84,7 +84,7 @@ final class GovernanceDelegateInfoInteractor {
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccountId)
     }
 
-    private func subscribeAccountVotes() {
+    func subscribeAccountVotes() {
         guard let selectedAccountId = selectedAccountId else {
             presenter?.didReceiveVotingResult(.init(value: nil, blockHash: nil))
             return
@@ -109,88 +109,90 @@ final class GovernanceDelegateInfoInteractor {
         }
     }
 
-    private func fetchBlockTimeAndUpdateDetails() {
-        let blockTimeUpdateWrapper = timelineService.createBlockTimeOperation()
+    func fetchAndUpdateDetails() {
+        guard
+            !delegateDetailsCallStore.hasCall,
+            let currentThreshold,
+            let delegateAddress = try? delegateId.toAddress(using: chain.chainFormat)
+        else { return }
 
-        blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
+        let threshold = currentThreshold.backIn(
+            seconds: TimeInterval(lastVotedDays).secondsFromDays
+        )
 
-                    self?.fetchDetails(for: blockTime)
-                } catch {
-                    self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
-                }
+        let wrapper = detailsOperationFactory.fetchDetailsWrapper(
+            for: delegateAddress,
+            threshold: threshold
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: delegateDetailsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(details):
+                self?.presenter?.didReceiveDetails(details)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.detailsFetchFailed(error))
             }
         }
-
-        operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func fetchDetails(for blockTime: BlockTime) {
-        do {
-            guard
-                let activityBlockNumber = currentBlockNumber?.blockBackInDays(
-                    lastVotedDays,
-                    blockTime: blockTime
-                ) else {
+    func subscribeTimepointThreshold() {
+        timepointThresholdService.remove(observer: self)
+
+        timepointThresholdService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, timepointThreshold in
+            guard let self, let timepointThreshold else { return }
+            let previousThreshold = currentThreshold
+            currentThreshold = timepointThreshold
+
+            if
+                case let .block(newBlockNumber, _) = timepointThreshold.type,
+                case let .block(previousBlockNumber, _) = previousThreshold?.type,
+                newBlockNumber.isNext(to: previousBlockNumber) {
                 return
             }
 
-            let delegateAddress = try delegateId.toAddress(using: chain.chainFormat)
-
-            let wrapper = detailsOperationFactory.fetchDetailsWrapper(
-                for: delegateAddress,
-                activityStartBlock: activityBlockNumber
-            )
-
-            wrapper.targetOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    do {
-                        let details = try wrapper.targetOperation.extractNoCancellableResultData()
-                        self?.presenter?.didReceiveDetails(details)
-                    } catch {
-                        self?.presenter?.didReceiveError(.detailsFetchFailed(error))
-                    }
-                }
-            }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        } catch {
-            presenter?.didReceiveError(.detailsFetchFailed(error))
+            fetchAndUpdateDetails()
         }
     }
 
-    private func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
-    }
-
-    private func subscribeToDelegatesMetadata() {
+    func subscribeToDelegatesMetadata() {
         metadataProvider?.removeObserver(self)
         metadataProvider = subscribeDelegatesMetadata(for: chain)
     }
 
-    private func provideIdentity(for delegate: AccountId) {
+    func provideIdentity(for delegate: AccountId) {
         let wrapper = identityProxyFactory.createIdentityWrapper(for: { [delegate] })
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let identity = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
-                    self?.presenter?.didReceiveIdentity(identity)
-                } catch {
-                    self?.presenter?.didReceiveError(.identityFetchFailed(error))
-                }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(identities):
+                self?.presenter?.didReceiveIdentity(identities.first?.value)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.identityFetchFailed(error))
             }
         }
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
+// MARK: - GovernanceDelegateInfoInteractorInputProtocol
+
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
-        subscribeBlockNumber()
+        timepointThresholdService.setup()
+
+        subscribeTimepointThreshold()
         provideIdentity(for: delegateId)
         subscribeAccountVotes()
         subscribeToDelegatesMetadata()
@@ -198,13 +200,13 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
     }
 
     func refreshDetails() {
-        if currentBlockNumber != nil {
-            fetchBlockTimeAndUpdateDetails()
-        }
+        guard currentThreshold != nil else { return }
+
+        fetchAndUpdateDetails()
     }
 
     func remakeSubscriptions() {
-        subscribeBlockNumber()
+        subscribeTimepointThreshold()
 
         subscribeToDelegatesMetadata()
 
@@ -220,25 +222,7 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
     }
 }
 
-extension GovernanceDelegateInfoInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber = blockNumber {
-                let optLastBlockNumber = currentBlockNumber
-                currentBlockNumber = blockNumber
-
-                if let lastBlockNumber = optLastBlockNumber, blockNumber.isNext(to: lastBlockNumber) {
-                    return
-                }
-
-                fetchBlockTimeAndUpdateDetails()
-            }
-        case let .failure(error):
-            presenter?.didReceiveError(.blockSubscriptionFailed(error))
-        }
-    }
-}
+// MARK: - GovJsonLocalStorageSubscriber
 
 extension GovernanceDelegateInfoInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
     func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain: ChainModel) {

@@ -20,17 +20,14 @@ extension GovernanceDelegateListFactoryProtocol {
         ) {
             let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard
-                let activityBlockNumber = params.currentBlockNumber.blockBackInDays(
-                    params.lastVotedDays,
-                    blockTime: blockTime
-                ) else {
-                return nil
-            }
-
-            return self.fetchDelegateListWrapper(
-                for: activityBlockNumber
+            let thresholdType: TimepointThresholdType = .block(
+                blockNumber: params.currentBlockNumber,
+                blockTime: blockTime
             )
+            let threshold = TimepointThreshold(type: thresholdType)
+                .backIn(seconds: TimeInterval(params.lastVotedDays).secondsFromDays)
+
+            return self.fetchDelegateListWrapper(for: threshold)
         }
 
         wrapper.addDependency(wrapper: blockTimeUpdateWrapper)
