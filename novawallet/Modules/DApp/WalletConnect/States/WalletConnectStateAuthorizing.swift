@@ -26,7 +26,7 @@ class WalletConnectStateAuthorizing: WalletConnectBaseState {
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
             if authResponse.approved {
                 let settings = DAppSettings(
-                    identifier: pairingId,
+                    dAppId: pairingId,
                     metaId: authResponse.wallet.metaId,
                     source: DAppTransports.walletConnect
                 )

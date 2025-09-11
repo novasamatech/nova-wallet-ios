@@ -29,5 +29,5 @@ final class DAppFavoriteMapper: CoreDataMapperProtocol {
         }
     }
 
-    var entityIdentifierFieldName: String { #keyPath(CDDAppSettings.identifier) }
+    var entityIdentifierFieldName: String { #keyPath(CDDAppFavorite.identifier) }
 }

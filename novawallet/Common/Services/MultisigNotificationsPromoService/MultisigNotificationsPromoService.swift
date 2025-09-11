@@ -79,10 +79,10 @@ private extension MultisigNotificationsPromoService {
 
         clear(streamableProvider: &multisigwWalletListProvider)
 
-        let selectedWalletsOepration = notificationsSettingsrepository.fetchAllOperation(with: .init())
+        let selectedWalletsOperation = notificationsSettingsrepository.fetchAllOperation(with: .init())
 
         execute(
-            operation: selectedWalletsOepration,
+            operation: selectedWalletsOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: workingQueue
         ) { [weak self] result in
