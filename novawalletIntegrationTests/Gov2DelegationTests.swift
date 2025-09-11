@@ -20,7 +20,7 @@ final class Gov2DelegationTests: XCTestCase {
         // when
 
         let wrapper = operationFactory.fetchDelegateListWrapper(
-            for: .block(blockNumber: recentBlockNumber, blockTime: blockTime)
+            for: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -60,7 +60,7 @@ final class Gov2DelegationTests: XCTestCase {
         let delegateIds = Set(delegates.compactMap({ try? $0.toAccountId(using: chain.chainFormat) }))
         let wrapper = operationFactory.fetchDelegateListByIdsWrapper(
             from: Set(delegateIds),
-            threshold: .block(blockNumber: recentBlockNumber, blockTime: blockTime)
+            threshold: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -97,7 +97,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         let wrapper = statsOperationFactory.fetchDetailsWrapper(
             for: delegate,
-            threshold: .block(blockNumber: recentBlockNumber, blockTime: blockTime)
+            threshold: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
