@@ -21,6 +21,8 @@ final class TimepointThresholdService: BaseObservableStateStore<TimepointThresho
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
 
+    private let callStore = CancellableCallStore()
+
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 
     private var observers: [Observable<RemoteState?>.ObserverWrapper] {
@@ -58,10 +60,12 @@ private extension TimepointThresholdService {
                 blockTimeEstimationService: estimationService
             )
 
-            execute(
+            executeCancellable(
                 wrapper: blockTimeWrapper,
                 inOperationQueue: operationQueue,
-                runningCallbackIn: workingQueue
+                backingCallIn: callStore,
+                runningCallbackIn: workingQueue,
+                mutex: mutex
             ) { [weak self] result in
                 switch result {
                 case let .success(blockTime):
@@ -114,6 +118,9 @@ extension TimepointThresholdService: TimepointThresholdServiceProtocol {
     }
 
     func setup() {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         let alreadySetUp: Bool = stateObservable.state != nil || blockNumberProvider != nil
 
         guard !alreadySetUp else {
