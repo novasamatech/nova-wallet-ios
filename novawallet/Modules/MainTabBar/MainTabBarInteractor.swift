@@ -102,22 +102,24 @@ private extension MainTabBarInteractor {
         }
     }
 
+    func setupNotificationPromoObserver() {
+        notificationsPromoService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            guard let newState, case let .requestingShow(params) = newState else {
+                return
+            }
+
+            self?.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
+        }
+    }
+
     func setupMultisigNotificationPromoOrNextAction() {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            guard let self else { return }
-
-            notificationsPromoService.add(
-                observer: self,
-                sendStateOnSubscription: true,
-                queue: .main
-            ) { _, newState in
-                guard let newState, case let .requestingShow(params) = newState else {
-                    return
-                }
-
-                self.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
-            }
-            onLaunchQueue.runNext()
+            self?.setupNotificationPromoObserver()
+            self?.onLaunchQueue.runNext()
         }
     }
 
