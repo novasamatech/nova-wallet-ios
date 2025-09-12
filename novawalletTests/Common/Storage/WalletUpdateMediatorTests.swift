@@ -8,11 +8,12 @@ final class WalletUpdateMediatorTests: XCTestCase {
         let operationQueue: OperationQueue
         let selectedAccountSettings: SelectedWalletSettings
         let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
-        let walletStorageCleaner: WalletStorageCleaning
+        let walletStorageCleaner: MockWalletStorageCleaning
         let walletUpdateMediator: WalletUpdateMediating
 
-        init(storageCleaner: WalletStorageCleaning? = nil) {
+        init() {
             operationQueue = OperationQueue()
+            let walletCleaner = MockWalletStorageCleaning()
             let facade = UserDataStorageTestFacade()
 
             selectedAccountSettings = SelectedWalletSettings(
@@ -23,18 +24,16 @@ final class WalletUpdateMediatorTests: XCTestCase {
             let mapper = ManagedMetaAccountMapper()
             let coreDataRepository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
             repository = AnyDataProviderRepository(coreDataRepository)
-            walletStorageCleaner = if let storageCleaner {
-                storageCleaner
-            } else {
-                WalletStorageCleanerFactory.createTestCleaner(
-                    operationQueue: operationQueue,
-                    storageFacade: facade
-                )
+            walletStorageCleaner = walletCleaner
+
+            stub(walletCleaner) { stub in
+                when(stub.cleanStorage(using: any())).thenReturn(.createWithResult(()))
             }
+
             walletUpdateMediator = WalletUpdateMediator(
                 selectedWalletSettings: selectedAccountSettings,
                 repository: repository,
-                walletsCleaner: walletStorageCleaner,
+                walletsCleaner: walletCleaner,
                 operationQueue: operationQueue
             )
         }
@@ -217,6 +216,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testNoSwitchWalletIfNoSelectedAccountsRemoved() {
@@ -250,6 +251,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testRemoveNestedProxiedsWhenProxyRemovedAndAutoswitchSelectedWallet() throws {
@@ -278,6 +281,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testRemoveRecursiveProxiedsWhenProxyRemoved() throws {
@@ -306,6 +311,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testRecursiveWalletNotRemovedIfReachable() throws {
@@ -342,6 +349,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testAutoSwitchWalletIfProxiedRevoked() throws {
@@ -376,6 +385,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 
     func testAutoSwitchNewWalletIfAllRemoved() throws {
@@ -409,47 +420,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } else {
             XCTFail("Selected wallet expected")
         }
-    }
 
-    // TODO: Uncomment after fix
-//    func testBrowserStateClearingCalledAndOtherOperationsCompleted() throws {
-//        // given
-//
-//        let storageCleaner = MockWalletStorageCleaning()
-//        let common = Common(storageCleaner: storageCleaner)
-//
-//        let wallets = (0..<10).map { index in
-//            ManagedMetaAccountModel(
-//                info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-//                isSelected: index == 0,
-//                order: index
-//            )
-//        }
-//
-//        common.setup(with: wallets)
-//
-//        let removedWallet = wallets[0]
-//
-//        let walletStorageCleanerExpectation = XCTestExpectation()
-//
-//        stub(storageCleaner) { stub in
-//            when(stub).cleanStorage(using: any()).then { _ in
-//                walletStorageCleanerExpectation.fulfill()
-//
-//                return .createWithResult(())
-//            }
-//        }
-//
-//        // when
-//
-//        let result = try common.update(with: [], remove: [removedWallet])
-//
-//        wait(for: [walletStorageCleanerExpectation], timeout: 5)
-//
-//         then
-//
-//        XCTAssertTrue(result.isWalletSwitched)
-//        XCTAssertTrue(result.selectedWallet != nil)
-//        XCTAssertTrue(common.selectedAccountSettings.value.identifier != removedWallet.identifier)
-//    }
+        verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
+    }
 }

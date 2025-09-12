@@ -110,6 +110,8 @@ sources = [
     "novawallet/Modules/DApp/DAppBrowser/DAppBrowserProtocols.swift",
     "novawallet/Modules/DApp/DAppOperationConfirm/DAppOperationConfirmProtocols.swift",
     "novawallet/Modules/DApp/DAppSearch/DAppSearchProtocols.swift",
+    "novawallet/Modules/DApp/DAppBrowser/Tabs/DAppBrowserTabManager/DAppBrowserTabManagerProtocol.swift",
+    "novawallet/Modules/DApp/DAppBrowser/Tabs/WebViewPool/WebViewPoolProtocol.swift",
     "novawallet/Modules/AssetsSettings/AssetsSettingsProtocols.swift",
     "novawallet/Modules/OperationDetails/OperationDetailsProtocols.swift",
     "novawallet/Modules/Vote/Crowdloan/CrowdloanYourContributions/CrowdloanYourContributionsProtocols.swift",

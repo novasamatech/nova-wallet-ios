@@ -7,7 +7,11 @@ final class DAppSettingsMapper: CoreDataMapperProtocol {
     typealias CoreDataEntity = CDDAppSettings
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
-        DAppSettings(identifier: entity.identifier!, metaId: entity.metaId, source: entity.source)
+        DAppSettings(
+            dAppId: entity.dAppId,
+            metaId: entity.metaId!,
+            source: entity.source
+        )
     }
 
     func populate(
@@ -16,6 +20,7 @@ final class DAppSettingsMapper: CoreDataMapperProtocol {
         using _: NSManagedObjectContext
     ) throws {
         entity.identifier = model.identifier
+        entity.dAppId = model.dAppId
         entity.metaId = model.metaId
         entity.source = model.source
     }

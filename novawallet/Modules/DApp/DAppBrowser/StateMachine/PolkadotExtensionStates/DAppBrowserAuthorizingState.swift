@@ -28,7 +28,7 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
 
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
             let newSettings = DAppSettings(
-                identifier: dappId,
+                dAppId: dappId,
                 metaId: dataSource.wallet.metaId,
                 source: nil
             )

@@ -187,6 +187,7 @@ enum ChainModelGenerator {
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
+        isEthereumBased: Bool = false,
         hasProxy: Bool = true,
         hasMultisig: Bool = true,
         enabled: Bool = true
@@ -207,6 +208,7 @@ enum ChainModelGenerator {
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans,
             hasSubstrateRuntime: hasSubstrateRuntime,
+            isEthereumBased: isEthereumBased,
             hasProxy: hasProxy,
             hasMultisig: hasMultisig,
             enabled: enabled
@@ -221,6 +223,7 @@ enum ChainModelGenerator {
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
+        isEthereumBased: Bool = false,
         hasProxy: Bool = true,
         hasMultisig: Bool = true,
         enabled: Bool = true
@@ -253,6 +256,10 @@ enum ChainModelGenerator {
 
         if hasMultisig {
             options.append(.multisig)
+        }
+
+        if isEthereumBased {
+            options.append(.ethereumBased)
         }
 
         let externalApis = generateExternaApis(

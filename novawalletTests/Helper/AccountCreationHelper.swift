@@ -35,8 +35,7 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
-        let accountItem = try operation
-            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let accountItem = try operation.extractNoCancellableResultData()
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -73,8 +72,7 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
-        let accountItem = try operation
-            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let accountItem = try operation.extractNoCancellableResultData()
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -103,8 +101,7 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
-        let accountItem = try operation
-            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let accountItem = try operation.extractNoCancellableResultData()
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -129,8 +126,7 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
-        let accountItem = try operation
-            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let accountItem = try operation.extractNoCancellableResultData()
 
         try selectMetaAccount(accountItem, settings: settings)
     }
@@ -182,8 +178,7 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
-        let accountItem = try operation
-            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+        let accountItem = try operation.extractNoCancellableResultData()
 
         try selectMetaAccount(accountItem, settings: settings)
     }

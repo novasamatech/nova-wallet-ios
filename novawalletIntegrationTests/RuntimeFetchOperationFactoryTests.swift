@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
+import SubstrateSdk
 
 final class RuntimeFetchOperationFactoryTests: XCTestCase {
     func testPolkadot() {
@@ -16,6 +17,18 @@ final class RuntimeFetchOperationFactoryTests: XCTestCase {
         do {
             let metadata = try performTestFetchLatestMetadata(for: KnowChainId.edgeware)
             Logger.shared.info("Metadata opaque: \(metadata.isOpaque)")
+        } catch {
+            XCTFail("Error: \(error)")
+        }
+    }
+
+    func testBasiliskOpaque() {
+        do {
+            let rawMetadata = try performTestFetchLatestMetadata(for: "a85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755")
+
+            let metadata = try RuntimeMetadataContainer.createFromOpaque(data: rawMetadata.metadata)
+
+            Logger.shared.info("Metadata opaque: \(metadata)")
         } catch {
             XCTFail("Error: \(error)")
         }

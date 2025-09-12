@@ -43,7 +43,7 @@ class AccountConfirmTests: XCTestCase {
             accountOperationFactory: accountOperationFactory,
             accountRepository: AnyDataProviderRepository(repository),
             settings: settings,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             eventCenter: eventCenter
         )
 
