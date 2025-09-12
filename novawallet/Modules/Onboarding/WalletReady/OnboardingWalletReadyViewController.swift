@@ -30,13 +30,21 @@ final class OnboardingWalletReadyViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletReadyTitle()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletReadyTitle()
 
-        rootView.subtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletReadySubtitle()
+        rootView.subtitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletReadySubtitle()
 
-        rootView.cloudBackupButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinueWithAppleBackup()
+        rootView.cloudBackupButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinueWithAppleBackup()
 
-        rootView.manualBackupButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinueWithManualBackup()
+        rootView.manualBackupButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinueWithManualBackup()
     }
 
     private func setupHandlers() {

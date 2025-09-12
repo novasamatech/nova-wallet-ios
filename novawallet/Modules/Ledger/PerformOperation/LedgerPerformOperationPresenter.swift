@@ -85,7 +85,9 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
             )
         case .unsupported:
             baseWireframe.present(
-                message: R.string(preferredLanguages: locale.rLanguages).localizable.commonBluetoothUnsupportedMessage(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonBluetoothUnsupportedMessage(),
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle(),
                 closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
                 from: view

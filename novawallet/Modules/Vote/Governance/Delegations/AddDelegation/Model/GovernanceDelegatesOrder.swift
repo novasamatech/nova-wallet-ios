@@ -18,7 +18,9 @@ extension GovernanceDelegatesOrder {
         case .delegatedVotes:
             return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortDelegatedVotes()
         case let .lastVoted(days):
-            let formattedDays = R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFormat(format: days)
+            let formattedDays = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonDaysFormat(format: days)
             return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortLastVoted(formattedDays)
         }
     }

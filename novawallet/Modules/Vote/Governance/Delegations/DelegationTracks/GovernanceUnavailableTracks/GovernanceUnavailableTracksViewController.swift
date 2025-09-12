@@ -37,11 +37,17 @@ final class GovUnavailableTracksViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govUnavailableTracks()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govUnavailableTracks()
 
-        rootView.delegatedTracksTitleLabel?.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govUnavailableTracksDelegated()
+        rootView.delegatedTracksTitleLabel?.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govUnavailableTracksDelegated()
 
-        rootView.votedTracksTitleLabel?.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govUnavailableTracksVoted()
+        rootView.votedTracksTitleLabel?.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govUnavailableTracksVoted()
 
         rootView.removeVotesButton?.imageWithTitleView?.title =
             R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govUnavailableTracksRemoveVotes()

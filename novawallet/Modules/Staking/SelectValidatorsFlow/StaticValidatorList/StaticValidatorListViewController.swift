@@ -74,7 +74,9 @@ class StaticValidatorListViewController: UIViewController, ViewHolder {
 extension StaticValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectedValidatorsTitle()
+            title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingSelectedValidatorsTitle()
 
             updateHeaderView()
         }

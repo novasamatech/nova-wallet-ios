@@ -47,12 +47,18 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
 
         rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.dappAuthSubtitle()
 
-        rootView.walletView.rowContentView.titleView.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.walletView.rowContentView.titleView.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonWallet()
 
         rootView.dappView.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonDapp()
 
-        rootView.allowButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonAllow()
-        rootView.denyButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonReject()
+        rootView.allowButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonAllow()
+        rootView.denyButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonReject()
     }
 
     private func applyTitle() {

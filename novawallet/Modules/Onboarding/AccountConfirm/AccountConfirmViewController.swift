@@ -82,9 +82,13 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
             .confirmMnemonicTitle()
-        rootView.continueButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        rootView.continueButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable
             .confirmMnemonicSelectWord()
-        rootView.skipButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        rootView.skipButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable
             .commonSkip()
     }
 }

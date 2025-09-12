@@ -75,7 +75,9 @@ class QRScannerViewController: UIViewController, ViewHolder {
 
         rootView.detailsView.bind(viewModel: localizableDetails?.value(for: selectedLocale))
 
-        rootView.actionButton?.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.qrScanUploadGallery()
+        rootView.actionButton?.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.qrScanUploadGallery()
     }
 
     private func setupHandlers() {

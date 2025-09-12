@@ -22,7 +22,9 @@ final class WalletManageViewController: WalletsListViewController<
     override func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.profileWalletsTitle()
 
-        rootView.addWalletButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletAddButtonTitle()
+        rootView.addWalletButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletAddButtonTitle()
 
         rootView.addWalletButton.invalidateLayout()
 

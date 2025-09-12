@@ -196,7 +196,9 @@ extension AssetDetailsBalanceWidget {
         let languages = locale.rLanguages
 
         headerCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalancesWidgetTitle()
-        transferrableCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
+        transferrableCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletBalanceAvailable()
         lockCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceLocked()
     }
 }

@@ -81,7 +81,9 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
         let viewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamMissingAccountTitle(),
-            message: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamMissingAccountMessage(),
+            message: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.crowdloanMoonbeamMissingAccountMessage(),
             actions: [
                 .init(
                     title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel(),
@@ -179,8 +181,12 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 } catch {
                     guard let controller = self?.previousView?.controller else { return }
                     UIAlertController.present(
-                        message: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamRegionRestrictionMessage(),
-                        title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanMoonbeamRegionRestrictionTitle(),
+                        message: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionMessage(),
+                        title: R.string(
+                            preferredLanguages: locale.rLanguages
+                        ).localizable.crowdloanMoonbeamRegionRestrictionTitle(),
                         closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonOk(),
                         with: controller
                     )

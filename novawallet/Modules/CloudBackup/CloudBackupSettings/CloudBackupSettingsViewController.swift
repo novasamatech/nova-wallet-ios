@@ -64,17 +64,29 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackup()
 
-        rootView.cloudBackupTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonIcloud()
+        rootView.cloudBackupTitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonIcloud()
 
-        rootView.cloudBackupSubtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.backupSettingsCloudSubtitle()
+        rootView.cloudBackupSubtitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.backupSettingsCloudSubtitle()
 
-        rootView.cloudBackupActionControl.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackupIcloud()
+        rootView.cloudBackupActionControl.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonBackupIcloud()
 
-        rootView.manualBackupTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonManual()
+        rootView.manualBackupTitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonManual()
 
-        rootView.manualBackupSubtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.backupSettingsManualSubtitle()
+        rootView.manualBackupSubtitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.backupSettingsManualSubtitle()
 
-        rootView.manualBackupActionControl.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackupManual()
+        rootView.manualBackupActionControl.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonBackupManual()
     }
 
     @objc func actionIcloudSwitch() {

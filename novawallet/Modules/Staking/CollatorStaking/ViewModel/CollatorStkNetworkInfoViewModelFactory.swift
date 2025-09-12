@@ -130,7 +130,9 @@ final class CollatorStkNetworkInfoViewModelFactory: CollatorStkNetworkInfoViewMo
             unstakingDuration: model.unstakingDuration
         ).value(for: locale)
 
-        let stakingPeriod = R.string(preferredLanguages: locale.rLanguages).localizable.stakingNetworkInfoStakingPeriodValue()
+        let stakingPeriod = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNetworkInfoStakingPeriodValue()
 
         return .init(
             totalStake: .loaded(value: totalStake),

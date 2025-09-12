@@ -65,7 +65,9 @@ extension ParaStkStateViewModelFactory {
     ) -> StakingAlert? {
         if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notRewarded }) {
             let description = LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingAlertCollatorsWithNoRewards()
+                R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.parachainStakingAlertCollatorsWithNoRewards()
             }
 
             return .nominatorLowStake(description)

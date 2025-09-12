@@ -66,9 +66,13 @@ final class GovRevokeDelegationConfirmViewController: UIViewController, ViewHold
 
         rootView.delegateCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govDelegate()
 
-        rootView.undelegatingPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.govUndelegatingPeriod()
+        rootView.undelegatingPeriodTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.govUndelegatingPeriod()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

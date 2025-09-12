@@ -54,19 +54,31 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendTitle()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
 
         if rootView.destinationNetworkCell == nil {
-            rootView.originNetworkCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonNetwork()
+            rootView.originNetworkCell.titleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonNetwork()
         } else {
-            rootView.originNetworkCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonFromNetwork()
+            rootView.originNetworkCell.titleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonFromNetwork()
         }
 
-        rootView.destinationNetworkCell?.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonToNetwork()
+        rootView.destinationNetworkCell?.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonToNetwork()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonWallet()
 
-        rootView.senderCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSender()
+        rootView.senderCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonSender()
 
         rootView.originFeeCell.rowContentView.locale = selectedLocale
 
@@ -77,7 +89,9 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
             hintView.bind(texts: [hint])
         }
 
-        rootView.recepientCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonRecipient()
+        rootView.recepientCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonRecipient()
     }
 
     @objc func actionSubmit() {

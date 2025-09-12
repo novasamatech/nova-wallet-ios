@@ -201,7 +201,9 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         locale: Locale?
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.govRevokeDelegateMissingErrorTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.govRevokeDelegateMissingErrorMessage()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govRevokeDelegateMissingErrorMessage()
 
         let close = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 

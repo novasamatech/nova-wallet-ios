@@ -9,7 +9,9 @@ final class ExportMnemonicConfirmWireframe: AccountConfirmWireframeProtocol, Mod
     }
 
     func proceed(from view: AccountConfirmViewProtocol?) {
-        let title = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonConfirmed()
+        let title = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.commonConfirmed()
 
         presentSuccessNotification(title, from: view) {
             DispatchQueue.main.async {

@@ -18,9 +18,13 @@ enum LockType: String {
             case .staking:
                 return R.string(preferredLanguages: locale.rLanguages).localizable.stakingTitle()
             case .democracy:
-                return R.string(preferredLanguages: locale.rLanguages).localizable.walletAccountLocksDemocracyVersion1()
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.walletAccountLocksDemocracyVersion1()
             case .governance:
-                return R.string(preferredLanguages: locale.rLanguages).localizable.walletAccountLocksDemocracyVersion2()
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.walletAccountLocksDemocracyVersion2()
             case .elections:
                 return R.string(preferredLanguages: locale.rLanguages).localizable.walletAccountLocksElections()
             }

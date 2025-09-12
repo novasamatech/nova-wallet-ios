@@ -254,7 +254,9 @@ private extension NetworkDetailsPresenter {
     func openDeleteNodeAlert(for node: ChainNodeModel) {
         let alertViewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertTitle(),
-            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeDeleteAlertDescription(node.name),
+            message: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.networkNodeDeleteAlertDescription(node.name),
             actions: [
                 .init(
                     title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),
@@ -280,7 +282,9 @@ private extension NetworkDetailsPresenter {
     func openDeleteNetworkAlert() {
         let alertViewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertTitle(),
-            message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageDeleteAlertDescription(),
+            message: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.networkManageDeleteAlertDescription(),
             actions: [
                 .init(
                     title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel(),

@@ -30,7 +30,9 @@ final class RecommendedValidatorListViewModelFactory {
 
     private func createItemsCountString(for currentCount: Int, outOf maxCount: Int) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSelectedValidatorsCount_v191(currentCount, maxCount)
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingSelectedValidatorsCount_v191(currentCount, maxCount)
         }
     }
 }

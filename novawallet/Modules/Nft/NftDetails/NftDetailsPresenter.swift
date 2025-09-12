@@ -100,7 +100,9 @@ final class NftDetailsPresenter {
 
         if let unitsDecimal = price.units?.decimal() {
             let unitsString = balanceViewModelFactory.unitsFromValue(unitsDecimal).value(for: selectedLocale)
-            let amount = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.nftFungiblePrice(unitsString, viewModel.amount)
+            let amount = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.nftFungiblePrice(unitsString, viewModel.amount)
 
             let viewModelWithUnits = BalanceViewModel(amount: amount, price: viewModel.price)
 

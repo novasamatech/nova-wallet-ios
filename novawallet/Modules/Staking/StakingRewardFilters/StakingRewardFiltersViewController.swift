@@ -123,7 +123,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func createTitleHeaderView(for tableView: UITableView) -> IconTitleHeaderView {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let header = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardFiltersPeriodHeader()
+        let header = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingRewardFiltersPeriodHeader()
         view.bind(title: header, icon: nil)
         view.contentInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
         return view
@@ -299,7 +301,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
 
     private func dateStringValue(_ date: Date?) -> String {
         guard let date = date else {
-            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardFiltersPeriodSelectDate()
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingRewardFiltersPeriodSelectDate()
         }
 
         return dateFormatter.value(for: selectedLocale).string(from: date)
@@ -357,7 +361,9 @@ final class StakingRewardFiltersViewController: UIViewController, ViewHolder {
             in: snapshot
         )
 
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardFiltersPeriodEndDateOpen()
+        let title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingRewardFiltersPeriodEndDateOpen()
         switch customPeriod.endDay.value {
         case .alwaysToday, .none:
             snapshot = dataStore.updating(
@@ -421,14 +427,18 @@ extension StakingRewardFiltersViewController: UITableViewDelegate {
         case .period:
             return createTitleHeaderView(for: tableView)
         case let .start(date, activated):
-            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardFiltersPeriodDateStart()
+            let title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingRewardFiltersPeriodDateStart()
             let view = createActionHeaderView(for: tableView, title: title, value: date, activated: activated)
             view.control.addTarget(self, action: #selector(startDayAction), for: .touchUpInside)
             return view
         case .endAlwaysToday:
             return nil
         case let .end(date, activated):
-            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardFiltersPeriodDateEnd()
+            let title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingRewardFiltersPeriodDateEnd()
             let view = createActionHeaderView(for: tableView, title: title, value: date, activated: activated)
             view.control.addTarget(self, action: #selector(endDayAction), for: .touchUpInside)
             return view

@@ -86,7 +86,9 @@ class CrowdloanContributionSetupViewLayout: UIView {
         amountInputView.priceText = assetViewModel.price
 
         if let balance = assetViewModel.balance {
-            amountInputView.balanceText = R.string(preferredLanguages: locale.rLanguages).localizable.commonAvailableFormat(balance)
+            amountInputView.balanceText = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonAvailableFormat(balance)
         } else {
             amountInputView.balanceText = nil
         }
@@ -96,7 +98,9 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
         assetViewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
 
-        hintView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanUnlockHint(symbol)
+        hintView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanUnlockHint(symbol)
     }
 
     func bind(rewardDestination viewModel: CrowdloanRewardDestinationVM) {
@@ -139,18 +143,28 @@ class CrowdloanContributionSetupViewLayout: UIView {
     }
 
     func applyLocalization() {
-        contributionTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanContributeTitle()
+        contributionTitleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanContributeTitle()
 
         networkFeeView.locale = locale
-        leasingPeriodView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanLeasingPeriod()
+        leasingPeriodView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanLeasingPeriod()
 
         amountInputView.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendAmountTitle()
 
-        actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
+        actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonContinue()
 
-        estimatedRewardView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanReward()
+        estimatedRewardView?.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanReward()
 
-        bonusView?.rowContentView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonBonus()
+        bonusView?.rowContentView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonBonus()
     }
 
     func setupLayout() {

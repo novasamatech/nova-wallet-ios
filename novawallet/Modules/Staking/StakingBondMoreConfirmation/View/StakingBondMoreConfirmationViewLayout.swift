@@ -58,11 +58,15 @@ final class StakingBMConfirmationViewLayout: UIView {
         walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
         accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
 
-        hintView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRewardBondMore_v2_2_0()
+        hintView.detailsLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingHintRewardBondMore_v2_2_0()
 
         networkFeeCell.rowContentView.locale = locale
 
-        actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirm()
+        actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonConfirm()
 
         setNeedsLayout()
     }

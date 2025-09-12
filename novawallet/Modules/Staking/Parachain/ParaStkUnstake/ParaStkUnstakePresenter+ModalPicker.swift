@@ -16,7 +16,9 @@ extension ParaStkUnstakePresenter: ModalPickerViewControllerDelegate {
         } else {
             let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkCantUnstakeTitle()
 
-            let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkCantUnstakeMessage()
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parastkCantUnstakeMessage()
 
             let close = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
 

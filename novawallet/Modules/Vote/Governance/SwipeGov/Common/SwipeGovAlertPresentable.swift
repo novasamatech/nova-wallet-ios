@@ -68,9 +68,10 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
         let languages = locale.rLanguages
 
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.govVotingListItemRemoveAlertTitle(
-                Int(votingItem.referendumId),
+            title: R.string(
                 preferredLanguages: languages
+            ).localizable.govVotingListItemRemoveAlertTitle(
+                Int(votingItem.referendumId)
             ),
             message: R.string(preferredLanguages: languages).localizable.govVotingListItemRemoveAlertMessage(),
             actions: [
@@ -104,7 +105,9 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
 
         let alertViewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: languages).localizable.swipeGovReferendaExcludedAlertTitle(),
-            message: R.string(preferredLanguages: languages).localizable.swipeGovReferendaExcludedAlertMessage(availableBalance),
+            message: R.string(
+                preferredLanguages: languages
+            ).localizable.swipeGovReferendaExcludedAlertMessage(availableBalance),
             actions: [
                 .init(
                     title: R.string(preferredLanguages: languages).localizable.commonOk(),

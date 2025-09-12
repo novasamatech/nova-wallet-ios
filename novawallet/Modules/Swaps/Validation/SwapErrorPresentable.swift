@@ -120,7 +120,9 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
 
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.swapFailureCannotReceiveInsufficientAssetOut(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapFailureCannotReceiveInsufficientAssetOut(
             utilityMinBalance,
             network,
             token
@@ -217,7 +219,9 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
 
         switch reason {
         case let .dueSwap(value):
-            message = R.string(preferredLanguages: locale.rLanguages).localizable.swapsDustRemainsFeeNativeAssetMessage(
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsDustRemainsFeeNativeAssetMessage(
                 value.minBalance,
                 value.remaining
             )
@@ -279,7 +283,9 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         locale: Locale
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.swapIntermediateTooLowAmountToStayAbowEdMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapIntermediateTooLowAmountToStayAbowEdMessage(
             amount,
             minAmount
         )

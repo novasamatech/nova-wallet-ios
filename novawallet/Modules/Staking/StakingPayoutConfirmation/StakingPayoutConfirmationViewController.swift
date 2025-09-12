@@ -61,7 +61,9 @@ extension StakingPayoutConfirmationViewController: Localizable {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonConfirm()
 
         applyFeeViewModel()
         applyConfirmationViewModel()

@@ -69,7 +69,9 @@ extension ParaStkYieldBoostErrorPresentable where Self: AlertPresentable & Error
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.yieldBoostNotEnoughExecutionFeeTitle()
 
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.yieldBoostNotEnoughExecutionFeeMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.yieldBoostNotEnoughExecutionFeeMessage(
             extrinsicFee,
             executionFee,
             balance

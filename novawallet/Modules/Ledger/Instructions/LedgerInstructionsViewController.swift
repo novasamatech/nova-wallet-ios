@@ -41,18 +41,26 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
     private func highlightedForStep1() -> String {
         switch walletType {
         case .legacy:
-            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerInstructionsStep1Highlighted()
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.ledgerInstructionsStep1Highlighted()
         case .generic:
-            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.genericLedgerInstructionsStep1Highlighted()
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.genericLedgerInstructionsStep1Highlighted()
         }
     }
 
     private func highlightedForStep2() -> String {
         switch walletType {
         case .legacy:
-            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.ledgerInstructionsStep2Highlighted()
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.ledgerInstructionsStep2Highlighted()
         case .generic:
-            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.genericLedgerInstructionsStep2Highlighted()
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.genericLedgerInstructionsStep2Highlighted()
         }
     }
 
@@ -61,11 +69,15 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
 
         rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.ledgerInstructionsTitle()
 
-        rootView.hintLinkView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.ledgerInstructionsLink()
+        rootView.hintLinkView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.ledgerInstructionsLink()
 
         rootView.hintLinkView.actionButton.invalidateLayout()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
 
         rootView.actionButton.invalidateLayout()
 

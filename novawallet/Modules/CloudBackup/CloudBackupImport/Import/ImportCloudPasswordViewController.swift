@@ -51,13 +51,19 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupImportTitle()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.cloudBackupImportTitle()
 
         switch flow {
         case .importBackup, .changePassword:
-            rootView.subtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupImportSubtitle()
+            rootView.subtitleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.cloudBackupImportSubtitle()
         case .enterPassword:
-            rootView.subtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.cloudBackupEnterPasswordSetMessage()
+            rootView.subtitleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.cloudBackupEnterPasswordSetMessage()
         }
 
         let passwordPlaceholder = NSAttributedString(
@@ -70,7 +76,9 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
 
         rootView.passwordView.textField.attributedPlaceholder = passwordPlaceholder
 
-        rootView.forgetPasswordButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonForgotPasswordButton()
+        rootView.forgetPasswordButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonForgotPasswordButton()
 
         applyActionStyle()
     }
@@ -79,11 +87,15 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
         if let viewModel = rootView.passwordView.inputViewModel, viewModel.inputHandler.completed {
             rootView.actionButton.isEnabled = true
             rootView.actionButton.applyEnabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonContinue()
         } else {
             rootView.actionButton.isEnabled = false
             rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonEnterPassword()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonEnterPassword()
         }
     }
 

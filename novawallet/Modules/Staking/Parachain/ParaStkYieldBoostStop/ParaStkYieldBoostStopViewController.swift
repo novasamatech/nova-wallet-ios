@@ -55,7 +55,9 @@ final class ParaStkYieldBoostStopViewController: UIViewController, ViewHolder, I
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.parachainStakingCollator()
+        rootView.collatorCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.parachainStakingCollator()
 
         rootView.stakingTypeCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingTitle()
 

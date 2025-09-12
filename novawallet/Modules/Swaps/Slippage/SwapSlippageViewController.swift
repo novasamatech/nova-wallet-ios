@@ -38,9 +38,15 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         title = R.string(preferredLanguages: languages).localizable.swapsSetupSettingsTitle()
-        rootView.slippageButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.swapsSetupSlippage()
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonApply()
-        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset()
+        rootView.slippageButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.swapsSetupSlippage()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonApply()
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonReset()
     }
 
     private func setupHandlers() {

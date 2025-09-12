@@ -88,7 +88,9 @@ struct ValidatorListFilterViewModelFactory {
 
             case .ownStake:
                 let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleOwnStakeToken(token)
+                    title: R.string(
+                        preferredLanguages: locale.rLanguages
+                    ).localizable.stakingFilterTitleOwnStakeToken(token)
                 )
 
                 internalViewModel = SelectableViewModel(
@@ -98,7 +100,9 @@ struct ValidatorListFilterViewModelFactory {
 
             case .totalStake:
                 let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorTotalStakeToken(token)
+                    title: R.string(
+                        preferredLanguages: locale.rLanguages
+                    ).localizable.stakingValidatorTotalStakeToken(token)
                 )
 
                 internalViewModel = SelectableViewModel(

@@ -47,13 +47,21 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
+        rootView.amountView.titleView.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonAvailablePrefix()
+        rootView.amountView.detailsTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonAvailablePrefix()
 
-        rootView.convictionView.titleLabel.text = R.string(preferredLanguages: languages).localizable.govVoteConvictionTitle()
+        rootView.convictionView.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.govVoteConvictionTitle()
 
-        rootView.convictionHintView.iconDetailsView.detailsLabel.text = R.string(preferredLanguages: languages).localizable.govVoteConvictionHintTitle()
+        rootView.convictionHintView.iconDetailsView.detailsLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.govVoteConvictionHintTitle()
 
         rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
         rootView.lockPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonLockingPeriod()

@@ -53,7 +53,9 @@ final class GovernanceUnlockSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletBalanceLocked()
 
-        rootView.unlockButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonUnlock()
+        rootView.unlockButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonUnlock()
         rootView.unlockButton.invalidateLayout()
     }
 
@@ -108,7 +110,9 @@ extension GovernanceUnlockSetupViewController: UITableViewDataSource {
             cell.view.apply(style: .readonly)
             cell.view.bind(
                 model: .init(
-                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanYouContributionsTotal(),
+                    title: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.crowdloanYouContributionsTotal(),
                     count: nil,
                     amount: viewModel?.total.amount ?? "",
                     amountDetails: viewModel?.total.price ?? ""

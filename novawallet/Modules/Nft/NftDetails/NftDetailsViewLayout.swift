@@ -199,7 +199,9 @@ final class NftDetailsViewLayout: UIView {
     }
 
     private func setupCollectionLocalization() {
-        collectionCell?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.nftCollectionTitle()
+        collectionCell?.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.nftCollectionTitle()
     }
 
     private func setupLayout() {

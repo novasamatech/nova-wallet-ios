@@ -43,7 +43,9 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
     private func setupLocalization() {
         title = ""
 
-        rootView.searchField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumsSearchFieldPlaceholder()
+        rootView.searchField.placeholder = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.governanceReferendumsSearchFieldPlaceholder()
 
         let cancelButtonTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCancel()
         rootView.cancelButton.imageWithTitleView?.title = cancelButtonTitle
@@ -95,7 +97,9 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         indexPath: IndexPath
     ) -> ReferendumEmptySearchTableViewCell {
         let cell: ReferendumEmptySearchTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumsSearchEmpty()
+        let text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.governanceReferendumsSearchEmpty()
         cell.bind(text: text)
         return cell
     }

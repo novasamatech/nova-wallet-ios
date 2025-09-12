@@ -204,7 +204,9 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
         jsonView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.govParametersJson()
 
-        jsonView.valueBottom.view.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonTooLongPreview()
+        jsonView.valueBottom.view.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonTooLongPreview()
 
         containerView.stackView.addArrangedSubview(jsonView)
 

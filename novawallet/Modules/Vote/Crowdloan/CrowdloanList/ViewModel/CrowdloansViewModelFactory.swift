@@ -134,7 +134,9 @@ final class CrowdloansViewModelFactory {
             ),
             let raisedString = formatters.display.stringFromDecimal(raised),
             let totalString = formatters.token.stringFromDecimal(cap) {
-            let text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanProgressFormat(raisedString, totalString)
+            let text = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.crowdloanProgressFormat(raisedString, totalString)
             let value: Double = {
                 guard cap != 0 else { return 0 }
                 return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
@@ -171,7 +173,9 @@ final class CrowdloansViewModelFactory {
             )
 
             if remainedTime.daysFromSeconds > 0 {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysFormat(format: remainedTime.daysFromSeconds)
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonDaysFormat(format: remainedTime.daysFromSeconds)
             } else {
                 let time = try? formatters.time.string(from: remainedTime)
                 return R.string(preferredLanguages: locale.rLanguages).localizable.commonTimeLeftFormat(time ?? "")
@@ -382,7 +386,9 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
 
     private func createAboutSection(chainAsset: ChainAssetDisplayInfo?, locale: Locale) -> CrowdloansSection {
         let symbol = chainAsset?.asset.symbol ?? ""
-        let description = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanListSectionFormat_v2_2_0(symbol)
+        let description = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanListSectionFormat_v2_2_0(symbol)
 
         let model = AboutCrowdloansView.Model(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanAboutCrowdloans(),
@@ -398,7 +404,9 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansSection {
-        let contributionsTitle = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanYouContributionsTitle()
+        let contributionsTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanYouContributionsTitle()
         let balance = balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: chainAsset.asset,
             amount: amount,

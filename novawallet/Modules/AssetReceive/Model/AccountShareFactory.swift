@@ -29,7 +29,9 @@ extension AccountShareFactory: NovaAccountShareFactoryProtocol {
 
         let locale = localizationManager.selectedLocale
 
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.walletReceiveShareMessage(chain.name, assetInfo.symbol)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletReceiveShareMessage(chain.name, assetInfo.symbol)
 
         return [qrImage, message, address]
     }

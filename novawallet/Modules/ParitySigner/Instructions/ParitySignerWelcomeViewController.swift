@@ -63,7 +63,9 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
             type.getName(for: selectedLocale)
         )
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonScanQrCode()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonScanQrCode()
 
         rootView.actionButton.invalidateLayout()
 
@@ -103,7 +105,9 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep2Details()
+        rootView.step2DetailsView.detailsLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.welcomeParitySignerStep2Details()
 
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
@@ -146,7 +150,9 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Details()
+        rootView.step2DetailsView.detailsLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.welcomePolkadotVaultStep2Details()
 
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,

@@ -40,13 +40,21 @@ final class ControllerAccountConfirmationVC: UIViewController, ViewHolder, Impor
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingControllerConfirmTitle()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonAccount()
 
-        rootView.controllerCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingControllerAccountTitle()
+        rootView.controllerCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingControllerAccountTitle()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 

@@ -17,7 +17,9 @@ extension StakingMainStaticViewModelProtocol {
     }
 
     func waitingNextEra(for timeString: String, locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingWaitingNextEraFormat(timeString).uppercased()
+        R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingWaitingNextEraFormat(timeString).uppercased()
     }
 
     func networkInfoTitle(for locale: Locale) -> String {

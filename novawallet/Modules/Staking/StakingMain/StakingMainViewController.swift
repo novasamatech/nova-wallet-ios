@@ -433,7 +433,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
     }
 
     func didReceive(viewModel: StakingMainViewModel) {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingOnNetwork(viewModel.chainName)
+        title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingOnNetwork(viewModel.chainName)
     }
 
     func didReceiveStakingState(viewModel: StakingViewState) {

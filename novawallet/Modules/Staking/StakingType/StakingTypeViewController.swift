@@ -37,7 +37,9 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingTypeTitle()
-        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonDone()
     }
 
     private func setupNavigationItem() {

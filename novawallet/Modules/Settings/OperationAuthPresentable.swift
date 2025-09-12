@@ -27,8 +27,12 @@ extension OperationAuthPresentable {
     ) {
         let biometryTypeName = biometrySettings.name
         let languages = locale.rLanguages
-        let title = R.string(preferredLanguages: languages).localizable.settingsBiometryAuthAlertTitle(biometryTypeName)
-        let message = R.string(preferredLanguages: languages).localizable.settingsBiometryAuthAlertMessage(biometryTypeName)
+        let title = R.string(
+            preferredLanguages: languages
+        ).localizable.settingsBiometryAuthAlertTitle(biometryTypeName)
+        let message = R.string(
+            preferredLanguages: languages
+        ).localizable.settingsBiometryAuthAlertMessage(biometryTypeName)
         let alertModel = AlertPresentableViewModel(
             title: title,
             message: message,
@@ -38,7 +42,9 @@ extension OperationAuthPresentable {
                     handler: useAction
                 ),
                 .init(
-                    title: R.string(preferredLanguages: languages).localizable.settingsBiometryAuthAlertDisableButton(),
+                    title: R.string(
+                        preferredLanguages: languages
+                    ).localizable.settingsBiometryAuthAlertDisableButton(),
                     style: .cancel,
                     handler: skipAction
                 )
@@ -56,7 +62,9 @@ extension OperationAuthPresentable {
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.settingsApproveWithPinAlertTitle()
         let message = R.string(preferredLanguages: locale.rLanguages).localizable.settingsApproveWithPinAlertMessage()
-        let enableButtonTitle = R.string(preferredLanguages: locale.rLanguages).localizable.settingsApproveWithPinAlertEnableButtonTitle()
+        let enableButtonTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.settingsApproveWithPinAlertEnableButtonTitle()
         let alertModel = AlertPresentableViewModel(
             title: title,
             message: message,

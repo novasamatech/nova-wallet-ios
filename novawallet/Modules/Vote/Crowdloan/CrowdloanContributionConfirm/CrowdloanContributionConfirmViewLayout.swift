@@ -59,7 +59,9 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         amountInputView.priceText = assetViewModel.price
 
         if let balance = assetViewModel.balance {
-            amountInputView.balanceText = R.string(preferredLanguages: locale.rLanguages).localizable.commonAvailableFormat(balance)
+            amountInputView.balanceText = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonAvailableFormat(balance)
         } else {
             amountInputView.balanceText = nil
         }
@@ -118,11 +120,15 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
 
         networkFeeConfirmView.locale = locale
 
-        leasingPeriodView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanLeasingPeriod()
+        leasingPeriodView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanLeasingPeriod()
 
         amountInputView.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendAmountTitle()
 
-        estimatedRewardView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanReward()
+        estimatedRewardView?.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanReward()
 
         bonusView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonBonus()
     }

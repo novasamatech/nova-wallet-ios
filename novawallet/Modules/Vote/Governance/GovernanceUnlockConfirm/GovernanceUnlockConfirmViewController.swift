@@ -55,11 +55,15 @@ final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder,
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
+        rootView.transferableTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletBalanceAvailable()
 
         rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

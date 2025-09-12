@@ -67,7 +67,9 @@ final class WalletConnectSessionsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWalletConnect()
 
-        rootView.scanButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletConnectScanButton()
+        rootView.scanButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletConnectScanButton()
 
         rootView.scanButton.invalidateLayout()
     }

@@ -61,9 +61,13 @@ final class StartStakingConfirmViewController: UIViewController, ViewHolder {
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.stakingTypeCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingTypeTitle()
+        rootView.stakingTypeCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingTypeTitle()
 
-        rootView.genericActionView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.genericActionView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc func actionSelectSender() {

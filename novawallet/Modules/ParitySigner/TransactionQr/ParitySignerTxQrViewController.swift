@@ -94,7 +94,9 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
             preferredLanguages: languages
         )
 
-        rootView.continueButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.continueButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
     }
 
     @objc private func actionSelectAccount() {

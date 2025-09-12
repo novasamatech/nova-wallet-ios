@@ -57,7 +57,9 @@ class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
+        rootView.transferableTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletBalanceAvailable()
 
         rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
         rootView.lockPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonLockingPeriod()
@@ -65,7 +67,9 @@ class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
         let hint = R.string(preferredLanguages: languages).localizable.govVoteSetupHint()
         rootView.hintsView.bind(texts: [hint])
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

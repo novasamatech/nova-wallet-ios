@@ -117,7 +117,9 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.addTokenEnterContractAddress()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: languages
+            ).localizable.addTokenEnterContractAddress()
 
             return
         }
@@ -126,7 +128,9 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.addTokenEnterSymbol()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: languages
+            ).localizable.addTokenEnterSymbol()
 
             return
         }
@@ -135,7 +139,9 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.addTokenEnterDecimals()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: languages
+            ).localizable.addTokenEnterDecimals()
 
             return
         }
@@ -143,7 +149,9 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.addTokenAction()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.addTokenAction()
     }
 
     private func applyPlaceholder(_ placeholder: String, inputView: TextInputView) {

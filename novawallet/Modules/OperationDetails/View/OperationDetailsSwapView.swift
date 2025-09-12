@@ -72,8 +72,12 @@ final class OperationDetailsSwapView: LocalizableView {
     }
 
     private func setup(locale: Locale) {
-        rateCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee()
+        rateCell.titleButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupDetailsRate()
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNetworkFee()
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
 

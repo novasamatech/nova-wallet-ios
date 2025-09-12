@@ -71,14 +71,22 @@ final class GovernanceDelegateConfirmViewController: UIViewController, ViewHolde
 
         rootView.delegateCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govDelegate()
 
-        rootView.yourDelegationCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govYourDelegation()
+        rootView.yourDelegationCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.govYourDelegation()
 
-        rootView.transferableTitleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceAvailable()
+        rootView.transferableTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletBalanceAvailable()
 
         rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
-        rootView.undelegatingPeriodTitleLabel.text = R.string(preferredLanguages: languages).localizable.govUndelegatingPeriod()
+        rootView.undelegatingPeriodTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.govUndelegatingPeriod()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {

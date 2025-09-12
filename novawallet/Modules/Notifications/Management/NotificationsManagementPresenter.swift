@@ -120,8 +120,12 @@ private extension NotificationsManagementPresenter {
     }
 
     func showNotificationDeniedError() {
-        let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsErrorDisabledInSettingsMessage()
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsErrorDisabledInSettingsTitle()
+        let message = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsErrorDisabledInSettingsMessage()
+        let title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsErrorDisabledInSettingsTitle()
         wireframe.askOpenApplicationSettings(
             with: message,
             title: title,
@@ -343,7 +347,9 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             if isStatusDeniedError(error) {
                 showNotificationDeniedError()
             } else {
-                let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle()
+                let title = R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.commonErrorGeneralTitle()
 
                 let message = error.localizedDescription
 

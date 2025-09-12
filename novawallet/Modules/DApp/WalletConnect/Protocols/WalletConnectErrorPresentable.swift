@@ -38,7 +38,9 @@ extension WalletConnectErrorPresentable where Self: AlertPresentable {
     }
 
     func presentWCAuthSubmissionError(from view: ControllerBackedProtocol?, locale: Locale?) {
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.walletConnectProposalResultSubmitError()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletConnectProposalResultSubmitError()
 
         presentWCError(from: view, message: message, locale: locale)
     }

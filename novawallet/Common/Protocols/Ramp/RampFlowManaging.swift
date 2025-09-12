@@ -78,7 +78,9 @@ private extension RampFlowManaging {
         locale: Locale,
         delegate: RampDelegate
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonAlertExternalLinkDisclaimerTitle()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonAlertExternalLinkDisclaimerTitle()
         let message = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.commonAlertExternalLinkDisclaimerMessage(

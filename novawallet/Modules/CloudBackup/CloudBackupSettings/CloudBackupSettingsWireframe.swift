@@ -46,7 +46,9 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
 
         let viewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupAlertRemoveWalletsTitle(),
-            message: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupAlertRemoveWalletsMessage(),
+            message: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.cloudBackupAlertRemoveWalletsMessage(),
             actions: [confirmationAction],
             closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         )

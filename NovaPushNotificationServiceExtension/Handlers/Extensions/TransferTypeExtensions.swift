@@ -38,7 +38,9 @@ extension PushNotification.TransferType {
                     chainName
                 )
             } else {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationSentTokensNoAddressSubtitle(
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.pushNotificationSentTokensNoAddressSubtitle(
                     amount,
                     priceString,
                     chainName

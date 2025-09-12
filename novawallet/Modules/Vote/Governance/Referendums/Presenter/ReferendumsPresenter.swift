@@ -295,7 +295,9 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
             showDetails(referendum: referendum)
         } else {
-            let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceReferendumNotFoundMessage()
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.governanceReferendumNotFoundMessage()
             let closeAction = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonOk()
             wireframe.present(
                 message: message,

@@ -51,37 +51,51 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
     private func content(from chain: ChainModel) -> NotificationContentResult {
         switch payload.toStatus {
         case .approved:
-            let title = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumApprovedTitle()
+            let title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.pushNotificationReferendumApprovedTitle()
 
-            let body = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumApprovedSubtitle(
+            let body = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.pushNotificationReferendumApprovedSubtitle(
                 chain.name,
                 payload.referendumNumber
             )
 
             return .init(title: title, body: body)
         case .rejected:
-            let title = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumRejectedTitle()
+            let title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.pushNotificationReferendumRejectedTitle()
 
-            let body = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumRejectedSubtitle(
+            let body = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.pushNotificationReferendumRejectedSubtitle(
                 chain.name,
                 payload.referendumNumber
             )
 
             return .init(title: title, body: body)
         default:
-            let title = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumStatusUpdatedTitle()
+            let title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.pushNotificationReferendumStatusUpdatedTitle()
 
             let body: String
 
             if let oldStatus = payload.fromStatus {
-                body = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumStatusUpdatedSubtitle(
+                body = R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.pushNotificationReferendumStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     oldStatus.description(for: locale),
                     payload.toStatus.description(for: locale)
                 )
             } else {
-                body = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
+                body = R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     payload.toStatus.description(for: locale)

@@ -45,7 +45,9 @@ final class WalletConnectSessionViewController: UIViewController, ViewHolder {
 
         rootView.statusCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonStatus()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonDisconnect()
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonDisconnect()
     }
 
     private func setupHandlers() {

@@ -460,7 +460,9 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.ledgerNotSupportTokenMessage(tokenName, tokenName)
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.ledgerNotSupportTokenMessage(tokenName, tokenName)
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(

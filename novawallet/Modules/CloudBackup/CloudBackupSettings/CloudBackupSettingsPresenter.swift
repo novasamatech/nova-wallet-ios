@@ -343,7 +343,9 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             wireframe.showManualBackup(from: view)
         } else {
             wireframe.present(
-                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.noManualBackupAlertMessage(),
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.noManualBackupAlertMessage(),
                 title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.noManualBackupAlertTitle(),
                 closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view

@@ -61,13 +61,17 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
             rootView.proceedButton.applyEnabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = true
 
-            rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            rootView.proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable
                 .commonContinue()
         } else {
             rootView.proceedButton.applyDisabledStyle()
             rootView.proceedButton.isUserInteractionEnabled = false
 
-            rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            rootView.proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable
                 .commonEnterWalletNameDisabled()
         }
 

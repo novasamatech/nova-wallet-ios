@@ -37,7 +37,9 @@ final class NominationPoolBondMoreConfirmViewController: UIViewController, ViewH
 
         title = R.string(preferredLanguages: languages).localizable.stakingBondMore_v190()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonConfirm()
 
         rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 

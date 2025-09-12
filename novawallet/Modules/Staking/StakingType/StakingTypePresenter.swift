@@ -128,7 +128,9 @@ final class StakingTypePresenter {
 
         let viewModel = AlertPresentableViewModel(
             title: R.string(preferredLanguages: languages).localizable.stakingTypeDirectStakingAlertTitle(),
-            message: R.string(preferredLanguages: languages).localizable.stakingTypeDirectStakingAlertMessage(minStake, directStaking),
+            message: R.string(
+                preferredLanguages: languages
+            ).localizable.stakingTypeDirectStakingAlertMessage(minStake, directStaking),
             actions: [cancelAction],
             closeAction: nil
         )
@@ -166,13 +168,19 @@ final class StakingTypePresenter {
 
         switch type {
         case .direct:
-            message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingDirect()
+            message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingStartAlreadyStakingDirect()
         case .nominationPool:
-            message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingPool()
+            message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingStartAlreadyStakingPool()
         }
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingStartAlreadyStakingTitle(),
+            title: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingStartAlreadyStakingTitle(),
             message: message,
             actions: [backAction],
             closeAction: nil

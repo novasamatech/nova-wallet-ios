@@ -189,11 +189,19 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
 extension CustomValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomValidatorsListTitle()
+            title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomValidatorsListTitle()
 
-            rootView.fillRestButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomFillButtonTitle()
-            rootView.clearButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomClearButtonTitle()
-            rootView.deselectButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomDeselectButtonTitle()
+            rootView.fillRestButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomFillButtonTitle()
+            rootView.clearButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomClearButtonTitle()
+            rootView.deselectButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingCustomDeselectButtonTitle()
 
             updateProceedButton()
         }

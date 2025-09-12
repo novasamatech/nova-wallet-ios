@@ -41,7 +41,9 @@ enum TransferType {
                     chainName
                 )
             } else {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationSentTokensWoAddressSubtitle(
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.pushNotificationSentTokensWoAddressSubtitle(
                     amount,
                     priceString,
                     chainName

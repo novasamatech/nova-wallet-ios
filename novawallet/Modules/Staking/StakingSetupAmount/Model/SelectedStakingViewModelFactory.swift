@@ -80,7 +80,9 @@ extension SelectedStakingViewModelFactory: SelectedStakingViewModelFactoryProtoc
     ) -> PoolStakingTypeViewModel.PoolAccountModel {
         let poolName = pool.title(for: chainAsset.chain.chainFormat) ?? ""
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool()
-        let subtitle = displaysRecommended ? R.string(preferredLanguages: locale.rLanguages).localizable.commonRecommended() : poolName
+        let subtitle = displaysRecommended ? R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonRecommended() : poolName
 
         return PoolStakingTypeViewModel.PoolAccountModel(
             icon: nil,

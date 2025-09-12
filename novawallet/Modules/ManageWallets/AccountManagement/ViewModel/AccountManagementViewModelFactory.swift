@@ -183,7 +183,9 @@ private extension AccountManagementViewModelFactory {
             )
         }
 
-        let otherSignatoriesTitle = R.string(preferredLanguages: locale.rLanguages).localizable.multisigOtherSignatories()
+        let otherSignatoriesTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.multisigOtherSignatories()
 
         return .init(
             signatory: signatoryViewModel,
