@@ -4,6 +4,8 @@ import SubstrateSdk
 import BigInt
 
 final class XcmTypeBasedCallDerivator {
+    static let preferredVersion: Xcm.Version = .V3
+
     let chainRegistry: ChainRegistryProtocol
 
     private lazy var xcmModelFactory = XcmModelFactory()
@@ -160,8 +162,9 @@ private extension XcmTypeBasedCallDerivator {
                 destinationAssetOperation: destinationAssetOperation
             )
         case .xcmpalletTransferAssets:
-            let assetIdVersionWrapper = xcmPalletQueryFactory.createLowestXcmAssetIdVersionWrapper(
-                for: runtimeProvider
+            let assetIdVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmAssetIdVersionWrapper(
+                for: runtimeProvider,
+                preferredVersion: Self.preferredVersion
             )
 
             let callWrapper = createTransferAssetsUsingTypeAndThen(
@@ -197,7 +200,10 @@ private extension XcmTypeBasedCallDerivator {
         for request: XcmUnweightedTransferRequest,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
+        let versionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+            for: runtimeProvider,
+            preferredVersion: Self.preferredVersion
+        )
 
         let resultOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
             let version = try versionWrapper.targetOperation.extractNoCancellableResultData()

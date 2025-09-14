@@ -8,12 +8,14 @@ protocol XcmPalletMetadataQueryFactoryProtocol {
         for runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<String>
 
-    func createLowestXcmVersionWrapper(
-        for runtimeProvider: RuntimeCodingServiceProtocol
+    func createPreferredOrLowestXcmVersionWrapper(
+        for runtimeProvider: RuntimeCodingServiceProtocol,
+        preferredVersion: Xcm.Version?
     ) -> CompoundOperationWrapper<Xcm.Version>
 
-    func createLowestXcmAssetIdVersionWrapper(
-        for runtimeProvider: RuntimeCodingServiceProtocol
+    func createPreferredOrLowestXcmAssetIdVersionWrapper(
+        for runtimeProvider: RuntimeCodingServiceProtocol,
+        preferredVersion: Xcm.Version?
     ) -> CompoundOperationWrapper<Xcm.Version>
 
     func createXcmMessageTypeResolutionWrapper(
@@ -26,7 +28,8 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory {}
 private extension XcmPalletMetadataQueryFactory {
     func createXcmVersionResolutionOperation(
         dependingOn typeOperation: BaseOperation<String?>,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        preferredVersion: Xcm.Version?
     ) -> BaseOperation<Xcm.Version> {
         ClosureOperation<Xcm.Version> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -38,10 +41,17 @@ private extension XcmPalletMetadataQueryFactory {
                 throw XcmMetadataQueryError.noXcmTypeFound
             }
 
-            guard
-                let version = versionNode.typeMapping
-                .compactMap({ Xcm.Version(rawName: $0.name) })
-                .min() else {
+            let allVersions = versionNode
+                .typeMapping
+                .compactMap { Xcm.Version(rawName: $0.name) }
+
+            let optVersion: Xcm.Version? = if let preferredVersion, allVersions.contains(preferredVersion) {
+                preferredVersion
+            } else {
+                allVersions.min()
+            }
+
+            guard let version = optVersion else {
                 throw XcmMetadataQueryError.noXcmVersionFound
             }
 
@@ -51,15 +61,17 @@ private extension XcmPalletMetadataQueryFactory {
 }
 
 extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
-    func createLowestXcmVersionWrapper(
-        for runtimeProvider: RuntimeCodingServiceProtocol
+    func createPreferredOrLowestXcmVersionWrapper(
+        for runtimeProvider: RuntimeCodingServiceProtocol,
+        preferredVersion: Xcm.Version?
     ) -> CompoundOperationWrapper<Xcm.Version> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let xcmMessageTypeWrapper = createXcmMessageTypeResolutionWrapper(for: runtimeProvider)
 
         let resolutionOperation = createXcmVersionResolutionOperation(
             dependingOn: xcmMessageTypeWrapper.targetOperation,
-            codingFactoryOperation: codingFactoryOperation
+            codingFactoryOperation: codingFactoryOperation,
+            preferredVersion: preferredVersion
         )
 
         resolutionOperation.addDependency(codingFactoryOperation)
@@ -107,8 +119,9 @@ extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
             .insertingTail(operation: resultOperation)
     }
 
-    func createLowestXcmAssetIdVersionWrapper(
-        for runtimeProvider: RuntimeCodingServiceProtocol
+    func createPreferredOrLowestXcmAssetIdVersionWrapper(
+        for runtimeProvider: RuntimeCodingServiceProtocol,
+        preferredVersion: Xcm.Version?
     ) -> CompoundOperationWrapper<Xcm.Version> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let moduleResolutionWrapper = createModuleNameResolutionWrapper(for: runtimeProvider)
@@ -130,7 +143,8 @@ extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
 
         let resolutionOperation = createXcmVersionResolutionOperation(
             dependingOn: typeOperation,
-            codingFactoryOperation: codingFactoryOperation
+            codingFactoryOperation: codingFactoryOperation,
+            preferredVersion: preferredVersion
         )
 
         resolutionOperation.addDependency(typeOperation)
