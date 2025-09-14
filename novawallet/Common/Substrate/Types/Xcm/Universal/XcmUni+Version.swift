@@ -43,4 +43,8 @@ extension XcmUni.Versioned {
         let newEntity = try transformation(entity)
         return XcmUni.Versioned(entity: newEntity, version: version)
     }
+
+    func replacingVersion(_ newVersion: Xcm.Version) -> Self {
+        XcmUni.Versioned(entity: entity, version: newVersion)
+    }
 }
