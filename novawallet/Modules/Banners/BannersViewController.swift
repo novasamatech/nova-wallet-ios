@@ -169,8 +169,6 @@ private extension BannersViewController {
     ) {
         guard let staticState else { return }
 
-        let indexPath = IndexPath(item: index, section: 0)
-
         if animated {
             dynamicState = DynamicState(
                 contentOffset: rootView.collectionView.contentOffset.x,

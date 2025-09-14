@@ -10,10 +10,11 @@ extension StackInfoTableCell {
             if viewModel.totalNetworks > 1 {
                 canSelect = true
 
-                let details = R.string.localizable.commonMoreFormat(
-                    networkViewModel.name,
-                    "\(viewModel.totalNetworks - 1)",
+                let details = R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.commonMoreFormat(
+                    networkViewModel.name,
+                    "\(viewModel.totalNetworks - 1)"
                 )
 
                 bind(details: details)

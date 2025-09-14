@@ -30,7 +30,9 @@ final class PersistentTabLocalSubscriptionFactory {
 // MARK: PersistentTabLocalSubscriptionFactoryProtocol
 
 extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol {
-    func getTabsProvider(_ metaId: MetaAccountModel.Id?) -> Operation_iOS.StreamableProvider<DAppBrowserTab.PersistenceModel> {
+    func getTabsProvider(
+        _ metaId: MetaAccountModel.Id?
+    ) -> Operation_iOS.StreamableProvider<DAppBrowserTab.PersistenceModel> {
         runStoreCleaner()
 
         if

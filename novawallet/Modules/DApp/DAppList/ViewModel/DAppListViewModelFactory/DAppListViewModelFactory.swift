@@ -111,10 +111,7 @@ private extension DAppListViewModelFactory {
 
     func sortedDAppViewModels(from viewModels: [DAppViewModel]) -> [DAppViewModel] {
         viewModels.sorted { lhsModel, rhsModel in
-            let lhsIsFavorite = lhsModel.isFavorite ? 1 : 0
-            let rhsIsFavorite = rhsModel.isFavorite ? 1 : 0
-
-            return if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
+            if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
                 lhsOrder < rhsOrder
             } else if lhsModel.order != nil {
                 false
