@@ -45,8 +45,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     ModalAlertPresenting,
     BrowserOpening,
     MessageSheetPresentable,
-    FeatureSupportChecking
-{
+    FeatureSupportChecking {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
 
     func presentWalletMigration(on view: MainTabBarViewProtocol?, message: WalletMigrationMessage.Start)

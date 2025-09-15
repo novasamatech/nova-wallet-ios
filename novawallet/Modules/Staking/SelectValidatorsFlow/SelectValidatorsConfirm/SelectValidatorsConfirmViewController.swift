@@ -122,10 +122,11 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             rootView.removeRewardDestinationIfNeeded()
         }
 
-        rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
-            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
-            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? "",
+        rootView.validatorsCell.detailsLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingValidatorInfoNominators(
+            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
+            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
         )
     }
 

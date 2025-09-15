@@ -10,7 +10,7 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
         self.storageRequestFactory = storageRequestFactory
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func fetchCountdownOperationWrapper(
         for connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol

@@ -75,7 +75,7 @@ final class ExportViewModelFactory {
         )
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func createViewModelForNetwork(
         with model: ExportChainData,
         selectedLocale: Locale,

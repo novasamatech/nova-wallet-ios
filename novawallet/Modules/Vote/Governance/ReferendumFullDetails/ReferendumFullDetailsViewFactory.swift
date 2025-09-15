@@ -12,8 +12,7 @@ struct ReferendumFullDetailsViewFactory {
     ) -> ReferendumFullDetailsViewProtocol? {
         guard
             let chain = state.settings.value?.chain,
-            let currencyManager = CurrencyManager.shared,
-            let assetInfo = chain.utilityAssetDisplayInfo() else {
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 

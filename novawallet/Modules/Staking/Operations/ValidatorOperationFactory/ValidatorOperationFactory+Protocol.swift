@@ -3,7 +3,6 @@ import Operation_iOS
 import NovaCrypto
 
 extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
-    // swiftlint:disable:next function_body_length
     func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]> {
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 

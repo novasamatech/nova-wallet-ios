@@ -93,7 +93,7 @@ private extension ManualBackupKeyListViewModelFactory {
         let othersString = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
         ).localizable.chainAccountsListDefaultSubtitle(restCount)
 
-        var joinedChains = chainsToMention
+        let joinedChains = chainsToMention
             .map(\.name)
             .joined(with: String.CompoundSeparator.commaSpace)
 

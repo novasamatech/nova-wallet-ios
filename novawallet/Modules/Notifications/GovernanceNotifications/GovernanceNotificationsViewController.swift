@@ -90,8 +90,12 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
         if selectedTracks.allSelected {
             return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAll()
         } else {
-            return R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.notificationsManagementGovSelectedTracks(selectedTracks.tracks.count, selectedTracks.totalTracksCount)
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.notificationsManagementGovSelectedTracks(
+                selectedTracks.tracks.count,
+                selectedTracks.totalTracksCount
+            )
         }
     }
 }

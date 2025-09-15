@@ -48,9 +48,10 @@ extension StakingRewardFiltersPeriod {
             return ""
         }
 
-        return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
-            "\(days + 1)",
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardFiltersPeriodCustomMonthShort(
+            "\(days + 1)"
         )
     }
 }

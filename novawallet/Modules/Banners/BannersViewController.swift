@@ -167,7 +167,7 @@ private extension BannersViewController {
         animated: Bool,
         completionBlock: (() -> Void)? = nil
     ) {
-        guard let staticState else { return }
+        guard staticState != nil else { return }
 
         if animated {
             dynamicState = DynamicState(
@@ -272,7 +272,6 @@ private extension BannersViewController {
         else { return }
 
         let itemWidth = scrollView.bounds.width
-        let fullContentWidth = itemWidth * CGFloat(dataSource.numberOfItems())
 
         if currentItemByOffset == firstIndex {
             scrollView.contentOffset.x = itemWidth * CGFloat(lastShowingItemIndex)
@@ -385,7 +384,7 @@ extension BannersViewController: UIScrollViewDelegate {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard let staticState else { return }
+        guard staticState != nil else { return }
 
         autoScrollManager.stopScrolling()
 

@@ -37,8 +37,7 @@ extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionF
 
         if
             let metaId,
-            let provider = providerStore[metaId]?.target as? StreamableProvider<DAppBrowserTab.PersistenceModel>
-        {
+            let provider = providerStore[metaId]?.target as? StreamableProvider<DAppBrowserTab.PersistenceModel> {
             return provider
         }
 

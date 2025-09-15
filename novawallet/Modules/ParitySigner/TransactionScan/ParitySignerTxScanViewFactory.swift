@@ -31,16 +31,14 @@ struct ParitySignerTxScanViewFactory {
         )
 
         let title = LocalizableResource { locale in
-            R.string.localizable.paritySignerTxTitle(
-                params.type.getName(for: locale),
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerTxTitle(
+                params.type.getName(for: locale)
             )
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle_9_7_0(
-                params.type.getName(for: locale),
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerScanTitle_9_7_0(
+                params.type.getName(for: locale)
             )
         }
 

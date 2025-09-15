@@ -89,7 +89,10 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
 }
 
 extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
-    func createOperation(referendumId: ReferendumIdLocal, votersType: ReferendumVotersType?) -> BaseOperation<ReferendumVotingAmount> {
+    func createOperation(
+        referendumId: ReferendumIdLocal,
+        votersType: ReferendumVotersType?
+    ) -> BaseOperation<ReferendumVotingAmount> {
         let query = if let votersType {
             switch votersType {
             case .ayes:
@@ -188,7 +191,7 @@ extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
             accAbstain += voting.vote.abstains
         case let .standard(model) where model.vote.aye:
             accAye += (voting.vote.ayes + voting.delegatorsVotes)
-        case let .standard(model):
+        case .standard:
             accNay += (voting.vote.nays + voting.delegatorsVotes)
         }
 

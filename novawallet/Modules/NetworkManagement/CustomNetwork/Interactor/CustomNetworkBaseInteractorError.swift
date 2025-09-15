@@ -41,7 +41,7 @@ enum CustomNetworkBaseInteractorError: Error {
 }
 
 extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         switch self {
         case let .alreadyExistRemote(_, chain):

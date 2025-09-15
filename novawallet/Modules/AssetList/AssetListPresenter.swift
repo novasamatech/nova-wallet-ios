@@ -551,7 +551,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            guard let self, let wallet else { return }
+            guard let self else { return }
 
             wireframe.showRamp(
                 from: view,
@@ -577,7 +577,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in
-            guard let self, let wallet else { return }
+            guard let self else { return }
 
             wireframe.showRamp(
                 from: view,

@@ -42,14 +42,6 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
 
-    init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
-    ) {
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.estimatedEarningsFormatter = estimatedEarningsFormatter
-    }
-
     func earnupModel(
         earnings: Decimal?,
         chainAsset: ChainAsset,
@@ -245,11 +237,10 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
             preferredLanguages: locale.rLanguages
         ).localizable.stakingStartTestNetworkDescription()
         let value = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartTestNetworkTokenValue()
-        let text = R.string.localizable.stakingStartTestNetwork(
+        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartTestNetwork(
             chain.name,
             description,
-            value,
-            preferredLanguages: locale.rLanguages
+            value
         )
         let textWithAccents = AccentTextModel(
             text: text,

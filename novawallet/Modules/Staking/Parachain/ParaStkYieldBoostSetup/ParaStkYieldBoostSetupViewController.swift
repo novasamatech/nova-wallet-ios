@@ -135,15 +135,17 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
 
         if let newDays = viewModel?.new {
             if let oldDays = viewModel?.old, oldDays != newDays {
-                period = R.string.localizable.yieldBoostSetupUpdatedPeriodDetails(
-                    newDays.localizedDaysPeriod(for: selectedLocale),
-                    oldDays.localizedDaysPeriod(for: selectedLocale),
+                period = R.string(
                     preferredLanguages: selectedLocale.rLanguages
+                ).localizable.yieldBoostSetupUpdatedPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale),
+                    oldDays.localizedDaysPeriod(for: selectedLocale)
                 )
             } else {
-                period = R.string.localizable.yieldBoostSetupNewPeriodDetails(
-                    newDays.localizedDaysPeriod(for: selectedLocale),
+                period = R.string(
                     preferredLanguages: selectedLocale.rLanguages
+                ).localizable.yieldBoostSetupNewPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale)
                 )
             }
 

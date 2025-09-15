@@ -333,7 +333,7 @@ private extension CustomNetworkBaseInteractor {
         )
 
         let range = NSRange(location: 0, length: urlString.utf16.count)
-        if let match = regex?.firstMatch(in: urlString, options: [], range: range) {
+        if regex?.firstMatch(in: urlString, options: [], range: range) != nil {
             return true
         } else {
             return false

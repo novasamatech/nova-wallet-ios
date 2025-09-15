@@ -34,7 +34,6 @@ final class StakingSetupProxyViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
 
         rootView.titleLabel.text = strings.stakingSetupProxyTitle(token)

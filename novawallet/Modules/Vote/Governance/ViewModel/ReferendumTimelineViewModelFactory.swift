@@ -119,9 +119,10 @@ final class ReferendumTimelineViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPreparingInqueue() :
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPreparing()
 
-        let title = R.string.localizable.govTimelineVotingFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotingFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
@@ -159,9 +160,10 @@ final class ReferendumTimelineViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPassing() :
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusDeciding()
 
-        let title = R.string.localizable.govTimelineVotingFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotingFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
@@ -178,9 +180,10 @@ final class ReferendumTimelineViewModelFactory {
             preferredLanguages: locale.rLanguages
         ).localizable.governanceReferendumsStatusApproved()
 
-        return R.string.localizable.govTimelineVotedFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotedFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
     }
 
@@ -239,9 +242,10 @@ final class ReferendumTimelineViewModelFactory {
             locale: locale
         )
 
-        let title = R.string.localizable.govTimelineVotedFormat(
-            status.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotedFormat(
+            status.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = date.map { ReferendumTimelineView.StatusSubtitle.date($0) }

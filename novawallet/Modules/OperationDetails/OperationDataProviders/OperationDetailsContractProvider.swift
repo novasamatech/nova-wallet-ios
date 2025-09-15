@@ -9,7 +9,6 @@ extension OperationDetailsContractProvider: OperationDetailsDataProviderProtocol
         calculatorFactory: PriceHistoryCalculatorFactoryProtocol,
         progressClosure: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
         let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.chain.utilityAsset()?.priceId)
 
         let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
