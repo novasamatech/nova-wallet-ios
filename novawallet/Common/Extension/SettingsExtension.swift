@@ -30,6 +30,7 @@ enum SettingsKey: String {
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
     case multisigNotificationsPromoSeen
+    case privacyModeSettings
 }
 
 extension SettingsManagerProtocol {
@@ -356,6 +357,24 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.multisigNotificationsPromoSeen.rawValue)
+        }
+    }
+    
+    var privacyModeSettings: PrivacyModeSettings {
+        get {
+            value(
+                of: PrivacyModeSettings.self,
+                for: SettingsKey.privacyModeSettings.rawValue
+            ) ?? PrivacyModeSettings(
+                privacySettingsEnabled: false,
+                privacyModeEnabled: false
+            )
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.privacyModeSettings.rawValue
+            )
         }
     }
 }
