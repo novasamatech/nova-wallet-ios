@@ -570,7 +570,7 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 preferredVersion: Self.preferredVersion
             )
 
-            let reserveVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmAssetIdVersionWrapper(
+            let reserveVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
                 for: reserveRuntimeProvider,
                 preferredVersion: Self.preferredVersion
             )
