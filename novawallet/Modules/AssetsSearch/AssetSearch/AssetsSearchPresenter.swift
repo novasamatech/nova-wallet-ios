@@ -119,11 +119,16 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             return nil
         }
 
-        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+        let params = AssetListTokenGroupViewModelParams(
             assetsList: assets,
             group: groupModel,
             maybePrices: maybePrices,
-            connected: true,
+            privacyModeEnabled: true,
+            connected: true
+        )
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            params: params,
             locale: selectedLocale
         ) {
             .token(groupViewModel)
@@ -152,11 +157,16 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             )
         }
 
-        let groupViewModel = viewModelFactory.createNetworkGroupViewModel(
-            for: chain,
+        let params = AssetListNetworkGroupViewModelParams(
+            chain: chain,
             assets: assetInfoList,
             value: groupModel.value,
-            connected: true,
+            privacyModeEnabled: true,
+            connected: true
+        )
+
+        let groupViewModel = viewModelFactory.createNetworkGroupViewModel(
+            params: params,
             locale: selectedLocale
         )
 

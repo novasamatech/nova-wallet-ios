@@ -16,21 +16,17 @@ class AssetListAssetCell: UICollectionViewCell {
         return label
     }()
 
-    let balanceLabel: UILabel = {
-        let label = UILabel()
-        label.font = .semiBoldBody
-        label.textColor = R.color.colorTextPrimary()
-        label.textAlignment = .right
-        return label
-    }()
+    let balanceLabel: GenericSecuredView<AssetListAssetBalanceLabel> = .create {
+        $0.originalView.font = .regularFootnote
+        $0.originalView.textColor = R.color.colorTextSecondary()
+        $0.originalView.textAlignment = .right
+    }
 
-    let balanceValueLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = R.color.colorTextSecondary()
-        label.textAlignment = .right
-        return label
-    }()
+    let balanceValueLabel: GenericSecuredView<AssetListAssetValueLabel> = .create {
+        $0.originalView.font = .regularFootnote
+        $0.originalView.textColor = R.color.colorTextSecondary()
+        $0.originalView.textAlignment = .right
+    }
 
     let dividerView: BorderedContainerView = .create { view in
         view.strokeWidth = 1.0
@@ -130,28 +126,21 @@ class AssetListAssetCell: UICollectionViewCell {
         applyBalanceValue(balanceViewModel.balanceValue)
     }
 
-    private func applyBalance(_ balanceViewModel: LoadableViewModelState<String>) {
+    private func applyBalance(_ balanceViewModel: LoadableViewModelState<SecuredViewModel<String>>) {
         switch balanceViewModel {
         case .loading:
-            balanceLabel.text = ""
+            balanceLabel.originalView.update(with: "")
         case let .cached(value), let .loaded(value):
-            balanceLabel.attributedText = NSAttributedString.styledAmountString(
-                from: value,
-                intPartFont: .semiBoldBody,
-                fractionFont: .semiBoldSubheadline,
-                decimalSeparator: String(String.Separator.dot.rawValue)
-            )
+            balanceLabel.bind(value)
         }
     }
 
-    private func applyBalanceValue(_ balanceValueViewModel: LoadableViewModelState<String>) {
+    private func applyBalanceValue(_ balanceValueViewModel: LoadableViewModelState<SecuredViewModel<String>>) {
         switch balanceValueViewModel {
         case .loading:
-            balanceValueLabel.text = ""
-        case let .cached(value):
-            balanceValueLabel.text = value
-        case let .loaded(value):
-            balanceValueLabel.text = value
+            balanceValueLabel.originalView.update(with: "")
+        case let .cached(value), let .loaded(value):
+            balanceValueLabel.bind(value)
         }
     }
 
@@ -183,6 +172,7 @@ class AssetListAssetCell: UICollectionViewCell {
         balanceLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(32.0)
             make.leading.greaterThanOrEqualTo(assetLabel.snp.trailing).offset(4.0)
+            make.height.equalTo(22.0)
             make.top.equalToSuperview().inset(8.0)
         }
 
@@ -190,6 +180,7 @@ class AssetListAssetCell: UICollectionViewCell {
         balanceValueLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(32.0)
             make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(4.0)
+            make.height.equalTo(18.0)
             make.bottom.equalToSuperview().inset(8.0)
         }
 

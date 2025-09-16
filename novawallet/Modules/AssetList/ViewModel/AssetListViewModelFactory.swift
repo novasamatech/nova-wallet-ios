@@ -32,6 +32,7 @@ protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtoc
     func createOrganizerViewModel(
         from nfts: [NftModel],
         operations: [Multisig.PendingOperation],
+        privacyModeEnabled: Bool,
         locale: Locale
     ) -> AssetListOrganizerViewModel?
 }
@@ -110,7 +111,7 @@ private extension AssetListViewModelFactory {
         privacyModeEnabled: Bool,
         locale: Locale
     ) -> LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>> {
-        let balancePrivacyMode: ViewPrivacyMode = createBalancePrivacyMode(for: privacyModeEnabled)
+        let balancePrivacyMode: ViewPrivacyMode = createPrivacyMode(for: privacyModeEnabled)
 
         switch prices {
         case .loading:
@@ -165,11 +166,15 @@ private extension AssetListViewModelFactory {
 
         return SecuredViewModel(
             originalContent: amount,
-            privacyMode: createBalancePrivacyMode(for: privacyModeEnabled)
+            privacyMode: createPrivacyMode(for: privacyModeEnabled)
         )
     }
 
-    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel {
+    func createNftsViewModel(
+        from nfts: [NftModel],
+        privacyModeEnabled: Bool,
+        locale: Locale
+    ) -> AssetListNftsViewModel {
         let numberOfNfts = NSNumber(value: nfts.count)
         let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
 
@@ -197,7 +202,15 @@ private extension AssetListViewModelFactory {
             return nil
         }
 
-        return AssetListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
+        let privacyMode = createPrivacyMode(for: privacyModeEnabled)
+        let countViewModel: LoadableViewModelState<SecuredViewModel<RoundedIconTitleView.ViewModel>> = .loaded(
+            value: .init(originalContent: (title: count, icon: nil), privacyMode: privacyMode)
+        )
+
+        return AssetListNftsViewModel(
+            totalCount: countViewModel,
+            mediaViewModels: viewModels
+        )
     }
 
     func createMultisigOperationsViewModel(
@@ -210,7 +223,7 @@ private extension AssetListViewModelFactory {
         return AssetListMultisigOperationsViewModel(totalCount: count)
     }
 
-    func createBalancePrivacyMode(for privacyModeEnabled: Bool) -> ViewPrivacyMode {
+    func createPrivacyMode(for privacyModeEnabled: Bool) -> ViewPrivacyMode {
         privacyModeEnabled ? .hidden : .visible
     }
 }
@@ -267,12 +280,21 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
     func createOrganizerViewModel(
         from nfts: [NftModel],
         operations: [Multisig.PendingOperation],
+        privacyModeEnabled: Bool,
         locale: Locale
     ) -> AssetListOrganizerViewModel? {
         var items: [AssetListOrganizerItemViewModel] = []
 
         if !nfts.isEmpty {
-            items.append(.nfts(createNftsViewModel(from: nfts, locale: locale)))
+            items.append(
+                .nfts(
+                    createNftsViewModel(
+                        from: nfts,
+                        privacyModeEnabled: privacyModeEnabled,
+                        locale: locale
+                    )
+                )
+            )
         }
         if !operations.isEmpty {
             items.append(.pendingTransactions(createMultisigOperationsViewModel(from: operations, locale: locale)))

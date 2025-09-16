@@ -375,11 +375,16 @@ private extension AssetListPresenter {
             return nil
         }
 
-        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+        let params = AssetListTokenGroupViewModelParams(
             assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
-            connected: true,
+            privacyModeEnabled: true,
+            connected: true
+        )
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            params: params,
             locale: selectedLocale
         ) {
             .token(groupViewModel)
@@ -413,12 +418,16 @@ private extension AssetListPresenter {
             )
         }
 
+        let params = AssetListNetworkGroupViewModelParams(
+            chain: chain,
+            assets: assetInfoList,
+            value: groupModel.value,
+            privacyModeEnabled: true,
+            connected: true
+        )
         return .network(
             viewModelFactory.createNetworkGroupViewModel(
-                for: chain,
-                assets: assetInfoList,
-                value: groupModel.value,
-                connected: true,
+                params: params,
                 locale: selectedLocale
             )
         )
@@ -428,6 +437,7 @@ private extension AssetListPresenter {
         let viewModel = viewModelFactory.createOrganizerViewModel(
             from: model.nfts,
             operations: model.pendingOperations,
+            privacyModeEnabled: true,
             locale: selectedLocale
         )
 

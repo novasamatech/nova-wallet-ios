@@ -10,6 +10,7 @@ final class AssetListTotalBalanceView: UIView {
         static let elementMovingMotion: CGFloat = 5
         static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         static let infoIconSize = CGSize(width: 12, height: 12)
+        static let locksViewHeight: CGFloat = 22.0
     }
 
     let backgroundBlurView = GladingCardView()
@@ -235,6 +236,7 @@ final class AssetListTotalBalanceView: UIView {
         displayContentView.addSubview(locksView)
         locksView.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview()
+            make.height.equalTo(Constants.locksViewHeight)
         }
 
         displayContentView.addSubview(titleLabel)

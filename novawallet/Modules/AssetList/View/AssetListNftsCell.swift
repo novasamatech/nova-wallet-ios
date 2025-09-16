@@ -29,6 +29,7 @@ final class AssetListNftsView: UIView {
         static let mediaCornerRadius: CGFloat = 8.0
         static let mediaSpacing: CGFloat = 20.0
         static let mediaTrailing: CGFloat = 8.0
+        static let counterViewHeight: CGFloat = 22.0
     }
 
     private var mediaViews: [NftMediaView] = []
@@ -37,8 +38,13 @@ final class AssetListNftsView: UIView {
         view.apply(style: .regularSubhedlinePrimary)
     }
 
-    let counterLabel: UILabel = .create { view in
-        view.apply(style: .semiboldChip)
+    let counterView: GenericSecuredView<RoundedIconTitleView> = .create { view in
+        view.originalView.titleView.detailsLabel.apply(style: .semiboldChip)
+        view.originalView.titleView.spacing = .zero
+        view.originalView.titleView.hidesIcon = true
+        view.originalView.contentInsets = .zero
+        view.originalView.roundedBackgroundView.apply(style: .chips)
+        view.originalView.roundedBackgroundView.cornerRadius = 8.0
     }
 
     let counterBackgroundView: RoundedView = .create { view in
@@ -75,9 +81,9 @@ final class AssetListNftsView: UIView {
     func bind(viewModel: AssetListNftsViewModel) {
         switch viewModel.totalCount {
         case let .cached(value), let .loaded(value):
-            counterLabel.text = value
+            counterView.bind(value)
         case .loading:
-            counterLabel.text = ""
+            counterView.originalView.bind(title: "", icon: nil)
         }
 
         bind(mediaViewModels: viewModel.mediaViewModels)
@@ -176,17 +182,12 @@ private extension AssetListNftsView {
             make.centerY.equalToSuperview()
         }
 
-        addSubview(counterBackgroundView)
-        counterBackgroundView.snp.makeConstraints { make in
+        addSubview(counterView)
+        counterView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
             make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()
-        }
-
-        counterBackgroundView.addSubview(counterLabel)
-        counterLabel.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(2.0)
-            make.leading.trailing.equalToSuperview().inset(8.0)
+            make.height.equalTo(Constants.counterViewHeight)
         }
     }
 }

@@ -67,7 +67,7 @@ enum AssetListOrganizerItemViewModel: Equatable {
 }
 
 struct AssetListNftsViewModel: Equatable {
-    let totalCount: LoadableViewModelState<String>
+    let totalCount: LoadableViewModelState<SecuredViewModel<RoundedIconTitleView.ViewModel>>
     let mediaViewModels: [NftMediaViewModelProtocol]
 
     static func == (
@@ -77,7 +77,8 @@ struct AssetListNftsViewModel: Equatable {
         let lhsIdSet = Set(lhs.mediaViewModels.map(\.identifier))
         let rhsIdSet = Set(rhs.mediaViewModels.map(\.identifier))
 
-        return lhs.totalCount == rhs.totalCount && lhsIdSet == rhsIdSet
+        return lhs.totalCount.value?.originalContent.title == rhs.totalCount.value?.originalContent.title
+            && lhsIdSet == rhsIdSet
     }
 }
 
@@ -188,8 +189,8 @@ struct AssetListTokenGroupAssetViewModel: Identifiable {
 
 struct AssetListAssetBalanceViewModel {
     let price: LoadableViewModelState<AssetPriceViewModel>
-    let balanceAmount: LoadableViewModelState<String>
-    let balanceValue: LoadableViewModelState<String>
+    let balanceAmount: LoadableViewModelState<SecuredViewModel<String>>
+    let balanceValue: LoadableViewModelState<SecuredViewModel<String>>
 }
 
 extension LoadableViewModelState: Hashable, Equatable where T == String {}

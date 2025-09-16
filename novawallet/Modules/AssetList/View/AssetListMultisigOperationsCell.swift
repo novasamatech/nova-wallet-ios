@@ -27,6 +27,7 @@ final class AssetListMultisigOperationsView: UIView {
         view.titleView.imageView.image = R.image.iconPending()
         view.titleView.detailsLabel.apply(style: .semiboldChip)
         view.titleView.spacing = 4.0
+        view.contentInsets = .zero
         view.roundedBackgroundView.apply(style: .chips)
         view.roundedBackgroundView.cornerRadius = 8.0
     }

@@ -19,22 +19,15 @@ final class RoundedIconTitleView: UIView {
             if contentInsets != oldValue {
                 roundedBackgroundView.snp.updateConstraints { make in
                     make.leading.equalToSuperview().inset(contentInsets.left)
-                    make.trailing.lessThanOrEqualToSuperview().inset(contentInsets.right)
+                    make.trailing.equalToSuperview().inset(contentInsets.right)
                     make.top.equalToSuperview().inset(contentInsets.top)
-                    make.bottom.lessThanOrEqualToSuperview().inset(contentInsets.bottom)
+                    make.bottom.equalToSuperview().inset(contentInsets.bottom)
                 }
             }
         }
     }
 
-    let roundedBackgroundView: RoundedView = {
-        let view = RoundedView()
-        view.shadowOpacity = 0.0
-        view.fillColor = R.color.colorContainerBorder()!
-        view.highlightedFillColor = R.color.colorContainerBorder()!
-        view.cornerRadius = 7.0
-        return view
-    }()
+    lazy var roundedBackgroundView: RoundedView = createBackground()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,27 +42,83 @@ final class RoundedIconTitleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        addSubview(roundedBackgroundView)
-        roundedBackgroundView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(contentInsets.left)
-            make.trailing.lessThanOrEqualToSuperview().inset(contentInsets.right)
-            make.top.equalToSuperview().inset(contentInsets.top)
-            make.bottom.lessThanOrEqualToSuperview().inset(contentInsets.bottom)
-        }
+    func bind(title: String, icon: UIImage?) {
+        titleView.detailsLabel.text = title
+        titleView.imageView.image = icon
 
-        roundedBackgroundView.addSubview(titleView)
-        titleView.snp.makeConstraints { make in
+        setNeedsLayout()
+    }
+}
+
+// MARK: - Private
+
+private extension RoundedIconTitleView {
+    func setupLayout() {
+        setupBackgroundLayout(
+            for: self,
+            backgroundView: roundedBackgroundView
+        )
+        setupContentLayout(
+            for: roundedBackgroundView,
+            contentView: titleView
+        )
+    }
+
+    func setupBackgroundLayout(for container: UIView, backgroundView: RoundedView) {
+        container.addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(contentInsets.left)
+            make.trailing.equalToSuperview().inset(contentInsets.right)
+            make.top.equalToSuperview().inset(contentInsets.top)
+            make.bottom.equalToSuperview().inset(contentInsets.bottom)
+        }
+    }
+
+    func setupContentLayout(for container: UIView, contentView: UIView) {
+        container.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(6.0)
             make.top.bottom.equalToSuperview().inset(3.0)
             make.trailing.equalToSuperview().inset(8.0)
         }
     }
 
-    func bind(title: String, icon: UIImage?) {
-        titleView.detailsLabel.text = title
-        titleView.imageView.image = icon
+    func createBackground() -> RoundedView {
+        .create { view in
+            view.shadowOpacity = 0.0
+            view.fillColor = R.color.colorContainerBorder()!
+            view.highlightedFillColor = R.color.colorContainerBorder()!
+            view.cornerRadius = 7.0
+        }
+    }
+}
 
-        setNeedsLayout()
+// MARK: - SecurableViewProtocol
+
+extension RoundedIconTitleView: SecurableViewProtocol {
+    typealias ViewModel = (title: String, icon: UIImage?)
+
+    func update(with viewModel: ViewModel) {
+        bind(title: viewModel.title, icon: viewModel.icon)
+    }
+
+    func createSecureOverlay() -> UIView? {
+        let container = UIView()
+
+        let dotsOverlay = DotsOverlayView()
+        dotsOverlay.configuration = .smallBalance
+
+        let backgroundView = createBackground()
+
+        setupBackgroundLayout(
+            for: container,
+            backgroundView: backgroundView
+        )
+        setupContentLayout(
+            for: backgroundView,
+            contentView: dotsOverlay
+        )
+
+        return container
     }
 }

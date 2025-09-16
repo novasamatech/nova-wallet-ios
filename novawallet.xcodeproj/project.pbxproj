@@ -2008,6 +2008,8 @@
 		2DD83BC72E42A75D00E83B4C /* IPAddressProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BC62E42A75D00E83B4C /* IPAddressProviderTests.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
+		2DDC720F2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */; };
+		2DDC72132E7A1EC900480C6F /* AssetListAssetValueLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
 		2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */; };
 		2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */; };
@@ -8488,6 +8490,8 @@
 		2DD83BC62E42A75D00E83B4C /* IPAddressProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAddressProviderTests.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
+		2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetBalanceLabel.swift; sourceTree = "<group>"; };
+		2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetValueLabel.swift; sourceTree = "<group>"; };
 		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
 		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTab.swift; sourceTree = "<group>"; };
@@ -26104,6 +26108,8 @@
 				843E9B2727C83985009C143A /* AssetListNftsCell.swift */,
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
 				0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */,
+				2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */,
+				2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -30644,6 +30650,7 @@
 				0CED71B72D9C105200F79C02 /* XcmExecuteDerivator.swift in Sources */,
 				2DE8B0E22E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift in Sources */,
 				849976CA27B2F9E000B14A6C /* DAppMetamaskAuthorizingState.swift in Sources */,
+				2DDC72132E7A1EC900480C6F /* AssetListAssetValueLabel.swift in Sources */,
 				F484FF5F264BA2720015320F /* ControllerAccountConfirmationLayout.swift in Sources */,
 				841494402604E71C000D8D1A /* TotalRewardItem.swift in Sources */,
 				88DA0CD0295F345E0009F70F /* WKWebView+VewportScript.swift in Sources */,
@@ -31163,6 +31170,7 @@
 				84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */,
 				0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
+				2DDC720F2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift in Sources */,
 				84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */,
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,
 				0CD846412BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift in Sources */,

@@ -10,34 +10,106 @@ struct AssetListAssetAccountInfo {
     let priceData: PriceData?
 }
 
-protocol AssetListAssetViewModelFactoryProtocol {
-    func createNetworkGroupViewModel(
-        for chain: ChainModel,
+struct AssetListNetworkGroupViewModelParams {
+    let chain: ChainModel
+    let assets: [AssetListAssetAccountInfo]
+    let value: Decimal
+    let privacyModeEnabled: Bool
+    let connected: Bool
+
+    init(
+        chain: ChainModel,
         assets: [AssetListAssetAccountInfo],
         value: Decimal,
-        connected: Bool,
+        privacyModeEnabled: Bool = false,
+        connected: Bool
+    ) {
+        self.chain = chain
+        self.assets = assets
+        self.value = value
+        self.privacyModeEnabled = privacyModeEnabled
+        self.connected = connected
+    }
+}
+
+struct AssetListTokenGroupViewModelParams {
+    let assetsList: [AssetListAssetModel]
+    let group: AssetListAssetGroupModel
+    let maybePrices: [ChainAssetId: PriceData]?
+    let privacyModeEnabled: Bool
+    let connected: Bool
+
+    init(
+        assetsList: [AssetListAssetModel],
+        group: AssetListAssetGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?,
+        privacyModeEnabled: Bool = false,
+        connected: Bool
+    ) {
+        self.assetsList = assetsList
+        self.group = group
+        self.maybePrices = maybePrices
+        self.privacyModeEnabled = privacyModeEnabled
+        self.connected = connected
+    }
+}
+
+struct AssetListTokenGroupAssetViewModelParams {
+    let assetModel: AssetListAssetModel
+    let maybePrices: [ChainAssetId: PriceData]?
+    let privacyModeEnabled: Bool
+    let connected: Bool
+
+    init(
+        assetModel: AssetListAssetModel,
+        maybePrices: [ChainAssetId: PriceData]?,
+        privacyModeEnabled: Bool = false,
+        connected: Bool
+    ) {
+        self.assetModel = assetModel
+        self.maybePrices = maybePrices
+        self.privacyModeEnabled = privacyModeEnabled
+        self.connected = connected
+    }
+}
+
+struct AssetListNetworkGroupAssetViewModelParams {
+    let chainId: ChainModel.Id
+    let assetAccountInfo: AssetListAssetAccountInfo
+    let privacyModeEnabled: Bool
+    let connected: Bool
+
+    init(
+        chainId: ChainModel.Id,
+        assetAccountInfo: AssetListAssetAccountInfo,
+        privacyModeEnabled: Bool = false,
+        connected: Bool
+    ) {
+        self.chainId = chainId
+        self.assetAccountInfo = assetAccountInfo
+        self.privacyModeEnabled = privacyModeEnabled
+        self.connected = connected
+    }
+}
+
+protocol AssetListAssetViewModelFactoryProtocol {
+    func createNetworkGroupViewModel(
+        params: AssetListNetworkGroupViewModelParams,
         locale: Locale
     ) -> AssetListNetworkGroupViewModel
 
     func createTokenGroupViewModel(
-        assetsList: [AssetListAssetModel],
-        group: AssetListAssetGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        connected: Bool,
+        params: AssetListTokenGroupViewModelParams,
         locale: Locale
     ) -> AssetListTokenGroupViewModel?
 
     func createTokenGroupAssetViewModel(
-        assetModel: AssetListAssetModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        connected: Bool,
+        params: AssetListTokenGroupAssetViewModelParams,
         locale: Locale
     ) -> AssetListTokenGroupAssetViewModel?
 
     func createNetworkGroupAssetViewModel(
-        chainId: ChainModel.Id,
-        assetAccountInfo: AssetListAssetAccountInfo,
-        connected: Bool,
+        params: AssetListNetworkGroupAssetViewModelParams,
         locale: Locale
     ) -> AssetListNetworkGroupAssetViewModel
 }
@@ -75,12 +147,14 @@ private extension AssetListAssetViewModelFactory {
     func createBalanceViewModel(
         using assetAccountInfo: AssetListAssetAccountInfo,
         connected: Bool,
+        privacyModeEnabled: Bool,
         locale: Locale
     ) -> AssetListAssetBalanceViewModel {
         let priceState = createPriceState(assetAccountInfo: assetAccountInfo, locale: locale)
 
         let (balanceState, balanceValueState) = createBalanceState(
             assetAccountInfo: assetAccountInfo,
+            privacyModeEnabled: privacyModeEnabled,
             connected: connected,
             locale: locale
         )
@@ -122,7 +196,7 @@ private extension AssetListAssetViewModelFactory {
         for group: AssetListAssetGroupModel,
         assetInfo: AssetBalanceDisplayInfo,
         maybePrices: [ChainAssetId: PriceData]?,
-        connected _: Bool,
+        privacyModeEnabled: Bool,
         locale: Locale
     ) -> AssetListAssetBalanceViewModel {
         let priceData: PriceData? = {
@@ -150,6 +224,7 @@ private extension AssetListAssetViewModelFactory {
         let (amountState, valueState) = createBalanceState(
             for: group.amount,
             value: group.value,
+            privacyModeEnabled: privacyModeEnabled,
             assetDisplayInfo: assetInfo,
             priceData: priceData,
             locale: locale
@@ -165,10 +240,14 @@ private extension AssetListAssetViewModelFactory {
     func createBalanceState(
         for balance: Decimal,
         value: Decimal,
+        privacyModeEnabled: Bool,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
-    ) -> (LoadableViewModelState<String>, LoadableViewModelState<String>) {
+    ) -> (
+        LoadableViewModelState<SecuredViewModel<String>>,
+        LoadableViewModelState<SecuredViewModel<String>>
+    ) {
         let balanceViewModelFactory = balanceViewModelFactory(assetInfo: assetDisplayInfo)
         let balanceFormatter = assetFormatterFactory.createDisplayFormatter(for: assetDisplayInfo)
 
@@ -176,25 +255,39 @@ private extension AssetListAssetViewModelFactory {
             balance
         ) ?? ""
 
-        let balanceState = LoadableViewModelState.loaded(value: balanceAmountString)
+        let privacyMode: ViewPrivacyMode = privacyModeEnabled ? .hidden : .visible
+
+        let securedAmount = SecuredViewModel(
+            originalContent: balanceAmountString,
+            privacyMode: privacyMode
+        )
+
+        let loadedAmount = LoadableViewModelState.loaded(value: securedAmount)
 
         if let priceData {
             let balanceValue = balanceViewModelFactory.priceFromFiatAmount(
                 value,
                 currencyId: priceData.currencyId
             ).value(for: locale)
-
-            return (balanceState, .loaded(value: balanceValue))
+            let securedBalanceValue = SecuredViewModel(
+                originalContent: balanceValue,
+                privacyMode: privacyMode
+            )
+            return (loadedAmount, .loaded(value: securedBalanceValue))
         } else {
-            return (balanceState, .loading)
+            return (loadedAmount, .loading)
         }
     }
 
     func createBalanceState(
         assetAccountInfo: AssetListAssetAccountInfo,
+        privacyModeEnabled: Bool,
         connected: Bool,
         locale: Locale
-    ) -> (LoadableViewModelState<String>, LoadableViewModelState<String>) {
+    ) -> (
+        LoadableViewModelState<SecuredViewModel<String>>,
+        LoadableViewModelState<SecuredViewModel<String>>
+    ) {
         if let balance = assetAccountInfo.balance {
             let assetInfo = assetAccountInfo.assetInfo
             let balanceViewModelFactory = balanceViewModelFactory(assetInfo: assetInfo)
@@ -210,17 +303,27 @@ private extension AssetListAssetViewModelFactory {
                 decimalBalance
             ) ?? ""
 
-            let balanceState = connected ? LoadableViewModelState.loaded(value: balanceAmountString) :
-                LoadableViewModelState.cached(value: balanceAmountString)
+            let privacyMode: ViewPrivacyMode = privacyModeEnabled ? .hidden : .visible
+
+            let securedAmount = SecuredViewModel(
+                originalContent: balanceAmountString,
+                privacyMode: privacyMode
+            )
+            let loadedAmount = connected ? LoadableViewModelState.loaded(value: securedAmount) :
+                LoadableViewModelState.cached(value: securedAmount)
 
             if let priceData = assetAccountInfo.priceData {
                 let balanceValue = balanceViewModelFactory.priceFromAmount(
                     decimalBalance,
                     priceData: priceData
                 ).value(for: locale)
-                return (balanceState, .loaded(value: balanceValue))
+                let securedBalanceValue = SecuredViewModel(
+                    originalContent: balanceValue,
+                    privacyMode: privacyMode
+                )
+                return (loadedAmount, .loaded(value: securedBalanceValue))
             } else {
-                return (balanceState, .loading)
+                return (loadedAmount, .loading)
             }
 
         } else {
@@ -262,28 +365,28 @@ private extension AssetListAssetViewModelFactory {
 
 extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol {
     func createNetworkGroupViewModel(
-        for chain: ChainModel,
-        assets: [AssetListAssetAccountInfo],
-        value: Decimal,
-        connected: Bool,
+        params: AssetListNetworkGroupViewModelParams,
         locale: Locale
     ) -> AssetListNetworkGroupViewModel {
-        let assetViewModels = assets.map { asset in
+        let assetViewModels = params.assets.map { asset in
             createNetworkGroupAssetViewModel(
-                chainId: chain.chainId,
-                assetAccountInfo: asset,
-                connected: connected,
+                params: .init(
+                    chainId: params.chain.chainId,
+                    assetAccountInfo: asset,
+                    privacyModeEnabled: params.privacyModeEnabled,
+                    connected: params.connected
+                ),
                 locale: locale
             )
         }
 
-        let networkName = chain.name.uppercased()
+        let networkName = params.chain.name.uppercased()
 
-        let iconViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
+        let iconViewModel = ImageViewModelFactory.createChainIconOrDefault(from: params.chain.icon)
 
-        let priceString: String = if let asset = assets.first, let priceData = asset.priceData {
+        let priceString: String = if let asset = params.assets.first, let priceData = asset.priceData {
             balanceViewModelFactory(assetInfo: asset.assetInfo)
-                .priceFromFiatAmount(value, currencyId: priceData.currencyId)
+                .priceFromFiatAmount(params.value, currencyId: priceData.currencyId)
                 .value(for: locale)
         } else {
             ""
@@ -298,37 +401,37 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
     }
 
     func createTokenGroupViewModel(
-        assetsList: [AssetListAssetModel],
-        group: AssetListAssetGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        connected: Bool,
+        params: AssetListTokenGroupViewModelParams,
         locale: Locale
     ) -> AssetListTokenGroupViewModel? {
-        guard let assetInfo = assetsList.first?.chainAssetModel.assetDisplayInfo else {
+        guard let assetInfo = params.assetsList.first?.chainAssetModel.assetDisplayInfo else {
             return nil
         }
 
-        let assetViewModels = assetsList.compactMap { assetModel in
+        let assetViewModels = params.assetsList.compactMap { assetModel in
             createTokenGroupAssetViewModel(
-                assetModel: assetModel,
-                maybePrices: maybePrices,
-                connected: connected,
+                params: .init(
+                    assetModel: assetModel,
+                    maybePrices: params.maybePrices,
+                    privacyModeEnabled: params.privacyModeEnabled,
+                    connected: params.connected
+                ),
                 locale: locale
             )
         }
 
         let tokenViewModel = AssetViewModel(
-            symbol: group.multichainToken.symbol,
+            symbol: params.group.multichainToken.symbol,
             imageViewModel: assetIconViewModelFactory.createAssetIconViewModel(
-                for: group.multichainToken.icon
+                for: params.group.multichainToken.icon
             )
         )
 
         let balanceViewModel = createBalanceViewModel(
-            for: group,
+            for: params.group,
             assetInfo: assetInfo,
-            maybePrices: maybePrices,
-            connected: connected,
+            maybePrices: params.maybePrices,
+            privacyModeEnabled: params.privacyModeEnabled,
             locale: locale
         )
 
@@ -339,19 +442,46 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
         )
     }
 
-    func createNetworkGroupAssetViewModel(
-        chainId: ChainModel.Id,
-        assetAccountInfo: AssetListAssetAccountInfo,
-        connected: Bool,
+    func createTokenGroupAssetViewModel(
+        params: AssetListTokenGroupAssetViewModelParams,
         locale: Locale
-    ) -> AssetListNetworkGroupAssetViewModel {
+    ) -> AssetListTokenGroupAssetViewModel? {
+        let assetInfo = createAssetAccountInfo(
+            from: params.assetModel,
+            chain: params.assetModel.chainAssetModel.chain,
+            maybePrices: params.maybePrices
+        )
+
+        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(
+            from: params.assetModel.chainAssetModel
+        )
+
         let balanceViewModel = createBalanceViewModel(
-            using: assetAccountInfo,
-            connected: connected,
+            using: assetInfo,
+            connected: params.connected,
+            privacyModeEnabled: params.privacyModeEnabled,
             locale: locale
         )
 
-        let assetInfo = assetAccountInfo.assetInfo
+        return AssetListTokenGroupAssetViewModel(
+            chainAssetId: params.assetModel.chainAssetModel.chainAssetId,
+            chainAsset: chainAssetViewModel,
+            balance: balanceViewModel
+        )
+    }
+
+    func createNetworkGroupAssetViewModel(
+        params: AssetListNetworkGroupAssetViewModelParams,
+        locale: Locale
+    ) -> AssetListNetworkGroupAssetViewModel {
+        let balanceViewModel = createBalanceViewModel(
+            using: params.assetAccountInfo,
+            connected: params.connected,
+            privacyModeEnabled: params.privacyModeEnabled,
+            locale: locale
+        )
+
+        let assetInfo = params.assetAccountInfo.assetInfo
 
         let iconViewModel = assetIconViewModelFactory.createAssetIconViewModel(
             for: assetInfo.icon?.getPath(),
@@ -359,38 +489,9 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
         )
 
         return AssetListNetworkGroupAssetViewModel(
-            chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),
+            chainAssetId: ChainAssetId(chainId: params.chainId, assetId: params.assetAccountInfo.assetId),
             tokenName: assetInfo.symbol,
             icon: iconViewModel,
-            balance: balanceViewModel
-        )
-    }
-
-    func createTokenGroupAssetViewModel(
-        assetModel: AssetListAssetModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        connected: Bool,
-        locale: Locale
-    ) -> AssetListTokenGroupAssetViewModel? {
-        let assetInfo = createAssetAccountInfo(
-            from: assetModel,
-            chain: assetModel.chainAssetModel.chain,
-            maybePrices: maybePrices
-        )
-
-        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(
-            from: assetModel.chainAssetModel
-        )
-
-        let balanceViewModel = createBalanceViewModel(
-            using: assetInfo,
-            connected: connected,
-            locale: locale
-        )
-
-        return AssetListTokenGroupAssetViewModel(
-            chainAssetId: assetModel.chainAssetModel.chainAssetId,
-            chainAsset: chainAssetViewModel,
             balance: balanceViewModel
         )
     }
