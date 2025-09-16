@@ -35,6 +35,8 @@ extension Xcm {
     }
 
     struct TransferAssetsUsingTypeAndThen: Codable {
+        static let callName = "transfer_assets_using_type_and_then"
+
         enum CodingKeys: String, CodingKey {
             case destination = "dest"
             case assets
@@ -56,7 +58,7 @@ extension Xcm {
         func runtimeCall(for moduleName: String) -> RuntimeCall<Self> {
             RuntimeCall(
                 moduleName: moduleName,
-                callName: "transfer_assets_using_type_and_then",
+                callName: Self.callName,
                 args: self
             )
         }

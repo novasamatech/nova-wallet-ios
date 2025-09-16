@@ -11,6 +11,7 @@ enum XcmLegacyCrosschainFeeCalculatorError: Error {
 
 final class XcmLegacyCrosschainFeeCalculator {
     static let weightPerSecond = BigUInt(1_000_000_000_000)
+    static let preferredVersion: Xcm.Version = .V3
 
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -48,7 +49,10 @@ final class XcmLegacyCrosschainFeeCalculator {
                 for: request.destination.chain.chainId
             )
 
-            let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
+            let versionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+                for: runtimeProvider,
+                preferredVersion: Self.preferredVersion
+            )
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
             feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -98,7 +102,10 @@ final class XcmLegacyCrosschainFeeCalculator {
                 for: request.reserve.chain.chainId
             )
 
-            let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
+            let versionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+                for: runtimeProvider,
+                preferredVersion: Self.preferredVersion
+            )
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
             feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -558,12 +565,14 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 for: request.reserve.chain.chainId
             )
 
-            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(
-                for: destinationRuntimeProvider
+            let destinationVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+                for: destinationRuntimeProvider,
+                preferredVersion: Self.preferredVersion
             )
 
-            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(
-                for: reserveRuntimeProvider
+            let reserveVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+                for: reserveRuntimeProvider,
+                preferredVersion: Self.preferredVersion
             )
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>

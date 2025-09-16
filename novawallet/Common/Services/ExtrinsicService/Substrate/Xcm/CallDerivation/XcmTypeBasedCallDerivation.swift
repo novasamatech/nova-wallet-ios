@@ -4,6 +4,8 @@ import SubstrateSdk
 import BigInt
 
 final class XcmTypeBasedCallDerivator {
+    static let preferredVersion: Xcm.Version = .V3
+
     let chainRegistry: ChainRegistryProtocol
 
     private lazy var xcmModelFactory = XcmModelFactory()
@@ -19,7 +21,8 @@ private extension XcmTypeBasedCallDerivator {
     func createTransferAssetsUsingTypeAndThen(
         for request: XcmUnweightedTransferRequest,
         dependingOn moduleResolutionOperation: BaseOperation<String>,
-        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        assetIdVersionOperation: BaseOperation<Xcm.Version>
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
@@ -34,13 +37,23 @@ private extension XcmTypeBasedCallDerivator {
                 version: xcmVersion
             )
 
-            let feeAssetId = destinationAsset.asset.map(\.assetId)
+            let assetIdVersion = try assetIdVersionOperation.extractNoCancellableResultData()
+            let feeAssetId = destinationAsset.asset
+                .map(\.assetId)
+                .replacingVersion(assetIdVersion)
+
+            // allCounted support starting from v3
+            let assetFilter = if xcmVersion.rawValue > 2 {
+                XcmUni.WildAsset.singleCounted
+            } else {
+                XcmUni.WildAsset.all
+            }
 
             let xcmOnDestination = XcmUni.VersionedMessage(
                 entity: [
                     XcmUni.Instruction.depositAsset(
                         XcmUni.DepositAssetValue(
-                            assets: .wild(.singleCounted),
+                            assets: .wild(assetFilter),
                             beneficiary: beneficiaryAccount.entity
                         )
                     )
@@ -149,11 +162,21 @@ private extension XcmTypeBasedCallDerivator {
                 destinationAssetOperation: destinationAssetOperation
             )
         case .xcmpalletTransferAssets:
-            return createTransferAssetsUsingTypeAndThen(
+            let assetIdVersionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmAssetIdVersionWrapper(
+                for: runtimeProvider,
+                preferredVersion: Self.preferredVersion
+            )
+
+            let callWrapper = createTransferAssetsUsingTypeAndThen(
                 for: transferRequest,
                 dependingOn: moduleResolutionOperation,
-                destinationAssetOperation: destinationAssetOperation
+                destinationAssetOperation: destinationAssetOperation,
+                assetIdVersionOperation: assetIdVersionWrapper.targetOperation
             )
+
+            callWrapper.addDependency(wrapper: assetIdVersionWrapper)
+
+            return callWrapper.insertingHead(operations: assetIdVersionWrapper.allOperations)
         case .unknown:
             return .createWithError(XcmCallTypeError.unknownType)
         }
@@ -177,7 +200,10 @@ private extension XcmTypeBasedCallDerivator {
         for request: XcmUnweightedTransferRequest,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
+        let versionWrapper = xcmPalletQueryFactory.createPreferredOrLowestXcmVersionWrapper(
+            for: runtimeProvider,
+            preferredVersion: Self.preferredVersion
+        )
 
         let resultOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
             let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
