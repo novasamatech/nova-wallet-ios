@@ -1,3 +1,4 @@
+import UIKit
 import Foundation
 import Foundation_iOS
 
@@ -13,9 +14,7 @@ final class MultisigNotificationsViewController: BaseNotificationSettingsViewCon
             presenter: presenter,
             localizationManager: localizationManager,
             navigationItemTitle: .init {
-                R.string.localizable.notificationsManagementMultisigTransactions(
-                    preferredLanguages: $0.rLanguages
-                )
+                R.string(preferredLanguages: $0.rLanguages).localizable.notificationsManagementMultisigTransactions()
             }
         )
     }

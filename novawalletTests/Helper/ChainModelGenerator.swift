@@ -11,7 +11,7 @@ enum ChainModelGenerator {
         hasGovernance: Bool = false,
         hasSubstrateRuntime: Bool = true
     ) -> [ChainModel] {
-        (0..<count).map { index in
+        (0 ..< count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
 
             let asset = AssetModel(
@@ -34,7 +34,7 @@ enum ChainModelGenerator {
                 url: "wss://node.io/\(chainId)",
                 name: chainId,
                 order: 0,
-                features: nil, 
+                features: nil,
                 source: .remote
             )
 
@@ -103,7 +103,7 @@ enum ChainModelGenerator {
         hasSubstrateRuntime: Bool = true,
         fullSyncByDefault: Bool = true
     ) -> [RemoteChainModel] {
-        (0..<count).map { index in
+        (0 ..< count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
 
             let asset = RemoteAssetModel(
@@ -140,7 +140,7 @@ enum ChainModelGenerator {
             if !hasSubstrateRuntime {
                 options.append(LocalChainOptions.noSubstrateRuntime.rawValue)
             }
-            
+
             if fullSyncByDefault {
                 options.append(RemoteOnlyChainOptions.fullSyncByDefault.rawValue)
             }
@@ -159,7 +159,7 @@ enum ChainModelGenerator {
                     event: nil
                 )
             ]
-            
+
             return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -183,7 +183,7 @@ enum ChainModelGenerator {
         defaultChainId: ChainModel.Id? = nil,
         generatingAssets count: Int,
         addressPrefix: ChainModel.AddressPrefix,
-        assetPresicion: UInt16 = (9...18).randomElement()!,
+        assetPresicion: UInt16 = (9 ... 18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
@@ -192,7 +192,7 @@ enum ChainModelGenerator {
         hasMultisig: Bool = true,
         enabled: Bool = true
     ) -> ChainModel {
-        let assets = (0..<count).map { index in
+        let assets = (0 ..< count).map { index in
             generateAssetWithId(
                 AssetModel.Id(index),
                 assetPresicion: assetPresicion,
@@ -219,7 +219,7 @@ enum ChainModelGenerator {
         assets: [AssetModel],
         defaultChainId: ChainModel.Id? = nil,
         addressPrefix: ChainModel.AddressPrefix,
-        assetPresicion: UInt16 = (9...18).randomElement()!,
+        assetPresicion _: UInt16 = (9 ... 18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
         hasSubstrateRuntime: Bool = true,
@@ -249,15 +249,15 @@ enum ChainModelGenerator {
         if !hasSubstrateRuntime {
             options.append(.noSubstrateRuntime)
         }
-        
+
         if hasProxy {
             options.append(.proxy)
         }
-        
+
         if hasMultisig {
             options.append(.multisig)
         }
-        
+
         if isEthereumBased {
             options.append(.ethereumBased)
         }
@@ -302,14 +302,13 @@ enum ChainModelGenerator {
     static func generateAssetWithId(
         _ identifier: AssetModel.Id,
         symbol: String? = nil,
-        assetPresicion: UInt16 = (9...18).randomElement()!,
+        assetPresicion: UInt16 = (9 ... 18).randomElement()!,
         hasStaking: Bool = false,
         buyProviders: JSON? = nil,
         sellProviders: JSON? = nil,
         enabled: Bool = true,
         source: AssetModel.Source = .remote
     ) -> AssetModel {
-
         let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
 
         return AssetModel(
@@ -396,22 +395,28 @@ enum ChainModelGenerator {
     static func generateChainColor() -> String {
         "linear-gradient(315deg, #D43079 0%, #F93C90 100%)"
     }
-    
+
     static func generateEvmToken(chainId1: ChainModel.Id, chainId2: ChainModel.Id) -> RemoteEvmToken {
-        RemoteEvmToken(symbol: "USDT",
-                       precision: 6,
-                       name: "Tether USD",
-                       priceId: "tether",
-                       icon: nil,
-                       instances: [
-                        .init(chainId: chainId1,
-                              contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
-                              buyProviders: nil,
-                              sellProviders: nil),
-                        .init(chainId: chainId2,
-                              contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
-                              buyProviders: nil,
-                              sellProviders: nil)
-                       ])
+        RemoteEvmToken(
+            symbol: "USDT",
+            precision: 6,
+            name: "Tether USD",
+            priceId: "tether",
+            icon: nil,
+            instances: [
+                .init(
+                    chainId: chainId1,
+                    contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+                    buyProviders: nil,
+                    sellProviders: nil
+                ),
+                .init(
+                    chainId: chainId2,
+                    contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+                    buyProviders: nil,
+                    sellProviders: nil
+                )
+            ]
+        )
     }
 }

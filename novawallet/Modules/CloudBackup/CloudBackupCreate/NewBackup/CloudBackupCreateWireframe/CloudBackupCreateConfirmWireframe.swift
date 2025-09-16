@@ -1,6 +1,7 @@
 import Foundation
 
-final class CloudBackupCreateConfirmWireframe: BaseCloudBackupUpdatePasswordWireframe, CloudBackupCreateWireframeProtocol {
+final class CloudBackupCreateConfirmWireframe: BaseCloudBackupUpdatePasswordWireframe,
+    CloudBackupCreateWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
     override func proceed(

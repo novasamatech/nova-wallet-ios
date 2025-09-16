@@ -292,7 +292,7 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 return
             }
 
-            let stakingType = R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages)
+            let stakingType = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeDirect()
             self?.presentable.presentMaxNumberOfNominatorsReached(
                 from: view,
                 stakingType: stakingType,
@@ -411,11 +411,9 @@ extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
             let stakingType: String
             switch staking {
             case .direct:
-                stakingType = R.string.localizable.stakingTypeDirect(
-                    preferredLanguages: locale.rLanguages)
+                stakingType = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeDirect()
             case .pool:
-                stakingType = R.string.localizable.stakingTypeNominationPool(
-                    preferredLanguages: locale.rLanguages)
+                stakingType = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool()
             case .none:
                 stakingType = ""
             }

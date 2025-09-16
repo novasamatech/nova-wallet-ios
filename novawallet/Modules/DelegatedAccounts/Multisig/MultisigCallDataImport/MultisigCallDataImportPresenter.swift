@@ -42,29 +42,28 @@ private extension MultisigCallDataImportPresenter {
         switch validationError {
         case .invalidCallData:
             wireframe.present(
-                message: R.string.localizable.callDataValidationErrorMessage(
+                message: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
-                title: R.string.localizable.callDataValidationErrorTitle(
+                ).localizable.callDataValidationErrorMessage(),
+                title: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
-                closeAction: R.string.localizable.commonClose(
+                ).localizable.callDataValidationErrorTitle(),
+                closeAction: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                ).localizable.commonClose(),
                 from: view
             )
         case let .differentHash(hash):
             wireframe.present(
-                message: R.string.localizable.callDataValidationHashMatchingErrorMessage(
-                    hash,
+                message: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
-                title: R.string.localizable.callDataValidationErrorTitle(
+                ).localizable.callDataValidationHashMatchingErrorMessage(hash),
+                title: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
-                closeAction: R.string.localizable.commonClose(
+                ).localizable.callDataValidationErrorTitle(),
+                closeAction: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
+                ).localizable.commonClose(),
                 from: view
             )
         }

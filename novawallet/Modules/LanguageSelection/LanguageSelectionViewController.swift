@@ -1,6 +1,6 @@
 import UIKit
-import Rswift
 import Foundation_iOS
+import RswiftResources
 
 final class LanguageSelectionViewController: SelectionListViewController<SelectionSubtitleTableViewCell> {
     var presenter: LanguageSelectionPresenterProtocol!
@@ -26,7 +26,7 @@ extension LanguageSelectionViewController: LanguageSelectionViewProtocol {}
 
 extension LanguageSelectionViewController: Localizable {
     func applyLocalization() {
-        let languages = localizationManager?.preferredLocalizations
-        title = R.string.localizable.languageTitle(preferredLanguages: languages)
+        let languages = localizationManager?.preferredLocalizations ?? []
+        title = R.string(preferredLanguages: languages).localizable.languageTitle()
     }
 }

@@ -4,7 +4,7 @@ import Foundation_iOS
 extension WalletEmptyStateDataSource {
     static var history: WalletEmptyStateDataSource {
         let title = LocalizableResource { locale in
-            R.string.localizable.walletEmptyDescription_v2_2_0(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletEmptyDescription_v2_2_0()
         }
 
         let image = R.image.iconEmptyHistory()
@@ -16,7 +16,7 @@ extension WalletEmptyStateDataSource {
 
     static var contacts: WalletEmptyStateDataSource {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonSearchStartTitle_v2_2_0(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSearchStartTitle_v2_2_0()
         }
 
         let image = R.image.iconEmptyHistory()
@@ -28,7 +28,7 @@ extension WalletEmptyStateDataSource {
 
     static var search: WalletEmptyStateDataSource {
         let title = LocalizableResource { locale in
-            R.string.localizable.walletSearchEmptyTitle_v1100(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletSearchEmptyTitle_v1100()
         }
 
         let image = R.image.iconEmptySearch()

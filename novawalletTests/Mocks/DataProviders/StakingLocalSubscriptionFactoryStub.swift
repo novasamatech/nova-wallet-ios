@@ -21,7 +21,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let stashItem: StashItem?
     let storageFacade: StorageFacadeProtocol
     let proxy: ProxyDefinition?
-    
+
     init(
         minNominatorBond: BigUInt? = nil,
         counterForNominators: UInt32? = nil,
@@ -60,7 +60,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getMinNominatorBondProvider(
         for chainId: ChainModel.Id,
-        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
+        missingEntryStrategy _: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
     ) throws -> AnyDataProvider<DecodedBigUInt> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -85,7 +85,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getCounterForNominatorsProvider(
         for chainId: ChainModel.Id,
-        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+        missingEntryStrategy _: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -110,7 +110,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getMaxNominatorsCountProvider(
         for chainId: ChainModel.Id,
-        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+        missingEntryStrategy _: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -135,7 +135,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getBagListSizeProvider(
         for chainId: ChainModel.Id,
-        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+        missingEntryStrategy _: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -228,7 +228,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     }
 
     func getBagListNodeProvider(
-        for accountId: AccountId,
+        for _: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBagListNode> {
         try getDataProviderStub(
@@ -301,18 +301,18 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt> {
         try getDataProviderStub(
-            for: totalIssuance.map({ StringScaleMapper(value: $0) }),
+            for: totalIssuance.map { StringScaleMapper(value: $0) },
             storagePath: StorageCodingPath.totalIssuance,
             chainId: chainId
         )
     }
-    
+
     func getTotalReward(
-        for address: AccountAddress,
-        startTimestamp: Int64?,
-        endTimestamp: Int64?,
-        api: LocalChainExternalApi,
-        assetPrecision: Int16
+        for _: AccountAddress,
+        startTimestamp _: Int64?,
+        endTimestamp _: Int64?,
+        api _: LocalChainExternalApi,
+        assetPrecision _: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         AnySingleValueProvider(SingleValueProviderStub(item: totalReward))
     }
@@ -328,14 +328,14 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
                 for: address,
                 chainId: chainId
             )
-            
+
             let saveOperation = repository.saveOperation({ [stashItem] }, { [] })
             OperationQueue().addOperations([saveOperation], waitUntilFinished: true)
         }
 
         return provider
     }
-    
+
     func getProxyListProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id

@@ -16,11 +16,11 @@ extension PhishingErrorPresentable where Self: AlertPresentable & ErrorPresentab
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable
-            .walletSendPhishingWarningTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable
+            .walletSendPhishingWarningTitle()
 
-        let message = R.string.localizable
-            .walletSendPhishingWarningText(address ?? "", preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable
+            .walletSendPhishingWarningText(address ?? "")
 
         presentWarning(
             for: title,
@@ -38,14 +38,14 @@ extension PhishingErrorPresentable where Self: AlertPresentable & ErrorPresentab
         view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let proceedTitle = R.string.localizable
-            .commonProceed(preferredLanguages: locale?.rLanguages)
+        let proceedTitle = R.string(preferredLanguages: locale.rLanguages).localizable
+            .commonProceed()
         let proceedAction = AlertPresentableAction(title: proceedTitle) {
             action()
         }
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale?.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable
+            .commonCancel()
 
         let viewModel = AlertPresentableViewModel(
             title: title,

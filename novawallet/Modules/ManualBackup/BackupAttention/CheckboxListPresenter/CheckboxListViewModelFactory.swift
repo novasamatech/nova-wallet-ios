@@ -28,15 +28,12 @@ class CheckboxListViewModelFactory {
             text: .attributed(
                 NSAttributedString.coloredItems(
                     [
-                        R.string.localizable.backupAttentionPassphraseDescriptionHighlighted(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseDescriptionHighlighted()
                     ],
                     formattingClosure: { items in
-                        R.string.localizable.backupAttentionPassphraseDescription(
-                            items[0],
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseDescription(items[0])
                     },
                     color: R.color.colorTextPrimary()!
                 )
@@ -55,15 +52,12 @@ class CheckboxListViewModelFactory {
             text: .attributed(
                 NSAttributedString.coloredItems(
                     [
-                        R.string.localizable.backupAttentionPassphraseWriteDescriptionHighlighted(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseWriteDescriptionHighlighted()
                     ],
                     formattingClosure: { items in
-                        R.string.localizable.backupAttentionPassphraseWriteDescription(
-                            items[0],
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseWriteDescription(items[0])
                     },
                     color: R.color.colorTextPrimary()!
                 )
@@ -82,15 +76,12 @@ class CheckboxListViewModelFactory {
             text: .attributed(
                 NSAttributedString.coloredItems(
                     [
-                        R.string.localizable.backupAttentionPassphraseSupportDescriptionHighlighted(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseSupportDescriptionHighlighted()
                     ],
                     formattingClosure: { items in
-                        R.string.localizable.backupAttentionPassphraseSupportDescription(
-                            items[0],
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.backupAttentionPassphraseSupportDescription(items[0])
                     },
                     color: R.color.colorTextPrimary()!
                 )

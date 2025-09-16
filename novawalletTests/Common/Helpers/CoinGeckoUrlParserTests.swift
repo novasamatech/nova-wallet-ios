@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 final class CoinGeckoUrlParserTests: XCTestCase {
-
     func testValidUrlStrings() {
         let parser = CoingeckoUrlParser()
 

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Keystore_iOS
 import NovaCrypto
 import Operation_iOS

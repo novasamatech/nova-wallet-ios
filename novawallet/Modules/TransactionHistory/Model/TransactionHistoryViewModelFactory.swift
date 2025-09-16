@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 import SubstrateSdk
 import BigInt
@@ -132,7 +133,7 @@ final class TransactionHistoryViewModelFactory {
         return .init(
             identifier: data.identifier,
             timestamp: data.timestamp,
-            title: R.string.localizable.commonSwapTitle(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapTitle(),
             subtitle: subtitle,
             amount: balance.amount,
             amountDetails: amountDetails,
@@ -149,17 +150,15 @@ final class TransactionHistoryViewModelFactory {
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
         let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
-        let title = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.transferTitle()
 
         let subtitle = txType == .incoming ?
-            R.string.localizable.walletHistoryTransferIncomingDetails(
-                peerAddress,
+            R.string(
                 preferredLanguages: locale.rLanguages
-            ) :
-            R.string.localizable.walletHistoryTransferOutgoingDetails(
-                peerAddress,
+            ).localizable.walletHistoryTransferIncomingDetails(peerAddress) :
+            R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.walletHistoryTransferOutgoingDetails(peerAddress)
 
         return .init(title: title, subtitle: subtitle)
     }
@@ -168,13 +167,12 @@ final class TransactionHistoryViewModelFactory {
         data: TransactionHistoryItem,
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
-        let title = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.evmContractCall()
 
         guard let functionName = data.evmContractFunctionName else {
-            let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
-                data.receiver ?? "",
+            let subtitle = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
 
             return .init(title: title, subtitle: subtitle)
         }
@@ -182,10 +180,9 @@ final class TransactionHistoryViewModelFactory {
         if !functionName.hasAmbiguousFunctionName {
             return .init(title: title, subtitle: functionName)
         } else {
-            let subtitle = R.string.localizable.walletHistoryTransferOutgoingDetails(
-                data.receiver ?? "",
+            let subtitle = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.walletHistoryTransferOutgoingDetails(data.receiver ?? "")
             return .init(title: title, subtitle: subtitle)
         }
     }
@@ -197,9 +194,9 @@ final class TransactionHistoryViewModelFactory {
         txType: TransactionType
     ) -> TransactionItemViewModel {
         let title = txType == .reward ?
-            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
-        let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingReward() :
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSlash()
+        let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTitle()
 
         return createCommonRewardItemFromData(
             data,
@@ -218,9 +215,9 @@ final class TransactionHistoryViewModelFactory {
         txType: TransactionType
     ) -> TransactionItemViewModel {
         let title = txType == .poolReward ?
-            R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
-        let subtitle = R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingReward() :
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSlash()
+        let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool()
 
         return createCommonRewardItemFromData(
             data,
@@ -321,11 +318,7 @@ final class TransactionHistoryViewModelFactory {
         guard let price = price else {
             return time
         }
-        return R.string.localizable.walletHistoryAmountDetails(
-            price,
-            time,
-            preferredLanguages: locale.rLanguages
-        )
+        return R.string(preferredLanguages: locale.rLanguages).localizable.walletHistoryAmountDetails(price, time)
     }
 }
 

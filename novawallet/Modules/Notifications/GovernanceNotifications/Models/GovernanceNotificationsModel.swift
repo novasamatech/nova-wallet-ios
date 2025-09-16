@@ -4,14 +4,6 @@ struct GovernanceNotificationsModel {
     let newReferendum: [ChainModel.Id: Set<TrackIdLocal>]
     let referendumUpdate: [ChainModel.Id: Set<TrackIdLocal>]
 
-    init(
-        newReferendum: [ChainModel.Id: Set<TrackIdLocal>],
-        referendumUpdate: [ChainModel.Id: Set<TrackIdLocal>]
-    ) {
-        self.newReferendum = newReferendum
-        self.referendumUpdate = referendumUpdate
-    }
-
     func isNewReferendumNotificationEnabled(for chainId: ChainModel.Id) -> Bool {
         newReferendum[chainId] != nil
     }

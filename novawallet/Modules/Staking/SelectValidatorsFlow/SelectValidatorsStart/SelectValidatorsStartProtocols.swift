@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol SelectValidatorsStartViewProtocol: ControllerBackedProtocol, Localizable {
+protocol SelectValidatorsStartViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SelectValidatorsStartViewModel)
 }
 

@@ -1,3 +1,5 @@
+import Foundation
+import UIKit
 import Foundation_iOS
 
 struct SwapSetupInitState {
@@ -31,37 +33,28 @@ extension DepositOperationModel {
     func titleForLocale(_ locale: Locale) -> String {
         switch operation {
         case .send:
-            return R.string.localizable.swapsSetupDepositByCrossChainTransferTitle(
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.swapsSetupDepositByCrossChainTransferTitle()
         case .receive:
-            return R.string.localizable.walletAssetReceive(
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetReceive()
         case .buy:
-            return R.string.localizable.walletAssetBuy(
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetBuy()
         }
     }
 
     func subtitleForLocale(_ locale: Locale, token: String) -> String {
         switch operation {
         case .send:
-            return R.string.localizable.swapsSetupDepositByCrossChainTransferSubtitle(
-                token,
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.swapsSetupDepositByCrossChainTransferSubtitle(token)
         case .receive:
-            return R.string.localizable.swapsSetupDepositByReceiveSubtitle(
-                token,
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.swapsSetupDepositByReceiveSubtitle(token)
         case .buy:
-            return R.string.localizable.swapsSetupDepositByBuySubtitle(
-                token,
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositByBuySubtitle(token)
         }
     }
 

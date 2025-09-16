@@ -4,9 +4,9 @@ extension AssetExchangeMetaOperationLabel {
     func getTitle(for locale: Locale) -> String {
         switch self {
         case .swap:
-            R.string.localizable.swapsLabelSwap(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelSwap()
         case .transfer:
-            R.string.localizable.swapsLabelCrosschain(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelCrosschain()
         }
     }
 }

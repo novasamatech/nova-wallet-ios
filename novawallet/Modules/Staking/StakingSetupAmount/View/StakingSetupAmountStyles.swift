@@ -1,3 +1,5 @@
+import UIKit
+
 extension BorderedLabelView.Style {
     static let counter = BorderedLabelView.Style(
         text: .init(

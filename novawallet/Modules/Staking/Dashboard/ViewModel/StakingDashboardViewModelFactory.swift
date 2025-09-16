@@ -132,13 +132,13 @@ final class StakingDashboardViewModelFactory {
         switch stakingOption.type {
         case .auraRelaychain, .azero, .relaychain:
             return TitleIconViewModel(
-                title: R.string.localizable.stakingDirect(preferredLanguages: locale.rLanguages).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingDirect().uppercased(),
                 icon: R.image.iconStakingDirect()
             )
 
         case .nominationPools:
             return TitleIconViewModel(
-                title: R.string.localizable.stakingPool(preferredLanguages: locale.rLanguages).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingPool().uppercased(),
                 icon: R.image.iconStakingPool()
             )
         case .parachain, .turing, .mythos, .unsupported:

@@ -1,5 +1,5 @@
 import Foundation
-
+import Foundation_iOS
 import BigInt
 
 final class SelectValidatorsConfirmPresenter {
@@ -23,6 +23,7 @@ final class SelectValidatorsConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let localizationManager: LocalizationManagerProtocol
     let chain: ChainModel
 
     init(
@@ -33,6 +34,7 @@ final class SelectValidatorsConfirmPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -42,6 +44,7 @@ final class SelectValidatorsConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.assetInfo = assetInfo
+        self.localizationManager = localizationManager
         self.chain = chain
     }
 
@@ -102,7 +105,7 @@ final class SelectValidatorsConfirmPresenter {
     }
 
     private func handle(error: Error) {
-        let locale = view?.localizationManager?.selectedLocale
+        let locale = localizationManager.selectedLocale
 
         if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
@@ -144,7 +147,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
             return
         }
 
-        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         wireframe.presentAccountOptions(
             from: view,
@@ -160,7 +163,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
         }
 
         if case let .payout(account) = state.rewardDestination, let view = view {
-            let locale = view.localizationManager?.selectedLocale ?? Locale.current
+            let locale = localizationManager.selectedLocale
 
             wireframe.presentAccountOptions(
                 from: view,
@@ -176,7 +179,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
             return
         }
 
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let validators: [DataValidating] = [
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
@@ -325,7 +328,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
             from: view,
             sender: submission.sender,
             completionAction: .dismiss,
-            locale: view?.selectedLocale
+            locale: localizationManager.selectedLocale
         )
     }
 

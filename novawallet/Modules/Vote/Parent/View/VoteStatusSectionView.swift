@@ -78,8 +78,6 @@ extension VoteStatusSectionView {
     }
 }
 
-// swiftlint:enable nesting
-
 extension VoteStatusSectionView: SkeletonableView {
     var skeletonSuperview: UIView {
         self

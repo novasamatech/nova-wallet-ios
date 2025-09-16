@@ -1,6 +1,7 @@
 import Foundation
 import Kingfisher
 import Operation_iOS
+import UIKit
 
 struct ChainLogoRemoteImageProvider: RemoteImageProvider {
     typealias ImageInfo = ChainLogoImageInfo

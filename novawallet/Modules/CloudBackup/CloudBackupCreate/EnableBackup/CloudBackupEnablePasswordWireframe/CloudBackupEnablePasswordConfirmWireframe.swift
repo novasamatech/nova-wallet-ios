@@ -17,9 +17,7 @@ final class CloudBackupEnablePasswordConfirmWireframe: BaseCloudBackupUpdatePass
         navigationController.popToViewController(cloudBackupSettingsView, animated: true)
 
         presentMultilineSuccessNotification(
-            R.string.localizable.cloudBackupCreatedSuccessfully(
-                preferredLanguages: locale.rLanguages
-            ),
+            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupCreatedSuccessfully(),
             from: view
         )
     }

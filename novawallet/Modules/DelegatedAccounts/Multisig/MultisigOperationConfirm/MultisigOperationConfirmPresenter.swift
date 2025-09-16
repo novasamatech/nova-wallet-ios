@@ -69,9 +69,7 @@ private extension MultisigOperationConfirmPresenter {
             confirmClosure: { [weak self] in
                 self?.doConfirm()
             },
-            callDataAddClosure: {
-                [weak self] in
-
+            callDataAddClosure: { [weak self] in
                 self?.wireframe.showAddCallData(
                     from: self?.view,
                     for: pendingOperation.operation
@@ -142,13 +140,9 @@ private extension MultisigOperationConfirmPresenter {
         else { return }
 
         let text = if multisigContext.threshold - definition.approvals.count > 1 {
-            R.string.localizable.commonTransactionSigned(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransactionSigned()
         } else {
-            R.string.localizable.commonTransactionSignedAndExecuted(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransactionSignedAndExecuted()
         }
 
         wireframe.presentExtrinsicSubmission(
@@ -162,7 +156,7 @@ private extension MultisigOperationConfirmPresenter {
     }
 
     func showSuccessReject(with model: ExtrinsicSubmittedModel) {
-        let text = R.string.localizable.commonTransactionRejected(preferredLanguages: selectedLocale.rLanguages)
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonTransactionRejected()
 
         wireframe.presentExtrinsicSubmission(
             from: view,

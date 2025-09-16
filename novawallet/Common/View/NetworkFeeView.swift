@@ -4,7 +4,7 @@ import Foundation_iOS
 
 class NetworkFeeView: TitleAmountView {
     var title: LocalizableResource<String> = LocalizableResource { locale in
-        R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee()
     } {
         didSet {
             applyLocalization()

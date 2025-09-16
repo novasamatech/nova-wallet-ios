@@ -57,24 +57,22 @@ final class GovRevokeDelegationConfirmViewController: UIViewController, ViewHold
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.govRevokeDelegationTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govRevokeDelegationTitle()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.delegateCell.titleLabel.text = R.string.localizable.govDelegate(
-            preferredLanguages: languages
-        )
+        rootView.delegateCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.govDelegate()
 
-        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(
+        rootView.undelegatingPeriodTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.govUndelegatingPeriod()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {
@@ -114,7 +112,7 @@ extension GovRevokeDelegationConfirmViewController: GovernanceRevokeDelegationCo
     func didReceiveTracks(viewModel: GovernanceTracksViewModel) {
         if
             let cell = rootView.addTracksCell(
-                for: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks(),
                 viewModel: viewModel
             ) {
             cell.addTarget(self, action: #selector(actionTracks), for: .touchUpInside)

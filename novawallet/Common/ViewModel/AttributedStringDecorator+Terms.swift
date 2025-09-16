@@ -15,11 +15,11 @@ extension CompoundAttributedStringDecorator {
             .font: UIFont.regularFootnote
         ]
 
-        let termsConditions = R.string.localizable
-            .commonTermsAndConditions(preferredLanguages: locale?.rLanguages)
+        let termsConditions = R.string(preferredLanguages: locale.rLanguages).localizable
+            .commonTermsAndConditions()
 
-        let privacyPolicy = R.string.localizable
-            .commonPrivacyPolicy(preferredLanguages: locale?.rLanguages)
+        let privacyPolicy = R.string(preferredLanguages: locale.rLanguages).localizable
+            .commonPrivacyPolicy()
 
         let replacementDecorator = AttributedReplacementStringDecorator(
             pattern: marker,

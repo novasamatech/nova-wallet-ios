@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 import SubstrateSdk
 import Keystore_iOS
@@ -9,7 +10,7 @@ final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
         self.storageRequestFactory = storageRequestFactory
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func fetchCountdownOperationWrapper(
         for connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol

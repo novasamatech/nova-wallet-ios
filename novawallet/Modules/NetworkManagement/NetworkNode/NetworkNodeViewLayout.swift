@@ -91,10 +91,10 @@ extension NetworkNodeViewLayout {
 
 private extension NetworkNodeViewLayout {
     func applyLocalization() {
-        titleLabelFor.text = R.string.localizable.commonFor(preferredLanguages: locale.rLanguages).lowercased()
+        titleLabelFor.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonFor().lowercased()
 
-        nameTitleLabel.text = R.string.localizable.networkInfoNodeName(preferredLanguages: locale.rLanguages)
-        urlTitleLabel.text = R.string.localizable.networkInfoNodeUrl(preferredLanguages: locale.rLanguages)
+        nameTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.networkInfoNodeName()
+        urlTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.networkInfoNodeUrl()
 
         urlInput.locale = locale
     }

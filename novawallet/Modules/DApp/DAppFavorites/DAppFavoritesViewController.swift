@@ -51,9 +51,7 @@ private extension DAppFavoritesViewController {
     }
 
     func setupNavigationBar() {
-        navigationItem.title = R.string.localizable.commonFavorites(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        navigationItem.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonFavorites()
     }
 }
 

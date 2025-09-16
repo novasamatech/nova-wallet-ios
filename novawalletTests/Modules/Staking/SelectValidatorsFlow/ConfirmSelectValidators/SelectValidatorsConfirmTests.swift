@@ -9,15 +9,21 @@ import Foundation_iOS
 
 class SelectValidatorsConfirmTests: XCTestCase {
     let initiatedBoding: PreparedNomination<InitiatedBonding> = {
-        let validator1 = SelectedValidatorInfo(address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
-                                               identity: nil)
-        let validator2 = SelectedValidatorInfo(address: "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq",
-                                               identity: nil)
+        let validator1 = SelectedValidatorInfo(
+            address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
+            identity: nil
+        )
+        let validator2 = SelectedValidatorInfo(
+            address: "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq",
+            identity: nil
+        )
         let initiatedBonding = InitiatedBonding(amount: 1.0, rewardDestination: .restake)
 
-        return PreparedNomination(bonding: initiatedBonding,
-                                  targets: [validator1, validator2],
-                                  maxTargets: 16)
+        return PreparedNomination(
+            bonding: initiatedBonding,
+            targets: [validator1, validator2],
+            maxTargets: 16
+        )
     }()
 
     func testSetupAndSendExtrinsic() throws {
@@ -50,7 +56,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
 
         let extrinsicService = ExtrinsicServiceStub.dummy()
 
-        let selectedMetaAccount  = AccountGenerator.generateMetaAccount()
+        let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chain.accountRequest())!
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
@@ -89,7 +95,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: chainAsset.assetDisplayInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -104,37 +111,35 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let hintExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(feeViewModel: any()).then { viewModel in
+            when(stub.didReceive(feeViewModel: any())).then { viewModel in
                 if viewModel != nil {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceive(amountViewModel: any()).then { _ in
+            when(stub.didReceive(amountViewModel: any())).then { _ in
                 assetExpectation.fulfill()
             }
 
-            when(stub).didReceive(confirmationViewModel: any()).then { _ in
+            when(stub.didReceive(confirmationViewModel: any())).then { _ in
                 confirmExpectation.fulfill()
             }
 
-            when(stub).didReceive(hintsViewModel: any()).then { _ in
+            when(stub.didReceive(hintsViewModel: any())).then { _ in
                 hintExpectation.fulfill()
             }
 
-            when(stub).localizationManager.get.thenReturn(LocalizationManager.shared)
-
-            when(stub).didStartLoading().thenDoNothing()
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStartLoading()).thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -145,8 +150,10 @@ class SelectValidatorsConfirmTests: XCTestCase {
 
         // then
 
-        wait(for: [feeExpectation, assetExpectation, confirmExpectation, hintExpectation],
-             timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [feeExpectation, assetExpectation, confirmExpectation, hintExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         // when
 

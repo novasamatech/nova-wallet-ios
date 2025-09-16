@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 extension StakingRewardFiltersPeriod {
@@ -6,18 +7,21 @@ extension StakingRewardFiltersPeriod {
             let languages = locale.rLanguages
             switch self {
             case .allTime:
-                return R.string.localizable.stakingRewardFiltersPeriodAllTimeShort(preferredLanguages: languages)
+                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodAllTimeShort()
             case .lastWeek:
-                return R.string.localizable.stakingRewardFiltersPeriodLastWeekShort(preferredLanguages: languages)
+                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastWeekShort()
             case .lastMonth:
-                return R.string.localizable.stakingRewardFiltersPeriodLastMonthShort(preferredLanguages: languages)
+                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastMonthShort()
             case .lastThreeMonths:
-                return R.string.localizable.stakingRewardFiltersPeriodLastThreeMonthsShort(
-                    preferredLanguages: languages)
+                return R.string(
+                    preferredLanguages: languages
+                ).localizable.stakingRewardFiltersPeriodLastThreeMonthsShort()
             case .lastSixMonths:
-                return R.string.localizable.stakingRewardFiltersPeriodLastSixMonthsShort(preferredLanguages: languages)
+                return R.string(
+                    preferredLanguages: languages
+                ).localizable.stakingRewardFiltersPeriodLastSixMonthsShort()
             case .lastYear:
-                return R.string.localizable.stakingRewardFiltersPeriodLastYearShort(preferredLanguages: languages)
+                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastYearShort()
             case let .custom(customPeriod):
                 return customPeriodTitle(customPeriod, calendar: calendar, locale: locale)
             }
@@ -44,9 +48,10 @@ extension StakingRewardFiltersPeriod {
             return ""
         }
 
-        return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
-            "\(days + 1)",
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardFiltersPeriodCustomMonthShort(
+            "\(days + 1)"
         )
     }
 }

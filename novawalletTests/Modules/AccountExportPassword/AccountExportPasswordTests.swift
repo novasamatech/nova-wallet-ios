@@ -47,11 +47,11 @@ class AccountExportPasswordTests: XCTestCase {
         var confirmationViewModel: InputViewModelProtocol?
 
         stub(view) { stub in
-            when(stub).setPasswordInputViewModel(any()).then { viewModel in
+            when(stub.setPasswordInputViewModel(any())).then { viewModel in
                 inputViewModel = viewModel
             }
 
-            when(stub).setPasswordConfirmationViewModel(any()).then { viewModel in
+            when(stub.setPasswordConfirmationViewModel(any())).then { viewModel in
                 confirmationViewModel = viewModel
             }
         }
@@ -59,7 +59,7 @@ class AccountExportPasswordTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).share(source: any(), from: any(), with: any()).then { _ in
+            when(stub.share(source: any(), from: any(), with: any())).then { _ in
                 expectation.fulfill()
             }
         }

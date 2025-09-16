@@ -9,17 +9,17 @@ protocol IdentityViewModelFactoryProtocol {
 
 final class IdentityViewModelFactory {
     func createLegalRow(with legal: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityLegalNameTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.identityLegalNameTitle()
         return .init(title: title, value: .text(legal))
     }
 
     func createEmailRow(with email: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityEmailTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.identityEmailTitle()
         return .init(title: title, value: .link(email, tag: .email))
     }
 
     func createWebRow(with web: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityWebTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.identityWebTitle()
         return .init(title: title, value: .link(web, tag: .web))
     }
 
@@ -28,7 +28,7 @@ final class IdentityViewModelFactory {
     }
 
     func createRiotRow(with riot: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityRiotNameTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.identityRiotNameTitle()
         return .init(title: title, value: .link(riot, tag: .riot))
     }
 }

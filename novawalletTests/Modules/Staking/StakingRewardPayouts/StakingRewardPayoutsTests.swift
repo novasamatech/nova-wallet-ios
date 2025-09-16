@@ -5,7 +5,6 @@ import Foundation_iOS
 @testable import novawallet
 
 class StakingRewardPayoutsTests: XCTestCase {
-
     func testViewStateIsLoadingThenError() {
         let chain = ChainModelGenerator.generateChain(
             generatingAssets: 2,
@@ -51,7 +50,7 @@ class StakingRewardPayoutsTests: XCTestCase {
         let viewStateIsErrorWhenPresenterRecievedError = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).reload(with: any())
+            when(stub.reload(with: any()))
                 .then { viewState in
                     if case let StakingRewardPayoutsViewState.loading(loading) = viewState, loading {
                         viewStateIsLoadingOnPresenterSetup.fulfill()
@@ -62,7 +61,7 @@ class StakingRewardPayoutsTests: XCTestCase {
                         viewStateIsNotLoadingWhenPresenterRecievedResult.fulfill()
                     }
                 }.then { viewState in
-                    if case StakingRewardPayoutsViewState.error(_) = viewState {
+                    if case StakingRewardPayoutsViewState.error = viewState {
                         viewStateIsErrorWhenPresenterRecievedError.fulfill()
                     }
                 }
@@ -99,7 +98,7 @@ class StakingRewardPayoutsTests: XCTestCase {
         presenter.view = view
 
         stub(interactor) { stub in
-            when(stub).setup().then {
+            when(stub.setup()).then {
                 if case let Result.success(payoutsInfo) = PayoutRewardsServiceStub.dummy().result {
                     presenter.didReceive(result: .success(payoutsInfo))
                 }
@@ -123,7 +122,7 @@ class StakingRewardPayoutsTests: XCTestCase {
         }
 
         stub(viewModelFactory) { stub in
-            when(stub).createPayoutsViewModel(payoutsInfo: any(), priceData: any(), eraCountdown: any()).then { _ in
+            when(stub.createPayoutsViewModel(payoutsInfo: any(), priceData: any(), eraCountdown: any())).then { _ in
                 LocalizableResource { _ in
                     StakingPayoutViewModel(
                         cellViewModels: [],
@@ -136,8 +135,8 @@ class StakingRewardPayoutsTests: XCTestCase {
 
         let viewStateIsPayoutListExpectation = XCTestExpectation()
         stub(view) { stub in
-            when(stub).reload(with: any()).then { viewState in
-                if case StakingRewardPayoutsViewState.payoutsList(_) = viewState {
+            when(stub.reload(with: any())).then { viewState in
+                if case StakingRewardPayoutsViewState.payoutsList = viewState {
                     viewStateIsPayoutListExpectation.fulfill()
                 }
             }
@@ -145,23 +144,21 @@ class StakingRewardPayoutsTests: XCTestCase {
 
         let showRewardDetailsExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub).showRewardDetails(
-                    from: any(),
-                    payoutInfo: any(),
-                    historyDepth: any(),
-                    eraCountdown: any()
-            ).then { _ in
+            when(stub.showRewardDetails(
+                from: any(),
+                payoutInfo: any(),
+                historyDepth: any(),
+                eraCountdown: any()
+            )).then { _ in
                 showRewardDetailsExpectation.fulfill()
             }
         }
 
         let showPayoutConfirmationExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub)
-                .showPayoutConfirmation(for: any(), from: any())
-                .then { _ in
-                    showPayoutConfirmationExpectation.fulfill()
-                }
+            when(stub.showPayoutConfirmation(for: any(), from: any())).then { _ in
+                showPayoutConfirmationExpectation.fulfill()
+            }
         }
 
         // when

@@ -40,6 +40,7 @@ struct StakingRewardDestSetupViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             applicationConfig: ApplicationConfig.shared,
             assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

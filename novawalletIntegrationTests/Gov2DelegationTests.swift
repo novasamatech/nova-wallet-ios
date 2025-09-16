@@ -3,7 +3,6 @@ import XCTest
 import SubstrateSdk
 
 final class Gov2DelegationTests: XCTestCase {
-
     func testDelegationListFetch() {
         // given
 
@@ -55,7 +54,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         // when
 
-        let delegateIds = Set(delegates.compactMap({ try? $0.toAccountId(using: chain.chainFormat) }))
+        let delegateIds = Set(delegates.compactMap { try? $0.toAccountId(using: chain.chainFormat) })
         let wrapper = operationFactory.fetchDelegateListByIdsWrapper(
             from: Set(delegateIds),
             activityStartBlock: recentBlockNumber
@@ -134,7 +133,7 @@ final class Gov2DelegationTests: XCTestCase {
     func testFetchDelegations() {
         performFetchDelegationsTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
     }
-    
+
     func testFetchReferendumVoters() {
         performFetchReferndumVotersTest(referendumId: 84)
     }
@@ -257,7 +256,7 @@ final class Gov2DelegationTests: XCTestCase {
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
-        
+
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
@@ -271,13 +270,13 @@ final class Gov2DelegationTests: XCTestCase {
             identityProxyFactory: identityProxyFactory
         )
     }
-    
+
     private func performFetchReferndumVotersTest(referendumId: ReferendumIdLocal) {
         // given
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = KnowChainId.kusama
-        
+
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
@@ -285,7 +284,7 @@ final class Gov2DelegationTests: XCTestCase {
         }
 
         let operationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
-        
+
         // when
 
         let wrapper = operationFactory.createReferendumVotesFetchOperation(

@@ -49,11 +49,11 @@ final class CollatorStakingSelectSearchViewController: UIViewController, ViewHol
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
+        rootView.searchField.placeholder = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.searchByAddressNamePlaceholder()
     }
 
     private func applyState() {
@@ -156,12 +156,14 @@ extension CollatorStakingSelectSearchViewController: EmptyStateDataSource {
 
         if viewModel != nil {
             emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable
-                .stakingValidatorSearchEmptyTitle(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingValidatorSearchEmptyTitle()
         } else {
             emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable
-                .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonSearchStartTitle_v2_2_0()
         }
 
         emptyView.titleColor = R.color.colorTextSecondary()!

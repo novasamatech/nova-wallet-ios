@@ -84,7 +84,7 @@ final class CreateWatchOnlyViewLayout: UIView {
         view.showsMyself = false
 
         view.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.commonSubstrateAddressTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSubstrateAddressTitle()
         }
 
         return view
@@ -99,7 +99,7 @@ final class CreateWatchOnlyViewLayout: UIView {
         view.showsMyself = false
 
         view.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.commonEvmAddress(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonEvmAddress()
         }
 
         return view

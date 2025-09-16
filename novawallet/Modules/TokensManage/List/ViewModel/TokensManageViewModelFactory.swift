@@ -25,17 +25,14 @@ final class TokensManageViewModelFactory {
         let enabledInstances = token.enabledInstances()
 
         if enabledInstances.isEmpty || token.instances.count == enabledInstances.count {
-            return R.string.localizable.tokensManageAllSelected(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.tokensManageAllSelected()
         } else if let instance = enabledInstances.first {
             if enabledInstances.count > 1 {
                 let chainsCount = quantityFormater.value(for: locale).string(
                     from: NSNumber(value: enabledInstances.count - 1)
                 )
-                return R.string.localizable.tokensManagePartialSelected(
-                    instance.chainName,
-                    chainsCount ?? "",
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages
+                ).localizable.tokensManagePartialSelected(instance.chainName, chainsCount ?? "")
             } else {
                 return instance.chainName
             }

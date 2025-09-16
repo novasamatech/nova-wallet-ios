@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingUnbondConfirmTests: XCTestCase {
-
     func testUnbondingConfirmationSuccess() throws {
         // given
 
@@ -22,28 +21,26 @@ class StakingUnbondConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveAmount(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveConfirmation(viewModel: any())).thenDoNothing()
 
-            when(stub).didSetShouldResetRewardsDestination(value: any()).thenDoNothing()
+            when(stub.didSetShouldResetRewardsDestination(value: any())).thenDoNothing()
 
-            when(stub).didReceiveBonding(duration: any()).thenDoNothing()
+            when(stub.didReceiveBonding(duration: any())).thenDoNothing()
 
-            when(stub).localizationManager.get.then { nil }
+            when(stub.didStartLoading()).thenDoNothing()
 
-            when(stub).didStartLoading().thenDoNothing()
-
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -158,7 +155,8 @@ class StakingUnbondConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            chain: ChainModelGenerator.generate(count: 1).first!
+            chain: ChainModelGenerator.generate(count: 1).first!,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -173,28 +171,28 @@ class StakingUnbondConfirmTests: XCTestCase {
         let resetsRewardsDestinationExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAmount(viewModel: any())).then { viewModel in
                 let balance = viewModel.value(for: Locale.current).amount
                 if !balance.isEmpty {
                     assetExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if let fee = viewModel?.value(for: Locale.current).amount, !fee.isEmpty {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveConfirmation(viewModel: any()).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
 
-            when(stub).didReceiveBonding(duration: any()).then { _ in
+            when(stub.didReceiveBonding(duration: any())).then { _ in
                 bondingDurationExpectation.fulfill()
             }
 
-            when(stub).didSetShouldResetRewardsDestination(value: any()).then { _ in
+            when(stub.didSetShouldResetRewardsDestination(value: any())).then { _ in
                 resetsRewardsDestinationExpectation.fulfill()
             }
         }

@@ -4,11 +4,11 @@ protocol ValidatorListFilterWireframeProtocol {
     func close(_ view: ControllerBackedProtocol?)
 }
 
-protocol ValidatorListFilterViewProtocol: ControllerBackedProtocol, Localizable {
+protocol ValidatorListFilterViewProtocol: ControllerBackedProtocol {
     func didUpdateViewModel(_ viewModel: ValidatorListFilterViewModel)
 }
 
-protocol ValidatorListFilterPresenterProtocol: Localizable {
+protocol ValidatorListFilterPresenterProtocol {
     var view: ValidatorListFilterViewProtocol? { get set }
 
     func setup()

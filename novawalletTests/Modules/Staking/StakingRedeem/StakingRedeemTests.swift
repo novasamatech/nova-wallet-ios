@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRedeemTests: XCTestCase {
-
     func testRedeemConfirmationSuccess() throws {
         // given
 
@@ -22,24 +21,22 @@ class StakingRedeemTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveAmount(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveConfirmation(viewModel: any())).thenDoNothing()
 
-            when(stub).localizationManager.get.then { nil }
+            when(stub.didStartLoading()).thenDoNothing()
 
-            when(stub).didStartLoading().thenDoNothing()
-
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -52,7 +49,7 @@ class StakingRedeemTests: XCTestCase {
     }
 
     private func setupPresenter(
-        for inputAmount: Decimal,
+        for _: Decimal,
         view: MockStakingRedeemViewProtocol,
         wireframe: MockStakingRedeemWireframeProtocol
     ) throws -> StakingRedeemPresenterProtocol {
@@ -155,7 +152,8 @@ class StakingRedeemTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -168,20 +166,20 @@ class StakingRedeemTests: XCTestCase {
         let confirmViewModelExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAmount(viewModel: any())).then { viewModel in
                 let balance = viewModel.value(for: Locale.current).amount
                 if !balance.isEmpty {
                     assetExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if let fee = viewModel?.value(for: Locale.current).amount, !fee.isEmpty {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveConfirmation(viewModel: any()).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
         }

@@ -25,18 +25,25 @@ class UserDataStorageTestFacade: StorageFacadeProtocol {
 
         let modelURL = omoURL ?? momURL
 
-        let configuration = CoreDataServiceConfiguration(modelURL: modelURL!,
-                                                         storageType: .inMemory)
+        let configuration = CoreDataServiceConfiguration(
+            modelURL: modelURL!,
+            storageType: .inMemory
+        )
 
         databaseService = CoreDataService(configuration: configuration)
     }
 
-    func createRepository<T, U>(filter: NSPredicate?,
-                            sortDescriptors: [NSSortDescriptor],
-                            mapper: AnyCoreDataMapper<T, U>) -> CoreDataRepository<T, U>
-    where T: Identifiable, U: NSManagedObject {
-            return CoreDataRepository(databaseService: databaseService,
-                                      mapper: mapper, filter: filter,
-                                      sortDescriptors: sortDescriptors)
+    func createRepository<T, U>(
+        filter: NSPredicate?,
+        sortDescriptors: [NSSortDescriptor],
+        mapper: AnyCoreDataMapper<T, U>
+    ) -> CoreDataRepository<T, U>
+        where T: Identifiable, U: NSManagedObject {
+        CoreDataRepository(
+            databaseService: databaseService,
+            mapper: mapper,
+            filter: filter,
+            sortDescriptors: sortDescriptors
+        )
     }
 }

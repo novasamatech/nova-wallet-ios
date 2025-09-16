@@ -39,26 +39,17 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
         let languages = locale.rLanguages
 
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.swipeGovInsufficientBalanceAlertTitle(
-                preferredLanguages: languages
-            ),
-            message: R.string.localizable.swipeGovInsufficientBalanceAlertMessage(
-                model.votingAmount,
-                model.votingConviction,
-                preferredLanguages: languages
-            ),
+            title: R.string(preferredLanguages: languages).localizable.swipeGovInsufficientBalanceAlertTitle(),
+            message: R.string(preferredLanguages: languages
+            ).localizable.swipeGovInsufficientBalanceAlertMessage(model.votingAmount, model.votingConviction),
             actions: [
                 .init(
-                    title: R.string.localizable.commonChange(
-                        preferredLanguages: languages
-                    ),
+                    title: R.string(preferredLanguages: languages).localizable.commonChange(),
                     style: .normal,
                     handler: action
                 )
             ],
-            closeAction: R.string.localizable.commonClose(
-                preferredLanguages: languages
-            )
+            closeAction: R.string(preferredLanguages: languages).localizable.commonClose()
         )
 
         present(
@@ -77,24 +68,19 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
         let languages = locale.rLanguages
 
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.govVotingListItemRemoveAlertTitle(
-                Int(votingItem.referendumId),
+            title: R.string(
                 preferredLanguages: languages
+            ).localizable.govVotingListItemRemoveAlertTitle(
+                Int(votingItem.referendumId)
             ),
-            message: R.string.localizable.govVotingListItemRemoveAlertMessage(
-                preferredLanguages: languages
-            ),
+            message: R.string(preferredLanguages: languages).localizable.govVotingListItemRemoveAlertMessage(),
             actions: [
                 .init(
-                    title: R.string.localizable.commonCancel(
-                        preferredLanguages: languages
-                    ),
+                    title: R.string(preferredLanguages: languages).localizable.commonCancel(),
                     style: .cancel
                 ),
                 .init(
-                    title: R.string.localizable.commonRemove(
-                        preferredLanguages: languages
-                    ),
+                    title: R.string(preferredLanguages: languages).localizable.commonRemove(),
                     style: .destructive,
                     handler: { action() }
                 )
@@ -118,18 +104,13 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
         let languages = locale.rLanguages
 
         let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.swipeGovReferendaExcludedAlertTitle(
+            title: R.string(preferredLanguages: languages).localizable.swipeGovReferendaExcludedAlertTitle(),
+            message: R.string(
                 preferredLanguages: languages
-            ),
-            message: R.string.localizable.swipeGovReferendaExcludedAlertMessage(
-                availableBalance,
-                preferredLanguages: languages
-            ),
+            ).localizable.swipeGovReferendaExcludedAlertMessage(availableBalance),
             actions: [
                 .init(
-                    title: R.string.localizable.commonOk(
-                        preferredLanguages: languages
-                    ),
+                    title: R.string(preferredLanguages: languages).localizable.commonOk(),
                     style: .cancel,
                     handler: { action() }
                 )

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UIKit_iOS
 
 final class StackAddressCell: RowView<LoadableIconDetailsView> {

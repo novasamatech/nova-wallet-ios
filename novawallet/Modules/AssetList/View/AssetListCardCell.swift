@@ -48,7 +48,7 @@ final class AssetListCardView: ControlView<
 
     private func setupLocalization() {
         let mainTitleString = NSAttributedString(
-            string: R.string.localizable.commonManageDebitCard(preferredLanguages: locale.rLanguages),
+            string: R.string(preferredLanguages: locale.rLanguages).localizable.commonManageDebitCard(),
             attributes: [
                 .font: UIFont.regularBody,
                 .foregroundColor: R.color.colorTextPrimary()!

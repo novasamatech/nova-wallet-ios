@@ -4,7 +4,7 @@ import Operation_iOS
 
 final class MockPreferredValidatorsProvider {
     let model: PreferredValidatorsProviderModel?
-    
+
     init(model: PreferredValidatorsProviderModel? = nil) {
         self.model = model
     }
@@ -12,7 +12,7 @@ final class MockPreferredValidatorsProvider {
 
 extension MockPreferredValidatorsProvider: PreferredValidatorsProviding {
     func createPreferredValidatorsWrapper(
-        for chain: ChainModel
+        for _: ChainModel
     ) -> CompoundOperationWrapper<PreferredValidatorsProviderModel?> {
         CompoundOperationWrapper.createWithResult(model)
     }

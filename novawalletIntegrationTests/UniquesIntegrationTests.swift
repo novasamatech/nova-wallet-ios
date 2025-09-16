@@ -92,32 +92,34 @@ class UniquesIntegrationTests: XCTestCase {
 
         let fetchClassMetadataWrapper = uniqiuesFactory.createClassMetadataWrapper(
             for: {
-                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map { $0.classId }
+                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map(\.classId)
             },
             connection: connection,
             operationManager: operationManager,
             codingFactoryClosure: {
                 try codingFactoryOperation.extractNoCancellableResultData()
-            })
+            }
+        )
 
         let fetchInstanceMetadataWrapper = uniqiuesFactory.createInstanceMetadataWrapper(
             for: {
-                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map { $0.classId }
+                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map(\.classId)
             },
             instanceIdsClosure: {
-                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map { $0.instanceId }
+                try fetchKeysWraper.targetOperation.extractNoCancellableResultData().map(\.instanceId)
             },
             connection: connection,
             operationManager: operationManager,
             codingFactoryClosure: {
                 try codingFactoryOperation.extractNoCancellableResultData()
-            })
+            }
+        )
 
         fetchClassMetadataWrapper.addDependency(wrapper: fetchKeysWraper)
         fetchInstanceMetadataWrapper.addDependency(wrapper: fetchKeysWraper)
 
         let operations = [codingFactoryOperation] + fetchKeysWraper.allOperations +
-        fetchClassMetadataWrapper.allOperations + fetchInstanceMetadataWrapper.allOperations
+            fetchClassMetadataWrapper.allOperations + fetchInstanceMetadataWrapper.allOperations
 
         operationQueue.addOperations(operations, waitUntilFinished: true)
 
@@ -130,7 +132,7 @@ class UniquesIntegrationTests: XCTestCase {
             let classMetadataDict = try fetchClassMetadataWrapper.targetOperation
                 .extractNoCancellableResultData()
 
-            classMetadataDict.forEach { (key, value) in
+            classMetadataDict.forEach { key, value in
                 logger.info(
                     "Metadata for class \(key): \(String(data: value.data, encoding: .utf8)!)"
                 )
@@ -139,7 +141,7 @@ class UniquesIntegrationTests: XCTestCase {
             let instanceMetadataDic = try fetchInstanceMetadataWrapper.targetOperation
                 .extractNoCancellableResultData()
 
-            instanceMetadataDic.forEach { (key, value) in
+            instanceMetadataDic.forEach { key, value in
                 logger.info(
                     "Metadata for instance \(key): \(String(data: value.data, encoding: .utf8)!)"
                 )

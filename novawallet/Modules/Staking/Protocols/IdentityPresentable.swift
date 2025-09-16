@@ -43,12 +43,9 @@ extension IdentityPresentable {
 
         if !writeEmail(with: message, from: view, completionHandler: nil) {
             present(
-                message: R.string.localizable
-                    .noEmailBoundErrorMessage(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable
-                    .commonErrorGeneralTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable
-                    .commonClose(preferredLanguages: locale.rLanguages),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.noEmailBoundErrorMessage(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle(),
+                closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
                 from: view
             )
         }

@@ -62,7 +62,7 @@ class ErrorStateView: UIView {
     }
 
     private func applyLocalization() {
-        let title = R.string.localizable.commonRetry(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonRetry()
         retryButton.setTitle(title, for: .normal)
     }
 

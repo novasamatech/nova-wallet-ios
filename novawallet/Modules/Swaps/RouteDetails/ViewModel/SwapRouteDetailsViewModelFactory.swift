@@ -33,9 +33,9 @@ private extension SwapRouteDetailsViewModelFactory {
     ) -> String {
         switch operation.label {
         case .swap:
-            R.string.localizable.swapsLabelSwap(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelSwap()
         case .transfer:
-            R.string.localizable.swapsLabelTransfer(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelTransfer()
         }
     }
 
@@ -113,10 +113,7 @@ private extension SwapRouteDetailsViewModelFactory {
             currencyId: priceStore.getCurrencyId()
         ).value(for: locale)
 
-        return R.string.localizable.commonFeeAmountPrefixed(
-            amount,
-            preferredLanguages: locale.rLanguages
-        )
+        return R.string(preferredLanguages: locale.rLanguages).localizable.commonFeeAmountPrefixed(amount)
     }
 }
 

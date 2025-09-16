@@ -38,7 +38,7 @@ enum OpenScreenUrlParsingError: Error {
             return govScreenError.message(locale: locale)
         case let .openDAppScreen(dAppError):
             return dAppError.message(locale: locale)
-        case let .cardScreen(cardError):
+        case .cardScreen:
             return nil
         }
     }
@@ -49,20 +49,15 @@ extension OpenScreenUrlParsingError.GovScreenError {
         let languages = locale.rLanguages
         switch self {
         case .govTypeIsNotSpecified:
-            return R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorNoGovernanceTypeMessage()
         case .invalidChainId:
-            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
         case .invalidReferendumId:
-            return R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidReferendumIdMessage()
         case .chainNotSupportsGovType, .chainNotSupportsGov:
-            return R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidGovernanceTypeMessage()
         case .chainNotFound:
-            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
         }
     }
 }
@@ -72,8 +67,7 @@ extension OpenScreenUrlParsingError.DAppError {
         let languages = locale.rLanguages
         switch self {
         case .invalidURL:
-            return R.string.localizable.deeplinkErrorInvalidDappUrlMessage(
-                preferredLanguages: languages)
+            return R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidDappUrlMessage()
         case .loadListFailed, .unknownURL:
             return nil
         }

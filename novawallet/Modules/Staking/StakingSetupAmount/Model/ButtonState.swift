@@ -7,7 +7,7 @@ struct ButtonState {
 
     static let startState = ButtonState(
         title: LocalizableResource {
-            R.string.localizable.transferSetupEnterAmount(preferredLanguages: $0.rLanguages)
+            R.string(preferredLanguages: $0.rLanguages).localizable.transferSetupEnterAmount()
         },
         enabled: false
     )
@@ -15,7 +15,7 @@ struct ButtonState {
     static func continueState(enabled: Bool) -> ButtonState {
         .init(
             title: LocalizableResource {
-                R.string.localizable.commonContinue(preferredLanguages: $0.rLanguages)
+                R.string(preferredLanguages: $0.rLanguages).localizable.commonContinue()
             },
             enabled: enabled
         )

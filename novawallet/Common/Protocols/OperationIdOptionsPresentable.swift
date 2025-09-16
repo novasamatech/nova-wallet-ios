@@ -24,7 +24,7 @@ extension OperationIdOptionsPresentable {
     ) {
         UIPasteboard.general.string = operationId
 
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonCopied()
         let controller = ModalAlertFactory.createSuccessAlert(title)
 
         view.controller.present(

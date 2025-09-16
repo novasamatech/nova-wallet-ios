@@ -14,25 +14,19 @@ enum LockType: String {
         LocalizableResource<String> { locale in
             switch self {
             case .vesting:
-                return R.string.localizable.walletAccountLocksVesting(
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.walletAccountLocksVesting()
             case .staking:
-                return R.string.localizable.stakingTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.stakingTitle()
             case .democracy:
-                return R.string.localizable.walletAccountLocksDemocracyVersion1(
+                return R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.walletAccountLocksDemocracyVersion1()
             case .governance:
-                return R.string.localizable.walletAccountLocksDemocracyVersion2(
+                return R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.walletAccountLocksDemocracyVersion2()
             case .elections:
-                return R.string.localizable.walletAccountLocksElections(
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.walletAccountLocksElections()
             }
         }
     }

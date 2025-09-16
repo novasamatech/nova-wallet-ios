@@ -46,7 +46,7 @@ final class BannersViewDataSource {
     }
 
     var firstShowingItemIndex: Int? {
-        guard let viewModels else { return nil }
+        guard viewModels != nil else { return nil }
 
         return looped ? 1 : 0
     }

@@ -36,6 +36,7 @@ extension StakingMainPresenterFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             networkInfoViewModelFactory: networkInfoFactory,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

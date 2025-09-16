@@ -124,9 +124,7 @@ final class StakingDashboardActiveCellView: UIView {
     }
 
     private func setupStaticLocalization(for locale: Locale) {
-        rewardsView.valueTop.text = R.string.localizable.stakingRewardsTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        rewardsView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardsTitle()
     }
 
     private func setupLayout() {

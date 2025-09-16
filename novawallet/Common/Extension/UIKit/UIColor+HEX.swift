@@ -26,7 +26,6 @@ extension UIColor {
         return nil
     }
 
-    // swiftlint:disable:next large_tuple
     var rgbaComponents: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var rComponent: CGFloat = 0
         var gComponent: CGFloat = 0

@@ -4,7 +4,6 @@ import Keystore_iOS
 import Cuckoo
 
 class DAppAuthConfirmTests: XCTestCase {
-
     func testSetup() throws {
         // given
 
@@ -35,7 +34,7 @@ class DAppAuthConfirmTests: XCTestCase {
         var actualResponse: DAppAuthResponse?
 
         stub(delegate) { stub in
-            stub.didReceiveAuthResponse(any(), for: any()).then { (response, _) in
+            stub.didReceiveAuthResponse(any(), for: any()).then { response, _ in
                 actualResponse = response
             }
         }
@@ -66,7 +65,7 @@ class DAppAuthConfirmTests: XCTestCase {
         var actualResponse: DAppAuthResponse?
 
         stub(delegate) { stub in
-            stub.didReceiveAuthResponse(any(), for: any()).then { (response, _) in
+            stub.didReceiveAuthResponse(any(), for: any()).then { response, _ in
                 actualResponse = response
             }
         }
@@ -114,7 +113,7 @@ class DAppAuthConfirmTests: XCTestCase {
             requiredChains: .init(),
             optionalChains: nil
         )
-        
+
         let viewModelFactory = DAppAuthViewModelFactory(
             iconViewModelFactory: DAppIconViewModelFactory()
         )

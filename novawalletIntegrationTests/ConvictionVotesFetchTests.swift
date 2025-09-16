@@ -37,12 +37,12 @@ class ConvictionVotesFetchTests: XCTestCase {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let wrapper: CompoundOperationWrapper<[ConvictionVoting.VotingForKey: ConvictionVoting.Voting]> =
-        requestFactory.queryByPrefix(
-            engine: connection,
-            request: request,
-            storagePath: ConvictionVoting.votingFor,
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() }
-        )
+            requestFactory.queryByPrefix(
+                engine: connection,
+                request: request,
+                storagePath: ConvictionVoting.votingFor,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+            )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
@@ -87,14 +87,14 @@ class ConvictionVotesFetchTests: XCTestCase {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let wrapper: CompoundOperationWrapper<[StorageResponse<[ConvictionVoting.ClassLock]>]> =
-        requestFactory.queryItems(
-            engine: connection,
-            keyParams: {
-                [BytesCodable(wrappedValue: accountId)]
-            },
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: ConvictionVoting.trackLocksFor
-        )
+            requestFactory.queryItems(
+                engine: connection,
+                keyParams: {
+                    [BytesCodable(wrappedValue: accountId)]
+                },
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: ConvictionVoting.trackLocksFor
+            )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 

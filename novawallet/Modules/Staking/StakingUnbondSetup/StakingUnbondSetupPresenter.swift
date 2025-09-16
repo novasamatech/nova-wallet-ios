@@ -6,6 +6,7 @@ final class StakingUnbondSetupPresenter {
     weak var view: StakingUnbondSetupViewProtocol?
     let wireframe: StakingUnbondSetupWireframeProtocol
     let interactor: StakingUnbondSetupInteractorInputProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -30,6 +31,7 @@ final class StakingUnbondSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -37,6 +39,7 @@ final class StakingUnbondSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -114,7 +117,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
     }
 
     func proceed() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         var unbondAmount = inputAmount
 

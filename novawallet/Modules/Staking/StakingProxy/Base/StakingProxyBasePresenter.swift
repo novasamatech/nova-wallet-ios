@@ -142,7 +142,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
 
     func getAccountId() -> AccountId? {
         let request = chainAsset.chain.accountRequest()
-        return try? wallet.fetch(for: request)?.accountId
+        return wallet.fetch(for: request)?.accountId
     }
 }
 

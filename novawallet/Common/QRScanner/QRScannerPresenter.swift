@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import AVFoundation
 import Foundation_iOS
 
@@ -71,20 +72,16 @@ class QRScannerPresenter: QRScannerPresenterProtocol {
         switch error {
         case .deviceAccessRestricted:
             view.present(
-                message: R.string.localizable.qrScanErrorCameraRestricted(
-                    preferredLanguages: locale.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorCameraRestricted(),
                 animated: true
             )
         case .deviceAccessDeniedPreviously:
-            let message = R.string.localizable.qrScanErrorCameraRestricted(preferredLanguages: locale.rLanguages)
-            let title = R.string.localizable.qrScanErrorCameraTitle(preferredLanguages: locale.rLanguages)
+            let message = R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorCameraRestricted()
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorCameraTitle()
             wireframe.askOpenApplicationSettings(with: message, title: title, from: view, locale: locale)
         case .unsupportedFormat:
             view.present(
-                message: R.string.localizable.commonUnsupportedQrCode(
-                    preferredLanguages: locale.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.commonUnsupportedQrCode(),
                 animated: true
             )
         default:
@@ -97,16 +94,12 @@ class QRScannerPresenter: QRScannerPresenterProtocol {
         switch error {
         case .noFeatures:
             view?.present(
-                message: R.string.localizable.qrScanErrorNoInfo(
-                    preferredLanguages: locale?.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorNoInfo(),
                 animated: true
             )
         case .detectorUnavailable, .invalidImage:
             view?.present(
-                message: R.string.localizable.qrScanErrorInvalidImage(
-                    preferredLanguages: locale?.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorInvalidImage(),
                 animated: true
             )
         }
@@ -117,18 +110,14 @@ class QRScannerPresenter: QRScannerPresenterProtocol {
         switch error {
         case .accessRestricted:
             view?.present(
-                message: R.string.localizable.qrScanErrorGalleryRestricted(
-                    preferredLanguages: locale?.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorGalleryRestricted(),
                 animated: true
             )
         case .accessDeniedPreviously:
-            let message = R.string.localizable.qrScanErrorGalleryRestrictedPreviously(
-                preferredLanguages: locale?.rLanguages
-            )
-            let title = R.string.localizable.qrScanErrorGalleryTitle(
-                preferredLanguages: locale?.rLanguages
-            )
+            let message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.qrScanErrorGalleryRestrictedPreviously()
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.qrScanErrorGalleryTitle()
 
             wireframe.askOpenApplicationSettings(
                 with: message,

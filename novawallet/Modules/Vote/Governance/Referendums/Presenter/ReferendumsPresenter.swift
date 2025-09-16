@@ -260,10 +260,8 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     func selectSwipeGov() {
         guard let chain, let view else { return }
 
-        let addAccountAskMessage = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let addAccountAskMessage = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonChainCrowdloanAccountMissingMessage(chain.name)
 
         let handlers = createAccountValidationHandlers()
 
@@ -297,10 +295,10 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         if let referendum = referendums.first(where: { $0.index == referendumIndex }) {
             showDetails(referendum: referendum)
         } else {
-            let message = R.string.localizable.governanceReferendumNotFoundMessage(
-                preferredLanguages: selectedLocale.rLanguages)
-            let closeAction = R.string.localizable.commonOk(
-                preferredLanguages: selectedLocale.rLanguages)
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.governanceReferendumNotFoundMessage()
+            let closeAction = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonOk()
             wireframe.present(
                 message: message,
                 title: nil,

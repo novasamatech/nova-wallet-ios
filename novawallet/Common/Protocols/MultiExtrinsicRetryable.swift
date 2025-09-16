@@ -22,15 +22,17 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable {
         if let error = params.errors.first as? ErrorContentConvertible {
             let details = error.toErrorContent(for: locale).message
 
-            return R.string.localizable.commonMultiTxErrorHasDetailsMessage(
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonMultiTxErrorHasDetailsMessage(
                 failedCountString,
-                details,
-                preferredLanguages: locale?.rLanguages
+                details
             )
         } else {
-            return R.string.localizable.commonMultiTxErrorNoDetailsMessage(
-                failedCountString,
-                preferredLanguages: locale?.rLanguages
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonMultiTxErrorNoDetailsMessage(
+                failedCountString
             )
         }
     }
@@ -42,17 +44,19 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable {
         onRetry: @escaping () -> Void,
         onSkip: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonMultiTxErrorTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonMultiTxErrorTitle()
         let message = createMessage(from: params, locale: locale)
 
         let skipAction = AlertPresentableAction(
-            title: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSkip(),
             style: .cancel,
             handler: onSkip
         )
 
         let retryAction = AlertPresentableAction(
-            title: R.string.localizable.commonRetry(preferredLanguages: locale?.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonRetry(),
             style: .normal,
             handler: onRetry
         )

@@ -1,6 +1,7 @@
 import Foundation
 import Kingfisher
 import Operation_iOS
+import UIKit
 
 struct ImageRetrieveOperationFactory<T> {
     private let imageManager: KingfisherManager

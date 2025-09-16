@@ -35,17 +35,16 @@ final class SwapExecutionViewModelFactory {
     ) -> String {
         switch operation.label {
         case .transfer:
-            return R.string.localizable.swapsExecutionTransferDetails(
-                operation.assetIn.asset.symbol,
-                operation.assetOut.chain.name,
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.swapsExecutionTransferDetails(operation.assetIn.asset.symbol, operation.assetOut.chain.name)
         case .swap:
-            return R.string.localizable.swapsExecutionSwapDetails(
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsExecutionSwapDetails(
                 operation.assetIn.asset.symbol,
                 operation.assetOut.asset.symbol,
-                operation.assetOut.chain.name,
-                preferredLanguages: locale.rLanguages
+                operation.assetOut.chain.name
             )
         }
     }
@@ -60,7 +59,7 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel {
         let remainedTimeViewModel = CountdownLoadingView.ViewModel(
             duration: UInt(remainedTime.rounded(.up)),
-            units: R.string.localizable.secTimeUnits(preferredLanguages: locale.rLanguages)
+            units: R.string(preferredLanguages: locale.rLanguages).localizable.secTimeUnits()
         )
 
         let currentOperationString = createOperationDetails(
@@ -68,15 +67,15 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
             locale: locale
         )
 
-        let totalOperations = R.string.localizable.commonOperations(
-            format: quote.metaOperations.count,
+        let totalOperations = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonOperations(format: quote.metaOperations.count)
 
-        let details = R.string.localizable.commonOf(
-            String(currentOperationIndex + 1),
-            totalOperations,
+        let details = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.commonOf(
+            String(currentOperationIndex + 1),
+            totalOperations
         )
 
         return .inProgress(
@@ -98,10 +97,11 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
 
         let operationLabel = quote.metaOperations[currentOperationIndex].label.getTitle(for: locale)
 
-        let operationDescription = R.string.localizable.swapsExecutionSwapFailure(
-            String(currentOperationIndex + 1),
-            operationLabel,
+        let operationDescription = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.swapsExecutionSwapFailure(
+            String(currentOperationIndex + 1),
+            operationLabel
         )
 
         let details = if let errorDetails = failure.getErrorDetails(for: locale) {
@@ -120,10 +120,9 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
     ) -> SwapExecutionViewModel {
         let time = dateFormatter.value(for: locale).string(from: date)
 
-        let operationsString = R.string.localizable.commonOperations(
-            format: quote.metaOperations.count,
+        let operationsString = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonOperations(format: quote.metaOperations.count)
 
         return .completed(.init(time: time, details: operationsString))
     }

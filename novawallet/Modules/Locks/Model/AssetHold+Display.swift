@@ -4,7 +4,7 @@ extension AssetHold {
     func displayTitle(for locale: Locale) -> String {
         switch (module, reason) {
         case ("DelegatedStaking", "StakingDelegation"):
-            return R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool()
         default:
             return "\(module): \(reason)"
         }

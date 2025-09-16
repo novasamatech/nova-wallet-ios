@@ -7,7 +7,6 @@ import NovaCrypto
 @testable import novawallet
 
 class StakingBondMoreTests: XCTestCase {
-
     func testContinueAction() throws {
         let wireframe = MockStakingBondMoreWireframeProtocol()
         let interactor = MockStakingBondMoreInteractorInputProtocol()
@@ -29,7 +28,8 @@ class StakingBondMoreTests: XCTestCase {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidator,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = MockStakingBondMoreViewProtocol()
@@ -37,16 +37,15 @@ class StakingBondMoreTests: XCTestCase {
         dataValidator.view = view
 
         stub(view) { stub in
-            when(stub).localizationManager.get.then { _ in nil }
-            when(stub).didReceiveInput(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveInput(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveAsset(viewModel: any())).thenDoNothing()
         }
 
         // given
         let continueExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub).showConfirmation(from: any(), amount: any()).then { _ in
+            when(stub.showConfirmation(from: any(), amount: any())).then { _ in
                 continueExpectation.fulfill()
             }
         }
@@ -57,7 +56,7 @@ class StakingBondMoreTests: XCTestCase {
         let assetBalance = AssetBalance(
             chainAssetId: chain.utilityChainAssetId()!,
             accountId: stashAccountId,
-            freeInPlank: 100000000000000,
+            freeInPlank: 100_000_000_000_000,
             reservedInPlank: 0,
             frozenInPlank: 0,
             edCountMode: .basedOnFree,
@@ -67,7 +66,7 @@ class StakingBondMoreTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(assetBalance))
 
-        let paymentInfo = ExtrinsicFee(amount: 12600002654,payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let paymentInfo = ExtrinsicFee(amount: 12_600_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfo))
 
         presenter.didReceiveStashItem(result: .success(stashItem))
@@ -99,13 +98,20 @@ class StakingBondMoreTests: XCTestCase {
         // given
         let errorAlertExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub).present(message: any(), title: any(), closeAction: any(), from: any()).then { _ in
+            when(
+                stub.present(
+                    message: any(),
+                    title: any(),
+                    closeAction: any(),
+                    from: any()
+                )
+            ).then { _ in
                 errorAlertExpectation.fulfill()
             }
         }
         // empty balance & extra fee is received
         presenter.didReceiveAccountBalance(result: .success(nil))
-        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12600000000002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
+        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12_600_000_000_002_654, payer: nil, weight: .init(refTime: 331_759_000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfoWithExtraFee))
 
         // when

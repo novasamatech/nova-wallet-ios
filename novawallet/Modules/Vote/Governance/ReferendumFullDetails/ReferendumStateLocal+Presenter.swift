@@ -75,13 +75,13 @@ extension Referenda.Curve {
     func displayName(for locale: Locale) -> String {
         switch self {
         case .linearDecreasing:
-            return R.string.localizable.govLinearDecreasing(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govLinearDecreasing()
         case .reciprocal:
-            return R.string.localizable.govReciprocal(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govReciprocal()
         case .steppedDecreasing:
-            return R.string.localizable.govSteppedDecreasing(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govSteppedDecreasing()
         case .unknown:
-            return R.string.localizable.commonUnknown(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonUnknown()
         }
     }
 }
@@ -90,16 +90,17 @@ extension Democracy.VoteThreshold {
     func displayName(for locale: Locale) -> String {
         switch self {
         case .simpleMajority:
-            return R.string.localizable.govVoteTresholdFunctionSimpleMajority(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govVoteTresholdFunctionSimpleMajority()
         case .superMajorityAgainst:
-            return R.string.localizable.govVoteTresholdFunctionSuperMajorityAgainst(
-                preferredLanguages: locale.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govVoteTresholdFunctionSuperMajorityAgainst()
         case .superMajorityApprove:
-            return R.string.localizable.govVoteTresholdFunctionSuperMajorityApprove(
-                preferredLanguages: locale.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govVoteTresholdFunctionSuperMajorityApprove()
         case .unknown:
-            return R.string.localizable.commonUnknown(
-                preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonUnknown()
         }
     }
 }

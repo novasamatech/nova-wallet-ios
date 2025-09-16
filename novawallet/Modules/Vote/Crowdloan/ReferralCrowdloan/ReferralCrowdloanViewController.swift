@@ -59,7 +59,7 @@ final class ReferralCrowdloanViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonBonus(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBonus()
 
         rootView.locale = selectedLocale
 
@@ -71,24 +71,25 @@ final class ReferralCrowdloanViewController: UIViewController, ViewHolder {
             return
         }
 
-        rootView.applyAppBonusLabel.text = R.string.localizable.crowdloanAppBonusFormat(
-            referralViewModel.bonusPercentage,
+        rootView.applyAppBonusLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
+        ).localizable.crowdloanAppBonusFormat(
+            referralViewModel.bonusPercentage
         )
 
         rootView.bonusView.valueLabel.text = referralViewModel.bonusValue
 
         if referralViewModel.canApplyDefaultCode {
-            rootView.applyAppBonusButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+            rootView.applyAppBonusButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            ).localizable.commonApply().uppercased()
 
             rootView.applyAppBonusButton.isEnabled = true
             rootView.applyAppBonusButton.applyDefaultStyle()
         } else {
-            rootView.applyAppBonusButton.imageWithTitleView?.title = R.string.localizable.commonApplied(
+            rootView.applyAppBonusButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            ).localizable.commonApplied().uppercased()
 
             rootView.applyAppBonusButton.isEnabled = false
             rootView.applyAppBonusButton.applyDisabledStyle()
@@ -99,17 +100,17 @@ final class ReferralCrowdloanViewController: UIViewController, ViewHolder {
         rootView.termsSwitchView.isOn = referralViewModel.isTermsAgreed
 
         if !referralViewModel.isCodeReceived {
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.karuraReferralCodeAction(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.karuraReferralCodeAction()
         } else if !referralViewModel.isTermsAgreed {
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.karuraTermsAction(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.karuraTermsAction()
         } else {
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonApply()
         }
 
         rootView.actionButton.invalidateLayout()

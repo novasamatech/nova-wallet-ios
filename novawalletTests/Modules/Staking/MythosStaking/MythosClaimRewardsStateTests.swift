@@ -12,30 +12,30 @@ final class MythosClaimRewardsStateTests: XCTestCase {
             ],
             reward: 1
         )
-        
+
         // when
-        
+
         guard let model = state.deriveModel() else {
             XCTFail("Model expected")
             return
         }
-        
+
         // then
-        
+
         guard let restake = model.getRestake() else {
             XCTFail("Restake expected")
             return
         }
-        
+
         XCTAssertEqual(restake.lock.amount, state.claimableRewards.total)
-        
+
         let stakeTargets = restake.stake.targets
-        
+
         XCTAssertEqual(stakeTargets.count, 1)
         XCTAssertEqual(stakeTargets[0].stake, state.claimableRewards.total)
         XCTAssertEqual(stakeTargets[0].candidate, state.details.collatorIds.first)
     }
-    
+
     func testThreeCollatorsRestakeWithRemainedAmount() throws {
         // given
 
@@ -47,35 +47,35 @@ final class MythosClaimRewardsStateTests: XCTestCase {
             ],
             reward: 1
         )
-        
+
         // when
-        
+
         guard let model = state.deriveModel() else {
             XCTFail("Model expected")
             return
         }
-        
+
         // then
-        
+
         guard let restake = model.getRestake() else {
             XCTFail("Restake expected")
             return
         }
-        
+
         XCTAssertEqual(restake.lock.amount, state.claimableRewards.total)
-        
+
         let stakeTargets = restake.stake.targets
-        
+
         XCTAssertEqual(stakeTargets.count, 3)
-        
+
         let totalStake: Balance = stakeTargets.reduce(0) { $0 + $1.stake }
-        
+
         XCTAssertEqual(totalStake, state.claimableRewards.total)
     }
-    
+
     func testNoRestakeForFreeBalanceStrategy() throws {
         // given
-        
+
         let state = try prepareState(
             stakeDistribution: [
                 "0xe07113E692708775d0Cc39E00Fe7f2974bFF4e20": 10
@@ -83,24 +83,24 @@ final class MythosClaimRewardsStateTests: XCTestCase {
             reward: 1,
             claimStrategy: .freeBalance
         )
-        
+
         // when
-        
+
         guard let model = state.deriveModel() else {
             XCTFail("Model expected")
             return
         }
-        
+
         // then
-        
+
         let restake = model.getRestake()
-        
+
         XCTAssertNil(restake)
     }
-    
+
     func testNoRestakeWhenAutoCompound() throws {
         // given
-        
+
         let state = try prepareState(
             stakeDistribution: [
                 "0xe07113E692708775d0Cc39E00Fe7f2974bFF4e20": 10
@@ -108,21 +108,21 @@ final class MythosClaimRewardsStateTests: XCTestCase {
             reward: 1,
             autoCompound: 100
         )
-        
+
         // when
-        
+
         guard let model = state.deriveModel() else {
             XCTFail("Model expected")
             return
         }
-        
+
         // then
-        
+
         let restake = model.getRestake()
-        
+
         XCTAssertNil(restake)
     }
-    
+
     private func prepareState(
         stakeDistribution: [AccountAddress: Decimal],
         reward: Decimal,
@@ -134,15 +134,15 @@ final class MythosClaimRewardsStateTests: XCTestCase {
         ) { accum, keyValue in
             let accountId = try keyValue.key.toAccountId()
             let balance = keyValue.value.toSubstrateAmount(precision: 18)!
-            
+
             accum[accountId] = .init(stake: balance, session: 0)
         }
-        
+
         let details = MythosStakingDetails(stakeDistribution: convertedDistribution, maybeLastUnstake: nil)
         let rewardInPlank = reward.toSubstrateAmount(precision: 18)!
-        
+
         let claimableRewards = MythosStakingClaimableRewards(total: rewardInPlank, shouldClaim: true)
-        
+
         return MythosStkClaimRewardsState(
             details: details,
             claimableRewards: claimableRewards,

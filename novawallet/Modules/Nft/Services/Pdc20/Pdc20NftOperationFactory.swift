@@ -11,7 +11,6 @@ enum Pdc20Api {
 }
 
 final class Pdc20NftOperationFactory: SubqueryBaseOperationFactory {
-    // swiftlint:disable:next function_body_length
     private func buildQuery(for address: String, network: String) -> String {
         """
         {

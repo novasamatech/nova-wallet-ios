@@ -3,7 +3,6 @@ import Operation_iOS
 import NovaCrypto
 
 extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
-    // swiftlint:disable function_body_length
     func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]> {
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -229,7 +228,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func wannabeValidatorsOperation(
         for accountIdList: [AccountId]
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {

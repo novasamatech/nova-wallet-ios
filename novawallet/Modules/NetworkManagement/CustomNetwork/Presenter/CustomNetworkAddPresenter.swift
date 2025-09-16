@@ -43,9 +43,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
     }
 
     override func completeButtonTitle() -> String {
-        R.string.localizable.networksListAddNetworkButtonTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networksListAddNetworkButtonTitle()
     }
 
     override func handleUrl(_ url: String) {

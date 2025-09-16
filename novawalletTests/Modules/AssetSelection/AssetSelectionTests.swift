@@ -12,7 +12,7 @@ class AssetSelectionTests: XCTestCase {
         let selectedAccount = AccountGenerator.generateMetaAccount()
 
         let assetsPerChain = 2
-        let chains = (0..<10).map { index in
+        let chains = (0 ..< 10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: assetsPerChain,
                 addressPrefix: ChainModel.AddressPrefix(index),
@@ -30,7 +30,7 @@ class AssetSelectionTests: XCTestCase {
         )
         let operationQueue = OperationQueue()
 
-        let saveChainsOperation = repository.saveOperation( { chains }, { [] })
+        let saveChainsOperation = repository.saveOperation({ chains }, { [] })
         operationQueue.addOperations([saveChainsOperation], waitUntilFinished: true)
 
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(
@@ -92,7 +92,7 @@ class AssetSelectionTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            stub.complete(on: any(), selecting: any()).then { (_, chainAsset) in
+            stub.complete(on: any(), selecting: any()).then { _, chainAsset in
                 XCTAssertTrue(chainAsset.asset.hasStaking)
                 completionExpectation.fulfill()
             }

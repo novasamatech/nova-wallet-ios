@@ -28,36 +28,32 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
 
         switch walletType {
         case .secrets, .watchOnly, .proxied, .multisig:
-            let wallet = R.string.localizable.commonWallet(preferredLanguages: locale.rLanguages)
-            title = R.string.localizable.commonWalletNotSupportChain(
+            let wallet = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletNotSupportChain(
                 wallet,
-                chainName,
-                preferredLanguages: locale.rLanguages
+                chainName
             )
         case .paritySigner:
-            let paritySigner = R.string.localizable.commonParitySigner(preferredLanguages: locale.rLanguages)
-            title = R.string.localizable.commonWalletNotSupportChain(
+            let paritySigner = R.string(preferredLanguages: locale.rLanguages).localizable.commonParitySigner()
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletNotSupportChain(
                 paritySigner,
-                chainName,
-                preferredLanguages: locale.rLanguages
+                chainName
             )
         case .polkadotVault:
-            let polkadotVault = R.string.localizable.commonPolkadotVault(preferredLanguages: locale.rLanguages)
-            title = R.string.localizable.commonWalletNotSupportChain(
+            let polkadotVault = R.string(preferredLanguages: locale.rLanguages).localizable.commonPolkadotVault()
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletNotSupportChain(
                 polkadotVault,
-                chainName,
-                preferredLanguages: locale.rLanguages
+                chainName
             )
         case .ledger, .genericLedger:
-            let ledger = R.string.localizable.commonLedger(preferredLanguages: locale.rLanguages)
-            title = R.string.localizable.commonWalletNotSupportChain(
+            let ledger = R.string(preferredLanguages: locale.rLanguages).localizable.commonLedger()
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletNotSupportChain(
                 ledger,
-                chainName,
-                preferredLanguages: locale.rLanguages
+                chainName
             )
         }
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        let close = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         present(message: nil, title: title, closeAction: close, from: view)
     }
 
@@ -70,18 +66,17 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
     ) {
         let languages = locale.rLanguages
 
-        let title = R.string.localizable.commonChainAccountMissingTitleFormat(
-            chainName,
-            preferredLanguages: languages
+        let title = R.string(preferredLanguages: languages).localizable.commonChainAccountMissingTitleFormat(
+            chainName
         )
 
         let cancelAction = AlertPresentableAction(
-            title: R.string.localizable.commonCancel(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonCancel(),
             style: .destructive
         )
 
         let addAction = AlertPresentableAction(
-            title: R.string.localizable.commonAdd(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonAdd(),
             handler: addClosure
         )
 

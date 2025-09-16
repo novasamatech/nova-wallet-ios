@@ -118,9 +118,8 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
     }
 
     func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String {
-        R.string.localizable.commonSecondsFormat(
-            format: Int(timeInterval.rounded(.up)),
-            preferredLanguages: locale.rLanguages
+        R.string(preferredLanguages: locale.rLanguages).localizable.commonSecondsFormat(
+            format: Int(timeInterval.rounded(.up))
         ).approximately()
     }
 

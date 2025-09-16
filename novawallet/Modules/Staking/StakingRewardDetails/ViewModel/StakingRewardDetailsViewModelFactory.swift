@@ -60,7 +60,7 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
         let details: String
 
         if let stringIndex = numberFormatter.string(from: NSNumber(value: index)) {
-            details = R.string.localizable.commonEraFormat(stringIndex, preferredLanguages: locale.rLanguages)
+            details = R.string(preferredLanguages: locale.rLanguages).localizable.commonEraFormat(stringIndex)
         } else {
             details = ""
         }

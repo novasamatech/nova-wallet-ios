@@ -18,9 +18,9 @@ final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol, Mo
     }
 
     func saved(on view: ControllerBackedProtocol?) {
-        let title = R.string.localizable.commonSaved(
+        let title = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
+        ).localizable.commonSaved()
 
         let presenter = view?.controller.presentingViewController
 

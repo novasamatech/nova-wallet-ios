@@ -37,14 +37,16 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        title = R.string.localizable.swapsSetupSettingsTitle(
-            preferredLanguages: languages)
-        rootView.slippageButton.imageWithTitleView?.title = R.string.localizable.swapsSetupSlippage(
-            preferredLanguages: languages)
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonApply(
-            preferredLanguages: languages)
-        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonReset(
-            preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: languages).localizable.swapsSetupSettingsTitle()
+        rootView.slippageButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.swapsSetupSlippage()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonApply()
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonReset()
     }
 
     private func setupHandlers() {
@@ -66,7 +68,7 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         navigationItem.rightBarButtonItem = .init(
-            title: R.string.localizable.commonReset(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset(),
             style: .plain,
             target: self,
             action: #selector(resetAction)

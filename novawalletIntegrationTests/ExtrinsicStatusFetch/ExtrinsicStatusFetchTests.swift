@@ -12,13 +12,13 @@ final class CallDispatchErrorDecoderTests: XCTestCase {
                 node: URL(string: "wss://hydration-rpc.n.dwellir.com")!,
                 chainId: KnowChainId.hydra
             )
-            
+
             Logger.shared.debug("Status: \(status)")
         } catch {
             XCTFail("Error: \(error)")
         }
     }
-    
+
     func testHydraXcmTokenTransferError() throws {
         do {
             let status = try fetchStatus(
@@ -28,13 +28,13 @@ final class CallDispatchErrorDecoderTests: XCTestCase {
                 node: URL(string: "wss://hydration-rpc.n.dwellir.com")!,
                 chainId: KnowChainId.hydra
             )
-            
+
             Logger.shared.debug("Status: \(status)")
         } catch {
             XCTFail("Error: \(error)")
         }
     }
-    
+
     func testHydraSuccessSwap() throws {
         do {
             let status = try fetchStatus(
@@ -44,13 +44,13 @@ final class CallDispatchErrorDecoderTests: XCTestCase {
                 node: URL(string: "wss://hydration-rpc.n.dwellir.com")!,
                 chainId: KnowChainId.hydra
             )
-            
+
             Logger.shared.debug("Status: \(status)")
         } catch {
             XCTFail("Error: \(error)")
         }
     }
-    
+
     private func fetchStatus(
         for extrinsicHash: ExtrinsicHash,
         blockHash: BlockHash,
@@ -60,28 +60,28 @@ final class CallDispatchErrorDecoderTests: XCTestCase {
     ) throws -> SubstrateExtrinsicStatus {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
+
         let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
         let connection = WebSocketEngine(urls: [node])!
         connection.connect()
-        
+
         let operationQueue = OperationQueue()
-        
+
         let statusService = ExtrinsicStatusService(
             connection: connection,
             runtimeProvider: runtimeService,
             eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
             logger: Logger.shared
         )
-        
+
         let wrapper = statusService.fetchExtrinsicStatusForHash(
             extrinsicHash,
             inBlock: blockHash,
             matchingEvents: matchingEvents
         )
-        
+
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-        
+
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }
