@@ -11,6 +11,7 @@ extension XcmUni {
     typealias VersionedAssets = Versioned<XcmUni.Assets>
     typealias VersionedLocation = Versioned<XcmUni.RelativeLocation>
     typealias VersionedLocatableAsset = Versioned<XcmUni.LocatableAsset>
+    typealias VersionedAssetId = Versioned<XcmUni.AssetId>
 }
 
 extension XcmUni.Versioned: Equatable where Entity: Equatable {}
@@ -41,5 +42,9 @@ extension XcmUni.Versioned {
     func map<U>(_ transformation: (Entity) throws -> U) rethrows -> XcmUni.Versioned<U> {
         let newEntity = try transformation(entity)
         return XcmUni.Versioned(entity: newEntity, version: version)
+    }
+
+    func replacingVersion(_ newVersion: Xcm.Version) -> Self {
+        XcmUni.Versioned(entity: entity, version: newVersion)
     }
 }

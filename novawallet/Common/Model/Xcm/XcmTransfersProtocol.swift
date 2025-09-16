@@ -17,5 +17,5 @@ protocol XcmTransferAssetProtocol {
 protocol XcmTransferDestinationProtocol {
     var chainId: ChainModel.Id { get }
     var assetId: AssetModel.Id { get }
-    var type: XcmTransferType { get }
+    var type: XcmCallType { get }
 }

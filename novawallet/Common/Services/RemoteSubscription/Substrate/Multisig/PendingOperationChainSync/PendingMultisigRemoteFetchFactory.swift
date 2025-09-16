@@ -74,10 +74,6 @@ private extension PendingMultisigRemoteFetchFactory {
                 .extractNoCancellableResultData()
                 .keys
 
-            guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
-                return .createWithResult([:])
-            }
-
             return offchainFactory.createFetchOffChainOperationInfo(
                 for: multisigAccountId,
                 callHashes: Set(callHashes)
