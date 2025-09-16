@@ -22,9 +22,9 @@ final class AssetListTotalBalanceView: UIView {
         view.apply(style: .semiboldSubhedlineSecondary)
     }
 
-    let amountLabel: UILabel = .create { view in
-        view.textColor = R.color.colorTextPrimary()
-        view.font = .boldLargeTitle
+    let amountLabel: GenericSecuredView<AssetListTotalAmountLabel> = .create { view in
+        view.originalView.textColor = R.color.colorTextSecondary()
+        view.originalView.font = .boldLargeTitle
     }
 
     let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
@@ -139,7 +139,7 @@ final class AssetListTotalBalanceView: UIView {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.attributedText = totalAmountString(from: value)
+            amountLabel.bind(value)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -149,7 +149,7 @@ final class AssetListTotalBalanceView: UIView {
 
             stopLoadingIfNeeded()
         case .loading:
-            amountLabel.text = ""
+            amountLabel.originalView.privateContentView.text = ""
             setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
@@ -263,6 +263,7 @@ final class AssetListTotalBalanceView: UIView {
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
+        amountLabel.configurePrivateStyle(type: .dots)
 
         displayContentView.addSubview(actionsBackgroundView)
         actionsBackgroundView.snp.makeConstraints { make in
@@ -342,8 +343,10 @@ final class AssetListTotalBalanceView: UIView {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
-            amountLabel.font.lineHeight / 2.0 - bigRowSize.height / 2.0
+        let offsetY = Constants.insets.top
+            + titleLabel.font.lineHeight
+            + Constants.amountTitleSpacing
+            + amountLabel.originalView.privateContentView.font.lineHeight / 2.0 - bigRowSize.height / 2.0
 
         let offset = CGPoint(
             x: UIConstants.horizontalInset + Constants.insets.left,

@@ -5,18 +5,17 @@ import Keystore_iOS
 enum ViewPrivacyMode {
     case visible
     case hidden(style: HidingStyle)
-    
+
     enum HidingStyle {
-        case dots(text: String)
-        case blur
-        case placeholder(image: UIImage)
+        case dots
+        case image(UIImage)
         case invisible
     }
 }
 
 protocol PrivacyStateManagerProtocol: AnyObject {
     var settingsEnabled: Bool { get set }
-    
+
     var lastEnabled: Bool { get set }
 
     func addObserver(
@@ -28,9 +27,9 @@ protocol PrivacyStateManagerProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-final class PrivacyStateManager: Observable<Bool>, PrivacyStateManagerProtocol {    
+final class PrivacyStateManager: Observable<Bool>, PrivacyStateManagerProtocol {
     private let settingsManager: SettingsManagerProtocol
-    
+
     var settingsEnabled: Bool {
         get {
             settingsManager.privacyModeSettings.privacySettingsEnabled
@@ -40,7 +39,7 @@ final class PrivacyStateManager: Observable<Bool>, PrivacyStateManagerProtocol {
                 .with(privacySettingsEnabled: newValue))
         }
     }
-    
+
     var lastEnabled: Bool {
         get {
             settingsManager.privacyModeSettings.lastEnabled
@@ -50,18 +49,24 @@ final class PrivacyStateManager: Observable<Bool>, PrivacyStateManagerProtocol {
                 .with(lastEnabled: newValue))
         }
     }
-    
+
     init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
-        
+
         super.init(state: settingsManager.privacyModeSettings.enabled)
     }
-    
+
     private func updateState(with updatedSettings: PrivacyModeSettings) {
         settingsManager.privacyModeSettings = updatedSettings
-        
+
         guard state != updatedSettings.enabled else { return }
-        
+
         state = updatedSettings.enabled
     }
+}
+
+extension PrivacyStateManager {
+    static let shared: PrivacyStateManagerProtocol = PrivacyStateManager(
+        settingsManager: SettingsManager.shared
+    )
 }

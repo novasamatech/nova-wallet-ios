@@ -65,6 +65,7 @@ struct AssetListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            privacyStateManager: PrivacyStateManager.shared,
             localizationManager: localizationManager,
             appearanceFacade: appearanceFacade
         )

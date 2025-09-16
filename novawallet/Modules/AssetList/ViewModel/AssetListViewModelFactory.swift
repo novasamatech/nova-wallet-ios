@@ -23,6 +23,7 @@ struct AssetListHeaderParams {
     let prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?
     let locks: [AssetListAssetAccountPrice]?
     let hasSwaps: Bool
+    let privacyModeEnabled: Bool
 }
 
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
@@ -106,8 +107,13 @@ private extension AssetListViewModelFactory {
 
     func createTotalPrice(
         from prices: LoadableViewModelState<[AssetListAssetAccountPrice]>,
+        privacyModeEnabled: Bool,
         locale: Locale
-    ) -> LoadableViewModelState<AssetListTotalAmountViewModel> {
+    ) -> LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>> {
+        let balancePrivacyMode: ViewPrivacyMode = privacyModeEnabled
+            ? .hidden(style: .dots)
+            : .visible
+
         switch prices {
         case .loading:
             return .loading
@@ -117,16 +123,32 @@ private extension AssetListViewModelFactory {
                 priceData: value.first?.price,
                 locale: locale
             )
+            let viewModel = AssetListTotalAmountViewModel(
+                amount: formattedPrice,
+                decimalSeparator: locale.decimalSeparator
+            )
+            let privateViewModel = SecuredViewModel(
+                originalContent: viewModel,
+                privacyMode: balancePrivacyMode
+            )
 
-            return .cached(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
+            return .cached(value: privateViewModel)
         case let .loaded(value):
             let formattedPrice = createTotalPriceString(
                 from: calculateTotalPrice(from: value),
                 priceData: value.first?.price,
                 locale: locale
             )
+            let viewModel = AssetListTotalAmountViewModel(
+                amount: formattedPrice,
+                decimalSeparator: locale.decimalSeparator
+            )
+            let privateViewModel = SecuredViewModel(
+                originalContent: viewModel,
+                privacyMode: balancePrivacyMode
+            )
 
-            return .loaded(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
+            return .loaded(value: privateViewModel)
         }
     }
 
@@ -190,7 +212,12 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             nil
 
         if let prices = params.prices {
-            let totalPrice = createTotalPrice(from: prices, locale: locale)
+            let totalPrice = createTotalPrice(
+                from: prices,
+                privacyModeEnabled: params.privacyModeEnabled,
+                locale: locale
+            )
+
             return AssetListHeaderViewModel(
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: params.title,

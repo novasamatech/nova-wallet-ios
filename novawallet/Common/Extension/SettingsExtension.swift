@@ -359,7 +359,7 @@ extension SettingsManagerProtocol {
             set(value: newValue, for: SettingsKey.multisigNotificationsPromoSeen.rawValue)
         }
     }
-    
+
     var privacyModeSettings: PrivacyModeSettings {
         get {
             value(
@@ -367,7 +367,7 @@ extension SettingsManagerProtocol {
                 for: SettingsKey.privacyModeSettings.rawValue
             ) ?? PrivacyModeSettings(
                 privacySettingsEnabled: false,
-                privacyModeEnabled: false
+                lastEnabled: false
             )
         }
         set {

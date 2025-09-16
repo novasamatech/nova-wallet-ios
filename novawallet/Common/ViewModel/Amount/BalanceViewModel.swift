@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 protocol BalanceViewModelProtocol {
     var amount: String { get }

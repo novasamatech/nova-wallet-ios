@@ -16,6 +16,7 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
+    let privacyStateManager: PrivacyStateManagerProtocol
 
     private var wallet: MetaAccountModel?
 
@@ -46,12 +47,14 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.privacyStateManager = privacyStateManager
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
     }
@@ -86,7 +89,8 @@ private extension AssetListPresenter {
                     ),
                     prices: nil,
                     locks: nil,
-                    hasSwaps: model.hasSwaps()
+                    hasSwaps: model.hasSwaps(),
+                    privacyModeEnabled: true
                 ),
                 locale: selectedLocale
             )
@@ -180,7 +184,8 @@ private extension AssetListPresenter {
                 ),
                 prices: totalValue,
                 locks: totalLocks,
-                hasSwaps: model.hasSwaps()
+                hasSwaps: model.hasSwaps(),
+                privacyModeEnabled: true
             ),
             locale: selectedLocale
         )
