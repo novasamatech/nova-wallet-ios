@@ -27,19 +27,7 @@ final class AssetListTotalBalanceView: UIView {
         view.originalView.font = .boldLargeTitle
     }
 
-    let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
-        $0.contentInsets = Constants.locksContentInsets
-        $0.backgroundView.apply(style: .chipsOnCard)
-        $0.setupContentView = { contentView in
-            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
-            contentView.detailsView.detailsLabel.font = .regularFootnote
-            contentView.detailsView.detailsLabel.textColor = R.color.colorChipText()!
-            contentView.spacing = 4
-            contentView.detailsView.spacing = 4
-            contentView.detailsView.mode = .detailsIcon
-            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.kf.resize(to: Constants.infoIconSize)
-        }
-
+    let locksView: GenericSecuredView<AssetListTotalLocksView> = .create {
         $0.isHidden = true
     }
 
@@ -149,7 +137,7 @@ final class AssetListTotalBalanceView: UIView {
 
             stopLoadingIfNeeded()
         case .loading:
-            amountLabel.originalView.privateContentView.text = ""
+            amountLabel.originalView.text = ""
             setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
@@ -195,14 +183,12 @@ final class AssetListTotalBalanceView: UIView {
         }
     }
 
-    private func setupStateWithLocks(amount: String) {
+    private func setupStateWithLocks(amount: SecuredViewModel<String>) {
         locksView.isHidden = false
-
-        locksView.contentView.detailsView.detailsLabel.text = amount
+        locksView.bind(amount)
     }
 
     private func setupStateWithoutLocks() {
-        locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
@@ -263,7 +249,6 @@ final class AssetListTotalBalanceView: UIView {
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
-        amountLabel.configurePrivateStyle(type: .dots)
 
         displayContentView.addSubview(actionsBackgroundView)
         actionsBackgroundView.snp.makeConstraints { make in
@@ -346,7 +331,7 @@ final class AssetListTotalBalanceView: UIView {
         let offsetY = Constants.insets.top
             + titleLabel.font.lineHeight
             + Constants.amountTitleSpacing
-            + amountLabel.originalView.privateContentView.font.lineHeight / 2.0 - bigRowSize.height / 2.0
+            + amountLabel.originalView.font.lineHeight / 2.0 - bigRowSize.height / 2.0
 
         let offset = CGPoint(
             x: UIConstants.horizontalInset + Constants.insets.left,

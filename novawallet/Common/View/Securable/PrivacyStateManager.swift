@@ -2,17 +2,6 @@ import UIKit
 import Foundation
 import Keystore_iOS
 
-enum ViewPrivacyMode {
-    case visible
-    case hidden(style: HidingStyle)
-
-    enum HidingStyle {
-        case dots
-        case image(UIImage)
-        case invisible
-    }
-}
-
 protocol PrivacyStateManagerProtocol: AnyObject {
     var settingsEnabled: Bool { get set }
 

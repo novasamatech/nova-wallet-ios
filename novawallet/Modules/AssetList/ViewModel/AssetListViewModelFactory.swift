@@ -110,9 +110,7 @@ private extension AssetListViewModelFactory {
         privacyModeEnabled: Bool,
         locale: Locale
     ) -> LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>> {
-        let balancePrivacyMode: ViewPrivacyMode = privacyModeEnabled
-            ? .hidden(style: .dots)
-            : .visible
+        let balancePrivacyMode: ViewPrivacyMode = createBalancePrivacyMode(for: privacyModeEnabled)
 
         switch prices {
         case .loading:
@@ -150,6 +148,25 @@ private extension AssetListViewModelFactory {
 
             return .loaded(value: privateViewModel)
         }
+    }
+
+    func createLocksViewModel(
+        for locks: [AssetListAssetAccountPrice]?,
+        privacyModeEnabled: Bool,
+        locale: Locale
+    ) -> SecuredViewModel<String>? {
+        guard let amount = locks.map({ lock in
+            formatPrice(
+                amount: calculateTotalPrice(from: lock),
+                priceData: lock.first?.price,
+                locale: locale
+            )
+        }) else { return nil }
+
+        return SecuredViewModel(
+            originalContent: amount,
+            privacyMode: createBalancePrivacyMode(for: privacyModeEnabled)
+        )
     }
 
     func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel {
@@ -192,6 +209,10 @@ private extension AssetListViewModelFactory {
 
         return AssetListMultisigOperationsViewModel(totalCount: count)
     }
+
+    func createBalancePrivacyMode(for privacyModeEnabled: Bool) -> ViewPrivacyMode {
+        privacyModeEnabled ? .hidden : .visible
+    }
 }
 
 // MARK: - AssetListViewModelFactoryProtocol
@@ -217,18 +238,17 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 privacyModeEnabled: params.privacyModeEnabled,
                 locale: locale
             )
+            let locksAmount = createLocksViewModel(
+                for: params.locks,
+                privacyModeEnabled: params.privacyModeEnabled,
+                locale: locale
+            )
 
             return AssetListHeaderViewModel(
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: params.title,
                 amount: totalPrice,
-                locksAmount: params.locks.map { lock in
-                    formatPrice(
-                        amount: calculateTotalPrice(from: lock),
-                        priceData: lock.first?.price,
-                        locale: locale
-                    )
-                },
+                locksAmount: locksAmount,
                 walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps
             )

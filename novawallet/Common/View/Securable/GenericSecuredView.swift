@@ -1,45 +1,24 @@
 import Foundation
 import UIKit
 
+enum ViewPrivacyMode {
+    case visible
+    case hidden
+}
+
 protocol SecurableViewProtocol: AnyObject {
     associatedtype ViewModel
-    associatedtype PrivateContentView: UIView
-
-    var privateContentView: PrivateContentView { get }
 
     func update(with viewModel: ViewModel)
-    func createSecureOverlay() -> PrivateContentView
-}
-
-extension SecurableViewProtocol where PrivateContentView: UILabel {
-    func createSecureOverlay() -> PrivateContentView {
-        let view = PrivateContentView()
-        view.textAlignment = privateContentView.textAlignment
-        view.font = privateContentView.font
-        view.textColor = privateContentView.textColor
-        view.text = "•••••"
-
-        return view
-    }
-}
-
-extension SecurableViewProtocol where PrivateContentView: UIImageView {
-    func createSecureOverlay() -> PrivateContentView {
-        let view = PrivateContentView()
-        view.contentMode = privateContentView.contentMode
-
-        return view
-    }
+    func createSecureOverlay() -> UIView?
 }
 
 final class GenericSecuredView<View: UIView & SecurableViewProtocol>: UIView {
     let originalView: View
 
-    private lazy var placeholderImageView: UIImageView = .create {
-        $0.contentMode = .scaleAspectFit
-    }
-
-    private var overlayView: UIView?
+    private lazy var secureOverlayView: UIView? = {
+        originalView.createSecureOverlay()
+    }()
 
     init(originalView: View = View()) {
         self.originalView = originalView
@@ -63,55 +42,47 @@ final class GenericSecuredView<View: UIView & SecurableViewProtocol>: UIView {
 
 private extension GenericSecuredView {
     func setupLayout() {
-        addSubview(originalView)
-        originalView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        setupLayout(for: originalView)
     }
 
-    func setupPrivacyOverlay(for privacyMode: ViewPrivacyMode) {
-        switch privacyMode {
-        case .hidden:
-            guard let overlayView else { return }
+    func showSecureOverlay() {
+        originalView.removeFromSuperview()
 
-            originalView.privateContentView.alpha = 0
+        setupLayout(for: secureOverlayView)
+    }
 
-            addSubview(overlayView)
-            overlayView.snp.makeConstraints { $0.edges.equalTo(originalView) }
-        case .visible:
-            overlayView?.removeFromSuperview()
+    func hideSecureOverlay() {
+        secureOverlayView?.removeFromSuperview()
 
-            originalView.privateContentView.alpha = 1
-        }
+        setupLayout(for: originalView)
+    }
+
+    func setupLayout(for contentView: UIView?) {
+        guard let contentView else { return }
+
+        addSubview(contentView)
+        contentView.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 }
 
 // MARK: - Internal
 
 extension GenericSecuredView {
-    enum PrivateStyle {
-        case dots
-        case image(UIImage)
-        case hide
-    }
-
     func bind(_ viewModel: SecuredViewModel<View.ViewModel>) {
         originalView.update(with: viewModel.originalContent)
-        setupPrivacyOverlay(for: viewModel.privacyMode)
-    }
 
-    func configurePrivateStyle(type: PrivateStyle) {
-        switch type {
-        case .dots:
-            overlayView = originalView.createSecureOverlay()
-        case let .image(image):
-            guard let imageOverlayView = originalView.createSecureOverlay() as? UIImageView else {
-                return
+        switch viewModel.privacyMode {
+        case .hidden:
+            if let secureOverlayView {
+                guard secureOverlayView.superview == nil else { return }
+                showSecureOverlay()
+            } else {
+                originalView.removeFromSuperview()
             }
+        case .visible:
+            guard originalView.superview == nil else { return }
 
-            imageOverlayView.image = image
-
-            overlayView = imageOverlayView
-        default:
-            break
+            hideSecureOverlay()
         }
     }
 }

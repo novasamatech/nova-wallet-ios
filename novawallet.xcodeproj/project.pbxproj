@@ -1910,6 +1910,8 @@
 		2DA826DE2E7986DF00C03B3C /* GenericSecuredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */; };
 		2DA826E02E79AF8400C03B3C /* SecuredViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */; };
 		2DA826E22E79C19F00C03B3C /* AssetListTotalAmountLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */; };
+		2DA826E42E79C2CB00C03B3C /* AssetListTotalLocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */; };
+		2DA826E62E79DC5400C03B3C /* DotsOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
 		2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */; };
@@ -8397,6 +8399,8 @@
 		2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericSecuredView.swift; sourceTree = "<group>"; };
 		2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredViewModel.swift; sourceTree = "<group>"; };
 		2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalAmountLabel.swift; sourceTree = "<group>"; };
+		2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalLocksView.swift; sourceTree = "<group>"; };
+		2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsOverlayView.swift; sourceTree = "<group>"; };
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
 		2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupProtocols.swift; sourceTree = "<group>"; };
@@ -17972,6 +17976,7 @@
 			children = (
 				2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */,
 				2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */,
+				2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */,
 				2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */,
 				2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */,
 			);
@@ -26081,6 +26086,7 @@
 			isa = PBXGroup;
 			children = (
 				2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */,
+				2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */,
 				0CF606CA2D7B0E290041B7AE /* AssetListCardCell.swift */,
 				2D008A642CC5684F00BFEE99 /* AssetListCollectionManager */,
 				2D008A5B2CC11DE300BFEE99 /* FlowLayout */,
@@ -32871,6 +32877,7 @@
 				84E8BA2A2A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift in Sources */,
 				2D3C71B22E08C99D00DF9E49 /* MultisigCallFetchFactory.swift in Sources */,
 				8454C21D2632A78900657DAD /* EventRecord.swift in Sources */,
+				2DA826E62E79DC5400C03B3C /* DotsOverlayView.swift in Sources */,
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
 				0C9C64342A8D67AF004DC078 /* StakingNPoolsWireframe.swift in Sources */,
 				0CC0F8222BB52C7E002C49F6 /* CloudBackup.swift in Sources */,
@@ -35699,6 +35706,7 @@
 				34E4B25CDFE0D7B5F4F18185 /* TransferNetworkSelectionInteractor.swift in Sources */,
 				7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */,
 				0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */,
+				2DA826E42E79C2CB00C03B3C /* AssetListTotalLocksView.swift in Sources */,
 				2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */,
 				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,

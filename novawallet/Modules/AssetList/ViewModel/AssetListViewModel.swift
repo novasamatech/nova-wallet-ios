@@ -47,7 +47,7 @@ struct AssetListHeaderViewModel {
     let walletConnectSessionsCount: String?
     let title: String
     let amount: LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>>
-    let locksAmount: String?
+    let locksAmount: SecuredViewModel<String>?
     let walletSwitch: WalletSwitchViewModel
     let hasSwaps: Bool
 }

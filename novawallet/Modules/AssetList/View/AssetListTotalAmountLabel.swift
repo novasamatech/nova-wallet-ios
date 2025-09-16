@@ -1,15 +1,6 @@
 import UIKit
 
-final class AssetListTotalAmountLabel: UILabel, SecurableViewProtocol {
-    typealias ViewModel = AssetListTotalAmountViewModel
-    typealias PrivateContentView = AssetListTotalAmountLabel
-
-    var privateContentView: PrivateContentView { self }
-
-    func update(with viewModel: AssetListTotalAmountViewModel) {
-        attributedText = totalAmountString(from: viewModel)
-    }
-
+final class AssetListTotalAmountLabel: UILabel {
     private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
         let defaultAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: R.color.colorTextPrimary()!,
@@ -46,5 +37,27 @@ final class AssetListTotalAmountLabel: UILabel, SecurableViewProtocol {
 
             return amountAttributedString
         }
+    }
+}
+
+// MARK: - SecurableViewProtocol
+
+extension AssetListTotalAmountLabel: SecurableViewProtocol {
+    typealias ViewModel = AssetListTotalAmountViewModel
+
+    func update(with viewModel: AssetListTotalAmountViewModel) {
+        attributedText = totalAmountString(from: viewModel)
+    }
+
+    func createSecureOverlay() -> UIView? {
+        let dotsView = DotsOverlayView()
+        dotsView.configuration = DotsOverlayView.Configuration(
+            dotSize: 10,
+            spacing: 6,
+            numberOfDots: 4,
+            dotColor: R.color.colorTextSecondary()!,
+            alignment: .left
+        )
+        return dotsView
     }
 }
