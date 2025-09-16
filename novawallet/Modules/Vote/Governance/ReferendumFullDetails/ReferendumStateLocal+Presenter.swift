@@ -92,9 +92,13 @@ extension Democracy.VoteThreshold {
         case .simpleMajority:
             return R.string(preferredLanguages: locale.rLanguages).localizable.govVoteTresholdFunctionSimpleMajority()
         case .superMajorityAgainst:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.govVoteTresholdFunctionSuperMajorityAgainst()
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govVoteTresholdFunctionSuperMajorityAgainst()
         case .superMajorityApprove:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.govVoteTresholdFunctionSuperMajorityApprove()
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.govVoteTresholdFunctionSuperMajorityApprove()
         case .unknown:
             return R.string(preferredLanguages: locale.rLanguages).localizable.commonUnknown()
         }

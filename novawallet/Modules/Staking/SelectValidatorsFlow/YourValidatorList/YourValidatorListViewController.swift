@@ -223,7 +223,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
     private func configureWarning(headerView: YourValidatorListWarningSectionView, validatorsCount: Int) {
         configureElected(headerView: headerView, validatorsCount: validatorsCount)
 
-        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourOversubscribedMessage()
+        let text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingYourOversubscribedMessage()
 
         headerView.bind(warningText: text)
 
@@ -238,7 +240,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourAllocatedDescription_2_2_0()
+        let description = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingYourAllocatedDescription_2_2_0()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextPrimary()
 
@@ -249,7 +253,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
     }
 
     private func configureNotAllocated(headerView: YourValidatorListDescSectionView, section: Int) {
-        let description = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourNotAllocatedDescription_v2_2_0()
+        let description = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingYourNotAllocatedDescription_v2_2_0()
 
         headerView.bind(description: description)
 
@@ -272,7 +278,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourInactiveDescription_v2_2_0()
+        let description = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingYourInactiveDescription_v2_2_0()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -298,7 +306,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourValidatorsChangingTitle()
+        let description = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingYourValidatorsChangingTitle()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -345,7 +355,9 @@ extension YourValidatorListViewController: EmptyStateDataSource {
             return errorView
         case .loading:
             let loadingView = ListLoadingView()
-            loadingView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingLoadingValidators()
+            loadingView.titleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingLoadingValidators()
             loadingView.start()
             return loadingView
         case .validatorList:

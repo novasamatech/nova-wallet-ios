@@ -13,9 +13,13 @@ extension StakingRewardFiltersPeriod {
             case .lastMonth:
                 return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastMonthShort()
             case .lastThreeMonths:
-                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastThreeMonthsShort()
+                return R.string(
+                    preferredLanguages: languages
+                ).localizable.stakingRewardFiltersPeriodLastThreeMonthsShort()
             case .lastSixMonths:
-                return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastSixMonthsShort()
+                return R.string(
+                    preferredLanguages: languages
+                ).localizable.stakingRewardFiltersPeriodLastSixMonthsShort()
             case .lastYear:
                 return R.string(preferredLanguages: languages).localizable.stakingRewardFiltersPeriodLastYearShort()
             case let .custom(customPeriod):
@@ -44,9 +48,10 @@ extension StakingRewardFiltersPeriod {
             return ""
         }
 
-        return R.string.localizable.stakingRewardFiltersPeriodCustomMonthShort(
-            "\(days + 1)",
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardFiltersPeriodCustomMonthShort(
+            "\(days + 1)"
         )
     }
 }

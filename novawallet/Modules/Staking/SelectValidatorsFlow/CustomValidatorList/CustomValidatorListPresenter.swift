@@ -158,7 +158,9 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
 
         guard !changedValidator.blocked else {
             wireframe.present(
-                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomBlockedWarning(),
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingCustomBlockedWarning(),
                 title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
                 closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view

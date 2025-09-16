@@ -224,7 +224,9 @@ private extension NetworksListViewController {
         )
 
         let rightBarButtonItem = UIBarButtonItem(
-            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networksListAddNetworkButtonTitle(),
+            title: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.networksListAddNetworkButtonTitle(),
             style: .plain,
             target: self,
             action: #selector(actionAddNetwork)
@@ -242,11 +244,15 @@ private extension NetworksListViewController {
     }
 
     func setupNavigationBarTitle() {
-        navigationItem.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.connectionManagementTitle()
+        navigationItem.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.connectionManagementTitle()
     }
 
     func setupTextFieldPlaceholder() {
-        rootView.searchTextField.placeholder = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkKnownListSearchPlaceholder()
+        rootView.searchTextField.placeholder = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.networkKnownListSearchPlaceholder()
     }
 
     @objc private func actionSegmentChanged() {

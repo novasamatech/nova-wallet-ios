@@ -56,10 +56,14 @@ enum CloudBackupMessageSheetViewFactory {
                 message: LocalizableResource { locale in
                     NSAttributedString.coloredItems(
                         [
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupExistingBottomSheetRecover()
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupExistingBottomSheetRecover()
                         ],
                         formattingClosure: { items in
-                            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupExistingBottomSheetMessage(
+                            R.string(
+                                preferredLanguages: locale.rLanguages
+                            ).localizable.cloudBackupExistingBottomSheetMessage(
                                 items[0]
                             )
                         },

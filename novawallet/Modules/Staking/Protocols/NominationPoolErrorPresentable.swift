@@ -82,7 +82,9 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         locale: Locale?
     ) {
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolIsDestroing()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingPoolRewardsBondMorePoolIsDestroing()
 
         let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         present(message: message, title: title, closeAction: closeAction, from: view)
@@ -92,8 +94,12 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorTitle()
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorMessage()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingPoolRewardsBondMorePoolUnbondingErrorMessage()
         let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)

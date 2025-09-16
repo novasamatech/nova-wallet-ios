@@ -36,11 +36,17 @@ final class NPoolsUnstakeConfirmViewController: UIViewController, ViewHolder {
 
         title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
     }

@@ -91,7 +91,9 @@ class WalletsListViewController<
             title = ParitySignerType.vault.getName(for: selectedLocale).uppercased()
         case .ledger:
             icon = R.image.iconLedgerHeaderWarning()
-            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedgerLegacy().uppercased()
+            title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonLedgerLegacy().uppercased()
         case .proxied:
             icon = R.image.iconProxy()
             title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonProxieds().uppercased()

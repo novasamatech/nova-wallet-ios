@@ -83,17 +83,23 @@ final class YourWalletsPresenter {
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedgerLegacy().uppercased(),
+                title: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.commonLedgerLegacy().uppercased(),
                 icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonProxieds().uppercased(),
+                title: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.commonProxieds().uppercased(),
                 icon: R.image.iconProxy()
             )
         case .multisig:
             return .init(
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonMultisig().uppercased(),
+                title: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.commonMultisig().uppercased(),
                 icon: R.image.iconMultisig()
             )
         case .genericLedger:

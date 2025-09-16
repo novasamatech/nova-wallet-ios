@@ -80,7 +80,9 @@ final class WalletNameView: UIView {
     }
 
     private func setupLocalization() {
-        walletNameTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletUsernameSetupChooseTitle_v2_2_0()
+        walletNameTitleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletUsernameSetupChooseTitle_v2_2_0()
 
         let placeholder = NSAttributedString(
             string: R.string(preferredLanguages: locale.rLanguages).localizable.walletNameInputPlaceholder(),

@@ -148,7 +148,9 @@ private extension CommonMultisigHandler {
 
         guard let callData = payload.callData else {
             let mapOperation = ClosureOperation<NotificationContentResult> {
-                let unknownOperationBody = R.string(preferredLanguages: self.locale.rLanguages).localizable.pushNotificationMultisigUnknownBody(
+                let unknownOperationBody = R.string(
+                    preferredLanguages: self.locale.rLanguages
+                ).localizable.pushNotificationMultisigUnknownBody(
                     chain.name.capitalized
                 )
                 let params = try notificationParamsOperation.extractNoCancellableResultData()

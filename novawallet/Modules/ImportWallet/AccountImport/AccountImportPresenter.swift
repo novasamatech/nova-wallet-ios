@@ -15,7 +15,9 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             // we don't support ethereum crypto for wallets
 
             wireframe.present(
-                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.importJsonUnsupportedSubstrateCryptoMessage(),
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.importJsonUnsupportedSubstrateCryptoMessage(),
                 title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle(),
                 closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view

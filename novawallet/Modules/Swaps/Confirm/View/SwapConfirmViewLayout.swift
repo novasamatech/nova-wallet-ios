@@ -110,7 +110,9 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
         accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
 
-        loadableActionView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonConfirm()
+        loadableActionView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     func set(warning: String?) {

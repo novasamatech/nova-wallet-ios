@@ -11,7 +11,9 @@ extension GetTokenOperation {
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
         case .crosschain:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositByCrossChainTransferTitle()
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupDepositByCrossChainTransferTitle()
         case .receive:
             return R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetReceive()
         case .buy:
@@ -22,9 +24,13 @@ extension GetTokenOperation {
     func subtitleForLocale(_ locale: Locale, token: String) -> String {
         switch self {
         case .crosschain:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositByCrossChainTransferSubtitle(token)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupDepositByCrossChainTransferSubtitle(token)
         case .receive:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositByReceiveSubtitle(token)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupDepositByReceiveSubtitle(token)
         case .buy:
             return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDepositByBuySubtitle(token)
         }

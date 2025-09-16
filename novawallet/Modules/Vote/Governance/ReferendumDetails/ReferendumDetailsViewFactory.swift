@@ -3,7 +3,7 @@ import SubstrateSdk
 import Operation_iOS
 import Foundation_iOS
 
-// swiftlint:disable function_body_length
+// swiftlint:disable:next function_body_length
 struct ReferendumDetailsViewFactory {
     static func createView(
         for state: GovernanceSharedState,

@@ -34,7 +34,9 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
             return nil
         }
 
-        let titleText = R.string(preferredLanguages: locale.rLanguages).localizable.commonCountedReferenda(filteredReferendums.count)
+        let titleText = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonCountedReferenda(filteredReferendums.count)
 
         return .swipeGov(
             SwipeGovBannerViewModel(

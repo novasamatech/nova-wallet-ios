@@ -91,7 +91,9 @@ final class CollatorStakingSelectViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingSelectCollator()
 
-        rootView.clearButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingCustomClearButtonTitle()
+        rootView.clearButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingCustomClearButtonTitle()
 
         rootView.clearButton.invalidateLayout()
     }
@@ -212,7 +214,9 @@ extension CollatorStakingSelectViewController: EmptyStateDataSource {
             return errorView
         case .loading:
             let loadingView = ListLoadingView()
-            loadingView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLoadingCollators()
+            loadingView.titleLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonLoadingCollators()
             loadingView.start()
             return loadingView
         case .loaded:

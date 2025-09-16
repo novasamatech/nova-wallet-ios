@@ -24,9 +24,13 @@ enum PayCardSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            let minutesString = R.string(preferredLanguages: locale.rLanguages).localizable.commonMinutesFormat(format: totalTime.minutesFromSeconds)
+            let minutesString = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonMinutesFormat(format: totalTime.minutesFromSeconds)
 
-            return R.string(preferredLanguages: locale.rLanguages).localizable.cardOpenPendingSheetMessage(minutesString)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.cardOpenPendingSheetMessage(minutesString)
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerLabel.ContentViewModel>(

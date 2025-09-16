@@ -40,7 +40,12 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
 
         return [
             (.main(warning: warning), [
-                createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, isActive: true, locale: locale),
+                createSwitchViewModel(
+                    row: .enableNotifications,
+                    isOn: parameters.isNotificationsOn,
+                    isActive: true,
+                    locale: locale
+                ),
                 createViewModel(row: .wallets, count: parameters.wallets, isActive: true, locale: locale)
             ]),
             (.general, [

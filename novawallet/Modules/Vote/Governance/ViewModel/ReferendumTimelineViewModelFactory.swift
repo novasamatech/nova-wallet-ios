@@ -119,9 +119,10 @@ final class ReferendumTimelineViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPreparingInqueue() :
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPreparing()
 
-        let title = R.string.localizable.govTimelineVotingFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotingFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
@@ -159,9 +160,10 @@ final class ReferendumTimelineViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusPassing() :
             R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusDeciding()
 
-        let title = R.string.localizable.govTimelineVotingFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotingFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
@@ -174,11 +176,14 @@ final class ReferendumTimelineViewModelFactory {
     }
 
     private func createApprovedTitle(for locale: Locale) -> String {
-        let votingTitle = R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusApproved()
-
-        return R.string.localizable.govTimelineVotedFormat(
-            votingTitle.lowercased().firstLetterCapitalized(),
+        let votingTitle = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.governanceReferendumsStatusApproved()
+
+        return R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotedFormat(
+            votingTitle.lowercased().firstLetterCapitalized()
         )
     }
 
@@ -237,9 +242,10 @@ final class ReferendumTimelineViewModelFactory {
             locale: locale
         )
 
-        let title = R.string.localizable.govTimelineVotedFormat(
-            status.lowercased().firstLetterCapitalized(),
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.govTimelineVotedFormat(
+            status.lowercased().firstLetterCapitalized()
         )
 
         let subtitle = date.map { ReferendumTimelineView.StatusSubtitle.date($0) }
@@ -262,7 +268,9 @@ final class ReferendumTimelineViewModelFactory {
             where: { $0.isExecuted }
         )?.time
 
-        let executedTitle = R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusExecuted().firstLetterCapitalized()
+        let executedTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.governanceReferendumsStatusExecuted().firstLetterCapitalized()
 
         let executed = makeTimeViewModel(title: executedTitle, date: executedDate, locale: locale, isLast: true)
 
@@ -319,7 +327,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             models = [approved]
         case let .rejected(model):
             let rejected = createVotedTerminal(
-                status: R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusRejected(),
+                status: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.governanceReferendumsStatusRejected(),
                 atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
@@ -329,7 +339,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             models = [rejected]
         case let .cancelled(model):
             let cancelled = createVotedTerminal(
-                status: R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusCancelled(),
+                status: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.governanceReferendumsStatusCancelled(),
                 atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
@@ -339,7 +351,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             models = [cancelled]
         case let .killed(atBlock):
             let killed = createVotedTerminal(
-                status: R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusKilled(),
+                status: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.governanceReferendumsStatusKilled(),
                 atBlock: atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
@@ -349,7 +363,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             models = [killed]
         case let .timedOut(model):
             let timedOut = createVotedTerminal(
-                status: R.string(preferredLanguages: locale.rLanguages).localizable.governanceReferendumsStatusTimedOut(),
+                status: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.governanceReferendumsStatusTimedOut(),
                 atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,

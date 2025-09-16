@@ -50,7 +50,9 @@ enum ValidatorListFilterRow: Int, CaseIterable {
             return LocalizableResource { locale in
                 TitleWithSubtitleViewModel(
                     title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint3(),
-                    subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint3Addition()
+                    subtitle: R.string(
+                        preferredLanguages: locale.rLanguages
+                    ).localizable.stakingRecommendedHint3Addition()
                 )
             }
         }

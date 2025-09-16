@@ -21,7 +21,7 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
         self.sessionPeriodOperationFactory = sessionPeriodOperationFactory
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func fetchCountdownOperationWrapper(
         for connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol

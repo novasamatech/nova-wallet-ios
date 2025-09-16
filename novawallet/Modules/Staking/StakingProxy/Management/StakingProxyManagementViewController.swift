@@ -46,7 +46,9 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSetupYourProxies()
 
-        rootView.addButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsAddTitle()
+        rootView.addButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.delegationsAddTitle()
     }
 
     private func makeDataSource() -> DataSource {

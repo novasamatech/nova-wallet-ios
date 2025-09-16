@@ -24,11 +24,9 @@ private extension AssetsSearchCollectionViewDelegate {
         _: UICollectionView,
         at indexPath: IndexPath
     ) {
-        guard
-            let groupsLayoutDelegate,
-            let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
-                indexPath.section
-            ) else {
+        guard let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
+            indexPath.section
+        ) else {
             return
         }
 

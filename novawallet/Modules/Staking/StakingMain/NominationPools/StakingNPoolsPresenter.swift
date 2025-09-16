@@ -106,7 +106,9 @@ final class StakingNPoolsPresenter {
             let poolNumber = quantityFormatter.value(
                 for: selectedLocale
             ).string(from: NSNumber(value: poolMember.poolId))
-            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourPoolFormat(poolNumber ?? "")
+            let title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingYourPoolFormat(poolNumber ?? "")
 
             let selectedPool = NominationPools.SelectedPool(
                 poolId: poolMember.poolId,

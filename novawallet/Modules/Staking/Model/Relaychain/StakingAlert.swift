@@ -46,7 +46,9 @@ extension StakingAlert {
         case .bondedSetValidators:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetValidatorsTitle()
         case .waitingNextEra:
-            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingNominatorStatusAlertWaitingMessage()
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingNominatorStatusAlertWaitingMessage()
         case .rebag:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingImprovements()
         }

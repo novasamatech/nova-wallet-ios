@@ -81,7 +81,9 @@ final class SettingsPresenter {
 
         if !wireframe.writeEmail(with: message, from: view, completionHandler: nil) {
             wireframe.present(
-                message: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.noEmailBoundErrorMessage(),
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.noEmailBoundErrorMessage(),
                 title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorGeneralTitle(),
                 closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view
@@ -276,10 +278,14 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             }
 
             let biometryTypeName = biometrySettings.name
-            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.settingsErrorBiometryDisabledInSettingsTitle(
+            let title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.settingsErrorBiometryDisabledInSettingsTitle(
                 biometryTypeName
             )
-            let message = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.settingsErrorBiometryDisabledInSettingsMessage(
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.settingsErrorBiometryDisabledInSettingsMessage(
                 biometryTypeName
             )
 

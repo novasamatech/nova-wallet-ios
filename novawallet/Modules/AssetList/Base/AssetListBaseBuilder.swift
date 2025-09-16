@@ -17,7 +17,6 @@ typealias ChainChangeProcessResult = (
     assetGroupResult: ChainChangeAssetsProcessResult
 )
 
-// swiftlint:disable:next type_body_length
 class AssetListBaseBuilder {
     let workingQueue: DispatchQueue
     let callbackQueue: DispatchQueue

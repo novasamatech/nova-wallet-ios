@@ -99,7 +99,9 @@ class NetworkDetailsViewModelFactory {
         var rows: [NetworkDetailsViewLayout.Row] = [
             .addCustomNode(
                 .init(
-                    title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkDetailsAddCustomNode(),
+                    title: R.string(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.networkDetailsAddCustomNode(),
                     icon: nil
                 )
             )
@@ -136,7 +138,9 @@ private extension NetworkDetailsViewModelFactory {
                 .switcher(
                     .init(
                         underlyingViewModel: .init(
-                            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkDetailsEnableConnection(),
+                            title: R.string(
+                                preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ).localizable.networkDetailsEnableConnection(),
                             icon: nil
                         ),
                         selectable: network.syncMode.enabled(),
@@ -146,7 +150,9 @@ private extension NetworkDetailsViewModelFactory {
                 .switcher(
                     .init(
                         underlyingViewModel: .init(
-                            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkDetailsAutoBalance(),
+                            title: R.string(
+                                preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ).localizable.networkDetailsAutoBalance(),
                             icon: nil
                         ),
                         selectable: network.connectionMode == .autoBalanced && network.syncMode.enabled(),
@@ -197,7 +203,9 @@ private extension NetworkDetailsViewModelFactory {
     ) -> Node {
         var connectionState: Node.ConnectionState = chain.syncMode.enabled()
             ? .connecting(
-                R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkStatusConnecting().uppercased()
+                R.string(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.networkStatusConnecting().uppercased()
             )
             : .disconnected
 
@@ -205,7 +213,9 @@ private extension NetworkDetailsViewModelFactory {
             connectionState = switch nodeConnectionState {
             case .connecting:
                 .connecting(
-                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.networkStatusConnecting().uppercased()
+                    R.string(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.networkStatusConnecting().uppercased()
                 )
             case .disconnected:
                 .disconnected
@@ -213,7 +223,9 @@ private extension NetworkDetailsViewModelFactory {
                 createConnectionState(for: ping)
             default:
                 .unknown(
-                    R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonUnknown().uppercased()
+                    R.string(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).localizable.commonUnknown().uppercased()
                 )
             }
         }

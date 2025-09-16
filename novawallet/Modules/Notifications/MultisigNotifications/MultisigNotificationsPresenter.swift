@@ -64,13 +64,17 @@ private extension MultisigNotificationsPresenter {
             action: actionSignedBySignatory
         )
         let signedTransactionExecutedModel = SwitchTitleIconViewModel(
-            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonMultisigExecuted(),
+            title: R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.commonMultisigExecuted(),
             icon: nil,
             isOn: settings.transactionExecuted,
             action: actionTransactionExecuted
         )
         let signedTransactionRejectedModel = SwitchTitleIconViewModel(
-            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonMultisigRejected(),
+            title: R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.commonMultisigRejected(),
             icon: nil,
             isOn: settings.transactionRejected,
             action: actionTransactionRejected
@@ -130,8 +134,12 @@ private extension MultisigNotificationsPresenter {
         ).localizable.notificationsManagementMultisigNoWalletsAlertTitle()
         let message = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
         ).localizable.notificationsManagementMultisigNoWalletsAlertMessage()
-        let learnMoreActionTitle = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonLearnMore()
-        let gotItActionTitle = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable.commonGotIt()
+        let learnMoreActionTitle = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.commonLearnMore()
+        let gotItActionTitle = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.commonGotIt()
 
         let actions = [
             AlertPresentableAction(

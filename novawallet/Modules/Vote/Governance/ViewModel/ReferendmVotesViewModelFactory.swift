@@ -146,7 +146,6 @@ protocol BaseReferendumVotesViewModelFactory {
 }
 
 extension BaseReferendumVotesViewModelFactory {
-    // swiftlint:disable function_body_length
     func createReferendumVotes(
         from referendum: ReferendumLocal,
         offchainVotingAmount: ReferendumVotingAmount?,
@@ -280,7 +279,9 @@ extension BaseReferendumVotesViewModelFactory {
 
         let delegateName = delegateName ?? vote.delegateAddress
 
-        let voteDescription = R.string(preferredLanguages: locale.rLanguages).localizable.delegatorVotesViaDelegate(delegateName)
+        let voteDescription = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.delegatorVotesViaDelegate(delegateName)
 
         let viewModel = YourVoteRow.Model(
             vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),

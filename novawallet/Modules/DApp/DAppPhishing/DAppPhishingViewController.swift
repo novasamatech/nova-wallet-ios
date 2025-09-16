@@ -49,7 +49,9 @@ final class DAppPhishingViewController: UIViewController, ViewHolder {
         rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.dappPhishingTitle()
         rootView.subtitleLabel.text = R.string(preferredLanguages: languages).localizable.dappPhishingMessage()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.dappPhishingAction()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.dappPhishingAction()
     }
 
     @objc func actionGoBack() {

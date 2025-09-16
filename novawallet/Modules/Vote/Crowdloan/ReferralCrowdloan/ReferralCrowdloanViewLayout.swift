@@ -83,9 +83,13 @@ final class ReferralCrowdloanViewLayout: UIView {
     private func applyLocalization() {
         termsLabel.attributedText = NSAttributedString.crowdloanTerms(for: locale)
 
-        applyAppBonusButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonApply().uppercased()
+        applyAppBonusButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonApply().uppercased()
 
-        codeInputView.animatedInputField.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonReferralCodeTitle()
+        codeInputView.animatedInputField.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonReferralCodeTitle()
 
         bonusView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonBonus()
     }

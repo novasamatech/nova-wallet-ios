@@ -45,7 +45,9 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
                 let formattedTime = (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
                 return R.string(preferredLanguages: locale.rLanguages).localizable.commonTimeLeftFormat(formattedTime)
             } else {
-                return R.string(preferredLanguages: locale.rLanguages).localizable.commonDaysLeftFormat(format: daysLeft)
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonDaysLeftFormat(format: daysLeft)
             }
         }()
 

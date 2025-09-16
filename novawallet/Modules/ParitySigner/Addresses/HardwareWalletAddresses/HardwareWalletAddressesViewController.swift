@@ -55,7 +55,9 @@ private extension HardwareWalletAddressesViewController {
 
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
     }
 
     @objc func actionProceed() {

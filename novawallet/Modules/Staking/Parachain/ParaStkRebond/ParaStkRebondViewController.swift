@@ -36,15 +36,23 @@ final class ParaStkRebondViewController: UIViewController, ViewHolder {
 
         title = R.string(preferredLanguages: languages).localizable.stakingRebond()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
 
-        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallet()
+        rootView.walletCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAccount()
+        rootView.accountCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingCollator()
+        rootView.collatorCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parachainStakingCollator()
     }
 
     private func setupHandlers() {

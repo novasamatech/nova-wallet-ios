@@ -141,12 +141,12 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
 
         if viewModel.selectedCount > 0 {
             let languages = selectedLocale.rLanguages
-            let text = R.string.localizable
-                .stakingValidatorInfoNominators(
-                    "\(viewModel.selectedCount)",
-                    "\(viewModel.totalCount)",
-                    preferredLanguages: languages
-                )
+            let text = R.string(
+                preferredLanguages: languages
+            ).localizable.stakingValidatorInfoNominators(
+                "\(viewModel.selectedCount)",
+                "\(viewModel.totalCount)"
+            )
             rootView.customValidatorsCell.detailsLabel.text = text
         } else {
             rootView.customValidatorsCell.detailsLabel.text = ""

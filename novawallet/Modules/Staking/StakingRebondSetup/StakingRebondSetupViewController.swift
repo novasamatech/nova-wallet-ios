@@ -127,15 +127,25 @@ extension StakingRebondSetupViewController: Localizable {
 
         title = R.string(preferredLanguages: languages).localizable.stakingRebond()
 
-        rootView.amountView.titleView.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendAmountTitle()
+        rootView.amountView.titleView.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonUnstakingPrefix()
+        rootView.amountView.detailsTitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonUnstakingPrefix()
 
-        rootView.transferrableView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletBalanceAvailable()
+        rootView.transferrableView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletBalanceAvailable()
 
-        rootView.hintView.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRebondHint()
+        rootView.hintView.detailsLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingRebondHint()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
 
         rootView.networkFeeView.locale = selectedLocale
 

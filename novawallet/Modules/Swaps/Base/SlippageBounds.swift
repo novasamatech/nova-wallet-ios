@@ -28,10 +28,14 @@ extension SlippageBounds {
             return nil
         }
         if value < recommendation.lower {
-            let warning = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippageWarningLowAmount()
+            let warning = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupSlippageWarningLowAmount()
             return warning
         } else if value > recommendation.upper {
-            let warning = R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippageWarningHighAmount()
+            let warning = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.swapsSetupSlippageWarningHighAmount()
             return warning
         } else {
             return nil

@@ -94,16 +94,22 @@ final class OperationDetailsRewardView: LocalizableView {
     private func setupLocalization() {
         networkView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetwork()
 
-        eventIdView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonEventId()
+        eventIdView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingCommonEventId()
 
-        typeView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingAnalyticsDetailsType()
+        typeView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingAnalyticsDetailsType()
 
         setupValidatorLocalization()
         setupEraLocalization()
     }
 
     private func setupValidatorLocalization() {
-        validatorView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonValidator()
+        validatorView?.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingCommonValidator()
     }
 
     private func setupEraLocalization() {

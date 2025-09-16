@@ -80,7 +80,9 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
     }
 
     func applyNominatorsView(from exposure: ValidatorInfoViewModel.Exposure) {
-        let nominatorsTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorNominators()
+        let nominatorsTitle = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingValidatorNominators()
 
         rootView.addNominatorsView(exposure, title: nominatorsTitle)
     }
@@ -88,7 +90,9 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
     func applyEstimatedReward(_ estimatedReward: String) {
         if let stakingTableView = rootView.stakingTableView {
             rootView.addTitleValueView(
-                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorEstimatedReward(),
+                for: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingValidatorEstimatedReward(),
                 value: estimatedReward,
                 to: stakingTableView
             )
@@ -144,7 +148,9 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
 
     private func addSlashedAlertIfNeeded(for model: ValidatorInfoViewModel) {
         if model.staking.slashed {
-            let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorSlashedDesc()
+            let text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingValidatorSlashedDesc()
 
             rootView.addErrorView(message: text)
         }
@@ -154,9 +160,13 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
         if case let .elected(exposure) = model.status, exposure.oversubscribed {
             let message: String = {
                 if let myNomination = exposure.myNomination, !myNomination.isRewarded {
-                    return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorMyOversubscribedMessage()
+                    return R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.stakingValidatorMyOversubscribedMessage()
                 } else {
-                    return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorOtherOversubscribedMessage()
+                    return R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.stakingValidatorOtherOversubscribedMessage()
                 }
             }()
 

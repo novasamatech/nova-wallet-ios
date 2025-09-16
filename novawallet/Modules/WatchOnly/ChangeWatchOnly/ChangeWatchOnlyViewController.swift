@@ -52,13 +52,19 @@ final class ChangeWatchOnlyViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountActionsChangeTitle()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.accountActionsChangeTitle()
 
-        rootView.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.createWatchOnlyDetails()
+        rootView.detailsLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.createWatchOnlyDetails()
 
         rootView.addressInputView.locale = selectedLocale
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
     }
 
     private func setupHandlers() {
@@ -86,14 +92,18 @@ final class ChangeWatchOnlyViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAddress()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAddress()
 
             rootView.actionButton.invalidateLayout()
         } else {
             rootView.actionButton.applyEnabledStyle()
             rootView.actionButton.isUserInteractionEnabled = true
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonContinue()
 
             rootView.actionButton.invalidateLayout()
         }

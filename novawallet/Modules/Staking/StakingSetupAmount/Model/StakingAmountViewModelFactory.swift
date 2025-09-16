@@ -12,14 +12,6 @@ struct StakingAmountViewModelFactory: StakingAmountViewModelFactoryProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
 
-    init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
-    ) {
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.estimatedEarningsFormatter = estimatedEarningsFormatter
-    }
-
     func balance(
         amount: BigUInt?,
         chainAsset: ChainAsset,

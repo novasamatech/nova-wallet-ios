@@ -27,7 +27,9 @@ extension BackupManualWarningPresentable where Self: AlertPresentable {
     ) -> AlertPresentableViewModel {
         let alertTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonNoScreenshotTitle_v2_2_0()
 
-        let alertMessage = R.string(preferredLanguages: locale.rLanguages).localizable.commonNoScreenshotMessage_v2_2_0()
+        let alertMessage = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNoScreenshotMessage_v2_2_0()
 
         let cancelAction = createCancelAction(for: locale, onCancel: onCancel)
         let proceedAction = createProceedAction(for: locale, onProceed: onProceed)

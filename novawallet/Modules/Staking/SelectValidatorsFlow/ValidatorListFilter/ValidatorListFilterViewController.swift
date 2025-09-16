@@ -215,9 +215,13 @@ extension ValidatorListFilterViewController: Localizable {
     func applyLocalization() {
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletFiltersTitle()
 
-        navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset()
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonReset()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply()
+        rootView.applyButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonApply()
 
         rootView.tableView.reloadData()
     }

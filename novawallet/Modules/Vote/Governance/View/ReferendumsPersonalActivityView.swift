@@ -57,13 +57,13 @@ extension ReferendumsPersonalActivityView {
 
 extension ReferendumsPersonalActivityView {
     func bind(viewModel: ReferendumsDelegationViewModel, locale: Locale) {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
         switch viewModel {
         case .addDelegation:
-            titleLabel.text = strings.delegationsAddTitle(preferredLanguages: locale.rLanguages)
+            titleLabel.text = strings.delegationsAddTitle()
             titleView.sView.isHidden = true
         case let .delegations(total):
-            titleLabel.text = strings.governanceReferendumsYourDelegations(preferredLanguages: locale.rLanguages)
+            titleLabel.text = strings.governanceReferendumsYourDelegations()
             titleView.sView.isHidden = false
             valueLabel.text = total
         }

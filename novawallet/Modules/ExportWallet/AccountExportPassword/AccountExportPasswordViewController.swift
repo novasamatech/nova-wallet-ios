@@ -54,9 +54,13 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.exportPasswordTitle()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.exportPasswordTitle()
 
-        rootView.subtitleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountExportJsonHint()
+        rootView.subtitleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.accountExportJsonHint()
 
         let enterPasswordPlaceholder = NSAttributedString(
             string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSetPassword(),

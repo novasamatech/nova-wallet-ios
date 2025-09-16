@@ -42,7 +42,9 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressMessage()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.addTokenInvalidContractAddressMessage()
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressTitle()
         let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
@@ -54,7 +56,9 @@ extension TokenAddErrorPresentable where Self: AlertPresentable & ErrorPresentab
         name: String,
         locale: Locale?
     ) {
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidNetworkContractMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.addTokenInvalidNetworkContractMessage(
             name
         )
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.addTokenInvalidContractAddressTitle()

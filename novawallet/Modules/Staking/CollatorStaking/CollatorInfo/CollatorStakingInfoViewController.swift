@@ -7,7 +7,9 @@ final class CollatorStakingInfoViewController: ValidatorInfoViewController {
 
     override func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
         if case let .elected(exposure) = model.status, exposure.oversubscribed {
-            let message: String = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkCollatorInfoNotRewarded()
+            let message: String = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parastkCollatorInfoNotRewarded()
 
             rootView.addWarningView(message: message)
         }
@@ -20,7 +22,9 @@ final class CollatorStakingInfoViewController: ValidatorInfoViewController {
     }
 
     override func applyNominatorsView(from exposure: ValidatorInfoViewModel.Exposure) {
-        let delegatorsTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonParastkDelegators()
+        let delegatorsTitle = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonParastkDelegators()
 
         rootView.addNominatorsView(exposure, title: delegatorsTitle)
     }
@@ -28,7 +32,9 @@ final class CollatorStakingInfoViewController: ValidatorInfoViewController {
     override func applyEstimatedReward(_ estimatedReward: String) {
         if let stakingTableView = rootView.stakingTableView {
             rootView.addTitleValueView(
-                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorEstimatedReward(),
+                for: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingValidatorEstimatedReward(),
                 value: estimatedReward,
                 to: stakingTableView
             )

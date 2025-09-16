@@ -87,7 +87,9 @@ final class CrowdloanListViewController: UIViewController, ViewHolder, LoadableV
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.headerView.titleLabel.text = R.string(preferredLanguages: languages).localizable.tabbarCrowdloanTitle_v190()
+        rootView.headerView.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.tabbarCrowdloanTitle_v190()
     }
 
     @objc func actionRefresh() {
@@ -145,7 +147,9 @@ extension CrowdloanListViewController: UITableViewDataSource {
             return cell
         case .empty:
             let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-            let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanEmptyMessage_v3_9_1()
+            let text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.crowdloanEmptyMessage_v3_9_1()
             cell.view.bind(
                 image: R.image.iconEmptyHistory(),
                 text: text

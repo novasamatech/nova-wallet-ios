@@ -69,7 +69,9 @@ final class OperationDetailsContractView: LocalizableView {
     }
 
     private func setupFunctionFieldLocalization() {
-        functionView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.evmContractFunction()
+        functionView?.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.evmContractFunction()
     }
 
     private func setupFunctionName(for value: String?) {

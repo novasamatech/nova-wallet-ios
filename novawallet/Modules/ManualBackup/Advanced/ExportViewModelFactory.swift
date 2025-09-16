@@ -75,7 +75,7 @@ final class ExportViewModelFactory {
         )
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func createViewModelForNetwork(
         with model: ExportChainData,
         selectedLocale: Locale,
@@ -95,9 +95,13 @@ final class ExportViewModelFactory {
             blocks.append(
                 .secret(model: .init(
                     blockLeftTitle: secretTitle,
-                    blockRightTitle: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(),
+                    blockRightTitle: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(),
                     hidden: true,
-                    coverText: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.mnemonicCardCoverMessageTitle(),
+                    coverText: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.mnemonicCardCoverMessageTitle(),
                     onCoverTap: onTapSecret,
                     secret: nil,
                     chainName: model.name
@@ -108,8 +112,12 @@ final class ExportViewModelFactory {
         if showJSONExport {
             blocks.append(
                 .jsonExport(model: .init(
-                    blockLeftTitle: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.importRecoveryJson(),
-                    buttonTitle: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.advancedExportJsonButtonTitle(),
+                    blockLeftTitle: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.importRecoveryJson(),
+                    buttonTitle: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.advancedExportJsonButtonTitle(),
                     action: onTapExportJSON
                 ))
             )
@@ -126,7 +134,9 @@ final class ExportViewModelFactory {
         if let derivationPath = model.derivationPath {
             blocks.append(
                 .derivationPath(model: .init(
-                    blockLeftTitle: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSecretDerivationPath(),
+                    blockLeftTitle: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.commonSecretDerivationPath(),
                     content: derivationPath
                 ))
             )

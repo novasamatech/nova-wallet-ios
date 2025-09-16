@@ -72,7 +72,9 @@ extension StakingStateViewModelFactory {
                 let message = minActiveAmount.price.map { "\(minActiveAmount.amount) (\($0))" }
                     ?? minActiveAmount.amount
 
-                return R.string(preferredLanguages: locale.rLanguages).localizable.stakingInactiveCurrentMinimalStake(message)
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.stakingInactiveCurrentMinimalStake(message)
             }
             return .nominatorLowStake(localizedString)
         } else {

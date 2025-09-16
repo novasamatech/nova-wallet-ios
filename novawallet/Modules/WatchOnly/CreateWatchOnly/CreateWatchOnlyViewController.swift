@@ -69,15 +69,23 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
         )
 
         rootView.walletNameInputView.textField.attributedPlaceholder = placeholder
-        rootView.walletNameHintLabel.text = R.string(preferredLanguages: languages).localizable.walletNicknameCreateCaption_v2_2_0()
+        rootView.walletNameHintLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletNicknameCreateCaption_v2_2_0()
 
-        rootView.substrateAddressTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonSubstrateAddressTitle()
+        rootView.substrateAddressTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonSubstrateAddressTitle()
 
         rootView.substrateAddressInputView.locale = selectedLocale
 
-        rootView.substrateAddressHintLabel.text = R.string(preferredLanguages: languages).localizable.commonSubstrateAddressHint()
+        rootView.substrateAddressHintLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonSubstrateAddressHint()
 
-        rootView.evmAddressTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonEvmAddressOptionalTitle()
+        rootView.evmAddressTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonEvmAddressOptionalTitle()
 
         rootView.evmAddressInputView.locale = selectedLocale
 
@@ -131,7 +139,9 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable
                 .createWatchOnlyMissingNickname()
             rootView.actionButton.invalidateLayout()
 
@@ -142,7 +152,9 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable
                 .createWatchOnlyMissingSubstrate()
             rootView.actionButton.invalidateLayout()
 
@@ -152,7 +164,9 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 

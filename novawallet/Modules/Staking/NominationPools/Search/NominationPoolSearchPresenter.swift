@@ -135,7 +135,9 @@ extension NominationPoolSearchPresenter: NominationPoolSearchInteractorOutputPro
                 self?.interactor.remakeSubscriptions()
             }
         case .emptySearchResults:
-            let emptyMessage = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSearchPoolEmpty()
+            let emptyMessage = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingSearchPoolEmpty()
             view?.didReceivePools(state: .error(emptyMessage))
         }
     }

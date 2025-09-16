@@ -93,7 +93,9 @@ final class CrowdloanContributionViewModelFactory {
 
             let dateFormatter = DateFormatter.shortDate.value(for: locale)
             let dateString = dateFormatter.string(from: leasingTimeInterval.tillDate)
-            leasingEndDateTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonTillDate(dateString)
+            leasingEndDateTitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonTillDate(dateString)
 
         } else {
             leasingPeriodTitle = ""
@@ -241,7 +243,9 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         }()
 
         return CrowdloanRewardDestinationVM(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanRewardDestinationFormat(displayInfo.token),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.crowdloanRewardDestinationFormat(displayInfo.token),
             accountName: displayInfo.name,
             accountAddress: address,
             crowdloanIcon: displayInfo.icon,

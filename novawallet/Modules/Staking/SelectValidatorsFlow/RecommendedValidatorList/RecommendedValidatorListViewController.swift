@@ -57,7 +57,9 @@ final class RecommendedValidatorListViewController: UIViewController, ViewHolder
         let languages = selectedLocale.rLanguages
         title = R.string(preferredLanguages: languages).localizable.stakingRecommendedSectionTitle()
 
-        rootView.proceedButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.proceedButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
     }
 
     @objc private func actionContinue() {

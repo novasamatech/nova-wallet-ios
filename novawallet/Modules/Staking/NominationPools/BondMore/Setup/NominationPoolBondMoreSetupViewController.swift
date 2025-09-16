@@ -38,11 +38,17 @@ final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHol
 
         title = R.string(preferredLanguages: languages).localizable.stakingBondMore_v190()
 
-        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.walletSendAmountTitle()
+        rootView.amountView.titleView.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonAvailablePrefix()
+        rootView.amountView.detailsTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.commonAvailablePrefix()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonContinue()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -88,7 +94,9 @@ final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHol
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAmount()
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAmount()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -97,7 +105,9 @@ final class NominationPoolBondMoreSetupViewController: UIViewController, ViewHol
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 }

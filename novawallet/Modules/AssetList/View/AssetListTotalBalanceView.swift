@@ -204,10 +204,18 @@ final class AssetListTotalBalanceView: UIView {
 
     private func setupLocalization() {
         titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletTotalBalance()
-        sendButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendTitle()
-        receiveButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetReceive()
-        buySellButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetBuySell()
-        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapAction()
+        sendButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendTitle()
+        receiveButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletAssetReceive()
+        buySellButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletAssetBuySell()
+        swapButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonSwapAction()
     }
 
     private func setupLayout() {

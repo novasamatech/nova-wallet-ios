@@ -36,8 +36,12 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
     }
 
     private func createSection(from model: GovernanceNotificationsViewModel) -> Section {
-        let newRefendumTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsManagementGovNewReferendum()
-        let referendumUpdate = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.notificationsManagementGovReferendumUpdate()
+        let newRefendumTitle = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsManagementGovNewReferendum()
+        let referendumUpdate = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.notificationsManagementGovReferendumUpdate()
         let tracks = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks()
         return .collapsable([
             .switchCell(.init(
@@ -86,8 +90,12 @@ final class GovernanceNotificationsViewController: BaseNotificationSettingsViewC
         if selectedTracks.allSelected {
             return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAll()
         } else {
-            return R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.notificationsManagementGovSelectedTracks(selectedTracks.tracks.count, selectedTracks.totalTracksCount)
+            return R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.notificationsManagementGovSelectedTracks(
+                selectedTracks.tracks.count,
+                selectedTracks.totalTracksCount
+            )
         }
     }
 }

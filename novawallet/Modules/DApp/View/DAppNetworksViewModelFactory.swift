@@ -24,10 +24,9 @@ final class DAppNetworksViewModelFactory {
         let name = namedChains.map(\.name).joined(with: .commaSpace)
 
         if remainedCount > 0 {
-            return R.string.localizable.commonMoreFormat(
+            return R.string(preferredLanguages: locale.rLanguages).localizable.commonMoreFormat(
                 name,
-                "\(remainedCount)",
-                preferredLanguages: locale.rLanguages
+                "\(remainedCount)"
             )
         } else {
             return name

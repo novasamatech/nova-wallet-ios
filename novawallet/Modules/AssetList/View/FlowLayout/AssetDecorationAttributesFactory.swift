@@ -53,7 +53,8 @@ private extension AssetDecorationAttributesFactory {
 
         // Calculate position based on summary section
         let summaryHeight = AssetListMeasurement.accountHeight + AssetListFlowLayout.SectionType.summary.cellSpacing +
-            AssetListMeasurement.totalBalanceHeight + AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
+            AssetListMeasurement.totalBalanceHeight + AssetListMeasurement.summaryInsets.top +
+            AssetListMeasurement.summaryInsets.bottom
 
         let contentHeight = CGFloat(numberOfItems) * AssetListMeasurement.organizerItemHeight
 

@@ -55,7 +55,9 @@ final class DAppWalletAuthViewModelFactory {
             return nil
         }
 
-        return R.string(preferredLanguages: locale.rLanguages).localizable.dappsMissingRequiredNetworksWarningFormat(request.dApp)
+        return R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.dappsMissingRequiredNetworksWarningFormat(request.dApp)
     }
 
     private func detectWalletWarning(

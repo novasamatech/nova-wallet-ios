@@ -96,7 +96,9 @@ final class NftListViewModelFactory {
 
         let priceUnitsString = viewModelFactory.unitsFromValue(priceUnits).value(for: locale)
 
-        let amount = R.string(preferredLanguages: locale.rLanguages).localizable.nftFungiblePrice(priceUnitsString, viewModel.amount)
+        let amount = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.nftFungiblePrice(priceUnitsString, viewModel.amount)
 
         return BalanceViewModel(amount: amount, price: viewModel.price)
     }
@@ -245,7 +247,9 @@ final class NftListViewModelFactory {
             let amountString = viewModelFactory.unitsFromValue(amount.decimal()).value(for: locale)
             let totalSupplyString = viewModelFactory.unitsFromValue(totalSupply.decimal()).value(for: locale)
 
-            label = R.string(preferredLanguages: locale.rLanguages).localizable.nftIssuanceFungibleFormat(amountString, totalSupplyString)
+            label = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.nftIssuanceFungibleFormat(amountString, totalSupplyString)
         } else {
             label = model.issuanceMyAmount.map { String($0) }
         }

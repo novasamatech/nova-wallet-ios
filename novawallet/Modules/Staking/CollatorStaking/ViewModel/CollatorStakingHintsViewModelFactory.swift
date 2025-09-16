@@ -11,9 +11,10 @@ final class CollatorStakingHintsViewModelFactory: CollatorStakingHintsViewModelF
     func unstakeHint(for duration: TimeInterval, locale: Locale) -> String {
         let unstakingPeriod = duration.localizedDaysHoursOrFallbackMinutes(for: locale)
 
-        return R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-            unstakingPeriod.approximately(),
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingHintUnstakeFormat_v2_2_0(
+            unstakingPeriod.approximately()
         )
     }
 

@@ -22,7 +22,9 @@ final class CloudBackupAddWalletPresenter: BaseUsernameSetupPresenter {
     }
 
     private func provideBadge() {
-        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonCloudBackup().uppercased()
+        let title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonCloudBackup().uppercased()
 
         let icon = R.image.iconPositiveCheckmarkFilled()
 

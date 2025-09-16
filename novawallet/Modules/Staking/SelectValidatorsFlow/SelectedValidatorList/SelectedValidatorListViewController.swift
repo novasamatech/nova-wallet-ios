@@ -74,9 +74,13 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 
     private func updateEditButton() {
         if rootView.tableView.isEditing {
-            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonDone()
+            navigationItem.rightBarButtonItem?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonDone()
         } else {
-            navigationItem.rightBarButtonItem?.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonEdit()
+            navigationItem.rightBarButtonItem?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonEdit()
         }
     }
 
@@ -144,7 +148,9 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
 extension SelectedValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectedValidatorsTitle()
+            title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingSelectedValidatorsTitle()
 
             updateEditButton()
             updateProceedButton()

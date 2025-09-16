@@ -32,7 +32,9 @@ extension NPoolsUnstakeHintsFactory: NPoolsUnstakeHintsFactoryProtocol {
 
         if let stakingDuration = stakingDuration {
             let duration = stakingDuration.localizableUnlockingString.value(for: locale)
-            let hint = R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintUnstakeFormat_v2_2_0(duration)
+            let hint = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingHintUnstakeFormat_v2_2_0(duration)
 
             hints.append(hint)
         }
@@ -45,7 +47,9 @@ extension NPoolsUnstakeHintsFactory: NPoolsUnstakeHintsFactoryProtocol {
         if let rewards = rewards, rewards > 0 {
             let decimalAmount = rewards.decimal(precision: chainAsset.asset.precision)
             let amountString = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
-            let hint = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsClaimHint(amountString)
+            let hint = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingPoolRewardsClaimHint(amountString)
 
             hints.append(hint)
         }

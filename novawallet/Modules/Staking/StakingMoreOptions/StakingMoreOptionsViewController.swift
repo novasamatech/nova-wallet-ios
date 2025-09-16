@@ -122,7 +122,9 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             header?.bind(
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingMoreOptionsDAppsTitle()
+                title: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingMoreOptionsDAppsTitle()
             )
             header?.titleLabel.apply(style: .title3Primary)
             header?.contentInsets = .zero

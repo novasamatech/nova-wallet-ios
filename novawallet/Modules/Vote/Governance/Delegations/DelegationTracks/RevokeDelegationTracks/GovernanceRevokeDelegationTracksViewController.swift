@@ -4,6 +4,8 @@ final class GovRevokeDelegationTracksViewController: GovernanceSelectTracksViewC
     override func setupLocalization() {
         super.setupLocalization()
 
-        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govRevokeDelegationTracksTitle()
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.govRevokeDelegationTracksTitle()
     }
 }

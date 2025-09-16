@@ -53,7 +53,9 @@ final class NetworkManageNodePresenter {
         ]
 
         let viewModel = NetworkManageNodeViewModel(
-            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkManageNodeManageAddedNode(),
+            title: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.networkManageNodeManageAddedNode(),
             nodeName: node.name,
             actions: actions
         )

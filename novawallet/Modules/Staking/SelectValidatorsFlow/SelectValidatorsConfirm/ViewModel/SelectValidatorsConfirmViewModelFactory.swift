@@ -18,12 +18,16 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
 
     func createStartStakingHints(from duration: StakingDuration) -> LocalizableResource<[String]> {
         LocalizableResource { locale in
-            let eraDurationString = R.string(preferredLanguages: locale.rLanguages).localizable.commonHoursFormat(format: duration.era.hoursFromSeconds)
+            let eraDurationString = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonHoursFormat(format: duration.era.hoursFromSeconds)
 
             let unlockingDurationString = duration.unlocking.localizedDaysHours(for: locale)
 
             return [
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRewardsFormat_v2_2_0(eraDurationString),
+                R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.stakingHintRewardsFormat_v2_2_0(eraDurationString),
                 R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintUnstakeFormat_v2_2_0(
                     "~\(unlockingDurationString)"
                 ),

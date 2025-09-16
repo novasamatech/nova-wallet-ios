@@ -193,7 +193,9 @@ final class CollatorStakingSelectPresenter {
 
             view?.didReceive(state: .loaded(viewModel: viewModel))
         } catch {
-            let errorDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonErrorNoDataRetrieved()
+            let errorDescription = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonErrorNoDataRetrieved()
 
             view?.didReceive(state: .error(errorDescription))
 

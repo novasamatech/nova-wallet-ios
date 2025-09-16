@@ -74,13 +74,19 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
         rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonConfirm()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonConfirm()
 
         rootView.actionButton.invalidateLayout()
 
-        rootView.validatorsCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingSelectedValidatorsTitle()
+        rootView.validatorsCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingSelectedValidatorsTitle()
 
-        rootView.rewardDestinationCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.stakingRewardsDestinationTitle_v2_0_0()
+        rootView.rewardDestinationCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingRewardsDestinationTitle_v2_0_0()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
@@ -116,20 +122,25 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             rootView.removeRewardDestinationIfNeeded()
         }
 
-        rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
-            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
-            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? "",
+        rootView.validatorsCell.detailsLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingValidatorInfoNominators(
+            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
+            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
         )
     }
 
     private func applyRewardDestinationViewModel(_ viewModel: RewardDestinationTypeViewModel) {
         switch viewModel {
         case .restake:
-            rootView.rewardDestinationCell.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRestakeTitle_v2_2_0()
+            rootView.rewardDestinationCell.detailsLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingRestakeTitle_v2_2_0()
             rootView.removePayoutAccountIfNeeded()
         case let .payout(details):
-            rootView.rewardDestinationCell.detailsLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingPayoutTitle_v2_2_0()
+            rootView.rewardDestinationCell.detailsLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingPayoutTitle_v2_2_0()
             rootView.addPayoutAccountIfNeeded()
 
             rootView.payoutAccountCell?.addTarget(

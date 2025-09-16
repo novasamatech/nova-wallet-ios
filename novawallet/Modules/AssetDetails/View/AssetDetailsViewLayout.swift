@@ -150,7 +150,9 @@ final class AssetDetailsViewLayout: UIView {
         sendButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletSendTitle()
         sendButton.invalidateLayout()
 
-        receiveButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletAssetReceive()
+        receiveButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.walletAssetReceive()
         receiveButton.invalidateLayout()
 
         swapButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonSwapAction()
