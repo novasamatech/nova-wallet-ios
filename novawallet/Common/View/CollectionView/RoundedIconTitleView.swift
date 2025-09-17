@@ -19,7 +19,7 @@ final class RoundedIconTitleView: UIView {
             if contentInsets != oldValue {
                 roundedBackgroundView.snp.updateConstraints { make in
                     make.leading.equalToSuperview().inset(contentInsets.left)
-                    make.trailing.equalToSuperview().inset(contentInsets.right)
+                    make.trailing.lessThanOrEqualToSuperview().inset(contentInsets.right)
                     make.top.equalToSuperview().inset(contentInsets.top)
                     make.bottom.equalToSuperview().inset(contentInsets.bottom)
                 }
@@ -68,7 +68,7 @@ private extension RoundedIconTitleView {
         container.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(contentInsets.left)
-            make.trailing.equalToSuperview().inset(contentInsets.right)
+            make.trailing.lessThanOrEqualToSuperview().inset(contentInsets.right)
             make.top.equalToSuperview().inset(contentInsets.top)
             make.bottom.equalToSuperview().inset(contentInsets.bottom)
         }

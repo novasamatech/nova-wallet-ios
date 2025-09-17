@@ -147,14 +147,14 @@ private extension AssetListAssetViewModelFactory {
     func createBalanceViewModel(
         using assetAccountInfo: AssetListAssetAccountInfo,
         connected: Bool,
-        privacyModeEnabled: Bool,
+        privacyMode: ViewPrivacyMode,
         locale: Locale
     ) -> AssetListAssetBalanceViewModel {
         let priceState = createPriceState(assetAccountInfo: assetAccountInfo, locale: locale)
 
         let (balanceState, balanceValueState) = createBalanceState(
             assetAccountInfo: assetAccountInfo,
-            privacyModeEnabled: privacyModeEnabled,
+            privacyMode: privacyMode,
             connected: connected,
             locale: locale
         )
@@ -196,7 +196,7 @@ private extension AssetListAssetViewModelFactory {
         for group: AssetListAssetGroupModel,
         assetInfo: AssetBalanceDisplayInfo,
         maybePrices: [ChainAssetId: PriceData]?,
-        privacyModeEnabled: Bool,
+        privacyMode: ViewPrivacyMode,
         locale: Locale
     ) -> AssetListAssetBalanceViewModel {
         let priceData: PriceData? = {
@@ -224,7 +224,7 @@ private extension AssetListAssetViewModelFactory {
         let (amountState, valueState) = createBalanceState(
             for: group.amount,
             value: group.value,
-            privacyModeEnabled: privacyModeEnabled,
+            privacyMode: privacyMode,
             assetDisplayInfo: assetInfo,
             priceData: priceData,
             locale: locale
@@ -240,7 +240,7 @@ private extension AssetListAssetViewModelFactory {
     func createBalanceState(
         for balance: Decimal,
         value: Decimal,
-        privacyModeEnabled: Bool,
+        privacyMode: ViewPrivacyMode,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
@@ -254,8 +254,6 @@ private extension AssetListAssetViewModelFactory {
         let balanceAmountString = balanceFormatter.value(for: locale).stringFromDecimal(
             balance
         ) ?? ""
-
-        let privacyMode: ViewPrivacyMode = privacyModeEnabled ? .hidden : .visible
 
         let securedAmount = SecuredViewModel(
             originalContent: balanceAmountString,
@@ -281,7 +279,7 @@ private extension AssetListAssetViewModelFactory {
 
     func createBalanceState(
         assetAccountInfo: AssetListAssetAccountInfo,
-        privacyModeEnabled: Bool,
+        privacyMode: ViewPrivacyMode,
         connected: Bool,
         locale: Locale
     ) -> (
@@ -302,8 +300,6 @@ private extension AssetListAssetViewModelFactory {
             let balanceAmountString = balanceFormatter.value(for: locale).stringFromDecimal(
                 decimalBalance
             ) ?? ""
-
-            let privacyMode: ViewPrivacyMode = privacyModeEnabled ? .hidden : .visible
 
             let securedAmount = SecuredViewModel(
                 originalContent: balanceAmountString,
@@ -427,11 +423,13 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             )
         )
 
+        let privacyMode: ViewPrivacyMode = params.privacyModeEnabled ? .hidden : .visible
+
         let balanceViewModel = createBalanceViewModel(
             for: params.group,
             assetInfo: assetInfo,
             maybePrices: params.maybePrices,
-            privacyModeEnabled: params.privacyModeEnabled,
+            privacyMode: privacyMode,
             locale: locale
         )
 
@@ -456,10 +454,12 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             from: params.assetModel.chainAssetModel
         )
 
+        let privacyMode: ViewPrivacyMode = params.privacyModeEnabled ? .hidden : .visible
+
         let balanceViewModel = createBalanceViewModel(
             using: assetInfo,
             connected: params.connected,
-            privacyModeEnabled: params.privacyModeEnabled,
+            privacyMode: privacyMode,
             locale: locale
         )
 
@@ -474,10 +474,12 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
         params: AssetListNetworkGroupAssetViewModelParams,
         locale: Locale
     ) -> AssetListNetworkGroupAssetViewModel {
+        let privacyMode: ViewPrivacyMode = params.privacyModeEnabled ? .hidden : .visible
+
         let balanceViewModel = createBalanceViewModel(
             using: params.assetAccountInfo,
             connected: params.connected,
-            privacyModeEnabled: params.privacyModeEnabled,
+            privacyMode: privacyMode,
             locale: locale
         )
 

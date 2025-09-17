@@ -23,17 +23,16 @@ final class AssetListMultisigOperationsView: UIView {
         view.apply(style: .regularSubhedlinePrimary)
     }
 
-    let counterView: RoundedIconTitleView = .create { view in
-        view.titleView.imageView.image = R.image.iconPending()
-        view.titleView.detailsLabel.apply(style: .semiboldChip)
-        view.titleView.spacing = 4.0
-        view.contentInsets = .zero
-        view.roundedBackgroundView.apply(style: .chips)
-        view.roundedBackgroundView.cornerRadius = 8.0
+    let counterView: GenericSecuredView<RoundedIconTitleView> = .create { view in
+        view.originalView.titleView.detailsLabel.apply(style: .semiboldChip)
+        view.originalView.titleView.spacing = 4.0
+        view.originalView.contentInsets = .zero
+        view.originalView.roundedBackgroundView.apply(style: .chips)
+        view.originalView.roundedBackgroundView.cornerRadius = 8.0
     }
 
     var counterLabel: UILabel {
-        counterView.titleView.detailsLabel
+        counterView.originalView.titleView.detailsLabel
     }
 
     let accessoryImageView: UIImageView = .create { view in
@@ -64,7 +63,7 @@ final class AssetListMultisigOperationsView: UIView {
     }
 
     func bind(viewModel: AssetListMultisigOperationsViewModel) {
-        counterLabel.text = viewModel.totalCount
+        counterView.bind(viewModel.totalCount)
     }
 }
 
@@ -88,6 +87,7 @@ private extension AssetListMultisigOperationsView {
         counterView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
             make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-8.0)
+            make.height.equalTo(22.0)
             make.centerY.equalToSuperview()
         }
     }

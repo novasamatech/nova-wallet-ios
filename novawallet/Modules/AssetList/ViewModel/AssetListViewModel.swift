@@ -85,7 +85,15 @@ struct AssetListNftsViewModel: Equatable {
 }
 
 struct AssetListMultisigOperationsViewModel: Equatable {
-    let totalCount: String
+    let totalCount: SecuredViewModel<RoundedIconTitleView.ViewModel>
+
+    static func == (
+        lhs: AssetListMultisigOperationsViewModel,
+        rhs: AssetListMultisigOperationsViewModel
+    ) -> Bool {
+        lhs.totalCount.originalContent == rhs.totalCount.originalContent
+            && lhs.totalCount.privacyMode == rhs.totalCount.privacyMode
+    }
 }
 
 struct AssetPriceViewModel {
