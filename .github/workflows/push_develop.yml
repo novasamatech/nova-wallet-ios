@@ -105,7 +105,7 @@ jobs:
           DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: |
-          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
+          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -skipPackagePluginValidation
 
       - name: Export archive
         run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist -skipPackagePluginValidation
