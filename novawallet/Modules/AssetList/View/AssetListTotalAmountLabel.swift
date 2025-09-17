@@ -58,6 +58,7 @@ extension AssetListTotalAmountLabel: SecurableViewProtocol {
             dotColor: R.color.colorTextSecondary()!,
             alignment: .left
         )
+
         return dotsView
     }
 }

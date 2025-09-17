@@ -12,6 +12,7 @@ final class AssetListTotalBalanceView: UIView {
         static let infoIconSize = CGSize(width: 12, height: 12)
         static let locksViewHeight: CGFloat = 22.0
         static let privacyButtonSize = CGSize(width: 20, height: 20)
+        static let totalBalanceHeight: CGFloat = 47.0
     }
 
     let backgroundBlurView = GladingCardView()
@@ -240,6 +241,7 @@ final class AssetListTotalBalanceView: UIView {
         displayContentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.totalBalanceHeight)
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
 
