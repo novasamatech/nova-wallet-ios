@@ -68,7 +68,8 @@ final class RootInteractor {
 
         let wcURLActivityValidators: [URLActivityValidator] = [
             WalletConnectUrlParsingService.WCActivityValidator(),
-            WalletConnectUrlParsingService.OldWCActivityValidator()
+            WalletConnectUrlParsingService.OldWCActivityValidator(),
+            WalletConnectUrlParsingService.RainbowWCActivityValidator()
         ]
 
         let wcHandlingService = WalletConnectUrlParsingService(validators: wcURLActivityValidators)
