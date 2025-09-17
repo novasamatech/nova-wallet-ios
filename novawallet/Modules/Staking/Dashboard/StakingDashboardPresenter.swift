@@ -7,6 +7,7 @@ final class StakingDashboardPresenter {
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
+    let privacyStateManager: PrivacyStateManagerProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -14,22 +15,27 @@ final class StakingDashboardPresenter {
     private var lastResult: StakingDashboardBuilderResult?
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
+    private var privacyModeEnabled: Bool = false
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
         wireframe: StakingDashboardWireframeProtocol,
         viewModelFactory: StakingDashboardViewModelFactoryProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.privacyStateManager = privacyStateManager
         self.logger = logger
         self.localizationManager = localizationManager
     }
+}
 
-    private func updateWalletView() {
+private extension StakingDashboardPresenter {
+    func updateWalletView() {
         guard let wallet = wallet else {
             return
         }
@@ -44,7 +50,7 @@ final class StakingDashboardPresenter {
         view?.didReceiveWallet(viewModel: viewModel)
     }
 
-    private func updateStakingsView() {
+    func updateStakingsView() {
         guard let result = lastResult else {
             return
         }
@@ -57,22 +63,40 @@ final class StakingDashboardPresenter {
         }
     }
 
-    private func reloadStakingView(using model: StakingDashboardModel) {
-        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
+    func reloadStakingView(using model: StakingDashboardModel) {
+        let viewModel = viewModelFactory.createViewModel(
+            from: model,
+            privacyModeEnabled: privacyModeEnabled,
+            locale: selectedLocale
+        )
         view?.didReceiveStakings(viewModel: viewModel)
     }
 
-    private func updateStakingView(
+    func updateStakingView(
         using model: StakingDashboardModel,
         syncChange: StakingDashboardBuilderResult.SyncChange
     ) {
         let updateViewModel = viewModelFactory.createUpdateViewModel(
             from: model,
             syncChange: syncChange,
+            privacyModeEnabled: privacyModeEnabled,
             locale: selectedLocale
         )
 
         view?.didReceiveUpdate(viewModel: updateViewModel)
+    }
+    
+    func subscribePrivacyModeChanges() {
+        privacyStateManager.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, privacyModeEnabled in
+            self?.privacyModeEnabled = privacyModeEnabled
+            
+            guard let lastResult = self?.lastResult else { return }
+                
+            self?.reloadStakingView(using: lastResult.model)
+        }
     }
 }
 
