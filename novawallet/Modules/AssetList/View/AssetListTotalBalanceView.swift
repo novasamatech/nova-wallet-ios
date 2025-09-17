@@ -11,6 +11,7 @@ final class AssetListTotalBalanceView: UIView {
         static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         static let infoIconSize = CGSize(width: 12, height: 12)
         static let locksViewHeight: CGFloat = 22.0
+        static let privacyButtonSize = CGSize(width: 20, height: 20)
     }
 
     let backgroundBlurView = GladingCardView()
@@ -21,6 +22,10 @@ final class AssetListTotalBalanceView: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldSubhedlineSecondary)
+    }
+
+    let privacyToggleButton: UIButton = .create { button in
+        button.imageView?.contentMode = .scaleAspectFit
     }
 
     let amountLabel: GenericSecuredView<AssetListTotalAmountLabel> = .create { view in
@@ -144,44 +149,23 @@ final class AssetListTotalBalanceView: UIView {
         }
 
         swapButton.isEnabled = viewModel.hasSwaps
+
+        setupPrivacyModeToggle(enabled: viewModel.privacyModelEnabled)
     }
 
-    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
-        let defaultAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorTextPrimary()!,
-            .font: UIFont.boldLargeTitle
-        ]
+    private func setupPrivacyModeToggle(enabled: Bool) {
+        let icon = enabled ? R.image.iconEyeHide() : R.image.iconEyeShow()
 
-        let amount = model.amount
-
-        if
-            let lastChar = model.amount.last?.asciiValue,
-            !NSCharacterSet.decimalDigits.contains(UnicodeScalar(lastChar)) {
-            return .init(string: amount, attributes: defaultAttributes)
-        } else {
-            guard let decimalSeparator = model.decimalSeparator,
-                  let range = amount.range(of: decimalSeparator) else {
-                return .init(string: amount, attributes: defaultAttributes)
-            }
-
-            let amountAttributedString = NSMutableAttributedString(string: amount)
-            let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
-
-            let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
-
-            amountAttributedString.setAttributes(
-                defaultAttributes,
-                range: intPartRange
-            )
-
-            amountAttributedString.setAttributes(
-                [.foregroundColor: R.color.colorTextSecondary()!,
-                 .font: UIFont.boldTitle3],
-                range: fractionPartRange
-            )
-
-            return amountAttributedString
-        }
+        privacyToggleButton.setImage(
+            icon,
+            for: .normal
+        )
+        privacyToggleButton.setImage(
+            icon?.withTintColor(
+                R.color.colorIconSecondary()!.withAlphaComponent(0.5)
+            ),
+            for: .highlighted
+        )
     }
 
     private func setupStateWithLocks(amount: SecuredViewModel<String>) {
@@ -244,6 +228,13 @@ final class AssetListTotalBalanceView: UIView {
             make.leading.equalToSuperview()
             make.centerY.equalTo(locksView.snp.centerY)
             make.trailing.lessThanOrEqualTo(locksView.snp.leading).offset(-8)
+        }
+
+        displayContentView.addSubview(privacyToggleButton)
+        privacyToggleButton.snp.makeConstraints { make in
+            make.centerY.equalTo(titleLabel)
+            make.leading.equalTo(titleLabel.snp.trailing).offset(8)
+            make.size.equalTo(Constants.privacyButtonSize)
         }
 
         displayContentView.addSubview(amountLabel)

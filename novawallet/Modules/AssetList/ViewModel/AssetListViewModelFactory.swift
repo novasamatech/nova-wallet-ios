@@ -263,7 +263,8 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 amount: totalPrice,
                 locksAmount: locksAmount,
                 walletSwitch: walletSwitch,
-                hasSwaps: params.hasSwaps
+                hasSwaps: params.hasSwaps,
+                privacyModelEnabled: params.privacyModeEnabled
             )
         } else {
             return AssetListHeaderViewModel(
@@ -272,7 +273,8 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 amount: .loading,
                 locksAmount: nil,
                 walletSwitch: walletSwitch,
-                hasSwaps: params.hasSwaps
+                hasSwaps: params.hasSwaps,
+                privacyModelEnabled: params.privacyModeEnabled
             )
         }
     }

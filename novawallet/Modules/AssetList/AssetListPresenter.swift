@@ -34,6 +34,7 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
 
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
+    private var privacyModeEnabled: Bool = false
 
     private var organizerViewModel: AssetListOrganizerViewModel?
 
@@ -90,7 +91,7 @@ private extension AssetListPresenter {
                     prices: nil,
                     locks: nil,
                     hasSwaps: model.hasSwaps(),
-                    privacyModeEnabled: true
+                    privacyModeEnabled: privacyModeEnabled
                 ),
                 locale: selectedLocale
             )
@@ -185,7 +186,7 @@ private extension AssetListPresenter {
                 prices: totalValue,
                 locks: totalLocks,
                 hasSwaps: model.hasSwaps(),
-                privacyModeEnabled: true
+                privacyModeEnabled: privacyModeEnabled
             ),
             locale: selectedLocale
         )
@@ -379,7 +380,7 @@ private extension AssetListPresenter {
             assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
-            privacyModeEnabled: true,
+            privacyModeEnabled: privacyModeEnabled,
             connected: true
         )
 
@@ -422,7 +423,7 @@ private extension AssetListPresenter {
             chain: chain,
             assets: assetInfoList,
             value: groupModel.value,
-            privacyModeEnabled: true,
+            privacyModeEnabled: privacyModeEnabled,
             connected: true
         )
         return .network(
@@ -437,7 +438,7 @@ private extension AssetListPresenter {
         let viewModel = viewModelFactory.createOrganizerViewModel(
             from: model.nfts,
             operations: model.pendingOperations,
-            privacyModeEnabled: true,
+            privacyModeEnabled: privacyModeEnabled,
             locale: selectedLocale
         )
 
@@ -502,6 +503,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         }
 
         interactor.setup()
+
+        privacyStateManager.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, privacyModeEnabled in
+            guard self?.privacyModeEnabled != privacyModeEnabled else { return }
+
+            self?.privacyModeEnabled = privacyModeEnabled
+
+            self?.provideHeaderViewModel()
+            self?.provideAssetViewModels()
+            self?.provideOrganizerViewModel()
+        }
     }
 
     func selectWallet() {
@@ -623,6 +637,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         provideAssetViewModels()
         interactor.setAssetListGroupsStyle(assetListStyle)
+    }
+
+    func togglePrivacyMode() {
+        privacyStateManager.lastEnabled.toggle()
     }
 }
 

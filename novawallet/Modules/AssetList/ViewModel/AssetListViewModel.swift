@@ -50,6 +50,7 @@ struct AssetListHeaderViewModel {
     let locksAmount: SecuredViewModel<String>?
     let walletSwitch: WalletSwitchViewModel
     let hasSwaps: Bool
+    let privacyModelEnabled: Bool
 }
 
 struct AssetListTotalAmountViewModel {
@@ -78,6 +79,7 @@ struct AssetListNftsViewModel: Equatable {
         let rhsIdSet = Set(rhs.mediaViewModels.map(\.identifier))
 
         return lhs.totalCount.value?.originalContent.title == rhs.totalCount.value?.originalContent.title
+            && lhs.totalCount.value?.privacyMode == rhs.totalCount.value?.privacyMode
             && lhsIdSet == rhsIdSet
     }
 }
