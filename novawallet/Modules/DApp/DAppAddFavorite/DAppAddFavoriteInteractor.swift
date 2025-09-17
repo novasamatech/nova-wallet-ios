@@ -32,7 +32,7 @@ final class DAppAddFavoriteInteractor {
                         self?.provideProposedModelWithMatchedDApp(nil)
                     }
                 case .none, .failure:
-                    // ignore ignore cause we still can propose model
+                    // ignore cause we still can propose model
                     self?.provideProposedModelWithMatchedDApp(nil)
                 }
             }
