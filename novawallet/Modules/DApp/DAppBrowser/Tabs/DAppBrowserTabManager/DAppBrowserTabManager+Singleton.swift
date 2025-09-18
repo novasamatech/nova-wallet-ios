@@ -32,11 +32,14 @@ extension DAppBrowserTabManager {
             logger: logger
         )
 
+        let workingQueue = DispatchQueue.global(qos: .userInitiated)
+
         return DAppBrowserTabManager(
             fileRepository: renderFilesRepository,
             tabsSubscriptionFactory: tabsSubscriptionFactory,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             repository: AnyDataProviderRepository(coreDataRepository),
+            workingQueue: workingQueue,
             operationQueue: operationQueue,
             logger: logger
         )

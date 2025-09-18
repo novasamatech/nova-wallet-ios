@@ -10,16 +10,21 @@ final class DAppBrowserTabManager {
     private let fileRepository: WebViewRenderFilesOperationFactoryProtocol
     private let repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>
     private let operationQueue: OperationQueue
+    private let workingQueue: DispatchQueue
     private let observerQueue: DispatchQueue
 
     private let logger: LoggerProtocol
+
+    private let transportStates: InMemoryCache<UUID, [DAppTransportState]> = .init()
+
+    private let callStore = CancellableCallStore()
+    private let mutex = NSLock()
 
     private var metaAccount: MetaAccountModel?
 
     private var browserTabProvider: StreamableProvider<DAppBrowserTab.PersistenceModel>?
     private var selectedWalletProvider: StreamableProvider<ManagedMetaAccountModel>?
 
-    private var transportStates: InMemoryCache<UUID, [DAppTransportState]> = .init()
     private var observableTabs: DAppBrowserTabsObservable = .init(state: .init())
 
     init(
@@ -28,6 +33,7 @@ final class DAppBrowserTabManager {
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>,
         observerQueue: DispatchQueue = .main,
+        workingQueue: DispatchQueue,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -36,6 +42,7 @@ final class DAppBrowserTabManager {
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.fileRepository = fileRepository
         self.operationQueue = operationQueue
+        self.workingQueue = workingQueue
         self.observerQueue = observerQueue
         self.logger = logger
 
@@ -51,7 +58,7 @@ private extension DAppBrowserTabManager {
     }
 
     func clearInMemory() {
-        transportStates = .init()
+        transportStates.removeAllValues()
         observableTabs.state.removeAllValues()
     }
 
@@ -285,6 +292,38 @@ private extension DAppBrowserTabManager {
 
         return tab
     }
+
+    func handleWalletChange(_ managedMetaAccount: ManagedMetaAccountModel?) {
+        let walletChangeInfo = evaluateWalletChange(managedMetaAccount)
+
+        guard walletChangeInfo.didChange else {
+            return
+        }
+
+        performWalletTransition(to: walletChangeInfo.newMetaAccount)
+    }
+
+    func evaluateWalletChange(_ managedMetaAccount: ManagedMetaAccountModel?) -> WalletChangeInfo {
+        let newMetaId = managedMetaAccount?.info.metaId
+        let currentMetaId = metaAccount?.metaId
+
+        guard currentMetaId != newMetaId else {
+            return WalletChangeInfo(didChange: false, newMetaAccount: nil)
+        }
+
+        let newMetaAccount = managedMetaAccount?.info
+        metaAccount = newMetaAccount
+
+        return WalletChangeInfo(didChange: true, newMetaAccount: newMetaAccount)
+    }
+
+    func performWalletTransition(to newMetaAccount: MetaAccountModel?) {
+        observableTabs.state.removeAllValues()
+
+        guard let newMetaAccount else { return }
+
+        browserTabProvider = subscribeToBrowserTabs(newMetaAccount.metaId)
+    }
 }
 
 // MARK: DAppBrowserTabLocalSubscriber
@@ -293,6 +332,9 @@ extension DAppBrowserTabManager: DAppBrowserTabLocalSubscriber, DAppBrowserTabLo
     func handleBrowserTabs(
         result: Result<[DataProviderChange<DAppBrowserTab.PersistenceModel>], any Error>
     ) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         switch result {
         case let .success(changes):
             apply(changes)
@@ -308,18 +350,12 @@ extension DAppBrowserTabManager: WalletListLocalStorageSubscriber, WalletListLoc
     func handleSelectedWallet(
         result: Result<ManagedMetaAccountModel?, any Error>
     ) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         switch result {
         case let .success(managedMetaAccount):
-            guard metaAccount?.metaId != managedMetaAccount?.info.metaId else {
-                return
-            }
-
-            observableTabs.state.removeAllValues()
-            metaAccount = managedMetaAccount?.info
-
-            guard let metaAccount else { return }
-
-            browserTabProvider = subscribeToBrowserTabs(metaAccount.metaId)
+            handleWalletChange(managedMetaAccount)
         case let .failure(error):
             logger.error("Failed on WalletList local subscription with error: \(error.localizedDescription)")
         }
@@ -330,10 +366,16 @@ extension DAppBrowserTabManager: WalletListLocalStorageSubscriber, WalletListLoc
 
 extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?> {
-        retrieveWrapper(for: id)
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return retrieveWrapper(for: id)
     }
 
     func getAllTabs(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         if let metaIds {
             return tabsFetchWrapper(for: metaIds)
         } else {
@@ -359,7 +401,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: .main,
+            runningCallbackIn: workingQueue,
             callbackClosure: { [weak self] _ in
                 self?.transportStates.removeValue(for: id)
             }
@@ -376,6 +418,9 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         with id: UUID,
         render: DAppBrowserTabRenderProtocol
     ) -> CompoundOperationWrapper<Void> {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         guard let tab = observableTabs.state.fetchValue(for: id) else {
             return .createWithResult(())
         }
@@ -411,16 +456,21 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeAll(for metaIds: Set<MetaAccountModel.Id>?) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         let wrapper = removeAllWrapper(metaIds)
 
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: .main
+            runningCallbackIn: workingQueue
         ) { [weak self] result in
             switch result {
             case .success:
+                self?.mutex.lock()
                 self?.clearInMemory()
+                self?.mutex.unlock()
             case .failure:
                 self?.logger.warning("\(String(describing: self)) Failed on tabs deletion operation")
             }
@@ -428,13 +478,19 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeAllWrapper(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>> {
-        removeAllWrapper(metaIds)
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return removeAllWrapper(metaIds)
     }
 
     func addObserver(
         _ observer: DAppBrowserTabsObserver,
         sendOnSubscription: Bool
     ) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         observableTabs.addObserver(
             with: observer,
             sendStateOnSubscription: sendOnSubscription,
@@ -446,5 +502,14 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
             observer.didReceiveUpdatedTabs(sortedTabs)
         }
+    }
+}
+
+// MARK: - Private types
+
+private extension DAppBrowserTabManager {
+    struct WalletChangeInfo {
+        let didChange: Bool
+        let newMetaAccount: MetaAccountModel?
     }
 }
