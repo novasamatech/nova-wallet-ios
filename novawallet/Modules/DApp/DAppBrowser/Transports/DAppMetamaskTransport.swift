@@ -241,7 +241,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
             })();
             """
 
-        let script = DAppBrowserScript(content: content, insertionPoint: .atDocEnd)
+        let script = DAppBrowserScript(content: content, insertionPoint: .atDocStart)
         return script
     }
 
