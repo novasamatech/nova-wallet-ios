@@ -39,6 +39,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionSwap()
     func actionChangeAssetListStyle()
     func actionCardOpen()
+    func actionTogglePrivacy()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
@@ -90,6 +91,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func swap()
     func presentWalletConnect()
     func toggleAssetListStyle()
+    func togglePrivacyMode()
 }
 
 // MARK: Interactor

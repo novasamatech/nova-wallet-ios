@@ -224,6 +224,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
     func actionChangeAssetListStyle() {
         presenter.toggleAssetListStyle()
     }
+
+    func actionTogglePrivacy() {
+        presenter.togglePrivacyMode()
+    }
 }
 
 // MARK: Localizable

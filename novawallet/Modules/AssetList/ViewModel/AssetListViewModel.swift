@@ -46,10 +46,11 @@ enum ValueDirection<T> {
 struct AssetListHeaderViewModel {
     let walletConnectSessionsCount: String?
     let title: String
-    let amount: LoadableViewModelState<AssetListTotalAmountViewModel>
-    let locksAmount: String?
+    let amount: LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>>
+    let locksAmount: SecuredViewModel<String>?
     let walletSwitch: WalletSwitchViewModel
     let hasSwaps: Bool
+    let privacyModelEnabled: Bool
 }
 
 struct AssetListTotalAmountViewModel {
@@ -67,7 +68,7 @@ enum AssetListOrganizerItemViewModel: Equatable {
 }
 
 struct AssetListNftsViewModel: Equatable {
-    let totalCount: LoadableViewModelState<String>
+    let totalCount: LoadableViewModelState<SecuredViewModel<TitleIconViewModel>>
     let mediaViewModels: [NftMediaViewModelProtocol]
 
     static func == (
@@ -77,12 +78,22 @@ struct AssetListNftsViewModel: Equatable {
         let lhsIdSet = Set(lhs.mediaViewModels.map(\.identifier))
         let rhsIdSet = Set(rhs.mediaViewModels.map(\.identifier))
 
-        return lhs.totalCount == rhs.totalCount && lhsIdSet == rhsIdSet
+        return lhs.totalCount.value?.originalContent.title == rhs.totalCount.value?.originalContent.title
+            && lhs.totalCount.value?.privacyMode == rhs.totalCount.value?.privacyMode
+            && lhsIdSet == rhsIdSet
     }
 }
 
 struct AssetListMultisigOperationsViewModel: Equatable {
-    let totalCount: String
+    let totalCount: SecuredViewModel<TitleIconViewModel>
+
+    static func == (
+        lhs: AssetListMultisigOperationsViewModel,
+        rhs: AssetListMultisigOperationsViewModel
+    ) -> Bool {
+        lhs.totalCount.originalContent == rhs.totalCount.originalContent
+            && lhs.totalCount.privacyMode == rhs.totalCount.privacyMode
+    }
 }
 
 struct AssetPriceViewModel {
@@ -188,8 +199,8 @@ struct AssetListTokenGroupAssetViewModel: Identifiable {
 
 struct AssetListAssetBalanceViewModel {
     let price: LoadableViewModelState<AssetPriceViewModel>
-    let balanceAmount: LoadableViewModelState<String>
-    let balanceValue: LoadableViewModelState<String>
+    let balanceAmount: LoadableViewModelState<SecuredViewModel<String>>
+    let balanceValue: LoadableViewModelState<SecuredViewModel<String>>
 }
 
 extension LoadableViewModelState: Hashable, Equatable where T == String {}

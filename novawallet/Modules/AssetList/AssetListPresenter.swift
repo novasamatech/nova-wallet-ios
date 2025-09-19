@@ -16,6 +16,7 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
+    let privacyStateManager: PrivacyStateManagerProtocol
 
     private var wallet: MetaAccountModel?
 
@@ -33,6 +34,7 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
 
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
+    private var privacyModeEnabled: Bool = false
 
     private var organizerViewModel: AssetListOrganizerViewModel?
 
@@ -46,12 +48,14 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.privacyStateManager = privacyStateManager
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
     }
@@ -88,7 +92,7 @@ private extension AssetListPresenter {
                     locks: nil,
                     hasSwaps: model.hasSwaps()
                 ),
-                locale: selectedLocale
+                genericParams: createGenericViewModelFactoryParams()
             )
 
             view?.didReceiveHeader(viewModel: viewModel)
@@ -180,9 +184,9 @@ private extension AssetListPresenter {
                 ),
                 prices: totalValue,
                 locks: totalLocks,
-                hasSwaps: model.hasSwaps()
+                hasSwaps: model.hasSwaps(),
             ),
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         view?.didReceiveHeader(viewModel: viewModel)
@@ -370,12 +374,16 @@ private extension AssetListPresenter {
             return nil
         }
 
-        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+        let params = AssetListTokenGroupViewModelParams(
             assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
-            connected: true,
-            locale: selectedLocale
+            connected: true
+        )
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            params: params,
+            genericParams: createGenericViewModelFactoryParams()
         ) {
             .token(groupViewModel)
         } else {
@@ -408,13 +416,17 @@ private extension AssetListPresenter {
             )
         }
 
+        let params = AssetListNetworkGroupViewModelParams(
+            chain: chain,
+            assets: assetInfoList,
+            value: groupModel.value,
+            connected: true
+        )
+
         return .network(
             viewModelFactory.createNetworkGroupViewModel(
-                for: chain,
-                assets: assetInfoList,
-                value: groupModel.value,
-                connected: true,
-                locale: selectedLocale
+                params: params,
+                genericParams: createGenericViewModelFactoryParams()
             )
         )
     }
@@ -423,7 +435,7 @@ private extension AssetListPresenter {
         let viewModel = viewModelFactory.createOrganizerViewModel(
             from: model.nfts,
             operations: model.pendingOperations,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         guard organizerViewModel != viewModel else {
@@ -460,6 +472,13 @@ private extension AssetListPresenter {
 
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
+
+    func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
+        ViewModelFactoryGenericParams(
+            locale: selectedLocale,
+            privacyModeEnabled: privacyModeEnabled
+        )
+    }
 }
 
 // MARK: AssetListPresenterProtocol
@@ -487,6 +506,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         }
 
         interactor.setup()
+
+        privacyStateManager.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, privacyModeEnabled in
+            guard self?.privacyModeEnabled != privacyModeEnabled else { return }
+
+            self?.privacyModeEnabled = privacyModeEnabled
+
+            self?.provideHeaderViewModel()
+            self?.provideAssetViewModels()
+            self?.provideOrganizerViewModel()
+        }
     }
 
     func selectWallet() {
@@ -608,6 +640,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         provideAssetViewModels()
         interactor.setAssetListGroupsStyle(assetListStyle)
+    }
+
+    func togglePrivacyMode() {
+        privacyStateManager.lastEnabled.toggle()
     }
 }
 

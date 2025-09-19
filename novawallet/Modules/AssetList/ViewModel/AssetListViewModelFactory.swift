@@ -26,12 +26,15 @@ struct AssetListHeaderParams {
 }
 
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
-    func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel
+    func createHeaderViewModel(
+        params: AssetListHeaderParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> AssetListHeaderViewModel
 
     func createOrganizerViewModel(
         from nfts: [NftModel],
         operations: [Multisig.PendingOperation],
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> AssetListOrganizerViewModel?
 }
 
@@ -106,8 +109,8 @@ private extension AssetListViewModelFactory {
 
     func createTotalPrice(
         from prices: LoadableViewModelState<[AssetListAssetAccountPrice]>,
-        locale: Locale
-    ) -> LoadableViewModelState<AssetListTotalAmountViewModel> {
+        genericParams: ViewModelFactoryGenericParams
+    ) -> LoadableViewModelState<SecuredViewModel<AssetListTotalAmountViewModel>> {
         switch prices {
         case .loading:
             return .loading
@@ -115,24 +118,50 @@ private extension AssetListViewModelFactory {
             let formattedPrice = createTotalPriceString(
                 from: calculateTotalPrice(from: value),
                 priceData: value.first?.price,
-                locale: locale
+                locale: genericParams.locale
+            )
+            let viewModel = AssetListTotalAmountViewModel(
+                amount: formattedPrice,
+                decimalSeparator: genericParams.locale.decimalSeparator
             )
 
-            return .cached(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
+            return .cached(value: .wrapped(viewModel, with: genericParams.privacyModeEnabled))
         case let .loaded(value):
             let formattedPrice = createTotalPriceString(
                 from: calculateTotalPrice(from: value),
                 priceData: value.first?.price,
-                locale: locale
+                locale: genericParams.locale
+            )
+            let viewModel = AssetListTotalAmountViewModel(
+                amount: formattedPrice,
+                decimalSeparator: genericParams.locale.decimalSeparator
             )
 
-            return .loaded(value: .init(amount: formattedPrice, decimalSeparator: locale.decimalSeparator))
+            return .loaded(value: .wrapped(viewModel, with: genericParams.privacyModeEnabled))
         }
     }
 
-    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel {
+    func createLocksViewModel(
+        for locks: [AssetListAssetAccountPrice]?,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> SecuredViewModel<String>? {
+        guard let amount = locks.map({ lock in
+            formatPrice(
+                amount: calculateTotalPrice(from: lock),
+                priceData: lock.first?.price,
+                locale: genericParams.locale
+            )
+        }) else { return nil }
+
+        return .wrapped(amount, with: genericParams.privacyModeEnabled)
+    }
+
+    func createNftsViewModel(
+        from nfts: [NftModel],
+        genericParams: ViewModelFactoryGenericParams
+    ) -> AssetListNftsViewModel {
         let numberOfNfts = NSNumber(value: nfts.count)
-        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
+        let count = quantityFormatter.value(for: genericParams.locale).string(from: numberOfNfts) ?? ""
 
         let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
             nft.media != nil || nft.metadata != nil
@@ -158,24 +187,40 @@ private extension AssetListViewModelFactory {
             return nil
         }
 
-        return AssetListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
+        return AssetListNftsViewModel(
+            totalCount: .loaded(
+                value: .wrapped(
+                    TitleIconViewModel(title: count, icon: nil),
+                    with: genericParams.privacyModeEnabled
+                )
+            ),
+            mediaViewModels: viewModels
+        )
     }
 
     func createMultisigOperationsViewModel(
         from operations: [Multisig.PendingOperation],
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> AssetListMultisigOperationsViewModel {
         let numberOfOperations = NSNumber(value: operations.count)
-        let count = quantityFormatter.value(for: locale).string(from: numberOfOperations) ?? ""
+        let count = quantityFormatter.value(for: genericParams.locale).string(from: numberOfOperations) ?? ""
 
-        return AssetListMultisigOperationsViewModel(totalCount: count)
+        return AssetListMultisigOperationsViewModel(
+            totalCount: .wrapped(
+                TitleIconViewModel(title: count, icon: R.image.iconPending()),
+                with: genericParams.privacyModeEnabled
+            )
+        )
     }
 }
 
 // MARK: - AssetListViewModelFactoryProtocol
 
 extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
-    func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel {
+    func createHeaderViewModel(
+        params: AssetListHeaderParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> AssetListHeaderViewModel {
         let icon = params.wallet.walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
         let walletSwitch = WalletSwitchViewModel(
             identifier: params.wallet.identifier,
@@ -185,25 +230,32 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         )
 
         let walletConnectSessionsCount = params.wallet.walletConnectSessionsCount
-        let formattedWalletConnectSessionsCount = walletConnectSessionsCount > 0 ?
-            quantityFormatter.value(for: locale).string(from: NSNumber(value: walletConnectSessionsCount)) :
+        let formattedWalletConnectSessionsCount: String? = if walletConnectSessionsCount > 0 {
+            quantityFormatter.value(
+                for: genericParams.locale
+            ).string(from: NSNumber(value: walletConnectSessionsCount))
+        } else {
             nil
+        }
 
         if let prices = params.prices {
-            let totalPrice = createTotalPrice(from: prices, locale: locale)
+            let totalPrice = createTotalPrice(
+                from: prices,
+                genericParams: genericParams
+            )
+            let locksAmount = createLocksViewModel(
+                for: params.locks,
+                genericParams: genericParams
+            )
+
             return AssetListHeaderViewModel(
                 walletConnectSessionsCount: formattedWalletConnectSessionsCount,
                 title: params.title,
                 amount: totalPrice,
-                locksAmount: params.locks.map { lock in
-                    formatPrice(
-                        amount: calculateTotalPrice(from: lock),
-                        priceData: lock.first?.price,
-                        locale: locale
-                    )
-                },
+                locksAmount: locksAmount,
                 walletSwitch: walletSwitch,
-                hasSwaps: params.hasSwaps
+                hasSwaps: params.hasSwaps,
+                privacyModelEnabled: genericParams.privacyModeEnabled
             )
         } else {
             return AssetListHeaderViewModel(
@@ -212,7 +264,8 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 amount: .loading,
                 locksAmount: nil,
                 walletSwitch: walletSwitch,
-                hasSwaps: params.hasSwaps
+                hasSwaps: params.hasSwaps,
+                privacyModelEnabled: genericParams.privacyModeEnabled
             )
         }
     }
@@ -220,15 +273,26 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
     func createOrganizerViewModel(
         from nfts: [NftModel],
         operations: [Multisig.PendingOperation],
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> AssetListOrganizerViewModel? {
         var items: [AssetListOrganizerItemViewModel] = []
 
         if !nfts.isEmpty {
-            items.append(.nfts(createNftsViewModel(from: nfts, locale: locale)))
+            items.append(
+                .nfts(
+                    createNftsViewModel(
+                        from: nfts,
+                        genericParams: genericParams
+                    )
+                )
+            )
         }
         if !operations.isEmpty {
-            items.append(.pendingTransactions(createMultisigOperationsViewModel(from: operations, locale: locale)))
+            let multisigOperationsViewModel = createMultisigOperationsViewModel(
+                from: operations,
+                genericParams: genericParams
+            )
+            items.append(.pendingTransactions(multisigOperationsViewModel))
         }
 
         guard !items.isEmpty else { return nil }
