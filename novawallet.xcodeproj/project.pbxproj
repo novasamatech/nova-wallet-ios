@@ -824,7 +824,6 @@
 		0C8FC22D2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FC22C2E62442500034ED3 /* DelegatedAccountsChangeCalculatorTests.swift */; };
 		0C8FCE762E65ED3400034ED3 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE752E65ED3400034ED3 /* DGCharts */; };
 		0C8FCE7B2E65EE0B00034ED3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7A2E65EE0B00034ED3 /* QRCode */; };
-		0C8FCE7D2E65EE0B00034ED3 /* QRCodeDetector in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7C2E65EE0B00034ED3 /* QRCodeDetector */; };
 		0C8FCE802E65EE5600034ED3 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE7F2E65EE5600034ED3 /* SubstrateSdk */; };
 		0C8FCE832E65EF7800034ED3 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE822E65EF7800034ED3 /* NovaCrypto */; };
 		0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8FCE982E6725D700034ED3 /* web3swift */; };
@@ -1088,7 +1087,6 @@
 		0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */; };
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CBD23F822E358320E328F2D /* GovernanceTracksSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */; };
-		0CBE44972E6741220034DC0A /* QRCodeStatic in Frameworks */ = {isa = PBXBuildFile; productRef = 0CBE44962E6741220034DC0A /* QRCodeStatic */; };
 		0CBF5DE72AB1A60500087EBF /* SharedOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */; };
 		0CC0F7EC2BAD8A78002C49F6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */; };
 		0CC0F7F22BADEB1D002C49F6 /* notification-ext.release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */; };
@@ -12638,7 +12636,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C8FCE7D2E65EE0B00034ED3 /* QRCodeDetector in Frameworks */,
 				0C8FCEC02E67335200034ED3 /* CDMarkdownKit in Frameworks */,
 				0C8FCEC62E67346F00034ED3 /* Algorithms in Frameworks */,
 				0C8FCEB12E672CFA00034ED3 /* SnapKit in Frameworks */,
@@ -12658,7 +12655,6 @@
 				0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */,
 				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
 				0C8FCEAE2E672CB000034ED3 /* Reachability in Frameworks */,
-				0CBE44972E6741220034DC0A /* QRCodeStatic in Frameworks */,
 				0C8FCED22E6735F300034ED3 /* FirebaseMessaging in Frameworks */,
 				0C8FCEA52E672BCE00034ED3 /* Operation-iOS in Frameworks */,
 				0C8FCEC32E6733AD00034ED3 /* EthereumSignTypedDataUtil in Frameworks */,
@@ -37219,14 +37215,6 @@
 				version = 5.1.0;
 			};
 		};
-		0CBE44952E6741220034DC0A /* XCRemoteSwiftPackageReference "qrcode" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/dagronf/qrcode.git";
-			requirement = {
-				kind = exactVersion;
-				version = 14.4.1;
-			};
-		};
 		0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Brightify/Cuckoo";
@@ -37337,11 +37325,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C8FCE792E65EE0B00034ED3 /* XCRemoteSwiftPackageReference "qrcode" */;
 			productName = QRCode;
-		};
-		0C8FCE7C2E65EE0B00034ED3 /* QRCodeDetector */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCE792E65EE0B00034ED3 /* XCRemoteSwiftPackageReference "qrcode" */;
-			productName = QRCodeDetector;
 		};
 		0C8FCE7F2E65EE5600034ED3 /* SubstrateSdk */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -37467,11 +37450,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0CA9B6CD2E68DD32002B0707 /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
-		};
-		0CBE44962E6741220034DC0A /* QRCodeStatic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0CBE44952E6741220034DC0A /* XCRemoteSwiftPackageReference "qrcode" */;
-			productName = QRCodeStatic;
 		};
 		0CF8F68F2E673E73007E41C4 /* Cuckoo */ = {
 			isa = XCSwiftPackageProductDependency;
