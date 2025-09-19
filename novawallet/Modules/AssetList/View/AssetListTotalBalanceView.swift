@@ -29,12 +29,32 @@ final class AssetListTotalBalanceView: UIView {
         button.imageView?.contentMode = .scaleAspectFit
     }
 
-    let amountLabel: GenericSecuredView<AssetListTotalAmountLabel> = .create { view in
+    let amountLabel: DotsSecureView<AssetListTotalAmountLabel> = .create { view in
+        view.privacyModeConfiguration = .largeBalanceSecondary
         view.originalView.textColor = R.color.colorTextSecondary()
         view.originalView.font = .boldLargeTitle
     }
 
-    let locksView: GenericSecuredView<AssetListTotalLocksView> = .create {
+    let locksView: GenericBorderedView<
+        IconDetailsGenericView<
+            IconDetailsGenericView<
+                DotsSecureView<UILabel>
+            >
+        >
+    > = .create {
+        $0.contentInsets = Constants.locksContentInsets
+        $0.backgroundView.apply(style: .chipsOnCard)
+        $0.setupContentView = { contentView in
+            contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
+            contentView.detailsView.detailsView.privacyModeConfiguration = .smallBalanceChip
+            contentView.detailsView.detailsView.originalView.font = .regularFootnote
+            contentView.detailsView.detailsView.originalView.textColor = R.color.colorChipText()!
+            contentView.spacing = 4
+            contentView.detailsView.spacing = 4
+            contentView.detailsView.mode = .detailsIcon
+            contentView.detailsView.imageView.image = R.image.iconInfoFilled()?.kf.resize(to: Constants.infoIconSize)
+        }
+
         $0.isHidden = true
     }
 
@@ -134,7 +154,8 @@ final class AssetListTotalBalanceView: UIView {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.bind(value)
+            amountLabel.originalView.bind(value.originalContent)
+            amountLabel.bind(value.privacyMode)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -171,7 +192,8 @@ final class AssetListTotalBalanceView: UIView {
 
     private func setupStateWithLocks(amount: SecuredViewModel<String>) {
         locksView.isHidden = false
-        locksView.bind(amount)
+        locksView.contentView.detailsView.detailsView.originalView.text = amount.originalContent
+        locksView.contentView.detailsView.detailsView.bind(amount.privacyMode)
     }
 
     private func setupStateWithoutLocks() {

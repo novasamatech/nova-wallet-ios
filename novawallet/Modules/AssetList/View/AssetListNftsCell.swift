@@ -38,18 +38,11 @@ final class AssetListNftsView: UIView {
         view.apply(style: .regularSubhedlinePrimary)
     }
 
-    let counterView: GenericSecuredView<RoundedIconTitleView> = .create { view in
-        view.originalView.titleView.detailsLabel.apply(style: .semiboldChip)
-        view.originalView.titleView.spacing = .zero
-        view.originalView.titleView.hidesIcon = true
-        view.originalView.contentInsets = .zero
-        view.originalView.roundedBackgroundView.apply(style: .chips)
-        view.originalView.roundedBackgroundView.cornerRadius = 8.0
-    }
-
-    let counterBackgroundView: RoundedView = .create { view in
-        view.apply(style: .chips)
-        view.cornerRadius = 8.0
+    let counterView: GenericBorderedView<DotsSecureView<IconDetailsView>> = .create { view in
+        view.contentView.privacyModeConfiguration = .smallBalanceChip
+        view.contentView.originalView.hidesIcon = true
+        view.contentView.originalView.spacing = .zero
+        view.contentView.originalView.detailsLabel.apply(style: .semiboldChip)
     }
 
     let accessoryImageView: UIImageView = .create { view in
@@ -81,9 +74,10 @@ final class AssetListNftsView: UIView {
     func bind(viewModel: AssetListNftsViewModel) {
         switch viewModel.totalCount {
         case let .cached(value), let .loaded(value):
-            counterView.bind(value)
+            counterView.contentView.originalView.bind(viewModel: value.originalContent)
+            counterView.contentView.bind(value.privacyMode)
         case .loading:
-            counterView.originalView.bind(title: "", icon: nil)
+            counterView.contentView.originalView.bind(viewModel: .init(title: "", icon: nil))
         }
 
         bind(mediaViewModels: viewModel.mediaViewModels)

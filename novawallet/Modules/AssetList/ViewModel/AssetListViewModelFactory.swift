@@ -189,7 +189,10 @@ private extension AssetListViewModelFactory {
 
         return AssetListNftsViewModel(
             totalCount: .loaded(
-                value: .wrapped((title: count, icon: nil), with: genericParams.privacyModeEnabled)
+                value: .wrapped(
+                    TitleIconViewModel(title: count, icon: nil),
+                    with: genericParams.privacyModeEnabled
+                )
             ),
             mediaViewModels: viewModels
         )
@@ -204,7 +207,7 @@ private extension AssetListViewModelFactory {
 
         return AssetListMultisigOperationsViewModel(
             totalCount: .wrapped(
-                (title: count, icon: R.image.iconPending()),
+                TitleIconViewModel(title: count, icon: R.image.iconPending()),
                 with: genericParams.privacyModeEnabled
             )
         )

@@ -11,17 +11,8 @@ final class AssetListAssetBalanceLabel: UILabel {
     }
 }
 
-// MARK: - SecurableViewProtocol
-
-extension AssetListAssetBalanceLabel: SecurableViewProtocol {
-    func update(with viewModel: String) {
+extension AssetListAssetBalanceLabel {
+    func bind(_ viewModel: String) {
         attributedText = createAttributedText(from: viewModel)
-    }
-
-    func createSecureOverlay() -> UIView? {
-        let dotsView = DotsOverlayView()
-        dotsView.configuration = .smallBalance
-
-        return dotsView
     }
 }

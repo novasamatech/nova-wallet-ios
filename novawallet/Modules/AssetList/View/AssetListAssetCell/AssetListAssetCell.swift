@@ -16,13 +16,15 @@ class AssetListAssetCell: UICollectionViewCell {
         return label
     }()
 
-    let balanceLabel: GenericSecuredView<AssetListAssetBalanceLabel> = .create {
+    let balanceLabel: DotsSecureView<AssetListAssetBalanceLabel> = .create {
+        $0.privacyModeConfiguration = .smallBalanceSecondary
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right
     }
 
-    let balanceValueLabel: GenericSecuredView<AssetListAssetValueLabel> = .create {
+    let balanceValueLabel: DotsSecureView<UILabel> = .create {
+        $0.privacyModeConfiguration = .smallBalanceSecondary
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right
@@ -129,18 +131,20 @@ class AssetListAssetCell: UICollectionViewCell {
     private func applyBalance(_ balanceViewModel: LoadableViewModelState<SecuredViewModel<String>>) {
         switch balanceViewModel {
         case .loading:
-            balanceLabel.originalView.update(with: "")
+            balanceLabel.originalView.bind("")
         case let .cached(value), let .loaded(value):
-            balanceLabel.bind(value)
+            balanceLabel.originalView.bind(value.originalContent)
+            balanceLabel.bind(value.privacyMode)
         }
     }
 
     private func applyBalanceValue(_ balanceValueViewModel: LoadableViewModelState<SecuredViewModel<String>>) {
         switch balanceValueViewModel {
         case .loading:
-            balanceValueLabel.originalView.update(with: "")
+            balanceValueLabel.originalView.text = ""
         case let .cached(value), let .loaded(value):
-            balanceValueLabel.bind(value)
+            balanceValueLabel.originalView.text = value.originalContent
+            balanceValueLabel.bind(value.privacyMode)
         }
     }
 

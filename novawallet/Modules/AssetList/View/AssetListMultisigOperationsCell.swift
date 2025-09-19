@@ -23,16 +23,15 @@ final class AssetListMultisigOperationsView: UIView {
         view.apply(style: .regularSubhedlinePrimary)
     }
 
-    let counterView: GenericSecuredView<RoundedIconTitleView> = .create { view in
-        view.originalView.titleView.detailsLabel.apply(style: .semiboldChip)
-        view.originalView.titleView.spacing = 4.0
-        view.originalView.contentInsets = .zero
-        view.originalView.roundedBackgroundView.apply(style: .chips)
-        view.originalView.roundedBackgroundView.cornerRadius = 8.0
+    let counterView: GenericBorderedView<DotsSecureView<IconDetailsView>> = .create { view in
+        view.contentView.privacyModeConfiguration = .smallBalanceChip
+        view.contentView.originalView.iconWidth = 16.0
+        view.contentView.originalView.spacing = 1.0
+        view.contentView.originalView.detailsLabel.apply(style: .semiboldChip)
     }
 
     var counterLabel: UILabel {
-        counterView.originalView.titleView.detailsLabel
+        counterView.contentView.originalView.detailsLabel
     }
 
     let accessoryImageView: UIImageView = .create { view in
@@ -63,7 +62,8 @@ final class AssetListMultisigOperationsView: UIView {
     }
 
     func bind(viewModel: AssetListMultisigOperationsViewModel) {
-        counterView.bind(viewModel.totalCount)
+        counterView.contentView.originalView.bind(viewModel: viewModel.totalCount.originalContent)
+        counterView.contentView.bind(viewModel.totalCount.privacyMode)
     }
 }
 
