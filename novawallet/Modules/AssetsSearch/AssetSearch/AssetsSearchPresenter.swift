@@ -61,13 +61,35 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         }
     }
 
-    private func processAssetSelected(with chainAssetId: ChainAssetId) {
+    // MARK: - AssetsSearchPresenterProtocol
+
+    func setup() {
+        interactor.setup()
+    }
+
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        processAssetSelected(with: chainAssetId)
+    }
+
+    func updateSearch(query: String) {
+        interactor.search(query: query)
+    }
+
+    func cancel() {
+        wireframe.close(view: view)
+    }
+}
+
+// MARK: - Private
+
+private extension AssetsSearchPresenter {
+    func processAssetSelected(with chainAssetId: ChainAssetId) {
         delegate?.assetSearchDidSelect(chainAssetId: chainAssetId)
 
         wireframe.close(view: view)
     }
 
-    private func provideAssetsViewModel() {
+    func provideAssetsViewModel() {
         guard
             let result,
             let assetListStyle
@@ -105,7 +127,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         view?.didReceiveList(viewModel: groupViewModel)
     }
 
-    private func createAssetGroupViewModel(
+    func createAssetGroupViewModel(
         from groupModel: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
@@ -123,13 +145,12 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             assetsList: assets,
             group: groupModel,
             maybePrices: maybePrices,
-            privacyModeEnabled: true,
             connected: true
         )
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
             params: params,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         ) {
             .token(groupViewModel)
         } else {
@@ -137,7 +158,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         }
     }
 
-    private func createChainGroupViewModel(
+    func createChainGroupViewModel(
         from groupModel: AssetListChainGroupModel,
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
@@ -161,36 +182,23 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             chain: chain,
             assets: assetInfoList,
             value: groupModel.value,
-            privacyModeEnabled: true,
             connected: true
         )
 
         let groupViewModel = viewModelFactory.createNetworkGroupViewModel(
             params: params,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         return .network(groupViewModel)
     }
 
-    // MARK: - AssetsSearchPresenterProtocol
-
-    func setup() {
-        interactor.setup()
-    }
-
-    func selectAsset(for chainAssetId: ChainAssetId) {
-        processAssetSelected(with: chainAssetId)
-    }
-
-    func updateSearch(query: String) {
-        interactor.search(query: query)
-    }
-
-    func cancel() {
-        wireframe.close(view: view)
+    func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
+        ViewModelFactoryGenericParams(locale: selectedLocale)
     }
 }
+
+// MARK: - AssetsSearchInteractorOutputProtocol
 
 extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
     func didReceive(result: AssetSearchBuilderResult) {
@@ -205,6 +213,8 @@ extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
         view?.didReceiveAssetGroupsStyle(style)
     }
 }
+
+// MARK: - Localizable
 
 extension AssetsSearchPresenter: Localizable {
     func applyLocalization() {

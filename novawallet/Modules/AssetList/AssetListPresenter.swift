@@ -90,10 +90,9 @@ private extension AssetListPresenter {
                     ),
                     prices: nil,
                     locks: nil,
-                    hasSwaps: model.hasSwaps(),
-                    privacyModeEnabled: privacyModeEnabled
+                    hasSwaps: model.hasSwaps()
                 ),
-                locale: selectedLocale
+                genericParams: createGenericViewModelFactoryParams()
             )
 
             view?.didReceiveHeader(viewModel: viewModel)
@@ -186,9 +185,8 @@ private extension AssetListPresenter {
                 prices: totalValue,
                 locks: totalLocks,
                 hasSwaps: model.hasSwaps(),
-                privacyModeEnabled: privacyModeEnabled
             ),
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         view?.didReceiveHeader(viewModel: viewModel)
@@ -380,13 +378,12 @@ private extension AssetListPresenter {
             assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
-            privacyModeEnabled: privacyModeEnabled,
             connected: true
         )
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
             params: params,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         ) {
             .token(groupViewModel)
         } else {
@@ -423,13 +420,13 @@ private extension AssetListPresenter {
             chain: chain,
             assets: assetInfoList,
             value: groupModel.value,
-            privacyModeEnabled: privacyModeEnabled,
             connected: true
         )
+
         return .network(
             viewModelFactory.createNetworkGroupViewModel(
                 params: params,
-                locale: selectedLocale
+                genericParams: createGenericViewModelFactoryParams()
             )
         )
     }
@@ -438,8 +435,7 @@ private extension AssetListPresenter {
         let viewModel = viewModelFactory.createOrganizerViewModel(
             from: model.nfts,
             operations: model.pendingOperations,
-            privacyModeEnabled: privacyModeEnabled,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         guard organizerViewModel != viewModel else {
@@ -475,6 +471,13 @@ private extension AssetListPresenter {
         }
 
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+    }
+
+    func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
+        ViewModelFactoryGenericParams(
+            locale: selectedLocale,
+            privacyModeEnabled: privacyModeEnabled
+        )
     }
 }
 
