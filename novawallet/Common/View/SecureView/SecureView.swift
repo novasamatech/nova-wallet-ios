@@ -6,21 +6,16 @@ enum ViewPrivacyMode {
     case hidden
 }
 
-protocol SecurableViewProtocol: AnyObject {
-    associatedtype ViewModel
-
-    func update(with viewModel: ViewModel)
-    func createSecureOverlay() -> UIView?
-}
-
-final class GenericSecuredView<View: UIView & SecurableViewProtocol>: UIView {
+class BaseSecureView<View: UIView>: UIView {
     let originalView: View
 
     private lazy var secureOverlayView: UIView? = {
-        originalView.createSecureOverlay()
+        createSecureOverlay()
     }()
 
-    init(originalView: View = View()) {
+    init(
+        originalView: View = View()
+    ) {
         self.originalView = originalView
         super.init(frame: .zero)
         setupLayout()
@@ -36,11 +31,15 @@ final class GenericSecuredView<View: UIView & SecurableViewProtocol>: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    func createSecureOverlay() -> UIView? {
+        fatalError("Method must be overriden by child class")
+    }
 }
 
 // MARK: - Private
 
-private extension GenericSecuredView {
+private extension BaseSecureView {
     func setupLayout() {
         setupLayout(for: originalView)
     }
@@ -67,11 +66,9 @@ private extension GenericSecuredView {
 
 // MARK: - Internal
 
-extension GenericSecuredView {
-    func bind(_ viewModel: SecuredViewModel<View.ViewModel>) {
-        originalView.update(with: viewModel.originalContent)
-
-        switch viewModel.privacyMode {
+extension BaseSecureView {
+    func bind(_ privacyMode: ViewPrivacyMode) {
+        switch privacyMode {
         case .hidden:
             if let secureOverlayView {
                 guard secureOverlayView.superview == nil else { return }
@@ -84,5 +81,18 @@ extension GenericSecuredView {
 
             hideSecureOverlay()
         }
+    }
+}
+
+// MARK: - DotsSecureView
+
+final class DotsSecureView<View: UIView>: BaseSecureView<View> {
+    var privacyModeConfiguration: DotsOverlayView.Configuration = .default
+
+    override func createSecureOverlay() -> UIView? {
+        let overlay = DotsOverlayView()
+        overlay.configuration = privacyModeConfiguration
+
+        return overlay
     }
 }

@@ -68,7 +68,7 @@ enum AssetListOrganizerItemViewModel: Equatable {
 }
 
 struct AssetListNftsViewModel: Equatable {
-    let totalCount: LoadableViewModelState<SecuredViewModel<RoundedIconTitleView.ViewModel>>
+    let totalCount: LoadableViewModelState<SecuredViewModel<TitleIconViewModel>>
     let mediaViewModels: [NftMediaViewModelProtocol]
 
     static func == (
@@ -85,7 +85,7 @@ struct AssetListNftsViewModel: Equatable {
 }
 
 struct AssetListMultisigOperationsViewModel: Equatable {
-    let totalCount: SecuredViewModel<RoundedIconTitleView.ViewModel>
+    let totalCount: SecuredViewModel<TitleIconViewModel>
 
     static func == (
         lhs: AssetListMultisigOperationsViewModel,

@@ -92,33 +92,3 @@ private extension RoundedIconTitleView {
         }
     }
 }
-
-// MARK: - SecurableViewProtocol
-
-extension RoundedIconTitleView: SecurableViewProtocol {
-    typealias ViewModel = (title: String, icon: UIImage?)
-
-    func update(with viewModel: ViewModel) {
-        bind(title: viewModel.title, icon: viewModel.icon)
-    }
-
-    func createSecureOverlay() -> UIView? {
-        let container = UIView()
-
-        let dotsOverlay = DotsOverlayView()
-        dotsOverlay.configuration = .smallBalance
-
-        let backgroundView = createBackground()
-
-        setupBackgroundLayout(
-            for: container,
-            backgroundView: backgroundView
-        )
-        setupContentLayout(
-            for: backgroundView,
-            contentView: dotsOverlay
-        )
-
-        return container
-    }
-}

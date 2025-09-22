@@ -40,25 +40,8 @@ final class AssetListTotalAmountLabel: UILabel {
     }
 }
 
-// MARK: - SecurableViewProtocol
-
-extension AssetListTotalAmountLabel: SecurableViewProtocol {
-    typealias ViewModel = AssetListTotalAmountViewModel
-
-    func update(with viewModel: AssetListTotalAmountViewModel) {
+extension AssetListTotalAmountLabel {
+    func bind(_ viewModel: AssetListTotalAmountViewModel) {
         attributedText = totalAmountString(from: viewModel)
-    }
-
-    func createSecureOverlay() -> UIView? {
-        let dotsView = DotsOverlayView()
-        dotsView.configuration = DotsOverlayView.Configuration(
-            dotSize: 10,
-            spacing: 6,
-            numberOfDots: 4,
-            dotColor: R.color.colorTextSecondary()!,
-            alignment: .left
-        )
-
-        return dotsView
     }
 }

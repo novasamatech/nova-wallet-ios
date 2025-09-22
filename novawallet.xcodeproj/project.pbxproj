@@ -1908,10 +1908,9 @@
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
 		2DA826D22E78155D00C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
-		2DA826DE2E7986DF00C03B3C /* GenericSecuredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */; };
+		2DA826DE2E7986DF00C03B3C /* SecureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DD2E7986DF00C03B3C /* SecureView.swift */; };
 		2DA826E02E79AF8400C03B3C /* SecuredViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */; };
 		2DA826E22E79C19F00C03B3C /* AssetListTotalAmountLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */; };
-		2DA826E42E79C2CB00C03B3C /* AssetListTotalLocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */; };
 		2DA826E62E79DC5400C03B3C /* DotsOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
@@ -2010,7 +2009,6 @@
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDC720F2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */; };
-		2DDC72132E7A1EC900480C6F /* AssetListAssetValueLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
 		2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */; };
 		2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */; };
@@ -8400,10 +8398,9 @@
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
-		2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericSecuredView.swift; sourceTree = "<group>"; };
+		2DA826DD2E7986DF00C03B3C /* SecureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureView.swift; sourceTree = "<group>"; };
 		2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredViewModel.swift; sourceTree = "<group>"; };
 		2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalAmountLabel.swift; sourceTree = "<group>"; };
-		2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalLocksView.swift; sourceTree = "<group>"; };
 		2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsOverlayView.swift; sourceTree = "<group>"; };
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -8493,7 +8490,6 @@
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
 		2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetBalanceLabel.swift; sourceTree = "<group>"; };
-		2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetValueLabel.swift; sourceTree = "<group>"; };
 		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
 		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTab.swift; sourceTree = "<group>"; };
@@ -17977,16 +17973,16 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		2DEA7B832E7415C9001F3DF5 /* Securable */ = {
+		2DEA7B832E7415C9001F3DF5 /* SecureView */ = {
 			isa = PBXGroup;
 			children = (
 				2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */,
 				2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */,
 				2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */,
-				2DA826DD2E7986DF00C03B3C /* GenericSecuredView.swift */,
+				2DA826DD2E7986DF00C03B3C /* SecureView.swift */,
 				2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */,
 			);
-			path = Securable;
+			path = SecureView;
 			sourceTree = "<group>";
 		};
 		2DEDEF482E4CE488008F07B2 /* ChainProvider */ = {
@@ -23549,7 +23545,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
-				2DEA7B832E7415C9001F3DF5 /* Securable */,
+				2DEA7B832E7415C9001F3DF5 /* SecureView */,
 				0CF6928A2C231C89000FC395 /* SharedStatusView */,
 				2D5493322C04C0C000607BF7 /* MnemonicCard */,
 				0CC0F7F52BB070C6002C49F6 /* LoadableAction */,
@@ -26093,7 +26089,6 @@
 			isa = PBXGroup;
 			children = (
 				2DA826E12E79C19F00C03B3C /* AssetListTotalAmountLabel.swift */,
-				2DA826E32E79C2CB00C03B3C /* AssetListTotalLocksView.swift */,
 				0CF606CA2D7B0E290041B7AE /* AssetListCardCell.swift */,
 				2D008A642CC5684F00BFEE99 /* AssetListCollectionManager */,
 				2D008A5B2CC11DE300BFEE99 /* FlowLayout */,
@@ -26112,7 +26107,6 @@
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
 				0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */,
 				2DDC720E2E7A1C1A00480C6F /* AssetListAssetBalanceLabel.swift */,
-				2DDC72122E7A1EC900480C6F /* AssetListAssetValueLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -30653,7 +30647,6 @@
 				0CED71B72D9C105200F79C02 /* XcmExecuteDerivator.swift in Sources */,
 				2DE8B0E22E5631C300F8BD40 /* MultisigOperationFetchProxyViewLayout.swift in Sources */,
 				849976CA27B2F9E000B14A6C /* DAppMetamaskAuthorizingState.swift in Sources */,
-				2DDC72132E7A1EC900480C6F /* AssetListAssetValueLabel.swift in Sources */,
 				F484FF5F264BA2720015320F /* ControllerAccountConfirmationLayout.swift in Sources */,
 				841494402604E71C000D8D1A /* TotalRewardItem.swift in Sources */,
 				88DA0CD0295F345E0009F70F /* WKWebView+VewportScript.swift in Sources */,
@@ -35717,7 +35710,6 @@
 				34E4B25CDFE0D7B5F4F18185 /* TransferNetworkSelectionInteractor.swift in Sources */,
 				7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */,
 				0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */,
-				2DA826E42E79C2CB00C03B3C /* AssetListTotalLocksView.swift in Sources */,
 				2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */,
 				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
@@ -36110,7 +36102,7 @@
 				FF3E3B0F71CD8C7AE878D06E /* MythosStkUnstakeSetupProtocols.swift in Sources */,
 				EDC5AACA7BA4A76C7D7E59F0 /* MythosStkUnstakeSetupWireframe.swift in Sources */,
 				B0420093B7E820C0CE2996F7 /* MythosStkUnstakeSetupPresenter.swift in Sources */,
-				2DA826DE2E7986DF00C03B3C /* GenericSecuredView.swift in Sources */,
+				2DA826DE2E7986DF00C03B3C /* SecureView.swift in Sources */,
 				0CBB1EA0D929938F74ED2E84 /* MythosStkUnstakeSetupInteractor.swift in Sources */,
 				5B9A3E47786A9991A53A3483 /* MythosStkUnstakeSetupViewFactory.swift in Sources */,
 				C9F25C75F66E7EFDE71CCF00 /* MythosStkUnstakeConfirmProtocols.swift in Sources */,
