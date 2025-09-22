@@ -13,7 +13,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     LoadableGenericIconDetailsView<
         GenericPairValueView<
             GenericPairValueView<ShimmerLabel, BorderedIconLabelView>,
-            DotsSecureView<UILabel>
+            GenericPairValueView<UILabel, DotsSecureView<UILabel>>
         >
     >,
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
@@ -25,7 +25,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     var networkLabel: ShimmerLabel { titleView.detailsView.fView.fView }
     var stakingTypeView: BorderedIconLabelView { titleView.detailsView.fView.sView }
 
-    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.detailsView.sView }
+    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.detailsView.sView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
@@ -130,14 +130,21 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     ) {
         titleView.bind(imageViewModel: viewModel.icon)
 
-        let balanceString = balance.originalContent.map {
-            R.string.localizable.commonAvailableFormat($0.amount, preferredLanguages: locale.rLanguages)
+        if let balanceViewModel = balance.originalContent {
+            titleView.detailsView.sView.isHidden = false
+            titleView.detailsView.sView.fView.text = R.string.localizable.commonAvailablePrefix(
+                preferredLanguages: locale.rLanguages
+            )
+            balanceSecureLabel.originalView.text = balanceViewModel.amount
+        } else {
+            titleView.detailsView.sView.isHidden = true
+            titleView.detailsView.sView.fView.text = nil
+            balanceSecureLabel.originalView.text = nil
         }
 
-        networkLabel.text = viewModel.name
-
         balanceSecureLabel.bind(balance.privacyMode)
-        balanceSecureLabel.originalView.text = balanceString
+
+        networkLabel.text = viewModel.name
     }
 
     private func configure() {
@@ -150,6 +157,11 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         titleView.detailsView.fView.makeHorizontal()
         titleView.detailsView.fView.spacing = 4
+
+        titleView.detailsView.sView.makeHorizontal()
+        titleView.detailsView.sView.spacing = 6
+        titleView.detailsView.sView.fView.apply(style: .caption1Secondary)
+        titleView.detailsView.sView.fView.textAlignment = .left
 
         networkLabel.applyShimmer(style: .regularSubheadlinePrimary)
         networkLabel.textAlignment = .left
