@@ -63,9 +63,9 @@ private extension UpdatedWalletBrowserStateCleaner {
     }
 
     func createTabIdsWrapper(
-        using providers: WalletStorageCleaningProviders
+        for metaIds: Set<MetaAccountModel.Id>
     ) -> CompoundOperationWrapper<Set<UUID>> {
-        let tabsWrapper = createTabsWrapper(using: providers)
+        let tabsWrapper = browserTabManager.getAllTabs(for: metaIds)
 
         let mappingOperation = ClosureOperation<Set<UUID>> {
             let tabIds = try tabsWrapper.targetOperation
@@ -80,51 +80,26 @@ private extension UpdatedWalletBrowserStateCleaner {
         return tabsWrapper.insertingTail(operation: mappingOperation)
     }
 
-    func createTabsWrapper(
-        using providers: WalletStorageCleaningProviders
-    ) -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let metaIdsOperation = createMetaIdsOperation(using: providers)
+    func extractMetaIds(
+        from providers: WalletStorageCleaningProviders
+    ) -> Set<MetaAccountModel.Id> {
+        let walletsBeforeChanges = providers.walletsBeforeChangesProvider()
+        let updatedWallets = providers.changesProvider()
+            .map(\.item)
 
-        let tabsWrapper: CompoundOperationWrapper<[DAppBrowserTab]>
-        tabsWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
+        let cleanTabsWalletIds = updatedWallets
+            .filter {
+                guard
+                    let updatedWallet = $0?.info,
+                    let walletBeforeChange = walletsBeforeChanges[updatedWallet.metaId]?.info
+                else {
+                    return false
+                }
 
-            let metaIds = try metaIdsOperation.extractNoCancellableResultData()
+                return walletBeforeChange.chainAccounts != updatedWallet.chainAccounts
+            }.compactMap { $0?.info.metaId }
 
-            return browserTabManager.getAllTabs(for: metaIds)
-        }
-
-        tabsWrapper.addDependency(operations: [metaIdsOperation])
-
-        return tabsWrapper.insertingHead(operations: [metaIdsOperation])
-    }
-
-    func createMetaIdsOperation(
-        using providers: WalletStorageCleaningProviders
-    ) -> ClosureOperation<Set<MetaAccountModel.Id>> {
-        ClosureOperation {
-            let walletsBeforeChanges = try providers.walletsBeforeChangesProvider()
-            let updatedWallets = try providers.changesProvider()
-                .map(\.item)
-
-            let cleanTabsWalletIds = updatedWallets
-                .filter {
-                    guard
-                        let updatedWallet = $0?.info,
-                        let walletBeforeChange = walletsBeforeChanges[updatedWallet.metaId]?.info
-                    else {
-                        return false
-                    }
-
-                    return walletBeforeChange.chainAccounts != updatedWallet.chainAccounts
-                }.compactMap { $0?.info.metaId }
-
-            return Set(cleanTabsWalletIds)
-        }
+        return Set(cleanTabsWalletIds)
     }
 }
 
@@ -134,7 +109,13 @@ extension UpdatedWalletBrowserStateCleaner: WalletStorageCleaning {
     func cleanStorage(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
-        let tabIdsWrapper = createTabIdsWrapper(using: providers)
+        let metaIds = extractMetaIds(from: providers)
+
+        guard !metaIds.isEmpty else {
+            return .createWithResult(())
+        }
+
+        let tabIdsWrapper = createTabIdsWrapper(for: metaIds)
 
         let webViewPoolCleaningOperation = createWebViewCleaningOperation(
             dependingOn: tabIdsWrapper

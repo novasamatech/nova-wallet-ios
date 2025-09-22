@@ -26,25 +26,17 @@ final class RemovedWalletNotificationsCleaner: WalletNotificationsCleaner {
     override func createUpdatedSettingsWrapper(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
-        OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
+        let metaIds = Set(
+            providers.changesProvider()
+                .filter { $0.isDeletion }
+                .map(\.identifier)
+        )
 
-            let metaIds = Set(
-                try providers.changesProvider()
-                    .filter { $0.isDeletion }
-                    .map(\.identifier)
-            )
-
-            guard !metaIds.isEmpty else {
-                return .createWithResult(nil)
-            }
-
-            return createUpdatedSettingsWrapper(for: metaIds)
+        guard !metaIds.isEmpty else {
+            return .createWithResult(nil)
         }
+
+        return createUpdatedSettingsWrapper(for: metaIds)
     }
 }
 
