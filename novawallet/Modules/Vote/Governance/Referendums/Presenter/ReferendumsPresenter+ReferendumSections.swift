@@ -27,7 +27,7 @@ extension ReferendumsPresenter {
                 voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
-                locale: selectedLocale
+                genericParams: createGenericParams()
             )
         } else {
             activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
@@ -35,7 +35,7 @@ extension ReferendumsPresenter {
                 voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
-                locale: selectedLocale
+                genericParams: createGenericParams()
             )
         }
     }

@@ -159,6 +159,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             crowdloansCalculator: CrowdloansCalculator(),
             accountManagementFilter: AccountManagementFilter(),
             appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared,
             logger: Logger.shared
         )
 

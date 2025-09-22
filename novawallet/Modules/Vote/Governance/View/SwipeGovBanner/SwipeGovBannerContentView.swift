@@ -2,63 +2,6 @@ import UIKit
 import UIKit_iOS
 import SnapKit
 
-typealias SwipeGovBannerTableViewCell = PlainBaseTableViewCell<SwipeGovBannerView>
-
-extension PlainBaseTableViewCell where C == SwipeGovBannerView {
-    func setupStyle() {
-        backgroundColor = .clear
-        selectionStyle = .none
-    }
-}
-
-// MARK: Banner View
-
-final class SwipeGovBannerView: UIView {
-    let gradientBackgroundView: RoundedGradientBackgroundView = .create { view in
-        view.cornerRadius = 12
-        view.strokeWidth = 2
-        view.strokeColor = R.color.colorContainerBorder()!
-        view.shadowColor = UIColor.black
-        view.shadowOpacity = 0.16
-        view.shadowOffset = CGSize(width: 6, height: 4)
-        view.bind(model: .swipeGovCell())
-    }
-
-    let contentView = SwipeGovBannerContentView()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-
-        backgroundColor = .clear
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupLayout() {
-        addSubview(gradientBackgroundView)
-        gradientBackgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.bottom.equalToSuperview().inset(15)
-        }
-    }
-
-    func bind(with viewModel: SwipeGovBannerViewModel) {
-        contentView.bind(with: viewModel)
-    }
-}
-
-// MARK: Content View
-
 final class SwipeGovBannerContentView: GenericPairValueView<
     GenericPairValueView<
         UIImageView,
@@ -117,13 +60,17 @@ final class SwipeGovBannerContentView: GenericPairValueView<
 
         backgroundColor = .clear
     }
+}
 
-    private func configure() {
-        setHorizontalAndSpacing(12.0)
-        fView.setHorizontalAndSpacing(12.0)
-        titleValueView.setVerticalAndSpacing(9.0)
+// MARK: - Private
+
+private extension SwipeGovBannerContentView {
+    func configure() {
+        setHorizontalAndSpacing(Constants.mainHorizontalSpacing)
+        fView.setHorizontalAndSpacing(Constants.mainHorizontalSpacing)
+        titleValueView.setVerticalAndSpacing(Constants.titleValueVerticalSpacing)
         titleValueView.stackView.alignment = .leading
-        titleValueView.fView.setHorizontalAndSpacing(8.0)
+        titleValueView.fView.setHorizontalAndSpacing(Constants.titleCounterHorizontalSpacing)
         titleValueView.fView.stackView.distribution = .equalCentering
 
         titleLabel.apply(style: .regularSubhedlinePrimary)
@@ -136,13 +83,13 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         counterLabel.apply(style: .semiboldChip)
 
         counterView.snp.makeConstraints { make in
-            make.height.equalTo(22)
+            make.height.equalTo(Constants.counterViewHeight)
         }
         iconView.snp.makeConstraints { make in
-            make.width.height.equalTo(72)
+            make.width.height.equalTo(Constants.iconSize)
         }
         accessoryView.snp.makeConstraints { make in
-            make.width.height.equalTo(24)
+            make.width.height.equalTo(Constants.accessorySize)
         }
 
         accessoryView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
@@ -151,7 +98,11 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         iconView.image = R.image.iconSwipeGov()
         iconView.contentMode = .scaleAspectFit
     }
+}
 
+// MARK: - Internal
+
+extension SwipeGovBannerContentView {
     func bind(with viewModel: SwipeGovBannerViewModel) {
         titleLabel.text = viewModel.title
         valueLabel.text = viewModel.description
@@ -164,5 +115,18 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         }
 
         counterSecureView.bind(viewModel.referendumCounterText.privacyMode)
+    }
+}
+
+// MARK: - Constants
+
+private extension SwipeGovBannerContentView {
+    enum Constants {
+        static let mainHorizontalSpacing: CGFloat = 12.0
+        static let titleValueVerticalSpacing: CGFloat = 9.0
+        static let titleCounterHorizontalSpacing: CGFloat = 8.0
+        static let counterViewHeight: CGFloat = 22
+        static let iconSize: CGFloat = 72
+        static let accessorySize: CGFloat = 24
     }
 }

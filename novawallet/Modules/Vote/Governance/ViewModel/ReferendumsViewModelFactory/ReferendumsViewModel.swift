@@ -12,8 +12,8 @@ enum ReferendumsSection {
 }
 
 enum ReferendumPersonalActivity {
-    case locks(ReferendumsUnlocksViewModel)
-    case delegations(ReferendumsDelegationViewModel)
+    case locks(SecuredViewModel<ReferendumsUnlocksViewModel>)
+    case delegations(SecuredViewModel<ReferendumsDelegationViewModel>)
 }
 
 struct SwipeGovBannerViewModel {
