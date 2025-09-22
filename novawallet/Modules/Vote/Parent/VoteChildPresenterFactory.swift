@@ -222,6 +222,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             govBalanceCalculatorFactory: GovBalanceCalculatorFactory(),
             localizationManager: localizationManager,
             appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared,
             logger: logger
         )
 

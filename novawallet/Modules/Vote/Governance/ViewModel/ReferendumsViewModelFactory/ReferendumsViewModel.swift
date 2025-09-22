@@ -19,7 +19,7 @@ enum ReferendumPersonalActivity {
 struct SwipeGovBannerViewModel {
     let title: String
     let description: String
-    let referendumCounterText: String?
+    let referendumCounterText: SecuredViewModel<String?>
 }
 
 struct ReferendumsCellViewModel: Hashable {

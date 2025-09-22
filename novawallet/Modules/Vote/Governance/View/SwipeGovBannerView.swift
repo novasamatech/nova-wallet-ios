@@ -65,7 +65,7 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         GenericPairValueView<
             GenericPairValueView<
                 UILabel,
-                BorderedLabelView
+                GenericBorderedView<DotsSecureView<UILabel>>
             >,
             UILabel
         >
@@ -79,19 +79,27 @@ final class SwipeGovBannerContentView: GenericPairValueView<
     var titleValueView: GenericPairValueView<
         GenericPairValueView<
             UILabel,
-            BorderedLabelView
+            GenericBorderedView<DotsSecureView<UILabel>>
         >,
         UILabel
     > {
         fView.sView
     }
 
-    var titleLabel: UILabel {
-        titleValueView.fView.fView
+    var counterView: GenericBorderedView<DotsSecureView<UILabel>> {
+        titleValueView.fView.sView
     }
 
-    var counterLabel: BorderedLabelView {
-        titleValueView.fView.sView
+    var counterSecureView: DotsSecureView<UILabel> {
+        counterView.contentView
+    }
+
+    var counterLabel: UILabel {
+        counterSecureView.originalView
+    }
+
+    var titleLabel: UILabel {
+        titleValueView.fView.fView
     }
 
     var valueLabel: UILabel {
@@ -124,11 +132,12 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         valueLabel.apply(style: .caption1Secondary)
         valueLabel.numberOfLines = 0
 
-        counterLabel.backgroundView.fillColor = R.color.colorChipsBackground()!
-        counterLabel.titleLabel.apply(style: .semiboldChip)
-        counterLabel.contentInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-        counterLabel.backgroundView.cornerRadius = 7
+        counterView.backgroundView.fillColor = R.color.colorChipsBackground()!
+        counterLabel.apply(style: .semiboldChip)
 
+        counterView.snp.makeConstraints { make in
+            make.height.equalTo(22)
+        }
         iconView.snp.makeConstraints { make in
             make.width.height.equalTo(72)
         }
@@ -147,11 +156,13 @@ final class SwipeGovBannerContentView: GenericPairValueView<
         titleLabel.text = viewModel.title
         valueLabel.text = viewModel.description
 
-        if let counterText = viewModel.referendumCounterText {
-            counterLabel.titleLabel.text = counterText
+        if let counterText = viewModel.referendumCounterText.originalContent {
+            counterLabel.text = counterText
             counterLabel.isHidden = false
         } else {
             counterLabel.isHidden = true
         }
+
+        counterSecureView.bind(viewModel.referendumCounterText.privacyMode)
     }
 }

@@ -48,7 +48,7 @@ extension ReferendumsPresenter {
         return swipeGovViewModelFactory.createSwipeGovReferendumsSection(
             with: observableState.state.value,
             eligibleReferendums: swipeGovEligibleReferendums ?? [],
-            locale: selectedLocale
+            genericParams: createGenericParams()
         )
     }
 
