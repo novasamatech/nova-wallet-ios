@@ -8,6 +8,6 @@ struct DAppSettings: Identifiable {
 
     // normaly it is a dapp url's host
     let dAppId: String
-    let metaId: String
+    let metaId: String?
     let source: String?
 }
