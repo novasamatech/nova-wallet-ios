@@ -136,6 +136,13 @@ final class ReferendumsPresenter {
     func createGenericParams() -> ViewModelFactoryGenericParams {
         .init(locale: selectedLocale, privacyModeEnabled: privacyModeEnabled)
     }
+
+    func provideLoadingViewModel() {
+        let sections = viewModelFactory.createLoadingViewModel(genericParams: createGenericParams())
+        let viewModel = ReferendumsViewModel(sections: sections)
+
+        view?.update(model: viewModel)
+    }
 }
 
 // MARK: - Private

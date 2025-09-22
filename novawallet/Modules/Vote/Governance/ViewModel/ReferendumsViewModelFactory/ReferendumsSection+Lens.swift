@@ -4,20 +4,30 @@ extension ReferendumsSection {
             get: { whole in
                 switch whole {
                 case .personalActivities, .swipeGov, .settings, .empty:
-                    return []
-                case let .active(_, activeReferendums):
-                    return activeReferendums
-                case let .completed(_, completedReferendums):
-                    return completedReferendums
+                    []
+                case let .active(viewModel), let .completed(viewModel):
+                    viewModel.cells
                 }
             }, set: { part, whole in
                 switch whole {
                 case .personalActivities, .swipeGov, .settings, .empty:
-                    return whole
-                case let .active(title, _):
-                    return .active(title, part)
-                case let .completed(title, _):
-                    return .completed(title, part)
+                    whole
+                case let .active(viewModel):
+                    .active(
+                        ReferendumsCellsSectionViewModel(
+                            titleText: viewModel.titleText,
+                            countText: viewModel.countText,
+                            cells: part
+                        )
+                    )
+                case let .completed(viewModel):
+                    .completed(
+                        ReferendumsCellsSectionViewModel(
+                            titleText: viewModel.titleText,
+                            countText: viewModel.countText,
+                            cells: part
+                        )
+                    )
                 }
             }
         )

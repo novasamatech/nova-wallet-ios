@@ -64,15 +64,19 @@ final class DelegateVotedReferendaPresenter {
             return
         }
 
-        let referendumsViewModels = viewModelFactory.createReferendumsViewModel(input: .init(
+        let params = ReferendumsModelFactoryParams(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: offchainVotes,
             offchainVotes: nil,
             chainInfo: .init(chain: chain, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale,
             voterName: name
-        ))
+        )
+
+        let referendumsViewModels = viewModelFactory.createReferendumsViewModel(
+            params: params,
+            genericParams: .init(locale: selectedLocale)
+        )
 
         view.update(viewModels: referendumsViewModels)
     }

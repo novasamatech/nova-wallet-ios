@@ -4,17 +4,21 @@ extension ReferendumsPresenter {
     func createReferendumsSections(
         for referendums: [ReferendumLocal],
         accountVotes: ReferendumAccountVotingDistribution?,
-        chainInfo: ReferendumsModelFactoryInput.ChainInformation
+        chainInfo: ReferendumsModelFactoryParams.ChainInformation
     ) -> [ReferendumsSection] {
-        viewModelFactory.createSections(input: .init(
+        let params = ReferendumsModelFactoryParams(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
             offchainVotes: offchainVoting,
             chainInfo: chainInfo,
-            locale: selectedLocale,
             voterName: nil
-        ))
+        )
+
+        return viewModelFactory.createSections(
+            params: params,
+            genericParams: createGenericParams()
+        )
     }
 
     func createActivitySection(

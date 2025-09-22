@@ -46,8 +46,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
             return actions.count
         case .settings, .swipeGov, .empty:
             return 1
-        case let .active(_, cells), let .completed(_, cells):
-            return !cells.isEmpty ? cells.count : 1
+        case let .active(viewModel), let .completed(viewModel):
+            return !viewModel.cells.isEmpty ? viewModel.cells.count : 1
         }
     }
 
@@ -160,8 +160,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
                 cellForRowAt: indexPath,
                 isFilterOn: isFilterOn
             )
-        case let .active(_, cells), let .completed(_, cells):
-            return referendumCell(tableView, cellForRowAt: indexPath, items: cells)
+        case let .active(viewModel), let .completed(viewModel):
+            return referendumCell(tableView, cellForRowAt: indexPath, items: viewModel.cells)
         case let .empty(model):
             return emptyCell(tableView, cellForRowAt: indexPath, emptyModel: model)
         }
@@ -196,8 +196,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
             presenter?.selectSwipeGov()
         case .settings, .empty:
             break
-        case let .active(_, cells), let .completed(_, cells):
-            guard let referendumIndex = cells[safe: indexPath.row]?.referendumIndex else {
+        case let .active(viewModel), let .completed(viewModel):
+            guard let referendumIndex = viewModel.cells[safe: indexPath.row]?.referendumIndex else {
                 return
             }
             presenter?.select(referendumIndex: referendumIndex)
@@ -210,13 +210,13 @@ extension ReferendumsViewManager: UITableViewDelegate {
         switch section {
         case .personalActivities, .swipeGov, .settings, .empty:
             return nil
-        case let .active(title, cells), let .completed(title, cells):
+        case let .active(viewModel), let .completed(viewModel):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            switch title {
-            case let .loaded(value):
-                headerView.bind(viewModel: .loaded(value: .init(title: value, count: cells.count)))
-            case let .cached(value):
-                headerView.bind(viewModel: .cached(value: .init(title: value, count: cells.count)))
+            switch viewModel.titleText {
+            case let .loaded(value), let .cached(value):
+                headerView.bind(
+                    viewModel: .loaded(value: .init(titleText: value, countText: viewModel.countText))
+                )
             case .loading:
                 headerView.bind(viewModel: .loading)
             }
@@ -230,8 +230,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
         switch section {
         case .personalActivities, .swipeGov, .settings, .empty:
             return 0
-        case let .active(title, _), let .completed(title, _):
-            switch title {
+        case let .active(viewModel), let .completed(viewModel):
+            switch viewModel.titleText {
             case .loaded, .cached:
                 return UITableView.automaticDimension
             case .loading:
@@ -250,8 +250,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
             return Constants.swipeGovBannerHeight
         case .settings:
             return Constants.settingsCellHeight
-        case let .active(_, cells), let .completed(_, cells):
-            switch cells[safe: indexPath.row]?.viewModel {
+        case let .active(viewModel), let .completed(viewModel):
+            switch viewModel.cells[safe: indexPath.row]?.viewModel {
             case .loaded, .cached, .none:
                 return UITableView.automaticDimension
             case .loading:
@@ -292,8 +292,9 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             switch section {
             case .personalActivities, .swipeGov, .settings, .empty:
                 break
-            case let .active(_, cells), let .completed(_, cells):
-                let cellModel = cells[indexPath.row]
+            case let .active(viewModel), let .completed(viewModel):
+                let cellModel = viewModel.cells[indexPath.row]
+
                 guard let timeModel = time[cellModel.referendumIndex]??.viewModel else {
                     return
                 }
