@@ -85,16 +85,16 @@ private extension StakingDashboardPresenter {
 
         view?.didReceiveUpdate(viewModel: updateViewModel)
     }
-    
+
     func subscribePrivacyModeChanges() {
         privacyStateManager.addObserver(
             with: self,
             queue: .main
         ) { [weak self] _, privacyModeEnabled in
             self?.privacyModeEnabled = privacyModeEnabled
-            
+
             guard let lastResult = self?.lastResult else { return }
-                
+
             self?.reloadStakingView(using: lastResult.model)
         }
     }
@@ -102,6 +102,8 @@ private extension StakingDashboardPresenter {
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func setup() {
+        subscribePrivacyModeChanges()
+
         interactor.setup()
     }
 

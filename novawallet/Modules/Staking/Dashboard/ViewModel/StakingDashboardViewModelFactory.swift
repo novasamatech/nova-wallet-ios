@@ -69,9 +69,8 @@ final class StakingDashboardViewModelFactory {
         priceData: PriceData?,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         isSyncing: Bool,
-        privacyMode: ViewPrivacyMode,
         locale: Locale
-    ) -> LoadableViewModelState<SecuredViewModel<BalanceViewModelProtocol>> {
+    ) -> LoadableViewModelState<BalanceViewModelProtocol> {
         guard
             let value = value,
             let decimalValue = Decimal.fromSubstrateAmount(value, precision: assetDisplayInfo.assetPrecision) else {
@@ -88,13 +87,8 @@ final class StakingDashboardViewModelFactory {
             decimalValue,
             priceData: priceData ?? PriceData.zero()
         ).value(for: locale)
-        
-        let securedViewModel = SecuredViewModel(
-            originalContent: viewModel,
-            privacyMode: privacyMode
-        )
 
-        return isSyncing ? .cached(value: securedViewModel) : .loaded(value: securedViewModel)
+        return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)
     }
 
     private func createStakingStatus(
@@ -182,7 +176,6 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             priceData: model.price,
             assetDisplayInfo: assetDisplayInfo,
             isSyncing: model.isOffchainSync,
-            privacyMode: privacyModeEnabled ? .hidden : .visible,
             locale: locale
         )
 
@@ -191,7 +184,6 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             priceData: model.price,
             assetDisplayInfo: assetDisplayInfo,
             isSyncing: model.isOnchainSync,
-            privacyMode: privacyModeEnabled ? .hidden : .visible,
             locale: locale
         )
 
@@ -208,9 +200,9 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         return .init(
             networkViewModel: network,
-            totalRewards: totalRewards,
+            totalRewards: .wrapped(totalRewards, with: privacyModeEnabled),
             status: status,
-            yourStake: yourStake,
+            yourStake: .wrapped(yourStake, with: privacyModeEnabled),
             estimatedEarnings: estimatedEarnings,
             stakingType: stakingType
         )
@@ -239,7 +231,6 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             priceData: model.price,
             assetDisplayInfo: assetDisplayInfo,
             isSyncing: false,
-            privacyMode: privacyModeEnabled ? .hidden : .visible,
             locale: locale
         ).value
 
@@ -251,7 +242,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         return .init(
             networkViewModel: network,
             estimatedEarnings: estimatedEarnings,
-            balance: balance,
+            balance: .wrapped(balance, with: privacyModeEnabled),
             stakingType: stakingType
         )
     }

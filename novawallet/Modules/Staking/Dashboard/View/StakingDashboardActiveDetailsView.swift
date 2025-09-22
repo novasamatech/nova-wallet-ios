@@ -16,7 +16,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     var statusView: LoadableStakingStatusView { internalStatusView.titleView }
 
-    private let internalStakeView: GenericMultiValueView<ShimmerMultibalanceView> = .create { view in
+    private let internalStakeView: GenericMultiValueView<ShimmerSecureMultibalanceView> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
         view.spacing = 2
@@ -68,7 +68,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     func bind(
         stakingStatus: LoadableViewModelState<StakingDashboardEnabledViewModel.Status>,
-        stake: LoadableViewModelState<BalanceViewModelProtocol>,
+        stake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>,
         estimatedEarnings: LoadableViewModelState<String?>,
         locale: Locale
     ) {
@@ -90,7 +90,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
         internalStakeView.valueBottom.bind(viewModel: stake)
 
-        if stake.isLoading {
+        if stake.originalContent.isLoading {
             newLoadingState.formUnion(.stake)
         }
 
@@ -161,6 +161,13 @@ final class StakingDashboardActiveDetailsView: UIView {
         internalStakeView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(Constants.stakeOffset)
+        }
+
+        internalStakeView.valueBottom.amountSecureView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(18)
+        }
+        internalStakeView.valueBottom.priceSecureView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(13)
         }
 
         addSubview(estimatedEarningsView)

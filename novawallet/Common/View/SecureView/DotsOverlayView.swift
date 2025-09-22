@@ -90,7 +90,7 @@ extension DotsOverlayView {
             case right
         }
 
-        static let `default` = smallBalanceSecondary
+        static let `default` = smallBalanceChip
 
         static let smallBalanceChip = Configuration(
             dotSize: 4,
@@ -100,19 +100,11 @@ extension DotsOverlayView {
             alignment: .left
         )
 
-        static let smallBalanceSecondary = Configuration(
-            dotSize: 4,
-            spacing: 4,
-            numberOfDots: 4,
-            dotColor: R.color.colorTextSecondary()!,
-            alignment: .left
-        )
-
-        static let largeBalanceSecondary = Configuration(
+        static let largeBalanceChip = Configuration(
             dotSize: 10,
             spacing: 6,
             numberOfDots: 4,
-            dotColor: R.color.colorTextSecondary()!,
+            dotColor: R.color.colorChipText()!,
             alignment: .left
         )
     }

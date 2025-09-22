@@ -12,7 +12,8 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
     LoadableGenericIconDetailsView<
         GenericPairValueView<
-            GenericPairValueView<ShimmerLabel, BorderedIconLabelView>, UILabel
+            GenericPairValueView<ShimmerLabel, BorderedIconLabelView>,
+            DotsSecureView<UILabel>
         >
     >,
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
@@ -24,7 +25,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     var networkLabel: ShimmerLabel { titleView.detailsView.fView.fView }
     var stakingTypeView: BorderedIconLabelView { titleView.detailsView.fView.sView }
 
-    var balanceLabel: UILabel { titleView.detailsView.sView }
+    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.detailsView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
@@ -122,15 +123,21 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         }
     }
 
-    private func setupNetworkView(from viewModel: NetworkViewModel, balance: String?, locale: Locale) {
+    private func setupNetworkView(
+        from viewModel: NetworkViewModel,
+        balance: SecuredViewModel<BalanceViewModelProtocol?>,
+        locale: Locale
+    ) {
         titleView.bind(imageViewModel: viewModel.icon)
 
-        let balanceString = balance.map {
-            R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
+        let balanceString = balance.originalContent.map {
+            R.string.localizable.commonAvailableFormat($0.amount, preferredLanguages: locale.rLanguages)
         }
 
         networkLabel.text = viewModel.name
-        titleView.detailsView.sView.text = balanceString
+
+        balanceSecureLabel.bind(balance.privacyMode)
+        balanceSecureLabel.originalView.text = balanceString
     }
 
     private func configure() {
@@ -158,8 +165,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             make.height.equalTo(16)
         }
 
-        balanceLabel.apply(style: .caption1Secondary)
-        balanceLabel.textAlignment = .left
+        balanceSecureLabel.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(16)
+        }
+
+        balanceSecureLabel.originalView.apply(style: .caption1Secondary)
+        balanceSecureLabel.originalView.textAlignment = .left
 
         valueView.detailsView.makeVertical()
         valueView.spacing = 0
