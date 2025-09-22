@@ -29,6 +29,7 @@ final class PrivacyStateManager: Observable<Bool> {
 
         var privacyModeSettings = settingsManager.privacyModeSettings
 
+        // If `enablePrivacyModeOnLaunch` is enabled, force-enable privacy mode
         if privacyModeSettings.enablePrivacyModeOnLaunch, !privacyModeSettings.privacyModeEnabled {
             privacyModeSettings = privacyModeSettings.with(privacyModeEnabled: true)
             settingsManager.privacyModeSettings = privacyModeSettings
