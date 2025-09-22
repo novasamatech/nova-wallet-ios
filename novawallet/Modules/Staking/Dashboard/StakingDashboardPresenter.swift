@@ -7,7 +7,6 @@ final class StakingDashboardPresenter {
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
-    let privacyStateManager: PrivacyStateManagerProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -15,7 +14,6 @@ final class StakingDashboardPresenter {
     private var lastResult: StakingDashboardBuilderResult?
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
-    private var privacyModeEnabled: Bool = false
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -28,11 +26,13 @@ final class StakingDashboardPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.privacyStateManager = privacyStateManager
         self.logger = logger
         self.localizationManager = localizationManager
+        self.privacyStateManager = privacyStateManager
     }
 }
+
+// MARK: - Private
 
 private extension StakingDashboardPresenter {
     func updateWalletView() {
@@ -85,25 +85,12 @@ private extension StakingDashboardPresenter {
 
         view?.didReceiveUpdate(viewModel: updateViewModel)
     }
-
-    func subscribePrivacyModeChanges() {
-        privacyStateManager.addObserver(
-            with: self,
-            queue: .main
-        ) { [weak self] _, privacyModeEnabled in
-            self?.privacyModeEnabled = privacyModeEnabled
-
-            guard let lastResult = self?.lastResult else { return }
-
-            self?.reloadStakingView(using: lastResult.model)
-        }
-    }
 }
+
+// MARK: - StakingDashboardPresenterProtocol
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func setup() {
-        subscribePrivacyModeChanges()
-
         interactor.setup()
     }
 
@@ -135,6 +122,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         interactor.refresh()
     }
 }
+
+// MARK: - StakingDashboardInteractorOutputProtocol
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
@@ -184,11 +173,27 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 }
 
+// MARK: - Localizable
+
 extension StakingDashboardPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateWalletView()
             updateStakingsView()
         }
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension StakingDashboardPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
+        guard
+            let view,
+            view.isSetup,
+            let lastResult
+        else { return }
+
+        reloadStakingView(using: lastResult.model)
     }
 }

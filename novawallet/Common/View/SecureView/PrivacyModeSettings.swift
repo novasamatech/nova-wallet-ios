@@ -1,24 +1,20 @@
 import Foundation
 
 struct PrivacyModeSettings: Codable {
-    let privacySettingsEnabled: Bool
-    let lastEnabled: Bool
+    let enablePrivacyModeOnLaunch: Bool
+    let privacyModeEnabled: Bool
 
-    var enabled: Bool {
-        privacySettingsEnabled ? privacySettingsEnabled : lastEnabled
-    }
-
-    func with(lastEnabled: Bool) -> Self {
+    func with(privacyModeEnabled: Bool) -> Self {
         .init(
-            privacySettingsEnabled: privacySettingsEnabled,
-            lastEnabled: lastEnabled
+            enablePrivacyModeOnLaunch: enablePrivacyModeOnLaunch,
+            privacyModeEnabled: privacyModeEnabled
         )
     }
 
-    func with(privacySettingsEnabled: Bool) -> Self {
+    func with(enablePrivacyModeOnLaunch: Bool) -> Self {
         .init(
-            privacySettingsEnabled: privacySettingsEnabled,
-            lastEnabled: lastEnabled
+            enablePrivacyModeOnLaunch: enablePrivacyModeOnLaunch,
+            privacyModeEnabled: privacyModeEnabled
         )
     }
 }
