@@ -130,6 +130,6 @@ extension ReferendumsPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceiveChainBalance(viewModel: viewModel)
+        view?.didReceiveChainBalance(viewModel: .wrapped(viewModel, with: true))
     }
 }

@@ -272,7 +272,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
 }
 
 extension ReferendumsViewManager: ReferendumsViewProtocol {
-    func didReceiveChainBalance(viewModel: ChainBalanceViewModel) {
+    func didReceiveChainBalance(viewModel: SecuredViewModel<ChainBalanceViewModel>) {
         chainSelectionView.bind(viewModel: viewModel)
     }
 

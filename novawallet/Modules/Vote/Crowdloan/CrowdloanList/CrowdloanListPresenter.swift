@@ -77,7 +77,7 @@ final class CrowdloanListPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceive(chainInfo: viewModel)
+        view?.didReceive(chainInfo: .wrapped(viewModel, with: true))
     }
 
     private func createMetadataResult() -> Result<CrowdloanMetadata, Error>? {

@@ -1637,6 +1637,7 @@
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
 		2D36E1432E816B5A00F1AB46 /* PrivacyModeSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36E1422E816B5A00F1AB46 /* PrivacyModeSupporting.swift */; };
 		2D36E1462E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36E1452E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift */; };
+		2D36E1482E81C9BD00F1AB46 /* VoteTableChainSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36E1472E81C9BD00F1AB46 /* VoteTableChainSelectionView.swift */; };
 		2D3733062D66825100217F29 /* PriceChartPeriodControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */; };
 		2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */; };
 		2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */; };
@@ -8147,6 +8148,7 @@
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
 		2D36E1422E816B5A00F1AB46 /* PrivacyModeSupporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSupporting.swift; sourceTree = "<group>"; };
 		2D36E1452E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrivacyStateManager+Shared.swift"; sourceTree = "<group>"; };
+		2D36E1472E81C9BD00F1AB46 /* VoteTableChainSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteTableChainSelectionView.swift; sourceTree = "<group>"; };
 		2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartPeriodControl.swift; sourceTree = "<group>"; };
 		2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovGradientFactory.swift; sourceTree = "<group>"; };
 		2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingListWidget.swift; sourceTree = "<group>"; };
@@ -25857,6 +25859,7 @@
 				888B853728ED966600AC9614 /* SkeletonableView.swift */,
 				8498430226592D29006BBB9F /* VoteStatusSectionView.swift */,
 				F4F69E272731B0B200214542 /* VoteTableHeaderView.swift */,
+				2D36E1472E81C9BD00F1AB46 /* VoteTableChainSelectionView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -33696,6 +33699,7 @@
 				84350ACC284569560031EF24 /* CollatorStakingInfoViewController.swift in Sources */,
 				775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */,
 				2D0673942E141BCF006392EB /* MultisigDataValidatorFactory.swift in Sources */,
+				2D36E1482E81C9BD00F1AB46 /* VoteTableChainSelectionView.swift in Sources */,
 				6A977B56FD6441F52660771C /* StakingRewardDetailsPresenter.swift in Sources */,
 				84981EEA29D4349300948306 /* TransactionHistoryRemoteFetcher.swift in Sources */,
 				0CD54E4F2BCE6C11007B58E7 /* CloudBackupValidating.swift in Sources */,
