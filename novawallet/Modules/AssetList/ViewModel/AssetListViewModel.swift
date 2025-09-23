@@ -63,12 +63,12 @@ struct AssetListOrganizerViewModel: Equatable {
 }
 
 enum AssetListOrganizerItemViewModel: Equatable {
-    case nfts(AssetListNftsViewModel)
+    case nfts(SecuredViewModel<AssetListNftsViewModel>)
     case pendingTransactions(AssetListMultisigOperationsViewModel)
 }
 
 struct AssetListNftsViewModel: Equatable {
-    let totalCount: LoadableViewModelState<SecuredViewModel<TitleIconViewModel>>
+    let totalCount: LoadableViewModelState<TitleIconViewModel>
     let mediaViewModels: [NftMediaViewModelProtocol]
 
     static func == (
@@ -78,8 +78,7 @@ struct AssetListNftsViewModel: Equatable {
         let lhsIdSet = Set(lhs.mediaViewModels.map(\.identifier))
         let rhsIdSet = Set(rhs.mediaViewModels.map(\.identifier))
 
-        return lhs.totalCount.value?.originalContent.title == rhs.totalCount.value?.originalContent.title
-            && lhs.totalCount.value?.privacyMode == rhs.totalCount.value?.privacyMode
+        return lhs.totalCount.value?.title == rhs.totalCount.value?.title
             && lhsIdSet == rhsIdSet
     }
 }

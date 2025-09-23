@@ -97,6 +97,22 @@ final class DotsSecureView<View: UIView>: BaseSecureView<View> {
     }
 }
 
+// MARK: - ImageSecureView
+
+final class ImageSecureView<View: UIView>: BaseSecureView<View> {
+    let secureImage: UIImage
+
+    init(secureImage: UIImage) {
+        self.secureImage = secureImage
+
+        super.init(frame: .zero)
+    }
+
+    override func createSecureOverlay() -> UIView? {
+        UIImageView(image: secureImage)
+    }
+}
+
 // MARK: - HideSecureView
 
 final class HideSecureView<View: UIView>: BaseSecureView<View> {

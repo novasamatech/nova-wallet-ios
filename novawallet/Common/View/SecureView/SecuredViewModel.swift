@@ -13,3 +13,13 @@ extension SecuredViewModel {
         )
     }
 }
+
+extension SecuredViewModel: Equatable where T: Equatable {
+    static func == (
+        lhs: SecuredViewModel<T>,
+        rhs: SecuredViewModel<T>
+    ) -> Bool {
+        lhs.originalContent == rhs.originalContent
+            && lhs.privacyMode == rhs.privacyMode
+    }
+}

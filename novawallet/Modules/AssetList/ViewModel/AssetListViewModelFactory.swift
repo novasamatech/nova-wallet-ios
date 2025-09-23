@@ -158,10 +158,10 @@ private extension AssetListViewModelFactory {
 
     func createNftsViewModel(
         from nfts: [NftModel],
-        genericParams: ViewModelFactoryGenericParams
+        locale: Locale
     ) -> AssetListNftsViewModel {
         let numberOfNfts = NSNumber(value: nfts.count)
-        let count = quantityFormatter.value(for: genericParams.locale).string(from: numberOfNfts) ?? ""
+        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
 
         let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
             nft.media != nil || nft.metadata != nil
@@ -189,10 +189,7 @@ private extension AssetListViewModelFactory {
 
         return AssetListNftsViewModel(
             totalCount: .loaded(
-                value: .wrapped(
-                    TitleIconViewModel(title: count, icon: nil),
-                    with: genericParams.privacyModeEnabled
-                )
+                value: TitleIconViewModel(title: count, icon: nil)
             ),
             mediaViewModels: viewModels
         )
@@ -280,9 +277,12 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         if !nfts.isEmpty {
             items.append(
                 .nfts(
-                    createNftsViewModel(
-                        from: nfts,
-                        genericParams: genericParams
+                    .wrapped(
+                        createNftsViewModel(
+                            from: nfts,
+                            locale: genericParams.locale
+                        ),
+                        with: genericParams.privacyModeEnabled
                     )
                 )
             )
