@@ -37036,7 +37036,7 @@
 			repositoryURL = "https://github.com/nova-wallet/substrate-sdk-ios.git";
 			requirement = {
 				kind = exactVersion;
-				version = 4.4.0;
+				version = 4.5.0;
 			};
 		};
 		0C8FCE812E65EF7800034ED3 /* XCRemoteSwiftPackageReference "Crypto-iOS" */ = {
@@ -37044,7 +37044,7 @@
 			repositoryURL = "https://github.com/novasamatech/Crypto-iOS";
 			requirement = {
 				kind = exactVersion;
-				version = 0.2.0;
+				version = 0.3.0;
 			};
 		};
 		0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */ = {
