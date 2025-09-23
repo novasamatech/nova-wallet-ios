@@ -30,6 +30,6 @@ extension URLLocalRouter: URLLocalRouting {
 
 extension URLLocalRouter {
     static func createWithDeeplinks() -> URLLocalRouter {
-        .init(supportedSchemes: ["novawallet", "wc"])
+        .init(supportedSchemes: ["novawallet", "wc", "rainbow"])
     }
 }
