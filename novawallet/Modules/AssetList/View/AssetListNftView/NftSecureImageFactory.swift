@@ -1,8 +1,6 @@
 import UIKit
 
 final class NftSecureImageFactory {
-    // MARK: - Private Methods
-
     private func createPlaceholderImage(with gradient: GradientModel) -> UIImage? {
         guard let iconImage = R.image.iconSiriNft() else {
             return nil
