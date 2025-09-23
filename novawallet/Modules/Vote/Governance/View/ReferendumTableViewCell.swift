@@ -19,7 +19,19 @@ final class ReferendumView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView == nil, viewModel?.isLoading == true {
+            updateLoadingState()
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension ReferendumView {
+    func setupLayout() {
         let content = UIView.vStack(
             spacing: 0,
             [
@@ -35,11 +47,26 @@ final class ReferendumView: UIView {
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    func bind(_ viewModel: LoadableViewModelState<Model>) {
+        self.viewModel = viewModel
 
-        if skeletonView == nil, viewModel?.isLoading == true {
-            updateLoadingState()
+        guard let model = viewModel.value else {
+            return
+        }
+        referendumInfoView.bind(viewModel: model.referendumInfo)
+
+        if let progressModel = model.progress {
+            progressView.bind(viewModel: progressModel)
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
+
+        if let yourVotesModel = model.yourVotes {
+            yourVoteView.originalView.bind(viewModel: yourVotesModel)
+            yourVoteView.isHidden = false
+        } else {
+            yourVoteView.isHidden = true
         }
     }
 }
@@ -62,51 +89,12 @@ extension ReferendumView {
     }
 
     func bind(securedCellmodel: SecuredViewModel<ReferendumsCellViewModel>) {
-        viewModel = securedCellmodel.originalContent.viewModel
-
-        guard let model = securedCellmodel.originalContent.viewModel.value else {
-            return
-        }
-        referendumInfoView.bind(viewModel: model.referendumInfo)
-
-        if let progressModel = model.progress {
-            progressView.bind(viewModel: progressModel)
-            progressView.isHidden = false
-        } else {
-            progressView.isHidden = true
-        }
-
+        bind(securedCellmodel.originalContent.viewModel)
         yourVoteView.bind(securedCellmodel.privacyMode)
-
-        if let yourVotesModel = model.yourVotes {
-            yourVoteView.originalView.bind(viewModel: yourVotesModel)
-            yourVoteView.isHidden = false
-        } else {
-            yourVoteView.isHidden = true
-        }
     }
 
     func bind(viewModel: LoadableViewModelState<Model>) {
-        self.viewModel = viewModel
-
-        guard let model = viewModel.value else {
-            return
-        }
-        referendumInfoView.bind(viewModel: model.referendumInfo)
-
-        if let progressModel = model.progress {
-            progressView.bind(viewModel: progressModel)
-            progressView.isHidden = false
-        } else {
-            progressView.isHidden = true
-        }
-
-        if let yourVotesModel = model.yourVotes {
-            yourVoteView.originalView.bind(viewModel: yourVotesModel)
-            yourVoteView.isHidden = false
-        } else {
-            yourVoteView.isHidden = true
-        }
+        bind(viewModel)
     }
 }
 

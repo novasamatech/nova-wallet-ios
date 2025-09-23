@@ -63,10 +63,8 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
         setupInitialState()
 
         referendumsState.addObserver(with: self) { [weak self] old, new in
-            let newCells = new.cells.map(\.originalContent)
-
-            if old.cells.map(\.originalContent) != newCells {
-                self?.updateReferendumsViewModels(newCells)
+            if old.cells != new.cells {
+                self?.updateReferendumsViewModels(new.cells.map(\.originalContent))
             }
 
             if old.timeModels != new.timeModels {
