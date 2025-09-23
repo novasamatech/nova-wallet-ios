@@ -1635,6 +1635,8 @@
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
+		2D36E1432E816B5A00F1AB46 /* PrivacyModeSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36E1422E816B5A00F1AB46 /* PrivacyModeSupporting.swift */; };
+		2D36E1462E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D36E1452E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift */; };
 		2D3733062D66825100217F29 /* PriceChartPeriodControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */; };
 		2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */; };
 		2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */; };
@@ -8143,6 +8145,8 @@
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
+		2D36E1422E816B5A00F1AB46 /* PrivacyModeSupporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSupporting.swift; sourceTree = "<group>"; };
+		2D36E1452E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrivacyStateManager+Shared.swift"; sourceTree = "<group>"; };
 		2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartPeriodControl.swift; sourceTree = "<group>"; };
 		2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovGradientFactory.swift; sourceTree = "<group>"; };
 		2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingListWidget.swift; sourceTree = "<group>"; };
@@ -16662,6 +16666,16 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		2D36E1442E816C8500F1AB46 /* PrivacyStateManager */ = {
+			isa = PBXGroup;
+			children = (
+				2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */,
+				2D36E1452E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift */,
+				2D36E1422E816B5A00F1AB46 /* PrivacyModeSupporting.swift */,
+			);
+			path = PrivacyStateManager;
+			sourceTree = "<group>";
+		};
 		2D3733072D66972400217F29 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -17976,8 +17990,8 @@
 		2DEA7B832E7415C9001F3DF5 /* SecureView */ = {
 			isa = PBXGroup;
 			children = (
+				2D36E1442E816C8500F1AB46 /* PrivacyStateManager */,
 				2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */,
-				2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */,
 				2DA826E52E79DC5400C03B3C /* DotsOverlayView.swift */,
 				2DA826DD2E7986DF00C03B3C /* SecureView.swift */,
 				2DA826DF2E79AF8400C03B3C /* SecuredViewModel.swift */,
@@ -30551,6 +30565,7 @@
 				0CD846252BDCABEF0026B5CA /* WalletOptionViewModel.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
 				2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */,
+				2D36E1462E816C9B00F1AB46 /* PrivacyStateManager+Shared.swift in Sources */,
 				8441D3C929E8015100070BA3 /* WalletConnectMetadata.swift in Sources */,
 				8434B604298D474D00FACF4C /* GovernanceAddDelegationTracksPresenter.swift in Sources */,
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
@@ -30627,6 +30642,7 @@
 				84CF00C327F6C1E4004DB322 /* CustomAssetMapper.swift in Sources */,
 				2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */,
 				0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */,
+				2D36E1432E816B5A00F1AB46 /* PrivacyModeSupporting.swift in Sources */,
 				2DF6F5F82C5D7DEE000D9CDD /* Decimal+Rounding.swift in Sources */,
 				7746854F2B3BDD4F002E0A0F /* WalletChanged.swift in Sources */,
 				880CC0B029E7F194008C7F65 /* EquillibriumLocksUpdater.swift in Sources */,
