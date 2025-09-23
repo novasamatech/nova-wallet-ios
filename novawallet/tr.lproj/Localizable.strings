@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Sizden başka bir işlem gerekmemektedir.";
 "multisig.operation.executed.no.format" = "%@ üzerinde ilk zincir üstü bilgi (çağrı verisi) olmadan işlem gerçekleştirildi.";
 "multisig.operation.cancelled.no.format" = "%@ üzerinde ilk zincir üstü bilgi (çağrı verisi) olmadan işlem reddedildi.";
+"settings.hide.balances.on.launch" = "Başlangıçta bakiyeleri gizle";

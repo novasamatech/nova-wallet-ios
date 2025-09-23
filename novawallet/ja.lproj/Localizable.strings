@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "これ以上の操作は必要ありません。";
 "multisig.operation.executed.no.format" = "初期のオンチェーン情報 (コールデータ) のないトランザクションが %@ で実行されました。";
 "multisig.operation.cancelled.no.format" = "初期のオンチェーン情報 (コールデータ) のないトランザクションが %@ で拒否されました。";
+"settings.hide.balances.on.launch" = "起動時に残高を非表示にする";

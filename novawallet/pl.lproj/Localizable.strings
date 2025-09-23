@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Nie są wymagane dalsze działania z Twojej strony.";
 "multisig.operation.executed.no.format" = "Transakcja bez początkowych informacji on-chain (danych wywołania) została wykonana na %@.";
 "multisig.operation.cancelled.no.format" = "Transakcja bez początkowych informacji on-chain (danych wywołania) została odrzucona na %@.";
+"settings.hide.balances.on.launch" = "Ukryj salda przy uruchomieniu";

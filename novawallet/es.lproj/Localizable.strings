@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "No se requieren más acciones de tu parte.";
 "multisig.operation.executed.no.format" = "Transacción sin información inicial en cadena (datos de la llamada) fue ejecutada en %@.";
 "multisig.operation.cancelled.no.format" = "Transacción sin información inicial en cadena (datos de la llamada) fue rechazada en %@.";
+"settings.hide.balances.on.launch" = "Ocultar saldos al iniciar";
