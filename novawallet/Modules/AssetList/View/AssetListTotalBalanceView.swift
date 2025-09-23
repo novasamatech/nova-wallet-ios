@@ -3,18 +3,6 @@ import UIKit_iOS
 import Kingfisher
 
 final class AssetListTotalBalanceView: UIView {
-    private enum Constants {
-        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
-        static let amountTitleSpacing: CGFloat = 15
-        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
-        static let elementMovingMotion: CGFloat = 5
-        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
-        static let infoIconSize = CGSize(width: 12, height: 12)
-        static let locksViewHeight: CGFloat = 22.0
-        static let privacyButtonSize = CGSize(width: 20, height: 20)
-        static let totalBalanceHeight: CGFloat = 47.0
-    }
-
     let backgroundBlurView = GladingCardView()
 
     let displayContentView: UIView = .create { view in
@@ -392,5 +380,21 @@ extension AssetListTotalBalanceView: AnimationUpdatibleView {
         actionsGladingView.updateLayerAnimationIfActive()
 
         skeletonView?.restartSkrulling()
+    }
+}
+
+// MARK: - Constants
+
+private extension AssetListTotalBalanceView {
+    enum Constants {
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
+        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
+        static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        static let infoIconSize = CGSize(width: 12, height: 12)
+        static let locksViewHeight: CGFloat = 22.0
+        static let privacyButtonSize = CGSize(width: 20, height: 20)
+        static let totalBalanceHeight: CGFloat = 47.0
     }
 }
