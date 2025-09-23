@@ -1949,4 +1949,4 @@
 "multisig.operation.no.actions.required" = "Больше не требуется никаких действий с вашей стороны.";
 "multisig.operation.executed.no.format" = "Транзакция без начальной информации в цепочке (данные вызова) была выполнена на %@.";
 "multisig.operation.cancelled.no.format" = "Транзакция без начальной информации в цепочке (данные вызова) была отклонена на %@.";
-"settings.hide.balances.on.launch" = "Скрывать балансы при запуске";
+"settings.hide.balances.on.launch" = "Открывать приложение со скрытым балансом";

@@ -1949,4 +1949,4 @@
 "multisig.operation.no.actions.required" = "Aucune action supplémentaire n'est requise de votre part.";
 "multisig.operation.executed.no.format" = "Transaction sans informations initiales sur la chaîne (données d'appel) a été exécutée sur %@.";
 "multisig.operation.cancelled.no.format" = "Transaction sans informations initiales sur la chaîne (données d'appel) a été rejetée sur %@.";
-"settings.hide.balances.on.launch" = "Masquer les soldes au lancement";
+"settings.hide.balances.on.launch" = "Ouvrir l’application avec le solde masqué";
