@@ -4,7 +4,7 @@ import UIKit_iOS
 final class ReferendumView: UIView {
     let referendumInfoView = ReferendumInfoView()
     let progressView = VotingProgressView()
-    let yourVoteView = YourVotesView()
+    let yourVoteView = HideSecureView<YourVotesView>()
     var skeletonView: SkrullableView?
     private var viewModel: LoadableViewModelState<Model>?
 
@@ -61,6 +61,31 @@ extension ReferendumView {
         let yourVotes: YourVotesView.Model?
     }
 
+    func bind(securedCellmodel: SecuredViewModel<ReferendumsCellViewModel>) {
+        viewModel = securedCellmodel.originalContent.viewModel
+
+        guard let model = securedCellmodel.originalContent.viewModel.value else {
+            return
+        }
+        referendumInfoView.bind(viewModel: model.referendumInfo)
+
+        if let progressModel = model.progress {
+            progressView.bind(viewModel: progressModel)
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
+
+        yourVoteView.bind(securedCellmodel.privacyMode)
+
+        if let yourVotesModel = model.yourVotes {
+            yourVoteView.originalView.bind(viewModel: yourVotesModel)
+            yourVoteView.isHidden = false
+        } else {
+            yourVoteView.isHidden = true
+        }
+    }
+
     func bind(viewModel: LoadableViewModelState<Model>) {
         self.viewModel = viewModel
 
@@ -68,6 +93,7 @@ extension ReferendumView {
             return
         }
         referendumInfoView.bind(viewModel: model.referendumInfo)
+
         if let progressModel = model.progress {
             progressView.bind(viewModel: progressModel)
             progressView.isHidden = false
@@ -76,7 +102,7 @@ extension ReferendumView {
         }
 
         if let yourVotesModel = model.yourVotes {
-            yourVoteView.bind(viewModel: yourVotesModel)
+            yourVoteView.originalView.bind(viewModel: yourVotesModel)
             yourVoteView.isHidden = false
         } else {
             yourVoteView.isHidden = true

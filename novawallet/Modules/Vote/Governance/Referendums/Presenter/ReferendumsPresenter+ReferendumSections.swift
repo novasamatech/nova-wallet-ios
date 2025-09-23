@@ -59,7 +59,7 @@ extension ReferendumsPresenter {
     func filteredReferendumsSections(for referendumsSections: [ReferendumsSection]) -> [ReferendumsSection] {
         if filter != .all {
             viewModelFactory.filteredSections(referendumsSections) {
-                filteredReferendums[$0.referendumIndex] != nil
+                filteredReferendums[$0.originalContent.referendumIndex] != nil
             }
         } else {
             referendumsSections

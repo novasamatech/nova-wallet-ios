@@ -1,6 +1,6 @@
 extension ReferendumsSection {
     enum Lens {
-        static let referendums = GenericLens<ReferendumsSection, [ReferendumsCellViewModel]>(
+        static let referendums = GenericLens<ReferendumsSection, [SecuredViewModel<ReferendumsCellViewModel>]>(
             get: { whole in
                 switch whole {
                 case .personalActivities, .swipeGov, .settings, .empty:

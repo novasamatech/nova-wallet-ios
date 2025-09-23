@@ -87,12 +87,12 @@ extension ReferendumsViewManager: UITableViewDataSource {
     func referendumCell(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath,
-        items: [ReferendumsCellViewModel]
+        items: [SecuredViewModel<ReferendumsCellViewModel>]
     ) -> UITableViewCell {
         let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
         cell.applyStyle()
-        let cellModel = items[indexPath.row].viewModel
-        cell.view.bind(viewModel: cellModel)
+        let cellModel = items[indexPath.row]
+        cell.view.bind(securedCellmodel: cellModel)
         return cell
     }
 
@@ -137,33 +137,38 @@ extension ReferendumsViewManager: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section = referendumsViewModel.sections[indexPath.section]
-
-        switch section {
+        switch referendumsViewModel.sections[indexPath.section] {
         case let .personalActivities(personalActivities):
-            let activity = personalActivities[indexPath.row]
-            return personalActivityCell(
+            personalActivityCell(
                 tableView,
                 cellForRowAt: indexPath,
-                activity: activity,
+                activity: personalActivities[indexPath.row],
                 totalActivities: personalActivities.count
             )
         case let .swipeGov(viewModel):
-            return swipeGovBannerCell(
+            swipeGovBannerCell(
                 tableView,
                 viewModel: viewModel,
                 cellForRowAt: indexPath
             )
         case let .settings(isFilterOn):
-            return settingsCell(
+            settingsCell(
                 tableView,
                 cellForRowAt: indexPath,
                 isFilterOn: isFilterOn
             )
         case let .active(viewModel), let .completed(viewModel):
-            return referendumCell(tableView, cellForRowAt: indexPath, items: viewModel.cells)
+            referendumCell(
+                tableView,
+                cellForRowAt: indexPath,
+                items: viewModel.cells
+            )
         case let .empty(model):
-            return emptyCell(tableView, cellForRowAt: indexPath, emptyModel: model)
+            emptyCell(
+                tableView,
+                cellForRowAt: indexPath,
+                emptyModel: model
+            )
         }
     }
 
@@ -197,10 +202,11 @@ extension ReferendumsViewManager: UITableViewDelegate {
         case .settings, .empty:
             break
         case let .active(viewModel), let .completed(viewModel):
-            guard let referendumIndex = viewModel.cells[safe: indexPath.row]?.referendumIndex else {
-                return
-            }
-            presenter?.select(referendumIndex: referendumIndex)
+            let index = viewModel.cells[safe: indexPath.row]?.originalContent.referendumIndex
+
+            guard let index else { return }
+
+            presenter?.select(referendumIndex: index)
         }
     }
 
@@ -251,7 +257,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         case .settings:
             return Constants.settingsCellHeight
         case let .active(viewModel), let .completed(viewModel):
-            switch viewModel.cells[safe: indexPath.row]?.viewModel {
+            switch viewModel.cells[safe: indexPath.row]?.originalContent.viewModel {
             case .loaded, .cached, .none:
                 return UITableView.automaticDimension
             case .loading:
@@ -295,7 +301,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             case let .active(viewModel), let .completed(viewModel):
                 let cellModel = viewModel.cells[indexPath.row]
 
-                guard let timeModel = time[cellModel.referendumIndex]??.viewModel else {
+                guard let timeModel = time[cellModel.originalContent.referendumIndex]??.viewModel else {
                     return
                 }
 

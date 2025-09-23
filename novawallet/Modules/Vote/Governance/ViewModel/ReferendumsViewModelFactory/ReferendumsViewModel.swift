@@ -38,7 +38,7 @@ struct ReferendumsCellViewModel: Hashable {
 struct ReferendumsCellsSectionViewModel {
     let titleText: LoadableViewModelState<String>
     let countText: SecuredViewModel<String>
-    let cells: [ReferendumsCellViewModel]
+    let cells: [SecuredViewModel<ReferendumsCellViewModel>]
 }
 
 enum ReferendumsEmptyModel {

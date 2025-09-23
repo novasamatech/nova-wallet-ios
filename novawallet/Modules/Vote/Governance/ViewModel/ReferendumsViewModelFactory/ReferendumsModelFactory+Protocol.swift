@@ -40,7 +40,7 @@ protocol ReferendumsModelFactoryProtocol {
 
     func filteredSections(
         _ sections: [ReferendumsSection],
-        filter: (ReferendumsCellViewModel) -> Bool
+        filter: (SecuredViewModel<ReferendumsCellViewModel>) -> Bool
     ) -> [ReferendumsSection]
 }
 
@@ -63,7 +63,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         let viewModel = ReferendumsCellsSectionViewModel(
             titleText: .loading,
             countText: .wrapped("\(cells.count)", with: genericParams.privacyModeEnabled),
-            cells: cells
+            cells: cells.map { .wrapped($0, with: genericParams.privacyModeEnabled) }
         )
 
         return [.active(viewModel)]
@@ -78,29 +78,37 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             genericParams: genericParams
         )
 
-        if referendumsCellViewModels.active.isEmpty, referendumsCellViewModels.completed.isEmpty {
+        let secureCellModels: (
+            active: [SecuredViewModel<ReferendumsCellViewModel>],
+            completed: [SecuredViewModel<ReferendumsCellViewModel>]
+        ) = (
+            active: referendumsCellViewModels.active.map { .wrapped($0, with: genericParams.privacyModeEnabled) },
+            completed: referendumsCellViewModels.completed.map { .wrapped($0, with: genericParams.privacyModeEnabled) }
+        )
+
+        if secureCellModels.active.isEmpty, secureCellModels.completed.isEmpty {
             return [.empty(.referendumsNotFound)]
         }
 
         var sections: [ReferendumsSection] = []
 
-        if !referendumsCellViewModels.active.isEmpty {
+        if !secureCellModels.active.isEmpty {
             let title = Strings.governanceReferendumsActive(preferredLanguages: genericParams.locale.rLanguages)
-            let countText = "\(referendumsCellViewModels.active.count)"
+            let countText = "\(secureCellModels.active.count)"
             let viewModel = ReferendumsCellsSectionViewModel(
                 titleText: .loaded(value: title),
                 countText: .wrapped(countText, with: genericParams.privacyModeEnabled),
-                cells: referendumsCellViewModels.active
+                cells: secureCellModels.active
             )
             sections.append(.active(viewModel))
         }
-        if !referendumsCellViewModels.completed.isEmpty {
+        if !secureCellModels.completed.isEmpty {
             let title = Strings.commonCompleted(preferredLanguages: genericParams.locale.rLanguages)
-            let countText = "\(referendumsCellViewModels.completed.count)"
+            let countText = "\(secureCellModels.completed.count)"
             let viewModel = ReferendumsCellsSectionViewModel(
                 titleText: .loaded(value: title),
                 countText: .wrapped(countText, with: genericParams.privacyModeEnabled),
-                cells: referendumsCellViewModels.completed
+                cells: secureCellModels.completed
             )
             sections.append(.completed(viewModel))
         }
@@ -110,7 +118,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
     func filteredSections(
         _ sections: [ReferendumsSection],
-        filter: (ReferendumsCellViewModel) -> Bool
+        filter: (SecuredViewModel<ReferendumsCellViewModel>) -> Bool
     ) -> [ReferendumsSection] {
         let filteredReferendumsSections = sections.map { section in
             let referendumViewModels = ReferendumsSection.Lens.referendums.get(section)
@@ -141,9 +149,9 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
             let model = createReferendumCellViewModel(
                 state: referendum.state,
-                params: statusParams,
                 voterName: params.voterName,
-                locale: genericParams.locale
+                params: statusParams,
+                genericParams: genericParams
             )
 
             let viewModel = ReferendumsCellViewModel(
@@ -170,17 +178,17 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
         return createReferendumCellViewModel(
             state: params.referendum.state,
-            params: params,
             voterName: nil,
-            locale: genericParams.locale
+            params: params,
+            genericParams: genericParams
         )
     }
 
     private func createReferendumCellViewModel(
         state: ReferendumStateLocal,
-        params: StatusParams,
         voterName: String?,
-        locale: Locale
+        params: StatusParams,
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumView.Model {
         let status: ReferendumInfoView.Status
         switch state {
@@ -189,31 +197,45 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
                 model,
                 params: params,
                 voterName: voterName,
-                locale: locale
+                locale: genericParams.locale
             )
         case let .deciding(model):
             return provideDecidingReferendumCellViewModel(
                 model,
                 params: params,
                 voterName: voterName,
-                locale: locale
+                locale: genericParams.locale
             )
         case .approved:
-            return provideApprovedReferendumCellViewModel(params: params, voterName: voterName, locale: locale)
+            return provideApprovedReferendumCellViewModel(
+                params: params,
+                voterName: voterName,
+                locale: genericParams.locale
+            )
         case .rejected:
-            let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusRejected(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .cancelled:
-            let statusName = Strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusCancelled(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .timedOut:
-            let statusName = Strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusTimedOut(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .killed:
-            let statusName = Strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusKilled(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .executed:
-            let statusName = Strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusExecuted(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .positive)
         }
 
@@ -221,7 +243,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             status: status,
             params: params,
             voterName: voterName,
-            locale: locale
+            locale: genericParams.locale
         )
     }
 }
