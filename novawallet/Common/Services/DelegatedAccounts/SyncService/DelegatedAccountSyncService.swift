@@ -78,11 +78,10 @@ final class DelegatedAccountSyncService: ObservableSyncService {
             metaAccountsClosure: { try metaAccountsWrapper.targetOperation.extractNoCancellableResultData() }
         )
 
-        let updateWrapper = walletUpdateMediator.saveChanges {
-            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
-
-            return changes
-        }
+        let updateWrapper = createWalletsUpdateWrapper(
+            dependingOn: changesWrapper,
+            metaAccountsWrapper: metaAccountsWrapper
+        )
 
         changesWrapper.addDependency(wrapper: metaAccountsWrapper)
         updateWrapper.addDependency(wrapper: changesWrapper)
@@ -185,6 +184,32 @@ private extension DelegatedAccountSyncService {
             targetOperation: filterOperation,
             dependencies: [metaAccountsOperation]
         )
+    }
+
+    func createWalletsUpdateWrapper(
+        dependingOn changesWrapper: CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>,
+        metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>
+    ) -> CompoundOperationWrapper<WalletUpdateMediatingResult> {
+        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard !changes.isEmpty else {
+                let selectedMetaAccount = try metaAccountsWrapper.targetOperation
+                    .extractNoCancellableResultData()
+                    .first { $0.isSelected }
+
+                return .createWithResult(
+                    .init(
+                        selectedWallet: selectedMetaAccount,
+                        isWalletSwitched: false
+                    )
+                )
+            }
+
+            return walletUpdateMediator.saveChanges { changes }
+        }
     }
 }
 
