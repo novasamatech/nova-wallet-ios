@@ -23431,6 +23431,21 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     func toggleHideBalances()  {
+        
+    return cuckoo_manager.call("toggleHideBalances()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.toggleHideBalances())
+        
+    }
+    
 
 	 struct __StubbingProxy_SettingsInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -23458,6 +23473,11 @@ import UIKit.UIImage
 	    func connectWalletConnect<M1: Cuckoo.Matchable>(uri: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: uri) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorInputProtocol.self, method: "connectWalletConnect(uri: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func toggleHideBalances() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorInputProtocol.self, method: "toggleHideBalances()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -23500,6 +23520,12 @@ import UIKit.UIImage
 	        return cuckoo_manager.verify("connectWalletConnect(uri: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func toggleHideBalances() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("toggleHideBalances()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -23530,6 +23556,12 @@ import UIKit.UIImage
     
     
      func connectWalletConnect(uri: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func toggleHideBalances()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -23695,6 +23727,21 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     func didReceive(hideBalancesOnLaunch: Bool)  {
+        
+    return cuckoo_manager.call("didReceive(hideBalancesOnLaunch: Bool)",
+            parameters: (hideBalancesOnLaunch),
+            escapingParameters: (hideBalancesOnLaunch),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(hideBalancesOnLaunch: hideBalancesOnLaunch))
+        
+    }
+    
 
 	 struct __StubbingProxy_SettingsInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -23747,6 +23794,11 @@ import UIKit.UIImage
 	    func didReceive<M1: Cuckoo.Matchable>(pushNotificationsStatus: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PushNotificationsStatus)> where M1.MatchedType == PushNotificationsStatus {
 	        let matchers: [Cuckoo.ParameterMatcher<(PushNotificationsStatus)>] = [wrap(matchable: pushNotificationsStatus) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(pushNotificationsStatus: PushNotificationsStatus)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(hideBalancesOnLaunch: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideBalancesOnLaunch) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(hideBalancesOnLaunch: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -23819,6 +23871,12 @@ import UIKit.UIImage
 	        return cuckoo_manager.verify("didReceive(pushNotificationsStatus: PushNotificationsStatus)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(hideBalancesOnLaunch: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideBalancesOnLaunch) { $0 }]
+	        return cuckoo_manager.verify("didReceive(hideBalancesOnLaunch: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -23879,6 +23937,12 @@ import UIKit.UIImage
     
     
      func didReceive(pushNotificationsStatus: PushNotificationsStatus)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(hideBalancesOnLaunch: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -58905,9 +58969,9 @@ import Foundation_iOS
     
     
     
-     func didReceive(chainInfo: ChainBalanceViewModel)  {
+     func didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)  {
         
-    return cuckoo_manager.call("didReceive(chainInfo: ChainBalanceViewModel)",
+    return cuckoo_manager.call("didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)",
             parameters: (chainInfo),
             escapingParameters: (chainInfo),
             superclassCall:
@@ -59027,9 +59091,9 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(chainInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainBalanceViewModel)> where M1.MatchedType == ChainBalanceViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainBalanceViewModel)>] = [wrap(matchable: chainInfo) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloansViewProtocol.self, method: "didReceive(chainInfo: ChainBalanceViewModel)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(chainInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SecuredViewModel<ChainBalanceViewModel>)> where M1.MatchedType == SecuredViewModel<ChainBalanceViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(SecuredViewModel<ChainBalanceViewModel>)>] = [wrap(matchable: chainInfo) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloansViewProtocol.self, method: "didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloansViewModel)> where M1.MatchedType == CrowdloansViewModel {
@@ -59099,9 +59163,9 @@ import Foundation_iOS
 	
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(chainInfo: M1) -> Cuckoo.__DoNotUse<(ChainBalanceViewModel), Void> where M1.MatchedType == ChainBalanceViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainBalanceViewModel)>] = [wrap(matchable: chainInfo) { $0 }]
-	        return cuckoo_manager.verify("didReceive(chainInfo: ChainBalanceViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(chainInfo: M1) -> Cuckoo.__DoNotUse<(SecuredViewModel<ChainBalanceViewModel>), Void> where M1.MatchedType == SecuredViewModel<ChainBalanceViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(SecuredViewModel<ChainBalanceViewModel>)>] = [wrap(matchable: chainInfo) { $0 }]
+	        return cuckoo_manager.verify("didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -59192,7 +59256,7 @@ import Foundation_iOS
     
     
     
-     func didReceive(chainInfo: ChainBalanceViewModel)   {
+     func didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
