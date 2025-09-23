@@ -32,35 +32,27 @@ final class UpdatedWalletNotificationsCleaner: WalletNotificationsCleaner {
     override func createUpdatedSettingsWrapper(
         using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<PushNotification.AllSettings?> {
-        OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
+        let updatedMetaAccounts = providers.changesProvider().compactMap(\.item)
 
-            let updatedMetaAccounts = try providers.changesProvider().compactMap(\.item)
-
-            guard !updatedMetaAccounts.isEmpty else {
-                return .createWithResult(nil)
-            }
-
-            let metaAccountsBeforeChanges = try providers.walletsBeforeChangesProvider()
-
-            let metaAccountsToRegister = updatedMetaAccounts.filter { updatedMetaAccount in
-                guard let metaAccount = metaAccountsBeforeChanges[updatedMetaAccount.info.metaId]?.info else {
-                    return false
-                }
-
-                return metaAccount.chainAccounts != updatedMetaAccount.info.chainAccounts
-            }
-
-            guard !metaAccountsToRegister.isEmpty else {
-                return .createWithResult(nil)
-            }
-
-            return createUpdatedSettingsWrapper(for: metaAccountsToRegister)
+        guard !updatedMetaAccounts.isEmpty else {
+            return .createWithResult(nil)
         }
+
+        let metaAccountsBeforeChanges = providers.walletsBeforeChangesProvider()
+
+        let metaAccountsToRegister = updatedMetaAccounts.filter { updatedMetaAccount in
+            guard let metaAccount = metaAccountsBeforeChanges[updatedMetaAccount.info.metaId]?.info else {
+                return false
+            }
+
+            return metaAccount.chainAccounts != updatedMetaAccount.info.chainAccounts
+        }
+
+        guard !metaAccountsToRegister.isEmpty else {
+            return .createWithResult(nil)
+        }
+
+        return createUpdatedSettingsWrapper(for: metaAccountsToRegister)
     }
 }
 
