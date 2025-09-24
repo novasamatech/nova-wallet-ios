@@ -1,18 +1,34 @@
 import UIKit
 
 final class ReferendumsPersonalActivityView: GenericTitleValueView<
-    GenericPairValueView<IconDetailsView, BorderedLabelView>, IconDetailsView
+    GenericPairValueView<
+        IconDetailsView,
+        GenericBorderedView<DotsSecureView<UILabel>>
+    >,
+    GenericPairValueView<HideSecureView<UILabel>, UIImageView>
 > {
     var titleLabel: UILabel {
         titleView.fView.detailsLabel
     }
 
+    var valueBorderedView: GenericBorderedView<DotsSecureView<UILabel>> {
+        titleView.sView
+    }
+
+    var valueSecureView: DotsSecureView<UILabel> {
+        valueBorderedView.contentView
+    }
+
     var valueLabel: UILabel {
-        titleView.sView.titleLabel
+        valueSecureView.originalView
+    }
+
+    var detailsSecureView: HideSecureView<UILabel> {
+        valueView.fView
     }
 
     var detailsLabel: UILabel {
-        valueView.detailsLabel
+        detailsSecureView.originalView
     }
 
     override init(frame: CGRect) {
@@ -32,44 +48,67 @@ final class ReferendumsPersonalActivityView: GenericTitleValueView<
         detailsLabel.apply(style: .unlockStyle)
         detailsLabel.numberOfLines = 1
 
-        titleView.sView.backgroundView.fillColor = R.color.colorChipsBackground()!
-        titleView.sView.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
-        titleView.sView.backgroundView.cornerRadius = 7
+        valueBorderedView.backgroundView.fillColor = R.color.colorChipsBackground()!
+        valueBorderedView.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
+        valueBorderedView.backgroundView.cornerRadius = 7
         titleView.fView.iconWidth = 24
         titleView.fView.spacing = 12
-        valueView.mode = .detailsIcon
+
+        valueView.makeHorizontal()
         valueView.spacing = 4
-        valueView.iconWidth = 24
-        valueView.imageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
+        valueView.sView.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+
+        valueView.sView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
+
+        valueBorderedView.snp.makeConstraints { make in
+            make.height.equalTo(22)
+        }
     }
 }
 
 extension ReferendumsPersonalActivityView {
-    func bind(viewModel: ReferendumsUnlocksViewModel, locale: Locale) {
-        titleView.sView.isHidden = false
+    func bind(
+        viewModel: SecuredViewModel<ReferendumsUnlocksViewModel>,
+        locale: Locale
+    ) {
+        valueBorderedView.isHidden = false
         titleLabel.text = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
-        valueLabel.text = viewModel.totalLock
-        detailsLabel.text = viewModel.hasUnlock ?
+        valueLabel.text = viewModel.originalContent.totalLock
+        detailsLabel.text = viewModel.originalContent.hasUnlock ?
             R.string.localizable.commonUnlock(preferredLanguages: locale.rLanguages) : ""
         titleView.fView.imageView.image = R.image.iconLockClosed()
+
+        valueSecureView.bind(viewModel.privacyMode)
+        detailsSecureView.bind(viewModel.privacyMode)
+
+        setNeedsLayout()
     }
 }
 
 extension ReferendumsPersonalActivityView {
-    func bind(viewModel: ReferendumsDelegationViewModel, locale: Locale) {
+    func bind(
+        viewModel: SecuredViewModel<ReferendumsDelegationViewModel>,
+        locale: Locale
+    ) {
         let strings = R.string.localizable.self
-        switch viewModel {
+        switch viewModel.originalContent {
         case .addDelegation:
             titleLabel.text = strings.delegationsAddTitle(preferredLanguages: locale.rLanguages)
-            titleView.sView.isHidden = true
+            valueBorderedView.isHidden = true
         case let .delegations(total):
             titleLabel.text = strings.governanceReferendumsYourDelegations(preferredLanguages: locale.rLanguages)
-            titleView.sView.isHidden = false
+            valueBorderedView.isHidden = false
             valueLabel.text = total
         }
 
+        valueSecureView.bind(viewModel.privacyMode)
+
         detailsLabel.text = nil
         titleView.fView.imageView.image = R.image.iconDelegate()
+
+        setNeedsLayout()
     }
 }
 

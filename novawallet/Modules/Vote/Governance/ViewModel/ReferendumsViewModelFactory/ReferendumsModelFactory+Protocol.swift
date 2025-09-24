@@ -2,13 +2,12 @@ import Foundation
 import BigInt
 import Foundation_iOS
 
-struct ReferendumsModelFactoryInput {
+struct ReferendumsModelFactoryParams {
     let referendums: [ReferendumLocal]
     let metadataMapping: [ReferendumIdLocal: ReferendumMetadataLocal]?
     let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
     let offchainVotes: GovernanceOffchainVotesLocal?
     let chainInfo: ChainInformation
-    let locale: Locale
     let voterName: String?
 
     struct ChainInformation {
@@ -18,59 +17,100 @@ struct ReferendumsModelFactoryInput {
     }
 }
 
-struct ReferendumsModelFactoryDetailsInput {
+struct ReferendumsModelFactoryDetailsParams {
     let referendum: ReferendumLocal
     let metadata: ReferendumMetadataLocal?
     let onchainVotes: ReferendumAccountVoteLocal?
     let offchainVotes: GovernanceOffchainVotesLocal.Single?
-    let chainInfo: ReferendumsModelFactoryInput.ChainInformation
-    let selectedLocale: Locale
+    let chainInfo: ReferendumsModelFactoryParams.ChainInformation
 }
 
 protocol ReferendumsModelFactoryProtocol {
-    func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection]
+    func createSections(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> [ReferendumsSection]
 
-    func createViewModel(input: ReferendumsModelFactoryDetailsInput) -> ReferendumView.Model
+    func createViewModel(
+        params: ReferendumsModelFactoryDetailsParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> ReferendumView.Model
 
-    func createLoadingViewModel() -> [ReferendumsSection]
+    func createLoadingViewModel(genericParams: ViewModelFactoryGenericParams) -> [ReferendumsSection]
 
     func filteredSections(
         _ sections: [ReferendumsSection],
-        filter: (ReferendumsCellViewModel) -> Bool
+        filter: (SecuredViewModel<ReferendumsCellViewModel>) -> Bool
     ) -> [ReferendumsSection]
 }
 
 protocol SearchReferendumsModelFactoryProtocol {
-    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel]
+    func createReferendumsViewModel(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> [ReferendumsCellViewModel]
 }
 
 extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
-    func createLoadingViewModel() -> [ReferendumsSection] {
+    func createLoadingViewModel(genericParams: ViewModelFactoryGenericParams) -> [ReferendumsSection] {
         let cells: [ReferendumsCellViewModel] = (0 ..< 10).map {
             ReferendumsCellViewModel(
                 referendumIndex: UInt($0),
                 viewModel: .loading
             )
         }
-        return [ReferendumsSection.active(.loading, cells)]
+
+        let viewModel = ReferendumsCellsSectionViewModel(
+            titleText: .loading,
+            countText: .wrapped("\(cells.count)", with: genericParams.privacyModeEnabled),
+            cells: cells.map { .wrapped($0, with: genericParams.privacyModeEnabled) }
+        )
+
+        return [.active(viewModel)]
     }
 
-    func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
-        let referendumsCellViewModels = createReferendumsCellViewModels(input: input)
+    func createSections(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> [ReferendumsSection] {
+        let referendumsCellViewModels = createReferendumsCellViewModels(
+            params: params,
+            genericParams: genericParams
+        )
 
-        if referendumsCellViewModels.active.isEmpty, referendumsCellViewModels.completed.isEmpty {
+        let secureCellModels: (
+            active: [SecuredViewModel<ReferendumsCellViewModel>],
+            completed: [SecuredViewModel<ReferendumsCellViewModel>]
+        ) = (
+            active: referendumsCellViewModels.active.map { .wrapped($0, with: genericParams.privacyModeEnabled) },
+            completed: referendumsCellViewModels.completed.map { .wrapped($0, with: genericParams.privacyModeEnabled) }
+        )
+
+        if secureCellModels.active.isEmpty, secureCellModels.completed.isEmpty {
             return [.empty(.referendumsNotFound)]
         }
 
         var sections: [ReferendumsSection] = []
 
-        if !referendumsCellViewModels.active.isEmpty {
-            let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
-            sections.append(.active(.loaded(value: title), referendumsCellViewModels.active))
+        if !secureCellModels.active.isEmpty {
+            let title = Strings.governanceReferendumsActive(preferredLanguages: genericParams.locale.rLanguages)
+            let countText = "\(secureCellModels.active.count)"
+            let viewModel = ReferendumsCellsSectionViewModel(
+                titleText: .loaded(value: title),
+                countText: .wrapped(countText, with: genericParams.privacyModeEnabled),
+                cells: secureCellModels.active
+            )
+            sections.append(.active(viewModel))
         }
-        if !referendumsCellViewModels.completed.isEmpty {
-            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
-            sections.append(.completed(.loaded(value: title), referendumsCellViewModels.completed))
+        if !secureCellModels.completed.isEmpty {
+            let title = Strings.commonCompleted(preferredLanguages: genericParams.locale.rLanguages)
+            let countText = "\(secureCellModels.completed.count)"
+            let viewModel = ReferendumsCellsSectionViewModel(
+                titleText: .loaded(value: title),
+                countText: .wrapped(countText, with: genericParams.privacyModeEnabled),
+                cells: secureCellModels.completed
+            )
+            sections.append(.completed(viewModel))
         }
 
         return sections
@@ -78,7 +118,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
     func filteredSections(
         _ sections: [ReferendumsSection],
-        filter: (ReferendumsCellViewModel) -> Bool
+        filter: (SecuredViewModel<ReferendumsCellViewModel>) -> Bool
     ) -> [ReferendumsSection] {
         let filteredReferendumsSections = sections.map { section in
             let referendumViewModels = ReferendumsSection.Lens.referendums.get(section)
@@ -89,27 +129,29 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         return filteredReferendumsSections.isEmpty ? [.empty(.filteredListEmpty)] : filteredReferendumsSections
     }
 
-    private func createReferendumsCellViewModels(input: ReferendumsModelFactoryInput) ->
-        (active: [ReferendumsCellViewModel], completed: [ReferendumsCellViewModel]) {
+    private func createReferendumsCellViewModels(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> (active: [ReferendumsCellViewModel], completed: [ReferendumsCellViewModel]) {
         var active: [ReferendumsCellViewModel] = []
         var completed: [ReferendumsCellViewModel] = []
 
-        input.referendums.forEach { referendum in
-            let metadata = input.metadataMapping?[referendum.index]
+        params.referendums.forEach { referendum in
+            let metadata = params.metadataMapping?[referendum.index]
 
-            let params = StatusParams(
+            let statusParams = StatusParams(
                 referendum: referendum,
                 metadata: metadata,
-                chainInfo: input.chainInfo,
-                onchainVotes: input.votes[referendum.index],
-                offchainVotes: input.offchainVotes?.fetchVotes(for: referendum.index)
+                chainInfo: params.chainInfo,
+                onchainVotes: params.votes[referendum.index],
+                offchainVotes: params.offchainVotes?.fetchVotes(for: referendum.index)
             )
 
             let model = createReferendumCellViewModel(
                 state: referendum.state,
-                params: params,
-                voterName: input.voterName,
-                locale: input.locale
+                voterName: params.voterName,
+                params: statusParams,
+                genericParams: genericParams
             )
 
             let viewModel = ReferendumsCellViewModel(
@@ -122,28 +164,31 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         return (active: active, completed: completed)
     }
 
-    func createViewModel(input: ReferendumsModelFactoryDetailsInput) -> ReferendumView.Model {
+    func createViewModel(
+        params: ReferendumsModelFactoryDetailsParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> ReferendumView.Model {
         let params = StatusParams(
-            referendum: input.referendum,
-            metadata: input.metadata,
-            chainInfo: input.chainInfo,
-            onchainVotes: input.onchainVotes,
-            offchainVotes: input.offchainVotes
+            referendum: params.referendum,
+            metadata: params.metadata,
+            chainInfo: params.chainInfo,
+            onchainVotes: params.onchainVotes,
+            offchainVotes: params.offchainVotes
         )
 
         return createReferendumCellViewModel(
-            state: input.referendum.state,
-            params: params,
+            state: params.referendum.state,
             voterName: nil,
-            locale: input.selectedLocale
+            params: params,
+            genericParams: genericParams
         )
     }
 
     private func createReferendumCellViewModel(
         state: ReferendumStateLocal,
-        params: StatusParams,
         voterName: String?,
-        locale: Locale
+        params: StatusParams,
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumView.Model {
         let status: ReferendumInfoView.Status
         switch state {
@@ -152,31 +197,45 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
                 model,
                 params: params,
                 voterName: voterName,
-                locale: locale
+                locale: genericParams.locale
             )
         case let .deciding(model):
             return provideDecidingReferendumCellViewModel(
                 model,
                 params: params,
                 voterName: voterName,
-                locale: locale
+                locale: genericParams.locale
             )
         case .approved:
-            return provideApprovedReferendumCellViewModel(params: params, voterName: voterName, locale: locale)
+            return provideApprovedReferendumCellViewModel(
+                params: params,
+                voterName: voterName,
+                locale: genericParams.locale
+            )
         case .rejected:
-            let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusRejected(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .cancelled:
-            let statusName = Strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusCancelled(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .timedOut:
-            let statusName = Strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusTimedOut(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .killed:
-            let statusName = Strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusKilled(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .executed:
-            let statusName = Strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
+            let statusName = Strings.governanceReferendumsStatusExecuted(
+                preferredLanguages: genericParams.locale.rLanguages
+            )
             status = .init(name: statusName.uppercased(), kind: .positive)
         }
 
@@ -184,14 +243,20 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             status: status,
             params: params,
             voterName: voterName,
-            locale: locale
+            locale: genericParams.locale
         )
     }
 }
 
 extension ReferendumsModelFactory: DelegateReferendumsModelFactoryProtocol, SearchReferendumsModelFactoryProtocol {
-    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel] {
-        let (active, completed) = createReferendumsCellViewModels(input: input)
+    func createReferendumsViewModel(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> [ReferendumsCellViewModel] {
+        let (active, completed) = createReferendumsCellViewModels(
+            params: params,
+            genericParams: genericParams
+        )
         return active + completed
     }
 

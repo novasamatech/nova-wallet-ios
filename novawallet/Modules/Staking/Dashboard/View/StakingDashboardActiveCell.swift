@@ -32,7 +32,7 @@ final class StakingDashboardActiveCellView: UIView {
         view.backgroundBlurView.contentView?.fillColor = R.color.colorInfoStakingCardBackground()!
     }
 
-    let rewardsView: GenericMultiValueView<ShimmerMultibalanceView> = .create { view in
+    let rewardsView: GenericMultiValueView<ShimmerSecureMultibalanceView> = .create { view in
         view.valueTop.apply(style: .footnoteSecondary)
         view.valueTop.textAlignment = .left
 
@@ -41,6 +41,8 @@ final class StakingDashboardActiveCellView: UIView {
 
         view.valueBottom.priceLabel.applyShimmer(style: .regularSubheadlineSecondary)
         view.valueBottom.priceLabel.textAlignment = .left
+
+        view.valueBottom.amountSecureView.privacyModeConfiguration = .largeBalanceChip
     }
 
     var skeletonView: SkrullableView?
@@ -91,7 +93,7 @@ final class StakingDashboardActiveCellView: UIView {
 
         rewardsView.valueBottom.bind(viewModel: viewModel.totalRewards)
 
-        if viewModel.totalRewards.isLoading {
+        if viewModel.totalRewards.originalContent.isLoading {
             newLoadingState.formUnion(.rewards)
         }
 
@@ -150,6 +152,13 @@ final class StakingDashboardActiveCellView: UIView {
             make.top.equalTo(networkContainerView.snp.bottom).offset(24)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
+        }
+
+        rewardsView.valueBottom.amountSecureView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(28)
+        }
+        rewardsView.valueBottom.priceSecureView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(20)
         }
 
         networkView.setContentCompressionResistancePriority(.low, for: .horizontal)

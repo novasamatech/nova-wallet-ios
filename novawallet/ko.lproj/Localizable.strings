@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "더 이상의 추가 작업이 필요 없습니다.";
 "multisig.operation.executed.no.format" = "%@에서 체인 상의 초기 정보(호출 데이터)가 없는 거래가 실행되었습니다.";
 "multisig.operation.cancelled.no.format" = "%@에서 체인 상의 초기 정보(호출 데이터)가 없는 거래가 거부되었습니다.";
+"settings.hide.balances.on.launch" = "숨겨진 잔액으로 앱 열기";

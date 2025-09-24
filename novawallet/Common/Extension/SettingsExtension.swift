@@ -366,8 +366,8 @@ extension SettingsManagerProtocol {
                 of: PrivacyModeSettings.self,
                 for: SettingsKey.privacyModeSettings.rawValue
             ) ?? PrivacyModeSettings(
-                privacySettingsEnabled: false,
-                lastEnabled: false
+                enablePrivacyModeOnLaunch: false,
+                privacyModeEnabled: false
             )
         }
         set {

@@ -17,14 +17,14 @@ class AssetListAssetCell: UICollectionViewCell {
     }()
 
     let balanceLabel: DotsSecureView<AssetListAssetBalanceLabel> = .create {
-        $0.privacyModeConfiguration = .smallBalanceSecondary
+        $0.privacyModeConfiguration = .smallBalanceChip
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right
     }
 
     let balanceValueLabel: DotsSecureView<UILabel> = .create {
-        $0.privacyModeConfiguration = .smallBalanceSecondary
+        $0.privacyModeConfiguration = .smallBalanceChip
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right

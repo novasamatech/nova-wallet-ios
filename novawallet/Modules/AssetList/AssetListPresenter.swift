@@ -16,7 +16,6 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
-    let privacyStateManager: PrivacyStateManagerProtocol
 
     private var wallet: MetaAccountModel?
 
@@ -34,7 +33,6 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
 
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
-    private var privacyModeEnabled: Bool = false
 
     private var organizerViewModel: AssetListOrganizerViewModel?
 
@@ -506,19 +504,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         }
 
         interactor.setup()
-
-        privacyStateManager.addObserver(
-            with: self,
-            queue: .main
-        ) { [weak self] _, privacyModeEnabled in
-            guard self?.privacyModeEnabled != privacyModeEnabled else { return }
-
-            self?.privacyModeEnabled = privacyModeEnabled
-
-            self?.provideHeaderViewModel()
-            self?.provideAssetViewModels()
-            self?.provideOrganizerViewModel()
-        }
     }
 
     func selectWallet() {
@@ -583,7 +568,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            guard let self, let wallet else { return }
+            guard let self, wallet != nil else { return }
 
             wireframe.showRamp(
                 from: view,
@@ -609,7 +594,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in
-            guard let self, let wallet else { return }
+            guard let self, wallet != nil else { return }
 
             wireframe.showRamp(
                 from: view,
@@ -643,7 +628,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func togglePrivacyMode() {
-        privacyStateManager.lastEnabled.toggle()
+        privacyStateManager?.privacyModeEnabled.toggle()
     }
 }
 
@@ -812,11 +797,15 @@ extension AssetListPresenter: Localizable {
     }
 }
 
+// MARK: - AssetsSearchDelegate
+
 extension AssetListPresenter: AssetsSearchDelegate {
     func assetSearchDidSelect(chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
     }
 }
+
+// MARK: - URIScanDelegate
 
 extension AssetListPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
@@ -826,11 +815,25 @@ extension AssetListPresenter: URIScanDelegate {
     }
 }
 
+// MARK: - IconAppearanceDepending
+
 extension AssetListPresenter: IconAppearanceDepending {
     func applyIconAppearance() {
         guard let view, view.isSetup else { return }
 
         provideAssetViewModels()
         updateOrganizerView()
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension AssetListPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
+        guard let view, view.isSetup else { return }
+
+        provideHeaderViewModel()
+        provideAssetViewModels()
+        provideOrganizerViewModel()
     }
 }

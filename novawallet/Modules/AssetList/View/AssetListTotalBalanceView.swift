@@ -30,7 +30,7 @@ final class AssetListTotalBalanceView: UIView {
     }
 
     let amountLabel: DotsSecureView<AssetListTotalAmountLabel> = .create { view in
-        view.privacyModeConfiguration = .largeBalanceSecondary
+        view.privacyModeConfiguration = .largeBalanceChip
         view.originalView.textColor = R.color.colorTextSecondary()
         view.originalView.font = .boldLargeTitle
     }

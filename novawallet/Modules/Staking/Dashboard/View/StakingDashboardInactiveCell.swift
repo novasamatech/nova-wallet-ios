@@ -12,7 +12,8 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
     LoadableGenericIconDetailsView<
         GenericPairValueView<
-            GenericPairValueView<ShimmerLabel, BorderedIconLabelView>, UILabel
+            GenericPairValueView<ShimmerLabel, BorderedIconLabelView>,
+            GenericPairValueView<UILabel, DotsSecureView<UILabel>>
         >
     >,
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
@@ -24,7 +25,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     var networkLabel: ShimmerLabel { titleView.detailsView.fView.fView }
     var stakingTypeView: BorderedIconLabelView { titleView.detailsView.fView.sView }
 
-    var balanceLabel: UILabel { titleView.detailsView.sView }
+    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.detailsView.sView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
@@ -122,15 +123,28 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         }
     }
 
-    private func setupNetworkView(from viewModel: NetworkViewModel, balance: String?, locale: Locale) {
+    private func setupNetworkView(
+        from viewModel: NetworkViewModel,
+        balance: SecuredViewModel<BalanceViewModelProtocol?>,
+        locale: Locale
+    ) {
         titleView.bind(imageViewModel: viewModel.icon)
 
-        let balanceString = balance.map {
-            R.string.localizable.commonAvailableFormat($0, preferredLanguages: locale.rLanguages)
+        if let balanceViewModel = balance.originalContent {
+            titleView.detailsView.sView.isHidden = false
+            titleView.detailsView.sView.fView.text = R.string.localizable.commonAvailablePrefix(
+                preferredLanguages: locale.rLanguages
+            )
+            balanceSecureLabel.originalView.text = balanceViewModel.amount
+        } else {
+            titleView.detailsView.sView.isHidden = true
+            titleView.detailsView.sView.fView.text = nil
+            balanceSecureLabel.originalView.text = nil
         }
 
+        balanceSecureLabel.bind(balance.privacyMode)
+
         networkLabel.text = viewModel.name
-        titleView.detailsView.sView.text = balanceString
     }
 
     private func configure() {
@@ -143,6 +157,11 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         titleView.detailsView.fView.makeHorizontal()
         titleView.detailsView.fView.spacing = 4
+
+        titleView.detailsView.sView.makeHorizontal()
+        titleView.detailsView.sView.spacing = 6
+        titleView.detailsView.sView.fView.apply(style: .caption1Secondary)
+        titleView.detailsView.sView.fView.textAlignment = .left
 
         networkLabel.applyShimmer(style: .regularSubheadlinePrimary)
         networkLabel.textAlignment = .left
@@ -158,8 +177,12 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             make.height.equalTo(16)
         }
 
-        balanceLabel.apply(style: .caption1Secondary)
-        balanceLabel.textAlignment = .left
+        balanceSecureLabel.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(16)
+        }
+
+        balanceSecureLabel.originalView.apply(style: .caption1Secondary)
+        balanceSecureLabel.originalView.textAlignment = .left
 
         valueView.detailsView.makeVertical()
         valueView.spacing = 0

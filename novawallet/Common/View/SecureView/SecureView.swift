@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import UIKit_iOS
 
 enum ViewPrivacyMode {
     case visible
@@ -94,5 +95,45 @@ final class DotsSecureView<View: UIView>: BaseSecureView<View> {
         overlay.configuration = privacyModeConfiguration
 
         return overlay
+    }
+}
+
+// MARK: - ImageSecureView
+
+final class ImageSecureView<View: UIView>: BaseSecureView<View> {
+    var overlayConfiguration: RoundedView.Style = .shadowedNft
+
+    private let secureImage: UIImage
+
+    init(secureImage: UIImage) {
+        self.secureImage = secureImage
+
+        super.init(frame: .zero)
+    }
+
+    override func createSecureOverlay() -> UIView? {
+        let roundedView = RoundedView()
+
+        let imageView = UIImageView(image: secureImage)
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = overlayConfiguration.rounding?.radius ?? .zero
+
+        roundedView.addSubview(imageView)
+
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        roundedView.apply(style: overlayConfiguration)
+
+        return roundedView
+    }
+}
+
+// MARK: - HideSecureView
+
+final class HideSecureView<View: UIView>: BaseSecureView<View> {
+    override func createSecureOverlay() -> UIView? {
+        nil
     }
 }

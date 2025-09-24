@@ -7,13 +7,13 @@ protocol ReferendumsActivityViewModelFactoryProtocol {
         voting: ReferendumTracksVotingDistribution?,
         blockNumber: BlockNumber?,
         unlockSchedule: GovernanceUnlockSchedule?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsUnlocksViewModel?
 
     func createDelegationViewModel(
         chain: ChainModel,
         voting: ReferendumTracksVotingDistribution?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsDelegationViewModel?
 }
 
@@ -23,7 +23,7 @@ extension ReferendumsActivityViewModelFactoryProtocol {
         voting: ReferendumTracksVotingDistribution?,
         blockNumber: BlockNumber?,
         unlockSchedule: GovernanceUnlockSchedule?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsSection {
         var actions: [ReferendumPersonalActivity] = []
 
@@ -34,18 +34,22 @@ extension ReferendumsActivityViewModelFactoryProtocol {
                 voting: voting,
                 blockNumber: blockNumber,
                 unlockSchedule: unlockSchedule,
-                locale: locale
+                genericParams: genericParams
             ) {
-            actions.append(.locks(viewModel))
+            actions.append(
+                .locks(.wrapped(viewModel, with: genericParams.privacyModeEnabled))
+            )
         }
 
         if
             let viewModel = createDelegationViewModel(
                 chain: chain,
                 voting: voting,
-                locale: locale
+                genericParams: genericParams
             ) {
-            actions.append(.delegations(viewModel))
+            actions.append(
+                .delegations(.wrapped(viewModel, with: genericParams.privacyModeEnabled))
+            )
         }
 
         return .personalActivities(actions)
@@ -56,20 +60,21 @@ extension ReferendumsActivityViewModelFactoryProtocol {
         voting: ReferendumTracksVotingDistribution?,
         blockNumber: BlockNumber?,
         unlockSchedule: GovernanceUnlockSchedule?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsSection {
-        if
-            let viewModel = createLocksViewModel(
-                chain: chain,
-                voting: voting,
-                blockNumber: blockNumber,
-                unlockSchedule: unlockSchedule,
-                locale: locale
-            ) {
-            return .personalActivities([.locks(viewModel)])
-        } else {
+        guard let viewModel = createLocksViewModel(
+            chain: chain,
+            voting: voting,
+            blockNumber: blockNumber,
+            unlockSchedule: unlockSchedule,
+            genericParams: genericParams
+        ) else {
             return .personalActivities([])
         }
+
+        return .personalActivities(
+            [.locks(.wrapped(viewModel, with: genericParams.privacyModeEnabled))]
+        )
     }
 }
 
@@ -102,13 +107,16 @@ extension ReferendumsActivityViewModelFactory: ReferendumsActivityViewModelFacto
         voting: ReferendumTracksVotingDistribution?,
         blockNumber: BlockNumber?,
         unlockSchedule: GovernanceUnlockSchedule?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsUnlocksViewModel? {
         guard let totalLocked = voting?.totalLocked(), totalLocked > 0 else {
             return nil
         }
 
-        guard let totalLockedString = convertAmount(totalLocked, chain: chain, locale: locale) else {
+        guard let totalLockedString = convertAmount(
+            totalLocked, chain: chain,
+            locale: genericParams.locale
+        ) else {
             return nil
         }
 
@@ -126,13 +134,13 @@ extension ReferendumsActivityViewModelFactory: ReferendumsActivityViewModelFacto
     func createDelegationViewModel(
         chain: ChainModel,
         voting: ReferendumTracksVotingDistribution?,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsDelegationViewModel? {
         guard let totalDelegated = voting?.totalDelegated() else {
             return .addDelegation
         }
 
-        let amount = convertAmount(totalDelegated, chain: chain, locale: locale)
+        let amount = convertAmount(totalDelegated, chain: chain, locale: genericParams.locale)
 
         return .delegations(total: amount)
     }

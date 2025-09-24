@@ -228,8 +228,9 @@ class CrowdloanListTests: XCTestCase {
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
             crowdloansCalculator: CrowdloansCalculator(),
-            accountManagementFilter: AccountManagementFilter(), 
-            appearanceFacade: AppearanceFacade.shared
+            accountManagementFilter: AccountManagementFilter(),
+            appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared
         )
 
         presenter.view = view
