@@ -3,7 +3,7 @@ import Foundation_iOS
 protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, LoadableViewProtocol {
     var presenter: CrowdloanListPresenterProtocol? { get set }
 
-    func didReceive(chainInfo: ChainBalanceViewModel)
+    func didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>)
     func didReceive(listState: CrowdloansViewModel)
 }
 

@@ -17,7 +17,7 @@ final class AssetListNftsCell: CollectionViewContainerCell<AssetListNftsView> {
         view.refresh()
     }
 
-    func bind(viewModel: AssetListNftsViewModel) {
+    func bind(viewModel: SecuredViewModel<AssetListNftsViewModel>) {
         view.bind(viewModel: viewModel)
     }
 }
@@ -29,21 +29,20 @@ final class AssetListNftsView: UIView {
         static let mediaCornerRadius: CGFloat = 8.0
         static let mediaSpacing: CGFloat = 20.0
         static let mediaTrailing: CGFloat = 8.0
+        static let counterViewHeight: CGFloat = 22.0
     }
 
-    private var mediaViews: [NftMediaView] = []
+    private var mediaViews: [AssetListNftSecureView<NftMediaView>] = []
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlinePrimary)
     }
 
-    let counterLabel: UILabel = .create { view in
-        view.apply(style: .semiboldChip)
-    }
-
-    let counterBackgroundView: RoundedView = .create { view in
-        view.apply(style: .chips)
-        view.cornerRadius = 8.0
+    let counterView: GenericBorderedView<DotsSecureView<IconDetailsView>> = .create { view in
+        view.contentView.privacyModeConfiguration = .smallBalanceChip
+        view.contentView.originalView.hidesIcon = true
+        view.contentView.originalView.spacing = .zero
+        view.contentView.originalView.detailsLabel.apply(style: .semiboldChip)
     }
 
     let accessoryImageView: UIImageView = .create { view in
@@ -72,19 +71,23 @@ final class AssetListNftsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListNftsViewModel) {
-        switch viewModel.totalCount {
+    func bind(viewModel: SecuredViewModel<AssetListNftsViewModel>) {
+        switch viewModel.originalContent.totalCount {
         case let .cached(value), let .loaded(value):
-            counterLabel.text = value
+            counterView.contentView.originalView.bind(viewModel: value)
+            counterView.contentView.bind(viewModel.privacyMode)
         case .loading:
-            counterLabel.text = ""
+            counterView.contentView.originalView.bind(viewModel: .init(title: "", icon: nil))
         }
 
-        bind(mediaViewModels: viewModel.mediaViewModels)
+        bind(
+            mediaViewModels: viewModel.originalContent.mediaViewModels,
+            with: viewModel.privacyMode
+        )
     }
 
     func refresh() {
-        mediaViews.forEach { $0.refreshMediaIfNeeded() }
+        mediaViews.forEach { $0.originalView.refreshMediaIfNeeded() }
     }
 }
 
@@ -95,13 +98,17 @@ private extension AssetListNftsView {
         titleLabel.text = R.string.localizable.walletListYourNftsTitle(preferredLanguages: locale.rLanguages)
     }
 
-    func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
+    func bind(
+        mediaViewModels: [NftMediaViewModelProtocol],
+        with privacyMode: ViewPrivacyMode
+    ) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
-            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in
-                createMediaView()
+            let newMediaViews = (0 ..< numberOfImagesToCreate).map { index in
+                createMediaView(for: index)
             }
+
             mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
         } else if numberOfImagesToCreate < 0 {
             let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
@@ -119,7 +126,7 @@ private extension AssetListNftsView {
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
             let isLastNftView = index == 0
-            mediaViews[index].bind(
+            mediaViews[index].originalView.bind(
                 viewModel: viewModel,
                 targetSize: imageSize,
                 cornerRadius: Constants.mediaCornerRadius,
@@ -129,17 +136,21 @@ private extension AssetListNftsView {
                     .placeholder: isLastNftView ? .nft : .shadowedNft
                 ]
             )
+            mediaViews[index].bind(privacyMode)
         }
     }
 
-    func createMediaView() -> NftMediaView {
-        let mediaView = NftMediaView()
-        mediaView.contentInsets = .zero
+    func createMediaView(for index: Int) -> AssetListNftSecureView<NftMediaView> {
+        let mediaView = AssetListNftSecureView<NftMediaView>(displayIndex: index)
+        mediaView.originalView.contentInsets = .zero
 
         return mediaView
     }
 
-    func updatingMediaViewList(_ list: [NftMediaView], appending: [NftMediaView]) -> [NftMediaView] {
+    func updatingMediaViewList(
+        _ list: [AssetListNftSecureView<NftMediaView>],
+        appending: [AssetListNftSecureView<NftMediaView>]
+    ) -> [AssetListNftSecureView<NftMediaView>] {
         let views = appending.reduce(list) { result, mediaView in
             addSubview(mediaView)
 
@@ -176,17 +187,12 @@ private extension AssetListNftsView {
             make.centerY.equalToSuperview()
         }
 
-        addSubview(counterBackgroundView)
-        counterBackgroundView.snp.makeConstraints { make in
+        addSubview(counterView)
+        counterView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.trailing).offset(8.0)
             make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()
-        }
-
-        counterBackgroundView.addSubview(counterLabel)
-        counterLabel.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(2.0)
-            make.leading.trailing.equalToSuperview().inset(8.0)
+            make.height.equalTo(Constants.counterViewHeight)
         }
     }
 }

@@ -1949,3 +1949,4 @@
 "multisig.notifications.promo.sheet.title" = "Multisig push notifications are here!";
 "multisig.notifications.promo.sheet.message" = "Get notified about signing requests, new signatures, and completed transactions — so you’re always in control. Manage anytime in Settings.";
 "common.enable.settings" = "Enable in Settings";
+"settings.hide.balances.on.launch" = "Open app with hidden balance";

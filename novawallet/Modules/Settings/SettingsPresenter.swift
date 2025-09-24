@@ -8,11 +8,13 @@ final class SettingsPresenter {
     let interactor: SettingsInteractorInputProtocol
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
+
     private var currency: String?
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
     private var hasWalletsListUpdates: Bool = false
     private var pushNotificationsStatus: PushNotificationsStatus?
+    private var hideBalances: Bool?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -32,15 +34,20 @@ final class SettingsPresenter {
         self.logger = logger
         self.localizationManager = localizationManager
     }
+}
 
-    private func updateView() {
+// MARK: - Private
+
+private extension SettingsPresenter {
+    func updateView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
         let parameters = SettingsParameters(
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
-            isNotificationsOn: pushNotificationsStatus == .active
+            isNotificationsOn: pushNotificationsStatus == .active,
+            isHideBalancesOn: hideBalances ?? false
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -53,8 +60,9 @@ final class SettingsPresenter {
         view?.reload(sections: sectionViewModels)
     }
 
-    private func updateAccountView() {
-        guard let wallet = wallet else { return }
+    func updateAccountView() {
+        guard let wallet else { return }
+
         let viewModel = viewModelFactory.createAccountViewModel(
             for: wallet,
             hasWalletNotification: hasWalletsListUpdates
@@ -62,16 +70,14 @@ final class SettingsPresenter {
         view?.didLoad(userViewModel: viewModel)
     }
 
-    private func show(url: URL) {
-        if let view = view {
-            wireframe.show(url: url, from: view)
-        }
+    func show(url: URL) {
+        guard let view else { return }
+
+        wireframe.show(url: url, from: view)
     }
 
-    private func writeUs() {
-        guard let view = view else {
-            return
-        }
+    func writeUs() {
+        guard let view else { return }
 
         let message = SocialMessage(
             body: nil,
@@ -93,8 +99,8 @@ final class SettingsPresenter {
         }
     }
 
-    private func toggleBiometryUsage() {
-        guard let biometrySettings = biometrySettings else {
+    func toggleBiometryUsage() {
+        guard let biometrySettings else {
             return
         }
 
@@ -111,8 +117,11 @@ final class SettingsPresenter {
         }
     }
 
-    private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
-        guard let biometrySettings = biometrySettings, let view = view else {
+    func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
+        guard
+            let biometrySettings,
+            let view
+        else {
             completion(true)
             return
         }
@@ -126,13 +135,12 @@ final class SettingsPresenter {
         )
     }
 
-    private func toggleConfirmationSettings(
+    func toggleConfirmationSettings(
         _ currentState: Bool,
         completion: @escaping (Bool) -> Void
     ) {
-        guard let view = view else {
-            return
-        }
+        guard let view else { return }
+
         let newState = !currentState
         let disabling = currentState == true && newState == false
         let enabling = currentState == false && newState == true
@@ -151,6 +159,8 @@ final class SettingsPresenter {
         }
     }
 }
+
+// MARK: - SettingsPresenterProtocol
 
 extension SettingsPresenter: SettingsPresenterProtocol {
     var appNameText: String {
@@ -180,6 +190,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             toggleConfirmationSettings(isPinConfirmationOn) { [weak self] newState in
                 self?.interactor.updatePinConfirmationSettings(isOn: newState)
             }
+        case .hideBalances:
+            interactor.toggleHideBalances()
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -222,7 +234,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
     }
 
     func handleWalletAction() {
-        guard let wallet = wallet else { return }
+        guard let wallet else { return }
+
         wireframe.showAccountDetails(for: wallet.identifier, from: view)
     }
 
@@ -230,6 +243,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         wireframe.showWalletSwitch(from: view)
     }
 }
+
+// MARK: - SettingsInteractorOutputProtocol
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
@@ -242,32 +257,33 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
-        if !wireframe.present(error: error, from: view, locale: locale) {
-            _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
-        }
+        guard !wireframe.present(error: error, from: view, locale: locale) else { return }
+
+        _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
     }
 
     func didReceive(currencyCode: String) {
         currency = currencyCode
 
-        if view?.isSetup == true {
-            updateView()
-        }
+        guard let view, view.isSetup else { return }
+
+        updateView()
     }
 
     func didReceive(biometrySettings: BiometrySettings) {
         self.biometrySettings = biometrySettings
-        if view?.isSetup == true {
-            updateView()
-        }
+
+        guard let view, view.isSetup else { return }
+
+        updateView()
     }
 
     func didReceive(pinConfirmationEnabled: Bool) {
         isPinConfirmationOn = pinConfirmationEnabled
 
-        if view?.isSetup == true {
-            updateView()
-        }
+        guard let view, view.isSetup else { return }
+
+        updateView()
     }
 
     func didReceive(error: SettingsError) {
@@ -275,9 +291,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         switch error {
         case .biometryAuthAndSystemSettingsOutOfSync:
-            guard let biometrySettings = biometrySettings else {
-                return
-            }
+            guard let biometrySettings else { return }
 
             let biometryTypeName = biometrySettings.name
             let title = R.string.localizable.settingsErrorBiometryDisabledInSettingsTitle(
@@ -315,7 +329,17 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         self.pushNotificationsStatus = pushNotificationsStatus
         updateView()
     }
+
+    func didReceive(hideBalancesOnLaunch: Bool) {
+        hideBalances = hideBalancesOnLaunch
+
+        guard let view, view.isSetup else { return }
+
+        updateView()
+    }
 }
+
+// MARK: - URIScanDelegate
 
 extension SettingsPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
@@ -325,10 +349,12 @@ extension SettingsPresenter: URIScanDelegate {
     }
 }
 
+// MARK: - Localizable
+
 extension SettingsPresenter: Localizable {
     func applyLocalization() {
-        if view?.isSetup == true {
-            updateView()
-        }
+        guard let view, view.isSetup else { return }
+
+        updateView()
     }
 }

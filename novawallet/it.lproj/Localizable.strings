@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Non sono richieste ulteriori azioni da parte tua.";
 "multisig.operation.executed.no.format" = "Transazione senza informazioni iniziali on-chain (dati call) è stata eseguita su %@.";
 "multisig.operation.cancelled.no.format" = "Transazione senza informazioni iniziali on-chain (dati call) è stata rifiutata su %@.";
+"settings.hide.balances.on.launch" = "Apri l'app con saldo nascosto";

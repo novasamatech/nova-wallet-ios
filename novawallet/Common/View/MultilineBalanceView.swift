@@ -71,9 +71,15 @@ class MultilineBalanceView: UIView {
     }
 }
 
-final class ShimmerMultibalanceView: GenericPairValueView<ShimmerLabel, ShimmerLabel> {
-    var amountLabel: ShimmerLabel { fView }
-    var priceLabel: ShimmerLabel { sView }
+final class ShimmerSecureMultibalanceView: GenericPairValueView<
+    DotsSecureView<ShimmerLabel>,
+    DotsSecureView<ShimmerLabel>
+> {
+    var amountSecureView: DotsSecureView<ShimmerLabel> { fView }
+    var priceSecureView: DotsSecureView<ShimmerLabel> { sView }
+
+    var amountLabel: ShimmerLabel { amountSecureView.originalView }
+    var priceLabel: ShimmerLabel { priceSecureView.originalView }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -102,11 +108,13 @@ final class ShimmerMultibalanceView: GenericPairValueView<ShimmerLabel, ShimmerL
     }
 }
 
-extension ShimmerMultibalanceView {
-    func bind(viewModel: LoadableViewModelState<BalanceViewModelProtocol>) {
+extension ShimmerSecureMultibalanceView {
+    func bind(viewModel: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>) {
+        bind(privacyMode: viewModel.privacyMode)
+
         stopShimmering()
 
-        switch viewModel {
+        switch viewModel.originalContent {
         case .loading:
             bind(amount: "", price: nil)
         case let .cached(value):
@@ -127,5 +135,10 @@ extension ShimmerMultibalanceView {
             priceLabel.text = ""
             priceLabel.isHidden = true
         }
+    }
+
+    func bind(privacyMode: ViewPrivacyMode) {
+        amountSecureView.bind(privacyMode)
+        priceSecureView.bind(privacyMode)
     }
 }

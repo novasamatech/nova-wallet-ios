@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Không cần thêm hành động nào từ bạn.";
 "multisig.operation.executed.no.format" = "Giao dịch không có thông tin trên chuỗi ban đầu (dữ liệu cuộc gọi) đã được thực hiện trên %@.";
 "multisig.operation.cancelled.no.format" = "Giao dịch không có thông tin trên chuỗi ban đầu (dữ liệu cuộc gọi) đã bị từ chối trên %@.";
+"settings.hide.balances.on.launch" = "Mở ứng dụng với số dư ẩn";

@@ -46,12 +46,14 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.privacyStateManager = privacyStateManager
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
     }
@@ -88,7 +90,7 @@ private extension AssetListPresenter {
                     locks: nil,
                     hasSwaps: model.hasSwaps()
                 ),
-                locale: selectedLocale
+                genericParams: createGenericViewModelFactoryParams()
             )
 
             view?.didReceiveHeader(viewModel: viewModel)
@@ -182,7 +184,7 @@ private extension AssetListPresenter {
                 locks: totalLocks,
                 hasSwaps: model.hasSwaps()
             ),
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         view?.didReceiveHeader(viewModel: viewModel)
@@ -370,12 +372,16 @@ private extension AssetListPresenter {
             return nil
         }
 
-        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+        let params = AssetListTokenGroupViewModelParams(
             assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
-            connected: true,
-            locale: selectedLocale
+            connected: true
+        )
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            params: params,
+            genericParams: createGenericViewModelFactoryParams()
         ) {
             .token(groupViewModel)
         } else {
@@ -408,13 +414,17 @@ private extension AssetListPresenter {
             )
         }
 
+        let params = AssetListNetworkGroupViewModelParams(
+            chain: chain,
+            assets: assetInfoList,
+            value: groupModel.value,
+            connected: true
+        )
+
         return .network(
             viewModelFactory.createNetworkGroupViewModel(
-                for: chain,
-                assets: assetInfoList,
-                value: groupModel.value,
-                connected: true,
-                locale: selectedLocale
+                params: params,
+                genericParams: createGenericViewModelFactoryParams()
             )
         )
     }
@@ -423,7 +433,7 @@ private extension AssetListPresenter {
         let viewModel = viewModelFactory.createOrganizerViewModel(
             from: model.nfts,
             operations: model.pendingOperations,
-            locale: selectedLocale
+            genericParams: createGenericViewModelFactoryParams()
         )
 
         guard organizerViewModel != viewModel else {
@@ -459,6 +469,13 @@ private extension AssetListPresenter {
         }
 
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+    }
+
+    func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
+        ViewModelFactoryGenericParams(
+            locale: selectedLocale,
+            privacyModeEnabled: privacyModeEnabled
+        )
     }
 }
 
@@ -551,7 +568,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            guard let self, let wallet else { return }
+            guard let self, wallet != nil else { return }
 
             wireframe.showRamp(
                 from: view,
@@ -577,7 +594,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in
-            guard let self, let wallet else { return }
+            guard let self, wallet != nil else { return }
 
             wireframe.showRamp(
                 from: view,
@@ -608,6 +625,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         provideAssetViewModels()
         interactor.setAssetListGroupsStyle(assetListStyle)
+    }
+
+    func togglePrivacyMode() {
+        privacyStateManager?.privacyModeEnabled.toggle()
     }
 }
 
@@ -776,11 +797,15 @@ extension AssetListPresenter: Localizable {
     }
 }
 
+// MARK: - AssetsSearchDelegate
+
 extension AssetListPresenter: AssetsSearchDelegate {
     func assetSearchDidSelect(chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
     }
 }
+
+// MARK: - URIScanDelegate
 
 extension AssetListPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
@@ -790,11 +815,25 @@ extension AssetListPresenter: URIScanDelegate {
     }
 }
 
+// MARK: - IconAppearanceDepending
+
 extension AssetListPresenter: IconAppearanceDepending {
     func applyIconAppearance() {
         guard let view, view.isSetup else { return }
 
         provideAssetViewModels()
         updateOrganizerView()
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension AssetListPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
+        guard let view, view.isSetup else { return }
+
+        provideHeaderViewModel()
+        provideAssetViewModels()
+        provideOrganizerViewModel()
     }
 }

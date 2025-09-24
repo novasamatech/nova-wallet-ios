@@ -19,6 +19,7 @@ final class StakingDashboardPresenter {
         interactor: StakingDashboardInteractorInputProtocol,
         wireframe: StakingDashboardWireframeProtocol,
         viewModelFactory: StakingDashboardViewModelFactoryProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -27,9 +28,14 @@ final class StakingDashboardPresenter {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
+        self.privacyStateManager = privacyStateManager
     }
+}
 
-    private func updateWalletView() {
+// MARK: - Private
+
+private extension StakingDashboardPresenter {
+    func updateWalletView() {
         guard let wallet = wallet else {
             return
         }
@@ -44,7 +50,7 @@ final class StakingDashboardPresenter {
         view?.didReceiveWallet(viewModel: viewModel)
     }
 
-    private func updateStakingsView() {
+    func updateStakingsView() {
         guard let result = lastResult else {
             return
         }
@@ -57,24 +63,31 @@ final class StakingDashboardPresenter {
         }
     }
 
-    private func reloadStakingView(using model: StakingDashboardModel) {
-        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
+    func reloadStakingView(using model: StakingDashboardModel) {
+        let viewModel = viewModelFactory.createViewModel(
+            from: model,
+            privacyModeEnabled: privacyModeEnabled,
+            locale: selectedLocale
+        )
         view?.didReceiveStakings(viewModel: viewModel)
     }
 
-    private func updateStakingView(
+    func updateStakingView(
         using model: StakingDashboardModel,
         syncChange: StakingDashboardBuilderResult.SyncChange
     ) {
         let updateViewModel = viewModelFactory.createUpdateViewModel(
             from: model,
             syncChange: syncChange,
+            privacyModeEnabled: privacyModeEnabled,
             locale: selectedLocale
         )
 
         view?.didReceiveUpdate(viewModel: updateViewModel)
     }
 }
+
+// MARK: - StakingDashboardPresenterProtocol
 
 extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func setup() {
@@ -109,6 +122,8 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         interactor.refresh()
     }
 }
+
+// MARK: - StakingDashboardInteractorOutputProtocol
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
@@ -158,11 +173,27 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 }
 
+// MARK: - Localizable
+
 extension StakingDashboardPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateWalletView()
             updateStakingsView()
         }
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension StakingDashboardPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
+        guard
+            let view,
+            view.isSetup,
+            let lastResult
+        else { return }
+
+        reloadStakingView(using: lastResult.model)
     }
 }
