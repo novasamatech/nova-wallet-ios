@@ -62,13 +62,10 @@ final class NftSecureImageFactory {
 // MARK: - Internal
 
 extension NftSecureImageFactory {
-    func createPlaceholders(count: Int) -> [UIImage] {
-        (0 ..< count).compactMap { index in
-            let gradientIndex = index % Constants.gradients.count
-            let gradient = Constants.gradients[gradientIndex]
+    func createPlaceholder(for index: Int) -> UIImage? {
+        let gradientIndex = index % Constants.gradients.count
 
-            return createPlaceholderImage(with: gradient)
-        }
+        return createPlaceholderImage(with: Constants.gradients[gradientIndex])
     }
 }
 

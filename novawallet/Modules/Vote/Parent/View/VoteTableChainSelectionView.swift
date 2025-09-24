@@ -50,11 +50,10 @@ private extension VoteTableChainSelectionControl {
         controlContentView.titleView.detailsView.stackView.alignment = .leading
         controlContentView.titleView.iconWidth = Constants.iconSize.width
 
+        subtitleSecureView.preferredSecuredHeight = Constants.subtitleSecureViewHeight
+
         titleLabel.snp.makeConstraints { make in
             make.height.equalTo(Constants.titleLabelHeight)
-        }
-        subtitleSecureView.snp.makeConstraints { make in
-            make.height.equalTo(Constants.subtitleLabelHeight)
         }
     }
 
@@ -131,6 +130,6 @@ private extension VoteTableChainSelectionControl {
         static let accessoryImageSize: CGSize = .init(width: 24, height: 24)
 
         static let titleLabelHeight: CGFloat = 20
-        static let subtitleLabelHeight: CGFloat = 18
+        static let subtitleSecureViewHeight: CGFloat = 18
     }
 }

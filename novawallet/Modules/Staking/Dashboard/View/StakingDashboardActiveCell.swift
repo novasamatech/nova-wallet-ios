@@ -42,6 +42,9 @@ final class StakingDashboardActiveCellView: UIView {
         view.valueBottom.priceLabel.applyShimmer(style: .regularSubheadlineSecondary)
         view.valueBottom.priceLabel.textAlignment = .left
 
+        view.valueBottom.amountSecureView.preferredSecuredHeight = 28
+        view.valueBottom.priceSecureView.preferredSecuredHeight = 20
+
         view.valueBottom.amountSecureView.privacyModeConfiguration = .largeBalanceChip
     }
 
@@ -152,13 +155,6 @@ final class StakingDashboardActiveCellView: UIView {
             make.top.equalTo(networkContainerView.snp.bottom).offset(24)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
-        }
-
-        rewardsView.valueBottom.amountSecureView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(28)
-        }
-        rewardsView.valueBottom.priceSecureView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(20)
         }
 
         networkView.setContentCompressionResistancePriority(.low, for: .horizontal)

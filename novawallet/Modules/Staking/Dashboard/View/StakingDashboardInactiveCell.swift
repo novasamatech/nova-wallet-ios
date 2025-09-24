@@ -177,9 +177,7 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             make.height.equalTo(16)
         }
 
-        balanceSecureLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(16)
-        }
+        balanceSecureLabel.preferredSecuredHeight = 16.0
 
         balanceSecureLabel.originalView.apply(style: .caption1Secondary)
         balanceSecureLabel.originalView.textAlignment = .left

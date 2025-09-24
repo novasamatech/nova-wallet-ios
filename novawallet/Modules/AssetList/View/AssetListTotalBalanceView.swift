@@ -19,6 +19,7 @@ final class AssetListTotalBalanceView: UIView {
 
     let amountLabel: DotsSecureView<AssetListTotalAmountLabel> = .create { view in
         view.privacyModeConfiguration = .largeBalanceChip
+        view.preferredSecuredHeight = Constants.totalBalanceSecureHeight
         view.originalView.textColor = R.color.colorTextSecondary()
         view.originalView.font = .boldLargeTitle
     }
@@ -35,6 +36,7 @@ final class AssetListTotalBalanceView: UIView {
         $0.setupContentView = { contentView in
             contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
             contentView.detailsView.detailsView.privacyModeConfiguration = .smallBalanceChip
+            contentView.detailsView.detailsView.preferredSecuredHeight = Constants.locksSecureViewHeight
             contentView.detailsView.detailsView.originalView.font = .regularFootnote
             contentView.detailsView.detailsView.originalView.textColor = R.color.colorChipText()!
             contentView.spacing = 4
@@ -251,7 +253,6 @@ final class AssetListTotalBalanceView: UIView {
         displayContentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(Constants.totalBalanceHeight)
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
 
@@ -393,8 +394,9 @@ private extension AssetListTotalBalanceView {
         static let elementMovingMotion: CGFloat = 5
         static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         static let infoIconSize = CGSize(width: 12, height: 12)
+        static let locksSecureViewHeight: CGFloat = 15.0
         static let locksViewHeight: CGFloat = 22.0
         static let privacyButtonSize = CGSize(width: 20, height: 20)
-        static let totalBalanceHeight: CGFloat = 47.0
+        static let totalBalanceSecureHeight: CGFloat = 47.0
     }
 }

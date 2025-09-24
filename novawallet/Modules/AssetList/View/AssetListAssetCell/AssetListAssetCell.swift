@@ -18,6 +18,7 @@ class AssetListAssetCell: UICollectionViewCell {
 
     let balanceLabel: DotsSecureView<AssetListAssetBalanceLabel> = .create {
         $0.privacyModeConfiguration = .smallBalanceChip
+        $0.preferredSecuredHeight = 22.0
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right
@@ -25,6 +26,7 @@ class AssetListAssetCell: UICollectionViewCell {
 
     let balanceValueLabel: DotsSecureView<UILabel> = .create {
         $0.privacyModeConfiguration = .smallBalanceChip
+        $0.preferredSecuredHeight = 18.0
         $0.originalView.font = .regularFootnote
         $0.originalView.textColor = R.color.colorTextSecondary()
         $0.originalView.textAlignment = .right
@@ -176,7 +178,6 @@ class AssetListAssetCell: UICollectionViewCell {
         balanceLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(32.0)
             make.leading.greaterThanOrEqualTo(assetLabel.snp.trailing).offset(4.0)
-            make.height.equalTo(22.0)
             make.top.equalToSuperview().inset(8.0)
         }
 
@@ -184,7 +185,6 @@ class AssetListAssetCell: UICollectionViewCell {
         balanceValueLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(32.0)
             make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(4.0)
-            make.height.equalTo(18.0)
             make.bottom.equalToSuperview().inset(8.0)
         }
 
