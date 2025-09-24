@@ -182,7 +182,7 @@ private extension AssetListPresenter {
                 ),
                 prices: totalValue,
                 locks: totalLocks,
-                hasSwaps: model.hasSwaps(),
+                hasSwaps: model.hasSwaps()
             ),
             genericParams: createGenericViewModelFactoryParams()
         )
