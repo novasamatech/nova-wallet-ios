@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Tidak ada tindakan lebih lanjut yang diperlukan dari Anda.";
 "multisig.operation.executed.no.format" = "Transaksi tanpa informasi awal di rantai (data panggilan) dieksekusi di %@.";
 "multisig.operation.cancelled.no.format" = "Transaksi tanpa informasi awal di rantai (data panggilan) ditolak di %@.";
+"settings.hide.balances.on.launch" = "Buka aplikasi dengan saldo tersembunyi";
