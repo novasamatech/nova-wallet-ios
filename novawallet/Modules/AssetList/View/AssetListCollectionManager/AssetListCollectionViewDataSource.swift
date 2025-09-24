@@ -289,7 +289,7 @@ private extension AssetListCollectionViewDataSource {
     func provideYourNftsCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath,
-        model: AssetListNftsViewModel,
+        model: SecuredViewModel<AssetListNftsViewModel>,
         addsSeparator: Bool
     ) -> AssetListNftsCell {
         let cell = collectionView.dequeueReusableCellWithType(

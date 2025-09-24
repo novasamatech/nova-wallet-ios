@@ -17,7 +17,7 @@ final class AssetListNftsCell: CollectionViewContainerCell<AssetListNftsView> {
         view.refresh()
     }
 
-    func bind(viewModel: AssetListNftsViewModel) {
+    func bind(viewModel: SecuredViewModel<AssetListNftsViewModel>) {
         view.bind(viewModel: viewModel)
     }
 }
@@ -32,7 +32,9 @@ final class AssetListNftsView: UIView {
         static let counterViewHeight: CGFloat = 22.0
     }
 
-    private var mediaViews: [NftMediaView] = []
+    private let placeholderFactory = NftSecureImageFactory()
+
+    private var mediaViews: [ImageSecureView<NftMediaView>] = []
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlinePrimary)
@@ -71,20 +73,23 @@ final class AssetListNftsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListNftsViewModel) {
-        switch viewModel.totalCount {
+    func bind(viewModel: SecuredViewModel<AssetListNftsViewModel>) {
+        switch viewModel.originalContent.totalCount {
         case let .cached(value), let .loaded(value):
-            counterView.contentView.originalView.bind(viewModel: value.originalContent)
-            counterView.contentView.bind(value.privacyMode)
+            counterView.contentView.originalView.bind(viewModel: value)
+            counterView.contentView.bind(viewModel.privacyMode)
         case .loading:
             counterView.contentView.originalView.bind(viewModel: .init(title: "", icon: nil))
         }
 
-        bind(mediaViewModels: viewModel.mediaViewModels)
+        bind(
+            mediaViewModels: viewModel.originalContent.mediaViewModels,
+            with: viewModel.privacyMode
+        )
     }
 
     func refresh() {
-        mediaViews.forEach { $0.refreshMediaIfNeeded() }
+        mediaViews.forEach { $0.originalView.refreshMediaIfNeeded() }
     }
 }
 
@@ -95,13 +100,19 @@ private extension AssetListNftsView {
         titleLabel.text = R.string.localizable.walletListYourNftsTitle(preferredLanguages: locale.rLanguages)
     }
 
-    func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
+    func bind(
+        mediaViewModels: [NftMediaViewModelProtocol],
+        with privacyMode: ViewPrivacyMode
+    ) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
+        let placeholders = placeholderFactory.createPlaceholders(count: numberOfImagesToCreate)
+
         if numberOfImagesToCreate > 0 {
-            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in
-                createMediaView()
+            let newMediaViews = (0 ..< numberOfImagesToCreate).map { index in
+                createMediaView(with: placeholders[index])
             }
+
             mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
         } else if numberOfImagesToCreate < 0 {
             let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
@@ -119,7 +130,7 @@ private extension AssetListNftsView {
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
             let isLastNftView = index == 0
-            mediaViews[index].bind(
+            mediaViews[index].originalView.bind(
                 viewModel: viewModel,
                 targetSize: imageSize,
                 cornerRadius: Constants.mediaCornerRadius,
@@ -129,17 +140,21 @@ private extension AssetListNftsView {
                     .placeholder: isLastNftView ? .nft : .shadowedNft
                 ]
             )
+            mediaViews[index].bind(privacyMode)
         }
     }
 
-    func createMediaView() -> NftMediaView {
-        let mediaView = NftMediaView()
-        mediaView.contentInsets = .zero
+    func createMediaView(with placeholder: UIImage) -> ImageSecureView<NftMediaView> {
+        let mediaView = ImageSecureView<NftMediaView>(secureImage: placeholder)
+        mediaView.originalView.contentInsets = .zero
 
         return mediaView
     }
 
-    func updatingMediaViewList(_ list: [NftMediaView], appending: [NftMediaView]) -> [NftMediaView] {
+    func updatingMediaViewList(
+        _ list: [ImageSecureView<NftMediaView>],
+        appending: [ImageSecureView<NftMediaView>]
+    ) -> [ImageSecureView<NftMediaView>] {
         let views = appending.reduce(list) { result, mediaView in
             addSubview(mediaView)
 
