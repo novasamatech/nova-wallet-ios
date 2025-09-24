@@ -109,7 +109,7 @@ extension ReferendumsPresenter {
         invalidateTimer()
         clearState()
 
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
+        provideLoadingViewModel()
     }
 
     func provideChainBalance() {
@@ -130,6 +130,6 @@ extension ReferendumsPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceiveChainBalance(viewModel: viewModel)
+        view?.didReceiveChainBalance(viewModel: .wrapped(viewModel, with: privacyModeEnabled))
     }
 }

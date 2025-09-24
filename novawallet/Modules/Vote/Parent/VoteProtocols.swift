@@ -12,7 +12,7 @@ protocol VoteViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
 }
 
 protocol VoteChainViewProtocol {
-    func bind(viewModel: ChainBalanceViewModel)
+    func bind(viewModel: SecuredViewModel<ChainBalanceViewModel>)
 }
 
 protocol VotePresenterProtocol: AnyObject {

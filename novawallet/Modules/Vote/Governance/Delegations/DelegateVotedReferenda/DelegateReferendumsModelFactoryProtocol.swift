@@ -1,4 +1,8 @@
 protocol DelegateReferendumsModelFactoryProtocol {
-    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel]
+    func createReferendumsViewModel(
+        params: ReferendumsModelFactoryParams,
+        genericParams: ViewModelFactoryGenericParams
+    ) -> [ReferendumsCellViewModel]
+
     func createLoadingViewModel() -> [ReferendumsCellViewModel]
 }

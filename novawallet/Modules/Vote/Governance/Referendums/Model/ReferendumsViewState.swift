@@ -1,4 +1,4 @@
 struct ReferendumsViewState: Equatable {
-    var cells: [ReferendumsCellViewModel]
+    var cells: [SecuredViewModel<ReferendumsCellViewModel>]
     var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]?
 }

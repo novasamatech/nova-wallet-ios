@@ -96,3 +96,11 @@ final class DotsSecureView<View: UIView>: BaseSecureView<View> {
         return overlay
     }
 }
+
+// MARK: - HideSecureView
+
+final class HideSecureView<View: UIView>: BaseSecureView<View> {
+    override func createSecureOverlay() -> UIView? {
+        nil
+    }
+}
