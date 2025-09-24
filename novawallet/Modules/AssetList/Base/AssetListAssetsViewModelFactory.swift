@@ -357,7 +357,10 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         return AssetListNetworkGroupViewModel(
             networkName: networkName,
-            amount: .loaded(value: priceString),
+            amount: .wrapped(
+                .loaded(value: priceString),
+                with: genericParams.privacyModeEnabled
+            ),
             icon: iconViewModel,
             assets: assetViewModels
         )

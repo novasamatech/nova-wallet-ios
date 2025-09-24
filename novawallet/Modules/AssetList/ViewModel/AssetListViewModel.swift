@@ -163,7 +163,7 @@ struct AssetListNetworkGroupViewModel: Identifiable {
     var id: String { networkName }
 
     let networkName: String
-    let amount: LoadableViewModelState<String>
+    let amount: SecuredViewModel<LoadableViewModelState<String>>
     let icon: ImageViewModelProtocol?
     let assets: [AssetListNetworkGroupAssetViewModel]
 }
