@@ -142,7 +142,7 @@ private extension AssetListAssetViewModelFactory {
         let (balanceState, balanceValueState) = createBalanceState(
             assetAccountInfo: assetAccountInfo,
             genericParams: genericParams,
-            connected: connected,
+            connected: connected
         )
 
         return AssetListAssetBalanceViewModel(
@@ -393,7 +393,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             for: params.group,
             assetInfo: assetInfo,
             maybePrices: params.maybePrices,
-            genericParams: genericParams,
+            genericParams: genericParams
         )
 
         return AssetListTokenGroupViewModel(
