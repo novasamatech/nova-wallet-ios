@@ -21,6 +21,9 @@ final class StakingDashboardActiveDetailsView: UIView {
         view.valueTop.textAlignment = .left
         view.spacing = 2
 
+        view.valueBottom.amountSecureView.preferredSecuredHeight = 18
+        view.valueBottom.priceSecureView.preferredSecuredHeight = 13
+
         view.valueBottom.amountLabel.applyShimmer(style: .semiboldFootnotePrimary)
         view.valueBottom.amountLabel.textAlignment = .left
 
@@ -161,13 +164,6 @@ final class StakingDashboardActiveDetailsView: UIView {
         internalStakeView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(Constants.stakeOffset)
-        }
-
-        internalStakeView.valueBottom.amountSecureView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(18)
-        }
-        internalStakeView.valueBottom.priceSecureView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(13)
         }
 
         addSubview(estimatedEarningsView)

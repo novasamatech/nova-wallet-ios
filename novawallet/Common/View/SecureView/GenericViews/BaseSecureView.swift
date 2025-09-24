@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import UIKit_iOS
 
 enum ViewPrivacyMode {
     case visible
@@ -10,9 +9,16 @@ enum ViewPrivacyMode {
 class BaseSecureView<View: UIView>: UIView {
     let originalView: View
 
-    private lazy var secureOverlayView: UIView? = {
-        createSecureOverlay()
-    }()
+    var preferredSecuredHeight: CGFloat? {
+        didSet {
+            updateOverlayViewLayout(
+                with: preferredSecuredHeight,
+                oldValue
+            )
+        }
+    }
+
+    private var secureOverlayView: UIView?
 
     init(
         originalView: View = View()
@@ -48,7 +54,10 @@ private extension BaseSecureView {
     func showSecureOverlay() {
         originalView.removeFromSuperview()
 
-        setupLayout(for: secureOverlayView)
+        setupLayout(
+            for: secureOverlayView,
+            preferredHeight: preferredSecuredHeight
+        )
     }
 
     func hideSecureOverlay() {
@@ -57,11 +66,54 @@ private extension BaseSecureView {
         setupLayout(for: originalView)
     }
 
-    func setupLayout(for contentView: UIView?) {
+    func prepareSecureOverlayView() {
+        guard secureOverlayView == nil else { return }
+
+        secureOverlayView = createSecureOverlay()
+    }
+
+    func setupLayout(
+        for contentView: UIView?,
+        preferredHeight: CGFloat? = nil
+    ) {
         guard let contentView else { return }
 
         addSubview(contentView)
-        contentView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+
+            guard let preferredHeight else { return }
+
+            $0.height.equalTo(preferredHeight)
+        }
+    }
+
+    func updateOverlayViewLayout(
+        with preferredHeight: CGFloat?,
+        _ oldValue: CGFloat?
+    ) {
+        guard let secureOverlayView, secureOverlayView.superview != nil else { return }
+
+        guard let preferredHeight else {
+            secureOverlayView.snp.remakeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            return
+        }
+
+        guard oldValue != nil else {
+            secureOverlayView.snp.remakeConstraints { make in
+                make.edges.equalToSuperview()
+                make.height.equalTo(preferredHeight)
+            }
+
+            return
+        }
+
+        secureOverlayView.snp.updateConstraints { make in
+            make.height.equalTo(preferredHeight)
+        }
     }
 }
 
@@ -71,6 +123,8 @@ extension BaseSecureView {
     func bind(_ privacyMode: ViewPrivacyMode) {
         switch privacyMode {
         case .hidden:
+            prepareSecureOverlayView()
+
             if let secureOverlayView {
                 guard secureOverlayView.superview == nil else { return }
                 showSecureOverlay()
@@ -82,58 +136,5 @@ extension BaseSecureView {
 
             hideSecureOverlay()
         }
-    }
-}
-
-// MARK: - DotsSecureView
-
-final class DotsSecureView<View: UIView>: BaseSecureView<View> {
-    var privacyModeConfiguration: DotsOverlayView.Configuration = .default
-
-    override func createSecureOverlay() -> UIView? {
-        let overlay = DotsOverlayView()
-        overlay.configuration = privacyModeConfiguration
-
-        return overlay
-    }
-}
-
-// MARK: - ImageSecureView
-
-final class ImageSecureView<View: UIView>: BaseSecureView<View> {
-    var overlayConfiguration: RoundedView.Style = .shadowedNft
-
-    private let secureImage: UIImage
-
-    init(secureImage: UIImage) {
-        self.secureImage = secureImage
-
-        super.init(frame: .zero)
-    }
-
-    override func createSecureOverlay() -> UIView? {
-        let roundedView = RoundedView()
-
-        let imageView = UIImageView(image: secureImage)
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = overlayConfiguration.rounding?.radius ?? .zero
-
-        roundedView.addSubview(imageView)
-
-        imageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        roundedView.apply(style: overlayConfiguration)
-
-        return roundedView
-    }
-}
-
-// MARK: - HideSecureView
-
-final class HideSecureView<View: UIView>: BaseSecureView<View> {
-    override func createSecureOverlay() -> UIView? {
-        nil
     }
 }

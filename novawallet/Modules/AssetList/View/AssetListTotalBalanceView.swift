@@ -3,18 +3,6 @@ import UIKit_iOS
 import Kingfisher
 
 final class AssetListTotalBalanceView: UIView {
-    private enum Constants {
-        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
-        static let amountTitleSpacing: CGFloat = 15
-        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
-        static let elementMovingMotion: CGFloat = 5
-        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
-        static let infoIconSize = CGSize(width: 12, height: 12)
-        static let locksViewHeight: CGFloat = 22.0
-        static let privacyButtonSize = CGSize(width: 20, height: 20)
-        static let totalBalanceHeight: CGFloat = 47.0
-    }
-
     let backgroundBlurView = GladingCardView()
 
     let displayContentView: UIView = .create { view in
@@ -31,6 +19,7 @@ final class AssetListTotalBalanceView: UIView {
 
     let amountLabel: DotsSecureView<AssetListTotalAmountLabel> = .create { view in
         view.privacyModeConfiguration = .largeBalanceChip
+        view.preferredSecuredHeight = Constants.totalBalanceSecureHeight
         view.originalView.textColor = R.color.colorTextSecondary()
         view.originalView.font = .boldLargeTitle
     }
@@ -47,6 +36,7 @@ final class AssetListTotalBalanceView: UIView {
         $0.setupContentView = { contentView in
             contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
             contentView.detailsView.detailsView.privacyModeConfiguration = .smallBalanceChip
+            contentView.detailsView.detailsView.preferredSecuredHeight = Constants.locksSecureViewHeight
             contentView.detailsView.detailsView.originalView.font = .regularFootnote
             contentView.detailsView.detailsView.originalView.textColor = R.color.colorChipText()!
             contentView.spacing = 4
@@ -263,7 +253,6 @@ final class AssetListTotalBalanceView: UIView {
         displayContentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(Constants.totalBalanceHeight)
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.amountTitleSpacing)
         }
 
@@ -392,5 +381,22 @@ extension AssetListTotalBalanceView: AnimationUpdatibleView {
         actionsGladingView.updateLayerAnimationIfActive()
 
         skeletonView?.restartSkrulling()
+    }
+}
+
+// MARK: - Constants
+
+private extension AssetListTotalBalanceView {
+    enum Constants {
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
+        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
+        static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        static let infoIconSize = CGSize(width: 12, height: 12)
+        static let locksSecureViewHeight: CGFloat = 15.0
+        static let locksViewHeight: CGFloat = 22.0
+        static let privacyButtonSize = CGSize(width: 20, height: 20)
+        static let totalBalanceSecureHeight: CGFloat = 47.0
     }
 }

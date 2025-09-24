@@ -32,9 +32,7 @@ final class AssetListNftsView: UIView {
         static let counterViewHeight: CGFloat = 22.0
     }
 
-    private let placeholderFactory = NftSecureImageFactory()
-
-    private var mediaViews: [ImageSecureView<NftMediaView>] = []
+    private var mediaViews: [AssetListNftSecureView<NftMediaView>] = []
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlinePrimary)
@@ -106,11 +104,9 @@ private extension AssetListNftsView {
     ) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
-        let placeholders = placeholderFactory.createPlaceholders(count: numberOfImagesToCreate)
-
         if numberOfImagesToCreate > 0 {
             let newMediaViews = (0 ..< numberOfImagesToCreate).map { index in
-                createMediaView(with: placeholders[index])
+                createMediaView(for: index)
             }
 
             mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
@@ -144,17 +140,17 @@ private extension AssetListNftsView {
         }
     }
 
-    func createMediaView(with placeholder: UIImage) -> ImageSecureView<NftMediaView> {
-        let mediaView = ImageSecureView<NftMediaView>(secureImage: placeholder)
+    func createMediaView(for index: Int) -> AssetListNftSecureView<NftMediaView> {
+        let mediaView = AssetListNftSecureView<NftMediaView>(displayIndex: index)
         mediaView.originalView.contentInsets = .zero
 
         return mediaView
     }
 
     func updatingMediaViewList(
-        _ list: [ImageSecureView<NftMediaView>],
-        appending: [ImageSecureView<NftMediaView>]
-    ) -> [ImageSecureView<NftMediaView>] {
+        _ list: [AssetListNftSecureView<NftMediaView>],
+        appending: [AssetListNftSecureView<NftMediaView>]
+    ) -> [AssetListNftSecureView<NftMediaView>] {
         let views = appending.reduce(list) { result, mediaView in
             addSubview(mediaView)
 
