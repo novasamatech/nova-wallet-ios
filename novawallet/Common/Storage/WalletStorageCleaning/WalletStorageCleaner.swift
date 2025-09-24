@@ -2,8 +2,8 @@ import Foundation
 import Operation_iOS
 
 struct WalletStorageCleaningProviders {
-    let changesProvider: () throws -> [DataProviderChange<ManagedMetaAccountModel>]
-    let walletsBeforeChangesProvider: () throws -> [MetaAccountModel.Id: ManagedMetaAccountModel]
+    let changesProvider: () -> [DataProviderChange<ManagedMetaAccountModel>]
+    let walletsBeforeChangesProvider: () -> [MetaAccountModel.Id: ManagedMetaAccountModel]
 }
 
 final class WalletStorageCleaner {
