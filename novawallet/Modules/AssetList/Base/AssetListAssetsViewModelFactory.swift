@@ -135,7 +135,7 @@ private extension AssetListAssetViewModelFactory {
     func createBalanceViewModel(
         using assetAccountInfo: AssetListAssetAccountInfo,
         connected: Bool,
-        genericParams: ViewModelFactoryGenericParams,
+        genericParams: ViewModelFactoryGenericParams
     ) -> AssetListAssetBalanceViewModel {
         let priceState = createPriceState(assetAccountInfo: assetAccountInfo, locale: genericParams.locale)
 
@@ -182,7 +182,7 @@ private extension AssetListAssetViewModelFactory {
         for group: AssetListAssetGroupModel,
         assetInfo: AssetBalanceDisplayInfo,
         maybePrices: [ChainAssetId: PriceData]?,
-        genericParams: ViewModelFactoryGenericParams,
+        genericParams: ViewModelFactoryGenericParams
     ) -> AssetListAssetBalanceViewModel {
         let priceData: PriceData? = {
             if let priceDataKey = group.multichainToken.instances.first(
