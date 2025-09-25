@@ -93,7 +93,7 @@
 		<key>iCloud.io.novafoundation.novawallet.Documents</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
-			<false/>
+			<true/>
 			<key>NSUbiquitousContainerName</key>
 			<string>Backup</string>
 			<key>NSUbiquitousContainerSupportedFolderLevels</key>
