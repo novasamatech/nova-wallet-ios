@@ -6,6 +6,7 @@ enum URLHandlingPendingLink: Codable {
     case governance(Referenda.ReferendumIndex)
     case dApp(URL)
     case card(String?)
+    case assetHubMigration(sourceChainId: ChainModel.Id)
 }
 
 protocol URLHandlingStoreProtocol {

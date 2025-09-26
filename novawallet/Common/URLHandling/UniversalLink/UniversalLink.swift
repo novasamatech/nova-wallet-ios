@@ -15,6 +15,7 @@ enum UniversalLink {
         case governance = "gov"
         case dApp = "dapp"
         case card
+        case assetHubMigration = "ahm"
     }
 
     enum GovScreen {

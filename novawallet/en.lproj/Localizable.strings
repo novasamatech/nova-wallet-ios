@@ -1950,3 +1950,12 @@
 "multisig.notifications.promo.sheet.message" = "Get notified about signing requests, new signatures, and completed transactions — so you’re always in control. Manage anytime in Settings.";
 "common.enable.settings" = "Enable in Settings";
 "settings.hide.balances.on.launch" = "Open app with hidden balance";
+"ahm.info.title" = "Starting %@ your %@ balance, Staking and Governance are now on %@";
+"ahm.info.subtitle" = "What makes Asset Hub awesome?";
+"ahm.info.feature.min.balance" = "%1$dx reduction in minimal balance\n(from %2$@ to %3$@)";
+"ahm.info.feature.fees" = "%1$dx lower transaction fees\n(from %2$@ to %3$@)";
+"ahm.info.feature.tokens" = "More tokens supported: %@ and other ecosystem tokens";
+"ahm.info.feature.unified" = "Unified access to %@, assets, staking, and governance";
+"ahm.info.feature.pay.fees" = "Ability to pay fees in any token";
+"ahm.info.history.info" = "Old transaction history remains on %@";
+"ahm.info.migration.info" = "Migration happens automatically, no action needed";
