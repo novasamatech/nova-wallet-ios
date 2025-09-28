@@ -14,7 +14,7 @@ final class OpenAHMUrlParsingService {
         self.migrationInfoRepository = migrationInfoRepository
         self.operationQueue = operationQueue
     }
-    
+
     deinit {
         callStore.clear()
     }
