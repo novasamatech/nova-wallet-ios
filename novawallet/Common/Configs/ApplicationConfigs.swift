@@ -369,5 +369,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/v2/content/"
     }
 
+    var assetHubMigrationConfigsPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/migrations/assetHub/"
+    }
+
     // swiftlint:enable line_length
 }

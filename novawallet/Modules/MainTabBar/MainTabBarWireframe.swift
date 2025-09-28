@@ -195,6 +195,17 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func openAssetHubMigrationInfoScreen(
+        in view: MainTabBarViewProtocol?,
+        navigation: AHMNavigation
+    ) {
+        guard let ahmInfoView = AHMInfoViewFactory.createView(remoteData: navigation.config) else {
+            return
+        }
+
+        view?.controller.present(ahmInfoView.controller, animated: true)
+    }
+
     func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
         guard let tabBarController = view.topModalViewController as? UITabBarController else {
             // some flow is currently presented modally
@@ -332,6 +343,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
             case let .card(cardNavigation):
                 openCardScreen(in: view, cardNavigation: cardNavigation)
+            case let .assetHubMigration(ahmNavigation):
+                openAssetHubMigrationInfoScreen(in: view, navigation: ahmNavigation)
             default:
                 break
             }

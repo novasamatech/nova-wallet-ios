@@ -1959,3 +1959,4 @@
 "ahm.info.feature.pay.fees" = "Ability to pay fees in any token";
 "ahm.info.history.info" = "Old transaction history remains on %@";
 "ahm.info.migration.info" = "Migration happens automatically, no action needed";
+"ahm.info.notFound.error" = "Migration info not found";

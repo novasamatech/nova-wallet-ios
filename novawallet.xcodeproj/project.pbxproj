@@ -665,7 +665,7 @@
 		0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */; };
 		0C7104722C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */; };
 		0C7104772C2AC00000487E64 /* CommonMetadataShortenerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */; };
-		0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */; };
+		0C7104792C2AC0F300487E64 /* InMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCache.swift */; };
 		0C71047B2C2AFF6D00487E64 /* LedgerWalletType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */; };
 		0C71047F2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71047E2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift */; };
 		0C7104832C2B176100487E64 /* LedgerCommonApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104822C2B176100487E64 /* LedgerCommonApplication.swift */; };
@@ -1971,6 +1971,12 @@
 		2DC002D22E867C1600D49A42 /* AHMInfoViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002D12E867C1600D49A42 /* AHMInfoViewModelFactory.swift */; };
 		2DC002D52E867CCD00D49A42 /* AHMRemoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002D42E867CCD00D49A42 /* AHMRemoteData.swift */; };
 		2DC002D72E869D2000D49A42 /* AHMNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002D62E869D2000D49A42 /* AHMNavigation.swift */; };
+		2DC002D92E869FD700D49A42 /* OpenAHMUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002D82E869FD700D49A42 /* OpenAHMUrlParsingService.swift */; };
+		2DC002DC2E86D25D00D49A42 /* ExpiringInMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002DB2E86D25D00D49A42 /* ExpiringInMemoryCache.swift */; };
+		2DC002DE2E86D27D00D49A42 /* ObservableInMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002DD2E86D27D00D49A42 /* ObservableInMemoryCache.swift */; };
+		2DC002DF2E86D27D00D49A42 /* ObservableInMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002DD2E86D27D00D49A42 /* ObservableInMemoryCache.swift */; };
+		2DC002E12E86D59900D49A42 /* AHMInfoRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002E02E86D59900D49A42 /* AHMInfoRepository.swift */; };
+		2DC002E32E895DB200D49A42 /* AHMInfoFetchOeprationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002E22E895DB200D49A42 /* AHMInfoFetchOeprationFactory.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DC08BE22DCCF95C00C690D4 /* ChainAccountFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */; };
@@ -1988,7 +1994,7 @@
 		2DC694532DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */; };
 		2DC694552DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC694542DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift */; };
 		2DC694562DF830F0004F4584 /* InMemoryDataProviderRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */; };
-		2DC6945A2DF836D2004F4584 /* InMemoryCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */; };
+		2DC6945A2DF836D2004F4584 /* InMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCache.swift */; };
 		2DC6945C2DF8376A004F4584 /* WeakWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8463A70225E2FCD0003B8160 /* WeakWrapper.swift */; };
 		2DC6945D2DF837A6004F4584 /* NotEqualWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DE5828FD32780055345C /* NotEqualWrapper.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
@@ -7155,7 +7161,7 @@
 		0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashGenerationTests.swift; sourceTree = "<group>"; };
 		0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofGenerationTests.swift; sourceTree = "<group>"; };
 		0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMetadataShortenerError.swift; sourceTree = "<group>"; };
-		0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaching.swift; sourceTree = "<group>"; };
+		0C7104782C2AC0F300487E64 /* InMemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCache.swift; sourceTree = "<group>"; };
 		0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerWalletType.swift; sourceTree = "<group>"; };
 		0C71047E2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerDiscoverWireframe.swift; sourceTree = "<group>"; };
 		0C7104822C2B176100487E64 /* LedgerCommonApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCommonApplication.swift; sourceTree = "<group>"; };
@@ -8480,6 +8486,11 @@
 		2DC002D12E867C1600D49A42 /* AHMInfoViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMInfoViewModelFactory.swift; sourceTree = "<group>"; };
 		2DC002D42E867CCD00D49A42 /* AHMRemoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMRemoteData.swift; sourceTree = "<group>"; };
 		2DC002D62E869D2000D49A42 /* AHMNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMNavigation.swift; sourceTree = "<group>"; };
+		2DC002D82E869FD700D49A42 /* OpenAHMUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAHMUrlParsingService.swift; sourceTree = "<group>"; };
+		2DC002DB2E86D25D00D49A42 /* ExpiringInMemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpiringInMemoryCache.swift; sourceTree = "<group>"; };
+		2DC002DD2E86D27D00D49A42 /* ObservableInMemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableInMemoryCache.swift; sourceTree = "<group>"; };
+		2DC002E02E86D59900D49A42 /* AHMInfoRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMInfoRepository.swift; sourceTree = "<group>"; };
+		2DC002E22E895DB200D49A42 /* AHMInfoFetchOeprationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMInfoFetchOeprationFactory.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationControllerDelegate.swift; sourceTree = "<group>"; };
@@ -17795,6 +17806,7 @@
 		2DC002D02E867C0400D49A42 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2DC002E02E86D59900D49A42 /* AHMInfoRepository.swift */,
 				2DC002CE2E867BB500D49A42 /* AHMInfoViewModel.swift */,
 				2DC002D42E867CCD00D49A42 /* AHMRemoteData.swift */,
 				2DC002D62E869D2000D49A42 /* AHMNavigation.swift */,
@@ -17807,8 +17819,19 @@
 			children = (
 				377CD0A9ABDBDFCA07B6DB5C /* AHMInfoViewFactory.swift */,
 				2DC002D12E867C1600D49A42 /* AHMInfoViewModelFactory.swift */,
+				2DC002E22E895DB200D49A42 /* AHMInfoFetchOeprationFactory.swift */,
 			);
 			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DC002DA2E86D24D00D49A42 /* InMemoryCache */ = {
+			isa = PBXGroup;
+			children = (
+				0C7104782C2AC0F300487E64 /* InMemoryCache.swift */,
+				2DC002DB2E86D25D00D49A42 /* ExpiringInMemoryCache.swift */,
+				2DC002DD2E86D27D00D49A42 /* ObservableInMemoryCache.swift */,
+			);
+			path = InMemoryCache;
 			sourceTree = "<group>";
 		};
 		2DC075E12BF249F000868563 /* View */ = {
@@ -19213,6 +19236,7 @@
 				77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */,
 				2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */,
 				77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */,
+				2DC002D82E869FD700D49A42 /* OpenAHMUrlParsingService.swift */,
 				77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */,
 				77FDFC472B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift */,
 				0C5FA9A42B830A650077934C /* WalletConnectUrlParsingService.swift */,
@@ -23455,6 +23479,7 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				2DC002DA2E86D24D00D49A42 /* InMemoryCache */,
 				0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */,
 				0CCD18C02BA1EF7E0068D73A /* AssetBalance */,
 				849B036E2A15EE07009624D9 /* TransactionHistory */,
@@ -23524,7 +23549,6 @@
 				0C93FCA22B885979009EE2DD /* DeviceOrientationManager.swift */,
 				0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */,
 				0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */,
-				0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */,
 				0C33E8B92D011D2E0090096A /* Debouncer.swift */,
 				0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */,
 			);
@@ -30431,7 +30455,7 @@
 				778215C62B914E25006C7D13 /* CommonHandler.swift in Sources */,
 				7778FE3C2B90CC440023E801 /* SubstrateDataStorageFacade.swift in Sources */,
 				2DEDF0482E4D1773008F07B2 /* BigUInt+Operation.swift in Sources */,
-				2DC6945A2DF836D2004F4584 /* InMemoryCaching.swift in Sources */,
+				2DC6945A2DF836D2004F4584 /* InMemoryCache.swift in Sources */,
 				77EF9A7E2B9F138A0034D619 /* OperatingCall.swift in Sources */,
 				2DEDEF6D2E4CFC07008F07B2 /* CallCodingPath+Evm.swift in Sources */,
 				2DC08BE32DCCF96B00C690D4 /* Data+Random.swift in Sources */,
@@ -30496,6 +30520,7 @@
 				2DEDEF8A2E4D13BA008F07B2 /* XcmPalletTransfer.swift in Sources */,
 				77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */,
 				2DC6945C2DF8376A004F4584 /* WeakWrapper.swift in Sources */,
+				2DC002DE2E86D27D00D49A42 /* ObservableInMemoryCache.swift in Sources */,
 				2DE8B0A02E54461A00F8BD40 /* OfflineChainProvider.swift in Sources */,
 				7778FE6B2B910D1B0023E801 /* AssetType.swift in Sources */,
 				2DE8B0D02E55A60A00F8BD40 /* FormattedCall+BatchDescription.swift in Sources */,
@@ -30866,6 +30891,7 @@
 				847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */,
 				849014C824AA8A28008F705E /* BiometryAuth.swift in Sources */,
 				84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */,
+				2DC002DF2E86D27D00D49A42 /* ObservableInMemoryCache.swift in Sources */,
 				84350ACE2845709D0031EF24 /* IdentityAccountView.swift in Sources */,
 				8489A6D027FD5B9E0040C066 /* StackActionView.swift in Sources */,
 				778D979F2A24D248002BA681 /* SearchViewProtocol.swift in Sources */,
@@ -31074,6 +31100,7 @@
 				0C37AFB72B555F1400009ECA /* StakingValidatorExposureFacade.swift in Sources */,
 				0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */,
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
+				2DC002E32E895DB200D49A42 /* AHMInfoFetchOeprationFactory.swift in Sources */,
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,
 				2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */,
 				84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */,
@@ -31124,6 +31151,7 @@
 				2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */,
 				0C11D85A2CCA3377003EC46D /* AssetsHydraOmnipoolExchange.swift in Sources */,
 				777BD86429F979DA004969A2 /* SelectableFilterCell.swift in Sources */,
+				2DC002E12E86D59900D49A42 /* AHMInfoRepository.swift in Sources */,
 				0C992C3F2B53AEF700ACC129 /* OperationSearchService.swift in Sources */,
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
@@ -31990,6 +32018,7 @@
 				84C41F3628EDADE000DB1CD3 /* ReferendaTrackInfo.swift in Sources */,
 				AEF507F226259DF00098574D /* ValidationViewModel.swift in Sources */,
 				84FD91B229B08F8F007851D3 /* BaseTableSearchViewLayout.swift in Sources */,
+				2DC002D92E869FD700D49A42 /* OpenAHMUrlParsingService.swift in Sources */,
 				847F2D4827A9DDC700AFD476 /* MultigradientView+Default.swift in Sources */,
 				8448F7A6288314250080CEA9 /* AssetListAssetsViewModelFactory.swift in Sources */,
 				0C59E8F42AA7649E001E11F3 /* OperationDetailsBaseProvider.swift in Sources */,
@@ -33342,6 +33371,7 @@
 				0CB3136A2C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift in Sources */,
 				2D32BE222C6D247C0047F520 /* FeeAssetSelectionPresentable.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
+				2DC002DC2E86D25D00D49A42 /* ExpiringInMemoryCache.swift in Sources */,
 				0CE933E42C07C225000F3EFE /* WalletCreationRequestFactory.swift in Sources */,
 				0C0F6D9D2D3E770600943A7C /* SessionPallet+Path.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
@@ -34834,7 +34864,7 @@
 				F85F1BCAD47F0596FBFBA110 /* ParaStkRebondWireframe.swift in Sources */,
 				77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */,
 				777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */,
-				0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */,
+				0C7104792C2AC0F300487E64 /* InMemoryCache.swift in Sources */,
 				0CEBAD542D5F941E000EBA45 /* CallDispatchErrorDecoder.swift in Sources */,
 				B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */,
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,

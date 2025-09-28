@@ -25,8 +25,8 @@ extension UrlHandlingScreen {
             self = .dApp(.init(url: url))
         case let .card(provider):
             self = .card(.init(rawValue: provider ?? ""))
-        case let .assetHubMigration(sourceChainId):
-            self = .assetHubMigration(.init(sourceChainId: sourceChainId))
+        case let .assetHubMigration(config):
+            self = .assetHubMigration(.init(config: config))
         }
     }
 
@@ -41,7 +41,7 @@ extension UrlHandlingScreen {
         case let .card(navigation):
             .card(navigation?.rawValue)
         case let .assetHubMigration(navigation):
-            .assetHubMigration(sourceChainId: navigation.sourceChainId)
+            .assetHubMigration(config: navigation.config)
         case .error:
             nil
         }

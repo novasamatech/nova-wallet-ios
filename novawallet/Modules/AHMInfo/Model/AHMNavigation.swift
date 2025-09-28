@@ -1,3 +1,3 @@
 struct AHMNavigation {
-    let sourceChainId: ChainModel.Id
+    let config: AHMRemoteData
 }
