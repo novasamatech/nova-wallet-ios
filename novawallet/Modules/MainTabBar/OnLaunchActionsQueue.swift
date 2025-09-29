@@ -3,6 +3,7 @@ import Foundation
 protocol OnLaunchActionsQueueDelegate: AnyObject {
     func onLaunchProccessPushNotificationsSetup(_ event: OnLaunchAction.PushNotificationsSetup)
     func onLaunchProcessMultisigNotificationPromo(_ event: OnLaunchAction.MultisigNotificationsPromo)
+    func onLaunchProcessAHMInfoSetup(_ event: OnLaunchAction.AHMInfoSetup)
 }
 
 protocol OnLaunchActionsQueueProtocol {

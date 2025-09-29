@@ -16,4 +16,10 @@ enum OnLaunchAction {
             visitor.onLaunchProcessMultisigNotificationPromo(self)
         }
     }
+
+    struct AHMInfoSetup: OnLaunchActionProtocol {
+        func accept(visitor: OnLaunchActionsQueueDelegate) {
+            visitor.onLaunchProcessAHMInfoSetup(self)
+        }
+    }
 }

@@ -33,6 +33,13 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
+    func didRequestAHMInfoOpen(with info: AHMRemoteData) {
+        wireframe.presentAssetHubMigrationInfoScreen(
+            in: view,
+            with: info
+        )
+    }
+
     func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams) {
         wireframe.presentMultisigNotificationsPromo(
             from: view,

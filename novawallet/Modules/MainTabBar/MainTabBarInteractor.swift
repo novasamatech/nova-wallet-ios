@@ -24,7 +24,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
             OnLaunchAction.PushNotificationsSetup(),
-            OnLaunchAction.MultisigNotificationsPromo()
+            OnLaunchAction.MultisigNotificationsPromo(),
+            OnLaunchAction.AHMInfoSetup()
         ]
     )
 
@@ -132,9 +133,30 @@ private extension MainTabBarInteractor {
         }
     }
 
+    func setupAHMInfoObserver() {
+        preSyncServiceCoodrinator.ahmInfoService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            guard let newState, !newState.isEmpty else {
+                return
+            }
+
+            self?.presenter?.didRequestAHMInfoOpen(with: newState.first!)
+        }
+    }
+
     func setupMultisigNotificationPromoOrNextAction() {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.setupNotificationPromoObserver()
+            self?.onLaunchQueue.runNext()
+        }
+    }
+
+    func setupAHMInfoServiceOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.setupAHMInfoObserver()
             self?.onLaunchQueue.runNext()
         }
     }
@@ -318,5 +340,9 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
 
     func onLaunchProcessMultisigNotificationPromo(_: OnLaunchAction.MultisigNotificationsPromo) {
         setupMultisigNotificationPromoOrNextAction()
+    }
+
+    func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
+        setupAHMInfoServiceOrNextAction()
     }
 }

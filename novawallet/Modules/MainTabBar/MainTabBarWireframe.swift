@@ -197,9 +197,9 @@ private extension MainTabBarWireframe {
 
     func openAssetHubMigrationInfoScreen(
         in view: MainTabBarViewProtocol?,
-        navigation: AHMNavigation
+        with info: AHMRemoteData
     ) {
-        guard let ahmInfoView = AHMInfoViewFactory.createView(remoteData: navigation.config) else {
+        guard let ahmInfoView = AHMInfoViewFactory.createView(remoteData: info) else {
             return
         }
 
@@ -259,6 +259,16 @@ private extension MainTabBarWireframe {
 // MARK: - MainTabBarWireframeProtocol
 
 extension MainTabBarWireframe: MainTabBarWireframeProtocol {
+    func presentAssetHubMigrationInfoScreen(
+        in view: MainTabBarViewProtocol?,
+        with info: AHMRemoteData
+    ) {
+        openAssetHubMigrationInfoScreen(
+            in: view,
+            with: info
+        )
+    }
+
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
         guard let tabBarController = view?.controller else {
             return
@@ -344,7 +354,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             case let .card(cardNavigation):
                 openCardScreen(in: view, cardNavigation: cardNavigation)
             case let .assetHubMigration(ahmNavigation):
-                openAssetHubMigrationInfoScreen(in: view, navigation: ahmNavigation)
+                openAssetHubMigrationInfoScreen(in: view, with: ahmNavigation.config)
             default:
                 break
             }
