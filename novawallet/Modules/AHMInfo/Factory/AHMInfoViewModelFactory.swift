@@ -4,7 +4,7 @@ import BigInt
 
 protocol AHMInfoViewModelFactoryProtocol {
     func createViewModel(
-        from remoteData: AHMRemoteData,
+        from info: AHMRemoteData,
         sourceChain: ChainModel,
         destinationChain: ChainModel,
         bannerState: BannersState,
@@ -30,7 +30,7 @@ final class AHMInfoViewModelFactory {
 
 private extension AHMInfoViewModelFactory {
     func createFeatures(
-        from remoteData: AHMRemoteData,
+        from info: AHMRemoteData,
         sourceChain: ChainModel,
         destinationChain: ChainModel,
         locale: Locale
@@ -38,25 +38,25 @@ private extension AHMInfoViewModelFactory {
         var features: [AHMInfoViewModel.Feature] = []
 
         guard
-            let sourceAsset = sourceChain.asset(for: remoteData.sourceData.assetId),
-            let destinationAsset = destinationChain.asset(for: remoteData.destinationData.assetId)
+            let sourceAsset = sourceChain.asset(for: info.sourceData.assetId),
+            let destinationAsset = destinationChain.asset(for: info.destinationData.assetId)
         else {
             return features
         }
 
         // Min balance reduction
         let minBalanceReduction = calculateReduction(
-            from: remoteData.sourceData.minBalance,
-            to: remoteData.destinationData.minBalance
+            from: info.sourceData.minBalance,
+            to: info.destinationData.minBalance
         )
 
         let sourceMinBalance = formatBalance(
-            remoteData.sourceData.minBalance,
+            info.sourceData.minBalance,
             asset: sourceAsset,
             locale: locale
         )
         let destMinBalance = formatBalance(
-            remoteData.destinationData.minBalance,
+            info.destinationData.minBalance,
             asset: destinationAsset,
             locale: locale
         )
@@ -75,17 +75,17 @@ private extension AHMInfoViewModelFactory {
 
         // Fee reduction
         let feeReduction = calculateReduction(
-            from: remoteData.sourceData.averageFee,
-            to: remoteData.destinationData.averageFee
+            from: info.sourceData.averageFee,
+            to: info.destinationData.averageFee
         )
 
         let sourceFee = formatBalance(
-            remoteData.sourceData.averageFee,
+            info.sourceData.averageFee,
             asset: sourceAsset,
             locale: locale
         )
         let destFee = formatBalance(
-            remoteData.destinationData.averageFee,
+            info.destinationData.averageFee,
             asset: destinationAsset,
             locale: locale
         )
@@ -103,7 +103,7 @@ private extension AHMInfoViewModelFactory {
         )
 
         // More tokens
-        let tokensList = remoteData.newTokenNames.joined(with: .commaSpace)
+        let tokensList = info.newTokenNames.joined(with: .commaSpace)
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "🪙",
@@ -168,7 +168,7 @@ private extension AHMInfoViewModelFactory {
 
 extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
     func createViewModel(
-        from remoteData: AHMRemoteData,
+        from info: AHMRemoteData,
         sourceChain: ChainModel,
         destinationChain: ChainModel,
         bannerState: BannersState,
@@ -176,8 +176,8 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
     ) -> AHMInfoViewModel {
         dateFormatter.locale = locale
 
-        let date = Date(timeIntervalSince1970: TimeInterval(remoteData.timestamp))
-        let sourceAsset = sourceChain.asset(for: remoteData.sourceData.assetId)
+        let date = Date(timeIntervalSince1970: TimeInterval(info.timestamp))
+        let sourceAsset = sourceChain.asset(for: info.sourceData.assetId)
         let tokenSymbol = sourceAsset?.symbol ?? ""
 
         let title = R.string.localizable.ahmInfoTitle(
@@ -191,7 +191,7 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         )
 
         let features = createFeatures(
-            from: remoteData,
+            from: info,
             sourceChain: sourceChain,
             destinationChain: destinationChain,
             locale: locale

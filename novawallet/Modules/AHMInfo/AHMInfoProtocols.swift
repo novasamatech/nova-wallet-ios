@@ -12,6 +12,7 @@ protocol AHMInfoPresenterProtocol: AnyObject {
 
 protocol AHMInfoInteractorInputProtocol: AnyObject {
     func setup()
+    func setShown()
 }
 
 protocol AHMInfoInteractorOutputProtocol: AnyObject {

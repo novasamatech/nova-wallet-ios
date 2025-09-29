@@ -9,7 +9,7 @@ final class AHMInfoPresenter: BannersModuleInputOwnerProtocol {
     private let wireframe: AHMInfoWireframeProtocol
     private let interactor: AHMInfoInteractorInputProtocol
     private let viewModelFactory: AHMInfoViewModelFactoryProtocol
-    private let remoteData: AHMRemoteData
+    private let info: AHMRemoteData
     private let localizationManager: LocalizationManagerProtocol
 
     private var sourceChain: ChainModel?
@@ -19,13 +19,13 @@ final class AHMInfoPresenter: BannersModuleInputOwnerProtocol {
         interactor: AHMInfoInteractorInputProtocol,
         wireframe: AHMInfoWireframeProtocol,
         viewModelFactory: AHMInfoViewModelFactoryProtocol,
-        remoteData: AHMRemoteData,
+        info: AHMRemoteData,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.remoteData = remoteData
+        self.info = info
         self.localizationManager = localizationManager
     }
 
@@ -36,7 +36,7 @@ final class AHMInfoPresenter: BannersModuleInputOwnerProtocol {
         else { return }
 
         let viewModel = viewModelFactory.createViewModel(
-            from: remoteData,
+            from: info,
             sourceChain: sourceChain,
             destinationChain: destinationChain,
             bannerState: bannersModule?.bannersState ?? .unavailable,
@@ -59,6 +59,7 @@ extension AHMInfoPresenter: AHMInfoPresenterProtocol {
     }
 
     func actionGotIt() {
+        interactor.setShown()
         wireframe.complete(from: view)
     }
 
@@ -66,7 +67,7 @@ extension AHMInfoPresenter: AHMInfoPresenterProtocol {
         guard let view else { return }
 
         wireframe.showWeb(
-            url: remoteData.wikiURL,
+            url: info.wikiURL,
             from: view,
             style: .automatic
         )

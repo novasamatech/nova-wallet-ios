@@ -1,5 +1,9 @@
 import Foundation
 
 struct AHMInfoShownChains: Codable {
-    let chainIds: Set<ChainModel.Id>
+    var chainIds: Set<ChainModel.Id>
+
+    mutating func add(_ chainId: ChainModel.Id) {
+        chainIds.insert(chainId)
+    }
 }

@@ -1,15 +1,17 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
 
 final class AHMInfoViewFactory {
     static func createView(
-        remoteData: AHMRemoteData
+        info: AHMRemoteData
     ) -> AHMInfoViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let interactor = AHMInfoInteractor(
-            remoteData: remoteData,
-            chainRegistry: chainRegistry
+            info: info,
+            chainRegistry: chainRegistry,
+            settingsManager: SettingsManager.shared
         )
 
         let wireframe = AHMInfoWireframe()
@@ -22,12 +24,12 @@ final class AHMInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            remoteData: remoteData,
+            info: info,
             localizationManager: localizationManager
         )
 
         guard let bannersModule = BannersViewFactory.createView(
-            domain: remoteData.bannerPath,
+            domain: info.bannerPath,
             output: presenter,
             inputOwner: presenter,
             locale: localizationManager.selectedLocale

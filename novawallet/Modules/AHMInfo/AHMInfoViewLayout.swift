@@ -47,6 +47,12 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
         addArrangedSubview(featuresStackView, spacingAfter: 16)
         addArrangedSubview(infoStackView, spacingAfter: 12)
     }
+
+    override func setupStyle() {
+        super.setupStyle()
+
+        actionButton.applyDefaultStyle()
+    }
 }
 
 // MARK: - Private

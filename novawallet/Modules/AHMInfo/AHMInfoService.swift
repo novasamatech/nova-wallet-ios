@@ -14,7 +14,6 @@ protocol AHMInfoServiceProtocol: AnyProviderAutoCleaning {
     )
     func remove(observer: AnyObject)
     func reset()
-    func exclude(sourceChainId: ChainModel.Id)
 }
 
 final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
@@ -255,13 +254,6 @@ extension AHMInfoService: AHMInfoPreSyncServiceProtocol {
         defer { mutex.unlock() }
 
         callStore.cancel()
-    }
-
-    func exclude(sourceChainId: ChainModel.Id) {
-        var updatedChainIds = settingsManager.ahmInfoShownChains.chainIds
-        updatedChainIds.insert(sourceChainId)
-
-        settingsManager.ahmInfoShownChains = AHMInfoShownChains(chainIds: updatedChainIds)
     }
 }
 

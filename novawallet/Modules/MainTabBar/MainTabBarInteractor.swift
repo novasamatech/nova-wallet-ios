@@ -24,8 +24,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
             OnLaunchAction.PushNotificationsSetup(),
-            OnLaunchAction.MultisigNotificationsPromo(),
-            OnLaunchAction.AHMInfoSetup()
+            OnLaunchAction.AHMInfoSetup(),
+            OnLaunchAction.MultisigNotificationsPromo()
         ]
     )
 
@@ -92,6 +92,7 @@ private extension MainTabBarInteractor {
     }
 
     func stopServices() {
+        preSyncServiceCoodrinator.throttle()
         serviceCoordinator.throttle()
         inAppUpdatesService.stopSyncUp()
     }

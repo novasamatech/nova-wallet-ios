@@ -199,11 +199,20 @@ private extension MainTabBarWireframe {
         in view: MainTabBarViewProtocol?,
         with info: AHMRemoteData
     ) {
-        guard let ahmInfoView = AHMInfoViewFactory.createView(remoteData: info) else {
+        guard let ahmInfoView = AHMInfoViewFactory.createView(info: info) else {
             return
         }
 
-        view?.controller.present(ahmInfoView.controller, animated: true)
+        let navigationController = NovaNavigationController(rootViewController: ahmInfoView.controller)
+
+        navigationController.barSettings = .init(
+            style: .defaultStyle,
+            shouldSetCloseButton: false
+        )
+
+        navigationController.isModalInPresentation = true
+
+        view?.controller.present(navigationController, animated: true)
     }
 
     func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
