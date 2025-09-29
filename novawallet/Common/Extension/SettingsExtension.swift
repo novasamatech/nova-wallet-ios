@@ -30,6 +30,7 @@ enum SettingsKey: String {
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
     case multisigNotificationsPromoSeen
+    case ahmInfoShownChains
     case privacyModeSettings
 }
 
@@ -374,6 +375,21 @@ extension SettingsManagerProtocol {
             set(
                 value: newValue,
                 for: SettingsKey.privacyModeSettings.rawValue
+            )
+        }
+    }
+
+    var ahmInfoShownChains: AHMInfoShownChains {
+        get {
+            value(
+                of: AHMInfoShownChains.self,
+                for: SettingsKey.ahmInfoShownChains.rawValue
+            ) ?? AHMInfoShownChains(chainIds: Set())
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.ahmInfoShownChains.rawValue
             )
         }
     }

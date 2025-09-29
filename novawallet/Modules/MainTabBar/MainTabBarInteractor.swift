@@ -10,6 +10,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
+    let preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
@@ -33,6 +34,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
 
     init(
         eventCenter: EventCenterProtocol,
+        preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
@@ -53,6 +55,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
+        self.preSyncServiceCoodrinator = preSyncServiceCoodrinator
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
@@ -70,8 +73,21 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
 
 private extension MainTabBarInteractor {
     func startServices() {
-        serviceCoordinator.setup()
-        inAppUpdatesService.syncUp()
+        let preSyncSetupWrapper = preSyncServiceCoodrinator.setup()
+
+        execute(
+            wrapper: preSyncSetupWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.serviceCoordinator.setup()
+                self?.inAppUpdatesService.syncUp()
+            case .failure:
+                self?.logger.error("Failed on setup pre sync services")
+            }
+        }
     }
 
     func stopServices() {

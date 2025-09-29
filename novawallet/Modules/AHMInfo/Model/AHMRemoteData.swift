@@ -1,8 +1,8 @@
 import Foundation
 import BigInt
 
-struct AHMRemoteData: Codable {
-    struct ChainData: Codable {
+struct AHMRemoteData: Codable, Equatable {
+    struct ChainData: Codable, Equatable {
         let chainId: ChainModel.Id
         let assetId: AssetModel.Id
         let minBalance: BigUInt
