@@ -17,14 +17,14 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
 
     let featuresStackView: UIStackView = .create { view in
         view.axis = .vertical
-        view.spacing = 10
+        view.spacing = Constants.stackViewSpacing
         view.distribution = .fill
         view.alignment = .top
     }
 
     let infoStackView: UIStackView = .create { view in
         view.axis = .vertical
-        view.spacing = 10
+        view.spacing = Constants.stackViewSpacing
         view.distribution = .fill
         view.alignment = .leading
     }
@@ -35,18 +35,18 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
 
     override func setupLayout() {
         super.setupLayout()
-        addArrangedSubview(bannerContainer, spacingAfter: 16)
+        addArrangedSubview(bannerContainer, spacingAfter: Constants.bannerToTitle)
 
         bannerContainer.snp.makeConstraints { make in
-            make.height.equalTo(0)
+            make.height.equalTo(Constants.bannerInitialHeight)
         }
 
-        addArrangedSubview(titleLabel, spacingAfter: 4)
-        addArrangedSubview(subtitleLabel, spacingAfter: 17)
+        addArrangedSubview(titleLabel, spacingAfter: Constants.titleToSubtitle)
+        addArrangedSubview(subtitleLabel, spacingAfter: Constants.subtitleToFeatures)
 
-        addArrangedSubview(featuresStackView, spacingAfter: 13)
+        addArrangedSubview(featuresStackView, spacingAfter: Constants.featuresToSeparator)
 
-        addArrangedSubview(createSeparator(), spacingAfter: 10.0)
+        addArrangedSubview(createSeparator(), spacingAfter: Constants.separatorToInfo)
 
         addArrangedSubview(infoStackView)
     }
@@ -65,7 +65,7 @@ private extension AHMInfoViewLayout {
         let separator = UIView.createSeparator()
 
         separator.snp.makeConstraints { make in
-            make.height.equalTo(1)
+            make.height.equalTo(Constants.separatorHeight)
         }
 
         return separator
@@ -85,14 +85,14 @@ private extension AHMInfoViewLayout {
             emojiLabel.snp.makeConstraints { make in
                 make.top.leading.trailing.equalToSuperview()
                 make.bottom.lessThanOrEqualToSuperview()
-                make.height.equalTo(24)
+                make.height.equalTo(Constants.emojiLabelHeight)
             }
 
             view.sView.apply(style: .footnotePrimary)
             view.sView.numberOfLines = 0
             view.sView.textAlignment = .left
 
-            view.spacing = 16
+            view.spacing = Constants.featureIconToText
 
             emojiLabel.text = feature.emoji
             view.sView.text = feature.text
@@ -105,8 +105,8 @@ private extension AHMInfoViewLayout {
         let infoView: IconDetailsView = .create { view in
             view.detailsLabel.apply(style: .footnoteSecondary)
             view.detailsLabel.numberOfLines = 0
-            view.spacing = 16
-            view.iconWidth = 18
+            view.spacing = Constants.infoIconToText
+            view.iconWidth = Constants.iconWidth
         }
 
         let icon: UIImage? = switch info.type {
@@ -149,5 +149,24 @@ extension AHMInfoViewLayout {
         bannerContainer.snp.updateConstraints { make in
             make.height.equalTo(height)
         }
+    }
+}
+
+// MARK: - Constants
+
+private extension AHMInfoViewLayout {
+    enum Constants {
+        static let bannerToTitle: CGFloat = 16
+        static let titleToSubtitle: CGFloat = 4
+        static let subtitleToFeatures: CGFloat = 17
+        static let featuresToSeparator: CGFloat = 13
+        static let separatorToInfo: CGFloat = 10
+        static let stackViewSpacing: CGFloat = 10
+        static let featureIconToText: CGFloat = 16
+        static let infoIconToText: CGFloat = 16
+        static let bannerInitialHeight: CGFloat = 0
+        static let separatorHeight: CGFloat = 1
+        static let emojiLabelHeight: CGFloat = 24
+        static let iconWidth: CGFloat = 18
     }
 }
