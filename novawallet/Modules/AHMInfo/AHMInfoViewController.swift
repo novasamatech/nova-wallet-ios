@@ -1,4 +1,5 @@
 import UIKit
+import Foundation_iOS
 
 final class AHMInfoViewController: UIViewController, ViewHolder {
     typealias RootViewType = AHMInfoViewLayout
@@ -8,11 +9,13 @@ final class AHMInfoViewController: UIViewController, ViewHolder {
 
     init(
         presenter: AHMInfoPresenterProtocol,
-        bannersViewProvider: BannersViewProviderProtocol
+        bannersViewProvider: BannersViewProviderProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.bannersViewProvider = bannersViewProvider
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -27,6 +30,7 @@ final class AHMInfoViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigation()
         setupBanner()
         setupHandlers()
         presenter.setup()
@@ -36,6 +40,18 @@ final class AHMInfoViewController: UIViewController, ViewHolder {
 // MARK: - Private
 
 private extension AHMInfoViewController {
+    func setupNavigation() {
+        let barButtonItem = UIBarButtonItem(
+            title: R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages),
+            style: .plain,
+            target: self,
+            action: #selector(actionLearnMore)
+        )
+        barButtonItem.tintColor = R.color.colorButtonTextAccent()
+
+        navigationController?.navigationBar.topItem?.rightBarButtonItem = barButtonItem
+    }
+
     func setupBanner() {
         bannersViewProvider.setupBanners(
             on: self,
@@ -57,6 +73,10 @@ private extension AHMInfoViewController {
     @objc func actionGotIt() {
         presenter.actionGotIt()
     }
+
+    @objc func actionLearnMore() {
+        presenter.actionLearnMore()
+    }
 }
 
 // MARK: - AHMInfoViewProtocol
@@ -64,5 +84,15 @@ private extension AHMInfoViewController {
 extension AHMInfoViewController: AHMInfoViewProtocol {
     func didReceive(viewModel: AHMInfoViewModel) {
         rootView.bind(viewModel)
+    }
+}
+
+// MARK: - Localizable
+
+extension AHMInfoViewController: Localizable {
+    func applyLocalization() {
+        guard isViewLoaded else { return }
+
+        setupNavigation()
     }
 }

@@ -39,7 +39,8 @@ final class AHMInfoViewFactory {
 
         let view = AHMInfoViewController(
             presenter: presenter,
-            bannersViewProvider: bannersModule
+            bannersViewProvider: bannersModule,
+            localizationManager: localizationManager
         )
 
         presenter.view = view
