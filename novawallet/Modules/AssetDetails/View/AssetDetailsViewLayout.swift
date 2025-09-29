@@ -6,7 +6,7 @@ protocol AssetDetailsViewLayoutDelegate: AnyObject {
     func didUpdateHeight(_ height: CGFloat)
 }
 
-final class AssetDetailsViewLayout: UIView {
+final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     weak var delegate: AssetDetailsViewLayoutDelegate?
 
     private let layoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
@@ -34,19 +34,6 @@ final class AssetDetailsViewLayout: UIView {
         textAlignment: .center
     )
 
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(
-            top: 6,
-            left: 16,
-            bottom: .zero,
-            right: 16
-        )
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
-        return view
-    }()
-
     lazy var balanceWidget: AssetDetailsBalanceWidget = .create { view in
         view.delegate = self
     }
@@ -65,17 +52,6 @@ final class AssetDetailsViewLayout: UIView {
 
     private var chartViewHeight: CGFloat = .zero
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     private static func createOperationButton(
         icon: UIImage?,
         enabled: Bool = false
@@ -91,8 +67,11 @@ final class AssetDetailsViewLayout: UIView {
         return button
     }
 
-    private func setupLayout() {
-        addSubview(backgroundView)
+    override func setupLayout() {
+        super.setupLayout()
+
+        insertSubview(backgroundView, belowSubview: containerView)
+
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -115,20 +94,15 @@ final class AssetDetailsViewLayout: UIView {
             $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.top).offset(-7.0)
         }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalToSuperview().inset(Constants.containerViewTopOffset)
-        }
-
         balanceWidget.snp.makeConstraints { make in
             make.height.equalTo(balanceWidget.state.height)
         }
 
         containerView.stackView.spacing = Constants.sectionSpace
-        containerView.stackView.addArrangedSubview(balanceWidget)
-        containerView.stackView.addArrangedSubview(buttonsRow)
-        containerView.stackView.addArrangedSubview(chartContainerView)
+
+        addArrangedSubview(balanceWidget)
+        addArrangedSubview(buttonsRow)
+        addArrangedSubview(chartContainerView)
 
         chartContainerView.snp.makeConstraints { make in
             make.height.equalTo(chartViewHeight)
