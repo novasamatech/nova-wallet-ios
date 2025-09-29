@@ -33,7 +33,7 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
-    func didRequestAHMInfoOpen(with info: AHMRemoteData) {
+    func didRequestAHMInfoOpen(with info: [AHMRemoteData]) {
         wireframe.presentAssetHubMigrationInfoScreen(
             in: view,
             with: info

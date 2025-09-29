@@ -144,7 +144,7 @@ private extension MainTabBarInteractor {
                 return
             }
 
-            self?.presenter?.didRequestAHMInfoOpen(with: newState.first!)
+            self?.presenter?.didRequestAHMInfoOpen(with: newState)
         }
     }
 

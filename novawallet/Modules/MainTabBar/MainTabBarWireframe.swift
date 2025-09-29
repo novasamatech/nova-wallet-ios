@@ -270,12 +270,34 @@ private extension MainTabBarWireframe {
 extension MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAssetHubMigrationInfoScreen(
         in view: MainTabBarViewProtocol?,
-        with info: AHMRemoteData
+        with info: [AHMRemoteData]
     ) {
-        openAssetHubMigrationInfoScreen(
-            in: view,
-            with: info
-        )
+        let ahmInfoControllers = info
+            .compactMap { AHMInfoViewFactory.createView(info: $0) }
+            .map {
+                let navigationController = NovaNavigationController(rootViewController: $0.controller)
+
+                navigationController.barSettings = .init(
+                    style: .defaultStyle,
+                    shouldSetCloseButton: false
+                )
+
+                navigationController.isModalInPresentation = true
+
+                return navigationController
+            }
+
+        guard let view, !ahmInfoControllers.isEmpty else { return }
+
+        let allControllers = [view.controller] + ahmInfoControllers
+
+        allControllers.enumerated().forEach { index, controller in
+            let nextIndex = index + 1
+
+            guard allControllers.count > nextIndex else { return }
+
+            controller.present(allControllers[nextIndex], animated: true)
+        }
     }
 
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {

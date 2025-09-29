@@ -36,7 +36,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
     func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams)
-    func didRequestAHMInfoOpen(with info: AHMRemoteData)
+    func didRequestAHMInfoOpen(with info: [AHMRemoteData])
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
@@ -89,7 +89,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
 
     func presentAssetHubMigrationInfoScreen(
         in view: MainTabBarViewProtocol?,
-        with info: AHMRemoteData
+        with info: [AHMRemoteData]
     )
 }
 
