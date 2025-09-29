@@ -15,11 +15,7 @@ protocol AHMInfoViewModelFactoryProtocol {
 final class AHMInfoViewModelFactory {
     private let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d, yyyy"
-        return formatter
-    }()
+    private let dateFormatter = DateFormatter.fullDate
 
     init(assetFormatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
         self.assetFormatterFactory = assetFormatterFactory
@@ -174,14 +170,12 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         bannerState: BannersState,
         locale: Locale
     ) -> AHMInfoViewModel {
-        dateFormatter.locale = locale
-
         let date = Date(timeIntervalSince1970: TimeInterval(info.timestamp))
         let sourceAsset = sourceChain.asset(for: info.sourceData.assetId)
         let tokenSymbol = sourceAsset?.symbol ?? ""
 
         let title = R.string.localizable.ahmInfoTitle(
-            dateFormatter.string(from: date),
+            dateFormatter.value(for: locale).string(from: date),
             tokenSymbol,
             destinationChain.name,
             preferredLanguages: locale.rLanguages

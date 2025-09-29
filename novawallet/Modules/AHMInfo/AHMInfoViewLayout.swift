@@ -19,7 +19,7 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
         view.axis = .vertical
         view.spacing = 10
         view.distribution = .fill
-        view.alignment = .leading
+        view.alignment = .top
     }
 
     let infoStackView: UIStackView = .create { view in
@@ -42,10 +42,13 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
         }
 
         addArrangedSubview(titleLabel, spacingAfter: 4)
-        addArrangedSubview(subtitleLabel, spacingAfter: 12)
+        addArrangedSubview(subtitleLabel, spacingAfter: 17)
 
-        addArrangedSubview(featuresStackView, spacingAfter: 16)
-        addArrangedSubview(infoStackView, spacingAfter: 12)
+        addArrangedSubview(featuresStackView, spacingAfter: 13)
+
+        addArrangedSubview(createSeparator(), spacingAfter: 10.0)
+
+        addArrangedSubview(infoStackView)
     }
 
     override func setupStyle() {
@@ -58,22 +61,42 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
 // MARK: - Private
 
 private extension AHMInfoViewLayout {
+    func createSeparator() -> UIView {
+        let separator = UIView.createSeparator()
+
+        separator.snp.makeConstraints { make in
+            make.height.equalTo(1)
+        }
+
+        return separator
+    }
+
     func addFeatureView(_ feature: AHMInfoViewModel.Feature) {
-        let featureView: GenericPairValueView<UILabel, UILabel> = .create { view in
+        let featureView: GenericPairValueView<UIView, UILabel> = .create { view in
             view.makeHorizontal()
 
-            view.fView.apply(style: .title3Primary)
-            view.fView.textAlignment = .left
+            let emojiLabel = UILabel()
+
+            emojiLabel.apply(style: .title3Primary)
+            emojiLabel.textAlignment = .left
+
+            view.fView.addSubview(emojiLabel)
+
+            emojiLabel.snp.makeConstraints { make in
+                make.top.leading.trailing.equalToSuperview()
+                make.bottom.lessThanOrEqualToSuperview()
+                make.height.equalTo(24)
+            }
 
             view.sView.apply(style: .footnotePrimary)
             view.sView.numberOfLines = 0
             view.sView.textAlignment = .left
 
-            view.spacing = 12
-        }
+            view.spacing = 16
 
-        featureView.fView.text = feature.emoji
-        featureView.sView.text = feature.text
+            emojiLabel.text = feature.emoji
+            view.sView.text = feature.text
+        }
 
         featuresStackView.addArrangedSubview(featureView)
     }
