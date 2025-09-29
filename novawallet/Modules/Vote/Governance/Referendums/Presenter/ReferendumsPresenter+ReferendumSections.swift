@@ -4,17 +4,21 @@ extension ReferendumsPresenter {
     func createReferendumsSections(
         for referendums: [ReferendumLocal],
         accountVotes: ReferendumAccountVotingDistribution?,
-        chainInfo: ReferendumsModelFactoryInput.ChainInformation
+        chainInfo: ReferendumsModelFactoryParams.ChainInformation
     ) -> [ReferendumsSection] {
-        viewModelFactory.createSections(input: .init(
+        let params = ReferendumsModelFactoryParams(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
             offchainVotes: offchainVoting,
             chainInfo: chainInfo,
-            locale: selectedLocale,
             voterName: nil
-        ))
+        )
+
+        return viewModelFactory.createSections(
+            params: params,
+            genericParams: createGenericParams()
+        )
     }
 
     func createActivitySection(
@@ -27,7 +31,7 @@ extension ReferendumsPresenter {
                 voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
-                locale: selectedLocale
+                genericParams: createGenericParams()
             )
         } else {
             activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
@@ -35,7 +39,7 @@ extension ReferendumsPresenter {
                 voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
-                locale: selectedLocale
+                genericParams: createGenericParams()
             )
         }
     }
@@ -48,14 +52,14 @@ extension ReferendumsPresenter {
         return swipeGovViewModelFactory.createSwipeGovReferendumsSection(
             with: observableState.state.value,
             eligibleReferendums: swipeGovEligibleReferendums ?? [],
-            locale: selectedLocale
+            genericParams: createGenericParams()
         )
     }
 
     func filteredReferendumsSections(for referendumsSections: [ReferendumsSection]) -> [ReferendumsSection] {
         if filter != .all {
             viewModelFactory.filteredSections(referendumsSections) {
-                filteredReferendums[$0.referendumIndex] != nil
+                filteredReferendums[$0.originalContent.referendumIndex] != nil
             }
         } else {
             referendumsSections

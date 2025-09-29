@@ -8,8 +8,8 @@ final class DAppSettingsMapper: CoreDataMapperProtocol {
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
         DAppSettings(
-            dAppId: entity.dAppId,
-            metaId: entity.metaId!,
+            dAppId: entity.dAppId ?? entity.identifier!,
+            metaId: entity.metaId,
             source: entity.source
         )
     }

@@ -2,7 +2,7 @@ import Foundation
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
     func setup() {
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
+        provideLoadingViewModel()
         interactor.setup()
     }
 

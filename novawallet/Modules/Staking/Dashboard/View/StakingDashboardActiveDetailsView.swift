@@ -16,10 +16,13 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     var statusView: LoadableStakingStatusView { internalStatusView.titleView }
 
-    private let internalStakeView: GenericMultiValueView<ShimmerMultibalanceView> = .create { view in
+    private let internalStakeView: GenericMultiValueView<ShimmerSecureMultibalanceView> = .create { view in
         view.valueTop.apply(style: .caption2Secondary)
         view.valueTop.textAlignment = .left
         view.spacing = 2
+
+        view.valueBottom.amountSecureView.preferredSecuredHeight = 18
+        view.valueBottom.priceSecureView.preferredSecuredHeight = 13
 
         view.valueBottom.amountLabel.applyShimmer(style: .semiboldFootnotePrimary)
         view.valueBottom.amountLabel.textAlignment = .left
@@ -68,7 +71,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
     func bind(
         stakingStatus: LoadableViewModelState<StakingDashboardEnabledViewModel.Status>,
-        stake: LoadableViewModelState<BalanceViewModelProtocol>,
+        stake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>,
         estimatedEarnings: LoadableViewModelState<String?>,
         locale: Locale
     ) {
@@ -90,7 +93,7 @@ final class StakingDashboardActiveDetailsView: UIView {
 
         internalStakeView.valueBottom.bind(viewModel: stake)
 
-        if stake.isLoading {
+        if stake.originalContent.isLoading {
             newLoadingState.formUnion(.stake)
         }
 

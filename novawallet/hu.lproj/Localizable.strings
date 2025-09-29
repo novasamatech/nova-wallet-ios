@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "Öntől nincs szükség további lépésekre.";
 "multisig.operation.executed.no.format" = "Tranzakció láncon kívüli információ (hívás adat) nélkül végrehajtva: %@.";
 "multisig.operation.cancelled.no.format" = "Tranzakció láncon kívüli információ (hívás adat) nélkül elutasítva: %@.";
+"settings.hide.balances.on.launch" = "Alkalmazás megnyitása rejtett egyenleggel";

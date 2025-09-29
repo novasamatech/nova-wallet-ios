@@ -1949,3 +1949,4 @@
 "multisig.operation.no.actions.required" = "您无需采取进一步动作。";
 "multisig.operation.executed.no.format" = "没有初始链上信息（调用数据）的交易在 %@ 上执行。";
 "multisig.operation.cancelled.no.format" = "没有初始链上信息（调用数据）的交易在 %@ 上被拒绝。";
+"settings.hide.balances.on.launch" = "使用隐藏余额打开应用";

@@ -3,13 +3,12 @@ import UIKit
 final class AssetListNetworkView: UICollectionReusableView {
     let chainView = AssetListChainView()
 
-    let valueLabel: UILabel = {
-        let view = UILabel()
-        view.textColor = R.color.colorTextSecondary()
-        view.font = .regularFootnote
-        view.textAlignment = .right
-        return view
-    }()
+    let valueLabel: DotsSecureView<UILabel> = .create { view in
+        view.preferredSecuredHeight = 18
+        view.originalView.textColor = R.color.colorTextSecondary()
+        view.originalView.font = .regularFootnote
+        view.originalView.textAlignment = .right
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,18 +24,22 @@ final class AssetListNetworkView: UICollectionReusableView {
     }
 
     func bind(viewModel: AssetListNetworkGroupViewModel) {
-        switch viewModel.amount {
+        switch viewModel.amount.originalContent {
         case let .loaded(value), let .cached(value):
-            valueLabel.text = value
+            valueLabel.originalView.text = value
         case .loading:
-            valueLabel.text = ""
+            valueLabel.originalView.text = ""
         }
 
         chainView.nameLabel.text = viewModel.networkName
 
-        let networkViewModel = NetworkViewModel(name: viewModel.networkName, icon: viewModel.icon)
+        let networkViewModel = NetworkViewModel(
+            name: viewModel.networkName,
+            icon: viewModel.icon
+        )
 
         chainView.bind(viewModel: networkViewModel)
+        valueLabel.bind(viewModel.amount.privacyMode)
     }
 
     private func setupLayout() {
