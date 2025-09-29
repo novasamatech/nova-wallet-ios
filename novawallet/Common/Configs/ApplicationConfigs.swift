@@ -370,7 +370,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var assetHubMigrationConfigsPath: String {
-        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/migrations/assetHub/"
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/migrations/asset_hub/"
     }
 
     // swiftlint:enable line_length

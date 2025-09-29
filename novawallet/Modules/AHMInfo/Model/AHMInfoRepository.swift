@@ -81,7 +81,7 @@ extension AHMInfoRepository: AHMInfoRepositoryProtocol {
     func fetchAllWrapper() -> CompoundOperationWrapper<[AHMRemoteData]> {
         let cachedValues = cache.fetchAllValues()
 
-        guard !cachedValues.isEmpty else {
+        guard cachedValues.isEmpty else {
             return .createWithResult(cachedValues)
         }
 

@@ -18,9 +18,9 @@ final class AHMInfoFetchOperationFactory: BaseFetchOperationFactory {
 private extension AHMInfoFetchOperationFactory {
     func createURL() -> URL? {
         let path = NSString.path(withComponents: [Constants.configPath])
-        let urlString = (ahmConfigsPath as NSString).appendingPathComponent(path)
+        let urlString = URL(string: ahmConfigsPath)?.appendingPathComponent(path)
 
-        return URL(string: urlString)
+        return urlString
     }
 }
 

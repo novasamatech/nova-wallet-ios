@@ -165,10 +165,6 @@ private extension AHMInfoService {
                 .extractNoCancellableResultData()
                 .reduce(into: [:]) { $0[$1.sourceData.chainId] = $1 }
 
-            let runtimeProviders = configs.keys.reduce(into: [:]) { acc, chainId in
-                acc[chainId] = self.chainRegistry.getRuntimeProvider(for: chainId)
-            }
-
             return configs.compactMap { chainId, config in
                 guard
                     let chain = self.chainRegistry.getChain(for: chainId),
