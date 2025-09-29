@@ -73,6 +73,12 @@ enum UniversalLink {
         }
     }
 
+    enum AssetHubMigration {
+        enum QueryKey {
+            static let chainId = "chainId"
+        }
+    }
+
     enum CardScreen {
         enum QueryKey {
             static let provider = "provider"

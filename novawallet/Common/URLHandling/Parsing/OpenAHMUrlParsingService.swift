@@ -36,7 +36,7 @@ extension OpenAHMUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         let sourceChainId: ChainModel.Id? = query.first {
             $0.name.trimmingCharacters(
                 in: .whitespacesAndNewlines
-            ) == UniversalLink.Screen.assetHubMigration.rawValue
+            ) == UniversalLink.AssetHubMigration.QueryKey.chainId
         }?.value
 
         guard let sourceChainId else {
