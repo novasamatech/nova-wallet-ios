@@ -17075,12 +17075,12 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
-		2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromoService */ = {
+		2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */ = {
 			isa = PBXGroup;
 			children = (
 				2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */,
 			);
-			path = MultisigNotificationsPromoService;
+			path = MultisigNotificationsPromo;
 			sourceTree = "<group>";
 		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
@@ -17840,6 +17840,23 @@
 				2DC002DD2E86D27D00D49A42 /* ObservableInMemoryCache.swift */,
 			);
 			path = InMemoryCache;
+			sourceTree = "<group>";
+		};
+		2DC002EB2E8AEB1500D49A42 /* ServiceCoordinators */ = {
+			isa = PBXGroup;
+			children = (
+				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
+				2DC002E42E8A56AC00D49A42 /* PreSyncServiceCoordinator.swift */,
+			);
+			path = ServiceCoordinators;
+			sourceTree = "<group>";
+		};
+		2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */ = {
+			isa = PBXGroup;
+			children = (
+				2DC002E62E8A5A0000D49A42 /* AHMInfoService.swift */,
+			);
+			path = AssetHubMigrationInfo;
 			sourceTree = "<group>";
 		};
 		2DC075E12BF249F000868563 /* View */ = {
@@ -20211,7 +20228,8 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromoService */,
+				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
+				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
 				2D06CC272E38F4E80093CA84 /* AppAttest */,
 				0CD9801D2E268EA4005251E1 /* WalletDelayedExecution */,
 				0C521C0E2E1728C500ABAC97 /* CallFormatting */,
@@ -20237,8 +20255,8 @@
 				2AB7A7FD25CD0E3E00767D87 /* GitHubPhishingService */,
 				84155DE9253980E100A27058 /* WebSocketService */,
 				88D1F1B02981211100316A1A /* InAppUpdatesService */,
+				2DC002EB2E8AEB1500D49A42 /* ServiceCoordinators */,
 				84155DEC2539817200A27058 /* ApplicationService.swift */,
-				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
 				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
 				848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */,
 				844304642A28EB0D00DE36DE /* ObservableSyncService.swift */,
@@ -29525,8 +29543,6 @@
 				6D65767C939FE2ACAF80E2B5 /* AHMInfoInteractor.swift */,
 				D0DA7291E053BF3B6F78990C /* AHMInfoViewController.swift */,
 				8487FC52E560180302B91222 /* AHMInfoViewLayout.swift */,
-				2DC002E42E8A56AC00D49A42 /* PreSyncServiceCoordinator.swift */,
-				2DC002E62E8A5A0000D49A42 /* AHMInfoService.swift */,
 			);
 			path = AHMInfo;
 			sourceTree = "<group>";
