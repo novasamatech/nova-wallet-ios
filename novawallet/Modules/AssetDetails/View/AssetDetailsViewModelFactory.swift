@@ -3,6 +3,7 @@ import Foundation_iOS
 import BigInt
 
 struct AssetDetailsBalanceModelParams {
+    let chain: ChainModel
     let total: BigUInt
     let locked: BigUInt
     let transferrable: BigUInt
@@ -115,7 +116,10 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
             interactive: params.locked > 0 || !params.externalBalances.isEmpty
         )
 
+        let networkViewModel = networkViewModelFactory.createViewModel(from: params.chain)
+
         return AssetDetailsBalanceModel(
+            chain: networkViewModel,
             total: totalModel,
             locked: lockedModel,
             transferrable: models[2]
@@ -123,13 +127,11 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     }
 
     func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel {
-        let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
 
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,
             assetIcon: assetIcon,
-            network: networkViewModel
         )
     }
 

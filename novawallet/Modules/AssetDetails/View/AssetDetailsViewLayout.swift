@@ -20,7 +20,6 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     let backgroundView = MultigradientView.background
-    let chainView = AssetListChainView()
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
@@ -116,12 +115,6 @@ final class AssetDetailsViewLayout: UIView {
             $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.top).offset(-7.0)
         }
 
-        addSubview(chainView)
-        chainView.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-16)
-            $0.leading.greaterThanOrEqualTo(assetView.snp.trailing).offset(8)
-            $0.centerY.equalTo(assetView.snp.centerY)
-        }
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
@@ -174,7 +167,6 @@ final class AssetDetailsViewLayout: UIView {
             animated: true
         )
         assetLabel.text = assetDetailsModel.tokenName
-        chainView.bind(viewModel: assetDetailsModel.network)
     }
 
     func setChartViewHeight(_ height: CGFloat) {

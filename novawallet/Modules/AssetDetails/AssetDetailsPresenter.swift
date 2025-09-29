@@ -60,6 +60,7 @@ private extension AssetDetailsPresenter {
 
         let balanceModel = viewModelFactory.createBalanceViewModel(
             params: .init(
+                chain: chainAsset.chain,
                 total: balance.totalInPlank + totalExternalBalances,
                 locked: balance.locked + totalExternalBalances,
                 transferrable: balance.transferable,
