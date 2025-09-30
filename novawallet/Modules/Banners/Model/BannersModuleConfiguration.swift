@@ -6,9 +6,11 @@ enum Banners {
         let domain: Domain
     }
 
-    enum Domain: String {
+    enum Domain: String, Codable {
         case dApps = "dapps"
         case assets
+        case ahmKusama = "ahm_kusama"
+        case ahmPolkadot = "ahm_polkadot"
     }
 }
 

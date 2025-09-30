@@ -78,6 +78,7 @@ private extension MainTabBarViewFactory {
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
+            preSyncServiceCoodrinator: PreSyncServiceCoordinator.createDefault(),
             serviceCoordinator: serviceCoordinator,
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,

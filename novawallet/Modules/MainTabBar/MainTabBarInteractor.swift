@@ -10,6 +10,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
+    let preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
@@ -23,6 +24,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
             OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.AHMInfoSetup(),
             OnLaunchAction.MultisigNotificationsPromo()
         ]
     )
@@ -33,6 +35,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
 
     init(
         eventCenter: EventCenterProtocol,
+        preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
@@ -53,6 +56,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
+        self.preSyncServiceCoodrinator = preSyncServiceCoodrinator
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
@@ -70,11 +74,25 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
 
 private extension MainTabBarInteractor {
     func startServices() {
-        serviceCoordinator.setup()
-        inAppUpdatesService.syncUp()
+        let preSyncSetupWrapper = preSyncServiceCoodrinator.setup()
+
+        execute(
+            wrapper: preSyncSetupWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.serviceCoordinator.setup()
+                self?.inAppUpdatesService.syncUp()
+            case .failure:
+                self?.logger.error("Failed on setup pre sync services")
+            }
+        }
     }
 
     func stopServices() {
+        preSyncServiceCoodrinator.throttle()
         serviceCoordinator.throttle()
         inAppUpdatesService.stopSyncUp()
     }
@@ -116,9 +134,30 @@ private extension MainTabBarInteractor {
         }
     }
 
+    func setupAHMInfoObserver() {
+        preSyncServiceCoodrinator.ahmInfoService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            guard let newState, !newState.isEmpty else {
+                return
+            }
+
+            self?.presenter?.didRequestAHMInfoOpen(with: newState)
+        }
+    }
+
     func setupMultisigNotificationPromoOrNextAction() {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.setupNotificationPromoObserver()
+            self?.onLaunchQueue.runNext()
+        }
+    }
+
+    func setupAHMInfoServiceOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.setupAHMInfoObserver()
             self?.onLaunchQueue.runNext()
         }
     }
@@ -302,5 +341,9 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
 
     func onLaunchProcessMultisigNotificationPromo(_: OnLaunchAction.MultisigNotificationsPromo) {
         setupMultisigNotificationPromoOrNextAction()
+    }
+
+    func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
+        setupAHMInfoServiceOrNextAction()
     }
 }
