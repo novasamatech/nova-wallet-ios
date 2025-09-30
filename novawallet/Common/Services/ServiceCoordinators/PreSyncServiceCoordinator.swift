@@ -10,6 +10,8 @@ protocol PreSyncServiceProtocol {
 
 protocol PreSyncServiceCoordinatorProtocol: PreSyncServiceProtocol {
     var ahmInfoService: AHMInfoServiceProtocol { get }
+
+    func updateOnAppBecomeActive() -> CompoundOperationWrapper<Void>
 }
 
 final class PreSyncServiceCoordinator {
@@ -27,19 +29,20 @@ final class PreSyncServiceCoordinator {
 // MARK: - Private
 
 private extension PreSyncServiceCoordinator {
-    func createServiceArray() -> [PreSyncServiceProtocol] {
+    var allServices: [PreSyncServiceProtocol] {
         [
             ahmInfoPreSyncService
         ]
     }
-}
 
-// MARK: - PreSyncServiceCoordinatorProtocol
+    var appBecomeActiveUpdateGroup: [PreSyncServiceProtocol] {
+        [
+            ahmInfoPreSyncService
+        ]
+    }
 
-extension PreSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol {
-    func setup() -> CompoundOperationWrapper<Void> {
-        let services = createServiceArray()
-        let setupWrappers = services.map { $0.setup() }
+    func setup(serviceGroup: [PreSyncServiceProtocol]) -> CompoundOperationWrapper<Void> {
+        let setupWrappers = serviceGroup.map { $0.setup() }
 
         let resultOperation: BaseOperation<Void> = ClosureOperation {
             _ = try setupWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
@@ -52,9 +55,24 @@ extension PreSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol {
             dependencies: setupWrappers.flatMap(\.allOperations)
         )
     }
+}
+
+// MARK: - PreSyncServiceCoordinatorProtocol
+
+extension PreSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol {
+    func setup() -> CompoundOperationWrapper<Void> {
+        setup(serviceGroup: allServices)
+    }
 
     func throttle() {
-        createServiceArray().forEach { $0.throttle() }
+        allServices.forEach { $0.throttle() }
+    }
+
+    func updateOnAppBecomeActive() -> CompoundOperationWrapper<Void> {
+        let group = appBecomeActiveUpdateGroup
+        group.forEach { $0.throttle() }
+
+        return setup(serviceGroup: group)
     }
 }
 
@@ -62,26 +80,13 @@ extension PreSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol {
 
 extension PreSyncServiceCoordinator {
     static func createDefault() -> PreSyncServiceCoordinatorProtocol {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let substrateStorage = SubstrateDataStorageFacade.shared
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorage)
-
-        let ahmInfoService = AHMInfoService(
-            blockNumberOperationFactory: BlockNumberOperationFactory(
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue
-            ),
-            chainRegistry: chainRegistry,
-            applicationHandler: ApplicationHandler(),
-            ahmInfoRepository: AHMInfoRepository.shared,
-            assetBalanceRepository: repositoryFactory.createAssetBalanceRepository(),
-            settingsManager: SettingsManager.shared,
-            operationQueue: operationQueue,
-            workingQueue: .main,
-            logger: Logger.shared
+        let snapshot = AHMInfoService.Snapshot(
+            initialBalances: [:],
+            ahmInfoRepository: AHMInfoRepository.shared
         )
 
-        return PreSyncServiceCoordinator(ahmInfoPreSyncService: ahmInfoService)
+        return PreSyncServiceCoordinator(
+            ahmInfoPreSyncService: snapshot.restoreService(with: \.ahmInfoShownChains)
+        )
     }
 }

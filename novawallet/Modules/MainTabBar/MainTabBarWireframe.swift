@@ -6,9 +6,14 @@ typealias FlowStatusPresentingClosure = (ModalAlertPresenting, ControllerBackedP
 
 final class MainTabBarWireframe {
     private let cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol
+    private let ahmInfoService: AHMInfoServiceProtocol
 
-    init(cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol) {
+    init(
+        cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol,
+        ahmInfoService: AHMInfoServiceProtocol
+    ) {
         self.cardScreenNavigationFactory = cardScreenNavigationFactory
+        self.ahmInfoService = ahmInfoService
     }
 }
 
@@ -69,7 +74,8 @@ private extension MainTabBarWireframe {
 
     func openAssetDetailsScreen(
         in controller: UITabBarController,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
@@ -83,9 +89,9 @@ private extension MainTabBarWireframe {
         )
 
         guard let detailsView = AssetDetailsContainerViewFactory.createView(
-            chain: chainAsset.chain,
-            asset: chainAsset.asset,
-            operationState: operationState
+            chainAsset: chainAsset,
+            operationState: operationState,
+            ahmInfoSnapshot: ahmInfoSnapshot
         ) else {
             return
         }
@@ -405,9 +411,16 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
         switch screen {
         case let .gov(rederendumIndex):
-            openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+            openGovernanceScreen(
+                in: controller,
+                rederendumIndex: rederendumIndex
+            )
         case let .historyDetails(chainAsset):
-            openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
+            openAssetDetailsScreen(
+                in: controller,
+                chainAsset: chainAsset,
+                ahmInfoSnapshot: ahmInfoService.createSnapshot()
+            )
         case let .multisigOperationDetails(operationKey):
             openMultisigOperationScreen(in: controller, operationKey: operationKey)
         case let .multisigOperationEnded(model):

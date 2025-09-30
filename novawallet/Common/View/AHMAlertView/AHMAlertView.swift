@@ -57,7 +57,7 @@ private extension AHMAlertView {
         contentView.fView.makeHorizontal()
         contentView.fView.stackView.alignment = .top
 
-        contentView.spacing = Constants.conentToButton
+        contentView.spacing = Constants.contentToButton
         contentView.fView.spacing = Constants.infoToContent
         contentView.fView.sView.sView.spacing = Constants.titleToMessage
 
@@ -151,7 +151,7 @@ extension AHMAlertView {
 
 private extension AHMAlertView {
     enum Constants {
-        static let conentToButton: CGFloat = 8
+        static let contentToButton: CGFloat = 8
         static let infoToContent: CGFloat = 12
         static let titleToMessage: CGFloat = 8
 

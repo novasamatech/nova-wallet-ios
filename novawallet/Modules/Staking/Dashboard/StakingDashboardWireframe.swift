@@ -1,15 +1,22 @@
 import Foundation
 
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
+    var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
+        serviceCoordinator.delegatedAccountSyncService
+    }
+
     let stateObserver: Observable<StakingDashboardModel>
-    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+    let serviceCoordinator: ServiceCoordinatorProtocol
+    let preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
 
     init(
         stateObserver: Observable<StakingDashboardModel>,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
     ) {
         self.stateObserver = stateObserver
-        self.delegatedAccountSyncService = delegatedAccountSyncService
+        self.serviceCoordinator = serviceCoordinator
+        self.preSyncServiceCoordinator = preSyncServiceCoordinator
     }
 
     func showMoreOptions(from view: ControllerBackedProtocol?) {

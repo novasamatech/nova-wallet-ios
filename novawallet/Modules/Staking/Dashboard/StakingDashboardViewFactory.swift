@@ -3,15 +3,15 @@ import Foundation_iOS
 
 struct StakingDashboardViewFactory {
     static func createView(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
         guard
             let interactor = createInteractor(
                 for: stateObserver,
-                walletNotificationService: walletNotificationService
+                walletNotificationService: serviceCoordinator.walletNotificationService
             ),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -19,7 +19,8 @@ struct StakingDashboardViewFactory {
 
         let wireframe = StakingDashboardWireframe(
             stateObserver: stateObserver,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            serviceCoordinator: serviceCoordinator,
+            preSyncServiceCoordinator: preSyncServiceCoordinator
         )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

@@ -162,11 +162,6 @@ private extension AssetDetailsInteractor {
     }
 
     func provideAHMInfo() {
-        guard !settingsManager.ahmAssetDetailsAlertClosed else {
-            presenter?.didReceive(ahmInfo: nil)
-            return
-        }
-
         let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
 
         execute(
@@ -229,7 +224,7 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
     }
 
     func closeAHMAlert() {
-        settingsManager.ahmAssetDetailsAlertClosed = true
+        settingsManager.ahmAssetDetailsAlertClosedChains.add(chainAsset.chain.chainId)
         provideAHMInfo()
     }
 }

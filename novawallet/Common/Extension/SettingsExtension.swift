@@ -31,8 +31,8 @@ enum SettingsKey: String {
     case isAppFirstLaunch
     case multisigNotificationsPromoSeen
     case ahmInfoShownChains
-    case ahmAssetDetailsAlertClosed
-    case ahmStakingAlertClosed
+    case ahmAssetDetailsAlertClosedChains
+    case ahmStakingAlertClosedChains
     case privacyModeSettings
 }
 
@@ -381,12 +381,12 @@ extension SettingsManagerProtocol {
         }
     }
 
-    var ahmInfoShownChains: AHMInfoShownChains {
+    var ahmInfoShownChains: AHMInfoExcludedChains {
         get {
             value(
-                of: AHMInfoShownChains.self,
+                of: AHMInfoExcludedChains.self,
                 for: SettingsKey.ahmInfoShownChains.rawValue
-            ) ?? AHMInfoShownChains(chainIds: Set())
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
         }
         set {
             set(
@@ -396,23 +396,33 @@ extension SettingsManagerProtocol {
         }
     }
 
-    var ahmAssetDetailsAlertClosed: Bool {
+    var ahmAssetDetailsAlertClosedChains: AHMInfoExcludedChains {
         get {
-            bool(for: SettingsKey.ahmAssetDetailsAlertClosed.rawValue) ?? false
+            value(
+                of: AHMInfoExcludedChains.self,
+                for: SettingsKey.ahmAssetDetailsAlertClosedChains.rawValue
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
         }
-
         set {
-            set(value: newValue, for: SettingsKey.ahmAssetDetailsAlertClosed.rawValue)
+            set(
+                value: newValue,
+                for: SettingsKey.ahmAssetDetailsAlertClosedChains.rawValue
+            )
         }
     }
 
-    var ahmStakingAlertClosed: Bool {
+    var ahmStakingAlertClosedChains: AHMInfoExcludedChains {
         get {
-            bool(for: SettingsKey.ahmStakingAlertClosed.rawValue) ?? false
+            value(
+                of: AHMInfoExcludedChains.self,
+                for: SettingsKey.ahmStakingAlertClosedChains.rawValue
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
         }
-
         set {
-            set(value: newValue, for: SettingsKey.ahmStakingAlertClosed.rawValue)
+            set(
+                value: newValue,
+                for: SettingsKey.ahmStakingAlertClosedChains.rawValue
+            )
         }
     }
 }

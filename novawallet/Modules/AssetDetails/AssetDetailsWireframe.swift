@@ -6,13 +6,16 @@ import Foundation_iOS
 final class AssetDetailsWireframe {
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
+    let ahmInfoSnapshot: AHMInfoService.Snapshot
 
     init(
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol
+        swapState: SwapTokensFlowStateProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) {
         self.operationState = operationState
         self.swapState = swapState
+        self.ahmInfoSnapshot = ahmInfoSnapshot
     }
 
     private func present(
@@ -115,9 +118,9 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         chainAsset: ChainAsset
     ) {
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
-            chain: chainAsset.chain,
-            asset: chainAsset.asset,
-            operationState: operationState
+            chainAsset: chainAsset,
+            operationState: operationState,
+            ahmInfoSnapshot: ahmInfoSnapshot
         ),
             let navigationController = view?.controller.navigationController
         else {

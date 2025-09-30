@@ -7,14 +7,14 @@ protocol AHMFullInfoFactoryProtocol {
 
 final class AHMFullInfoFactory {
     private let chainRegistry: ChainRegistryProtocol
-    private let repository: AHMInfoRepositoryProtocol
+    private let ahmInfoService: AHMInfoServiceProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        repository: AHMInfoRepositoryProtocol
+        ahmInfoService: AHMInfoServiceProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.repository = repository
+        self.ahmInfoService = ahmInfoService
     }
 }
 
@@ -22,7 +22,7 @@ final class AHMFullInfoFactory {
 
 extension AHMFullInfoFactory: AHMFullInfoFactoryProtocol {
     func fetch(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AHMFullInfo?> {
-        let infoFetchWrapper = repository.fetch(by: chainId)
+        let infoFetchWrapper = ahmInfoService.fetchPassedMigrationsInfo(by: chainId)
 
         let mapOperation = ClosureOperation<AHMFullInfo?> { [weak self] in
             guard

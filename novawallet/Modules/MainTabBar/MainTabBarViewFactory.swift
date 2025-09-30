@@ -9,13 +9,18 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createView() -> MainTabBarViewProtocol? {
         let localizationManager = LocalizationManager.shared
+        let preSyncServiceCoordinator = PreSyncServiceCoordinator.createDefault()
         let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingServiceFacade.shared)
 
         guard
-            let interactor = createInteractor(serviceCoordinator: serviceCoordinator),
+            let interactor = createInteractor(
+                preSyncServiceCoordinator: preSyncServiceCoordinator,
+                serviceCoordinator: serviceCoordinator
+            ),
             let indexedControllers = createIndexedControllers(
                 localizationManager: localizationManager,
-                serviceCoordinator: serviceCoordinator
+                serviceCoordinator: serviceCoordinator,
+                preSyncServiceCoordinator: preSyncServiceCoordinator
             )
         else { return nil }
 
@@ -28,7 +33,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         view.viewControllers = indexedControllers.map(\.1)
 
-        let wireframe = MainTabBarWireframe(cardScreenNavigationFactory: CardScreenNavigationFactory())
+        let wireframe = MainTabBarWireframe(
+            cardScreenNavigationFactory: CardScreenNavigationFactory(),
+            ahmInfoService: preSyncServiceCoordinator.ahmInfoService
+        )
 
         presenter.view = view
         presenter.interactor = interactor
@@ -42,7 +50,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 // MARK: Private
 
 private extension MainTabBarViewFactory {
-    static func createInteractor(serviceCoordinator: ServiceCoordinatorProtocol) -> MainTabBarInteractor? {
+    static func createInteractor(
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol,
+        serviceCoordinator: ServiceCoordinatorProtocol
+    ) -> MainTabBarInteractor? {
         let urlServiceFacade: URLHandlingServiceFacadeProtocol = URLHandlingServiceFacade.shared
 
         guard
@@ -77,8 +88,9 @@ private extension MainTabBarViewFactory {
         )
 
         let interactor = MainTabBarInteractor(
+            applicationHandler: ApplicationHandler(),
             eventCenter: EventCenter.shared,
-            preSyncServiceCoodrinator: PreSyncServiceCoordinator.createDefault(),
+            preSyncServiceCoodrinator: preSyncServiceCoordinator,
             serviceCoordinator: serviceCoordinator,
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
@@ -98,7 +110,8 @@ private extension MainTabBarViewFactory {
 
     static func createIndexedControllers(
         localizationManager: LocalizationManagerProtocol,
-        serviceCoordinator: ServiceCoordinatorProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
     ) -> [(Int, UIViewController)]? {
         let walletNotificationService = serviceCoordinator.walletNotificationService
         let delegatedAccountSyncService = serviceCoordinator.delegatedAccountSyncService
@@ -106,14 +119,13 @@ private extension MainTabBarViewFactory {
         guard
             let walletController = createWalletController(
                 for: localizationManager,
-                dappMediator: serviceCoordinator.dappMediator,
-                walletNotificationService: walletNotificationService,
-                delegatedAccountSyncService: delegatedAccountSyncService
+                serviceCoordinator: serviceCoordinator,
+                preSyncServiceCoordinator: preSyncServiceCoordinator
             ),
             let stakingController = createStakingController(
                 for: localizationManager,
-                walletNotificationService: walletNotificationService,
-                delegatedAccountSyncService: delegatedAccountSyncService
+                serviceCoordinator: serviceCoordinator,
+                preSyncServiceCoordinator: preSyncServiceCoordinator
             ),
             let voteController = createVoteController(
                 for: localizationManager,
@@ -146,14 +158,12 @@ private extension MainTabBarViewFactory {
 
     static func createWalletController(
         for localizationManager: LocalizationManagerProtocol,
-        dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
     ) -> UIViewController? {
         guard let viewController = AssetListViewFactory.createView(
-            with: dappMediator,
-            walletNotificationService: walletNotificationService,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            serviceCoordinator: serviceCoordinator,
+            preSyncServiceCoordinator: preSyncServiceCoordinator
         )?.controller else {
             return nil
         }
@@ -190,12 +200,12 @@ private extension MainTabBarViewFactory {
 
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
     ) -> UIViewController? {
         let viewController = StakingDashboardViewFactory.createView(
-            walletNotificationService: walletNotificationService,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            serviceCoordinator: serviceCoordinator,
+            preSyncServiceCoordinator: preSyncServiceCoordinator
         )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in

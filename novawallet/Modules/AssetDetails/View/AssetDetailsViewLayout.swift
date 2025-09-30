@@ -13,8 +13,29 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         duration: 0.2,
         options: [.curveEaseInOut]
     )
+    private let alertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.4,
+        delay: 0.3,
+        options: [.curveEaseInOut]
+    )
+    private let alertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: 0.3,
+        delay: 0.0,
+        options: [.curveEaseInOut]
+    )
+    private let alertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 1.0,
+        to: 0.0,
+        duration: 0.3,
+        delay: 0.0,
+        options: [.curveEaseInOut]
+    )
 
-    lazy var ahmAlertView = AHMAlertView()
+    lazy var ahmAlertView: AHMAlertView = .create { view in
+        view.isHidden = true
+    }
 
     let chartContainerView: UIView = .create { view in
         view.backgroundColor = R.color.colorBlockBackground()
@@ -111,6 +132,49 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         }
     }
 
+    private func hideAlertWithAnimation() {
+        alertDisappearanceAnimator.animate(
+            view: ahmAlertView,
+            completionBlock: nil
+        )
+        alertLayoutChangesAnimator.animate(
+            block: { [weak self] in
+                self?.ahmAlertView.isHidden = true
+                self?.containerView.stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                self?.ahmAlertView.removeFromSuperview()
+            }
+        )
+    }
+
+    private func showAlertWithAnimation() {
+        ahmAlertView.alpha = 0
+
+        insertArrangedSubview(
+            ahmAlertView,
+            before: balanceWidget,
+            spacingAfter: Constants.alertSpacingAfter
+        )
+
+        alertLayoutChangesAnimator.animate(
+            block: { [weak self] in
+                guard let self else { return }
+
+                ahmAlertView.isHidden = false
+                containerView.stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                guard let self else { return }
+
+                alertAppearanceAnimator.animate(
+                    view: ahmAlertView,
+                    completionBlock: nil
+                )
+            }
+        )
+    }
+
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
@@ -173,25 +237,15 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
                 return
             }
 
-            insertArrangedSubview(
-                ahmAlertView,
-                before: balanceWidget,
-                spacingAfter: Constants.alertSpacingAfter
-            )
-
             ahmAlertView.bind(model)
+
+            showAlertWithAnimation()
         } else {
             guard ahmAlertView.superview != nil else {
                 return
             }
 
-            layoutChangesAnimator.animate(
-                block: { [weak self] in
-                    self?.ahmAlertView.removeFromSuperview()
-                    self?.containerView.layoutIfNeeded()
-                },
-                completionBlock: nil
-            )
+            hideAlertWithAnimation()
         }
     }
 

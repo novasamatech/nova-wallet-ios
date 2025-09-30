@@ -6,6 +6,7 @@ import Foundation_iOS
 final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?
 
+    let applicationHandler: ApplicationHandlerProtocol
     let eventCenter: EventCenterProtocol
     let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
@@ -34,6 +35,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     }
 
     init(
+        applicationHandler: ApplicationHandlerProtocol,
         eventCenter: EventCenterProtocol,
         preSyncServiceCoodrinator: PreSyncServiceCoordinatorProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
@@ -49,6 +51,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.applicationHandler = applicationHandler
         self.eventCenter = eventCenter
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
@@ -85,6 +88,7 @@ private extension MainTabBarInteractor {
             case .success:
                 self?.serviceCoordinator.setup()
                 self?.inAppUpdatesService.syncUp()
+                self?.applicationHandler.delegate = self
             case .failure:
                 self?.logger.error("Failed on setup pre sync services")
             }
@@ -120,6 +124,12 @@ private extension MainTabBarInteractor {
         }
     }
 
+    func showAhmInfoOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.showAhmInfoOrNext { self?.onLaunchQueue.runNext() }
+        }
+    }
+
     func setupNotificationPromoObserver() {
         notificationsPromoService.add(
             observer: self,
@@ -134,20 +144,6 @@ private extension MainTabBarInteractor {
         }
     }
 
-    func setupAHMInfoObserver() {
-        preSyncServiceCoodrinator.ahmInfoService.add(
-            observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            guard let newState, !newState.isEmpty else {
-                return
-            }
-
-            self?.presenter?.didRequestAHMInfoOpen(with: newState)
-        }
-    }
-
     func setupMultisigNotificationPromoOrNextAction() {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.setupNotificationPromoObserver()
@@ -155,10 +151,26 @@ private extension MainTabBarInteractor {
         }
     }
 
-    func setupAHMInfoServiceOrNextAction() {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.setupAHMInfoObserver()
-            self?.onLaunchQueue.runNext()
+    func showAhmInfoOrNext(nextOnLaunchClosure: (() -> Void)? = nil) {
+        let wrapper = preSyncServiceCoodrinator.ahmInfoService.fetchPassedMigrationsInfo()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                guard !info.isEmpty else {
+                    nextOnLaunchClosure?()
+                    return
+                }
+                self?.presenter?.didRequestAHMInfoOpen(with: info)
+            case let .failure(error):
+                self?.logger.error("Error fetching AHM info: \(error)")
+            }
+
+            nextOnLaunchClosure?()
         }
     }
 
@@ -344,6 +356,27 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     }
 
     func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
-        setupAHMInfoServiceOrNextAction()
+        showPushNotificationsSetupOrNextAction()
+    }
+}
+
+// MARK: - ApplicationHandlerDelegate
+
+extension MainTabBarInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        let updateServicesWrapper = preSyncServiceCoodrinator.updateOnAppBecomeActive()
+
+        execute(
+            wrapper: updateServicesWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.showAhmInfoOrNext()
+            case .failure:
+                self?.logger.error("Failed on update pre sync services")
+            }
+        }
     }
 }

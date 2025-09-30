@@ -4,10 +4,10 @@ import Keystore_iOS
 
 struct AssetDetailsViewFactory {
     static func createView(
-        chain: ChainModel,
-        asset: AssetModel,
+        chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol
+        swapState: SwapTokensFlowStateProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -16,11 +16,9 @@ struct AssetDetailsViewFactory {
             return nil
         }
 
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-
         let ahmInfoFactory = AHMFullInfoFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            repository: AHMInfoRepository.shared
+            ahmInfoService: ahmInfoSnapshot.restoreService(with: \.ahmAssetDetailsAlertClosedChains)
         )
 
         let interactor = AssetDetailsInteractor(
@@ -37,7 +35,11 @@ struct AssetDetailsViewFactory {
             currencyManager: currencyManager
         )
 
-        let wireframe = AssetDetailsWireframe(operationState: operationState, swapState: swapState)
+        let wireframe = AssetDetailsWireframe(
+            operationState: operationState,
+            swapState: swapState,
+            ahmInfoSnapshot: ahmInfoSnapshot
+        )
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(
@@ -61,7 +63,7 @@ struct AssetDetailsViewFactory {
         )
 
         guard let chartView = createChartView(
-            asset: asset,
+            asset: chainAsset.asset,
             locale: localizationManager.selectedLocale,
             currency: currencyManager.selectedCurrency,
             output: presenter,
