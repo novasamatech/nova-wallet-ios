@@ -1,8 +1,12 @@
 import UIKit
 import Operation_iOS
+import Keystore_iOS
 
 final class AssetDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: AssetDetailsInteractorOutputProtocol?
+
+    let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let settingsManager: SettingsManagerProtocol
     let chainAsset: ChainAsset
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -27,6 +31,8 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     }
 
     init(
+        ahmInfoFactory: AHMFullInfoFactoryProtocol,
+        settingsManager: SettingsManagerProtocol,
         selectedMetaAccount: MetaAccountModel,
         chainAsset: ChainAsset,
         rampProvider: RampProviderProtocol,
@@ -37,6 +43,8 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
+        self.ahmInfoFactory = ahmInfoFactory
+        self.settingsManager = settingsManager
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
@@ -152,6 +160,23 @@ private extension AssetDetailsInteractor {
         presenter?.didReceive(rampActions: rampActions)
         presenter?.didReceive(availableOperations: operations)
     }
+
+    func provideAHMInfo() {
+        let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
+
+        execute(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.presenter?.didReceive(ahmInfo: info)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .ahmInfo(error))
+            }
+        }
+    }
 }
 
 // MARK: AssetDetailsInteractorInputProtocol
@@ -161,6 +186,8 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         guard let accountId = accountId else {
             return
         }
+
+        provideAHMInfo()
 
         subscribePrice()
 

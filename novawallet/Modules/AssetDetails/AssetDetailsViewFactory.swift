@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
 
 struct AssetDetailsViewFactory {
     static func createView(
@@ -17,7 +18,14 @@ struct AssetDetailsViewFactory {
 
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
+        let ahmInfoFactory = AHMFullInfoFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            repository: AHMInfoRepository.shared
+        )
+
         let interactor = AssetDetailsInteractor(
+            ahmInfoFactory: ahmInfoFactory,
+            settingsManager: SettingsManager.shared,
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
             rampProvider: RampAggregator.defaultAggregator(),

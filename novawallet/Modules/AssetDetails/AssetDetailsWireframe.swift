@@ -110,6 +110,27 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
+    func showAssetDetails(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset
+    ) {
+        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+            chain: chainAsset.chain,
+            asset: chainAsset.asset,
+            operationState: operationState
+        ),
+            let navigationController = view?.controller.navigationController
+        else {
+            return
+        }
+
+        var viewControllers = navigationController.viewControllers
+        let index = viewControllers.count - 1
+        viewControllers[index] = assetDetailsView.controller
+
+        navigationController.setViewControllers(viewControllers, animated: true)
+    }
+
     func presentSuccessAlert(
         from view: AssetDetailsViewProtocol?,
         message: String

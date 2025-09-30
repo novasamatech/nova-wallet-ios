@@ -1960,3 +1960,6 @@
 "ahm.info.history.info" = "Old transaction history remains on %@";
 "ahm.info.migration.info" = "Migration happens automatically, no action needed";
 "ahm.info.notFound.error" = "Migration info not found";
+"ahm.info.alert.asset.details.title" = "Your %@ tokens now on %@";
+"ahm.info.alert.asset.details.message" = "Starting %@, your %@ balance, Staking, and Governance will be on %@ — with improved performance and lower costs.";
+"ahm.info.alert.asset.details.action" = "Go to %@";

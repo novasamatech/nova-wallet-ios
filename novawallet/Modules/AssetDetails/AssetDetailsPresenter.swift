@@ -14,6 +14,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     let selectedAccount: MetaAccountModel
     let logger: LoggerProtocol?
 
+    private var ahmInfo: AHMFullInfo?
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
@@ -73,6 +74,17 @@ private extension AssetDetailsPresenter {
 
         view.didReceive(balance: balanceModel)
         view.didReceive(availableOperations: availableOperations)
+
+        let ahmAlertModel: AHMAlertView.Model? = if let ahmInfo {
+            viewModelFactory.createAHMInfoViewModel(
+                info: ahmInfo,
+                locale: selectedLocale
+            )
+        } else {
+            nil
+        }
+
+        view.didReceive(ahmAlert: ahmAlertModel)
     }
 
     func validateAndProccedRamp(with type: RampActionType) {
@@ -205,11 +217,48 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func handleSwap() {
         wireframe.showSwaps(from: view, chainAsset: chainAsset)
     }
+
+    func handleAHMAlertClose() {}
+
+    func handleAHMAlertAction() {
+        guard
+            let destinationChain = ahmInfo?.destinationChain,
+            let asset = ahmInfo?.asset
+        else { return }
+
+        let chainAsset = ChainAsset(
+            chain: destinationChain,
+            asset: asset
+        )
+
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: chainAsset
+        )
+    }
+
+    func handleAHMAlertLearnMore() {
+        guard
+            let view,
+            let ahmWikiUrl = ahmInfo?.info.wikiURL
+        else { return }
+
+        wireframe.showWeb(
+            url: ahmWikiUrl,
+            from: view,
+            style: .automatic
+        )
+    }
 }
 
 // MARK: AssetDetailsInteractorOutputProtocol
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
+    func didReceive(ahmInfo: AHMFullInfo?) {
+        self.ahmInfo = ahmInfo
+        updateView()
+    }
+
     func didReceive(rampActions: [RampAction]) {
         self.rampActions = rampActions
         updateView()

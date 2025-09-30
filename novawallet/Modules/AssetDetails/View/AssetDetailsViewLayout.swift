@@ -14,6 +14,8 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         options: [.curveEaseInOut]
     )
 
+    lazy var ahmAlertView = AHMAlertView()
+
     let chartContainerView: UIView = .create { view in
         view.backgroundColor = R.color.colorBlockBackground()
         view.layer.cornerRadius = 12.0
@@ -164,6 +166,20 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         containerView.stackView.layoutMargins.bottom = inset + Constants.bottomOffset
     }
 
+    func setAHMAlert(with model: AHMAlertView.Model?) {
+        ahmAlertView.removeFromSuperview()
+
+        guard let model else { return }
+
+        insertArrangedSubview(
+            ahmAlertView,
+            before: balanceWidget,
+            spacingAfter: Constants.alertSpacingAfter
+        )
+
+        ahmAlertView.bind(model)
+    }
+
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset
             + currentBalanceHeight
@@ -208,5 +224,6 @@ extension AssetDetailsViewLayout {
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
         static let chartWidgetInset: CGFloat = 16
+        static let alertSpacingAfter: CGFloat = 8
     }
 }
