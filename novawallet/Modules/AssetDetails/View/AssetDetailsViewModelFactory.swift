@@ -136,7 +136,7 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
 
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,
-            assetIcon: assetIcon,
+            assetIcon: assetIcon
         )
     }
 
