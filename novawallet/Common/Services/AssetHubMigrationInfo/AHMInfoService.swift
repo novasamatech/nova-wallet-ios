@@ -63,6 +63,20 @@ final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
 // MARK: - Private
 
 private extension AHMInfoService {
+    func setBalances(_ balances: [AssetBalance]) {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
+        self.balances = balances.reduce(into: self.balances) { $0[$1.chainAssetId] = $1 }
+    }
+    
+    func fetchBalance(for chainAssetId: ChainAssetId) -> AssetBalance? {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
+        return balances[chainAssetId]
+    }
+    
     func createSetupWrapper() -> CompoundOperationWrapper<Void> {
         let assetBalanceFetchOperation = assetBalanceRepository.fetchAllOperation(with: .init())
 
@@ -71,11 +85,7 @@ private extension AHMInfoService {
 
             let allBalances = try assetBalanceFetchOperation.extractNoCancellableResultData()
 
-            mutex.lock()
-
-            balances = allBalances.reduce(into: balances) { $0[$1.chainAssetId] = $1 }
-
-            mutex.unlock()
+            setBalances(allBalances)
         }
 
         resultOperation.addDependency(assetBalanceFetchOperation)
@@ -127,18 +137,17 @@ private extension AHMInfoService {
             let shownChains = settingsManager.ahmInfoShownChains
 
             let ahmInfoConfigs = try ahmInfoWrapper.targetOperation.extractNoCancellableResultData()
-
-            mutex.lock()
+            
             let relevantConfigs = ahmInfoConfigs.filter {
                 let chainAssetId = ChainAssetId(
                     chainId: $0.sourceData.chainId,
                     assetId: $0.sourceData.assetId
                 )
-
+                let balance = self.fetchBalance(for: chainAssetId)
+                
                 return !shownChains.chainIds.contains(chainAssetId.chainId)
-                    && self.balances[chainAssetId] != nil
+                    && balance != nil
             }
-            mutex.unlock()
 
             return relevantConfigs
         }
