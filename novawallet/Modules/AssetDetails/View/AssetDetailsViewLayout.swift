@@ -167,17 +167,32 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     }
 
     func setAHMAlert(with model: AHMAlertView.Model?) {
-        ahmAlertView.removeFromSuperview()
+        if let model {
+            guard ahmAlertView.superview == nil else {
+                ahmAlertView.bind(model)
+                return
+            }
 
-        guard let model else { return }
+            insertArrangedSubview(
+                ahmAlertView,
+                before: balanceWidget,
+                spacingAfter: Constants.alertSpacingAfter
+            )
 
-        insertArrangedSubview(
-            ahmAlertView,
-            before: balanceWidget,
-            spacingAfter: Constants.alertSpacingAfter
-        )
+            ahmAlertView.bind(model)
+        } else {
+            guard ahmAlertView.superview != nil else {
+                return
+            }
 
-        ahmAlertView.bind(model)
+            layoutChangesAnimator.animate(
+                block: { [weak self] in
+                    self?.ahmAlertView.removeFromSuperview()
+                    self?.containerView.layoutIfNeeded()
+                },
+                completionBlock: nil
+            )
+        }
     }
 
     var prefferedHeight: CGFloat {
