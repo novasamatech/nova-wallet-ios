@@ -88,7 +88,10 @@ struct NPoolsRedeemViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let slashesOperationFactory = SlashesOperationFactory(storageRequestFactory: storageRequestFactory)
+        let slashesOperationFactory = SlashesOperationFactory(
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
         let npoolsOperationFactory = NominationPoolsOperationFactory(operationQueue: operationQueue)
 
         return NPoolsRedeemInteractor(

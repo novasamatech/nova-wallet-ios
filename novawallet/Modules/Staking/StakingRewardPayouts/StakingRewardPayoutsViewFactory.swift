@@ -11,12 +11,12 @@ final class StakingRewardPayoutsViewFactory {
     ) -> StakingRewardPayoutsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
-        guard let rewardsUrl = chainAsset.chain.externalApis?.staking()?.first?.url else {
+        guard let rewardsUrls = chainAsset.chain.externalApis?.stakingRewards()?.map(\.url) else {
             return nil
         }
 
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardsUrl
+            urls: rewardsUrls
         )
 
         let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)

@@ -15,7 +15,7 @@ protocol StakingServiceFactoryProtocol {
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
 
-    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel
+    func createTimeModel(for chainId: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel
 }
 
 final class StakingServiceFactory: StakingServiceFactoryProtocol {
@@ -24,6 +24,8 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+
+    private let blockTimeServiceFactory: BlockTimeEstimationServiceFactoryProtocol
 
     init(
         chainRegisty: ChainRegistryProtocol,
@@ -37,6 +39,14 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
+
+        blockTimeServiceFactory = BlockTimeEstimationServiceFactory(
+            chainRegisty: chainRegisty,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 
     func createEraValidatorService(
@@ -99,47 +109,24 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             eraValidatorsService: validatorService,
             operationManager: OperationManager(operationQueue: operationQueue),
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            runtimeCodingService: runtimeService,
             stakingDurationFactory: stakingDurationFactory,
             storageFacade: storageFacade,
             logger: logger
         )
     }
 
-    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel {
+    func createTimeModel(for chainId: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel {
+        let timelineChain = try chainRegisty.getTimelineChainOrError(for: chainId)
+
         switch consensus {
         case .babe:
-            return .babe
+            return .babe(timelineChain)
         case .auraGeneral:
-            let blockTimeService = try createBlockTimeService(for: chainId)
-            return .auraGeneral(blockTimeService)
+            let blockTimeService = try blockTimeServiceFactory.createService(for: timelineChain.chainId)
+            return .auraGeneral(timelineChain, blockTimeService)
         case .auraAzero:
-            let blockTimeService = try createBlockTimeService(for: chainId)
-            return .azero(blockTimeService)
+            let blockTimeService = try blockTimeServiceFactory.createService(for: timelineChain.chainId)
+            return .azero(timelineChain, blockTimeService)
         }
-    }
-
-    private func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        return BlockTimeEstimationService(
-            chainId: chainId,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: repository,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
     }
 }

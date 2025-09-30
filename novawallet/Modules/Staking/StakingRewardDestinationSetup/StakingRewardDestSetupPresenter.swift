@@ -25,7 +25,7 @@ final class StakingRewardDestSetupPresenter {
     private var bonded: Decimal?
     private var balance: Decimal?
     private var fee: ExtrinsicFeeProtocol?
-    private var nomination: Nomination?
+    private var nomination: Staking.Nomination?
 
     init(
         wireframe: StakingRewardDestSetupWireframeProtocol,
@@ -222,7 +222,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             bonded = stakingLedger.map {
@@ -304,7 +304,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveNomination(result: Result<Nomination?, Error>) {
+    func didReceiveNomination(result: Result<Staking.Nomination?, Error>) {
         switch result {
         case let .success(nomination):
             self.nomination = nomination

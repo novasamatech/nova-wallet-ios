@@ -9,12 +9,9 @@ final class AddDelegationInteractor {
     let chain: ChainModel
     let lastVotedDays: Int
     let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     private(set) var settings: SettingsManagerProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -25,24 +22,18 @@ final class AddDelegationInteractor {
     init(
         chain: ChainModel,
         lastVotedDays: Int,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
-        self.connection = connection
-        self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.delegateListOperationFactory = delegateListOperationFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.settings = settings
         self.operationQueue = operationQueue
@@ -57,10 +48,8 @@ final class AddDelegationInteractor {
             .init(
                 currentBlockNumber: currentBlockNumber,
                 lastVotedDays: lastVotedDays,
-                blockTimeService: blockTimeService,
-                blockTimeOperationFactory: blockTimeFactory
+                timelineService: timelineService
             ),
-            runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
@@ -79,7 +68,7 @@ final class AddDelegationInteractor {
     }
 
     private func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func provideSettings() {

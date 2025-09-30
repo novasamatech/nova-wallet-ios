@@ -402,7 +402,7 @@ class CalculatorServiceTests: XCTestCase {
                                                   engine: JSONRPCEngine,
                                                   codingFactory: RuntimeCoderFactoryProtocol,
                                                   queue: OperationQueue = OperationQueue()) throws
-    -> [StorageResponse<ValidatorPrefs>] {
+    -> [StorageResponse<Staking.ValidatorPrefs>] {
         let params1: () throws -> [String] = {
             Array(repeating: String(era), count: identifers.count)
         }
@@ -416,7 +416,7 @@ class CalculatorServiceTests: XCTestCase {
             operationManager: OperationManager()
         )
 
-        let queryWrapper: CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> =
+        let queryWrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> =
             requestFactory.queryItems(engine: engine,
                                       keyParams1: params1,
                                       keyParams2: params2,
@@ -491,7 +491,7 @@ class CalculatorServiceTests: XCTestCase {
 
         let fetchOperation = repository.fetchOperation(by: localKey, options: RepositoryFetchOptions())
 
-        let decodingOperation = StorageDecodingOperation<ActiveEraInfo>(path: Staking.activeEra)
+        let decodingOperation = StorageDecodingOperation<Staking.ActiveEraInfo>(path: Staking.activeEra)
         decodingOperation.codingFactory = codingFactory
 
         decodingOperation.configurationBlock = {
@@ -621,7 +621,10 @@ class CalculatorServiceTests: XCTestCase {
             for: chainAsset,
             stakingType: .relaychain,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            stakingDurationFactory: BabeStakingDurationFactory(),
+            stakingDurationFactory: BabeStakingDurationFactory(
+                chainId: chainId,
+                chainRegistry: chainRegistry
+            ),
             validatorService: validatorService
         )
 

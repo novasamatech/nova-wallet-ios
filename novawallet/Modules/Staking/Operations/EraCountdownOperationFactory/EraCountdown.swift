@@ -1,8 +1,8 @@
 import Foundation
 
 struct EraCountdown {
-    let activeEra: EraIndex
-    let currentEra: EraIndex
+    let activeEra: Staking.EraIndex
+    let currentEra: Staking.EraIndex
     let eraLength: SessionIndex
     let sessionLength: SessionIndex
     let activeEraStartSessionIndex: SessionIndex
@@ -11,6 +11,10 @@ struct EraCountdown {
     let currentSlot: Slot
     let genesisSlot: Slot
     let blockCreationTime: Moment
+
+    // when the timeline chain differs from current on we might
+    // add some blocks delay
+    let eraDelayInBlocks: UInt32
     let createdAtDate: Date
 
     var blockTimeInSeconds: TimeInterval {
@@ -22,7 +26,7 @@ struct EraCountdown {
         return TimeInterval(eraLengthInSlots) * blockTimeInSeconds
     }
 
-    func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillStart(targetEra: Staking.EraIndex) -> TimeInterval {
         guard targetEra > activeEra else { return 0 }
 
         let numberOfSlotsPerSession = UInt64(sessionLength)
@@ -50,14 +54,17 @@ struct EraCountdown {
 
         let distanceBetweenEras = TimeInterval(targetEra - (activeEra + 1))
         let targetEraDuration = distanceBetweenEras * TimeInterval(eraLengthInSlots) * blockTimeInSeconds
-        return max(0.0, targetEraDuration + activeEraRemainedTime)
+
+        let eraDelay = TimeInterval(eraDelayInBlocks) * blockTimeInSeconds
+
+        return max(0.0, targetEraDuration + activeEraRemainedTime + eraDelay)
     }
 
     func timeIntervalTillNextActiveEraStart() -> TimeInterval {
         timeIntervalTillStart(targetEra: activeEra + 1)
     }
 
-    func timeIntervalTillSet(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillSet(targetEra: Staking.EraIndex) -> TimeInterval {
         let sessionDuration = TimeInterval(sessionLength) * blockTimeInSeconds
         let tillEraStart = timeIntervalTillStart(targetEra: targetEra)
 

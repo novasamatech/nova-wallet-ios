@@ -147,22 +147,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     private func provideEraCompletionTime() {
         clear(cancellable: &eraCompletionTimeCancellable)
 
-        let chainId = selectedChainAsset.chain.chainId
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .eraCountdown(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceive(error: .eraCountdown(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        let operationWrapper = eraCoundownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let operationWrapper = eraCoundownOperationFactory.fetchCountdownOperationWrapper()
 
         operationWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

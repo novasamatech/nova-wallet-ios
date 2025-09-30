@@ -20,7 +20,7 @@ final class NPoolsRedeemPresenter {
     var assetBalance: AssetBalance?
     var poolMember: NominationPools.PoolMember?
     var subPools: NominationPools.SubPools?
-    var activeEra: ActiveEraInfo?
+    var activeEra: Staking.ActiveEraInfo?
     var existentialDeposit: BigUInt?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
@@ -214,7 +214,7 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         provideAmountViewModel()
     }
 
-    func didReceive(activeEra: ActiveEraInfo?) {
+    func didReceive(activeEra: Staking.ActiveEraInfo?) {
         logger.debug("Active era: \(String(describing: assetBalance))")
 
         self.activeEra = activeEra

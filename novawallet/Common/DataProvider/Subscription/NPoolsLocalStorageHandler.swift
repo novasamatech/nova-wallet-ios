@@ -60,7 +60,7 @@ protocol NPoolsLocalSubscriptionHandler {
         for _: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     )
 }
 
@@ -123,6 +123,6 @@ extension NPoolsLocalSubscriptionHandler {
         for _: AccountAddress,
         startTimestamp _: Int64?,
         endTimestamp _: Int64?,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {}
 }

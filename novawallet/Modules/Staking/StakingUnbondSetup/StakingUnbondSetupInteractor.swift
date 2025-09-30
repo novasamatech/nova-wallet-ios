@@ -82,15 +82,14 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
             presenter.didReceivePriceData(result: .success(nil))
         }
 
-        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
-            fetchStakingDuration(
-                runtimeCodingService: runtimeService,
-                operationFactory: stakingDurationOperationFactory,
-                operationManager: operationManager
-            ) { [weak self] result in
-                self?.presenter.didReceiveStakingDuration(result: result)
-            }
+        fetchStakingDuration(
+            operationFactory: stakingDurationOperationFactory,
+            operationManager: operationManager
+        ) { [weak self] result in
+            self?.presenter.didReceiveStakingDuration(result: result)
+        }
 
+        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
@@ -182,7 +181,7 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

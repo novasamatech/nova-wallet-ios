@@ -96,7 +96,7 @@ class StakingUnbondConfirmTests: XCTestCase {
         )
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),
@@ -124,7 +124,10 @@ class StakingUnbondConfirmTests: XCTestCase {
             )
         )
 
-        let stakingDurationOperationFactory = BabeStakingDurationFactory()
+        let stakingDurationOperationFactory = BabeStakingDurationFactory(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry
+        )
 
         let interactor = StakingUnbondConfirmInteractor(
             selectedAccount: selectedAccount,

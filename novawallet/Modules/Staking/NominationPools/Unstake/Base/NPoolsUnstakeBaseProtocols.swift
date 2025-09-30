@@ -17,7 +17,7 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
-    func didReceive(stakingLedger: StakingLedger?)
+    func didReceive(stakingLedger: Staking.Ledger?)
     func didReceive(stakingDuration: StakingDuration)
     func didReceive(eraCountdown: EraCountdown)
     func didReceive(claimableRewards: BigUInt?)

@@ -40,7 +40,7 @@ class YourValidatorListTests: XCTestCase {
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(16e+12),
             active: BigUInt(16e+12),
@@ -63,7 +63,7 @@ class YourValidatorListTests: XCTestCase {
             return EraValidatorInfo(
                 accountId: accountId,
                 exposure: exposure,
-                prefs: ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
+                prefs: Staking.ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
             )
         }
 
@@ -76,7 +76,7 @@ class YourValidatorListTests: XCTestCase {
 
         let targets = electedValidators.map { $0.accountId }
 
-        let nomination = Nomination(
+        let nomination = Staking.Nomination(
             targets: targets,
             submittedIn: 1
         )
@@ -84,7 +84,7 @@ class YourValidatorListTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
             nomination: nomination,
             ledgerInfo: stakingLedger,
-            activeEra: ActiveEraInfo(index: 5),
+            activeEra: Staking.ActiveEraInfo(index: 5),
             stashItem: stashItem
         )
 

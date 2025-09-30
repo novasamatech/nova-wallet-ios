@@ -62,7 +62,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
 
     private func provideConstants() {
         fetchConstant(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             runtimeCodingService: runtimeService,
             operationManager: operationManager
         ) { [weak self] (result: Result<BlockTime, Error>) in

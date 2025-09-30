@@ -14,8 +14,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     let feeProxy: MultiExtrinsicFeeProxyProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let lockStateFactory: GovernanceLockStateFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
@@ -35,8 +34,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -50,8 +48,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         self.selectedAccount = selectedAccount
         self.chain = chain
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -79,10 +76,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
             return
         }
 
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -110,7 +104,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         blockNumberProvider?.removeObserver(self)
         blockNumberProvider = nil
 
-        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberProvider = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func clearAndSubscribeBalance() {

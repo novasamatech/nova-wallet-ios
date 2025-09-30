@@ -15,8 +15,7 @@ final class SwipeGovReferendumDetailsInteractor {
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
     private let identityProxyFactory: IdentityProxyFactoryProtocol
-    private let blockTimeService: BlockTimeEstimationServiceProtocol
-    private let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    private let timelineService: ChainTimelineFacadeProtocol
 
     private let operationQueue: OperationQueue
 
@@ -43,8 +42,7 @@ final class SwipeGovReferendumDetailsInteractor {
         spendingAmountExtractor: GovSpendingExtracting,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
@@ -60,8 +58,7 @@ final class SwipeGovReferendumDetailsInteractor {
         self.runtimeProvider = runtimeProvider
         self.identityProxyFactory = identityProxyFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.operationQueue = operationQueue
@@ -201,10 +198,7 @@ private extension SwipeGovReferendumDetailsInteractor {
             return
         }
 
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
         executeCancellable(
             wrapper: wrapper,
@@ -249,7 +243,7 @@ private extension SwipeGovReferendumDetailsInteractor {
     }
 
     func makeSubscriptions() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
 
         subscribeReferendum()
 

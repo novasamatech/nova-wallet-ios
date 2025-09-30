@@ -3,8 +3,12 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory {
-    private func prepareListQuery(for activityStartBlock: BlockNumber) -> String {
+final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory {}
+
+// MARK: - Private
+
+private extension SubqueryDelegateStatsOperationFactory {
+    func prepareListQuery(for threshold: TimepointThreshold) -> String {
         """
         {
            delegates {
@@ -13,7 +17,7 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
                 accountId
                 delegators
                 delegatorVotes
-                delegateVotes(filter: {at: {greaterThanOrEqualTo: \(activityStartBlock)}}) {
+                delegateVotes(filter: \(createFilter(for: threshold))) {
                   totalCount
                 }
               }
@@ -22,9 +26,9 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
         """
     }
 
-    private func prepareListByIdsQuery(
+    func prepareListByIdsQuery(
         from addresses: String,
-        activityStartBlock: BlockNumber
+        threshold: TimepointThreshold
     ) -> String {
         """
         {
@@ -34,7 +38,7 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
                 accountId
                 delegators
                 delegatorVotes
-                delegateVotes(filter: {at: {greaterThanOrEqualTo: \(activityStartBlock)}}) {
+                delegateVotes(filter: \(createFilter(for: threshold))) {
                   totalCount
                 }
               }
@@ -43,9 +47,9 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
         """
     }
 
-    private func prepareDetailsQuery(
+    func prepareDetailsQuery(
         for delegate: AccountAddress,
-        activityStartBlock: BlockNumber
+        threshold: TimepointThreshold
     ) -> String {
         """
         {
@@ -57,7 +61,7 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
                     allVotes: delegateVotes {
                         totalCount
                     }
-                    recentVotes: delegateVotes(filter: {at: {greaterThanOrEqualTo: \(activityStartBlock)}}) {
+                    recentVotes: delegateVotes(filter: \(createFilter(for: threshold))) {
                         totalCount
                     }
                 }
@@ -66,7 +70,7 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
         """
     }
 
-    private func internalFetchStatsWrapper(from query: String) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
+    func internalFetchStatsWrapper(from query: String) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
         let operation = createOperation(
             for: query
         ) { (response: SubqueryDelegateStatsResponse) -> [GovernanceDelegateStats] in
@@ -84,31 +88,44 @@ final class SubqueryDelegateStatsOperationFactory: SubqueryBaseOperationFactory 
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
+
+    func createFilter(for threshold: TimepointThreshold) -> String {
+        let value = threshold.value
+
+        return switch threshold.type {
+        case .block:
+            "{at: {greaterThanOrEqualTo: \(value)}}"
+        case .timestamp:
+            "{timestamp: {greaterThanOrEqualTo: \(value)}}"
+        }
+    }
 }
+
+// MARK: - GovernanceDelegateStatsFactoryProtocol
 
 extension SubqueryDelegateStatsOperationFactory: GovernanceDelegateStatsFactoryProtocol {
     func fetchStatsWrapper(
-        for activityStartBlock: BlockNumber
+        for threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
-        let query = prepareListQuery(for: activityStartBlock)
+        let query = prepareListQuery(for: threshold)
         return internalFetchStatsWrapper(from: query)
     }
 
     func fetchStatsByIdsWrapper(
         from delegateIds: Set<AccountAddress>,
-        activityStartBlock: BlockNumber
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateStats]> {
         let addresses = String(delegateIds.map { "\"\($0)\"" }.joined(separator: ","))
-        let query = prepareListByIdsQuery(from: addresses, activityStartBlock: activityStartBlock)
+        let query = prepareListByIdsQuery(from: addresses, threshold: threshold)
 
         return internalFetchStatsWrapper(from: query)
     }
 
     func fetchDetailsWrapper(
         for delegate: AccountAddress,
-        activityStartBlock: BlockNumber
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<GovernanceDelegateDetails?> {
-        let query = prepareDetailsQuery(for: delegate, activityStartBlock: activityStartBlock)
+        let query = prepareDetailsQuery(for: delegate, threshold: threshold)
 
         let operation = createOperation(
             for: query

@@ -17,7 +17,7 @@ final class StakingPayoutConfirmationInteractor {
     let signer: SigningWrapperProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
-    let payouts: [PayoutInfo]
+    let payouts: [Staking.PayoutInfo]
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -37,7 +37,7 @@ final class StakingPayoutConfirmationInteractor {
         chainRegistry: ChainRegistryProtocol,
         signer: SigningWrapperProtocol,
         operationQueue: OperationQueue,
-        payouts: [PayoutInfo],
+        payouts: [Staking.PayoutInfo],
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -58,7 +58,7 @@ final class StakingPayoutConfirmationInteractor {
 
     // MARK: - Private functions
 
-    private func createExtrinsicSplitter(for payouts: [PayoutInfo]) throws -> ExtrinsicSplitting {
+    private func createExtrinsicSplitter(for payouts: [Staking.PayoutInfo]) throws -> ExtrinsicSplitting {
         guard let codingFactory = codingFactory else {
             throw CommonError.dataCorruption
         }

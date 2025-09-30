@@ -100,8 +100,7 @@ struct ReferendumVoteConfirmViewFactory {
         guard
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeFactory = state.createBlockTimeOperationFactory()
+            let timelineService = state.createChainTimelineFacade()
         else {
             return nil
         }
@@ -136,8 +135,7 @@ struct ReferendumVoteConfirmViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
+            timelineService: timelineService,
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,

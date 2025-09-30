@@ -1,6 +1,6 @@
 import Foundation
 
-enum ConsensusType {
+enum RelayStkConsensusType {
     case babe
     case auraGeneral
     case auraAzero

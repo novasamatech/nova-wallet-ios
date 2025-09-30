@@ -247,7 +247,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
@@ -255,7 +255,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
     }
 
     func handleNomination(
-        result: Result<Nomination?, Error>,
+        result: Result<Staking.Nomination?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
