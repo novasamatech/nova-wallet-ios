@@ -14,8 +14,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
@@ -47,8 +46,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
         spendingAmountExtractor: GovSpendingExtracting,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -69,8 +67,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
         self.identityProxyFactory = identityProxyFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.totalVotesFactory = totalVotesFactory
@@ -225,10 +222,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
             return
         }
 
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
         executeCancellable(
             wrapper: wrapper,
@@ -287,7 +281,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
     }
 
     private func makeSubscriptions() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
 
         subscribeReferendum()
 

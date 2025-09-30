@@ -6,7 +6,7 @@ protocol StakingRewardsLocalSubscriptionFactoryProtocol {
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem>
 }
@@ -17,7 +17,7 @@ final class StakingRewardsLocalSubscriptionFactory: SubstrateLocalSubscriptionFa
         for address: AccountAddress,
         startTimestamp: Int64?,
         endTimestamp: Int64?,
-        api: LocalChainExternalApi,
+        api: Set<LocalChainExternalApi>,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         clearIfNeeded()
@@ -25,9 +25,11 @@ final class StakingRewardsLocalSubscriptionFactory: SubstrateLocalSubscriptionFa
         let timeIdentifier = [
             startTimestamp.map { "\($0)" } ?? "nil",
             endTimestamp.map { "\($0)" } ?? "nil"
-        ].joined(separator: "-")
+        ].joined(with: .dash)
 
-        let identifier = ("reward" + api.url.absoluteString) + address + timeIdentifier
+        let identifier = ("reward" + api.map(\.url.absoluteString).joined(with: .dash))
+            + address
+            + timeIdentifier
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
             return AnySingleValueProvider(provider)
@@ -37,7 +39,9 @@ final class StakingRewardsLocalSubscriptionFactory: SubstrateLocalSubscriptionFa
             storageFacade: storageFacade
         ).createSingleValueRepository()
 
-        let operationFactory = SubqueryRewardOperationFactory(url: api.url)
+        let operationFactory = SubqueryRewardAggregatingWrapperFactory(
+            factories: api.map { SubqueryRewardOperationFactory(url: $0.url) }
+        )
 
         let source = SubqueryTotalRewardSource(
             address: address,

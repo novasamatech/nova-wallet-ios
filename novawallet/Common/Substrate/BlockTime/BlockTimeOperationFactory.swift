@@ -39,7 +39,7 @@ final class BlockTimeOperationFactory {
         }
 
         let babeTimeOperation: BaseOperation<BlockTime> = PrimitiveConstantOperation.operation(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             dependingOn: codingFactoryOperation
         )
 

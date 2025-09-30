@@ -4,7 +4,7 @@ import Operation_iOS
 protocol StakingAnalyticsLocalSubscriptionFactoryProtocol {
     func getWeaklyAnalyticsProvider(
         for address: AccountAddress,
-        url: URL
+        urls: [URL]
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]>
 }
 
@@ -28,14 +28,33 @@ final class StakingAnalyticsLocalSubscriptionFactory {
     }
 }
 
+private extension StakingAnalyticsLocalSubscriptionFactory {
+    func createHash(
+        for address: AccountAddress,
+        urls: [URL]
+    ) -> Int {
+        var hasher = Hasher()
+
+        hasher.combine(address)
+
+        urls
+            .map(\.absoluteString)
+            .sorted()
+            .forEach { hasher.combine($0) }
+
+        return hasher.finalize()
+    }
+}
+
 extension StakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol {
     func getWeaklyAnalyticsProvider(
         for address: AccountAddress,
-        url: URL
+        urls: [URL]
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]> {
         clearIfNeeded()
 
-        let identifier = "weaklyAnalytics" + address + url.absoluteString
+        let hash = createHash(for: address, urls: urls)
+        let identifier = "weaklyAnalytics_\(hash)"
 
         if let provider = getProvider(for: identifier) as? SingleValueProvider<[SubqueryRewardItemData]> {
             return AnySingleValueProvider(provider)
@@ -44,7 +63,9 @@ extension StakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscri
         let repository = SubstrateRepositoryFactory(storageFacade: storageFacade)
             .createSingleValueRepository()
 
-        let operationFactory = SubqueryRewardOperationFactory(url: url)
+        let operationFactory = SubqueryRewardAggregatingWrapperFactory(
+            factories: urls.map { SubqueryRewardOperationFactory(url: $0) }
+        )
         let source = WeaklyAnalyticsRewardSource(
             address: address,
             operationFactory: operationFactory

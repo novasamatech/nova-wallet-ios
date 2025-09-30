@@ -17,7 +17,7 @@ class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
         CompoundOperationWrapper.createWithResult(electedValidatorList)
     }
 
-    func allSelectedOperation(by nomination: Nomination, nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
+    func allSelectedOperation(by nomination: Staking.Nomination, nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
 

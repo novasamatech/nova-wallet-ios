@@ -11,8 +11,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
     let lockStateFactory: GovernanceLockStateFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
@@ -30,8 +29,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue,
@@ -43,8 +41,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         self.lockStateFactory = lockStateFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
@@ -66,10 +63,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
             return
         }
 
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -149,7 +143,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         blockNumberProvider?.removeObserver(self)
         blockNumberProvider = nil
 
-        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberProvider = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func clearAndSubscribePrice() {

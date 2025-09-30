@@ -23,7 +23,7 @@ protocol StakingUnbondConfirmInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
@@ -32,7 +32,7 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceivePayee(result: Result<Staking.RewardDestinationArg?, Error>)
     func didReceiveMinBonded(result: Result<BigUInt?, Error>)
-    func didReceiveNomination(result: Result<Nomination?, Error>)
+    func didReceiveNomination(result: Result<Staking.Nomination?, Error>)
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
     func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)

@@ -149,7 +149,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         updateAfterStakeAmountChange()
     }
 
-    override func didReceive(stakingLedger: StakingLedger?) {
+    override func didReceive(stakingLedger: Staking.Ledger?) {
         super.didReceive(stakingLedger: stakingLedger)
 
         updateAfterStakeAmountChange()

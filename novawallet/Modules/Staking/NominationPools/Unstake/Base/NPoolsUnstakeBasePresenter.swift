@@ -18,7 +18,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     var existentialDeposit: BigUInt?
     var poolMember: NominationPools.PoolMember?
     var bondedPool: NominationPools.BondedPool?
-    var stakingLedger: StakingLedger?
+    var stakingLedger: Staking.Ledger?
     var stakingDuration: StakingDuration?
     var eraCountdown: EraCountdown?
     var claimableRewards: BigUInt?
@@ -211,7 +211,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         }
     }
 
-    func didReceive(stakingLedger: StakingLedger?) {
+    func didReceive(stakingLedger: Staking.Ledger?) {
         logger.debug("Staking ledger: \(String(describing: stakingLedger))")
 
         let shouldRefreshFee = stakingLedger?.active != self.stakingLedger?.active

@@ -362,6 +362,14 @@ struct ChainModel: Equatable, Hashable {
         additional?.identityChain?.stringValue
     }
 
+    var timelineChain: ChainModel.Id? {
+        additional?.timelineChain?.stringValue
+    }
+
+    var separateTimelineChain: Bool {
+        timelineChain != nil
+    }
+
     var supportsGenericLedgerApp: Bool {
         additional?.supportsGenericLedgerApp?.boolValue ?? false
     }

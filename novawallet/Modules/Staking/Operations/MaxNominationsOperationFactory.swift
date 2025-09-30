@@ -31,7 +31,7 @@ final class MaxNominationsOperationFactory {
     private func constantFetchOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> BaseOperation<UInt32> {
-        let constOperation = PrimitiveConstantOperation<UInt32>(oneOfPaths: [.maxNominations])
+        let constOperation = PrimitiveConstantOperation<UInt32>(oneOfPaths: [Staking.maxNominationsPath])
 
         constOperation.configurationBlock = {
             do {

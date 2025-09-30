@@ -17,7 +17,7 @@ extension PayoutRewardsService {
                 storagePath: Staking.currentEra
             )
 
-        let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =
+        let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<Staking.ActiveEraInfo>]> =
             storageRequestFactory.queryItems(
                 engine: engine,
                 keys: { [try keyFactory.activeEra()] },
@@ -111,12 +111,12 @@ extension PayoutRewardsService {
     }
 
     func createFetchHistoryByEraOperation<T: Decodable>(
-        dependingOn erasOperation: BaseOperation<[EraIndex]>,
+        dependingOn erasOperation: BaseOperation<[Staking.EraIndex]>,
         engine: JSONRPCEngine,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         path: StorageCodingPath
-    ) throws -> CompoundOperationWrapper<[EraIndex: T]> {
-        let keyParams: () throws -> [StringScaleMapper<EraIndex>] = {
+    ) throws -> CompoundOperationWrapper<[Staking.EraIndex: T]> {
+        let keyParams: () throws -> [StringScaleMapper<Staking.EraIndex>] = {
             let eras = try erasOperation.extractNoCancellableResultData()
             return eras.map { StringScaleMapper(value: $0) }
         }
@@ -129,12 +129,12 @@ extension PayoutRewardsService {
                 storagePath: path
             )
 
-        let mergeOperation = ClosureOperation<[EraIndex: T]> {
+        let mergeOperation = ClosureOperation<[Staking.EraIndex: T]> {
             let eras = try keyParams()
 
             let results = try wrapper.targetOperation.extractNoCancellableResultData()
                 .enumerated()
-                .reduce(into: [EraIndex: T]()) { dict, item in
+                .reduce(into: [Staking.EraIndex: T]()) { dict, item in
                     guard let result = item.element.value else {
                         return
                     }
@@ -158,11 +158,11 @@ extension PayoutRewardsService {
         engine: JSONRPCEngine,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) throws -> CompoundOperationWrapper<ErasRewardDistribution> {
-        let erasOperation = ClosureOperation<[EraIndex]> {
+        let erasOperation = ClosureOperation<[Staking.EraIndex]> {
             try unclaimedErasClosure().map(\.era).distinct()
         }
 
-        let totalRewardOperation: CompoundOperationWrapper<[EraIndex: StringScaleMapper<BigUInt>]> =
+        let totalRewardOperation: CompoundOperationWrapper<[Staking.EraIndex: StringScaleMapper<BigUInt>]> =
             try createFetchHistoryByEraOperation(
                 dependingOn: erasOperation,
                 engine: engine,
@@ -175,7 +175,7 @@ extension PayoutRewardsService {
             $0.addDependency(erasOperation)
         }
 
-        let validatorRewardPoints: CompoundOperationWrapper<[EraIndex: EraRewardPoints]> =
+        let validatorRewardPoints: CompoundOperationWrapper<[Staking.EraIndex: Staking.EraRewardPoints]> =
             try createFetchHistoryByEraOperation(
                 dependingOn: erasOperation,
                 engine: engine,
@@ -213,12 +213,12 @@ extension PayoutRewardsService {
     func createValidatorPrefsWrapper(
         dependingOn unclaimedRewards: @escaping () throws -> [StakingUnclaimedReward],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) throws -> CompoundOperationWrapper<[ResolvedValidatorEra: ValidatorPrefs]> {
+    ) throws -> CompoundOperationWrapper<[ResolvedValidatorEra: Staking.ValidatorPrefs]> {
         let keysOperation = ClosureOperation<[ResolvedValidatorEra]> {
             try unclaimedRewards().map { ResolvedValidatorEra(validator: $0.accountId, era: $0.era) }.distinct()
         }
 
-        let keyParams1: () throws -> [StringScaleMapper<EraIndex>] = {
+        let keyParams1: () throws -> [StringScaleMapper<Staking.EraIndex>] = {
             let keys = try keysOperation.extractNoCancellableResultData()
             return keys.map { StringScaleMapper(value: $0.era) }
         }
@@ -228,7 +228,7 @@ extension PayoutRewardsService {
             return keys.map { BytesCodable(wrappedValue: $0.validator) }
         }
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> =
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> =
             storageRequestFactory.queryItems(
                 engine: engine,
                 keyParams1: keyParams1,
@@ -239,11 +239,11 @@ extension PayoutRewardsService {
 
         wrapper.addDependency(operations: [keysOperation])
 
-        let mergeOperation = ClosureOperation<[ResolvedValidatorEra: ValidatorPrefs]> {
+        let mergeOperation = ClosureOperation<[ResolvedValidatorEra: Staking.ValidatorPrefs]> {
             let responses = try wrapper.targetOperation.extractNoCancellableResultData()
             let keys = try keysOperation.extractNoCancellableResultData()
 
-            return responses.enumerated().reduce(into: [ResolvedValidatorEra: ValidatorPrefs]()) { result, item in
+            return responses.enumerated().reduce(into: [ResolvedValidatorEra: Staking.ValidatorPrefs]()) { result, item in
                 guard let value = item.element.value else {
                     return
                 }
@@ -265,14 +265,14 @@ extension PayoutRewardsService {
         for payoutInfoFactory: PayoutInfoFactoryProtocol,
         eraValidatorsOperation: BaseOperation<[StakingValidatorExposure]>,
         unclaimedRewardsOperation: BaseOperation<[StakingUnclaimedReward]>,
-        prefsOperation: BaseOperation<[ResolvedValidatorEra: ValidatorPrefs]>,
+        prefsOperation: BaseOperation<[ResolvedValidatorEra: Staking.ValidatorPrefs]>,
         erasRewardOperation: BaseOperation<ErasRewardDistribution>,
         historyRangeOperation: BaseOperation<ChainHistoryRange>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>
-    ) throws -> BaseOperation<PayoutsInfo> {
+    ) throws -> BaseOperation<Staking.PayoutsInfo> {
         let targetAccountId = try selectedAccountAddress.toAccountId()
 
-        return ClosureOperation<PayoutsInfo> {
+        return ClosureOperation<Staking.PayoutsInfo> {
             let validatorsByEra = try eraValidatorsOperation.extractNoCancellableResultData().reduce(
                 into: [ResolvedValidatorEra: StakingValidatorExposure]()
             ) { accum, exposure in
@@ -285,7 +285,7 @@ extension PayoutRewardsService {
             let prefsDic = try prefsOperation.extractNoCancellableResultData()
             let unclaimedRewards = try unclaimedRewardsOperation.extractNoCancellableResultData()
 
-            let payouts: [PayoutInfo] = try unclaimedRewards.compactMap { unclaimedReward in
+            let payouts: [Staking.PayoutInfo] = try unclaimedRewards.compactMap { unclaimedReward in
                 let validatorEra = ResolvedValidatorEra(validator: unclaimedReward.accountId, era: unclaimedReward.era)
                 guard let exposure = validatorsByEra[validatorEra], let prefs = prefsDic[validatorEra] else {
                     return nil
@@ -305,7 +305,7 @@ extension PayoutRewardsService {
             let overview = try historyRangeOperation.extractNoCancellableResultData()
             let sortedPayouts = payouts.sorted { $0.era < $1.era }
 
-            return PayoutsInfo(
+            return Staking.PayoutsInfo(
                 activeEra: overview.activeEra,
                 historyDepth: overview.historyDepth,
                 payouts: sortedPayouts

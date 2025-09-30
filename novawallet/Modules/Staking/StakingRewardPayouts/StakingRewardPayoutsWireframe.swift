@@ -9,7 +9,7 @@ final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol
 
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
-        payoutInfo: PayoutInfo,
+        payoutInfo: Staking.PayoutInfo,
         historyDepth: UInt32,
         eraCountdown: EraCountdown
     ) {
@@ -26,7 +26,7 @@ final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol
             .pushViewController(rewardDetails.controller, animated: true)
     }
 
-    func showPayoutConfirmation(for payouts: [PayoutInfo], from view: ControllerBackedProtocol?) {
+    func showPayoutConfirmation(for payouts: [Staking.PayoutInfo], from view: ControllerBackedProtocol?) {
         guard let confirmationView = StakingPayoutConfirmationViewFactory
             .createView(for: state, payouts: payouts) else { return }
 

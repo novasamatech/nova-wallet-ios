@@ -4,14 +4,14 @@ import Operation_iOS
 
 struct StakingUnclaimedReward {
     let accountId: AccountId
-    let era: EraIndex
+    let era: Staking.EraIndex
     let pages: Set<Staking.ValidatorPage>
 }
 
 protocol StakingUnclaimedRewardsFacadeProtocol {
     func createWrapper(
         for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
-        exposurePagedEra: @escaping () throws -> EraIndex?,
+        exposurePagedEra: @escaping () throws -> Staking.EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]>
@@ -97,7 +97,7 @@ final class StakingUnclaimedRewardsFacade {
 extension StakingUnclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol {
     func createWrapper(
         for validatorsClosure: @escaping () throws -> [StakingValidatorExposure],
-        exposurePagedEra: @escaping () throws -> EraIndex?,
+        exposurePagedEra: @escaping () throws -> Staking.EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {

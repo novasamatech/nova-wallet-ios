@@ -52,7 +52,7 @@ extension StakingRelaychainInteractor {
         if
             let stashItem = stashItem,
             let chainAsset = selectedChainAsset {
-            if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
+            if let rewardApi = chainAsset.chain.externalApis?.stakingRewards() {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
                     startTimestamp: totalRewardInterval?.startTimestamp,
@@ -172,7 +172,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
@@ -193,7 +193,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleNomination(
-        result: Result<Nomination?, Error>,
+        result: Result<Staking.Nomination?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
@@ -206,7 +206,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleValidator(
-        result: Result<ValidatorPrefs?, Error>,
+        result: Result<Staking.ValidatorPrefs?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
@@ -262,7 +262,7 @@ extension StakingRelaychainInteractor: StakingRewardsLocalSubscriber, StakingRew
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         switch result {
         case let .success(totalReward):

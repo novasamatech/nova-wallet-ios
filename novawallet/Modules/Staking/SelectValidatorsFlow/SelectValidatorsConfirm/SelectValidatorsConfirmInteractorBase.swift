@@ -73,7 +73,6 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
 
         fetchStakingDuration(
-            runtimeCodingService: runtimeService,
             operationFactory: durationOperationFactory,
             operationManager: operationManager
         ) { [weak self] result in

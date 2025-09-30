@@ -144,7 +144,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

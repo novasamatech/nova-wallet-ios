@@ -16,7 +16,7 @@ final class StakingRewardPayoutsInteractor {
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
-    private var payoutOperationsWrapper: CompoundOperationWrapper<PayoutsInfo>?
+    private var payoutOperationsWrapper: CompoundOperationWrapper<Staking.PayoutsInfo>?
 
     deinit {
         let wrapper = payoutOperationsWrapper
@@ -47,20 +47,7 @@ final class StakingRewardPayoutsInteractor {
     }
 
     private func fetchEraCompletionTime() {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper()
 
         operationWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -124,7 +111,7 @@ extension StakingRewardPayoutsInteractor: StakingRewardPayoutsInteractorInputPro
 }
 
 extension StakingRewardPayoutsInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case .success:
             reload()

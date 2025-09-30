@@ -4,6 +4,7 @@ import SubstrateSdk
 enum LocalChainApiExternalType: String {
     case history
     case staking
+    case stakingRewards
     case governance
     case crowdloans
     case governanceDelegations
@@ -48,6 +49,10 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
         getApis(for: .staking)
     }
 
+    func stakingRewards() -> Set<LocalChainExternalApi>? {
+        getApis(for: .stakingRewards)
+    }
+
     func history() -> Set<LocalChainExternalApi>? {
         getApis(for: .history)
     }
@@ -85,6 +90,7 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
             .addingApis(from: remoteApi.goverananceDelegations, apiType: .governanceDelegations)
             .addingApis(from: remoteApi.referendumSummary, apiType: .referendumSummary)
             .addingApis(from: remoteApi.multisig, apiType: .multisig)
+            .addingApis(from: remoteApi.stakingRewards, apiType: .stakingRewards)
     }
 }
 

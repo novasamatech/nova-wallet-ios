@@ -286,7 +286,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         fetchConstant(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             runtimeCodingService: runtimeService,
             operationManager: operationManager
         ) { [weak self] (result: Result<BlockTime, Error>) in

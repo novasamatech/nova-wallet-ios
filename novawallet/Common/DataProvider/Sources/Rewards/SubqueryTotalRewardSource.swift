@@ -9,7 +9,7 @@ final class SubqueryTotalRewardSource {
     let startTimestamp: Int64?
     let endTimestamp: Int64?
     let assetPrecision: Int16
-    let operationFactory: SubqueryRewardOperationFactoryProtocol
+    let operationFactory: SubqueryRewardWrapperFactoryProtocol
     let stakingType: SubqueryStakingType
 
     init(
@@ -17,7 +17,7 @@ final class SubqueryTotalRewardSource {
         startTimestamp: Int64?,
         endTimestamp: Int64?,
         assetPrecision: Int16,
-        operationFactory: SubqueryRewardOperationFactoryProtocol,
+        operationFactory: SubqueryRewardWrapperFactoryProtocol,
         stakingType: SubqueryStakingType
     ) {
         self.address = address
@@ -29,12 +29,12 @@ final class SubqueryTotalRewardSource {
     }
 
     private func createMapOperation(
-        dependingOn fetchOperation: BaseOperation<BigUInt>,
+        dependingOn fetchOperation: CompoundOperationWrapper<BigUInt>,
         address: AccountAddress,
         precision: Int16
     ) -> BaseOperation<Model?> {
         ClosureOperation<Model?> {
-            let rewardValue = try fetchOperation.extractNoCancellableResultData()
+            let rewardValue = try fetchOperation.targetOperation.extractNoCancellableResultData()
             let newRewardDecimal = Decimal.fromSubstrateAmount(rewardValue, precision: precision) ?? 0
             return TotalRewardItem(address: address, amount: AmountDecimal(value: newRewardDecimal))
         }
@@ -56,8 +56,11 @@ extension SubqueryTotalRewardSource: SingleValueProviderSourceProtocol {
             precision: assetPrecision
         )
 
-        mapOperation.addDependency(rewardOperation)
+        mapOperation.addDependency(rewardOperation.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [rewardOperation])
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: rewardOperation.allOperations
+        )
     }
 }

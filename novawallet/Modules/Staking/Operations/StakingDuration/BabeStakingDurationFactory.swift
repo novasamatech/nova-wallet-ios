@@ -1,77 +1,72 @@
 import Foundation
 import Operation_iOS
 
-final class BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
-    func createDurationOperation(
-        from runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<StakingDuration> {
-        let runtimeFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+final class BabeStakingDurationFactory {
+    let chainId: ChainModel.Id
+    let chainRegistry: ChainRegistryProtocol
 
-        let unlockingOperation: BaseOperation<UInt32> = createConstOperation(
-            dependingOn: runtimeFactoryOperation,
-            path: .lockUpPeriod
-        )
-
-        let eraLengthOperation: BaseOperation<SessionIndex> = createConstOperation(
-            dependingOn: runtimeFactoryOperation,
-            path: .eraLength
-        )
-
-        let sessionLengthOperation: BaseOperation<SessionIndex> = createConstOperation(
-            dependingOn: runtimeFactoryOperation,
-            path: .sessionLength
-        )
-
-        let blockTimeOperation: BaseOperation<Moment> = createConstOperation(
-            dependingOn: runtimeFactoryOperation,
-            path: .babeBlockTime
-        )
-
-        let mergeOperation = ClosureOperation<StakingDuration> {
-            let sessionLength = try sessionLengthOperation.extractNoCancellableResultData()
-            let eraLength = try eraLengthOperation.extractNoCancellableResultData()
-            let blockTime = try blockTimeOperation.extractNoCancellableResultData()
-            let unlocking = try unlockingOperation.extractNoCancellableResultData()
-
-            let sessionDuration = TimeInterval(sessionLength * blockTime).seconds
-            let eraDuration = TimeInterval(eraLength) * sessionDuration
-            let unlockingDuration = TimeInterval(unlocking) * eraDuration
-
-            return StakingDuration(
-                session: sessionDuration,
-                era: eraDuration,
-                unlocking: unlockingDuration
-            )
-        }
-
-        let constOperations = [unlockingOperation, sessionLengthOperation,
-                               eraLengthOperation, blockTimeOperation]
-
-        constOperations.forEach { constOperation in
-            constOperation.addDependency(runtimeFactoryOperation)
-            mergeOperation.addDependency(constOperation)
-        }
-
-        return CompoundOperationWrapper(
-            targetOperation: mergeOperation,
-            dependencies: [runtimeFactoryOperation] + constOperations
-        )
+    init(chainId: ChainModel.Id, chainRegistry: ChainRegistryProtocol) {
+        self.chainId = chainId
+        self.chainRegistry = chainRegistry
     }
+}
 
-    private func createConstOperation<T>(
-        dependingOn runtimeFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        path: ConstantCodingPath
-    ) -> PrimitiveConstantOperation<T> where T: LosslessStringConvertible {
-        let operation = PrimitiveConstantOperation<T>(path: path)
+extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
+    func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
+        do {
+            let stakingRuntimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            let timelineChain = try chainRegistry.getTimelineChainOrError(for: chainId)
+            let timelineRuntimeService = try chainRegistry.getRuntimeProviderOrError(for: timelineChain.chainId)
 
-        operation.configurationBlock = {
-            do {
-                operation.codingFactory = try runtimeFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                operation.result = .failure(error)
+            let unlockingWrapper: CompoundOperationWrapper<UInt32> = PrimitiveConstantOperation.wrapper(
+                for: Staking.lockUpPeriodPath,
+                runtimeService: stakingRuntimeService
+            )
+
+            let eraLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
+                for: Staking.eraLengthPath,
+                runtimeService: stakingRuntimeService
+            )
+
+            let sessionLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
+                for: BabePallet.sessionLengthPath,
+                runtimeService: timelineRuntimeService
+            )
+
+            let blockTimeWrapper: CompoundOperationWrapper<Moment> = PrimitiveConstantOperation.wrapper(
+                for: BabePallet.blockTimePath,
+                runtimeService: timelineRuntimeService
+            )
+
+            let mergeOperation = ClosureOperation<StakingDuration> {
+                let sessionLength = try sessionLengthWrapper.targetOperation.extractNoCancellableResultData()
+                let eraLength = try eraLengthWrapper.targetOperation.extractNoCancellableResultData()
+                let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+                let unlocking = try unlockingWrapper.targetOperation.extractNoCancellableResultData()
+
+                let sessionDuration = TimeInterval(sessionLength * blockTime).seconds
+                let eraDuration = TimeInterval(eraLength) * sessionDuration
+                let unlockingDuration = TimeInterval(unlocking) * eraDuration
+
+                return StakingDuration(
+                    session: sessionDuration,
+                    era: eraDuration,
+                    unlocking: unlockingDuration
+                )
             }
-        }
 
-        return operation
+            mergeOperation.addDependency(sessionLengthWrapper.targetOperation)
+            mergeOperation.addDependency(eraLengthWrapper.targetOperation)
+            mergeOperation.addDependency(blockTimeWrapper.targetOperation)
+            mergeOperation.addDependency(unlockingWrapper.targetOperation)
+
+            return blockTimeWrapper
+                .insertingHead(operations: sessionLengthWrapper.allOperations)
+                .insertingHead(operations: eraLengthWrapper.allOperations)
+                .insertingHead(operations: unlockingWrapper.allOperations)
+                .insertingTail(operation: mergeOperation)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

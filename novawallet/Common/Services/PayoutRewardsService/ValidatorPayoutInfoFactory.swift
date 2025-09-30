@@ -8,7 +8,7 @@ final class ValidatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
         self.chainAssetInfo = chainAssetInfo
     }
 
-    func calculate(for accountId: AccountId, params: PayoutInfoFactoryParams) throws -> PayoutInfo? {
+    func calculate(for accountId: AccountId, params: PayoutInfoFactoryParams) throws -> Staking.PayoutInfo? {
         let era = params.unclaimedRewards.era
 
         guard
@@ -43,7 +43,7 @@ final class ValidatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
 
         let validatorAddress = try accountId.toAddress(using: chainAssetInfo.chain)
 
-        return PayoutInfo(
+        return Staking.PayoutInfo(
             validator: accountId,
             era: era,
             pages: params.unclaimedRewards.pages,

@@ -9,7 +9,7 @@ extension NominationPools {
     }
 
     struct ActivePools {
-        let era: EraIndex
+        let era: Staking.EraIndex
         let pools: [ActivePool]
     }
 

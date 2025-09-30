@@ -22,11 +22,11 @@ protocol StakingRewardDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRewardDetailsWireframeProtocol: AnyObject, AddressOptionsPresentable {
-    func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo)
+    func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: Staking.PayoutInfo)
 }
 
 struct StakingRewardDetailsInput {
-    let payoutInfo: PayoutInfo
+    let payoutInfo: Staking.PayoutInfo
     let historyDepth: UInt32
     let eraCountdown: EraCountdown
 

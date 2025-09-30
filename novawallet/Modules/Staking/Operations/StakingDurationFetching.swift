@@ -3,7 +3,6 @@ import Operation_iOS
 
 protocol StakingDurationFetching {
     func fetchStakingDuration(
-        runtimeCodingService: RuntimeCodingServiceProtocol,
         operationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
         closure: @escaping (Result<StakingDuration, Error>) -> Void
@@ -12,12 +11,11 @@ protocol StakingDurationFetching {
 
 extension StakingDurationFetching {
     func fetchStakingDuration(
-        runtimeCodingService: RuntimeCodingServiceProtocol,
         operationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
         closure: @escaping (Result<StakingDuration, Error>) -> Void
     ) {
-        let operationWrapper = operationFactory.createDurationOperation(from: runtimeCodingService)
+        let operationWrapper = operationFactory.createDurationOperation()
 
         operationWrapper.targetOperation.completionBlock = {
             DispatchQueue.main.async {

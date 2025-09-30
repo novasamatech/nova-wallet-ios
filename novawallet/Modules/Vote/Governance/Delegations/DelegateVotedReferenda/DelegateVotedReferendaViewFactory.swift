@@ -92,8 +92,7 @@ struct DelegateVotedReferendaViewFactory {
         guard
             let option = state.settings.value,
             let referendumOperationFactory = state.referendumsOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeOperationFactory = state.createBlockTimeOperationFactory(),
+            let timelineService = state.createChainTimelineFacade(),
             let apiUrl = option.chain.externalApis?.governanceDelegations()?.first?.url else {
             return nil
         }
@@ -123,8 +122,7 @@ struct DelegateVotedReferendaViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             fetchFactory: fetchFactory,
-            blockTimeService: blockTimeService,
-            blockTimeOperationFactory: blockTimeOperationFactory,
+            timelineService: timelineService,
             dataFetchOption: dataFetchOption,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
