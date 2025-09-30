@@ -31,6 +31,8 @@ enum SettingsKey: String {
     case isAppFirstLaunch
     case multisigNotificationsPromoSeen
     case ahmInfoShownChains
+    case ahmAssetDetailsAlertClosed
+    case ahmStakingAlertClosed
     case privacyModeSettings
 }
 
@@ -391,6 +393,26 @@ extension SettingsManagerProtocol {
                 value: newValue,
                 for: SettingsKey.ahmInfoShownChains.rawValue
             )
+        }
+    }
+
+    var ahmAssetDetailsAlertClosed: Bool {
+        get {
+            bool(for: SettingsKey.ahmAssetDetailsAlertClosed.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.ahmAssetDetailsAlertClosed.rawValue)
+        }
+    }
+
+    var ahmStakingAlertClosed: Bool {
+        get {
+            bool(for: SettingsKey.ahmStakingAlertClosed.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.ahmStakingAlertClosed.rawValue)
         }
     }
 }

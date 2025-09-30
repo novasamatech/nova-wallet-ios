@@ -1,6 +1,6 @@
 import Foundation
 
-struct AHMFullInfo {
+struct AHMFullInfo: Equatable {
     let info: AHMRemoteData
     let sourceChain: ChainModel
     let destinationChain: ChainModel

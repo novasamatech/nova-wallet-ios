@@ -22,6 +22,7 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
 
 protocol AssetDetailsInteractorInputProtocol: AnyObject {
     func setup()
+    func closeAHMAlert()
 }
 
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {

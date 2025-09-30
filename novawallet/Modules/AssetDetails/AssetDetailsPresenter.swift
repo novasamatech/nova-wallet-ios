@@ -218,7 +218,9 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         wireframe.showSwaps(from: view, chainAsset: chainAsset)
     }
 
-    func handleAHMAlertClose() {}
+    func handleAHMAlertClose() {
+        interactor.closeAHMAlert()
+    }
 
     func handleAHMAlertAction() {
         guard
@@ -255,6 +257,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     func didReceive(ahmInfo: AHMFullInfo?) {
+        guard ahmInfo != self.ahmInfo else { return }
+
         self.ahmInfo = ahmInfo
         updateView()
     }
