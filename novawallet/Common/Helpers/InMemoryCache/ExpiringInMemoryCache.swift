@@ -38,7 +38,7 @@ extension ExpiringInMemoryCache {
             return internalCache.fetchValue(for: key)
         }
 
-        guard expirationDate < Date() else {
+        guard Date() < expirationDate else {
             internalCache.removeAllValues()
             return nil
         }
@@ -59,7 +59,7 @@ extension ExpiringInMemoryCache {
             return internalCache.fetchAllValues()
         }
 
-        guard expirationDate < Date() else {
+        guard Date() < expirationDate else {
             internalCache.removeAllValues()
             return []
         }
