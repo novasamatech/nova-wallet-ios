@@ -6,4 +6,8 @@ struct AHMInfoExcludedChains: Codable {
     mutating func add(_ chainId: ChainModel.Id) {
         chainIds.insert(chainId)
     }
+
+    static func empty() -> AHMInfoExcludedChains {
+        AHMInfoExcludedChains(chainIds: Set())
+    }
 }

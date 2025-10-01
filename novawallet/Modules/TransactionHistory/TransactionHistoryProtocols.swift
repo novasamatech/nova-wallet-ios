@@ -3,7 +3,7 @@ import Operation_iOS
 protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {
     func startLoading()
     func stopLoading()
-    func didReceive(viewModel: [TransactionSectionModel])
+    func didReceive(viewModel: [TransactionHistorySectionModel])
 }
 
 protocol TransactionHistoryPresenterProtocol: AnyObject {
@@ -22,6 +22,7 @@ protocol TransactionHistoryInteractorInputProtocol: AnyObject {
 }
 
 protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
+    func didReceive(ahmFullInfo: AHMFullInfo)
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
     func didReceive(priceCalculator: TokenPriceCalculatorProtocol)

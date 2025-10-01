@@ -23,7 +23,8 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
             let historyView = TransactionHistoryViewFactory.createView(
                 chainAsset: chainAsset,
                 operationState: operationState,
-                swapState: swapState
+                swapState: swapState,
+                ahmInfoSnapshot: ahmInfoSnapshot
             ) else {
             return nil
         }

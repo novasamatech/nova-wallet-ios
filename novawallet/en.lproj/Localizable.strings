@@ -1963,3 +1963,6 @@
 "ahm.info.alert.asset.details.title" = "Your %@ tokens now on %@";
 "ahm.info.alert.asset.details.message" = "Starting %@, your %@ balance, Staking, and Governance will be on %@ — with improved performance and lower costs.";
 "ahm.info.alert.asset.details.action" = "Go to %@";
+"ahm.info.alert.transaction.history.message" = "Your previous %@ transaction history is still available on %@";
+"ahm.info.alert.staking.details.message" = "%@ staking is live on %@ starting %@";
+"common.view" = "View";
