@@ -28,9 +28,9 @@ enum AssetListGroupModelComparator {
             token.instances.contains { $0.chainAssetId.chainId == knownChainId }
         }
 
-        return if matchesChain(KnowChainId.polkadot) {
+        return if matchesChain(KnowChainId.polkadotAssetHub) {
             0
-        } else if matchesChain(KnowChainId.kusama) {
+        } else if matchesChain(KnowChainId.kusamaAssetHub) {
             1
         } else if token.instances.allSatisfy({ $0.testnet }) {
             3
