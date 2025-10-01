@@ -15,6 +15,7 @@ struct AHMRemoteData: Codable, Equatable {
     let timestamp: UInt64
     let newTokenNames: [String]
     let bannerPath: Banners.Domain
+    let migrationInProgress: Bool
     let wikiURL: URL
 }
 

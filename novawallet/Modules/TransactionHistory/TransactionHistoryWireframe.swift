@@ -1,20 +1,44 @@
 import UIKit
 
-final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
+final class TransactionHistoryWireframe {
     let chainAsset: ChainAsset
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
+    let ahmInfoSnapshot: AHMInfoService.Snapshot
 
     init(
         chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol
+        swapState: SwapTokensFlowStateProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) {
         self.chainAsset = chainAsset
         self.operationState = operationState
         self.swapState = swapState
+        self.ahmInfoSnapshot = ahmInfoSnapshot
     }
+}
 
+// MARK: - Private
+
+private extension TransactionHistoryWireframe {
+    func presentInNavigation(
+        _ viewController: UIViewController,
+        from view: TransactionHistoryViewProtocol
+    ) {
+        guard let navigationController = view.controller.navigationController else {
+            return
+        }
+
+        let operationNavigationController = NovaNavigationController(rootViewController: viewController)
+
+        navigationController.presentWithCardLayout(operationNavigationController, animated: true)
+    }
+}
+
+// MARK: - TransactionHistoryWireframeProtocol
+
+extension TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     func showFilter(
         from view: TransactionHistoryViewProtocol,
         filter: WalletHistoryFilter,
@@ -45,20 +69,28 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
         presentInNavigation(operationDetailsView.controller, from: view)
     }
 
-    func closeTopModal(from view: TransactionHistoryViewProtocol) {
-        view.controller.topModalViewController.dismiss(animated: true)
-    }
-
-    private func presentInNavigation(
-        _ viewController: UIViewController,
-        from view: TransactionHistoryViewProtocol
+    func showAssetDetails(
+        from view: TransactionHistoryViewProtocol?,
+        chainAsset: ChainAsset
     ) {
-        guard let navigationController = view.controller.navigationController else {
+        guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
+            chainAsset: chainAsset,
+            operationState: operationState,
+            ahmInfoSnapshot: ahmInfoSnapshot
+        ),
+            let navigationController = view?.controller.navigationController
+        else {
             return
         }
 
-        let operationNavigationController = NovaNavigationController(rootViewController: viewController)
+        var viewControllers = navigationController.viewControllers
+        let index = viewControllers.count - 1
+        viewControllers[index] = assetDetailsView.controller
 
-        navigationController.presentWithCardLayout(operationNavigationController, animated: true)
+        navigationController.setViewControllers(viewControllers, animated: true)
+    }
+
+    func closeTopModal(from view: TransactionHistoryViewProtocol) {
+        view.controller.topModalViewController.dismiss(animated: true)
     }
 }

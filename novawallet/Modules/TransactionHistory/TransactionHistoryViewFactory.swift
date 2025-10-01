@@ -7,7 +7,8 @@ struct TransactionHistoryViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol
+        swapState: SwapTokensFlowStateProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> TransactionHistoryViewProtocol? {
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
@@ -20,13 +21,16 @@ struct TransactionHistoryViewFactory {
         let interactor = createInteractor(
             for: accountId,
             chainAsset: chainAsset,
-            currencyManager: currencyManager
+            selectedMetaAccount: selectedMetaAccount,
+            currencyManager: currencyManager,
+            ahmInfoSnapshot: ahmInfoSnapshot
         )
 
         let wireframe = TransactionHistoryWireframe(
             chainAsset: chainAsset,
             operationState: operationState,
-            swapState: swapState
+            swapState: swapState,
+            ahmInfoSnapshot: ahmInfoSnapshot
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -68,7 +72,9 @@ struct TransactionHistoryViewFactory {
     private static func createInteractor(
         for accountId: AccountId,
         chainAsset: ChainAsset,
-        currencyManager: CurrencyManagerProtocol
+        selectedMetaAccount: MetaAccountModel,
+        currencyManager: CurrencyManagerProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> TransactionHistoryInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -94,13 +100,21 @@ struct TransactionHistoryViewFactory {
             logger: Logger.shared
         )
 
+        let ahmInfoFactory = AHMFullInfoFactory(
+            chainRegistry: chainRegistry,
+            ahmInfoService: ahmInfoSnapshot.restoreService()
+        )
+
         return .init(
             accountId: accountId,
             chainAsset: chainAsset,
+            metaAccount: selectedMetaAccount,
             fetcherFactory: fetcherFactory,
+            chainRegistry: chainRegistry,
             localFilterFactory: localFilterFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
+            ahmInfoFactory: ahmInfoFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             pageSize: 100
         )

@@ -18,7 +18,7 @@ final class AHMInfoService {
     private let ahmInfoRepository: AHMInfoRepositoryProtocol
     private let assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
     private let settingsManager: SettingsManagerProtocol
-    private let filterSetKeypath: FilterSetKeyPath
+    private let filterSetKeypath: FilterSetKeyPath?
 
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
@@ -34,7 +34,7 @@ final class AHMInfoService {
         ahmInfoRepository: AHMInfoRepositoryProtocol,
         assetBalanceRepository: AnyDataProviderRepository<AssetBalance>,
         settingsManager: SettingsManagerProtocol,
-        filterSetKeypath: FilterSetKeyPath,
+        filterSetKeypath: FilterSetKeyPath?,
         initialBalances: [ChainAssetId: AssetBalance] = [:],
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -70,7 +70,11 @@ private extension AHMInfoService {
     }
 
     func filteredConfigs(from configs: [AHMRemoteData]) -> [AHMRemoteData] {
-        let excludedSet = settingsManager[keyPath: filterSetKeypath]
+        let excludedSet = if let filterSetKeypath {
+            settingsManager[keyPath: filterSetKeypath]
+        } else {
+            AHMInfoExcludedChains.empty()
+        }
 
         let relevantConfigs = configs.filter {
             let chainAssetId = ChainAssetId(
@@ -281,11 +285,11 @@ extension AHMInfoService {
             self.ahmInfoRepository = ahmInfoRepository
         }
 
-        func restoreService(with filterSetKeypath: FilterSetKeyPath) -> AHMInfoPreSyncServiceProtocol {
+        func restoreService(with filterSetKeypath: FilterSetKeyPath? = nil) -> AHMInfoPreSyncServiceProtocol {
             createService(with: filterSetKeypath)
         }
 
-        private func createService(with filterSetKeypath: FilterSetKeyPath) -> AHMInfoService {
+        private func createService(with filterSetKeypath: FilterSetKeyPath?) -> AHMInfoService {
             let chainRegistry = ChainRegistryFacade.sharedRegistry
             let operationQueue = OperationManagerFacade.sharedDefaultQueue
             let substrateStorage = SubstrateDataStorageFacade.shared

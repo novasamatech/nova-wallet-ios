@@ -2134,6 +2134,8 @@
 		2DE8B0ED2E56456900F8BD40 /* MultisigNotificationHandlingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */; };
 		2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */; };
 		2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */; };
+		2DEA415F2E8C0C630099796B /* HistoryAHMTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */; };
+		2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */; };
 		2DEA7B852E7418CC001F3DF5 /* PrivacyStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
@@ -8629,6 +8631,8 @@
 		2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationHandlingError.swift; sourceTree = "<group>"; };
 		2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSelectingNotificationHandling.swift; sourceTree = "<group>"; };
 		2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageModel.swift; sourceTree = "<group>"; };
+		2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryAHMTableViewCell.swift; sourceTree = "<group>"; };
+		2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryAHMViewModel.swift; sourceTree = "<group>"; };
 		2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyStateManager.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
@@ -27328,6 +27332,7 @@
 			isa = PBXGroup;
 			children = (
 				84ABB3272A16146600B5E95A /* HistoryItemTableViewCell.swift */,
+				2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */,
 				84ABB3292A16146600B5E95A /* WalletEmptyStateDataSource.swift */,
 				84ABB3282A16146600B5E95A /* WalletEmptyStateDataSource+Module.swift */,
 				84ABB32A2A16146600B5E95A /* WalletHistoryBackgroundView.swift */,
@@ -27462,6 +27467,7 @@
 			isa = PBXGroup;
 			children = (
 				84ABB3362A16164100B5E95A /* HistoryRewardContext.swift */,
+				2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */,
 				88AC5AD92948A8CC0056DD40 /* TransactionSectionModel.swift */,
 				88AC5ADD2948CB540056DD40 /* TransactionHistoryViewModelFactory.swift */,
 				0C59E8EC2AA75C84001E11F3 /* HistoryPoolRewardContext.swift */,
@@ -32749,6 +32755,7 @@
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
 				8472974D260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift in Sources */,
 				84FF267C28494B13003EC78D /* ParaStkStakeSetupPresenter+StartStaking.swift in Sources */,
+				2DEA415F2E8C0C630099796B /* HistoryAHMTableViewCell.swift in Sources */,
 				2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */,
 				2DBEE9932D7A29CB000B735B /* StackTitleValueIconView+Style.swift in Sources */,
 				0C13DFCF2AF8ADB300E5F355 /* BigUInt+Operation.swift in Sources */,
@@ -36255,6 +36262,7 @@
 				5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */,
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
 				0503753EC5E2136973D13E52 /* PayCardProtocols.swift in Sources */,
+				2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */,
 				F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */,
 				0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */,
 				0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */,

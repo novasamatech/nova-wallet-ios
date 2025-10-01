@@ -1950,7 +1950,7 @@
 "multisig.notifications.promo.sheet.message" = "Get notified about signing requests, new signatures, and completed transactions — so you’re always in control. Manage anytime in Settings.";
 "common.enable.settings" = "Enable in Settings";
 "settings.hide.balances.on.launch" = "Open app with hidden balance";
-"ahm.info.title" = "Starting %@ your %@ balance, Staking and Governance are now on %@";
+"ahm.info.title" = "Starting %@ your %@ balance, Staking and Governance are on %@";
 "ahm.info.subtitle" = "What makes Asset Hub awesome?";
 "ahm.info.feature.min.balance" = "%1$dx reduction in minimal balance\n(from %2$@ to %3$@)";
 "ahm.info.feature.fees" = "%1$dx lower transaction fees\n(from %2$@ to %3$@)";
@@ -1963,3 +1963,7 @@
 "ahm.info.alert.asset.details.title" = "Your %@ tokens now on %@";
 "ahm.info.alert.asset.details.message" = "Starting %@, your %@ balance, Staking, and Governance will be on %@ — with improved performance and lower costs.";
 "ahm.info.alert.asset.details.action" = "Go to %@";
+"ahm.info.alert.transaction.history.message" = "Your previous %@ transaction history is still available on %@";
+"ahm.info.alert.staking.details.message" = "%@ staking is live on %@ starting %@";
+"common.view" = "View";
+"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";

@@ -55,9 +55,9 @@ enum AssetListAssetModelComparator {
         }
 
         return if chainAsset.isUtilityAsset {
-            if matchesChain(KnowChainId.polkadot) {
+            if matchesChain(KnowChainId.polkadotAssetHub) {
                 0
-            } else if matchesChain(KnowChainId.kusama) {
+            } else if matchesChain(KnowChainId.kusamaAssetHub) {
                 1
             } else {
                 2
