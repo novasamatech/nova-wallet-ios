@@ -14,22 +14,20 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         options: [.curveEaseInOut]
     )
     private let alertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
-        duration: 0.4,
-        delay: 0.3,
+        duration: 0.3,
+        delay: 0.2,
         options: [.curveEaseInOut]
     )
     private let alertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 0.0,
         to: 1.0,
         duration: 0.3,
-        delay: 0.0,
         options: [.curveEaseInOut]
     )
     private let alertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
         duration: 0.3,
-        delay: 0.0,
         options: [.curveEaseInOut]
     )
 
@@ -66,7 +64,8 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     let buySellButton: RoundedButton = createOperationButton(icon: R.image.iconBuy(), enabled: true)
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
 
-    private var currentBalanceHeight = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
+    private var currentBalanceHeight: CGFloat = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
+    private var currentAHMAlertHeight: CGFloat = .zero
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
@@ -137,7 +136,7 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
             view: ahmAlertView,
             completionBlock: nil
         )
-        alertLayoutChangesAnimator.animate(
+        layoutChangesAnimator.animate(
             block: { [weak self] in
                 self?.ahmAlertView.isHidden = true
                 self?.containerView.stackView.layoutIfNeeded()
@@ -146,6 +145,9 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
                 self?.ahmAlertView.removeFromSuperview()
             }
         )
+
+        currentAHMAlertHeight = .zero
+        delegate?.didUpdateHeight(prefferedHeight)
     }
 
     private func showAlertWithAnimation() {
@@ -173,6 +175,9 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
                 )
             }
         )
+
+        currentAHMAlertHeight = ahmAlertView.frame.height
+        delegate?.didUpdateHeight(prefferedHeight)
     }
 
     func set(locale: Locale) {
@@ -262,6 +267,7 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
             + Constants.chartWidgetInset * 2
             + chartViewHeight
             + Constants.bottomOffset
+            + currentAHMAlertHeight
     }
 }
 

@@ -4,22 +4,20 @@ import Foundation_iOS
 
 final class StakingMainViewLayout: UIView {
     private let ahmAlertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
-        duration: 0.4,
-        delay: 0.3,
+        duration: 0.3,
+        delay: 0.2,
         options: [.curveEaseInOut]
     )
     private let ahmAlertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 0.0,
         to: 1.0,
         duration: 0.3,
-        delay: 0.0,
         options: [.curveEaseInOut]
     )
     private let ahmAlertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
         duration: 0.3,
-        delay: 0.0,
         options: [.curveEaseInOut]
     )
 
