@@ -11,10 +11,11 @@ struct AHMRemoteData: Codable, Equatable {
 
     let sourceData: ChainData
     let destinationData: ChainData
-    let blockNumber: BlockNumber = 20
+    let blockNumber: BlockNumber
     let timestamp: UInt64
     let newTokenNames: [String]
     let bannerPath: Banners.Domain
+    let migrationInProgress: Bool
     let wikiURL: URL
 }
 
