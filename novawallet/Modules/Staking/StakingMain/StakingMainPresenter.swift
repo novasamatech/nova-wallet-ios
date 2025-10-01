@@ -120,6 +120,16 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     func handleAHMAlertClose() {
         interactor.closeAHMAlert()
     }
+
+    func handleAHMAlertLearnMore() {
+        guard let view, let ahmInfo else { return }
+
+        wireframe.showWeb(
+            url: ahmInfo.info.wikiURL,
+            from: view,
+            style: .automatic
+        )
+    }
 }
 
 // MARK: - StakingMainInteractorOutputProtocol

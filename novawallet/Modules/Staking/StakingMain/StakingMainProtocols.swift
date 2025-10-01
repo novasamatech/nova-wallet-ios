@@ -24,6 +24,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performAlertAction(_ alert: StakingAlert)
     func selectPeriod()
     func handleAHMAlertClose()
+    func handleAHMAlertLearnMore()
 }
 
 protocol StakingMainInteractorInputProtocol: AnyObject {
@@ -39,7 +40,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?)
 }
 
-protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {
+protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable, WebPresentable {
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
     func showPeriodSelection(
         from view: ControllerBackedProtocol?,

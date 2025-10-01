@@ -97,6 +97,17 @@ private extension StakingMainViewController {
             action: #selector(didTapAHMAlertClose),
             for: .touchUpInside
         )
+
+        rootView.ahmAlertView.learnMoreButton.removeTarget(
+            self,
+            action: #selector(didTapAHMAlertLearnMore),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.learnMoreButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertLearnMore),
+            for: .touchUpInside
+        )
     }
 
     func setupLocalization() {
@@ -155,6 +166,10 @@ private extension StakingMainViewController {
 
     @objc func didTapAHMAlertClose() {
         presenter.handleAHMAlertClose()
+    }
+
+    @objc func didTapAHMAlertLearnMore() {
+        presenter.handleAHMAlertLearnMore()
     }
 }
 
