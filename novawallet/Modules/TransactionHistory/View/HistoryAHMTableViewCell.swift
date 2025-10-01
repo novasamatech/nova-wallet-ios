@@ -1,7 +1,17 @@
 import Foundation
 import UIKit_iOS
 
+protocol HistoryAHMViewDelegate: AnyObject {
+    func didActionViewRelay()
+}
+
 final class HistoryAHMTableViewCell: PlainBaseTableViewCell<HistoryAHMView> {
+    weak var delegate: HistoryAHMViewDelegate? {
+        didSet {
+            contentDisplayView.delegate = delegate
+        }
+    }
+
     override func setupStyle() {
         super.setupStyle()
 
@@ -16,6 +26,8 @@ final class HistoryAHMTableViewCell: PlainBaseTableViewCell<HistoryAHMView> {
 final class HistoryAHMView: GenericBorderedView<
     IconDetailsGenericView<GenericTitleValueView<UILabel, TriangularedButton>>
 > {
+    weak var delegate: HistoryAHMViewDelegate?
+
     var iconView: UIImageView {
         contentView.imageView
     }
@@ -33,6 +45,7 @@ final class HistoryAHMView: GenericBorderedView<
 
         setupLayout()
         setupStyle()
+        setupHandlers()
     }
 }
 
@@ -59,6 +72,18 @@ private extension HistoryAHMView {
         actionButton.triangularedView?.highlightedStrokeColor = .clear
         actionButton.imageWithTitleView?.titleFont = .semiBoldCaption1
         actionButton.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
+    }
+
+    func setupHandlers() {
+        actionButton.addTarget(
+            self,
+            action: #selector(actionViewRelay),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionViewRelay() {
+        delegate?.didActionViewRelay()
     }
 }
 

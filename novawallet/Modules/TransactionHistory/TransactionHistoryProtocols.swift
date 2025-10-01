@@ -11,6 +11,7 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
     func select(item: TransactionItemViewModel)
     func loadNext()
     func showFilter()
+    func actionViewRelay()
 }
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
@@ -39,6 +40,10 @@ protocol TransactionHistoryWireframeProtocol: ErrorPresentable, AlertPresentable
     func showOperationDetails(
         from view: TransactionHistoryViewProtocol,
         operation: TransactionHistoryItem
+    )
+    func showAssetDetails(
+        from view: TransactionHistoryViewProtocol?,
+        chainAsset: ChainAsset
     )
     func closeTopModal(from view: TransactionHistoryViewProtocol)
 }

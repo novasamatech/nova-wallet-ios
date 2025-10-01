@@ -28,7 +28,8 @@ struct TransactionHistoryViewFactory {
         let wireframe = TransactionHistoryWireframe(
             chainAsset: chainAsset,
             operationState: operationState,
-            swapState: swapState
+            swapState: swapState,
+            ahmInfoSnapshot: ahmInfoSnapshot
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(

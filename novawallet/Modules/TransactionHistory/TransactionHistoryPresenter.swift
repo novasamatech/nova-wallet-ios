@@ -93,6 +93,20 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
             delegate: self
         )
     }
+
+    func actionViewRelay() {
+        guard let ahmFullInfo else { return }
+
+        let chainAsset = ChainAsset(
+            chain: ahmFullInfo.sourceChain,
+            asset: ahmFullInfo.asset
+        )
+
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: chainAsset
+        )
+    }
 }
 
 extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtocol {

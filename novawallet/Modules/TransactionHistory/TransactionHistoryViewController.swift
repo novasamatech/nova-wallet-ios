@@ -82,8 +82,13 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(HistoryItemTableViewCell.self)
         rootView.tableView.registerClassForCell(HistoryAHMTableViewCell.self)
-        dataSource = TransactionHistoryDataSource(tableView: rootView.tableView)
+
+        dataSource = TransactionHistoryDataSource(
+            tableView: rootView.tableView,
+            ahmHintViewDelegate: self
+        )
         rootView.tableView.dataSource = dataSource
+
         setupLocalization()
         setupHandlers()
         presenter.setup()
@@ -520,6 +525,14 @@ extension TransactionHistoryViewController: EmptyStateDataSource {
 extension TransactionHistoryViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         dataSource?.snapshot().numberOfSections == 0 && isLoading == false
+    }
+}
+
+// MARK: - HistoryAHMViewDelegate
+
+extension TransactionHistoryViewController: HistoryAHMViewDelegate {
+    func didActionViewRelay() {
+        presenter.actionViewRelay()
     }
 }
 
