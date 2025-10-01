@@ -6,10 +6,12 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
     weak var presenter: TransactionHistoryInteractorOutputProtocol?
 
     let fetcherFactory: TransactionHistoryFetcherFactoryProtocol
+    let chainRegistry: ChainRegistryProtocol
     let chainAsset: ChainAsset
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol
     let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let metaAccount: MetaAccountModel
     let accountId: AccountId
     let pageSize: Int
     let operationQueue: OperationQueue
@@ -22,7 +24,9 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
     init(
         accountId: AccountId,
         chainAsset: ChainAsset,
+        metaAccount: MetaAccountModel,
         fetcherFactory: TransactionHistoryFetcherFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -33,9 +37,11 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.fetcherFactory = fetcherFactory
+        self.chainRegistry = chainRegistry
         self.localFilterFactory = localFilterFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.pageSize = pageSize
+        self.metaAccount = metaAccount
         self.ahmInfoFactory = ahmInfoFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -105,8 +111,21 @@ private extension TransactionHistoryInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    func checkIfHasRelayChainAccount(relayChainId: ChainModel.Id) -> Bool {
+        guard let chain = chainRegistry.getChain(for: relayChainId) else {
+            return false
+        }
+
+        let chainAccountRequest = chain.accountRequest()
+
+        return metaAccount.fetch(for: chainAccountRequest) != nil
+    }
+
     func provideAHMInfo() {
-        guard let parentChainId = chainAsset.chain.parentId else {
+        guard
+            let parentChainId = chainAsset.chain.parentId,
+            checkIfHasRelayChainAccount(relayChainId: parentChainId)
+        else {
             return
         }
 

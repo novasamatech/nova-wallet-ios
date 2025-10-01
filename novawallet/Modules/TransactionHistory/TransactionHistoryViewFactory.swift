@@ -21,6 +21,7 @@ struct TransactionHistoryViewFactory {
         let interactor = createInteractor(
             for: accountId,
             chainAsset: chainAsset,
+            selectedMetaAccount: selectedMetaAccount,
             currencyManager: currencyManager,
             ahmInfoSnapshot: ahmInfoSnapshot
         )
@@ -71,6 +72,7 @@ struct TransactionHistoryViewFactory {
     private static func createInteractor(
         for accountId: AccountId,
         chainAsset: ChainAsset,
+        selectedMetaAccount: MetaAccountModel,
         currencyManager: CurrencyManagerProtocol,
         ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> TransactionHistoryInteractor {
@@ -106,7 +108,9 @@ struct TransactionHistoryViewFactory {
         return .init(
             accountId: accountId,
             chainAsset: chainAsset,
+            metaAccount: selectedMetaAccount,
             fetcherFactory: fetcherFactory,
+            chainRegistry: chainRegistry,
             localFilterFactory: localFilterFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
