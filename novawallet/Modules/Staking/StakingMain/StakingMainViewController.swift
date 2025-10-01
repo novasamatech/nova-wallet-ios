@@ -86,6 +86,17 @@ private extension StakingMainViewController {
             action: #selector(rewardPeriodAction),
             for: .touchUpInside
         )
+
+        rootView.ahmAlertView.closeButton.removeTarget(
+            self,
+            action: #selector(didTapAHMAlertClose),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.closeButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertClose),
+            for: .touchUpInside
+        )
     }
 
     func setupLocalization() {
@@ -140,6 +151,10 @@ private extension StakingMainViewController {
 
     @objc func claimRewardsAction() {
         presenter.performClaimRewards()
+    }
+
+    @objc func didTapAHMAlertClose() {
+        presenter.handleAHMAlertClose()
     }
 }
 

@@ -78,9 +78,9 @@ enum StakingMainViewFactory {
 
         return .init(
             ahmInfoFactory: ahmInfoFactory,
+            settingsManager: settings,
             stakingOption: stakingOption,
             selectedWalletSettings: SelectedWalletSettings.shared,
-            commonSettings: settings,
             eventCenter: EventCenter.shared,
             stakingRewardsFilterRepository: stakingRewardsFilterRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

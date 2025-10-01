@@ -203,10 +203,6 @@ private extension StakingMainViewLayout {
             ahmAlertContainerView,
             at: 0
         )
-        stackView.setCustomSpacing(
-            8.0,
-            after: ahmAlertContainerView
-        )
 
         ahmAlertContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview()

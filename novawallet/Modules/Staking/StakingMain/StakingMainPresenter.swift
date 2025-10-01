@@ -116,6 +116,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             self?.view?.didEditRewardFilters()
         }
     }
+
+    func handleAHMAlertClose() {
+        interactor.closeAHMAlert()
+    }
 }
 
 // MARK: - StakingMainInteractorOutputProtocol
@@ -130,7 +134,7 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         childPresenter?.selectPeriod(period)
     }
 
-    func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo) {
+    func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?) {
         guard self.ahmInfo != ahmInfo else { return }
 
         self.ahmInfo = ahmInfo
