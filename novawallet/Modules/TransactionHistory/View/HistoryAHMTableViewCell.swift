@@ -57,6 +57,10 @@ private extension HistoryAHMView {
         contentInsets = Constants.contentInsets
         contentView.spacing = Constants.iconToMessage
         contentView.detailsView.spacing = Constants.messageToAction
+
+        actionButton.snp.makeConstraints { make in
+            make.width.greaterThanOrEqualTo(Constants.actionButtonWidth)
+        }
     }
 
     func setupStyle() {
@@ -103,6 +107,7 @@ private extension HistoryAHMView {
     enum Constants {
         static let iconToMessage: CGFloat = 12
         static let messageToAction: CGFloat = 12
+        static let actionButtonWidth: CGFloat = 30
         static let contentInsets = UIEdgeInsets(
             top: 10.0,
             left: 12.0,
