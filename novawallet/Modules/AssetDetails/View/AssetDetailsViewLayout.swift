@@ -27,8 +27,8 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     private let alertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
-        duration: 0.3,
-        options: [.curveEaseInOut]
+        duration: 0.15,
+        options: [.curveLinear]
     )
 
     lazy var ahmAlertView: AHMAlertView = .create { view in
