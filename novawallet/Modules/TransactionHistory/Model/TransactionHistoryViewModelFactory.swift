@@ -340,7 +340,7 @@ private extension TransactionHistoryViewModelFactory {
         let actionTitle = R.string.localizable.commonView(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.ahmInfoAlertTransactionHistoryMessage(
             ahmInfo.asset.symbol,
-            ahmInfo.destinationChain.name,
+            ahmInfo.sourceChain.name,
             preferredLanguages: locale.rLanguages
         )
 
