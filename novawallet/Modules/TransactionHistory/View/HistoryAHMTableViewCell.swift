@@ -16,6 +16,7 @@ final class HistoryAHMTableViewCell: PlainBaseTableViewCell<HistoryAHMView> {
         super.setupStyle()
 
         backgroundColor = .clear
+        selectionStyle = .none
     }
 
     func bind(_ viewModel: HistoryAHMViewModel) {
