@@ -183,12 +183,22 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         let sourceAsset = sourceChain.asset(for: info.sourceData.assetId)
         let tokenSymbol = sourceAsset?.symbol ?? ""
 
-        let title = R.string.localizable.ahmInfoTitle(
-            dateFormatter.value(for: locale).string(from: date),
-            tokenSymbol,
-            destinationChain.name,
-            preferredLanguages: locale.rLanguages
-        )
+        let title = if info.migrationInProgress {
+            R.string.localizable.ahmInfoInProgressTitle(
+                dateFormatter.value(for: locale).string(from: date),
+                tokenSymbol,
+                destinationChain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            R.string.localizable.ahmInfoTitle(
+                dateFormatter.value(for: locale).string(from: date),
+                tokenSymbol,
+                destinationChain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
         let subtitle = R.string.localizable.ahmInfoSubtitle(
             preferredLanguages: locale.rLanguages
         )
