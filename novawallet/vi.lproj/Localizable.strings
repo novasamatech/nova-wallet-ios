@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "Đi đến %@";
 "ahm.info.alert.transaction.history.message" = "Lịch sử giao dịch trước đây của bạn %@ vẫn còn trên %@";
 "ahm.info.alert.staking.details.message" = "Staking %@ đang hoạt động trên %@ bắt đầu từ %@";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
+"ahm.info.in.progress.title" = "Bắt đầu %@ số dư %@ của bạn, Staking và Governance trị đang ở %@. Những tính năng này có thể không khả dụng trong tối đa 24 giờ.";

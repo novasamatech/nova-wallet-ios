@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "Ugrás a(z) %@";
 "ahm.info.alert.transaction.history.message" = "A korábbi %@ tranzakció történeted még mindig elérhető a(z) %@-n";
 "ahm.info.alert.staking.details.message" = "A(z) %@ staking él a(z) %@-n, kezdve %@";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
+"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";"ahm.info.in.progress.title" = "%@ kezdő %@ egyenleggel, a Staking és a Governance %@ vannak. Ezek a funkciók akár 24 órán át nem biztos, hogy elérhetők.";

@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "前往 %@";
 "ahm.info.alert.transaction.history.message" = "您的之前 %@ 交易历史仍可在 %@ 上查阅";
 "ahm.info.alert.staking.details.message" = "%@ 质押在 %@ 上线，始于 %@";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
+"ahm.info.in.progress.title" = "从 %@ 您的 %@ 余额开始，质押和治理在 %@ 上可用。这些功能可能在长达 24 小时内不可用。";

@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "Git %@";
 "ahm.info.alert.transaction.history.message" = "Önceki %@ işlem geçmişiniz hâlâ %@ üzerinde mevcut";
 "ahm.info.alert.staking.details.message" = "%@ staking %@ itibariyle %@ üzerinde canlı";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
+"ahm.info.in.progress.title" = "%@ bakiyeniz %@ ile başlayarak, Staking ve Governance %@ üzerinde. Bu özellikler 24 saate kadar kullanılamayabilir.";
