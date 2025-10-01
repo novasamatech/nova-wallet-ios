@@ -3,19 +3,19 @@ import UIKit_iOS
 import Foundation_iOS
 
 final class StakingMainViewLayout: UIView {
-    private let alertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+    private let ahmAlertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
         duration: 0.4,
         delay: 0.3,
         options: [.curveEaseInOut]
     )
-    private let alertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+    private let ahmAlertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 0.0,
         to: 1.0,
         duration: 0.3,
         delay: 0.0,
         options: [.curveEaseInOut]
     )
-    private let alertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+    private let ahmAlertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
         duration: 0.3,
@@ -181,11 +181,11 @@ private extension StakingMainViewLayout {
     }
 
     func hideAHMAlertWithAnimation() {
-        alertDisappearanceAnimator.animate(
+        ahmAlertDisappearanceAnimator.animate(
             view: ahmAlertContainerView,
             completionBlock: nil
         )
-        alertLayoutChangesAnimator.animate(
+        ahmAlertLayoutChangesAnimator.animate(
             block: { [weak self] in
                 self?.ahmAlertContainerView.isHidden = true
                 self?.stackView.layoutIfNeeded()
@@ -208,7 +208,7 @@ private extension StakingMainViewLayout {
             make.width.equalToSuperview()
         }
 
-        alertLayoutChangesAnimator.animate(
+        ahmAlertLayoutChangesAnimator.animate(
             block: { [weak self] in
                 guard let self else { return }
 
@@ -218,7 +218,7 @@ private extension StakingMainViewLayout {
             completionBlock: { [weak self] _ in
                 guard let self else { return }
 
-                alertAppearanceAnimator.animate(
+                ahmAlertAppearanceAnimator.animate(
                     view: ahmAlertContainerView,
                     completionBlock: nil
                 )
