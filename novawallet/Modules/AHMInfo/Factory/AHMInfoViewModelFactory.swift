@@ -293,7 +293,7 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             .string(from: date)
 
         let title = R.string.localizable.ahmInfoAlertStakingDetailsMessage(
-            info.asset.symbol,
+            info.sourceChain.name,
             info.destinationChain.name,
             formattedDate,
             preferredLanguages: languages
