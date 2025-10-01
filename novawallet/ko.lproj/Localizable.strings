@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "이동 %@";
 "ahm.info.alert.transaction.history.message" = "이전 %@ 거래 내역은 여전히 %@에서 확인할 수 있습니다";
 "ahm.info.alert.staking.details.message" = "%@ Staking은 %@에서 %@부터 활성화됩니다";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";"ahm.info.in.progress.title" = "%@에 있는 your %@ 잔액을 기준으로, 스테이킹과 거버넌스는 %@에 있습니다. 이러한 기능은 최대 24시간 동안 사용 불가능할 수 있습니다.";
+"ahm.info.in.progress.title" = "%@에 있는 your %@ 잔액을 기준으로, 스테이킹과 거버넌스는 %@에 있습니다. 이러한 기능은 최대 24시간 동안 사용 불가능할 수 있습니다.";

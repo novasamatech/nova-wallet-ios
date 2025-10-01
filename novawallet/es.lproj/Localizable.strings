@@ -1966,4 +1966,4 @@
 "ahm.info.alert.asset.details.action" = "Ir a %@";
 "ahm.info.alert.transaction.history.message" = "Tu historial de transacciones anterior de %@ todavía está disponible en %@";
 "ahm.info.alert.staking.details.message" = "El Staking de %@ está activo en %@ a partir de %@";
-"ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";"ahm.info.in.progress.title" = "A partir de %@ tu saldo de %@, el Staking y la Gobernanza estarán en %@. Es posible que estas funciones no estén disponibles durante un máximo de 24 horas.";
+"ahm.info.in.progress.title" = "A partir de %@ tu saldo de %@, el Staking y la Gobernanza estarán en %@. Es posible que estas funciones no estén disponibles durante un máximo de 24 horas.";
