@@ -25,12 +25,12 @@ enum AssetListGroupModelComparator {
 
     private static func priority(for token: MultichainToken) -> UInt8 {
         let matchesChain: (ChainModel.Id) -> Bool = { knownChainId in
-            token.instances.contains { $0.chainAssetId.chainId == knownChainId }
+            token.instances.contains { $0.chainAssetId.chainId == knownChainId && $0.utility }
         }
 
-        return if matchesChain(KnowChainId.polkadot) {
+        return if matchesChain(KnowChainId.polkadotAssetHub) {
             0
-        } else if matchesChain(KnowChainId.kusama) {
+        } else if matchesChain(KnowChainId.kusamaAssetHub) {
             1
         } else if token.instances.allSatisfy({ $0.testnet }) {
             3
