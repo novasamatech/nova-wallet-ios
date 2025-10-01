@@ -356,7 +356,7 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     }
 
     func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
-        showPushNotificationsSetupOrNextAction()
+        showAhmInfoOrNextAction()
     }
 }
 
