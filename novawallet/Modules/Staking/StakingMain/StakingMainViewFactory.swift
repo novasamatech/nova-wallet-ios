@@ -7,11 +7,16 @@ import Operation_iOS
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
-        let interactor = createInteractor(with: settings, stakingOption: stakingOption)
+        let interactor = createInteractor(
+            with: settings,
+            stakingOption: stakingOption,
+            ahmInfoSnapshot: ahmInfoSnapshot
+        )
         let wireframe = StakingMainWireframe()
 
         let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy
@@ -33,21 +38,23 @@ enum StakingMainViewFactory {
             sharedStateFactory: sharedStateFactory
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = StakingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,
             stakingOption: stakingOption,
             childPresenterFactory: childPresenterFactory,
             viewModelFactory: StakingMainViewModelFactory(),
+            ahmViewModelFactory: AHMInfoViewModelFactory(),
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
         let view = StakingMainViewController(
-            presenter: presenter, localizationManager: LocalizationManager.shared
+            presenter: presenter,
+            localizationManager: localizationManager
         )
-
-        view.iconGenerator = NovaIconGenerator()
-        view.uiFactory = UIFactory()
 
         presenter.view = view
         interactor.presenter = presenter
@@ -57,16 +64,23 @@ enum StakingMainViewFactory {
 
     private static func createInteractor(
         with settings: SettingsManagerProtocol,
-        stakingOption: Multistaking.ChainAssetOption
+        stakingOption: Multistaking.ChainAssetOption,
+        ahmInfoSnapshot: AHMInfoService.Snapshot
     ) -> StakingMainInteractor {
         let mapper = AnyCoreDataMapper(StakingRewardsFilterMapper())
         let facade = UserDataStorageFacade.shared
         let stakingRewardsFilterRepository = AnyDataProviderRepository(facade.createRepository(mapper: mapper))
 
+        let ahmInfoFactory = AHMFullInfoFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            ahmInfoService: ahmInfoSnapshot.restoreService(with: \.ahmStakingAlertClosedChains)
+        )
+
         return .init(
+            ahmInfoFactory: ahmInfoFactory,
+            settingsManager: settings,
             stakingOption: stakingOption,
             selectedWalletSettings: SelectedWalletSettings.shared,
-            commonSettings: settings,
             eventCenter: EventCenter.shared,
             stakingRewardsFilterRepository: stakingRewardsFilterRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

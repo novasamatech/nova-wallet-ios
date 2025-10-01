@@ -7,8 +7,9 @@ import Foundation_iOS
 final class StakingMainInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol?
 
+    let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let settingsManager: SettingsManagerProtocol
     let selectedWalletSettings: SelectedWalletSettings
-    let commonSettings: SettingsManagerProtocol
     let stakingOption: Multistaking.ChainAssetOption
     let stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>
     let operationQueue: OperationQueue
@@ -20,16 +21,18 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     private var stakingRewardFiltersPeriod: StakingRewardFiltersPeriod?
 
     init(
+        ahmInfoFactory: AHMFullInfoFactoryProtocol,
+        settingsManager: SettingsManagerProtocol,
         stakingOption: Multistaking.ChainAssetOption,
         selectedWalletSettings: SelectedWalletSettings,
-        commonSettings: SettingsManagerProtocol,
         eventCenter: EventCenterProtocol,
         stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.ahmInfoFactory = ahmInfoFactory
+        self.settingsManager = settingsManager
         self.stakingOption = stakingOption
-        self.commonSettings = commonSettings
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
         self.stakingRewardsFilterRepository = stakingRewardsFilterRepository
@@ -67,19 +70,37 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
         operationQueue.addOperation(fetchFilterOperation)
     }
+
+    func provideAHMInfo() {
+        let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
+
+        execute(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.presenter?.didReceiveAHMInfo(info)
+            case let .failure(error):
+                self?.logger.error("Failed on fetch AHM info: \(error)")
+            }
+        }
+    }
 }
 
 extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     func setup() {
-        presenter?.didReceiveExpansion(commonSettings.stakingNetworkExpansion)
+        presenter?.didReceiveExpansion(settingsManager.stakingNetworkExpansion)
 
+        provideAHMInfo()
         provideStakingRewardsFilter()
 
         eventCenter.add(observer: self, dispatchIn: .main)
     }
 
     func saveNetworkInfoViewExpansion(isExpanded: Bool) {
-        commonSettings.stakingNetworkExpansion = isExpanded
+        settingsManager.stakingNetworkExpansion = isExpanded
     }
 
     func save(filter: StakingRewardFiltersPeriod) {
@@ -110,6 +131,11 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         }
 
         operationQueue.addOperation(saveOperation)
+    }
+
+    func closeAHMAlert() {
+        settingsManager.ahmStakingAlertClosedChains.add(chainAsset.chain.chainId)
+        provideAHMInfo()
     }
 }
 

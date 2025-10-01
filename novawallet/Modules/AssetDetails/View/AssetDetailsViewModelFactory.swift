@@ -27,11 +27,6 @@ protocol AssetDetailsViewModelFactoryProtocol {
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
 
     func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel
-
-    func createAHMInfoViewModel(
-        info: AHMFullInfo,
-        locale: Locale
-    ) -> AHMAlertView.Model
 }
 
 final class AssetDetailsViewModelFactory {
@@ -159,49 +154,6 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         assetBalanceFormatterFactory.createTokenFormatter(
             for: assetDisplayInfo,
             usesSuffixForBigNumbers: shouldDisplayFullInteger
-        )
-    }
-
-    func createAHMInfoViewModel(
-        info: AHMFullInfo,
-        locale: Locale
-    ) -> AHMAlertView.Model {
-        let languages = locale.rLanguages
-
-        let date = Date(timeIntervalSince1970: TimeInterval(info.info.timestamp))
-
-        let formattedDate = DateFormatter
-            .fullDate
-            .value(for: locale)
-            .string(from: date)
-
-        let title = R.string.localizable.ahmInfoAlertAssetDetailsTitle(
-            info.asset.symbol,
-            info.destinationChain.name,
-            preferredLanguages: languages
-        )
-        let message = R.string.localizable.ahmInfoAlertAssetDetailsMessage(
-            formattedDate,
-            info.asset.symbol,
-            info.destinationChain.name,
-            preferredLanguages: languages
-        )
-        let learnMoreModel = LearnMoreViewModel(
-            iconViewModel: nil,
-            title: R.string.localizable.commonLearnMore(
-                preferredLanguages: languages
-            )
-        )
-        let actionTitle = R.string.localizable.ahmInfoAlertAssetDetailsAction(
-            info.destinationChain.name,
-            preferredLanguages: languages
-        )
-
-        return AHMAlertView.Model(
-            title: title,
-            message: message,
-            learnMore: learnMoreModel,
-            actionTitle: actionTitle
         )
     }
 }
