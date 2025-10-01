@@ -38,7 +38,8 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     ) {
         guard let detailsView = StakingMainViewFactory.createView(
             for: option,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            delegatedAccountSyncService: delegatedAccountSyncService,
+            ahmInfoSnapshot: preSyncServiceCoordinator.ahmInfoService.createSnapshot()
         ) else {
             return
         }

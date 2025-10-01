@@ -1,5 +1,5 @@
 import Foundation
-
+import Foundation_iOS
 import BigInt
 
 final class StakingMainPresenter {
@@ -9,9 +9,12 @@ final class StakingMainPresenter {
 
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
+    let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
     let stakingOption: Multistaking.ChainAssetOption
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
+    private var ahmInfo: AHMFullInfo?
     private var childPresenter: StakingMainChildPresenterProtocol?
     private var period: StakingRewardFiltersPeriod?
 
@@ -21,6 +24,8 @@ final class StakingMainPresenter {
         stakingOption: Multistaking.ChainAssetOption,
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
+        ahmViewModelFactory: AHMInfoViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
@@ -28,13 +33,32 @@ final class StakingMainPresenter {
         self.stakingOption = stakingOption
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
+        self.ahmViewModelFactory = ahmViewModelFactory
+        self.localizationManager = localizationManager
         self.logger = logger
     }
+}
 
-    private func provideMainViewModel() {
+// MARK: - Private
+
+private extension StakingMainPresenter {
+    func provideMainViewModel() {
         let viewModel = viewModelFactory.createMainViewModel(chainAsset: stakingOption.chainAsset)
 
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func provideAHMAlertModel() {
+        let ahmAlertModel: AHMAlertView.Model? = if let ahmInfo {
+            ahmViewModelFactory.createStakingDetailsAlertViewModel(
+                info: ahmInfo,
+                locale: localizationManager.selectedLocale
+            )
+        } else {
+            nil
+        }
+
+        view?.didReceiveAHMAlert(viewModel: ahmAlertModel)
     }
 }
 
@@ -94,6 +118,8 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 }
 
+// MARK: - StakingMainInteractorOutputProtocol
+
 extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     func didReceiveExpansion(_ isExpanded: Bool) {
         view?.expandNetworkInfoView(isExpanded)
@@ -103,7 +129,17 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         self.period = period
         childPresenter?.selectPeriod(period)
     }
+
+    func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo) {
+        guard self.ahmInfo != ahmInfo else { return }
+
+        self.ahmInfo = ahmInfo
+
+        provideAHMAlertModel()
+    }
 }
+
+// MARK: - StakingRewardFiltersDelegate
 
 extension StakingMainPresenter: StakingRewardFiltersDelegate {
     func stackingRewardFilter(didSelectFilter filter: StakingRewardFiltersPeriod) {

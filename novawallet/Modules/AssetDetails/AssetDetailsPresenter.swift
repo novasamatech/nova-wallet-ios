@@ -8,6 +8,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
 
     let wireframe: AssetDetailsWireframeProtocol
+    let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
     let interactor: AssetDetailsInteractorInputProtocol
     let chainAsset: ChainAsset
@@ -28,6 +29,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
         localizableManager: LocalizationManagerProtocol,
         chainAsset: ChainAsset,
         selectedAccount: MetaAccountModel,
+        ahmViewModelFactory: AHMInfoViewModelFactoryProtocol,
         viewModelFactory: AssetDetailsViewModelFactoryProtocol,
         wireframe: AssetDetailsWireframeProtocol,
         logger: LoggerProtocol?
@@ -36,6 +38,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
+        self.ahmViewModelFactory = ahmViewModelFactory
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         localizationManager = localizableManager
@@ -76,7 +79,7 @@ private extension AssetDetailsPresenter {
         view.didReceive(availableOperations: availableOperations)
 
         let ahmAlertModel: AHMAlertView.Model? = if let ahmInfo {
-            viewModelFactory.createAHMInfoViewModel(
+            ahmViewModelFactory.createAssetDetailsAlertViewModel(
                 info: ahmInfo,
                 locale: selectedLocale
             )

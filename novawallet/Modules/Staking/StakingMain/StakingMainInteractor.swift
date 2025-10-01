@@ -7,6 +7,7 @@ import Foundation_iOS
 final class StakingMainInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol?
 
+    let ahmInfoFactory: AHMFullInfoFactoryProtocol
     let selectedWalletSettings: SelectedWalletSettings
     let commonSettings: SettingsManagerProtocol
     let stakingOption: Multistaking.ChainAssetOption
@@ -20,6 +21,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     private var stakingRewardFiltersPeriod: StakingRewardFiltersPeriod?
 
     init(
+        ahmInfoFactory: AHMFullInfoFactoryProtocol,
         stakingOption: Multistaking.ChainAssetOption,
         selectedWalletSettings: SelectedWalletSettings,
         commonSettings: SettingsManagerProtocol,
@@ -28,6 +30,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.ahmInfoFactory = ahmInfoFactory
         self.stakingOption = stakingOption
         self.commonSettings = commonSettings
         self.eventCenter = eventCenter
@@ -67,12 +70,32 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
         operationQueue.addOperation(fetchFilterOperation)
     }
+
+    func provideAHMInfo() {
+        let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
+
+        execute(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                guard let info else { return }
+
+                self?.presenter?.didReceiveAHMInfo(info)
+            case let .failure(error):
+                self?.logger.error("Failed on fetch AHM info: \(error)")
+            }
+        }
+    }
 }
 
 extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     func setup() {
         presenter?.didReceiveExpansion(commonSettings.stakingNetworkExpansion)
 
+        provideAHMInfo()
         provideStakingRewardsFilter()
 
         eventCenter.add(observer: self, dispatchIn: .main)

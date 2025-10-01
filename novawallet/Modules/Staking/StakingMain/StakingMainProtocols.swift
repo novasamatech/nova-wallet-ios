@@ -10,6 +10,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
     func expandNetworkInfoView(_ isExpanded: Bool)
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
     func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)
+    func didReceiveAHMAlert(viewModel: AHMAlertView.Model?)
     func didEditRewardFilters()
 }
 
@@ -33,6 +34,7 @@ protocol StakingMainInteractorInputProtocol: AnyObject {
 protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
     func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)
+    func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo)
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {

@@ -120,11 +120,25 @@ private extension AHMAlertView {
 extension AHMAlertView {
     func bind(_ viewModel: Model) {
         titleLabel.text = viewModel.title
-        messageLabel.text = viewModel.message
+
+        let contentInsets = if viewModel.actionTitle != nil {
+            Constants.contentInsets
+        } else {
+            Constants.hiddenActionContentInsets
+        }
+
+        self.contentInsets = contentInsets
+
+        if let message = viewModel.message {
+            messageLabel.text = message
+            messageLabel.isHidden = false
+        } else {
+            messageLabel.isHidden = true
+        }
 
         if let actionTitle = viewModel.actionTitle {
-            actionButton.isHidden = false
             actionButton.imageWithTitleView?.title = actionTitle
+            actionButton.isHidden = false
         } else {
             actionButton.isHidden = true
         }
@@ -159,6 +173,12 @@ private extension AHMAlertView {
             top: 10.0,
             left: 12.0,
             bottom: 12.0,
+            right: 12.0
+        )
+        static let hiddenActionContentInsets: UIEdgeInsets = .init(
+            top: 10.0,
+            left: 12.0,
+            bottom: 4.0,
             right: 12.0
         )
         static let cornerRadius: CGFloat = 12

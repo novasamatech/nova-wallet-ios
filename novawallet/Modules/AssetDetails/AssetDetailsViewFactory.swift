@@ -57,6 +57,7 @@ struct AssetDetailsViewFactory {
             localizableManager: localizationManager,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            ahmViewModelFactory: AHMInfoViewModelFactory(),
             viewModelFactory: viewModelFactory,
             wireframe: wireframe,
             logger: Logger.shared

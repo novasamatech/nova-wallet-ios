@@ -10,11 +10,20 @@ protocol AHMInfoViewModelFactoryProtocol {
         bannerState: BannersState,
         locale: Locale
     ) -> AHMInfoViewModel
+
+    func createAssetDetailsAlertViewModel(
+        info: AHMFullInfo,
+        locale: Locale
+    ) -> AHMAlertView.Model
+
+    func createStakingDetailsAlertViewModel(
+        info: AHMFullInfo,
+        locale: Locale
+    ) -> AHMAlertView.Model
 }
 
 final class AHMInfoViewModelFactory {
     private let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
-
     private let dateFormatter = DateFormatter.fullDate
 
     init(assetFormatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
@@ -214,6 +223,83 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             features: features,
             info: info,
             actionButtonTitle: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages)
+        )
+    }
+
+    func createAssetDetailsAlertViewModel(
+        info: AHMFullInfo,
+        locale: Locale
+    ) -> AHMAlertView.Model {
+        let languages = locale.rLanguages
+
+        let date = Date(timeIntervalSince1970: TimeInterval(info.info.timestamp))
+
+        let formattedDate = DateFormatter
+            .fullDate
+            .value(for: locale)
+            .string(from: date)
+
+        let title = R.string.localizable.ahmInfoAlertAssetDetailsTitle(
+            info.asset.symbol,
+            info.destinationChain.name,
+            preferredLanguages: languages
+        )
+        let message = R.string.localizable.ahmInfoAlertAssetDetailsMessage(
+            formattedDate,
+            info.asset.symbol,
+            info.destinationChain.name,
+            preferredLanguages: languages
+        )
+        let learnMoreModel = LearnMoreViewModel(
+            iconViewModel: nil,
+            title: R.string.localizable.commonLearnMore(
+                preferredLanguages: languages
+            )
+        )
+        let actionTitle = R.string.localizable.ahmInfoAlertAssetDetailsAction(
+            info.destinationChain.name,
+            preferredLanguages: languages
+        )
+
+        return AHMAlertView.Model(
+            title: title,
+            message: message,
+            learnMore: learnMoreModel,
+            actionTitle: actionTitle
+        )
+    }
+
+    func createStakingDetailsAlertViewModel(
+        info: AHMFullInfo,
+        locale: Locale
+    ) -> AHMAlertView.Model {
+        let languages = locale.rLanguages
+
+        let date = Date(timeIntervalSince1970: TimeInterval(info.info.timestamp))
+
+        let formattedDate = DateFormatter
+            .fullDate
+            .value(for: locale)
+            .string(from: date)
+
+        let title = R.string.localizable.ahmInfoAlertStakingDetailsMessage(
+            info.asset.symbol,
+            info.destinationChain.name,
+            formattedDate,
+            preferredLanguages: languages
+        )
+        let learnMoreModel = LearnMoreViewModel(
+            iconViewModel: nil,
+            title: R.string.localizable.commonLearnMore(
+                preferredLanguages: languages
+            )
+        )
+
+        return AHMAlertView.Model(
+            title: title,
+            message: nil,
+            learnMore: learnMoreModel,
+            actionTitle: nil
         )
     }
 }
