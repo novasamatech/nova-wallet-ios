@@ -8,12 +8,14 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
 
     let wireframe: AssetDetailsWireframeProtocol
+    let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
     let interactor: AssetDetailsInteractorInputProtocol
     let chainAsset: ChainAsset
     let selectedAccount: MetaAccountModel
     let logger: LoggerProtocol?
 
+    private var ahmInfo: AHMFullInfo?
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
@@ -27,6 +29,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
         localizableManager: LocalizationManagerProtocol,
         chainAsset: ChainAsset,
         selectedAccount: MetaAccountModel,
+        ahmViewModelFactory: AHMInfoViewModelFactoryProtocol,
         viewModelFactory: AssetDetailsViewModelFactoryProtocol,
         wireframe: AssetDetailsWireframeProtocol,
         logger: LoggerProtocol?
@@ -35,6 +38,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
+        self.ahmViewModelFactory = ahmViewModelFactory
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         localizationManager = localizableManager
@@ -60,6 +64,7 @@ private extension AssetDetailsPresenter {
 
         let balanceModel = viewModelFactory.createBalanceViewModel(
             params: .init(
+                chain: chainAsset.chain,
                 total: balance.totalInPlank + totalExternalBalances,
                 locked: balance.locked + totalExternalBalances,
                 transferrable: balance.transferable,
@@ -72,6 +77,17 @@ private extension AssetDetailsPresenter {
 
         view.didReceive(balance: balanceModel)
         view.didReceive(availableOperations: availableOperations)
+
+        let ahmAlertModel: AHMAlertView.Model? = if let ahmInfo {
+            ahmViewModelFactory.createAssetDetailsAlertViewModel(
+                info: ahmInfo,
+                locale: selectedLocale
+            )
+        } else {
+            nil
+        }
+
+        view.didReceive(ahmAlert: ahmAlertModel)
     }
 
     func validateAndProccedRamp(with type: RampActionType) {
@@ -204,11 +220,52 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func handleSwap() {
         wireframe.showSwaps(from: view, chainAsset: chainAsset)
     }
+
+    func handleAHMAlertClose() {
+        interactor.closeAHMAlert()
+    }
+
+    func handleAHMAlertAction() {
+        guard
+            let destinationChain = ahmInfo?.destinationChain,
+            let asset = ahmInfo?.asset
+        else { return }
+
+        let chainAsset = ChainAsset(
+            chain: destinationChain,
+            asset: asset
+        )
+
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: chainAsset
+        )
+    }
+
+    func handleAHMAlertLearnMore() {
+        guard
+            let view,
+            let ahmWikiUrl = ahmInfo?.info.wikiURL
+        else { return }
+
+        wireframe.showWeb(
+            url: ahmWikiUrl,
+            from: view,
+            style: .automatic
+        )
+    }
 }
 
 // MARK: AssetDetailsInteractorOutputProtocol
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
+    func didReceive(ahmInfo: AHMFullInfo?) {
+        guard ahmInfo != self.ahmInfo else { return }
+
+        self.ahmInfo = ahmInfo
+        updateView()
+    }
+
     func didReceive(rampActions: [RampAction]) {
         self.rampActions = rampActions
         updateView()

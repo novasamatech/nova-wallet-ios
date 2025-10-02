@@ -470,7 +470,10 @@ private extension AssetListPresenter {
             return
         }
 
-        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: ChainAsset(chain: chain, asset: asset)
+        )
     }
 
     func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
@@ -571,8 +574,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
             self?.wireframe.showAssetDetails(
                 from: self?.view,
-                chain: chainAsset.chain,
-                asset: chainAsset.asset
+                chainAsset: chainAsset
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
@@ -788,8 +790,7 @@ extension AssetListPresenter: RampDelegate {
 
             wireframe.showAssetDetails(
                 from: view,
-                chain: chainAsset.chain,
-                asset: chainAsset.asset
+                chainAsset: chainAsset
             )
             wireframe.presentRampDidComplete(
                 view: view,

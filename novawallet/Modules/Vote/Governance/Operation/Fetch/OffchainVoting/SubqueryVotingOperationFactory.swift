@@ -46,11 +46,11 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
 
     private func prepareBoundedVotingActivityQuery(
         for address: AccountAddress,
-        from block: BlockNumber
+        threshold: TimepointThreshold
     ) -> String {
         """
         {
-            castingVotings(filter: { voter: {equalTo: "\(address)"}, at: {greaterThanOrEqualTo: \(block)}}) {
+            castingVotings(filter: { voter: {equalTo: "\(address)"}, \(createFilter(for: threshold))}) {
                 nodes {
                     referendumId
                     standardVote
@@ -118,12 +118,23 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
 
     private func prepareVotingActivityQuery(
         for address: AccountAddress,
-        from block: BlockNumber?
+        threshold: TimepointThreshold?
     ) -> String {
-        if let block = block {
-            return prepareBoundedVotingActivityQuery(for: address, from: block)
+        if let threshold {
+            return prepareBoundedVotingActivityQuery(for: address, threshold: threshold)
         } else {
             return prepareAllVotingActityQuery(for: address)
+        }
+    }
+
+    func createFilter(for threshold: TimepointThreshold) -> String {
+        let value = threshold.value
+
+        return switch threshold.type {
+        case .block:
+            "at: {greaterThanOrEqualTo: \(value)}"
+        case .timestamp:
+            "timestamp: {greaterThanOrEqualTo: \(value)}"
         }
     }
 }
@@ -153,9 +164,9 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
 
     func createDirectVotesFetchOperation(
         for address: AccountAddress,
-        from block: BlockNumber?
+        from timepointThreshold: TimepointThreshold?
     ) -> CompoundOperationWrapper<GovernanceOffchainVotes> {
-        let query = prepareVotingActivityQuery(for: address, from: block)
+        let query = prepareVotingActivityQuery(for: address, threshold: timepointThreshold)
 
         let operation = createOperation(
             for: query
