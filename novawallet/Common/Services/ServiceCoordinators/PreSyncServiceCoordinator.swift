@@ -80,13 +80,29 @@ extension PreSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol {
 
 extension PreSyncServiceCoordinator {
     static func createDefault() -> PreSyncServiceCoordinatorProtocol {
-        let snapshot = AHMInfoService.Snapshot(
-            initialBalances: [:],
-            ahmInfoRepository: AHMInfoRepository.shared
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let substrateStorage = SubstrateDataStorageFacade.shared
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorage)
+        let ahmInfoRepository = AHMInfoRepository.shared
+        let settingsManager = SettingsManager.shared
+
+        let ahmInfoService = AHMInfoService(
+            blockNumberOperationFactory: BlockNumberOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            ),
+            chainRegistry: chainRegistry,
+            applicationHandler: ApplicationHandler(),
+            ahmInfoRepository: ahmInfoRepository,
+            assetBalanceRepository: repositoryFactory.createAssetBalanceRepository(),
+            settingsManager: settingsManager,
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         return PreSyncServiceCoordinator(
-            ahmInfoPreSyncService: snapshot.restoreService(with: \.ahmInfoShownChains)
+            ahmInfoPreSyncService: ahmInfoService
         )
     }
 }

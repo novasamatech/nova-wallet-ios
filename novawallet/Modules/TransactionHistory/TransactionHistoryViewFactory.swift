@@ -7,8 +7,7 @@ struct TransactionHistoryViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        swapState: SwapTokensFlowStateProtocol
     ) -> TransactionHistoryViewProtocol? {
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
@@ -22,15 +21,13 @@ struct TransactionHistoryViewFactory {
             for: accountId,
             chainAsset: chainAsset,
             selectedMetaAccount: selectedMetaAccount,
-            currencyManager: currencyManager,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            currencyManager: currencyManager
         )
 
         let wireframe = TransactionHistoryWireframe(
             chainAsset: chainAsset,
             operationState: operationState,
-            swapState: swapState,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            swapState: swapState
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -73,8 +70,7 @@ struct TransactionHistoryViewFactory {
         for accountId: AccountId,
         chainAsset: ChainAsset,
         selectedMetaAccount: MetaAccountModel,
-        currencyManager: CurrencyManagerProtocol,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        currencyManager: CurrencyManagerProtocol
     ) -> TransactionHistoryInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -100,10 +96,7 @@ struct TransactionHistoryViewFactory {
             logger: Logger.shared
         )
 
-        let ahmInfoFactory = AHMFullInfoFactory(
-            chainRegistry: chainRegistry,
-            ahmInfoService: ahmInfoSnapshot.restoreService()
-        )
+        let ahmInfoFactory = AHMFullInfoFactory()
 
         return .init(
             accountId: accountId,

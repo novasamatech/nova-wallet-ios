@@ -1,4 +1,5 @@
 import Foundation
+import Keystore_iOS
 import Operation_iOS
 
 protocol AHMFullInfoFactoryProtocol {
@@ -7,14 +8,35 @@ protocol AHMFullInfoFactoryProtocol {
 
 final class AHMFullInfoFactory {
     private let chainRegistry: ChainRegistryProtocol
-    private let ahmInfoService: AHMInfoServiceProtocol
+    private let settingsManager: SettingsManagerProtocol
+    private let ahmInfoRepository: AHMInfoRepositoryProtocol
+    private let filterSetKeypath: FilterSetKeyPath?
 
     init(
-        chainRegistry: ChainRegistryProtocol,
-        ahmInfoService: AHMInfoServiceProtocol
+        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
+        settingsManager: SettingsManagerProtocol = SettingsManager.shared,
+        ahmInfoRepository: AHMInfoRepositoryProtocol = AHMInfoRepository.shared,
+        filterSetKeypath: FilterSetKeyPath? = nil
     ) {
         self.chainRegistry = chainRegistry
-        self.ahmInfoService = ahmInfoService
+        self.settingsManager = settingsManager
+        self.ahmInfoRepository = ahmInfoRepository
+        self.filterSetKeypath = filterSetKeypath
+    }
+}
+
+// MARK: - Private
+
+private extension AHMFullInfoFactory {
+    func checkFetchAvailable(for chainId: ChainModel.Id) -> Bool {
+        let migrationEnded = settingsManager.ahmInfoShownChains.chainIds.contains(chainId)
+        let checkedByUser: Bool = if let filterSetKeypath {
+            settingsManager[keyPath: filterSetKeypath].chainIds.contains(chainId)
+        } else {
+            false
+        }
+
+        return migrationEnded && !checkedByUser
     }
 }
 
@@ -22,7 +44,11 @@ final class AHMFullInfoFactory {
 
 extension AHMFullInfoFactory: AHMFullInfoFactoryProtocol {
     func fetch(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AHMFullInfo?> {
-        let infoFetchWrapper = ahmInfoService.fetchPassedMigrationsInfo(by: chainId)
+        guard checkFetchAvailable(for: chainId) else {
+            return .createWithResult(nil)
+        }
+
+        let infoFetchWrapper = ahmInfoRepository.fetch(by: chainId)
 
         let mapOperation = ClosureOperation<AHMFullInfo?> { [weak self] in
             guard
@@ -51,4 +77,13 @@ extension AHMFullInfoFactory: AHMFullInfoFactoryProtocol {
 
         return infoFetchWrapper.insertingTail(operation: mapOperation)
     }
+}
+
+// MARK: - Internal types
+
+extension AHMFullInfoFactory {
+    typealias FilterSetKeyPath = KeyPath<
+        SettingsManagerProtocol,
+        AHMInfoExcludedChains
+    >
 }

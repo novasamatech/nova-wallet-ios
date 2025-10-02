@@ -6,8 +6,7 @@ struct AssetDetailsViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        swapState: SwapTokensFlowStateProtocol
     ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -17,8 +16,7 @@ struct AssetDetailsViewFactory {
         }
 
         let ahmInfoFactory = AHMFullInfoFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            ahmInfoService: ahmInfoSnapshot.restoreService(with: \.ahmAssetDetailsAlertClosedChains)
+            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
         )
 
         let interactor = AssetDetailsInteractor(
@@ -37,8 +35,7 @@ struct AssetDetailsViewFactory {
 
         let wireframe = AssetDetailsWireframe(
             operationState: operationState,
-            swapState: swapState,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            swapState: swapState
         )
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 

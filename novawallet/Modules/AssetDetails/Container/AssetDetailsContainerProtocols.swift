@@ -1,8 +1,7 @@
 protocol AssetDetailsContainerViewFactoryProtocol {
     static func createView(
         chainAsset: ChainAsset,
-        operationState: AssetOperationState,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol?
 }
 

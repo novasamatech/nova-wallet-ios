@@ -4,18 +4,15 @@ final class TransactionHistoryWireframe {
     let chainAsset: ChainAsset
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
-    let ahmInfoSnapshot: AHMInfoService.Snapshot
 
     init(
         chainAsset: ChainAsset,
         operationState: AssetOperationState,
-        swapState: SwapTokensFlowStateProtocol,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        swapState: SwapTokensFlowStateProtocol
     ) {
         self.chainAsset = chainAsset
         self.operationState = operationState
         self.swapState = swapState
-        self.ahmInfoSnapshot = ahmInfoSnapshot
     }
 }
 
@@ -75,8 +72,7 @@ extension TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     ) {
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chainAsset: chainAsset,
-            operationState: operationState,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            operationState: operationState
         ),
             let navigationController = view?.controller.navigationController
         else {

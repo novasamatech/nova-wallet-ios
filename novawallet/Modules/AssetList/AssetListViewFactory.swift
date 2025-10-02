@@ -4,11 +4,12 @@ import Keystore_iOS
 
 struct AssetListViewFactory {
     static func createView(
-        serviceCoordinator: ServiceCoordinatorProtocol,
-        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
+        dAppMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
-              let walletConnect = serviceCoordinator.dappMediator.children.first(
+              let walletConnect = dAppMediator.children.first(
                   where: { $0 is WalletConnectDelegateInputProtocol }
               ) as? WalletConnectDelegateInputProtocol else {
             return nil
@@ -21,7 +22,7 @@ struct AssetListViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetListModelObservable: assetListModelObservable,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            walletNotificationService: serviceCoordinator.walletNotificationService,
+            walletNotificationService: walletNotificationService,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
@@ -35,8 +36,9 @@ struct AssetListViewFactory {
 
         let wireframe = AssetListWireframe(
             assetListModelObservable: assetListModelObservable,
-            serviceCoordinator: serviceCoordinator,
-            preSyncServiceCoordinator: preSyncServiceCoordinator
+            dAppMediator: dAppMediator,
+            walletNotificationService: walletNotificationService,
+            delegatedAccountSyncService: delegatedAccountSyncService
         )
 
         let nftDownloadService = NftFileDownloadService(

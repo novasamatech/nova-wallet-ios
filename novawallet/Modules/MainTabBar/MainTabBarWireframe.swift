@@ -6,14 +6,9 @@ typealias FlowStatusPresentingClosure = (ModalAlertPresenting, ControllerBackedP
 
 final class MainTabBarWireframe {
     private let cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol
-    private let ahmInfoService: AHMInfoServiceProtocol
 
-    init(
-        cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol,
-        ahmInfoService: AHMInfoServiceProtocol
-    ) {
+    init(cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol) {
         self.cardScreenNavigationFactory = cardScreenNavigationFactory
-        self.ahmInfoService = ahmInfoService
     }
 }
 
@@ -74,8 +69,7 @@ private extension MainTabBarWireframe {
 
     func openAssetDetailsScreen(
         in controller: UITabBarController,
-        chainAsset: ChainAsset,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        chainAsset: ChainAsset
     ) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
@@ -90,8 +84,7 @@ private extension MainTabBarWireframe {
 
         guard let detailsView = AssetDetailsContainerViewFactory.createView(
             chainAsset: chainAsset,
-            operationState: operationState,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            operationState: operationState
         ) else {
             return
         }
@@ -418,8 +411,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         case let .historyDetails(chainAsset):
             openAssetDetailsScreen(
                 in: controller,
-                chainAsset: chainAsset,
-                ahmInfoSnapshot: ahmInfoService.createSnapshot()
+                chainAsset: chainAsset
             )
         case let .multisigOperationDetails(operationKey):
             openMultisigOperationScreen(in: controller, operationKey: operationKey)
