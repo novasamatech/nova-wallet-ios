@@ -378,6 +378,14 @@ struct ChainModel: Equatable, Hashable {
         additional?.disabledCheckMetadataHash?.boolValue ?? false
     }
 
+    var sessionsPerEra: UInt32? {
+        guard let value = additional?.sessionsPerEra?.unsignedIntValue else {
+            return nil
+        }
+
+        return UInt32(value)
+    }
+
     var isAddedByUser: Bool {
         source == .user
     }
