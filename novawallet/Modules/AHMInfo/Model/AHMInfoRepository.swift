@@ -88,7 +88,7 @@ extension AHMInfoRepository: AHMInfoRepositoryProtocol {
         return createFetchAllWrapper()
     }
 
-    func fetch(by chainId: ChainModel.Id) -> Operation_iOS.CompoundOperationWrapper<AHMRemoteData?> {
+    func fetch(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AHMRemoteData?> {
         let cachedValue = cache.fetchValue(for: chainId)
 
         guard cachedValue == nil else {

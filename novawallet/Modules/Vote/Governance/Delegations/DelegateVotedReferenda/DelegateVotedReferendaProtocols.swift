@@ -15,6 +15,7 @@ protocol DelegateVotedReferendaPresenterProtocol: AnyObject {
 protocol DelegateVotedReferendaInteractorInputProtocol: AnyObject {
     func setup()
     func retryBlockTime()
+    func retryTimepointThreshold()
     func retryOffchainVotingFetch()
     func remakeSubscription()
 }
@@ -37,4 +38,5 @@ enum DelegateVotedReferendaError: Error {
     case metadataSubscriptionFailed(Error)
     case offchainVotingFetchFailed(Error)
     case blockTimeFetchFailed(Error)
+    case timepointThresholdFetchFailed(Error)
 }

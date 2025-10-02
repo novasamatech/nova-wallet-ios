@@ -1,7 +1,6 @@
 protocol AssetDetailsContainerViewFactoryProtocol {
     static func createView(
-        chain: ChainModel,
-        asset: AssetModel,
+        chainAsset: ChainAsset,
         operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol?
 }
