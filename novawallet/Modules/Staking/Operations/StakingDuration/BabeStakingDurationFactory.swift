@@ -11,6 +11,25 @@ final class BabeStakingDurationFactory {
     }
 }
 
+private extension BabeStakingDurationFactory {
+    // temporary approach
+    // check https://github.com/novasamatech/nova-wallet-android/pull/2149
+    func createEraLengthWrapper(
+        using runtimeService: RuntimeCodingServiceProtocol
+    ) throws -> CompoundOperationWrapper<SessionIndex> {
+        let chain = try chainRegistry.getChainOrError(for: chainId)
+
+        guard let sessionsPerEra = chain.sessionsPerEra else {
+            return PrimitiveConstantOperation.wrapper(
+                for: Staking.eraLengthPath,
+                runtimeService: runtimeService
+            )
+        }
+
+        return .createWithResult(sessionsPerEra)
+    }
+}
+
 extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
     func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
         do {
@@ -23,9 +42,8 @@ extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
                 runtimeService: stakingRuntimeService
             )
 
-            let eraLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
-                for: Staking.eraLengthPath,
-                runtimeService: stakingRuntimeService
+            let eraLengthWrapper: CompoundOperationWrapper<SessionIndex> = try createEraLengthWrapper(
+                using: timelineRuntimeService
             )
 
             let sessionLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
