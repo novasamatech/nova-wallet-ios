@@ -4,10 +4,12 @@ import Operation_iOS
 final class BabeStakingDurationFactory {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
+    let eraLengthOperationFactory: EraLengthOperationFactoryProtocol
 
     init(chainId: ChainModel.Id, chainRegistry: ChainRegistryProtocol) {
         self.chainId = chainId
         self.chainRegistry = chainRegistry
+        eraLengthOperationFactory = EraLengthOperationFactory(chainRegistry: chainRegistry)
     }
 }
 
@@ -23,10 +25,7 @@ extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
                 runtimeService: stakingRuntimeService
             )
 
-            let eraLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
-                for: Staking.eraLengthPath,
-                runtimeService: stakingRuntimeService
-            )
+            let eraLengthWrapper = try eraLengthOperationFactory.createEraLengthWrapper(for: chainId)
 
             let sessionLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
                 for: BabePallet.sessionLengthPath,

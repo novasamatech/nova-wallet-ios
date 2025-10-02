@@ -478,6 +478,7 @@
 		0C33E8BA2D011D2E0090096A /* Debouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C33E8B92D011D2E0090096A /* Debouncer.swift */; };
 		0C363E982B6B63280065AFA6 /* HydraConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E972B6B63280065AFA6 /* HydraConstants.swift */; };
 		0C363E9C2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E9B2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift */; };
+		0C3731CC2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3731CB2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift */; };
 		0C37AFB72B555F1400009ECA /* StakingValidatorExposureFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFB62B555F1400009ECA /* StakingValidatorExposureFacade.swift */; };
 		0C37AFB92B5562B500009ECA /* StakingEraStakersExposureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFB82B5562B500009ECA /* StakingEraStakersExposureFactory.swift */; };
 		0C37AFBB2B556A9300009ECA /* StakingPagedExposureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */; };
@@ -6995,6 +6996,7 @@
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C363E972B6B63280065AFA6 /* HydraConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraConstants.swift; sourceTree = "<group>"; };
 		0C363E9B2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicConverter.swift; sourceTree = "<group>"; };
+		0C3731CB2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraLengthOperationFactory.swift; sourceTree = "<group>"; };
 		0C37AFB62B555F1400009ECA /* StakingValidatorExposureFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingValidatorExposureFacade.swift; sourceTree = "<group>"; };
 		0C37AFB82B5562B500009ECA /* StakingEraStakersExposureFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEraStakersExposureFactory.swift; sourceTree = "<group>"; };
 		0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPagedExposureFactory.swift; sourceTree = "<group>"; };
@@ -29530,6 +29532,7 @@
 				0CBF1A002E4370A3009EE38D /* RelayStkTimelineParamsOperationFactory.swift */,
 				0CBF1A022E43757D009EE38D /* BabeTimelineParamsOperationFactory.swift */,
 				0CBF1A102E437DBA009EE38D /* AuraTimelineParamsOperationFactory.swift */,
+				0C3731CB2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift */,
 			);
 			path = EraCountdownOperationFactory;
 			sourceTree = "<group>";
@@ -34829,6 +34832,7 @@
 				77AAE2282AFC1167006872CC /* ChainModel+historyId.swift in Sources */,
 				2DE757322D43D4D200EDE5E8 /* PseudoRandomNumberGenerator.swift in Sources */,
 				84981EEC29D4385F00948306 /* TransactionHistoryHybridFetcher.swift in Sources */,
+				0C3731CC2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift in Sources */,
 				0C75E2982C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift in Sources */,
 				0C277DB22D8336A5004FF053 /* PayCardSheetMode.swift in Sources */,
 				2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */,

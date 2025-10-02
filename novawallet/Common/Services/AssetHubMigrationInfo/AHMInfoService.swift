@@ -7,8 +7,6 @@ typealias AHMInfoPreSyncServiceProtocol = PreSyncServiceProtocol & AHMInfoServic
 
 protocol AHMInfoServiceProtocol {
     func fetchPassedMigrationsInfo() -> CompoundOperationWrapper<[AHMRemoteData]>
-    func fetchPassedMigrationsInfo(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AHMRemoteData?>
-    func createSnapshot() -> AHMInfoService.Snapshot
 }
 
 final class AHMInfoService {
@@ -18,7 +16,6 @@ final class AHMInfoService {
     private let ahmInfoRepository: AHMInfoRepositoryProtocol
     private let assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
     private let settingsManager: SettingsManagerProtocol
-    private let filterSetKeypath: FilterSetKeyPath?
 
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
@@ -34,7 +31,6 @@ final class AHMInfoService {
         ahmInfoRepository: AHMInfoRepositoryProtocol,
         assetBalanceRepository: AnyDataProviderRepository<AssetBalance>,
         settingsManager: SettingsManagerProtocol,
-        filterSetKeypath: FilterSetKeyPath?,
         initialBalances: [ChainAssetId: AssetBalance] = [:],
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -45,7 +41,6 @@ final class AHMInfoService {
         self.ahmInfoRepository = ahmInfoRepository
         self.assetBalanceRepository = assetBalanceRepository
         self.settingsManager = settingsManager
-        self.filterSetKeypath = filterSetKeypath
         balances = initialBalances
         self.operationQueue = operationQueue
         self.logger = logger
@@ -70,11 +65,7 @@ private extension AHMInfoService {
     }
 
     func filteredConfigs(from configs: [AHMRemoteData]) -> [AHMRemoteData] {
-        let excludedSet = if let filterSetKeypath {
-            settingsManager[keyPath: filterSetKeypath]
-        } else {
-            AHMInfoExcludedChains.empty()
-        }
+        let excludedSet = settingsManager.ahmInfoShownChains
 
         let relevantConfigs = configs.filter {
             let chainAssetId = ChainAssetId(
@@ -108,12 +99,8 @@ private extension AHMInfoService {
         )
     }
 
-    func createUpdatedConfigsWrapper(for chainId: ChainModel.Id? = nil) -> CompoundOperationWrapper<[AHMRemoteData]> {
-        let relevantConfigsWrapper = if let chainId {
-            createRelevantConfigsWrapper(for: chainId)
-        } else {
-            createRelevantConfigsWrapper()
-        }
+    func createUpdatedConfigsWrapper(for _: ChainModel.Id? = nil) -> CompoundOperationWrapper<[AHMRemoteData]> {
+        let relevantConfigsWrapper = createRelevantConfigsWrapper()
 
         let chainCurrentBlockNumbersOperation = createChainBlockNumbersOperation(
             dependingOn: relevantConfigsWrapper
@@ -153,26 +140,6 @@ private extension AHMInfoService {
             let ahmInfoConfigs = try ahmInfoWrapper.targetOperation.extractNoCancellableResultData()
 
             return filteredConfigs(from: ahmInfoConfigs)
-        }
-
-        resultOperation.addDependency(ahmInfoWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: ahmInfoWrapper.allOperations
-        )
-    }
-
-    func createRelevantConfigsWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<[AHMRemoteData]> {
-        let ahmInfoWrapper = ahmInfoRepository.fetch(by: chainId)
-
-        let resultOperation = ClosureOperation<[AHMRemoteData]> { [weak self] in
-            guard
-                let self,
-                let ahmInfoConfig = try ahmInfoWrapper.targetOperation.extractNoCancellableResultData()
-            else { return [] }
-
-            return filteredConfigs(from: [ahmInfoConfig])
         }
 
         resultOperation.addDependency(ahmInfoWrapper.targetOperation)
@@ -244,84 +211,6 @@ extension AHMInfoService: AHMInfoPreSyncServiceProtocol {
     func fetchPassedMigrationsInfo() -> CompoundOperationWrapper<[AHMRemoteData]> {
         createUpdatedConfigsWrapper()
     }
-
-    func fetchPassedMigrationsInfo(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AHMRemoteData?> {
-        let wrapper = createUpdatedConfigsWrapper(for: chainId)
-
-        let mapOperation = ClosureOperation<AHMRemoteData?> {
-            let configs = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            return configs.first
-        }
-
-        mapOperation.addDependency(wrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: wrapper.allOperations
-        )
-    }
-
-    func createSnapshot() -> Snapshot {
-        Snapshot(
-            initialBalances: balances,
-            ahmInfoRepository: ahmInfoRepository
-        )
-    }
-}
-
-// MARK: - Memento
-
-extension AHMInfoService {
-    struct Snapshot {
-        private let initialBalances: [ChainAssetId: AssetBalance]
-        private let ahmInfoRepository: AHMInfoRepositoryProtocol
-
-        init(
-            initialBalances: [ChainAssetId: AssetBalance],
-            ahmInfoRepository: AHMInfoRepositoryProtocol
-        ) {
-            self.initialBalances = initialBalances
-            self.ahmInfoRepository = ahmInfoRepository
-        }
-
-        func restoreService(with filterSetKeypath: FilterSetKeyPath? = nil) -> AHMInfoPreSyncServiceProtocol {
-            createService(with: filterSetKeypath)
-        }
-
-        private func createService(with filterSetKeypath: FilterSetKeyPath?) -> AHMInfoService {
-            let chainRegistry = ChainRegistryFacade.sharedRegistry
-            let operationQueue = OperationManagerFacade.sharedDefaultQueue
-            let substrateStorage = SubstrateDataStorageFacade.shared
-            let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorage)
-            let settingsManager = SettingsManager.shared
-
-            return AHMInfoService(
-                blockNumberOperationFactory: BlockNumberOperationFactory(
-                    chainRegistry: chainRegistry,
-                    operationQueue: operationQueue
-                ),
-                chainRegistry: chainRegistry,
-                applicationHandler: ApplicationHandler(),
-                ahmInfoRepository: ahmInfoRepository,
-                assetBalanceRepository: repositoryFactory.createAssetBalanceRepository(),
-                settingsManager: settingsManager,
-                filterSetKeypath: filterSetKeypath,
-                initialBalances: initialBalances,
-                operationQueue: operationQueue,
-                logger: Logger.shared
-            )
-        }
-    }
-}
-
-// MARK: - Internal types
-
-extension AHMInfoService {
-    typealias FilterSetKeyPath = KeyPath<
-        SettingsManagerProtocol,
-        AHMInfoExcludedChains
-    >
 }
 
 // MARK: - Private types

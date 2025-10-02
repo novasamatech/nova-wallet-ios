@@ -3,8 +3,7 @@ import Foundation_iOS
 final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryProtocol {
     static func createView(
         chainAsset: ChainAsset,
-        operationState: AssetOperationState,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol? {
         let swapState = SwapTokensFlowState(
             assetListObservable: operationState.assetListObservable,
@@ -17,14 +16,12 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
             let accountView = AssetDetailsViewFactory.createView(
                 chainAsset: chainAsset,
                 operationState: operationState,
-                swapState: swapState,
-                ahmInfoSnapshot: ahmInfoSnapshot
+                swapState: swapState
             ),
             let historyView = TransactionHistoryViewFactory.createView(
                 chainAsset: chainAsset,
                 operationState: operationState,
-                swapState: swapState,
-                ahmInfoSnapshot: ahmInfoSnapshot
+                swapState: swapState
             ) else {
             return nil
         }

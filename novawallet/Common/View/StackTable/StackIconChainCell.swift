@@ -26,7 +26,7 @@ final class StackIconChainCell: RowView<UIView>, StackTableViewCellProtocol {
         chainView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview()
-            make.height.equalTo(22.0)
+            make.height.equalTo(24.0)
         }
 
         borderView.strokeWidth = 0.0

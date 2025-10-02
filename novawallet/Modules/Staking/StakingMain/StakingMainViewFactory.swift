@@ -7,15 +7,13 @@ import Operation_iOS
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
         let interactor = createInteractor(
             with: settings,
-            stakingOption: stakingOption,
-            ahmInfoSnapshot: ahmInfoSnapshot
+            stakingOption: stakingOption
         )
         let wireframe = StakingMainWireframe()
 
@@ -64,17 +62,13 @@ enum StakingMainViewFactory {
 
     private static func createInteractor(
         with settings: SettingsManagerProtocol,
-        stakingOption: Multistaking.ChainAssetOption,
-        ahmInfoSnapshot: AHMInfoService.Snapshot
+        stakingOption: Multistaking.ChainAssetOption
     ) -> StakingMainInteractor {
         let mapper = AnyCoreDataMapper(StakingRewardsFilterMapper())
         let facade = UserDataStorageFacade.shared
         let stakingRewardsFilterRepository = AnyDataProviderRepository(facade.createRepository(mapper: mapper))
 
-        let ahmInfoFactory = AHMFullInfoFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            ahmInfoService: ahmInfoSnapshot.restoreService(with: \.ahmStakingAlertClosedChains)
-        )
+        let ahmInfoFactory = AHMFullInfoFactory(filterSetKeypath: \.ahmStakingAlertClosedChains)
 
         return .init(
             ahmInfoFactory: ahmInfoFactory,

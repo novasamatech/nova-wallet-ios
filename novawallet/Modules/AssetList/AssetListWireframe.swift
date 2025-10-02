@@ -3,22 +3,21 @@ import UIKit
 import UIKit_iOS
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    var delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
-        serviceCoordinator.delegatedAccountSyncService
-    }
-
     let assetListModelObservable: AssetListModelObservable
-    let serviceCoordinator: ServiceCoordinatorProtocol
-    let preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
+    let dAppMediator: DAppInteractionMediating
+    let walletNotificationService: WalletNotificationServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         assetListModelObservable: AssetListModelObservable,
-        serviceCoordinator: ServiceCoordinatorProtocol,
-        preSyncServiceCoordinator: PreSyncServiceCoordinatorProtocol
+        dAppMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.assetListModelObservable = assetListModelObservable
-        self.serviceCoordinator = serviceCoordinator
-        self.preSyncServiceCoordinator = preSyncServiceCoordinator
+        self.dAppMediator = dAppMediator
+        self.walletNotificationService = walletNotificationService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
     func showAssetDetails(
@@ -37,8 +36,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chainAsset: chainAsset,
-            operationState: operationState,
-            ahmInfoSnapshot: preSyncServiceCoordinator.ahmInfoService.createSnapshot()
+            operationState: operationState
         ),
             let navigationController = view?.controller.navigationController else {
             return
@@ -223,7 +221,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     func showWalletConnect(from view: AssetListViewProtocol?) {
         guard
             let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
-                with: serviceCoordinator.dappMediator
+                with: dAppMediator
             ) else {
             return
         }
