@@ -40,7 +40,7 @@ final class DelegateVotedReferendaOperationFactory: GovOffchainModelWrapperFacto
     ) -> CompoundOperationWrapper<DelegateVotedReferendaVotes> {
         let votesWrapper = offchainOperationFactory.createDirectVotesFetchOperation(
             for: params.address,
-            from: params.blockNumber
+            from: params.timepointThreshold
         )
 
         let currentChain = chain
