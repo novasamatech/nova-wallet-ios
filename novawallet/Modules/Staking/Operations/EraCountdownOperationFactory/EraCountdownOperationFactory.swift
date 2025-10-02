@@ -12,6 +12,7 @@ final class RelayStkEraCountdownOperationFactory {
     let storageRequestFactory: StorageRequestFactoryProtocol
     let timelineOperationFactory: RelayStkTimelineParamsOperationFactoryProtocol
     let eraStartOperationFactory: RelayStkEraStartOperationFactoryProtocol
+    let eraLengthOperationFactory: EraLengthOperationFactoryProtocol
 
     init(
         chainId: ChainModel.Id,
@@ -25,6 +26,7 @@ final class RelayStkEraCountdownOperationFactory {
         self.storageRequestFactory = storageRequestFactory
         self.timelineOperationFactory = timelineOperationFactory
         self.eraStartOperationFactory = eraStartOperationFactory
+        eraLengthOperationFactory = EraLengthOperationFactory(chainRegistry: chainRegistry)
     }
 }
 
@@ -36,10 +38,7 @@ extension RelayStkEraCountdownOperationFactory: EraCountdownOperationFactoryProt
 
             let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-            let eraLengthWrapper: CompoundOperationWrapper<SessionIndex> = PrimitiveConstantOperation.wrapper(
-                for: Staking.eraLengthPath,
-                runtimeService: runtimeService
-            )
+            let eraLengthWrapper = eraLengthOperationFactory.createEraLengthWrapper(for: chainId)
 
             let activeEraWrapper: CompoundOperationWrapper<StorageResponse<Staking.ActiveEraInfo>> =
                 storageRequestFactory.queryItem(
