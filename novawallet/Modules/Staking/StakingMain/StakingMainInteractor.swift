@@ -71,19 +71,35 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         operationQueue.addOperation(fetchFilterOperation)
     }
 
+    func ahmDestinationChainMatchIfExists(info: AHMFullInfo?) -> Bool {
+        guard let info else { return true }
+
+        return info.destinationChain.chainId == chainAsset.chain.chainId
+    }
+
     func provideAHMInfo() {
-        let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
+        guard let parentChainId = chainAsset.chain.parentId else {
+            return
+        }
+
+        let fetchWrapper = ahmInfoFactory.fetch(by: parentChainId)
 
         execute(
             wrapper: fetchWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(info):
-                self?.presenter?.didReceiveAHMInfo(info)
+                guard ahmDestinationChainMatchIfExists(info: info) else {
+                    return
+                }
+
+                presenter?.didReceiveAHMInfo(info)
             case let .failure(error):
-                self?.logger.error("Failed on fetch AHM info: \(error)")
+                logger.error("Failed on fetch AHM info: \(error)")
             }
         }
     }
