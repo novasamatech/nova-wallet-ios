@@ -34,6 +34,8 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
 
+    private lazy var privacyEnabled: Bool = privacyModeEnabled
+
     private var organizerViewModel: AssetListOrganizerViewModel?
 
     private(set) var walletConnectSessionsCount: Int = 0
@@ -477,8 +479,14 @@ private extension AssetListPresenter {
     func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
         ViewModelFactoryGenericParams(
             locale: selectedLocale,
-            privacyModeEnabled: privacyModeEnabled
+            privacyModeEnabled: privacyEnabled
         )
+    }
+
+    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
     }
 }
 
@@ -630,7 +638,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func togglePrivacyMode() {
-        privacyStateManager?.privacyModeEnabled.toggle()
+        createHapticFeedback(style: .light)
+        privacyEnabled.toggle()
+        provideHeaderViewModel()
+        provideOrganizerViewModel()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            self.privacyStateManager?.privacyModeEnabled.toggle()
+        }
     }
 }
 
@@ -833,8 +848,8 @@ extension AssetListPresenter: PrivacyModeSupporting {
     func applyPrivacyMode() {
         guard let view, view.isSetup else { return }
 
-        provideHeaderViewModel()
+        privacyEnabled = privacyModeEnabled
+
         provideAssetViewModels()
-        provideOrganizerViewModel()
     }
 }
