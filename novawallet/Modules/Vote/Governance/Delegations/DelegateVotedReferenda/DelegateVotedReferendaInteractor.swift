@@ -169,6 +169,7 @@ extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInpu
     }
 
     func setup() {
+        timepointThresholdService.setup()
         subscribeToBlockNumber()
         subscribeTimepointThreshold()
         subscribeToMetadata(for: governanceOption)
