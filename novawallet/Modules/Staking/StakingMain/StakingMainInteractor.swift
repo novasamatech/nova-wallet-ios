@@ -150,7 +150,11 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     func closeAHMAlert() {
-        settingsManager.ahmStakingAlertClosedChains.add(chainAsset.chain.chainId)
+        guard let parentChainId = chainAsset.chain.parentId else {
+            return
+        }
+
+        settingsManager.ahmStakingAlertClosedChains.add(parentChainId)
         provideAHMInfo()
     }
 }
