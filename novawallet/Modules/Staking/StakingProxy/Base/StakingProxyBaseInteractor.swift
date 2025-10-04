@@ -14,6 +14,8 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
     let feeProxy: ExtrinsicFeeProxyProtocol
     let sharedState: RelaychainStakingSharedStateProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let operationQueue: OperationQueue
+
     var chainAsset: ChainAsset {
         sharedState.stakingOption.chainAsset
     }
@@ -21,7 +23,6 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private var calculator = ProxyDepositCalculator()
     private var proxyProvider: AnyDataProvider<DecodedProxyDefinition>?
-    private let operationQueue: OperationQueue
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
 

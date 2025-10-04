@@ -5,6 +5,7 @@ import Keystore_iOS
 final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractorBase {
     let nomination: PreparedNomination<InitiatedBonding>
     let selectedAccount: WalletDisplayAddress
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init(
         selectedAccount: WalletDisplayAddress,
@@ -13,15 +14,17 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         signer: SigningWrapperProtocol,
         nomination: PreparedNomination<InitiatedBonding>,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.nomination = nomination
         self.selectedAccount = selectedAccount
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
 
         super.init(
             balanceAccountAddress: selectedAccount.address,
@@ -32,7 +35,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             signer: signer,
             currencyManager: currencyManager
         )
@@ -100,6 +103,30 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         return closure
     }
 
+    private func performNominationSubmission(for coderFactory: RuntimeCoderFactoryProtocol) {
+        guard let closure = createExtrinsicBuilderClosure(for: coderFactory) else {
+            return
+        }
+
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: closure,
+            signer: signer
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result.mapToExtrinsicSubmittedResult() {
+            case let .success(model):
+                self?.presenter.didCompleteNomination(submission: model)
+            case let .failure(error):
+                self?.presenter.didFailNomination(error: error)
+            }
+        }
+    }
+
     override func setup() {
         provideConfirmationModel()
 
@@ -142,24 +169,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         runtimeService.fetchCoderFactory(
             runningIn: operationManager,
             completion: { [weak self] coderFactory in
-                guard
-                    let closure = self?.createExtrinsicBuilderClosure(for: coderFactory),
-                    let signer = self?.signer else {
-                    return
-                }
-
-                self?.extrinsicService.submit(
-                    closure,
-                    signer: signer,
-                    runningIn: .main
-                ) { result in
-                    switch result {
-                    case let .success(model):
-                        self?.presenter.didCompleteNomination(submission: model)
-                    case let .failure(error):
-                        self?.presenter.didFailNomination(error: error)
-                    }
-                }
+                self?.performNominationSubmission(for: coderFactory)
             }, errorClosure: { [weak self] error in
                 self?.presenter.didFailNomination(error: error)
             }

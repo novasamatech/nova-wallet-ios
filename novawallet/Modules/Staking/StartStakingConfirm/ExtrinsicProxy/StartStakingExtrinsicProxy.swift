@@ -12,7 +12,7 @@ protocol StartStakingExtrinsicProxyProtocol {
     )
 
     func submit(
-        using service: ExtrinsicServiceProtocol,
+        using submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         stakingOption: SelectedStakingOption,
         amount: BigUInt,
@@ -131,7 +131,7 @@ final class StartStakingExtrinsicProxy {
     }
 
     private func submitDirectStaking(
-        service: ExtrinsicServiceProtocol,
+        submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         params: DirectStakingParams,
         coderFactory: RuntimeCoderFactoryProtocol,
@@ -142,28 +142,49 @@ final class StartStakingExtrinsicProxy {
             coderFactory: coderFactory
         )
 
-        service.submit(
-            builderClosure,
+        submitExtrinsic(
+            using: submissionMonitor,
             signer: signer,
-            runningIn: .main,
-            completion: closure
+            builderClosure: builderClosure,
+            closure: closure
         )
     }
 
     private func submitPoolStaking(
-        service: ExtrinsicServiceProtocol,
+        submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         params: PoolStakingParams,
         closure: @escaping ExtrinsicSubmitClosure
     ) {
         let builderClosure = createPoolStakingBuilderClosure(for: params)
 
-        service.submit(
-            builderClosure,
+        submitExtrinsic(
+            using: submissionMonitor,
             signer: signer,
-            runningIn: .main,
-            completion: closure
+            builderClosure: builderClosure,
+            closure: closure
         )
+    }
+
+    private func submitExtrinsic(
+        using submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
+        signer: SigningWrapperProtocol,
+        builderClosure: @escaping ExtrinsicBuilderClosure,
+        closure: @escaping ExtrinsicSubmitClosure
+    ) {
+        let wrapper = submissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            payingIn: nil,
+            signer: signer
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            closure(result.mapToExtrinsicSubmittedResult())
+        }
     }
 }
 
@@ -204,7 +225,7 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
     }
 
     func submit(
-        using service: ExtrinsicServiceProtocol,
+        using submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
         stakingOption: SelectedStakingOption,
         amount: BigUInt,
@@ -218,7 +239,7 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
                 runningIn: OperationManager(operationQueue: operationQueue),
                 completion: { [weak self] coderFactory in
                     self?.submitDirectStaking(
-                        service: service,
+                        submissionMonitor: submissionMonitor,
                         signer: signer,
                         params: .init(
                             controller: controller,
@@ -234,7 +255,7 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
             )
         case let .pool(selectedPool):
             submitPoolStaking(
-                service: service,
+                submissionMonitor: submissionMonitor,
                 signer: signer,
                 params: .init(pool: selectedPool, amount: amount),
                 closure: closure

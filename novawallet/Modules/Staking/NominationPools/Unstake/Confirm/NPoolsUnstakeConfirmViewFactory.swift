@@ -80,13 +80,20 @@ struct NPoolsUnstakeConfirmViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
+        )
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(with: extrinsicService)
 
         let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)
         let durationOperationFactory = state.createStakingDurationOperationFactory()
@@ -100,6 +107,7 @@ struct NPoolsUnstakeConfirmViewFactory {
             chainAsset: chainAsset,
             signingWrapper: signingWrapper,
             extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             feeProxy: ExtrinsicFeeProxy(),
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,

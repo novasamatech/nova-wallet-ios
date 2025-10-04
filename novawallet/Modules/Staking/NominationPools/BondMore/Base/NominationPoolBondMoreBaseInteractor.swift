@@ -17,8 +17,8 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     let runtimeService: RuntimeCodingServiceProtocol
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
+    let operationQueue: OperationQueue
 
-    private var operationQueue: OperationQueue
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     private var priceProvider: StreamableProvider<PriceData>?
@@ -49,7 +49,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
@@ -68,10 +68,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.assetStorageInfoFactory = assetStorageInfoFactory
 
-        extrinsicService = extrinsicServiceFactory.createService(
-            account: selectedAccount.chainAccount,
-            chain: chainAsset.chain
-        )
+        self.extrinsicService = extrinsicService
 
         self.currencyManager = currencyManager
     }
