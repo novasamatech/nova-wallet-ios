@@ -5,6 +5,7 @@ protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol, Containa
     func didReceive(balance: AssetDetailsBalanceModel)
     func didReceive(availableOperations: AssetDetailsOperation)
     func didReceiveChartAvailable(_ available: Bool)
+    func didReceive(ahmAlert: AHMAlertView.Model?)
 }
 
 protocol AssetDetailsPresenterProtocol: AnyObject {
@@ -14,10 +15,14 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
     func handleBuySell()
     func handleLocks()
     func handleSwap()
+    func handleAHMAlertClose()
+    func handleAHMAlertAction()
+    func handleAHMAlertLearnMore()
 }
 
 protocol AssetDetailsInteractorInputProtocol: AnyObject {
     func setup()
+    func closeAHMAlert()
 }
 
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
@@ -29,12 +34,20 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
     func didReceive(rampActions: [RampAction])
+    func didReceive(ahmInfo: AHMFullInfo?)
 }
 
 protocol AssetDetailsWireframeProtocol: AnyObject,
     RampActionsPresentable, RampPresentable, AlertPresentable,
-    MessageSheetPresentable, FeatureSupportChecking {
-    func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    MessageSheetPresentable, FeatureSupportChecking, WebPresentable {
+    func showSendTokens(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset
+    )
+    func showAssetDetails(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset
+    )
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,
         chainAsset: ChainAsset,
@@ -57,4 +70,5 @@ enum AssetDetailsError: Error {
     case externalBalances(Error)
     case swaps(Error)
     case holds(Error)
+    case ahmInfo(Error)
 }

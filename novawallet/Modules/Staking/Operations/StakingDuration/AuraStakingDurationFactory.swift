@@ -7,6 +7,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
+    let eraLengthOperationFactory: EraLengthOperationFactoryProtocol
 
     init(
         chainId: ChainModel.Id,
@@ -20,6 +21,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
         self.blockTimeService = blockTimeService
         self.blockTimeOperationFactory = blockTimeOperationFactory
         self.sessionPeriodOperationFactory = sessionPeriodOperationFactory
+        eraLengthOperationFactory = EraLengthOperationFactory(chainRegistry: chainRegistry)
     }
 
     func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
@@ -33,10 +35,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
                 dependingOn: runtimeFactoryOperation
             )
 
-            let eraLengthOperation: BaseOperation<SessionIndex> = PrimitiveConstantOperation.operation(
-                for: Staking.eraLengthPath,
-                dependingOn: runtimeFactoryOperation
-            )
+            let eraLengthWrapper = eraLengthOperationFactory.createEraLengthWrapper(for: chainId)
 
             let sessionLengthOperation = sessionPeriodOperationFactory.createOperation(dependingOn: runtimeFactoryOperation)
 
@@ -47,7 +46,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
 
             let mergeOperation = ClosureOperation<StakingDuration> {
                 let sessionLength = try sessionLengthOperation.extractNoCancellableResultData()
-                let eraLength = try eraLengthOperation.extractNoCancellableResultData()
+                let eraLength = try eraLengthWrapper.targetOperation.extractNoCancellableResultData()
                 let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
                 let unlocking = try unlockingOperation.extractNoCancellableResultData()
 
@@ -62,7 +61,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
                 )
             }
 
-            let constOperations = [unlockingOperation, sessionLengthOperation, eraLengthOperation]
+            let constOperations = [unlockingOperation, sessionLengthOperation] + eraLengthWrapper.allOperations
 
             constOperations.forEach { constOperation in
                 constOperation.addDependency(runtimeFactoryOperation)

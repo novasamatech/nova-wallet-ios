@@ -40211,6 +40211,21 @@ import Foundation_iOS
     
     
     
+     func didReceiveAHMAlert(viewModel: AHMAlertView.Model?)  {
+        
+    return cuckoo_manager.call("didReceiveAHMAlert(viewModel: AHMAlertView.Model?)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveAHMAlert(viewModel: viewModel))
+        
+    }
+    
+    
+    
      func didEditRewardFilters()  {
         
     return cuckoo_manager.call("didEditRewardFilters()",
@@ -40293,6 +40308,11 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveSelectedEntity(_: StakingSelectedEntityViewModel)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveAHMAlert<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AHMAlertView.Model?)> where M1.OptionalMatchedType == AHMAlertView.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(AHMAlertView.Model?)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveAHMAlert(viewModel: AHMAlertView.Model?)", parameterMatchers: matchers))
+	    }
+	    
 	    func didEditRewardFilters() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didEditRewardFilters()", parameterMatchers: matchers))
@@ -40368,6 +40388,12 @@ import Foundation_iOS
 	    func didReceiveSelectedEntity<M1: Cuckoo.Matchable>(_ entity: M1) -> Cuckoo.__DoNotUse<(StakingSelectedEntityViewModel), Void> where M1.MatchedType == StakingSelectedEntityViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingSelectedEntityViewModel)>] = [wrap(matchable: entity) { $0 }]
 	        return cuckoo_manager.verify("didReceiveSelectedEntity(_: StakingSelectedEntityViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveAHMAlert<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AHMAlertView.Model?), Void> where M1.OptionalMatchedType == AHMAlertView.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(AHMAlertView.Model?)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceiveAHMAlert(viewModel: AHMAlertView.Model?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -40453,6 +40479,12 @@ import Foundation_iOS
     
     
      func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveAHMAlert(viewModel: AHMAlertView.Model?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -40615,6 +40647,36 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func handleAHMAlertClose()  {
+        
+    return cuckoo_manager.call("handleAHMAlertClose()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.handleAHMAlertClose())
+        
+    }
+    
+    
+    
+     func handleAHMAlertLearnMore()  {
+        
+    return cuckoo_manager.call("handleAHMAlertLearnMore()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.handleAHMAlertLearnMore())
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingMainPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -40662,6 +40724,16 @@ import Foundation_iOS
 	    func selectPeriod() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "selectPeriod()", parameterMatchers: matchers))
+	    }
+	    
+	    func handleAHMAlertClose() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "handleAHMAlertClose()", parameterMatchers: matchers))
+	    }
+	    
+	    func handleAHMAlertLearnMore() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "handleAHMAlertLearnMore()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -40728,6 +40800,18 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("selectPeriod()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func handleAHMAlertClose() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("handleAHMAlertClose()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func handleAHMAlertLearnMore() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("handleAHMAlertLearnMore()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -40782,6 +40866,18 @@ import Foundation_iOS
     
     
      func selectPeriod()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func handleAHMAlertClose()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func handleAHMAlertLearnMore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -40857,6 +40953,21 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func closeAHMAlert()  {
+        
+    return cuckoo_manager.call("closeAHMAlert()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.closeAHMAlert())
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingMainInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -40879,6 +40990,11 @@ import Foundation_iOS
 	    func save<M1: Cuckoo.Matchable>(filter: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardFiltersPeriod)> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorInputProtocol.self, method: "save(filter: StakingRewardFiltersPeriod)", parameterMatchers: matchers))
+	    }
+	    
+	    func closeAHMAlert() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorInputProtocol.self, method: "closeAHMAlert()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -40915,6 +41031,12 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("save(filter: StakingRewardFiltersPeriod)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func closeAHMAlert() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("closeAHMAlert()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -40939,6 +41061,12 @@ import Foundation_iOS
     
     
      func save(filter: StakingRewardFiltersPeriod)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func closeAHMAlert()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -40999,6 +41127,21 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?)  {
+        
+    return cuckoo_manager.call("didReceiveAHMInfo(_: AHMFullInfo?)",
+            parameters: (ahmInfo),
+            escapingParameters: (ahmInfo),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveAHMInfo(ahmInfo))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingMainInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -41016,6 +41159,11 @@ import Foundation_iOS
 	    func didReceiveRewardFilter<M1: Cuckoo.Matchable>(_ filter: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardFiltersPeriod)> where M1.MatchedType == StakingRewardFiltersPeriod {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardFiltersPeriod)>] = [wrap(matchable: filter) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveRewardFilter(_: StakingRewardFiltersPeriod)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveAHMInfo<M1: Cuckoo.OptionalMatchable>(_ ahmInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AHMFullInfo?)> where M1.OptionalMatchedType == AHMFullInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(AHMFullInfo?)>] = [wrap(matchable: ahmInfo) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveAHMInfo(_: AHMFullInfo?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -41046,6 +41194,12 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("didReceiveRewardFilter(_: StakingRewardFiltersPeriod)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveAHMInfo<M1: Cuckoo.OptionalMatchable>(_ ahmInfo: M1) -> Cuckoo.__DoNotUse<(AHMFullInfo?), Void> where M1.OptionalMatchedType == AHMFullInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(AHMFullInfo?)>] = [wrap(matchable: ahmInfo) { $0 }]
+	        return cuckoo_manager.verify("didReceiveAHMInfo(_: AHMFullInfo?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -41064,6 +41218,12 @@ import Foundation_iOS
     
     
      func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41154,6 +41314,21 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
+        
+    return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
+            parameters: (url, view, style),
+            escapingParameters: (url, view, style),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showWeb(url: url, from: view, style: style))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingMainWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -41181,6 +41356,11 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
+	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -41223,6 +41403,12 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
+	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
+	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -41253,6 +41439,12 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

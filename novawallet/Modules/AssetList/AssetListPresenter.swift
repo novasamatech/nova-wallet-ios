@@ -34,6 +34,8 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
 
+    private lazy var privacyEnabled: Bool = privacyModeEnabled
+
     private var organizerViewModel: AssetListOrganizerViewModel?
 
     private(set) var walletConnectSessionsCount: Int = 0
@@ -468,14 +470,23 @@ private extension AssetListPresenter {
             return
         }
 
-        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: ChainAsset(chain: chain, asset: asset)
+        )
     }
 
     func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
         ViewModelFactoryGenericParams(
             locale: selectedLocale,
-            privacyModeEnabled: privacyModeEnabled
+            privacyModeEnabled: privacyEnabled
         )
+    }
+
+    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
     }
 }
 
@@ -563,8 +574,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
             self?.wireframe.showAssetDetails(
                 from: self?.view,
-                chain: chainAsset.chain,
-                asset: chainAsset.asset
+                chainAsset: chainAsset
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
@@ -628,7 +638,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func togglePrivacyMode() {
-        privacyStateManager?.privacyModeEnabled.toggle()
+        createHapticFeedback(style: .light)
+        privacyEnabled.toggle()
+        provideHeaderViewModel()
+        provideOrganizerViewModel()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            self.privacyStateManager?.privacyModeEnabled.toggle()
+        }
     }
 }
 
@@ -773,8 +790,7 @@ extension AssetListPresenter: RampDelegate {
 
             wireframe.showAssetDetails(
                 from: view,
-                chain: chainAsset.chain,
-                asset: chainAsset.asset
+                chainAsset: chainAsset
             )
             wireframe.presentRampDidComplete(
                 view: view,
@@ -832,8 +848,8 @@ extension AssetListPresenter: PrivacyModeSupporting {
     func applyPrivacyMode() {
         guard let view, view.isSetup else { return }
 
-        provideHeaderViewModel()
+        privacyEnabled = privacyModeEnabled
+
         provideAssetViewModels()
-        provideOrganizerViewModel()
     }
 }

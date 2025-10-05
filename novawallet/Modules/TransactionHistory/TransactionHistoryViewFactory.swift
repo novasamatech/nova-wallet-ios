@@ -20,6 +20,7 @@ struct TransactionHistoryViewFactory {
         let interactor = createInteractor(
             for: accountId,
             chainAsset: chainAsset,
+            selectedMetaAccount: selectedMetaAccount,
             currencyManager: currencyManager
         )
 
@@ -68,6 +69,7 @@ struct TransactionHistoryViewFactory {
     private static func createInteractor(
         for accountId: AccountId,
         chainAsset: ChainAsset,
+        selectedMetaAccount: MetaAccountModel,
         currencyManager: CurrencyManagerProtocol
     ) -> TransactionHistoryInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -94,13 +96,18 @@ struct TransactionHistoryViewFactory {
             logger: Logger.shared
         )
 
+        let ahmInfoFactory = AHMFullInfoFactory()
+
         return .init(
             accountId: accountId,
             chainAsset: chainAsset,
+            metaAccount: selectedMetaAccount,
             fetcherFactory: fetcherFactory,
+            chainRegistry: chainRegistry,
             localFilterFactory: localFilterFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
+            ahmInfoFactory: ahmInfoFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             pageSize: 100
         )

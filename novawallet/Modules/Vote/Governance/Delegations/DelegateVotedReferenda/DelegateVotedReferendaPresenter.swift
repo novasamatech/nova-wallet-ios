@@ -222,20 +222,22 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
     }
 
     func didReceiveError(_ error: DelegateVotedReferendaError) {
-        switch error {
-        case .blockNumberSubscriptionFailed, .metadataSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscription()
-            }
+        let retryAction: () -> Void = switch error {
+        case .metadataSubscriptionFailed, .blockNumberSubscriptionFailed:
+            interactor.remakeSubscription
         case .offchainVotingFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryOffchainVotingFetch()
-            }
+            interactor.retryOffchainVotingFetch
+        case .timepointThresholdFetchFailed:
+            interactor.retryTimepointThreshold
         case .blockTimeFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryBlockTime()
-            }
+            interactor.retryBlockTime
         }
+
+        wireframe.presentRequestStatus(
+            on: view,
+            locale: selectedLocale,
+            retryAction: retryAction
+        )
     }
 }
 

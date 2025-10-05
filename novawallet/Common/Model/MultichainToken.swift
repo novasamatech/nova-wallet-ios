@@ -6,6 +6,7 @@ struct MultichainToken {
         let chainName: String
         let enabled: Bool
         let testnet: Bool
+        let utility: Bool
         let icon: String?
     }
 
@@ -32,6 +33,7 @@ extension MultichainToken.Instance {
             chainName: chainName,
             enabled: enabled,
             testnet: testnet,
+            utility: utility,
             icon: icon
         )
     }
@@ -59,11 +61,14 @@ extension Array where Element == ChainModel {
             }.sorted { $0.assetId < $1.assetId }
 
             return assets.reduce(token) { accumToken, asset in
+                let chainAsset = ChainAsset(chain: chain, asset: asset)
+
                 let instance = MultichainToken.Instance(
-                    chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                    chainAssetId: chainAsset.chainAssetId,
                     chainName: chain.name,
                     enabled: asset.enabled,
                     testnet: chain.isTestnet,
+                    utility: chainAsset.isUtilityAsset,
                     icon: asset.icon
                 )
 
@@ -135,6 +140,7 @@ extension Array where Element == ChainAsset {
                 chainName: chainAsset.chain.name,
                 enabled: chainAsset.asset.enabled,
                 testnet: chainAsset.chain.isTestnet,
+                utility: chainAsset.isUtilityAsset,
                 icon: chainAsset.asset.icon
             )
 

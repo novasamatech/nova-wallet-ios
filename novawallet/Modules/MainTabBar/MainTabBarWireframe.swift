@@ -83,8 +83,7 @@ private extension MainTabBarWireframe {
         )
 
         guard let detailsView = AssetDetailsContainerViewFactory.createView(
-            chain: chainAsset.chain,
-            asset: chainAsset.asset,
+            chainAsset: chainAsset,
             operationState: operationState
         ) else {
             return
@@ -405,9 +404,15 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
         switch screen {
         case let .gov(rederendumIndex):
-            openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+            openGovernanceScreen(
+                in: controller,
+                rederendumIndex: rederendumIndex
+            )
         case let .historyDetails(chainAsset):
-            openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
+            openAssetDetailsScreen(
+                in: controller,
+                chainAsset: chainAsset
+            )
         case let .multisigOperationDetails(operationKey):
             openMultisigOperationScreen(in: controller, operationKey: operationKey)
         case let .multisigOperationEnded(model):

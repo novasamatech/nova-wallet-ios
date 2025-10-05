@@ -6,40 +6,11 @@ import UIKit_iOS
 final class StakingMainViewController: UIViewController, AdaptiveDesignable, ViewHolder {
     typealias RootViewType = StakingMainViewLayout
 
-    private enum Constants {
-        static let verticalSpacing: CGFloat = 0.0
-        static let bottomInset: CGFloat = 8.0
-    }
-
     let presenter: StakingMainPresenterProtocol
 
-    var scrollView: UIScrollView { rootView.containerView.scrollView }
-    var stackView: UIStackView { rootView.containerView.stackView }
-
-    private var networkInfoContainerView: UIView!
-    private var networkInfoView: NetworkInfoView!
-    private var rewardContainerView: UIView?
-    private var rewardView: StakingRewardView?
-    private lazy var alertsContainerView = UIView()
-    private lazy var alertsView = AlertsView()
-
-    private var actionsView: StakingActionsView?
-    private var unbondingsView: StakingUnbondingsView?
-
-    private var selectedEntityView: StackTableView?
-    private var selectedEntityCell: StackAddressCell?
-
-    private var stateContainerView: UIView?
-    private var stateView: LocalizableView?
-
-    private var balanceViewModel: LocalizableResource<String>?
-    private var assetIconViewModel: ImageViewModelProtocol?
     private var staticsViewModel: StakingMainStaticViewModelProtocol?
 
     private var stateRawType: Int?
-
-    var iconGenerator: IconGenerating?
-    var uiFactory: UIFactoryProtocol?
 
     // MARK: - UIViewController
 
@@ -63,9 +34,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupAlertsView()
-        setupNetworkInfoView()
-        setupScrollView()
+        setupHandlers()
         setupLocalization()
         presenter.setup()
     }
@@ -73,348 +42,140 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        networkInfoView.didAppearSkeleton()
-
-        if let skeletonState = stateView as? SkeletonLoadable {
-            skeletonState.didAppearSkeleton()
-        }
-
-        rewardView?.didAppearSkeleton()
-
-        selectedEntityCell?.didAppearSkeleton()
+        appearSkeletonView()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        networkInfoView.didDisappearSkeleton()
-
-        if let skeletonState = stateView as? SkeletonLoadable {
-            skeletonState.didDisappearSkeleton()
-        }
-
-        rewardView?.didDisappearSkeleton()
-
-        selectedEntityCell?.didDisappearSkeleton()
+        disappearSkeletonView()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        networkInfoView.didUpdateSkeletonLayout()
-
-        if let skeletonState = stateView as? SkeletonLoadable {
-            skeletonState.didUpdateSkeletonLayout()
-        }
-
-        rewardView?.didUpdateSkeletonLayout()
-
-        selectedEntityCell?.didUpdateSkeletonLayout()
+        updateSkeletonLayouts()
     }
+}
 
-    // MARK: - Private functions
+// MARK: - Private
 
-    @objc private func rewardPeriodAction() {
-        presenter.selectPeriod()
-    }
+private extension StakingMainViewController {
+    func setupHandlers() {
+        rootView.alertsView.delegate = self
+        rootView.unbondingsView?.delegate = self
 
-    @objc private func claimRewardsAction() {
-        presenter.performClaimRewards()
-    }
-
-    private func setupScrollView() {
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
-    }
-
-    private func setupEntityView(for viewModel: StakingSelectedEntityViewModel) {
-        let entityView: StackTableView
-
-        if let selectedEntityView = selectedEntityView {
-            entityView = selectedEntityView
-        } else {
-            let containerView = UIView()
-
-            entityView = StackTableView()
-
-            if let beforeView = networkInfoContainerView {
-                stackView.insertArranged(view: containerView, before: beforeView)
-            } else {
-                stackView.addArrangedSubview(containerView)
-            }
-
-            stackView.setCustomSpacing(8, after: containerView)
-
-            containerView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-            }
-
-            containerView.addSubview(entityView)
-            entityView.snp.makeConstraints { make in
-                make.top.bottom.equalToSuperview()
-                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            }
-
-            selectedEntityView = entityView
-        }
-
-        entityView.clear()
-
-        entityView.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 8.0, right: 16.0)
-
-        let tableHeader = StackTableHeaderCell()
-        tableHeader.titleLabel.text = viewModel.title
-        tableHeader.titleLabel.apply(style: .regularSubhedlineSecondary)
-        entityView.addArrangedSubview(tableHeader)
-
-        let addressCell = StackAddressCell()
-        entityView.addArrangedSubview(addressCell)
-
-        selectedEntityCell = addressCell
-
-        addressCell.bind(viewModel: viewModel.loadingAddress)
-    }
-
-    private func setupNetworkInfoView() {
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343.0, height: 296))
-        let networkInfoView = NetworkInfoView(frame: defaultFrame)
-
-        self.networkInfoView = networkInfoView
-
-        networkInfoView.delegate = self
-        networkInfoView.statics = staticsViewModel
-
-        networkInfoContainerView = UIView()
-        networkInfoContainerView.translatesAutoresizingMaskIntoConstraints = false
-
-        networkInfoContainerView.addSubview(networkInfoView)
-
-        applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
-
-        stackView.addArrangedSubview(networkInfoContainerView)
-    }
-
-    private func setupAlertsView() {
-        alertsContainerView.translatesAutoresizingMaskIntoConstraints = false
-        alertsContainerView.addSubview(alertsView)
-
-        applyConstraints(for: alertsContainerView, innerView: alertsView)
-
-        stackView.insertArrangedSubview(alertsContainerView, at: 0)
-
-        alertsView.delegate = self
-    }
-
-    private func setupStakingRewardViewIfNeeded() {
-        guard rewardContainerView == nil else {
-            return
-        }
-
-        let containerView = UIView()
-
-        let rewardView = StakingRewardView()
-        rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
-        rewardView.filterView.control.addTarget(
-            self,
-            action: #selector(rewardPeriodAction),
-            for: .touchUpInside
-        )
-        containerView.addSubview(rewardView)
-
-        applyConstraints(for: containerView, innerView: rewardView)
-
-        stackView.insertArranged(view: containerView, after: alertsContainerView)
-
-        rewardContainerView = containerView
-        self.rewardView = rewardView
-    }
-
-    private func clearStakingRewardViewIfNeeded() {
-        rewardContainerView?.removeFromSuperview()
-        rewardContainerView = nil
-        rewardView = nil
-    }
-
-    private func updateActionsView(for stakingActions: [StakingManageOption]?) {
-        guard let stakingActions = stakingActions, !stakingActions.isEmpty else {
-            actionsView?.removeFromSuperview()
-            actionsView = nil
-
-            return
-        }
-
-        if actionsView == nil {
-            let newActionsView = StakingActionsView()
-            newActionsView.locale = selectedLocale
-            newActionsView.delegate = self
-            newActionsView.statics = staticsViewModel
-            stackView.insertArranged(view: newActionsView, before: networkInfoContainerView)
-            newActionsView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-            }
-
-            stackView.setCustomSpacing(8.0, after: newActionsView)
-
-            actionsView = newActionsView
-        }
-
-        actionsView?.bind(actions: stakingActions)
-    }
-
-    private func updateUnbondingsView(for unbondingViewModel: StakingUnbondingViewModel?) {
-        guard let unbondingViewModel = unbondingViewModel, !unbondingViewModel.items.isEmpty else {
-            unbondingsView?.removeFromSuperview()
-            unbondingsView = nil
-
-            return
-        }
-
-        if unbondingsView == nil {
-            let newUnbondingsView = StakingUnbondingsView()
-            newUnbondingsView.locale = selectedLocale
-            newUnbondingsView.delegate = self
-
-            if let stateView = stateContainerView {
-                stackView.insertArranged(view: newUnbondingsView, after: stateView)
-            } else {
-                stackView.insertArranged(view: newUnbondingsView, before: networkInfoContainerView)
-            }
-
-            newUnbondingsView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-            }
-
-            stackView.setCustomSpacing(8.0, after: newUnbondingsView)
-
-            unbondingsView = newUnbondingsView
-        }
-
-        unbondingsView?.bind(viewModel: unbondingViewModel)
-    }
-
-    private func clearStateView() {
-        if let containerView = stateContainerView {
-            stackView.removeArrangedSubview(containerView)
-            containerView.removeFromSuperview()
-        }
-
-        stateContainerView = nil
-        stateView = nil
-        alertsContainerView.isHidden = true
-    }
-
-    private func applyConstraints(for containerView: UIView, innerView: UIView) {
-        innerView.translatesAutoresizingMaskIntoConstraints = false
-        innerView.leadingAnchor.constraint(
-            equalTo: containerView.leadingAnchor,
-            constant: UIConstants.horizontalInset
-        ).isActive = true
-        innerView.trailingAnchor.constraint(
-            equalTo: containerView.trailingAnchor,
-            constant: -UIConstants.horizontalInset
-        ).isActive = true
-        innerView.topAnchor.constraint(
-            equalTo: containerView.topAnchor,
-            constant: Constants.verticalSpacing
-        ).isActive = true
-
-        containerView.bottomAnchor.constraint(
-            equalTo: innerView.bottomAnchor,
-            constant: Constants.bottomInset
-        ).isActive = true
-    }
-
-    private func setupView<T: LocalizableView>(for viewFactory: () -> T?) -> T? {
-        clearStateView()
-
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-
-        guard let stateView = viewFactory() else {
-            return nil
-        }
-
-        containerView.addSubview(stateView)
-
-        applyConstraints(for: containerView, innerView: stateView)
-
-        if let rewardContainerView = rewardContainerView {
-            stackView.insertArranged(view: containerView, after: rewardContainerView)
-        } else {
-            stackView.insertArranged(view: containerView, after: alertsContainerView)
-        }
-
-        stateContainerView = containerView
-        self.stateView = stateView
-
-        return stateView
-    }
-
-    private func setupNominatorViewIfNeeded() -> NominatorStateView? {
-        if let nominatorView = stateView as? NominatorStateView {
-            return nominatorView
-        }
-
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
-        let stateView = setupView { NominatorStateView(frame: defaultFrame) }
-        stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
-        stateView?.statics = staticsViewModel
-
-        return stateView
-    }
-
-    private func setupValidatorViewIfNeeded() -> ValidatorStateView? {
-        if let validator = stateView as? ValidatorStateView {
-            return validator
-        }
-
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
-        let stateView = setupView { ValidatorStateView(frame: defaultFrame) }
-        stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
-        stateView?.statics = staticsViewModel
-
-        return stateView
-    }
-
-    private func applyNominator(viewModel: LocalizableResource<NominationViewModel>) {
-        let nominatorView = setupNominatorViewIfNeeded()
-        nominatorView?.bind(viewModel: viewModel)
-    }
-
-    private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
-        let validatorView = setupValidatorViewIfNeeded()
-        validatorView?.bind(viewModel: viewModel)
-    }
-
-    private func applyAlerts(_ alerts: [StakingAlert]) {
-        alertsContainerView.isHidden = alerts.isEmpty
-        alertsView.bind(alerts: alerts)
-        alertsContainerView.setNeedsLayout()
-    }
-
-    private func applyStakingReward(viewModel: LocalizableResource<StakingRewardViewModel>) {
-        setupStakingRewardViewIfNeeded()
-        rewardView?.bind(viewModel: viewModel)
-
-        rewardView?.claimButton?.addTarget(
+        rootView.rewardView?.claimButton?.removeTarget(
             self,
             action: #selector(claimRewardsAction),
             for: .touchUpInside
         )
+        rootView.rewardView?.claimButton?.addTarget(
+            self,
+            action: #selector(claimRewardsAction),
+            for: .touchUpInside
+        )
+
+        rootView.rewardView?.filterView.control.removeTarget(
+            self,
+            action: #selector(rewardPeriodAction),
+            for: .touchUpInside
+        )
+        rootView.rewardView?.filterView.control.addTarget(
+            self,
+            action: #selector(rewardPeriodAction),
+            for: .touchUpInside
+        )
+
+        rootView.ahmAlertView.closeButton.removeTarget(
+            self,
+            action: #selector(didTapAHMAlertClose),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.closeButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertClose),
+            for: .touchUpInside
+        )
+
+        rootView.ahmAlertView.learnMoreButton.removeTarget(
+            self,
+            action: #selector(didTapAHMAlertLearnMore),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.learnMoreButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertLearnMore),
+            for: .touchUpInside
+        )
+    }
+
+    func setupLocalization() {
+        rootView.locale = selectedLocale
+        rootView.networkInfoView.locale = selectedLocale
+        rootView.stateView?.locale = selectedLocale
+        rootView.alertsView.locale = selectedLocale
+        rootView.rewardView?.locale = selectedLocale
+        rootView.actionsView?.locale = selectedLocale
+        rootView.unbondingsView?.locale = selectedLocale
+    }
+
+    func updateSkeletonLayouts() {
+        rootView.networkInfoView.didUpdateSkeletonLayout()
+
+        if let skeletonState = rootView.stateView as? SkeletonLoadable {
+            skeletonState.didUpdateSkeletonLayout()
+        }
+
+        rootView.rewardView?.didUpdateSkeletonLayout()
+
+        rootView.selectedEntityCell?.didUpdateSkeletonLayout()
+    }
+
+    func appearSkeletonView() {
+        rootView.networkInfoView.didAppearSkeleton()
+
+        if let skeletonState = rootView.stateView as? SkeletonLoadable {
+            skeletonState.didAppearSkeleton()
+        }
+
+        rootView.rewardView?.didAppearSkeleton()
+
+        rootView.selectedEntityCell?.didAppearSkeleton()
+    }
+
+    func disappearSkeletonView() {
+        rootView.networkInfoView.didDisappearSkeleton()
+
+        if let skeletonState = rootView.stateView as? SkeletonLoadable {
+            skeletonState.didDisappearSkeleton()
+        }
+
+        rootView.rewardView?.didDisappearSkeleton()
+
+        rootView.selectedEntityCell?.didDisappearSkeleton()
+    }
+
+    @objc func rewardPeriodAction() {
+        presenter.selectPeriod()
+    }
+
+    @objc func claimRewardsAction() {
+        presenter.performClaimRewards()
+    }
+
+    @objc func didTapAHMAlertClose() {
+        presenter.handleAHMAlertClose()
+    }
+
+    @objc func didTapAHMAlertLearnMore() {
+        presenter.handleAHMAlertLearnMore()
     }
 }
 
+// MARK: - Localizable
+
 extension StakingMainViewController: Localizable {
-    private func setupLocalization() {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-
-        networkInfoView.locale = locale
-        stateView?.locale = locale
-        alertsView.locale = locale
-        rewardView?.locale = locale
-        actionsView?.locale = locale
-        unbondingsView?.locale = locale
-    }
-
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -423,13 +184,15 @@ extension StakingMainViewController: Localizable {
     }
 }
 
+// MARK: - StakingMainViewProtocol
+
 extension StakingMainViewController: StakingMainViewProtocol {
     func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel) {
-        setupEntityView(for: entity)
+        rootView.setupEntityView(for: entity)
     }
 
     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel) {
-        networkInfoView.bind(viewModel: viewModel)
+        rootView.networkInfoView.bind(viewModel: viewModel)
     }
 
     func didReceive(viewModel: StakingMainViewModel) {
@@ -445,68 +208,85 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
         switch viewModel {
         case .undefined:
-            clearStateView()
-            clearStakingRewardViewIfNeeded()
-            updateActionsView(for: nil)
-            updateUnbondingsView(for: nil)
+            rootView.clearStateView()
+            rootView.clearStakingRewardViewIfNeeded()
+            rootView.updateActionsView(
+                for: nil,
+                delegate: self
+            )
+            rootView.updateUnbondingsView(for: nil)
         case let .nominator(viewModel, alerts, optReward, unbondings, actions):
-            applyNominator(viewModel: viewModel)
-            applyAlerts(alerts)
+            rootView.applyNominator(viewModel: viewModel)
+            rootView.applyAlerts(alerts)
 
             if let reward = optReward {
-                applyStakingReward(viewModel: reward)
+                rootView.applyStakingReward(viewModel: reward)
             } else {
-                clearStakingRewardViewIfNeeded()
+                rootView.clearStakingRewardViewIfNeeded()
             }
 
             if !hasSameTypes {
                 expandNetworkInfoView(false)
             }
 
-            updateActionsView(for: actions)
-            updateUnbondingsView(for: unbondings)
+            rootView.updateActionsView(
+                for: actions,
+                delegate: self
+            )
+            rootView.updateUnbondingsView(for: unbondings)
         case let .validator(viewModel, alerts, optReward, unbondings, actions):
-            applyValidator(viewModel: viewModel)
-            applyAlerts(alerts)
+            rootView.applyValidator(viewModel: viewModel)
+            rootView.applyAlerts(alerts)
 
             if let reward = optReward {
-                applyStakingReward(viewModel: reward)
+                rootView.applyStakingReward(viewModel: reward)
             } else {
-                clearStakingRewardViewIfNeeded()
+                rootView.clearStakingRewardViewIfNeeded()
             }
 
             if !hasSameTypes {
                 expandNetworkInfoView(false)
             }
 
-            updateActionsView(for: actions)
-            updateUnbondingsView(for: unbondings)
+            rootView.updateActionsView(
+                for: actions,
+                delegate: self
+            )
+            rootView.updateUnbondingsView(for: unbondings)
         }
+
+        setupHandlers()
     }
 
     func expandNetworkInfoView(_ isExpanded: Bool) {
-        networkInfoView.setExpanded(isExpanded, animated: false)
+        rootView.networkInfoView.setExpanded(isExpanded, animated: false)
     }
 
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol) {
         staticsViewModel = viewModel
 
-        networkInfoView.statics = viewModel
-        actionsView?.statics = viewModel
+        rootView.networkInfoView.statics = viewModel
+        rootView.actionsView?.statics = viewModel
 
-        if let stateView = stateView as? StakingStateView {
+        if let stateView = rootView.stateView as? StakingStateView {
             stateView.statics = viewModel
         }
     }
 
     func didEditRewardFilters() {
-        rewardView?.filterView.control.deactivate(animated: true)
+        rootView.rewardView?.filterView.control.deactivate(animated: true)
+    }
+
+    func didReceiveAHMAlert(viewModel: AHMAlertView.Model?) {
+        rootView.setAHMAlert(with: viewModel)
     }
 }
 
+// MARK: - NetworkInfoViewDelegate
+
 extension StakingMainViewController: NetworkInfoViewDelegate {
     func animateAlongsideWithInfo(view _: NetworkInfoView) {
-        scrollView.layoutIfNeeded()
+        rootView.scrollView.layoutIfNeeded()
     }
 
     func didChangeExpansion(isExpanded: Bool, view _: NetworkInfoView) {
@@ -514,17 +294,23 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
     }
 }
 
+// MARK: - AlertsViewDelegate
+
 extension StakingMainViewController: AlertsViewDelegate {
     func didSelectStakingAlert(_ alert: StakingAlert) {
         presenter.performAlertAction(alert)
     }
 }
 
+// MARK: - StakingActionsViewDelegate
+
 extension StakingMainViewController: StakingActionsViewDelegate {
     func actionsViewDidSelectAction(_ action: StakingManageOption) {
         presenter.performManageAction(action)
     }
 }
+
+// MARK: - StakingUnbondingsViewDelegate
 
 extension StakingMainViewController: StakingUnbondingsViewDelegate {
     func stakingUnbondingViewDidCancel(_: StakingUnbondingsView) {
