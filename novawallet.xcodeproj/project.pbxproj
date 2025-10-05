@@ -2006,6 +2006,11 @@
 		2DC002E72E8A5A0000D49A42 /* AHMInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002E62E8A5A0000D49A42 /* AHMInfoService.swift */; };
 		2DC002E92E8A6E4500D49A42 /* AHMInfoShownChains.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002E82E8A6E4500D49A42 /* AHMInfoShownChains.swift */; };
 		2DC002EA2E8A6E6E00D49A42 /* AHMInfoShownChains.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002E82E8A6E4500D49A42 /* AHMInfoShownChains.swift */; };
+		2DC002EF2E8B05CD00D49A42 /* StackIconChainCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002EE2E8B05CD00D49A42 /* StackIconChainCell.swift */; };
+		2DC002F22E8B9F8800D49A42 /* AHMAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002F12E8B9F8800D49A42 /* AHMAlertView.swift */; };
+		2DC002F42E8BB65900D49A42 /* AHMFullInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002F32E8BB65900D49A42 /* AHMFullInfoFactory.swift */; };
+		2DC002F62E8BB6BB00D49A42 /* AHMFullInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002F52E8BB6BB00D49A42 /* AHMFullInfo.swift */; };
+		2DC002FA2E8BDC9F00D49A42 /* UIButton+Learn More.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC002F92E8BDC9F00D49A42 /* UIButton+Learn More.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DC08BE22DCCF95C00C690D4 /* ChainAccountFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */; };
@@ -2131,6 +2136,8 @@
 		2DE8B0ED2E56456900F8BD40 /* MultisigNotificationHandlingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */; };
 		2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */; };
 		2DE8B0F62E566EEF00F8BD40 /* MultisigEndedMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */; };
+		2DEA415F2E8C0C630099796B /* HistoryAHMTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */; };
+		2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */; };
 		2DEA7B852E7418CC001F3DF5 /* PrivacyStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */; };
 		2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */; };
 		2DEDEF402E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */; };
@@ -2172,15 +2179,15 @@
 		2DEDEF802E4D12C2008F07B2 /* ExtrinsicSignedExtensionFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */; };
 		2DEDEF812E4D12D0008F07B2 /* ExtrinsicSignedExtensionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DEE7032797FBF800B9A39E /* ExtrinsicSignedExtensionFactory.swift */; };
 		2DEDEF822E4D12DA008F07B2 /* AssetConversionPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */; };
-		2DEDEF832E4D12F3008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF842E4D1301008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF852E4D130D008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF862E4D131A008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF872E4D1332008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEF882E4D135B008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF832E4D12F3008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF842E4D1301008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF852E4D130D008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF862E4D131A008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF872E4D1332008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF882E4D135B008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEF892E4D1397008F07B2 /* Xcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1D285C58FF00B42FC0 /* Xcm.swift */; };
 		2DEDEF8A2E4D13BA008F07B2 /* XcmPalletTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E83AA328632AF50000B418 /* XcmPalletTransfer.swift */; };
-		2DEDEF8B2E4D13C4008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEF8B2E4D13C4008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEF8C2E4D1444008F07B2 /* XcmChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117073285B0E92006F4DFB /* XcmChain.swift */; };
 		2DEDEF8D2E4D1444008F07B2 /* XcmAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117075285B0F1F006F4DFB /* XcmAsset.swift */; };
 		2DEDEF8E2E4D1444008F07B2 /* XcmAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117077285B1050006F4DFB /* XcmAssetTransfer.swift */; };
@@ -2209,36 +2216,36 @@
 		2DEDEFA52E4D1444008F07B2 /* XcmTransferOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */; };
 		2DEDEFA62E4D14E1008F07B2 /* XcmLegacyModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF3A2D89280A00DB4E6A /* XcmLegacyModelFactory.swift */; };
 		2DEDEFA72E4D14E1008F07B2 /* XcmLegacyMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C16668D2D80065D005E6CD3 /* XcmLegacyMessagesFactory.swift */; };
-		2DEDEFA82E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFA92E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAA2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAB2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAC2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAD2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAE2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFAF2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB02E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB12E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB22E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB32E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB42E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB52E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB62E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB72E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB82E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFB92E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBA2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBB2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFBC2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFA82E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFA92E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAA2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAB2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAC2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAD2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAE2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFAF2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB02E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB12E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB22E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB32E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB42E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB52E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB62E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB72E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB82E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFB92E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBA2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBB2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBC2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFBD2E4D14E1008F07B2 /* XcmWeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */; };
-		2DEDEFBE2E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFBE2E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFBF2E4D14E1008F07B2 /* XcmPalletMetadataQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */; };
 		2DEDEFC12E4D14E1008F07B2 /* XcmMessageSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CCC442B60CAE800A6EA17 /* XcmMessageSerializer.swift */; };
-		2DEDEFC22E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFC32E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC22E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC32E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFC42E4D14E1008F07B2 /* Xcm+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF821E2D8B580E00DB17A4 /* Xcm+Event.swift */; };
-		2DEDEFC52E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		2DEDEFC62E4D14E1008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC52E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		2DEDEFC62E4D14E1008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDEFC72E4D1504008F07B2 /* SubstratePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */; };
 		2DEDEFC82E4D1594008F07B2 /* MoonbeamEvmPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F52DF0E9AD0042134B /* MoonbeamEvmPallet.swift */; };
 		2DEDEFC92E4D1594008F07B2 /* MoonbeamEvmPallet+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */; };
@@ -2374,7 +2381,7 @@
 		2DEDF0592E4D1B8B008F07B2 /* AvailSignedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */; };
 		2DEDF05A2E4D1B98008F07B2 /* AssetConversionTxPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */; };
 		2DEDF05B2E4D1BCC008F07B2 /* XcmModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */; };
-		2DEDF05C2E4D1C01008F07B2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		2DEDF05C2E4D1C01008F07B2 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		2DEDF05E2E4D1D32008F07B2 /* XcmExecute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCED285E82BB0006327E /* XcmExecute.swift */; };
 		2DEDF05F2E4D1D3E008F07B2 /* BlockchainWeightFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539629BF606D00C77111 /* BlockchainWeightFactory.swift */; };
 		2DEDF0602E4D1D4B008F07B2 /* CallMetadata+TypeCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0EE0D292D69A9008B2953 /* CallMetadata+TypeCheck.swift */; };
@@ -8531,6 +8538,11 @@
 		2DC002E42E8A56AC00D49A42 /* PreSyncServiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSyncServiceCoordinator.swift; sourceTree = "<group>"; };
 		2DC002E62E8A5A0000D49A42 /* AHMInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMInfoService.swift; sourceTree = "<group>"; };
 		2DC002E82E8A6E4500D49A42 /* AHMInfoShownChains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMInfoShownChains.swift; sourceTree = "<group>"; };
+		2DC002EE2E8B05CD00D49A42 /* StackIconChainCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackIconChainCell.swift; sourceTree = "<group>"; };
+		2DC002F12E8B9F8800D49A42 /* AHMAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMAlertView.swift; sourceTree = "<group>"; };
+		2DC002F32E8BB65900D49A42 /* AHMFullInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMFullInfoFactory.swift; sourceTree = "<group>"; };
+		2DC002F52E8BB6BB00D49A42 /* AHMFullInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHMFullInfo.swift; sourceTree = "<group>"; };
+		2DC002F92E8BDC9F00D49A42 /* UIButton+Learn More.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Learn More.swift"; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationControllerDelegate.swift; sourceTree = "<group>"; };
@@ -8623,6 +8635,8 @@
 		2DE8B0EC2E56456900F8BD40 /* MultisigNotificationHandlingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationHandlingError.swift; sourceTree = "<group>"; };
 		2DE8B0F22E56526000F8BD40 /* WalletSelectingNotificationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSelectingNotificationHandling.swift; sourceTree = "<group>"; };
 		2DE8B0F52E566EEF00F8BD40 /* MultisigEndedMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageModel.swift; sourceTree = "<group>"; };
+		2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryAHMTableViewCell.swift; sourceTree = "<group>"; };
+		2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryAHMViewModel.swift; sourceTree = "<group>"; };
 		2DEA7B842E7418CC001F3DF5 /* PrivacyStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyStateManager.swift; sourceTree = "<group>"; };
 		2DEDEF3D2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPresenter.swift; sourceTree = "<group>"; };
 		2DEDEF3F2E4B3EA6008F07B2 /* MultisigNotificationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsWireframe.swift; sourceTree = "<group>"; };
@@ -17855,6 +17869,8 @@
 			isa = PBXGroup;
 			children = (
 				2DC002E02E86D59900D49A42 /* AHMInfoRepository.swift */,
+				2DC002F32E8BB65900D49A42 /* AHMFullInfoFactory.swift */,
+				2DC002F52E8BB6BB00D49A42 /* AHMFullInfo.swift */,
 				2DC002E82E8A6E4500D49A42 /* AHMInfoShownChains.swift */,
 				2DC002CE2E867BB500D49A42 /* AHMInfoViewModel.swift */,
 				2DC002D42E867CCD00D49A42 /* AHMRemoteData.swift */,
@@ -17898,6 +17914,14 @@
 				2DC002E62E8A5A0000D49A42 /* AHMInfoService.swift */,
 			);
 			path = AssetHubMigrationInfo;
+			sourceTree = "<group>";
+		};
+		2DC002F02E8B9F7000D49A42 /* AHMAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				2DC002F12E8B9F8800D49A42 /* AHMAlertView.swift */,
+			);
+			path = AHMAlertView;
 			sourceTree = "<group>";
 		};
 		2DC075E12BF249F000868563 /* View */ = {
@@ -22429,6 +22453,7 @@
 				844C3E682A07BC4500C4305F /* StackWalletAmountCell.swift */,
 				0C7C886D2A962B0D00DD96A1 /* StackAddressCell.swift */,
 				0CB261F62A9E2D8400287305 /* StackSwitchCell.swift */,
+				2DC002EE2E8B05CD00D49A42 /* StackIconChainCell.swift */,
 			);
 			path = StackTable;
 			sourceTree = "<group>";
@@ -23753,6 +23778,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2DC002F02E8B9F7000D49A42 /* AHMAlertView */,
 				2DEA7B832E7415C9001F3DF5 /* SecureView */,
 				0CF6928A2C231C89000FC395 /* SharedStatusView */,
 				2D5493322C04C0C000607BF7 /* MnemonicCard */,
@@ -23862,6 +23888,7 @@
 				0CF976762CF08EF9001D2801 /* OperationExecutionProgressView.swift */,
 				0C0387802D0A1283000A2F24 /* AssetAmountView.swift */,
 				0C03878B2D0B2686000A2F24 /* LinePatternView.swift */,
+				2DC002F92E8BDC9F00D49A42 /* UIButton+Learn More.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -27310,6 +27337,7 @@
 			isa = PBXGroup;
 			children = (
 				84ABB3272A16146600B5E95A /* HistoryItemTableViewCell.swift */,
+				2DEA415E2E8C0C630099796B /* HistoryAHMTableViewCell.swift */,
 				84ABB3292A16146600B5E95A /* WalletEmptyStateDataSource.swift */,
 				84ABB3282A16146600B5E95A /* WalletEmptyStateDataSource+Module.swift */,
 				84ABB32A2A16146600B5E95A /* WalletHistoryBackgroundView.swift */,
@@ -27444,6 +27472,7 @@
 			isa = PBXGroup;
 			children = (
 				84ABB3362A16164100B5E95A /* HistoryRewardContext.swift */,
+				2DEA41622E8CF2810099796B /* HistoryAHMViewModel.swift */,
 				88AC5AD92948A8CC0056DD40 /* TransactionSectionModel.swift */,
 				88AC5ADD2948CB540056DD40 /* TransactionHistoryViewModelFactory.swift */,
 				0C59E8EC2AA75C84001E11F3 /* HistoryPoolRewardContext.swift */,
@@ -29899,13 +29928,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -29945,7 +29970,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
+				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -29959,13 +29984,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -30002,13 +30023,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -30101,7 +30118,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$PROJECT_DIR/R.generated.swift,
+				"$PROJECT_DIR/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -30166,7 +30183,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				$PROJECT_DIR/CIKeys.generated.swift,
+				"$PROJECT_DIR/CIKeys.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -30355,42 +30372,42 @@
 				0CB2E8912E5DC34B0067DE12 /* Staking+Era.swift in Sources */,
 				2DEDEFA62E4D14E1008F07B2 /* XcmLegacyModelFactory.swift in Sources */,
 				2DEDEFA72E4D14E1008F07B2 /* XcmLegacyMessagesFactory.swift in Sources */,
-				2DEDEFA82E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFA92E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAA2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAB2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFA82E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFA92E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAA2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAB2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DE8B0932E54443900F8BD40 /* FormattedCall.swift in Sources */,
-				2DEDEFAC2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAD2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAE2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFAF2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB02E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB12E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB22E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB32E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB42E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB52E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB62E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFAC2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAD2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAE2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFAF2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB02E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB12E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB22E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB32E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB42E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB52E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB62E4D14E1008F07B2 /* BuildFile in Sources */,
 				0C8FC2262E61E68500034ED3 /* MetaAccountModel+DelegationId.swift in Sources */,
-				2DEDEFB72E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB82E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFB92E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFB72E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB82E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFB92E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0642E4D1DF7008F07B2 /* UInt+Serialization.swift in Sources */,
-				2DEDEFBA2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFBB2E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFBC2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFBA2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFBB2E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFBC2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0382E4D15B5008F07B2 /* ExtrinsicFee.swift in Sources */,
 				0CB2E88E2E5DC3100067DE12 /* NominationPools.swift in Sources */,
 				2DEDEFBD2E4D14E1008F07B2 /* XcmWeightLimit.swift in Sources */,
-				2DEDEFBE2E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFBE2E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDEFBF2E4D14E1008F07B2 /* XcmPalletMetadataQueryFactory.swift in Sources */,
 				2DEDEFC12E4D14E1008F07B2 /* XcmMessageSerializer.swift in Sources */,
-				2DEDEFC22E4D14E1008F07B2 /* (null) in Sources */,
-				2DEDEFC32E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC22E4D14E1008F07B2 /* BuildFile in Sources */,
+				2DEDEFC32E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDEFC42E4D14E1008F07B2 /* Xcm+Event.swift in Sources */,
-				2DEDEFC52E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC52E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DE8B0982E5444A800F8BD40 /* OrmlTokensPallet.swift in Sources */,
-				2DEDEFC62E4D14E1008F07B2 /* (null) in Sources */,
+				2DEDEFC62E4D14E1008F07B2 /* BuildFile in Sources */,
 				2DEDF0472E4D1754008F07B2 /* ErrorContentConvertible.swift in Sources */,
 				2DEDF05A2E4D1B98008F07B2 /* AssetConversionTxPayment.swift in Sources */,
 				2DEDEF8C2E4D1444008F07B2 /* XcmChain.swift in Sources */,
@@ -30431,7 +30448,7 @@
 				0CB618D32E70C3320018C766 /* Xcm+TransferType.swift in Sources */,
 				77AE4F902B9058D300426519 /* Web3AlertLocalModel.swift in Sources */,
 				7778FE5E2B910B8A0023E801 /* OperationManagerFacade.swift in Sources */,
-				2DEDEF882E4D135B008F07B2 /* (null) in Sources */,
+				2DEDEF882E4D135B008F07B2 /* BuildFile in Sources */,
 				2DEDF03C2E4D1627008F07B2 /* DelegationResolution.swift in Sources */,
 				77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */,
 				0CCD18A72BA160C10068D73A /* R.generated.swift in Sources */,
@@ -30441,7 +30458,7 @@
 				0CCD18C92BA1F0A90068D73A /* SubstrateConstansts.swift in Sources */,
 				2DE8B09F2E54456000F8BD40 /* WalletType+Delegation.swift in Sources */,
 				77AE4F992B905B6E00426519 /* ChainNodeModel.swift in Sources */,
-				2DEDF05C2E4D1C01008F07B2 /* (null) in Sources */,
+				2DEDF05C2E4D1C01008F07B2 /* BuildFile in Sources */,
 				0CCD18BB2BA1EE830068D73A /* StateminAssetExtras.swift in Sources */,
 				77AE4F922B90591400426519 /* StorageFacadeProtocol.swift in Sources */,
 				2DEDF04B2E4D18ED008F07B2 /* JSON+BigUInt.swift in Sources */,
@@ -30468,9 +30485,9 @@
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				0CCD18B42BA1EDC30068D73A /* EquilibriumTokenExtras.swift in Sources */,
 				2DEDEF5B2E4CF965008F07B2 /* RuntimeCodingServiceProvider.swift in Sources */,
-				2DEDEF852E4D130D008F07B2 /* (null) in Sources */,
+				2DEDEF852E4D130D008F07B2 /* BuildFile in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
-				2DEDEF842E4D1301008F07B2 /* (null) in Sources */,
+				2DEDEF842E4D1301008F07B2 /* BuildFile in Sources */,
 				2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */,
 				77AE4FA42B905CE700426519 /* Currency.swift in Sources */,
 				770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */,
@@ -30552,7 +30569,7 @@
 				2DC694482DF2EEC7004F4584 /* AccountId+Dummy.swift in Sources */,
 				0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
-				2DEDEF8B2E4D13C4008F07B2 /* (null) in Sources */,
+				2DEDEF8B2E4D13C4008F07B2 /* BuildFile in Sources */,
 				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				2DC6945D2DF837A6004F4584 /* NotEqualWrapper.swift in Sources */,
 				2DEDEF822E4D12DA008F07B2 /* AssetConversionPallet.swift in Sources */,
@@ -30571,7 +30588,7 @@
 				778215D62B959344006C7D13 /* SharedSettingsManager.swift in Sources */,
 				2DE8B0BF2E54D99600F8BD40 /* UtilityBatchType.swift in Sources */,
 				2DEDEF7F2E4D12B3008F07B2 /* RuntimeTypeRegistryFactory.swift in Sources */,
-				2DEDEF872E4D1332008F07B2 /* (null) in Sources */,
+				2DEDEF872E4D1332008F07B2 /* BuildFile in Sources */,
 				7778FE552B9109C50023E801 /* AssetBalanceFormatterFactory.swift in Sources */,
 				778215CB2B914E9D006C7D13 /* Payload.swift in Sources */,
 				2DE8B0902E5336C100F8BD40 /* HexCodingWrapper.swift in Sources */,
@@ -30580,9 +30597,9 @@
 				0CCD18B02BA1C2D80068D73A /* AssetBalanceDisplayInfo.swift in Sources */,
 				77EDF9232B96D74E003266B1 /* MetaAccountModel.swift in Sources */,
 				778215E72B95C432006C7D13 /* StakingRewardsHandler.swift in Sources */,
-				2DEDEF862E4D131A008F07B2 /* (null) in Sources */,
+				2DEDEF862E4D131A008F07B2 /* BuildFile in Sources */,
 				0CFF823C2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */,
-				2DEDEF832E4D12F3008F07B2 /* (null) in Sources */,
+				2DEDEF832E4D12F3008F07B2 /* BuildFile in Sources */,
 				7778FE5D2B910B7D0023E801 /* SettingsExtension.swift in Sources */,
 				2DEDEF8A2E4D13BA008F07B2 /* XcmPalletTransfer.swift in Sources */,
 				77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */,
@@ -32103,6 +32120,7 @@
 				84D1F2FB260F51770077DDFE /* SwitchAccount.swift in Sources */,
 				2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */,
 				84E0EE08292D3C2D008B2953 /* GovernanceChainSelectionProtocols.swift in Sources */,
+				2DC002F62E8BB6BB00D49A42 /* AHMFullInfo.swift in Sources */,
 				84466B3C28B7680300FA1E0D /* LedgerDiscoverInteractor.swift in Sources */,
 				843CE3AA27D22B5200436F4E /* UniquesDetailsInteractor.swift in Sources */,
 				2D21BD3F2D675D2800B1C480 /* AssetPriceChartDataSource.swift in Sources */,
@@ -32731,6 +32749,7 @@
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
 				8472974D260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift in Sources */,
 				84FF267C28494B13003EC78D /* ParaStkStakeSetupPresenter+StartStaking.swift in Sources */,
+				2DEA415F2E8C0C630099796B /* HistoryAHMTableViewCell.swift in Sources */,
 				2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */,
 				2DBEE9932D7A29CB000B735B /* StackTitleValueIconView+Style.swift in Sources */,
 				0C13DFCF2AF8ADB300E5F355 /* BigUInt+Operation.swift in Sources */,
@@ -33394,7 +33413,9 @@
 				8465DA41298F05D500C7CFF1 /* GovernanceTrackViewModelFactory.swift in Sources */,
 				AE3983A5272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift in Sources */,
 				0CCDB2E62B7496C9007BC5D6 /* HydraStableswap.swift in Sources */,
+				2DC002F42E8BB65900D49A42 /* AHMFullInfoFactory.swift in Sources */,
 				842EBB372890A7BA00B952D8 /* WalletSelectionWireframe.swift in Sources */,
+				2DC002F22E8B9F8800D49A42 /* AHMAlertView.swift in Sources */,
 				8436C79F29ACD6D70024B409 /* ElectionProviderMultiPhase+CodingPath.swift in Sources */,
 				2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */,
 				0C79C89C2A7BE6A200B171E3 /* DirectStakingRecommendationFactory.swift in Sources */,
@@ -34259,6 +34280,7 @@
 				0CCD18BA2BA1EE690068D73A /* StatemineAssetExtras+AssetStorageInfo.swift in Sources */,
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
 				84B24FA02A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift in Sources */,
+				2DC002EF2E8B05CD00D49A42 /* StackIconChainCell.swift in Sources */,
 				0CA72A842D4A2B1B00B3FD02 /* CollatorStkPartialUnstakeSetupLayout.swift in Sources */,
 				8480154E29BB6521008557F3 /* BorderedImageView.swift in Sources */,
 				2D3C71CF2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift in Sources */,
@@ -35443,6 +35465,7 @@
 				934F229F4E5A588D5AF2A093 /* TokensAddSelectNetworkViewFactory.swift in Sources */,
 				0075488169C69B97C0630EB8 /* AssetReceiveProtocols.swift in Sources */,
 				2D1C5D102C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift in Sources */,
+				2DC002FA2E8BDC9F00D49A42 /* UIButton+Learn More.swift in Sources */,
 				0DACB56C0BDD4C984FE3C15C /* AssetReceiveWireframe.swift in Sources */,
 				2D20F1C42D364879003E9CF2 /* WalletStorageCleaning.swift in Sources */,
 				D264B2A8A516396051016CAB /* AssetReceivePresenter.swift in Sources */,
@@ -36234,6 +36257,7 @@
 				5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */,
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
 				0503753EC5E2136973D13E52 /* PayCardProtocols.swift in Sources */,
+				2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */,
 				F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */,
 				0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */,
 				0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */,

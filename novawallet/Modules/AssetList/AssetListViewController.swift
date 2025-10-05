@@ -98,12 +98,6 @@ private extension AssetListViewController {
             }
         }
     }
-
-    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        let generator = UIImpactFeedbackGenerator(style: style)
-        generator.prepare()
-        generator.impactOccurred()
-    }
 }
 
 // MARK: AssetListViewProtocol
@@ -237,8 +231,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func actionTogglePrivacy() {
         presenter.togglePrivacyMode()
-
-        createHapticFeedback(style: .light)
     }
 }
 

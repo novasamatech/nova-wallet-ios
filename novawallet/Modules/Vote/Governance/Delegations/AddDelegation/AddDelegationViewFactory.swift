@@ -65,7 +65,7 @@ struct AddDelegationViewFactory {
         let chain = option.chain
 
         guard
-            let timelineService = state.createChainTimelineFacade(),
+            let timepointThresholdService = state.timepointThresholdService,
             let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: option) else {
             return nil
         }
@@ -73,9 +73,8 @@ struct AddDelegationViewFactory {
         return AddDelegationInteractor(
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            timepointThresholdService: timepointThresholdService,
             delegateListOperationFactory: delegateListOperationFactory,
-            timelineService: timelineService,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

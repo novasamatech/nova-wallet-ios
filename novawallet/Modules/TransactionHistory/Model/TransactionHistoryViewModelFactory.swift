@@ -14,8 +14,9 @@ protocol TransactionHistoryViewModelFactoryProtocol {
         _ data: [TransactionHistoryItem],
         priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
+        ahmInfo: AHMFullInfo?,
         locale: Locale
-    ) -> [Date: [TransactionItemViewModel]]
+    ) -> [TransactionHistorySectionModel]
 
     func formatHeader(date: Date, locale: Locale) -> String
 }
@@ -43,8 +44,12 @@ final class TransactionHistoryViewModelFactory {
         self.assetIconViewModelFactory = assetIconViewModelFactory
         self.groupDateFormatter = groupDateFormatter
     }
+}
 
-    private func createBalance(
+// MARK: - Private
+
+private extension TransactionHistoryViewModelFactory {
+    func createBalance(
         from amount: Decimal,
         priceCalculator: TokenPriceCalculatorProtocol?,
         timestamp: Int64,
@@ -55,7 +60,7 @@ final class TransactionHistoryViewModelFactory {
         return balanceViewModelFactory.balanceFromPrice(amount, priceData: priceData).value(for: locale)
     }
 
-    private func createTransferItemFromData(
+    func createTransferItemFromData(
         _ data: TransactionHistoryItem,
         address: AccountAddress,
         priceCalculator: TokenPriceCalculatorProtocol?,
@@ -100,7 +105,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createSwapItemFromData(
+    func createSwapItemFromData(
         _ data: TransactionHistoryItem,
         priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
@@ -142,7 +147,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createTransferItemTitleWithSubtitle(
+    func createTransferItemTitleWithSubtitle(
         data: TransactionHistoryItem,
         address: AccountAddress,
         txType: TransactionType,
@@ -164,7 +169,7 @@ final class TransactionHistoryViewModelFactory {
         return .init(title: title, subtitle: subtitle)
     }
 
-    private func createEvmContractCallTitleWithSubtitle(
+    func createEvmContractCallTitleWithSubtitle(
         data: TransactionHistoryItem,
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
@@ -190,7 +195,7 @@ final class TransactionHistoryViewModelFactory {
         }
     }
 
-    private func createRewardOrSlashItemFromData(
+    func createRewardOrSlashItemFromData(
         _ data: TransactionHistoryItem,
         priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
@@ -211,7 +216,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createPoolRewardOrSlashFromData(
+    func createPoolRewardOrSlashFromData(
         _ data: TransactionHistoryItem,
         priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
@@ -232,7 +237,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createCommonRewardItemFromData(
+    func createCommonRewardItemFromData(
         _ data: TransactionHistoryItem,
         title: String,
         subtitle: String,
@@ -272,7 +277,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func createExtrinsicItemFromData(
+    func createExtrinsicItemFromData(
         _ data: TransactionHistoryItem,
         priceCalculator: TokenPriceCalculatorProtocol?,
         locale: Locale,
@@ -317,7 +322,7 @@ final class TransactionHistoryViewModelFactory {
         )
     }
 
-    private func amountDetails(price: String?, time: String, locale: Locale) -> String {
+    func amountDetails(price: String?, time: String, locale: Locale) -> String {
         guard let price = price else {
             return time
         }
@@ -327,7 +332,54 @@ final class TransactionHistoryViewModelFactory {
             preferredLanguages: locale.rLanguages
         )
     }
+
+    func createAHMHintModel(
+        ahmInfo: AHMFullInfo,
+        locale: Locale
+    ) -> HistoryAHMViewModel {
+        let actionTitle = R.string.localizable.commonView(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.ahmInfoAlertTransactionHistoryMessage(
+            ahmInfo.asset.symbol,
+            ahmInfo.sourceChain.name,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return HistoryAHMViewModel(
+            message: message,
+            buttonTitle: actionTitle
+        )
+    }
+
+    func createTransactionSections(
+        _ data: [TransactionHistoryItem],
+        priceCalculator: TokenPriceCalculatorProtocol?,
+        address: AccountAddress,
+        locale: Locale
+    ) -> [TransactionSectionModel] {
+        let items = data.compactMap {
+            createItemFromData(
+                $0,
+                priceCalculator: priceCalculator,
+                address: address,
+                locale: locale
+            )
+        }
+
+        return Dictionary(grouping: items, by: {
+            let eventDateTime = Date(timeIntervalSince1970: TimeInterval($0.timestamp))
+            let eventDate = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: eventDateTime)!
+            return eventDate
+        }).map {
+            TransactionSectionModel(
+                title: formatHeader(date: $0.key, locale: locale),
+                date: $0.key,
+                items: $0.value.sorted(by: { $0.timestamp > $1.timestamp }).map { .transaction($0) }
+            )
+        }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
+    }
 }
+
+// MARK: - TransactionHistoryViewModelFactoryProtocol
 
 extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactoryProtocol {
     func formatHeader(date: Date, locale: Locale) -> String {
@@ -338,24 +390,30 @@ extension TransactionHistoryViewModelFactory: TransactionHistoryViewModelFactory
         _ data: [TransactionHistoryItem],
         priceCalculator: TokenPriceCalculatorProtocol?,
         address: AccountAddress,
+        ahmInfo: AHMFullInfo?,
         locale: Locale
-    ) -> [Date: [TransactionItemViewModel]] {
-        let items = data.compactMap {
-            createItemFromData(
-                $0,
-                priceCalculator: priceCalculator,
-                address: address,
+    ) -> [TransactionHistorySectionModel] {
+        let hintModel: HistoryAHMViewModel? = if let ahmInfo {
+            createAHMHintModel(
+                ahmInfo: ahmInfo,
                 locale: locale
             )
+        } else {
+            nil
         }
 
-        let sections = Dictionary(grouping: items, by: {
-            let eventDateTime = Date(timeIntervalSince1970: TimeInterval($0.timestamp))
-            let eventDate = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: eventDateTime)!
-            return eventDate
-        })
+        let transactionSections = createTransactionSections(
+            data,
+            priceCalculator: priceCalculator,
+            address: address,
+            locale: locale
+        )
 
-        return sections
+        let ahmHintSections: [TransactionHistorySectionModel] = [hintModel]
+            .compactMap { $0 }
+            .map { .ahmHint(.ahmHint($0)) }
+
+        return ahmHintSections + transactionSections.map { .transaction($0) }
     }
 
     func createItemFromData(
