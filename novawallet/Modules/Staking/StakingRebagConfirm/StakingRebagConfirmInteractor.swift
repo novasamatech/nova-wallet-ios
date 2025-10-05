@@ -171,7 +171,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             for: stashAccountId,
             accountRequest: chainAsset.chain.accountRequest(),
             repositoryFactory: accountRepositoryFactory,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(response):

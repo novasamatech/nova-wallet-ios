@@ -28,10 +28,6 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
     private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
-    private var operationManager: OperationManagerProtocol {
-        OperationManager(operationQueue: operationQueue)
-    }
-
     private lazy var callFactory = SubstrateCallFactory()
 
     init(
@@ -170,7 +166,7 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeResponse):

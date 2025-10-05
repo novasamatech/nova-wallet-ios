@@ -129,18 +129,15 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
 
         dependencies.forEach { mapOperation.addDependency($0) }
 
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                do {
-                    let confirmationModel = try mapOperation.extractNoCancellableResultData()
-                    self.presenter.didReceiveModel(result: .success(confirmationModel))
-                } catch {
-                    self.presenter.didReceiveModel(result: .failure(error))
-                }
-            }
-        }
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
 
-        operationManager.enqueue(operations: dependencies + [mapOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didReceiveModel(result: result)
+        }
     }
 
     private func createExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure? {

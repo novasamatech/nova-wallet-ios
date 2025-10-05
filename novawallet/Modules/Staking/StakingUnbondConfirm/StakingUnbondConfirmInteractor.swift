@@ -32,10 +32,6 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
-    private var operationManager: OperationManagerProtocol {
-        OperationManager(operationQueue: operationQueue)
-    }
-
     private lazy var callFactory = SubstrateCallFactory()
 
     init(
@@ -132,7 +128,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
 
         fetchStakingDuration(
             operationFactory: stakingDurationOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             self?.presenter.didReceiveStakingDuration(result: result)
         }
@@ -141,7 +137,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -247,7 +243,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(response):

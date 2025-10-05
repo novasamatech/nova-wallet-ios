@@ -66,7 +66,6 @@ struct MoonbeamTermsViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
@@ -108,7 +107,7 @@ struct MoonbeamTermsViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             callFactory: SubstrateCallFactory(),
             moonbeamService: moonbeamService,
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapper: signingWrapper,
             chainConnection: connection,
             currencyManager: currencyManager,

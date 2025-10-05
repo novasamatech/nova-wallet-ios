@@ -13,7 +13,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let calculatorService: RewardCalculatorServiceProtocol
     let runtimeService: RuntimeCodingServiceProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
 
@@ -39,7 +39,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         calculatorService: RewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         currencyManager: CurrencyManagerProtocol
@@ -52,7 +52,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.calculatorService = calculatorService
         self.runtimeService = runtimeService
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
         self.currencyManager = currencyManager
@@ -76,21 +76,18 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
     private func provideRewardCalculator() {
         let operation = calculatorService.fetchCalculatorOperation()
 
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let engine = try operation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveCalculator(result: .success(engine))
-                } catch {
-                    self?.presenter?.didReceiveCalculator(result: .failure(error))
-                }
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(calculator):
+                self?.presenter?.didReceiveCalculator(result: .success(calculator))
+            case let .failure(error):
+                self?.presenter?.didReceiveCalculator(result: .failure(error))
             }
         }
-
-        operationManager.enqueue(
-            operations: [operation],
-            in: .transient
-        )
     }
 
     private func handleStashItemAccounts(for stashId: AccountId, controllerId: AccountId) {
@@ -98,7 +95,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
             for: controllerId,
             accountRequest: chainAsset.chain.accountRequest(),
             repositoryFactory: accountRepositoryFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(accountResponse):
@@ -116,7 +113,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
             for: stashId,
             accountRequest: chainAsset.chain.accountRequest(),
             repositoryFactory: accountRepositoryFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(accountResponse):
@@ -176,7 +173,7 @@ extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInpu
         fetchAllMetaAccountResponses(
             for: chainAsset.chain.accountRequest(),
             repository: repository,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(responses):
@@ -288,7 +285,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
                     for: accountId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(accountItem):

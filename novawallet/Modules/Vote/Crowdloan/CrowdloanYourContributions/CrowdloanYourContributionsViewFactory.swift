@@ -37,7 +37,7 @@ enum CrowdloanYourContributionsViewFactory {
         let interactor = CrowdloanYourContributionsInteractor(
             chain: chain,
             selectedMetaAccount: selectedMetaAccount,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             runtimeService: runtimeService,
             crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionFactory,
             crowdloanOffchainProviderFactory: sharedState.crowdloanOffchainProviderFactory,

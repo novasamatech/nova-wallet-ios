@@ -201,7 +201,7 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
             let controller = selectedAccount.accountId
 
             runtimeService.fetchCoderFactory(
-                runningIn: OperationManager(operationQueue: operationQueue),
+                runningIn: operationQueue,
                 completion: { [weak self] coderFactory in
                     self?.estimateDirectStakingFee(
                         service: service,
@@ -236,7 +236,7 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
             let controller = selectedAccount.accountId
 
             runtimeService.fetchCoderFactory(
-                runningIn: OperationManager(operationQueue: operationQueue),
+                runningIn: operationQueue,
                 completion: { [weak self] coderFactory in
                     self?.submitDirectStaking(
                         submissionMonitor: submissionMonitor,

@@ -6,7 +6,7 @@ protocol RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
@@ -15,7 +15,7 @@ protocol RuntimeConstantFetching {
     func fetchCompoundConstant<T: Decodable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
@@ -24,7 +24,7 @@ protocol RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         oneOfPaths: [ConstantCodingPath],
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
@@ -36,14 +36,14 @@ extension RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         oneOfPaths: [ConstantCodingPath],
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchConstant(
             oneOfPaths: oneOfPaths,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: fallbackValue,
             callbackQueue: .main,
             closure: closure
@@ -54,13 +54,13 @@ extension RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         oneOfPaths: [ConstantCodingPath],
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchConstant(
             oneOfPaths: oneOfPaths,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: nil,
             callbackQueue: .main,
             closure: closure
@@ -71,14 +71,14 @@ extension RuntimeConstantFetching {
     func fetchCompoundConstant<T: Decodable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchCompoundConstant(
             for: path,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: fallbackValue,
             callbackQueue: .main,
             closure: closure
@@ -89,14 +89,14 @@ extension RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchConstant(
             for: path,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: fallbackValue,
             callbackQueue: .main,
             closure: closure
@@ -107,13 +107,13 @@ extension RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchConstant(
             for: path,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: nil,
             callbackQueue: .main,
             closure: closure
@@ -124,13 +124,13 @@ extension RuntimeConstantFetching {
     func fetchCompoundConstant<T: Decodable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         fetchCompoundConstant(
             for: path,
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: nil,
             callbackQueue: .main,
             closure: closure
@@ -141,7 +141,7 @@ extension RuntimeConstantFetching {
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         oneOfPaths: [ConstantCodingPath],
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
@@ -162,26 +162,26 @@ extension RuntimeConstantFetching {
 
         constOperation.addDependency(codingFactoryOperation)
 
-        constOperation.completionBlock = {
-            callbackQueue.async {
-                if let result = constOperation.result {
-                    closure(result)
-                } else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
-                }
-            }
-        }
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: constOperation,
+            dependencies: [codingFactoryOperation]
+        )
 
-        operationManager.enqueue(operations: [constOperation, codingFactoryOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: callbackQueue,
+            callbackClosure: closure
+        )
 
-        return CompoundOperationWrapper(targetOperation: constOperation, dependencies: [codingFactoryOperation])
+        return wrapper
     }
 
     @discardableResult
     func fetchConstant<T: LosslessStringConvertible & Equatable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
         callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
@@ -189,7 +189,7 @@ extension RuntimeConstantFetching {
         fetchConstant(
             oneOfPaths: [path],
             runtimeCodingService: runtimeCodingService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             fallbackValue: fallbackValue,
             callbackQueue: callbackQueue,
             closure: closure
@@ -200,9 +200,9 @@ extension RuntimeConstantFetching {
     func fetchCompoundConstant<T: Decodable>(
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         fallbackValue: T?,
-        callbackQueue: DispatchQueue,
+        callbackQueue _: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
@@ -217,18 +217,18 @@ extension RuntimeConstantFetching {
 
         constOperation.addDependency(codingFactoryOperation)
 
-        constOperation.completionBlock = {
-            callbackQueue.async {
-                if let result = constOperation.result {
-                    closure(result)
-                } else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
-                }
-            }
-        }
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: constOperation,
+            dependencies: [codingFactoryOperation]
+        )
 
-        operationManager.enqueue(operations: [constOperation, codingFactoryOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: closure
+        )
 
-        return CompoundOperationWrapper(targetOperation: constOperation, dependencies: [codingFactoryOperation])
+        return wrapper
     }
 }

@@ -115,7 +115,7 @@ final class StakingSetupAmountInteractor: AnyProviderAutoCleaning, AnyCancellabl
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(existentialDeposit):

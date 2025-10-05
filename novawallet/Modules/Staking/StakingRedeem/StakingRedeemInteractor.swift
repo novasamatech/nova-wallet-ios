@@ -31,10 +31,6 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
     private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
-    private var operationManager: OperationManagerProtocol {
-        OperationManager(operationQueue: operationQueue)
-    }
-
     private lazy var callFactory = SubstrateCallFactory()
 
     init(
@@ -108,26 +104,21 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
             return
         }
 
+        let accountIdClosure = { try stash.toAccountId() }
+
         let wrapper = slashesOperationFactory.createSlashingSpansOperationForStash(
-            { try stash.toAccountId() },
+            accountIdClosure,
             engine: connection,
             runtimeService: registryService
         )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = wrapper.targetOperation.result {
-                    completionClosure(result)
-                } else {
-                    completionClosure(.failure(BaseOperationError.unexpectedDependentResult))
-                }
-            }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            completionClosure(result)
         }
-
-        operationManager.enqueue(
-            operations: wrapper.allOperations,
-            in: .transient
-        )
     }
 
     private func estimateFee(with numberOfSlasingSpans: UInt32) {
@@ -207,7 +198,7 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -270,7 +261,7 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeResponse):

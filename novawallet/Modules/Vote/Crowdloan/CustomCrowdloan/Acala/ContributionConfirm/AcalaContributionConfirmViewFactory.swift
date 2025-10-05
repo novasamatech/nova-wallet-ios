@@ -87,7 +87,6 @@ struct AcalaContributionConfirmViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
@@ -129,7 +128,7 @@ struct AcalaContributionConfirmViewFactory {
             jsonLocalSubscriptionFactory: JsonDataProviderFactory.shared,
             signingWrapper: signingWrapper,
             bonusService: bonusService,
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

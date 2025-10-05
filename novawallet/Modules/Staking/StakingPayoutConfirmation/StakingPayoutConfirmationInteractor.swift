@@ -115,7 +115,7 @@ final class StakingPayoutConfirmationInteractor {
 extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteractorInputProtocol {
     func setup() {
         runtimeService.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] codingFactory in
                 self?.codingFactory = codingFactory
                 self?.continueSetup()
