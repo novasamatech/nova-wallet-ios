@@ -13,7 +13,6 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let chainRegistry: ChainRegistryProtocol
     let crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let operationManager: OperationManagerProtocol
     let operationQueue: OperationQueue
     let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
@@ -30,6 +29,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
     private var priceProvider: StreamableProvider<PriceData>?
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
@@ -47,7 +47,6 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol,
         operationQueue: OperationQueue,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -62,7 +61,6 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.jsonDataProviderFactory = jsonDataProviderFactory
         self.crowdloanRemoteSubscriptionService = crowdloanRemoteSubscriptionService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.operationManager = operationManager
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory

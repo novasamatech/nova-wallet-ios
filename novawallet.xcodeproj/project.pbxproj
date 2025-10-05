@@ -479,6 +479,7 @@
 		0C363E982B6B63280065AFA6 /* HydraConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E972B6B63280065AFA6 /* HydraConstants.swift */; };
 		0C363E9C2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E9B2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift */; };
 		0C3731CC2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3731CB2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift */; };
+		0C3731CE2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3731CD2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift */; };
 		0C37AFB72B555F1400009ECA /* StakingValidatorExposureFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFB62B555F1400009ECA /* StakingValidatorExposureFacade.swift */; };
 		0C37AFB92B5562B500009ECA /* StakingEraStakersExposureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFB82B5562B500009ECA /* StakingEraStakersExposureFactory.swift */; };
 		0C37AFBB2B556A9300009ECA /* StakingPagedExposureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */; };
@@ -6990,6 +6991,7 @@
 		0C363E972B6B63280065AFA6 /* HydraConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraConstants.swift; sourceTree = "<group>"; };
 		0C363E9B2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C3731CB2E8EB00400EBB7D4 /* EraLengthOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraLengthOperationFactory.swift; sourceTree = "<group>"; };
+		0C3731CD2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmitMonitorFactoryStub.swift; sourceTree = "<group>"; };
 		0C37AFB62B555F1400009ECA /* StakingValidatorExposureFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingValidatorExposureFacade.swift; sourceTree = "<group>"; };
 		0C37AFB82B5562B500009ECA /* StakingEraStakersExposureFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEraStakersExposureFactory.swift; sourceTree = "<group>"; };
 		0C37AFBA2B556A9300009ECA /* StakingPagedExposureFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPagedExposureFactory.swift; sourceTree = "<group>"; };
@@ -20737,6 +20739,8 @@
 				8476D39727F431D5004D9A7A /* MockApplicationService.swift */,
 				8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */,
 				0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */,
+				844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */,
+				0C3731CD2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -21512,7 +21516,6 @@
 				AE5A205E26A5A54800925400 /* ExtrinsicOperationFactoryStub.swift */,
 				844D229025EE5CD600C022F7 /* DataProviderStub.swift */,
 				844D229825EE5E8400C022F7 /* SingleValueProviderStub.swift */,
-				844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */,
 				8476CA0A25EFB17A003EEAE1 /* RewardCalculatorServiceStub.swift */,
 				84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */,
 				841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */,
@@ -36553,6 +36556,7 @@
 				842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */,
 				84B7C711289BFA79001A3566 /* OnboardingMainTests.swift in Sources */,
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
+				0C3731CE2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift in Sources */,
 				0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */,
 				846A2C54252A0FDF00731018 /* FilterTests.swift in Sources */,
 				0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */,
