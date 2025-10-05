@@ -3,7 +3,7 @@ import Operation_iOS
 protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {
     func startLoading()
     func stopLoading()
-    func didReceive(viewModel: [TransactionSectionModel])
+    func didReceive(viewModel: [TransactionHistorySectionModel])
 }
 
 protocol TransactionHistoryPresenterProtocol: AnyObject {
@@ -11,6 +11,7 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
     func select(item: TransactionItemViewModel)
     func loadNext()
     func showFilter()
+    func actionViewRelay()
 }
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
@@ -22,6 +23,7 @@ protocol TransactionHistoryInteractorInputProtocol: AnyObject {
 }
 
 protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
+    func didReceive(ahmFullInfo: AHMFullInfo)
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
     func didReceive(priceCalculator: TokenPriceCalculatorProtocol)
@@ -38,6 +40,10 @@ protocol TransactionHistoryWireframeProtocol: ErrorPresentable, AlertPresentable
     func showOperationDetails(
         from view: TransactionHistoryViewProtocol,
         operation: TransactionHistoryItem
+    )
+    func showAssetDetails(
+        from view: TransactionHistoryViewProtocol?,
+        chainAsset: ChainAsset
     )
     func closeTopModal(from view: TransactionHistoryViewProtocol)
 }

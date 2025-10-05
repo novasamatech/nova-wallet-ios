@@ -134,6 +134,7 @@ class AssetListAssetCell: UICollectionViewCell {
         switch balanceViewModel {
         case .loading:
             balanceLabel.originalView.bind("")
+            balanceLabel.bind(.visible)
         case let .cached(value), let .loaded(value):
             balanceLabel.originalView.bind(value.originalContent)
             balanceLabel.bind(value.privacyMode)
@@ -144,6 +145,7 @@ class AssetListAssetCell: UICollectionViewCell {
         switch balanceValueViewModel {
         case .loading:
             balanceValueLabel.originalView.text = ""
+            balanceValueLabel.bind(.visible)
         case let .cached(value), let .loaded(value):
             balanceValueLabel.originalView.text = value.originalContent
             balanceValueLabel.bind(value.privacyMode)

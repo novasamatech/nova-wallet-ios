@@ -8,7 +8,7 @@ struct TimepointThreshold: Equatable {
     var value: Int64 {
         switch type {
         case .timestamp:
-            Int64(Date().timeIntervalSince1970) + Int64(Double.secondsInDay) * (additionalValue ?? 0)
+            Int64(Date().timeIntervalSince1970) + (additionalValue ?? 0)
         case let .block(blockNumber, blockTime):
             Int64(blockNumber)
         }

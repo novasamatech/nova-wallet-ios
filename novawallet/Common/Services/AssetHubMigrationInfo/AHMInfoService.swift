@@ -5,18 +5,11 @@ import Foundation_iOS
 
 typealias AHMInfoPreSyncServiceProtocol = PreSyncServiceProtocol & AHMInfoServiceProtocol
 
-protocol AHMInfoServiceProtocol: AnyProviderAutoCleaning {
-    func add(
-        observer: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<[AHMRemoteData]?>.StateChangeClosure
-    )
-    func remove(observer: AnyObject)
-    func reset()
+protocol AHMInfoServiceProtocol {
+    func fetchPassedMigrationsInfo() -> CompoundOperationWrapper<[AHMRemoteData]>
 }
 
-final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
+final class AHMInfoService {
     private let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let applicationHandler: ApplicationHandlerProtocol
@@ -25,16 +18,11 @@ final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
     private let settingsManager: SettingsManagerProtocol
 
     private let operationQueue: OperationQueue
-    private let workingQueue: DispatchQueue
+    private let logger: LoggerProtocol
 
-    private let callStore = CancellableCallStore()
+    private let mutex = NSLock()
 
-    private var balances: [ChainAssetId: AssetBalance] = [:] {
-        didSet {
-            guard balances != oldValue else { return }
-            updateState()
-        }
-    }
+    private var balances: [ChainAssetId: AssetBalance]
 
     init(
         blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
@@ -43,8 +31,8 @@ final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
         ahmInfoRepository: AHMInfoRepositoryProtocol,
         assetBalanceRepository: AnyDataProviderRepository<AssetBalance>,
         settingsManager: SettingsManagerProtocol,
+        initialBalances: [ChainAssetId: AssetBalance] = [:],
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.blockNumberOperationFactory = blockNumberOperationFactory
@@ -53,10 +41,9 @@ final class AHMInfoService: BaseObservableStateStore<[AHMRemoteData]> {
         self.ahmInfoRepository = ahmInfoRepository
         self.assetBalanceRepository = assetBalanceRepository
         self.settingsManager = settingsManager
+        balances = initialBalances
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
-
-        super.init(logger: logger)
+        self.logger = logger
     }
 }
 
@@ -75,6 +62,22 @@ private extension AHMInfoService {
         defer { mutex.unlock() }
 
         return balances[chainAssetId]
+    }
+
+    func filteredConfigs(from configs: [AHMRemoteData]) -> [AHMRemoteData] {
+        let excludedSet = settingsManager.ahmInfoShownChains
+
+        let relevantConfigs = configs.filter {
+            let chainAssetId = ChainAssetId(
+                chainId: $0.sourceData.chainId,
+                assetId: $0.sourceData.assetId
+            )
+            let balance = self.fetchBalance(for: chainAssetId)
+
+            return !excludedSet.chainIds.contains(chainAssetId.chainId) && balance != nil
+        }
+
+        return relevantConfigs
     }
 
     func createSetupWrapper() -> CompoundOperationWrapper<Void> {
@@ -96,35 +99,35 @@ private extension AHMInfoService {
         )
     }
 
-    func createUpdatedConfigsWrapper() -> CompoundOperationWrapper<[AHMRemoteData]> {
+    func createUpdatedConfigsWrapper(for _: ChainModel.Id? = nil) -> CompoundOperationWrapper<[AHMRemoteData]> {
         let relevantConfigsWrapper = createRelevantConfigsWrapper()
 
-        let migrationTimestampsOperation = createMigrationTimestampsOperation(
+        let chainCurrentBlockNumbersOperation = createChainBlockNumbersOperation(
             dependingOn: relevantConfigsWrapper
         )
 
-        migrationTimestampsOperation.addDependency(relevantConfigsWrapper.targetOperation)
+        chainCurrentBlockNumbersOperation.addDependency(relevantConfigsWrapper.targetOperation)
 
         let resultOperation: BaseOperation<[AHMRemoteData]> = ClosureOperation {
             let configs = try relevantConfigsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let timestamps = try migrationTimestampsOperation
+            let chainBlockNumbers = try chainCurrentBlockNumbersOperation
                 .extractNoCancellableResultData()
                 .compactMap { $0 }
                 .reduce(into: [:]) { $0[$1.0] = $1.1 }
 
-            return configs.filter {
-                guard let timestamp = timestamps[$0.sourceData.chainId] else { return false }
+            return configs.filter { config in
+                guard let currentBlockNumber = chainBlockNumbers[config.sourceData.chainId] else { return false }
 
-                return Date(timeIntervalSince1970: TimeInterval(timestamp)) <= Date()
+                return config.blockNumber <= currentBlockNumber
             }
         }
 
-        resultOperation.addDependency(migrationTimestampsOperation)
+        resultOperation.addDependency(chainCurrentBlockNumbersOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: relevantConfigsWrapper.allOperations + [migrationTimestampsOperation]
+            dependencies: relevantConfigsWrapper.allOperations + [chainCurrentBlockNumbersOperation]
         )
     }
 
@@ -134,22 +137,9 @@ private extension AHMInfoService {
         let resultOperation = ClosureOperation<[AHMRemoteData]> { [weak self] in
             guard let self else { return [] }
 
-            let shownChains = settingsManager.ahmInfoShownChains
-
             let ahmInfoConfigs = try ahmInfoWrapper.targetOperation.extractNoCancellableResultData()
 
-            let relevantConfigs = ahmInfoConfigs.filter {
-                let chainAssetId = ChainAssetId(
-                    chainId: $0.sourceData.chainId,
-                    assetId: $0.sourceData.assetId
-                )
-                let balance = self.fetchBalance(for: chainAssetId)
-
-                return !shownChains.chainIds.contains(chainAssetId.chainId)
-                    && balance != nil
-            }
-
-            return relevantConfigs
+            return filteredConfigs(from: ahmInfoConfigs)
         }
 
         resultOperation.addDependency(ahmInfoWrapper.targetOperation)
@@ -160,9 +150,9 @@ private extension AHMInfoService {
         )
     }
 
-    func createMigrationTimestampsOperation(
+    func createChainBlockNumbersOperation(
         dependingOn configsWrapper: CompoundOperationWrapper<[AHMRemoteData]>
-    ) -> BaseOperation<[MigrationTimeStamp]> {
+    ) -> BaseOperation<[ChainCurrentBlockNumber]> {
         OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] in
@@ -173,76 +163,36 @@ private extension AHMInfoService {
                 .extractNoCancellableResultData()
                 .reduce(into: [:]) { $0[$1.sourceData.chainId] = $1 }
 
-            return configs.compactMap { chainId, config in
+            return configs.compactMap { chainId, _ in
                 guard
-                    let chain = self.chainRegistry.getChain(for: chainId),
-                    let runtimeProvider = self.chainRegistry.getRuntimeProvider(for: chainId)
+                    let chain = self.chainRegistry.getChain(for: chainId)
                 else { return nil }
 
-                return self.createMigrationTimestampWrapper(
-                    for: chain,
-                    runtimeProvider: runtimeProvider,
-                    targetBlockNumber: config.blockNumber
-                )
+                return self.createCurrentBlockNumberWrapper(for: chain)
             }
         }.longrunOperation()
     }
 
-    func createMigrationTimestampWrapper(
-        for chain: ChainModel,
-        runtimeProvider: RuntimeProviderProtocol,
-        targetBlockNumber: BlockNumber
-    ) -> CompoundOperationWrapper<MigrationTimeStamp> {
+    func createCurrentBlockNumberWrapper(
+        for chain: ChainModel
+    ) -> CompoundOperationWrapper<ChainCurrentBlockNumber> {
         let currentBlockWrapper = blockNumberOperationFactory.createWrapper(
             for: chain.chainId
         )
-        let blocktimeWrapper = BlockTimeOperationFactory(chain: chain).createExpectedBlockTimeWrapper(
-            from: runtimeProvider
-        )
 
-        let resultOperation: BaseOperation<MigrationTimeStamp> = ClosureOperation {
-            let currentBlock = try currentBlockWrapper.targetOperation.extractNoCancellableResultData()
-            let blocktime = try blocktimeWrapper.targetOperation.extractNoCancellableResultData()
-
-            let timestamp = BlockTimestampEstimator.estimateTimestamp(
-                for: targetBlockNumber,
-                currentBlock: currentBlock,
-                blockTimeInMillis: blocktime
+        let resultOperation: BaseOperation<ChainCurrentBlockNumber> = ClosureOperation {
+            (
+                chain.chainId,
+                try currentBlockWrapper.targetOperation.extractNoCancellableResultData()
             )
-
-            return (chain.chainId, timestamp)
         }
 
         resultOperation.addDependency(currentBlockWrapper.targetOperation)
-        resultOperation.addDependency(blocktimeWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: currentBlockWrapper.allOperations + blocktimeWrapper.allOperations
+            dependencies: currentBlockWrapper.allOperations
         )
-    }
-
-    func updateState() {
-        let wrapper = createUpdatedConfigsWrapper()
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: callStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            guard let self else { return }
-
-            switch result {
-            case let .success(configs):
-                guard stateObservable.state != configs else { return }
-
-                stateObservable.state = configs
-            case let .failure(error):
-                logger.error("Failed to update AHM info state: \(error)")
-            }
-        }
     }
 }
 
@@ -253,29 +203,18 @@ extension AHMInfoService: AHMInfoPreSyncServiceProtocol {
         mutex.lock()
         defer { mutex.unlock() }
 
-        applicationHandler.delegate = self
-
         return createSetupWrapper()
     }
 
-    func throttle() {
-        mutex.lock()
-        defer { mutex.unlock() }
+    func throttle() {}
 
-        callStore.cancel()
-    }
-}
-
-// MARK: - ApplicationHandlerDelegate
-
-extension AHMInfoService: ApplicationHandlerDelegate {
-    func didReceiveDidBecomeActive(notification _: Notification) {
-        updateState()
+    func fetchPassedMigrationsInfo() -> CompoundOperationWrapper<[AHMRemoteData]> {
+        createUpdatedConfigsWrapper()
     }
 }
 
 // MARK: - Private types
 
 private extension AHMInfoService {
-    typealias MigrationTimeStamp = (ChainModel.Id, UInt64)
+    typealias ChainCurrentBlockNumber = (ChainModel.Id, BlockNumber)
 }

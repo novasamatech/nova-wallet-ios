@@ -180,6 +180,7 @@ final class Gov2DelegationTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = KnowChainId.kusama
+        let blockTime: BlockTime = 6000
 
         guard
             let chain = chainRegistry.getChain(for: chainId),
@@ -188,10 +189,19 @@ final class Gov2DelegationTests: XCTestCase {
         }
 
         let statsOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+        
+        let threshold: TimepointThreshold? = if let block {
+            .init(type: .block(blockNumber: block, blockTime: blockTime))
+        } else {
+            nil
+        }
 
         // when
 
-        let wrapper = statsOperationFactory.createDirectVotesFetchOperation(for: address, from: block)
+        let wrapper = statsOperationFactory.createDirectVotesFetchOperation(
+            for: address,
+            from: threshold
+        )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
