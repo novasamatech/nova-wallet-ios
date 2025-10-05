@@ -202,7 +202,7 @@ extension RuntimeConstantFetching {
         runtimeCodingService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         fallbackValue: T?,
-        callbackQueue _: DispatchQueue,
+        callbackQueue: DispatchQueue,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
@@ -225,7 +225,7 @@ extension RuntimeConstantFetching {
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: .main,
+            runningCallbackIn: callbackQueue,
             callbackClosure: closure
         )
 
