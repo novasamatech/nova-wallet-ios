@@ -132,7 +132,7 @@ protocol AssetListWireframeProtocol: AnyObject,
     MessageSheetPresentable,
     FeatureSupportChecking
 {
-    func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
+    func showAssetDetails(from view: AssetListViewProtocol?, chainAsset: ChainAsset)
     func showTokensManage(from view: AssetListViewProtocol?)
 
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)

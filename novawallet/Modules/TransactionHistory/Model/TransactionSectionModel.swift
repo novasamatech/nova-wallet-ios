@@ -1,9 +1,19 @@
 import UIKit
 
+enum TransactionHistorySectionModel: Hashable {
+    case ahmHint(TransactionHistoryItemModel)
+    case transaction(TransactionSectionModel)
+}
+
+enum TransactionHistoryItemModel: Hashable {
+    case ahmHint(HistoryAHMViewModel)
+    case transaction(TransactionItemViewModel)
+}
+
 struct TransactionSectionModel: Hashable {
     let title: String
     let date: Date
-    let items: [TransactionItemViewModel]
+    let items: [TransactionHistoryItemModel]
 }
 
 struct TransactionItemViewModel: Hashable {
