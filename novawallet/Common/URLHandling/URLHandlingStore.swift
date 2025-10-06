@@ -6,6 +6,7 @@ enum URLHandlingPendingLink: Codable {
     case governance(Referenda.ReferendumIndex)
     case dApp(URL)
     case card(String?)
+    case assetHubMigration(config: AHMRemoteData)
 }
 
 protocol URLHandlingStoreProtocol {

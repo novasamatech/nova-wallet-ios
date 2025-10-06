@@ -61,8 +61,12 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
         collectionViewManager.updateLoadingState()
     }
+}
 
-    private func setupCollectionView() {
+// MARK: - Private
+
+private extension AssetListViewController {
+    func setupCollectionView() {
         collectionViewManager.setupCollectionView()
     }
 
@@ -70,19 +74,19 @@ final class AssetListViewController: UIViewController, ViewHolder {
         rootView.collectionViewLayout.updateTotalBalanceHeight(height)
     }
 
-    private func activatePromotionWithHeight(_ height: CGFloat) {
+    func activatePromotionWithHeight(_ height: CGFloat) {
         rootView.collectionViewLayout.activatePromotionWithHeight(height)
     }
 
-    private func deactivatePromotion() {
+    func deactivatePromotion() {
         rootView.collectionViewLayout.deactivatePromotion()
     }
 
-    private func setOrganizerActive(_ isActive: Bool) {
+    func setOrganizerActive(_ isActive: Bool) {
         rootView.collectionViewLayout.setOrganizerActive(isActive)
     }
 
-    private func refreshOrganizerItems() {
+    func refreshOrganizerItems() {
         let numberOfOrganizerItems = rootView.collectionView.numberOfItems(
             inSection: AssetListFlowLayout.SectionType.organizer.index
         )
@@ -223,6 +227,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func actionChangeAssetListStyle() {
         presenter.toggleAssetListStyle()
+    }
+
+    func actionTogglePrivacy() {
+        presenter.togglePrivacyMode()
     }
 }
 

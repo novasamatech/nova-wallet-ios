@@ -11,8 +11,7 @@ final class GovernanceDelegateSearchInteractor {
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let identityProxyFactory: IdentityProxyFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let chain: ChainModel
     let operationQueue: OperationQueue
 
@@ -26,8 +25,7 @@ final class GovernanceDelegateSearchInteractor {
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         chain: ChainModel,
         operationQueue: OperationQueue
     ) {
@@ -37,8 +35,7 @@ final class GovernanceDelegateSearchInteractor {
         self.metadataProvider = metadataProvider
         self.identityProxyFactory = identityProxyFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.chain = chain
         self.operationQueue = operationQueue
     }
@@ -52,10 +49,8 @@ final class GovernanceDelegateSearchInteractor {
             .init(
                 currentBlockNumber: currentBlockNumber,
                 lastVotedDays: lastVotedDays,
-                blockTimeService: blockTimeService,
-                blockTimeOperationFactory: blockTimeFactory
+                timelineService: timelineService
             ),
-            runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
@@ -78,7 +73,7 @@ final class GovernanceDelegateSearchInteractor {
     }
 
     private func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func clearAndSubscribeMetadata() {

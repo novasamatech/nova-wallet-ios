@@ -47,7 +47,7 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
         )
     }
 
-    private func createValidatorViewModel(from payoutInfo: PayoutInfo) throws -> StackCellViewModel {
+    private func createValidatorViewModel(from payoutInfo: Staking.PayoutInfo) throws -> StackCellViewModel {
         let validator = DisplayAddress(
             address: try payoutInfo.validator.toAddress(using: chainFormat),
             username: payoutInfo.identity?.displayName ?? ""
@@ -56,7 +56,7 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
         return accountViewModelFactory.createViewModel(from: validator).cellViewModel
     }
 
-    private func createEraViewModel(from index: EraIndex, locale: Locale) -> StackCellViewModel {
+    private func createEraViewModel(from index: Staking.EraIndex, locale: Locale) -> StackCellViewModel {
         let details: String
 
         if let stringIndex = numberFormatter.string(from: NSNumber(value: index)) {

@@ -112,7 +112,11 @@ extension ValidatorInfoViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityProxyFactory: identityProxyFactory
+            identityProxyFactory: identityProxyFactory,
+            slashesOperationFactory: SlashesOperationFactory(
+                storageRequestFactory: storageRequestFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         )
 
         let interactor = YourValidatorInfoInteractor(

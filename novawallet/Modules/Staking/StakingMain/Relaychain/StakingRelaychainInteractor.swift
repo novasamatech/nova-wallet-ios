@@ -130,7 +130,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         clear(cancellable: &maxNominatorsPerValidatorCancellable)
 
         let wrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
@@ -263,26 +263,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     func fetchEraCompletionTime() {
         clear(cancellable: &eraCompletionTimeCancellable)
 
-        guard let chain = selectedChainAsset?.chain else {
-            return
-        }
-
-        let chainId = chain.chainId
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper()
 
         operationWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

@@ -53,7 +53,7 @@ struct StartStakingInfoViewFactory {
 
     private static func createRelaychainView(
         chainAsset: ChainAsset,
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         selectedStakingType: StakingType?
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue

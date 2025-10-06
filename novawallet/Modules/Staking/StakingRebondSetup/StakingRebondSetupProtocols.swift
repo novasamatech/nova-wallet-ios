@@ -22,7 +22,7 @@ protocol StakingRebondSetupInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingRebondSetupInteractorOutputProtocol: AnyObject {
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveController(result: Result<ChainAccountResponse?, Error>)

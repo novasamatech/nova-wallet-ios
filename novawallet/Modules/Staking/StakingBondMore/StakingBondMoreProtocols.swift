@@ -26,7 +26,7 @@ protocol StakingBondMoreInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveStash(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)
 }
 

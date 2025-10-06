@@ -16,7 +16,11 @@ extension StakingDashboardViewModelFactory: StakingMoreOptionsViewModelFactoryPr
         for model: StakingDashboardItemModel,
         locale: Locale
     ) -> StakingDashboardDisabledViewModel {
-        createInactiveStakingViewModel(for: model, locale: locale)
+        createInactiveStakingViewModel(
+            for: model,
+            privacyModeEnabled: false,
+            locale: locale
+        )
     }
 
     func createDAppModel(for dApp: DApp) -> LoadableViewModelState<DAppView.Model> {

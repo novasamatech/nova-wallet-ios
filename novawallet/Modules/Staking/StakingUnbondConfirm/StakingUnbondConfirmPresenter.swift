@@ -19,7 +19,7 @@ final class StakingUnbondConfirmPresenter {
     private var balance: Decimal?
     private var minimalBalance: Decimal?
     private var minNominatorBonded: Decimal?
-    private var nomination: Nomination?
+    private var nomination: Staking.Nomination?
     private var priceData: PriceData?
     private var fee: ExtrinsicFeeProtocol?
     private var controller: MetaChainAccountResponse?
@@ -199,7 +199,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             if let stakingLedger = stakingLedger {
@@ -315,7 +315,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         }
     }
 
-    func didReceiveNomination(result: Result<Nomination?, Error>) {
+    func didReceiveNomination(result: Result<Staking.Nomination?, Error>) {
         switch result {
         case let .success(nomination):
             self.nomination = nomination

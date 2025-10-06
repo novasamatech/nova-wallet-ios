@@ -69,6 +69,20 @@ final class BranchToInternalConvertionTests: XCTestCase {
         )
     }
     
+    func testAHMLinkConverstion() {
+        performTest(
+            for: [
+                ExternalUniversalLinkKey.action.rawValue: "open",
+                ExternalUniversalLinkKey.screen.rawValue: "ahm",
+                UniversalLink.AssetHubMigration.QueryKey.chainId: KnowChainId.polkadot
+            ],
+            expectedPath: "/open/ahm",
+            expectedQueryItems: [
+                UniversalLink.AssetHubMigration.QueryKey.chainId: KnowChainId.polkadot
+            ]
+        )
+    }
+    
     func testBranchParamsIgnored() {
         performTest(
             for: [

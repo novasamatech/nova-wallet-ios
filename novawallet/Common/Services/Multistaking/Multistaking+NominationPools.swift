@@ -11,10 +11,10 @@ extension Multistaking {
             case bonded
         }
 
-        let ledger: UncertainStorage<StakingLedger?>
+        let ledger: UncertainStorage<Staking.Ledger?>
         let bondedPool: UncertainStorage<NominationPools.BondedPool?>
-        let era: UncertainStorage<ActiveEraInfo>
-        let nomination: UncertainStorage<Nomination?>
+        let era: UncertainStorage<Staking.ActiveEraInfo>
+        let nomination: UncertainStorage<Staking.Nomination?>
 
         init(
             values: [BatchStorageSubscriptionResultValue],
@@ -49,9 +49,9 @@ extension Multistaking {
 
     struct NominationPoolState {
         let poolMember: NominationPools.PoolMember
-        let era: ActiveEraInfo?
-        let ledger: StakingLedger?
-        let nomination: Nomination?
+        let era: Staking.ActiveEraInfo?
+        let ledger: Staking.Ledger?
+        let nomination: Staking.Nomination?
         let bondedPool: NominationPools.BondedPool?
 
         var poolId: NominationPools.PoolId {
@@ -71,7 +71,7 @@ extension Multistaking {
         }
 
         func applying(change: NominationPoolStateChange) -> NominationPoolState {
-            let newEra: ActiveEraInfo?
+            let newEra: Staking.ActiveEraInfo?
 
             if case let .defined(activeEra) = change.era {
                 newEra = activeEra

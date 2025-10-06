@@ -37,7 +37,7 @@ protocol ControllerAccountInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>, address: AccountAddress)
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveIsDeprecated(result: Result<Bool, Error>)
 }
 

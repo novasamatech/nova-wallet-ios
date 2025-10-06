@@ -19,13 +19,13 @@ struct StakingUnbondingViewModel {
 
 struct StakingUnbondingItemViewModel {
     let amount: LocalizableResource<String>
-    let unbondingEra: EraIndex
+    let unbondingEra: Staking.EraIndex
 
-    func isNext(from activeEra: EraIndex) -> Bool {
+    func isNext(from activeEra: Staking.EraIndex) -> Bool {
         unbondingEra == activeEra + 1
     }
 
-    func isRedeemable(from activeEra: EraIndex) -> Bool {
+    func isRedeemable(from activeEra: Staking.EraIndex) -> Bool {
         unbondingEra <= activeEra
     }
 }

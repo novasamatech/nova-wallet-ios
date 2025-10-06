@@ -115,6 +115,7 @@ class StakingRewardPayoutsTests: XCTestCase {
                     currentSlot: 2,
                     genesisSlot: 1,
                     blockCreationTime: 6000,
+                    eraDelayInBlocks: 0,
                     createdAtDate: Date()
                 )
 

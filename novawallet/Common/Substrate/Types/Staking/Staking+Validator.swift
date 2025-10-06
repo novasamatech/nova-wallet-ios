@@ -25,4 +25,11 @@ extension Staking {
     }
 
     typealias ValidatorPage = UInt32
+
+    struct ValidatorPrefs: Codable, Equatable {
+        @StringCodable var commission: BigUInt
+        let blocked: Bool?
+
+        var isBlocked: Bool { blocked ?? false }
+    }
 }

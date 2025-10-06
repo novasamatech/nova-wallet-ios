@@ -16,6 +16,7 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
+    let privacyStateManager: PrivacyStateManagerProtocol
     let operationQueue: OperationQueue
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
@@ -28,6 +29,7 @@ final class SettingsInteractor {
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -37,11 +39,16 @@ final class SettingsInteractor {
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.privacyStateManager = privacyStateManager
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
+}
 
-    private func provideUserSettings() {
+// MARK: - Private
+
+private extension SettingsInteractor {
+    func provideUserSettings() {
         do {
             guard let wallet = selectedWalletSettings.value else {
                 throw ProfileInteractorError.noSelectedAccount
@@ -54,7 +61,7 @@ final class SettingsInteractor {
         provideSecuritySettings()
     }
 
-    private func provideSecuritySettings() {
+    func provideSecuritySettings() {
         let biometrySettings: BiometrySettings = .create(
             from: biometryAuth.supportedBiometryType,
             settingsManager: settingsManager
@@ -67,18 +74,24 @@ final class SettingsInteractor {
         }
     }
 
-    private func provideWalletConnectSessionsCount() {
+    func provideWalletConnectSessionsCount() {
         let count = walletConnect.getSessionsCount()
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
 
-    private func providePushNotificationsStatus() {
+    func providePushNotificationsStatus() {
         pushNotificationsFacade.subscribeStatus(self) { [weak self] _, newStatus in
             self?.presenter?.didReceive(pushNotificationsStatus: newStatus)
         }
     }
+
+    func providePrivacyStateSettings() {
+        presenter?.didReceive(hideBalancesOnLaunch: privacyStateManager.enablePrivacyModeOnLaunch)
+    }
 }
+
+// MARK: - SettingsInteractorInputProtocol
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
@@ -89,6 +102,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideWalletConnectSessionsCount()
         applyCurrency()
         providePushNotificationsStatus()
+        providePrivacyStateSettings()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
@@ -115,13 +129,19 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
     }
 
     func connectWalletConnect(uri: String) {
-        walletConnect.connect(uri: uri) { [weak self] optError in
-            if let error = optError {
-                self?.presenter?.didReceive(error: .walletConnectFailed(error))
-            }
+        walletConnect.connect(uri: uri) { [weak self] error in
+            guard let error else { return }
+
+            self?.presenter?.didReceive(error: .walletConnectFailed(error))
         }
     }
+
+    func toggleHideBalances() {
+        privacyStateManager.enablePrivacyModeOnLaunch.toggle()
+    }
 }
+
+// MARK: - EventVisitorProtocol
 
 extension SettingsInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
@@ -129,11 +149,13 @@ extension SettingsInteractor: EventVisitorProtocol {
     }
 
     func processWalletNameChanged(event: WalletNameChanged) {
-        if event.isSelectedWallet {
-            provideUserSettings()
-        }
+        guard event.isSelectedWallet else { return }
+
+        provideUserSettings()
     }
 }
+
+// MARK: - WalletConnectDelegateOutputProtocol
 
 extension SettingsInteractor: WalletConnectDelegateOutputProtocol {
     func walletConnectDidChangeSessions() {
@@ -141,12 +163,14 @@ extension SettingsInteractor: WalletConnectDelegateOutputProtocol {
     }
 }
 
+// MARK: - SelectedCurrencyDepending
+
 extension SettingsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let presenter = presenter,
-              let currencyManager = self.currencyManager else {
-            return
-        }
+        guard
+            let presenter,
+            let currencyManager
+        else { return }
 
         presenter.didReceive(currencyCode: currencyManager.selectedCurrency.code)
     }

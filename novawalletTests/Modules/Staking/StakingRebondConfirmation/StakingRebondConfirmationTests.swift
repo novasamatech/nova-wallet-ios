@@ -90,12 +90,12 @@ class StakingRebondConfirmationTests: XCTestCase {
         )
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(3e+12),
             active: BigUInt(1e+12),
             unlocking: [
-                UnlockChunk(value: BigUInt(2e+12), era: 5)
+                Staking.UnlockChunk(value: BigUInt(2e+12), era: 5)
             ],
             claimedRewards: [],
             legacyClaimedRewards: nil
@@ -103,7 +103,7 @@ class StakingRebondConfirmationTests: XCTestCase {
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
             ledgerInfo: stakingLedger,
-            activeEra: ActiveEraInfo(index: 1),
+            activeEra: Staking.ActiveEraInfo(index: 1),
             stashItem: stashItem
         )
 

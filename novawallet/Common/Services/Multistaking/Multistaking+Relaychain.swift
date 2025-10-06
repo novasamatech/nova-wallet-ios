@@ -16,7 +16,7 @@ extension Multistaking {
             blockHashJson _: JSON,
             context: [CodingUserInfoKey: Any]?
         ) throws {
-            stash = try UncertainStorage<StakingLedger?>(
+            stash = try UncertainStorage<Staking.Ledger?>(
                 values: values,
                 mappingKey: Key.stash.rawValue,
                 context: context
@@ -31,13 +31,13 @@ extension Multistaking {
     }
 
     struct RelaychainState {
-        let era: ActiveEraInfo
-        let ledger: StakingLedger?
-        let nomination: Nomination?
-        let validatorPrefs: ValidatorPrefs?
+        let era: Staking.ActiveEraInfo
+        let ledger: Staking.Ledger?
+        let nomination: Staking.Nomination?
+        let validatorPrefs: Staking.ValidatorPrefs?
 
         func applying(change: RelaychainStateChange) -> RelaychainState {
-            let newEra: ActiveEraInfo = change.era.valueWhenDefined(else: era)
+            let newEra: Staking.ActiveEraInfo = change.era.valueWhenDefined(else: era)
             let newLedger = change.ledger.valueWhenDefined(else: ledger)
             let newNomination = change.nomination.valueWhenDefined(else: nomination)
             let newValidatorPrefs = change.validatorPrefs.valueWhenDefined(else: validatorPrefs)
@@ -59,10 +59,10 @@ extension Multistaking {
             case validatorPrefs
         }
 
-        let era: UncertainStorage<ActiveEraInfo>
-        let ledger: UncertainStorage<StakingLedger?>
-        let nomination: UncertainStorage<Nomination?>
-        let validatorPrefs: UncertainStorage<ValidatorPrefs?>
+        let era: UncertainStorage<Staking.ActiveEraInfo>
+        let ledger: UncertainStorage<Staking.Ledger?>
+        let nomination: UncertainStorage<Staking.Nomination?>
+        let validatorPrefs: UncertainStorage<Staking.ValidatorPrefs?>
 
         init(
             values: [BatchStorageSubscriptionResultValue],

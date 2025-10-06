@@ -144,14 +144,14 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
         let lockUpPeriodOperation: BaseOperation<UInt32> =
             createConstOperation(
                 dependingOn: runtimeOperation,
-                path: .lockUpPeriod
+                path: Staking.lockUpPeriodPath
             )
 
         let existentialDepositOperation: BaseOperation<BigUInt> = createConstOperation(
@@ -164,7 +164,7 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
 
         let eraValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
-        let stakingDurationWrapper = durationOperationFactory.createDurationOperation(from: runtimeService)
+        let stakingDurationWrapper = durationOperationFactory.createDurationOperation()
 
         let votersWrapper = votersOperationFactory.createVotersInfoWrapper(for: runtimeService)
 

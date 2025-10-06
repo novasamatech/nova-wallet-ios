@@ -5,13 +5,24 @@ class StakingDurationOperationFactoryTests: XCTestCase {
     func testWestend() {
         do {
             // given
+            
+            let chain = ChainModelGenerator.generateChain(
+                generatingAssets: 2,
+                addressPrefix: 42,
+                assetPresicion: 12,
+                hasStaking: true
+            )
+            
+            let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
 
-            let runtimeService = try RuntimeCodingServiceStub.createWestendService()
-            let operationFactory = BabeStakingDurationFactory()
+            let operationFactory = BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            )
 
             // when
 
-            let operationWrapper = operationFactory.createDurationOperation(from: runtimeService)
+            let operationWrapper = operationFactory.createDurationOperation()
 
             OperationQueue().addOperations(operationWrapper.allOperations, waitUntilFinished: true)
 

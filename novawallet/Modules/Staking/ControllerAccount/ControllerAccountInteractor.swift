@@ -179,17 +179,17 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         }
     }
 
-    private func createLedgerFetchOperation(_ accountId: AccountId) -> CompoundOperationWrapper<StakingLedger?> {
+    private func createLedgerFetchOperation(_ accountId: AccountId) -> CompoundOperationWrapper<Staking.Ledger?> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<StakingLedger>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.Ledger>]> = storageRequestFactory.queryItems(
             engine: connection,
             keyParams: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
             storagePath: Staking.stakingLedger
         )
 
-        let mapOperation = ClosureOperation<StakingLedger?> {
+        let mapOperation = ClosureOperation<Staking.Ledger?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
         }
 
@@ -291,7 +291,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

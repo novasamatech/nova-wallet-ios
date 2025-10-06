@@ -10,7 +10,7 @@ enum NominationPools {
         @StringCodable var poolId: PoolId
         @StringCodable var points: BigUInt
         @StringCodable var lastRecordedRewardCounter: BigUInt
-        let unbondingEras: [SupportPallet.KeyValue<StringScaleMapper<EraIndex>, StringScaleMapper<BigUInt>>]
+        let unbondingEras: [SupportPallet.KeyValue<StringScaleMapper<Staking.EraIndex>, StringScaleMapper<BigUInt>>]
     }
 
     enum PoolState: Decodable, Equatable {
@@ -83,15 +83,15 @@ enum NominationPools {
 
     struct SubPools: Decodable, Equatable {
         let noEra: UnbondPool
-        let withEra: [SupportPallet.KeyValue<StringScaleMapper<EraIndex>, UnbondPool>]
+        let withEra: [SupportPallet.KeyValue<StringScaleMapper<Staking.EraIndex>, UnbondPool>]
 
-        func getPoolsByEra() -> [EraIndex: NominationPools.UnbondPool] {
-            withEra.reduce(into: [EraIndex: NominationPools.UnbondPool]()) {
+        func getPoolsByEra() -> [Staking.EraIndex: NominationPools.UnbondPool] {
+            withEra.reduce(into: [Staking.EraIndex: NominationPools.UnbondPool]()) {
                 $0[$1.key.value] = $1.value
             }
         }
 
-        func redeemableBalance(for member: NominationPools.PoolMember, in era: EraIndex) -> BigUInt {
+        func redeemableBalance(for member: NominationPools.PoolMember, in era: Staking.EraIndex) -> BigUInt {
             let poolsByEra = getPoolsByEra()
 
             return member.unbondingEras.reduce(BigUInt(0)) { redeemable, unbondingKeyValue in

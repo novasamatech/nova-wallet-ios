@@ -1,15 +1,15 @@
 import Foundation
 
 final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
-    private(set) var ledgerInfo: StakingLedger
-    private(set) var prefs: ValidatorPrefs
+    private(set) var ledgerInfo: Staking.Ledger
+    private(set) var prefs: Staking.ValidatorPrefs
 
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
-        ledgerInfo: StakingLedger,
-        prefs: ValidatorPrefs,
+        ledgerInfo: Staking.Ledger,
+        prefs: Staking.ValidatorPrefs,
         totalReward: TotalRewardItem?,
         payee: Staking.RewardDestinationArg?
     ) {
@@ -30,7 +30,7 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
         visitor.visit(state: self)
     }
 
-    override func process(ledgerInfo: StakingLedger?) {
+    override func process(ledgerInfo: Staking.Ledger?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -55,7 +55,7 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
         stateMachine.transit(to: newState)
     }
 
-    override func process(nomination: Nomination?) {
+    override func process(nomination: Staking.Nomination?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -80,7 +80,7 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
         stateMachine.transit(to: newState)
     }
 
-    override func process(validatorPrefs: ValidatorPrefs?) {
+    override func process(validatorPrefs: Staking.ValidatorPrefs?) {
         guard let stateMachine = stateMachine else {
             return
         }

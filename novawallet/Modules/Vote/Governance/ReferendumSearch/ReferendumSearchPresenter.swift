@@ -52,7 +52,7 @@ final class ReferendumSearchPresenter {
     }
 
     private func setupInitialState() {
-        updateReferendumsViewModels(referendumsState.state.cells)
+        updateReferendumsViewModels(referendumsState.state.cells.map(\.originalContent))
         updateTimeModels(referendumsState.state.timeModels)
     }
 }
@@ -64,7 +64,7 @@ extension ReferendumSearchPresenter: ReferendumSearchPresenterProtocol {
 
         referendumsState.addObserver(with: self) { [weak self] old, new in
             if old.cells != new.cells {
-                self?.updateReferendumsViewModels(new.cells)
+                self?.updateReferendumsViewModels(new.cells.map(\.originalContent))
             }
 
             if old.timeModels != new.timeModels {
