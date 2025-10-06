@@ -5,6 +5,7 @@ import Keystore_iOS
 final class AssetDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: AssetDetailsInteractorOutputProtocol?
 
+    let chainRegistry: ChainRegistryProtocol
     let ahmInfoFactory: AHMFullInfoFactoryProtocol
     let settingsManager: SettingsManagerProtocol
     let chainAsset: ChainAsset
@@ -31,6 +32,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     }
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         ahmInfoFactory: AHMFullInfoFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         selectedMetaAccount: MetaAccountModel,
@@ -43,6 +45,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
+        self.chainRegistry = chainRegistry
         self.ahmInfoFactory = ahmInfoFactory
         self.settingsManager = settingsManager
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -161,6 +164,16 @@ private extension AssetDetailsInteractor {
         presenter?.didReceive(availableOperations: operations)
     }
 
+    func checkIfHasAHChainAccount(chainId: ChainModel.Id) -> Bool {
+        guard let chain = chainRegistry.getChain(for: chainId) else {
+            return false
+        }
+
+        let chainAccountRequest = chain.accountRequest()
+
+        return selectedMetaAccount.fetch(for: chainAccountRequest) != nil
+    }
+
     func provideAHMInfo() {
         let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
 
@@ -169,11 +182,21 @@ private extension AssetDetailsInteractor {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(info):
-                self?.presenter?.didReceive(ahmInfo: info)
+                guard let info else {
+                    presenter?.didReceive(ahmInfo: nil)
+                    return
+                }
+                guard checkIfHasAHChainAccount(chainId: info.destinationChain.chainId) else {
+                    return
+                }
+
+                presenter?.didReceive(ahmInfo: info)
             case let .failure(error):
-                self?.presenter?.didReceive(error: .ahmInfo(error))
+                presenter?.didReceive(error: .ahmInfo(error))
             }
         }
     }
