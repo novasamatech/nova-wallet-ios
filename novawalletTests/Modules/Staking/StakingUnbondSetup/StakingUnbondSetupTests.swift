@@ -68,8 +68,6 @@ class StakingUnbondSetupTests: XCTestCase {
         let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
-        
-        let operationManager = OperationManager()
 
         let nominatorAddress = selectedAccount.toAddress()!
 
@@ -86,9 +84,7 @@ class StakingUnbondSetupTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
         let stakingLedger = Staking.Ledger(
@@ -132,7 +128,7 @@ class StakingUnbondSetupTests: XCTestCase {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

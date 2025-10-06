@@ -20,7 +20,6 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
         sharedState.stakingOption.chainAsset
     }
 
-    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private var calculator = ProxyDepositCalculator()
     private var proxyProvider: AnyDataProvider<DecodedProxyDefinition>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -60,7 +59,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
         fetchConstant(
             for: Proxy.depositBase,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(depositBase):
@@ -73,7 +72,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
         fetchConstant(
             for: Proxy.depositFactor,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(depositFactor):
@@ -86,7 +85,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
         fetchConstant(
             for: Proxy.maxProxyCount,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<Int, Error>) in
             switch result {
             case let .success(maxCount):
@@ -99,7 +98,7 @@ class StakingProxyBaseInteractor: RuntimeConstantFetching,
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(existensialDeposit):

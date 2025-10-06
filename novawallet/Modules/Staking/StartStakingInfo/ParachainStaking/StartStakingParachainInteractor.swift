@@ -200,7 +200,7 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         rewardPaymentDelayCancellable = fetchConstant(
             for: ParachainStaking.rewardPaymentDelay,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<UInt32, Error>) in
             DispatchQueue.main.async {
                 switch result {

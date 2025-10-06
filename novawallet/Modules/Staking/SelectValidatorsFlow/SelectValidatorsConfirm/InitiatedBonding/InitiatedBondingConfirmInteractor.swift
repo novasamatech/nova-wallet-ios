@@ -135,7 +135,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
 
     override func estimateFee() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 guard
                     let closure = self?.createExtrinsicBuilderClosure(
@@ -167,7 +167,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         }
 
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 self?.performNominationSubmission(for: coderFactory)
             }, errorClosure: { [weak self] error in

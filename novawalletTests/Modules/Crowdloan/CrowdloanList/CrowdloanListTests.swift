@@ -306,7 +306,7 @@ class CrowdloanListTests: XCTestCase {
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             applicationHandler: ApplicationHandler(),
             currencyManager: CurrencyManagerStub(),
             priceLocalSubscriptionFactory: priceProviderFactory

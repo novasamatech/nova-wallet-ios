@@ -17,10 +17,6 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     let signer: SigningWrapperProtocol
     let operationQueue: OperationQueue
 
-    var operationManager: OperationManagerProtocol {
-        OperationManager(operationQueue: operationQueue)
-    }
-
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
@@ -78,7 +74,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
 
         fetchStakingDuration(
             operationFactory: durationOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             self?.presenter.didReceiveStakingDuration(result: result)
         }

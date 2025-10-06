@@ -24,8 +24,6 @@ class YourValidatorListTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
@@ -114,7 +112,7 @@ class YourValidatorListTests: XCTestCase {
             accountRepositoryFactory: accountRepositoryFactory,
             eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         )
 
         let chainInfo = chainAsset.chainAssetInfo

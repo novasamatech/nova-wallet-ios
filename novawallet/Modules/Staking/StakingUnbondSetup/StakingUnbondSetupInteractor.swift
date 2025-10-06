@@ -17,7 +17,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
@@ -39,7 +39,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -52,7 +52,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -84,7 +84,7 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
 
         fetchStakingDuration(
             operationFactory: stakingDurationOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             self?.presenter.didReceiveStakingDuration(result: result)
         }
@@ -93,7 +93,7 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -157,7 +157,7 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                 for: controllerId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] result in
 
                 if case let .success(maybeController) = result, let controller = maybeController {

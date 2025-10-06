@@ -240,7 +240,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
             walletLocalSubscriptionFactory: walletSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             jsonLocalSubscriptionFactory: jsonProviderFactory,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             currencyManager: CurrencyManagerStub()
         )
     }

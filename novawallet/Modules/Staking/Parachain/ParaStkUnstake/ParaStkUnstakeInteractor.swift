@@ -101,7 +101,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         fetchConstant(
             oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minStake):
@@ -116,7 +116,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         fetchConstant(
             for: ParachainStaking.minDelegation,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minDelegation):

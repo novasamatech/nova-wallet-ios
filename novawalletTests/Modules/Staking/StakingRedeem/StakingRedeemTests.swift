@@ -70,8 +70,6 @@ class StakingRedeemTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
@@ -87,9 +85,7 @@ class StakingRedeemTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
         let stakingLedger = Staking.Ledger(
@@ -139,7 +135,7 @@ class StakingRedeemTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             slashesOperationFactory: slashesOperationFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

@@ -6,8 +6,23 @@ protocol AccountFetching {
         for accountId: AccountId,
         accountRequest: ChainAccountRequest,
         repositoryFactory: AccountRepositoryFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<ChainAccountResponse?, Error>) -> Void
+    )
+
+    func fetchFirstMetaAccountResponse(
+        for accountId: AccountId,
+        accountRequest: ChainAccountRequest,
+        repositoryFactory: AccountRepositoryFactoryProtocol,
+        operationQueue: OperationQueue,
+        closure: @escaping (Result<MetaChainAccountResponse?, Error>) -> Void
+    )
+
+    func fetchAllMetaAccountChainResponses(
+        for accountRequest: ChainAccountRequest,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue,
+        closure: @escaping (Result<[MetaAccountChainResponse], Error>) -> Void
     )
 
     func fetchDisplayAddress(
@@ -24,7 +39,7 @@ extension AccountFetching {
         for accountId: AccountId,
         accountRequest: ChainAccountRequest,
         repositoryFactory: AccountRepositoryFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<ChainAccountResponse?, Error>) -> Void
     ) {
         let repository = repositoryFactory.createAccountRepository(for: accountId)
@@ -48,24 +63,21 @@ extension AccountFetching {
 
         mapOperation.addDependency(fetchOperation)
 
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = mapOperation.result {
-                    closure(result)
-                } else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
-                }
-            }
-        }
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
 
-        operationManager.enqueue(operations: [fetchOperation, mapOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: closure
+        )
     }
 
     func fetchFirstMetaAccountResponse(
         for accountId: AccountId,
         accountRequest: ChainAccountRequest,
         repositoryFactory: AccountRepositoryFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<MetaChainAccountResponse?, Error>) -> Void
     ) {
         let repository = repositoryFactory.createAccountRepository(for: accountId)
@@ -89,29 +101,60 @@ extension AccountFetching {
 
         mapOperation.addDependency(fetchOperation)
 
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = mapOperation.result {
-                    closure(result)
-                } else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
-                }
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: closure
+        )
+    }
+
+    func fetchAllMetaAccountChainResponses(
+        for accountRequest: ChainAccountRequest,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue,
+        closure: @escaping (Result<[MetaAccountChainResponse], Error>) -> Void
+    ) {
+        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        let mapOperation = ClosureOperation<[MetaAccountChainResponse]> {
+            let metaAccounts = try fetchOperation.extractNoCancellableResultData()
+
+            let responses: [MetaAccountChainResponse] = metaAccounts.map { metaAccount in
+                let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: accountRequest)
+                return MetaAccountChainResponse(
+                    metaAccount: metaAccount,
+                    chainAccountResponse: metaAccountResponse
+                )
             }
+
+            return responses
         }
 
-        operationManager.enqueue(operations: [fetchOperation, mapOperation], in: .transient)
+        mapOperation.addDependency(fetchOperation)
+
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: closure
+        )
     }
 
     func fetchAllMetaAccountResponses(
         for accountRequest: ChainAccountRequest,
         repository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         closure: @escaping (Result<[MetaChainAccountResponse], Error>) -> Void
     ) {
         fetchAllMetaAccountChainResponses(
             for: accountRequest,
             repository: repository,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { result in
             switch result {
             case let .success(response):
@@ -155,17 +198,6 @@ extension AccountFetching {
             }
         }
 
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                do {
-                    let displayAddresses = try mapOperation.extractNoCancellableResultData()
-                    completion(.success(displayAddresses))
-                } catch {
-                    completion(.failure(error))
-                }
-            }
-        }
-
         mapOperation.addDependency(allAccountsOperation)
 
         let wrapper = CompoundOperationWrapper(
@@ -173,45 +205,13 @@ extension AccountFetching {
             dependencies: [allAccountsOperation]
         )
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
 
         return wrapper
-    }
-
-    func fetchAllMetaAccountChainResponses(
-        for accountRequest: ChainAccountRequest,
-        repository: AnyDataProviderRepository<MetaAccountModel>,
-        operationManager: OperationManagerProtocol,
-        closure: @escaping (Result<[MetaAccountChainResponse], Error>) -> Void
-    ) {
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let mapOperation = ClosureOperation<[MetaAccountChainResponse]> {
-            let metaAccounts = try fetchOperation.extractNoCancellableResultData()
-
-            let responses: [MetaAccountChainResponse] = metaAccounts.map { metaAccount in
-                let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: accountRequest)
-                return MetaAccountChainResponse(
-                    metaAccount: metaAccount,
-                    chainAccountResponse: metaAccountResponse
-                )
-            }
-
-            return responses
-        }
-
-        mapOperation.addDependency(fetchOperation)
-
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = mapOperation.result {
-                    closure(result)
-                } else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [fetchOperation, mapOperation], in: .transient)
     }
 }
