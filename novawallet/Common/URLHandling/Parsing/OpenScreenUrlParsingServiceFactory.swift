@@ -7,15 +7,18 @@ protocol OpenScreenUrlParsingServiceFactoryProtocol {
 final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
     private let applicationConfig: ApplicationConfigProtocol
+    private let operationQueue: OperationQueue
     private let settings: SettingsManagerProtocol
 
     init(
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared,
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         settings: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.chainRegistryClosure = chainRegistryClosure
         self.applicationConfig = applicationConfig
+        self.operationQueue = operationQueue
         self.settings = settings
     }
 
@@ -25,11 +28,16 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             return OpenStakingUrlParsingService()
         case .governance:
             let chainRegistry = chainRegistryClosure()
-            return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry, settings: settings)
+            return OpenGovernanceUrlParsingService(
+                chainRegistry: chainRegistry,
+                settings: settings
+            )
         case .dApp:
             return OpenDAppUrlParsingService()
         case .card:
             return OpenCardUrlParsingService()
+        case .assetHubMigration:
+            return OpenAHMUrlParsingService(operationQueue: operationQueue)
         default:
             return nil
         }

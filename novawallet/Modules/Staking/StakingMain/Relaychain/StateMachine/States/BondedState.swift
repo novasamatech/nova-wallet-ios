@@ -1,13 +1,13 @@
 import Foundation
 
 final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
-    private(set) var ledgerInfo: StakingLedger
+    private(set) var ledgerInfo: Staking.Ledger
 
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
-        ledgerInfo: StakingLedger,
+        ledgerInfo: Staking.Ledger,
         totalReward: TotalRewardItem?,
         payee: Staking.RewardDestinationArg?,
         bagListNode: BagList.Node?
@@ -28,7 +28,7 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
         visitor.visit(state: self)
     }
 
-    override func process(ledgerInfo: StakingLedger?) {
+    override func process(ledgerInfo: Staking.Ledger?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -53,7 +53,7 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
         stateMachine.transit(to: newState)
     }
 
-    override func process(nomination: Nomination?) {
+    override func process(nomination: Staking.Nomination?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -78,7 +78,7 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
         stateMachine.transit(to: newState)
     }
 
-    override func process(validatorPrefs: ValidatorPrefs?) {
+    override func process(validatorPrefs: Staking.ValidatorPrefs?) {
         guard let stateMachine = stateMachine else {
             return
         }

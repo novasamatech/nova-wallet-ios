@@ -4,10 +4,10 @@ import Operation_iOS
 
 protocol ExposurePagedEraOperationFactoryProtocol {
     func createWrapper(
-        for eraRangeClosure: @escaping () throws -> EraRange,
+        for eraRangeClosure: @escaping () throws -> Staking.EraRange,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<EraIndex?>
+    ) -> CompoundOperationWrapper<Staking.EraIndex?>
 }
 
 final class ExposurePagedEraOperationFactory {
@@ -19,11 +19,11 @@ final class ExposurePagedEraOperationFactory {
 
     private func createSearchWrapper(
         for storagePath: StorageCodingPath,
-        eraRangeClosure: @escaping () throws -> EraRange,
+        eraRangeClosure: @escaping () throws -> Staking.EraRange,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<EraIndex?> {
-        let searchService = OperationSearchService<EraIndex, UInt?>(
+    ) -> CompoundOperationWrapper<Staking.EraIndex?> {
+        let searchService = OperationSearchService<Staking.EraIndex, UInt?>(
             paramsClosure: {
                 let eraRange = try eraRangeClosure()
                 return Array(eraRange.start ... eraRange.end)
@@ -82,10 +82,10 @@ final class ExposurePagedEraOperationFactory {
 
 extension ExposurePagedEraOperationFactory: ExposurePagedEraOperationFactoryProtocol {
     func createWrapper(
-        for eraRangeClosure: @escaping () throws -> EraRange,
+        for eraRangeClosure: @escaping () throws -> Staking.EraRange,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<EraIndex?> {
+    ) -> CompoundOperationWrapper<Staking.EraIndex?> {
         let searchOperation = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
@@ -104,13 +104,13 @@ extension ExposurePagedEraOperationFactory: ExposurePagedEraOperationFactoryProt
 
                 return [wrapper]
             } else {
-                let wrapper = CompoundOperationWrapper<EraIndex?>.createWithResult(nil)
+                let wrapper = CompoundOperationWrapper<Staking.EraIndex?>.createWithResult(nil)
 
                 return [wrapper]
             }
         }.longrunOperation()
 
-        let mappingOperation = ClosureOperation<EraIndex?> {
+        let mappingOperation = ClosureOperation<Staking.EraIndex?> {
             guard let index = try searchOperation.extractNoCancellableResultData().first else {
                 return nil
             }

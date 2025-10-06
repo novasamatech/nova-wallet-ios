@@ -42,7 +42,7 @@ final class StakingRebondConfirmationPresenter {
         }
     }
 
-    private var stakingLedger: StakingLedger?
+    private var stakingLedger: Staking.Ledger?
     private var balance: Decimal?
     private var priceData: PriceData?
     private var fee: ExtrinsicFeeProtocol?
@@ -183,7 +183,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             self.stakingLedger = stakingLedger

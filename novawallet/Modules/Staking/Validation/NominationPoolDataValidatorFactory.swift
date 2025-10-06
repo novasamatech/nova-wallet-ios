@@ -34,7 +34,7 @@ protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFa
     ) -> DataValidating
 
     func hasLedgerUnstakeSpace(
-        for ledger: StakingLedger?,
+        for ledger: Staking.Ledger?,
         limits: NominationPools.UnstakeLimits?,
         eraCountdown: EraCountdownDisplayProtocol?,
         locale: Locale
@@ -232,7 +232,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
     }
 
     func hasLedgerUnstakeSpace(
-        for stakingLedger: StakingLedger?,
+        for stakingLedger: Staking.Ledger?,
         limits: NominationPools.UnstakeLimits?,
         eraCountdown: EraCountdownDisplayProtocol?,
         locale: Locale

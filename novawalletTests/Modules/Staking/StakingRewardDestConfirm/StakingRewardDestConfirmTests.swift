@@ -103,7 +103,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let address = selectedAccount.toAddress()!
         let stashItem = StashItem(stash: address, controller: address, chainId: chain.chainId)
 
-        let ledgerInfo = StakingLedger(
+        let ledgerInfo = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(2e+12),
             active: BigUInt(2e+12),

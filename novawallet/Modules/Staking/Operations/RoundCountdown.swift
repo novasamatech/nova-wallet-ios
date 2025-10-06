@@ -8,9 +8,9 @@ struct RoundCountdown {
 }
 
 extension RoundCountdown: EraCountdownDisplayProtocol {
-    var activeEra: EraIndex { roundInfo.current }
+    var activeEra: Staking.EraIndex { roundInfo.current }
 
-    func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillStart(targetEra: Staking.EraIndex) -> TimeInterval {
         guard roundInfo.length > 0 else {
             return 0
         }

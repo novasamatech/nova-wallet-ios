@@ -13,7 +13,7 @@ struct SubqueryRewardItemData: Equatable, Codable {
     let eventId: String
     let timestamp: Int64
     let validatorAddress: AccountAddress
-    let era: EraIndex
+    let era: Staking.EraIndex
     let stashAddress: AccountAddress
     let amount: BigUInt
     let isReward: Bool
@@ -36,7 +36,7 @@ extension SubqueryRewardItemData {
         self.eventId = eventId
         self.timestamp = timestamp
         self.validatorAddress = validatorAddress
-        self.era = EraIndex(era)
+        self.era = Staking.EraIndex(era)
         self.stashAddress = stashAddress
         self.amount = amount
         self.isReward = isReward

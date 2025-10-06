@@ -65,8 +65,8 @@ enum Staking {
         StorageCodingPath(moduleName: module, itemName: "ErasRewardPoints")
     }
 
-    static var eraStartSessionIndex: StorageCodingPath {
-        StorageCodingPath(moduleName: module, itemName: "ErasStartSessionIndex")
+    static var bondedEras: StorageCodingPath {
+        StorageCodingPath(moduleName: module, itemName: "BondedEras")
     }
 
     static var activeEra: StorageCodingPath {
@@ -99,5 +99,25 @@ enum Staking {
 
     static var maxUnlockingChunksConstantPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: module, constantName: "MaxUnlockingChunks")
+    }
+
+    static var slashDeferDurationPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "SlashDeferDuration")
+    }
+
+    static var maxNominatorRewardedPerValidatorPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "MaxNominatorRewardedPerValidator")
+    }
+
+    static var lockUpPeriodPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "BondingDuration")
+    }
+
+    static var eraLengthPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "SessionsPerEra")
+    }
+
+    static var maxNominationsPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "MaxNominations")
     }
 }

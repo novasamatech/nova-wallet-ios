@@ -10,7 +10,7 @@ protocol GovernanceOffchainVotingFactoryProtocol {
 
     func createDirectVotesFetchOperation(
         for address: AccountAddress,
-        from block: BlockNumber?
+        from timepointThreshold: TimepointThreshold?
     ) -> CompoundOperationWrapper<GovernanceOffchainVotes>
 
     func createReferendumVotesFetchOperation(

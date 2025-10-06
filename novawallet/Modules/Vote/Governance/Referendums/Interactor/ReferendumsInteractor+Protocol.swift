@@ -167,7 +167,7 @@ extension ReferendumsInteractor: PriceLocalSubscriptionHandler, PriceLocalStorag
 
 extension ReferendumsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
-        guard let chain = governanceState.settings.value?.chain, chain.chainId == chainId else {
+        guard timelineChainId == chainId else {
             return
         }
 

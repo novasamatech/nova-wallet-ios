@@ -4,16 +4,35 @@ import Operation_iOS
 import SubstrateSdk
 
 final class SlashesOperationFactoryStub: SlashesOperationFactoryProtocol {
-    let slashingSpans: SlashingSpans?
+    let slashingSpans: Staking.SlashingSpans?
+    let unappliedSlashes: RelayStkUnappliedSlashes
 
-    init(slashingSpans: SlashingSpans?) {
+    init(slashingSpans: Staking.SlashingSpans?, unappliedSlashes: RelayStkUnappliedSlashes) {
         self.slashingSpans = slashingSpans
+        self.unappliedSlashes = unappliedSlashes
     }
 
     func createSlashingSpansOperationForStash(
         _ stashAccount: @escaping () throws -> AccountId,
         engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol) -> CompoundOperationWrapper<SlashingSpans?> {
+        runtimeService: RuntimeCodingServiceProtocol) -> CompoundOperationWrapper<Staking.SlashingSpans?> {
         return CompoundOperationWrapper.createWithResult(slashingSpans)
+    }
+    
+    func createUnappliedSlashesWrapper(
+        erasClosure: @escaping () throws -> [Staking.EraIndex]?,
+        engine: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<RelayStkUnappliedSlashes> {
+        let operation = ClosureOperation<RelayStkUnappliedSlashes> {
+            if let eras = try erasClosure() {
+                let erasSet = Set(eras)
+                return self.unappliedSlashes.filter { erasSet.contains($0.key) }
+            } else {
+                return self.unappliedSlashes
+            }
+        }
+        
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }

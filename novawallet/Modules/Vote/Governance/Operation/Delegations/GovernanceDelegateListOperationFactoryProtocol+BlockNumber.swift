@@ -5,37 +5,29 @@ import Operation_iOS
 struct GovernanceDelegateListBlockParams {
     let currentBlockNumber: BlockNumber
     let lastVotedDays: Int
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
 }
 
 extension GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListByBlockNumber(
         _ params: GovernanceDelegateListBlockParams,
-        runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]?> {
-        let blockTimeUpdateWrapper = params.blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: params.blockTimeService
-        )
+        let blockTimeUpdateWrapper = params.timelineService.createBlockTimeOperation()
 
         let wrapper: CompoundOperationWrapper<[GovernanceDelegateLocal]?> = OperationCombiningService.compoundWrapper(
             operationManager: operationManager
         ) {
             let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard
-                let activityBlockNumber = params.currentBlockNumber.blockBackInDays(
-                    params.lastVotedDays,
-                    blockTime: blockTime
-                ) else {
-                return nil
-            }
-
-            return self.fetchDelegateListWrapper(
-                for: activityBlockNumber
+            let thresholdType: TimepointThresholdType = .block(
+                blockNumber: params.currentBlockNumber,
+                blockTime: blockTime
             )
+            let threshold = TimepointThreshold(type: thresholdType)
+                .backIn(seconds: TimeInterval(params.lastVotedDays).secondsFromDays)
+
+            return self.fetchDelegateListWrapper(for: threshold)
         }
 
         wrapper.addDependency(wrapper: blockTimeUpdateWrapper)

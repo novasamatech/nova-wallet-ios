@@ -22,10 +22,6 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Identity", itemName: "SuperOf")
     }
 
-    static var currentSessionIndex: StorageCodingPath {
-        StorageCodingPath(moduleName: "Session", itemName: "CurrentIndex")
-    }
-
     static var electionPhase: StorageCodingPath {
         StorageCodingPath(moduleName: "ElectionProviderMultiPhase", itemName: "CurrentPhase")
     }
@@ -44,18 +40,6 @@ extension StorageCodingPath {
 
     static var timestampNow: StorageCodingPath {
         StorageCodingPath(moduleName: "Timestamp", itemName: "Now")
-    }
-
-    static var currentSlot: StorageCodingPath {
-        StorageCodingPath(moduleName: "Babe", itemName: "CurrentSlot")
-    }
-
-    static var genesisSlot: StorageCodingPath {
-        StorageCodingPath(moduleName: "Babe", itemName: "GenesisSlot")
-    }
-
-    static var currentEpoch: StorageCodingPath {
-        StorageCodingPath(moduleName: "Babe", itemName: "EpochIndex")
     }
 
     static var balanceLocks: StorageCodingPath {

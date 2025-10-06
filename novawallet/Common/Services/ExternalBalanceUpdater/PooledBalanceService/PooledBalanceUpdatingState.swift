@@ -10,7 +10,7 @@ struct PooledBalanceStateChange: BatchStorageSubscriptionResult {
         case stakingDelegation
     }
 
-    let ledger: UncertainStorage<StakingLedger?>
+    let ledger: UncertainStorage<Staking.Ledger?>
     let bondedPool: UncertainStorage<NominationPools.BondedPool?>
     let subPools: UncertainStorage<NominationPools.SubPools?>
     let stakingDelegation: UncertainStorage<DelegatedStakingPallet.Delegation?>
@@ -48,7 +48,7 @@ struct PooledBalanceStateChange: BatchStorageSubscriptionResult {
 
 struct PooledBalanceState {
     let poolMember: NominationPools.PoolMember
-    let ledger: StakingLedger?
+    let ledger: Staking.Ledger?
     let bondedPool: NominationPools.BondedPool?
     let subPools: NominationPools.SubPools?
     let stakingDelegation: DelegatedStakingPallet.Delegation?

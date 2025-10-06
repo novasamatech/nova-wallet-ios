@@ -112,7 +112,10 @@ final class StakingRedeemViewFactory {
             stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            slashesOperationFactory: SlashesOperationFactory(storageRequestFactory: storageRequestFactory),
+            slashesOperationFactory: SlashesOperationFactory(
+                storageRequestFactory: storageRequestFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ),
             feeProxy: feeProxy,
             operationManager: operationManager,
             currencyManager: currencyManager

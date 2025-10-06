@@ -2,29 +2,30 @@ import UIKit
 import Operation_iOS
 import SubstrateSdk
 
-final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
-    weak var presenter: DelegateVotedReferendaInteractorOutputProtocol!
+final class DelegateVotedReferendaInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
+    weak var presenter: DelegateVotedReferendaInteractorOutputProtocol?
 
     let address: AccountAddress
     let governanceOption: GovernanceSelectedOption
     let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let timepointThresholdService: TimepointThresholdServiceProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let fetchFactory: DelegateVotedReferendaOperationFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let dataFetchOption: DelegateVotedReferendaOption
     let operationQueue: OperationQueue
 
     private var currentBlockNumber: BlockNumber?
+    private var currentThreshold: TimepointThreshold?
 
     private(set) var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private(set) var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
-    var referendumsCancellable: CancellableCall?
-    var blockTimeCancellable: CancellableCall?
-    var offchainVotingCancellable: CancellableCall?
+    private let referendumsCallStore = CancellableCallStore()
+    private let offchainVotingCallStore = CancellableCallStore()
+    private let blocktimeCallStore = CancellableCallStore()
 
     init(
         address: AccountAddress,
@@ -32,10 +33,10 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        timepointThresholdService: TimepointThresholdServiceProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         fetchFactory: DelegateVotedReferendaOperationFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         dataFetchOption: DelegateVotedReferendaOption,
         operationQueue: OperationQueue
     ) {
@@ -44,137 +45,138 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         self.connection = connection
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.timepointThresholdService = timepointThresholdService
+        self.timelineService = timelineService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.fetchFactory = fetchFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeOperationFactory = blockTimeOperationFactory
         self.dataFetchOption = dataFetchOption
         self.operationQueue = operationQueue
     }
 
     deinit {
-        clearCancellable()
+        referendumsCallStore.cancel()
+        offchainVotingCallStore.cancel()
+        blocktimeCallStore.cancel()
     }
+}
 
-    func clearCancellable() {
-        clear(cancellable: &referendumsCancellable)
-        clear(cancellable: &blockTimeCancellable)
-    }
+// MARK: - Private
 
-    func subscribeToBlockNumber(for chain: ChainModel) {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
-    }
+private extension DelegateVotedReferendaInteractor {
+    func subscribeTimepointThreshold() {
+        timepointThresholdService.remove(observer: self)
 
-    private func subscribeToMetadata(for option: GovernanceSelectedOption) {
-        metadataProvider = subscribeGovernanceMetadata(for: option)
+        timepointThresholdService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, timepointThreshold in
+            guard let self, let timepointThreshold else { return }
 
-        if metadataProvider == nil {
-            presenter?.didReceiveReferendumsMetadata([])
-        }
-    }
+            let previousThreshold = currentThreshold
+            currentThreshold = timepointThreshold
 
-    func fetchBlockTimeWithVoting() {
-        fetchBlockTime(forceVotingFetch: true)
-    }
-
-    func fetchBlockTime(forceVotingFetch: Bool = false) {
-        clear(cancellable: &blockTimeCancellable)
-
-        let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
-
-        blockTimeWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.blockTimeCancellable === blockTimeWrapper else {
-                    return
-                }
-
-                self?.blockTimeCancellable = nil
-
-                do {
-                    let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-
-                    if forceVotingFetch {
-                        self?.provideOffchainVoting(for: blockTime)
-                    }
-
-                    self?.presenter?.didReceiveBlockTime(blockTime)
-                } catch {
-                    self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
-                }
-            }
-        }
-
-        blockTimeCancellable = blockTimeWrapper
-
-        operationQueue.addOperations(blockTimeWrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func provideOffchainVotingIfNeeded() {
-        if offchainVotingCancellable == nil, currentBlockNumber != nil {
-            fetchBlockTimeWithVoting()
-        }
-    }
-
-    private func provideOffchainVoting(for blockTime: BlockTime) {
-        switch dataFetchOption {
-        case .allTimes:
-            provideOffchainVoting(from: nil)
-        case let .recent(days):
-            guard
-                let activityBlockNumber = currentBlockNumber?.blockBackInDays(
-                    days,
-                    blockTime: blockTime
-                ) else {
+            if
+                case let .block(newBlockNumber, _) = timepointThreshold.type,
+                case let .block(previousBlockNumber, _) = previousThreshold?.type,
+                newBlockNumber.isNext(to: previousBlockNumber) {
                 return
             }
 
-            provideOffchainVoting(from: activityBlockNumber)
+            provideOffchainVoting()
         }
     }
 
-    private func provideOffchainVoting(from blockNumber: BlockNumber?) {
-        clear(cancellable: &offchainVotingCancellable)
+    func subscribeToMetadata(for option: GovernanceSelectedOption) {
+        clear(streamableProvider: &metadataProvider)
+        metadataProvider = subscribeGovernanceMetadata(for: option)
 
+        guard metadataProvider == nil else { return }
+
+        presenter?.didReceiveReferendumsMetadata([])
+    }
+
+    func subscribeToBlockNumber() {
+        clear(dataProvider: &blockNumberSubscription)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
+    }
+
+    func provideOffchainVotingIfNeeded() {
+        guard !offchainVotingCallStore.hasCall, currentThreshold != nil else {
+            return
+        }
+
+        provideOffchainVoting()
+    }
+
+    func provideOffchainVoting() {
+        switch dataFetchOption {
+        case .allTimes:
+            provideOffchainVoting(for: nil)
+        case let .recent(days):
+            let threshold = currentThreshold?.backIn(seconds: TimeInterval(days).secondsFromDays)
+
+            provideOffchainVoting(for: threshold)
+        }
+    }
+
+    func provideOffchainVoting(for timepointThreshold: TimepointThreshold?) {
         let votingWrapper = fetchFactory.createVotedReferendaWrapper(
-            for: .init(address: address, blockNumber: blockNumber),
+            for: .init(address: address, timepointThreshold: timepointThreshold),
             connection: connection,
             runtimeService: runtimeService
         )
 
-        votingWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.offchainVotingCancellable === votingWrapper else {
-                    return
-                }
-
-                self?.offchainVotingCancellable = nil
-
-                do {
-                    let voting = try votingWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveOffchainVoting(voting)
-                } catch {
-                    self?.presenter?.didReceiveError(.offchainVotingFetchFailed(error))
-                }
+        executeCancellable(
+            wrapper: votingWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: offchainVotingCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(voting):
+                self?.presenter?.didReceiveOffchainVoting(voting)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.offchainVotingFetchFailed(error))
             }
         }
+    }
 
-        offchainVotingCancellable = votingWrapper
+    func fetchBlockTime() {
+        let blockTimeWrapper = timelineService.createBlockTimeOperation()
 
-        operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
+        executeCancellable(
+            wrapper: blockTimeWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: blocktimeCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(blockTime):
+                self?.presenter?.didReceiveBlockTime(blockTime)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
+            }
+        }
     }
 }
 
+// MARK: - DelegateVotedReferendaInteractorInputProtocol
+
 extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInputProtocol {
+    func retryBlockTime() {
+        fetchBlockTime()
+    }
+
     func setup() {
-        subscribeToBlockNumber(for: governanceOption.chain)
+        timepointThresholdService.setup()
+        subscribeToBlockNumber()
+        subscribeTimepointThreshold()
         subscribeToMetadata(for: governanceOption)
     }
 
-    func retryBlockTime() {
-        fetchBlockTime(forceVotingFetch: true)
+    func retryTimepointThreshold() {
+        provideOffchainVoting()
     }
 
     func retryOffchainVotingFetch() {
@@ -182,10 +184,12 @@ extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInpu
     }
 
     func remakeSubscription() {
-        subscribeToBlockNumber(for: governanceOption.chain)
         subscribeToMetadata(for: governanceOption)
+        subscribeToBlockNumber()
     }
 }
+
+// MARK: - GovMetadataLocalStorageSubscriber
 
 extension DelegateVotedReferendaInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataPreview(
@@ -201,17 +205,16 @@ extension DelegateVotedReferendaInteractor: GovMetadataLocalStorageSubscriber, G
     }
 }
 
+// MARK: - GeneralLocalStorageSubscriber
+
 extension DelegateVotedReferendaInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
-                let optLastBlockNumber = currentBlockNumber
                 currentBlockNumber = blockNumber
 
-                let forceVotingFetch = optLastBlockNumber.map { !blockNumber.isNext(to: $0) } ?? true
-
-                fetchBlockTime(forceVotingFetch: forceVotingFetch)
+                fetchBlockTime()
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
         case let .failure(error):

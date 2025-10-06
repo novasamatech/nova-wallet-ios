@@ -17,7 +17,7 @@ extension NetworkStakingInfo {
         return .init(lower: lowerBound, upper: upperBound)
     }
 
-    func searchBounds(ledgerInfo: StakingLedger, totalIssuance: BigUInt) -> BagListBounds? {
+    func searchBounds(ledgerInfo: Staking.Ledger, totalIssuance: BigUInt) -> BagListBounds? {
         guard let votersInfo = votersInfo else {
             return nil
         }

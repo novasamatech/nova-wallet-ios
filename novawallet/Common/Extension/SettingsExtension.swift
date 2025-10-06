@@ -30,6 +30,9 @@ enum SettingsKey: String {
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
     case multisigNotificationsPromoSeen
+    case ahmInfoShownChains
+    case ahmAssetDetailsAlertClosedChains
+    case ahmStakingAlertClosedChains
     case privacyModeSettings
 }
 
@@ -374,6 +377,51 @@ extension SettingsManagerProtocol {
             set(
                 value: newValue,
                 for: SettingsKey.privacyModeSettings.rawValue
+            )
+        }
+    }
+
+    var ahmInfoShownChains: AHMInfoExcludedChains {
+        get {
+            value(
+                of: AHMInfoExcludedChains.self,
+                for: SettingsKey.ahmInfoShownChains.rawValue
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.ahmInfoShownChains.rawValue
+            )
+        }
+    }
+
+    var ahmAssetDetailsAlertClosedChains: AHMInfoExcludedChains {
+        get {
+            value(
+                of: AHMInfoExcludedChains.self,
+                for: SettingsKey.ahmAssetDetailsAlertClosedChains.rawValue
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.ahmAssetDetailsAlertClosedChains.rawValue
+            )
+        }
+    }
+
+    var ahmStakingAlertClosedChains: AHMInfoExcludedChains {
+        get {
+            value(
+                of: AHMInfoExcludedChains.self,
+                for: SettingsKey.ahmStakingAlertClosedChains.rawValue
+            ) ?? AHMInfoExcludedChains(chainIds: Set())
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.ahmStakingAlertClosedChains.rawValue
             )
         }
     }

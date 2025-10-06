@@ -11,6 +11,7 @@ protocol OpenScreenUrlParsingServiceProtocol: AnyObject {
 enum OpenScreenUrlParsingError: Error {
     case openGovScreen(GovScreenError)
     case openDAppScreen(DAppError)
+    case openAHMScreen(AHMError)
     case cardScreen(CardError)
 
     enum GovScreenError: Error {
@@ -32,14 +33,20 @@ enum OpenScreenUrlParsingError: Error {
         case unsupportedProvider
     }
 
+    enum AHMError: Error {
+        case migrationDataNotFound
+    }
+
     func message(locale: Locale) -> String? {
         switch self {
         case let .openGovScreen(govScreenError):
-            return govScreenError.message(locale: locale)
+            govScreenError.message(locale: locale)
         case let .openDAppScreen(dAppError):
-            return dAppError.message(locale: locale)
-        case let .cardScreen(cardError):
-            return nil
+            dAppError.message(locale: locale)
+        case let .openAHMScreen(ahmError):
+            ahmError.message(locale: locale)
+        case .cardScreen:
+            nil
         }
     }
 }
@@ -47,21 +54,22 @@ enum OpenScreenUrlParsingError: Error {
 extension OpenScreenUrlParsingError.GovScreenError {
     func message(locale: Locale) -> String {
         let languages = locale.rLanguages
-        switch self {
+
+        return switch self {
         case .govTypeIsNotSpecified:
-            return R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
+            R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
                 preferredLanguages: languages)
         case .invalidChainId:
-            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
+            R.string.localizable.deeplinkErrorInvalidChainIdMessage(
                 preferredLanguages: languages)
         case .invalidReferendumId:
-            return R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
+            R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
                 preferredLanguages: languages)
         case .chainNotSupportsGovType, .chainNotSupportsGov:
-            return R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
+            R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
                 preferredLanguages: languages)
         case .chainNotFound:
-            return R.string.localizable.deeplinkErrorInvalidChainIdMessage(
+            R.string.localizable.deeplinkErrorInvalidChainIdMessage(
                 preferredLanguages: languages)
         }
     }
@@ -70,12 +78,24 @@ extension OpenScreenUrlParsingError.GovScreenError {
 extension OpenScreenUrlParsingError.DAppError {
     func message(locale: Locale) -> String? {
         let languages = locale.rLanguages
-        switch self {
+
+        return switch self {
         case .invalidURL:
-            return R.string.localizable.deeplinkErrorInvalidDappUrlMessage(
+            R.string.localizable.deeplinkErrorInvalidDappUrlMessage(
                 preferredLanguages: languages)
         case .loadListFailed, .unknownURL:
-            return nil
+            nil
+        }
+    }
+}
+
+extension OpenScreenUrlParsingError.AHMError {
+    func message(locale: Locale) -> String? {
+        let languages = locale.rLanguages
+
+        return switch self {
+        case .migrationDataNotFound:
+            R.string.localizable.ahmInfoNotFoundError(preferredLanguages: languages)
         }
     }
 }

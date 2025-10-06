@@ -6,7 +6,7 @@ extension EraValidatorService {
     private func updateValidators(
         activeEra: UInt32,
         exposures: [EraValidatorResultItem],
-        prefs: [StorageResponse<ValidatorPrefs>]
+        prefs: [StorageResponse<Staking.ValidatorPrefs>]
     ) {
         guard activeEra == self.activeEra else {
             logger.warning("Validators fetched but parameters changed. Cancelled.")
@@ -15,7 +15,7 @@ extension EraValidatorService {
 
         validatorUpdater = nil
 
-        let keyedPrefs = prefs.reduce(into: [Data: ValidatorPrefs]()) { result, item in
+        let keyedPrefs = prefs.reduce(into: [Data: Staking.ValidatorPrefs]()) { result, item in
             let accountId = item.key.getAccountIdFromKey()
             result[accountId] = item.value
         }
@@ -48,7 +48,7 @@ extension EraValidatorService {
 
     private func createPrefsWrapper(
         identifiersClosure: @escaping () throws -> [Data]
-    ) -> CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> {
+    ) -> CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> {
         let keys: () throws -> [Data] = {
             try identifiersClosure()
         }
@@ -60,7 +60,7 @@ extension EraValidatorService {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> = requestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> = requestFactory.queryItems(
             engine: connection,
             keyParams: keys,
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },

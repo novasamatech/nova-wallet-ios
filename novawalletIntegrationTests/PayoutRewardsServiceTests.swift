@@ -55,7 +55,10 @@ class PayoutRewardsServiceTests: XCTestCase {
         }
     }
     
-    private func fetchNominatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
+    private func fetchNominatorPayout(
+        for selectedAccount: AccountAddress,
+        chainId: ChainModel.Id
+    ) throws -> Staking.PayoutsInfo {
         let operationQueue = OperationQueue()
         let operationManager = OperationManager(operationQueue: operationQueue)
 
@@ -65,7 +68,8 @@ class PayoutRewardsServiceTests: XCTestCase {
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let chainAsset = chain.utilityChainAsset(),
-            let rewardUrl = chain.externalApis?.staking()?.first?.url else {
+            let rewardUrls = chainAsset.chain.externalApis?.stakingRewards()?.map(\.url)
+        else {
             throw ChainRegistryError.connectionUnavailable
         }
 
@@ -74,7 +78,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             operationManager: operationManager
         )
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardUrl
+            urls: rewardUrls
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
@@ -119,7 +123,10 @@ class PayoutRewardsServiceTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
     
-    private func fetchValidatorPayout(for selectedAccount: AccountAddress, chainId: ChainModel.Id) throws -> PayoutsInfo {
+    private func fetchValidatorPayout(
+        for selectedAccount: AccountAddress,
+        chainId: ChainModel.Id
+    ) throws -> Staking.PayoutsInfo {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 

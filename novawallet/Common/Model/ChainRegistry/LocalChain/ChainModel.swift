@@ -362,12 +362,28 @@ struct ChainModel: Equatable, Hashable {
         additional?.identityChain?.stringValue
     }
 
+    var timelineChain: ChainModel.Id? {
+        additional?.timelineChain?.stringValue
+    }
+
+    var separateTimelineChain: Bool {
+        timelineChain != nil
+    }
+
     var supportsGenericLedgerApp: Bool {
         additional?.supportsGenericLedgerApp?.boolValue ?? false
     }
 
     var disabledCheckMetadataHash: Bool {
         additional?.disabledCheckMetadataHash?.boolValue ?? false
+    }
+
+    var sessionsPerEra: UInt32? {
+        guard let value = additional?.sessionsPerEra?.unsignedIntValue else {
+            return nil
+        }
+
+        return UInt32(value)
     }
 
     var isAddedByUser: Bool {

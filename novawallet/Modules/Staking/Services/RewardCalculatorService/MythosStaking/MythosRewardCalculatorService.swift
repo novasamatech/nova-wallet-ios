@@ -11,9 +11,7 @@ struct MythosRewardsParamsSnapshot {
 final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRewardsParamsSnapshot> {
     let chainAsset: ChainAsset
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let runtimeService: RuntimeProviderProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let collatorService: MythosCollatorServiceProtocol
     let operationQueue: OperationQueue
 
@@ -29,9 +27,7 @@ final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRe
     init(
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
-        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        runtimeService: RuntimeProviderProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         collatorService: MythosCollatorServiceProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
@@ -39,9 +35,7 @@ final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRe
     ) {
         self.chainAsset = chainAsset
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.blockTimeOperationFactory = blockTimeOperationFactory
-        self.blockTimeService = blockTimeService
-        self.runtimeService = runtimeService
+        self.timelineService = timelineService
         self.collatorService = collatorService
         self.operationQueue = operationQueue
 
@@ -76,10 +70,7 @@ private extension MythosRewardCalculatorService {
             return .createWithResult(blockTime)
         }
 
-        return blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
+        return timelineService.createBlockTimeOperation()
     }
 
     func deliver(

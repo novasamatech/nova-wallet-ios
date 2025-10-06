@@ -82,8 +82,7 @@ struct GovernanceUnlockConfirmViewFactory {
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeFactory = state.createBlockTimeOperationFactory(),
+            let timelineService = state.createChainTimelineFacade(),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -117,8 +116,7 @@ struct GovernanceUnlockConfirmViewFactory {
             signer: signer,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
+            timelineService: timelineService,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue,

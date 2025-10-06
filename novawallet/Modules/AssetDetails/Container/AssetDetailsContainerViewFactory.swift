@@ -2,8 +2,7 @@ import Foundation_iOS
 
 final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryProtocol {
     static func createView(
-        chain: ChainModel,
-        asset: AssetModel,
+        chainAsset: ChainAsset,
         operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol? {
         let swapState = SwapTokensFlowState(
@@ -15,13 +14,12 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
 
         guard
             let accountView = AssetDetailsViewFactory.createView(
-                chain: chain,
-                asset: asset,
+                chainAsset: chainAsset,
                 operationState: operationState,
                 swapState: swapState
             ),
             let historyView = TransactionHistoryViewFactory.createView(
-                chainAsset: .init(chain: chain, asset: asset),
+                chainAsset: chainAsset,
                 operationState: operationState,
                 swapState: swapState
             ) else {

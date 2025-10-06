@@ -121,9 +121,9 @@ class BaseStakingState: StakingStateProtocol {
     }
 
     func process(stashItem _: StashItem?) {}
-    func process(ledgerInfo _: StakingLedger?) {}
-    func process(nomination _: Nomination?) {}
-    func process(validatorPrefs _: ValidatorPrefs?) {}
+    func process(ledgerInfo _: Staking.Ledger?) {}
+    func process(nomination _: Staking.Nomination?) {}
+    func process(validatorPrefs _: Staking.ValidatorPrefs?) {}
     func process(totalReward _: TotalRewardItem?) {}
     func process(payee _: Staking.RewardDestinationArg?) {}
     func process(bagListNode _: BagList.Node?) {}

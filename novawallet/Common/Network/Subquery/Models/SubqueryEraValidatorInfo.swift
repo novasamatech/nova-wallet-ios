@@ -2,7 +2,7 @@ import SubstrateSdk
 
 struct SubqueryEraValidatorInfo {
     let address: AccountAddress
-    let era: EraIndex
+    let era: Staking.EraIndex
 
     init?(from json: JSON) {
         guard
@@ -10,7 +10,7 @@ struct SubqueryEraValidatorInfo {
             let address = json.address?.stringValue
         else { return nil }
 
-        self.era = EraIndex(era)
+        self.era = Staking.EraIndex(era)
         self.address = address
     }
 }

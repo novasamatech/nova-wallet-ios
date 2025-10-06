@@ -295,7 +295,7 @@ extension NominationPoolsOperationFactory: NominationPoolsOperationFactoryProtoc
         )
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
