@@ -71,13 +71,15 @@ struct NominationPoolBondMoreSetupViewFactory {
             let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        )
+        ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         return .init(
@@ -88,7 +90,7 @@ struct NominationPoolBondMoreSetupViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             callFactory: SubstrateCallFactory(),
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),

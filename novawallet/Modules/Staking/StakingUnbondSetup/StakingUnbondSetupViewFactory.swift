@@ -63,7 +63,6 @@ struct StakingUnbondSetupViewFactory {
         let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationManager = OperationManagerFacade.sharedManager
 
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -92,7 +91,7 @@ struct StakingUnbondSetupViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

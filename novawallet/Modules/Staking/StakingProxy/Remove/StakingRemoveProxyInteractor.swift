@@ -10,7 +10,10 @@ final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
     let callFactory: SubstrateCallFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let chainAsset: ChainAsset
+    let operationQueue: OperationQueue
+
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
 
@@ -27,12 +30,15 @@ final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
         callFactory: SubstrateCallFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         selectedAccount: ChainAccountResponse,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.signingWrapper = signingWrapper
         self.proxyAccount = proxyAccount
         self.extrinsicService = extrinsicService
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
         self.chainAsset = chainAsset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.accountProviderFactory = accountProviderFactory
@@ -40,6 +46,7 @@ final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
         self.callFactory = callFactory
         self.feeProxy = feeProxy
         self.selectedAccount = selectedAccount
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -99,21 +106,27 @@ extension StakingRemoveProxyInteractor: StakingRemoveProxyInteractorInputProtoco
             type: proxyAccount.type
         )
 
-        extrinsicService.submit(
-            { builder in
-                try builder.adding(call: call)
-            },
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                switch result {
-                case let .success(model):
-                    self?.presenter?.didSubmit(model: model)
-                case let .failure(error):
-                    self?.presenter?.didReceive(error: .submit(error))
-                }
-            }
+        let closure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: call)
+        }
+
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: closure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result.mapToExtrinsicSubmittedResult() {
+            case let .success(model):
+                self?.presenter?.didSubmit(model: model)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .submit(error))
+            }
+        }
     }
 }
 

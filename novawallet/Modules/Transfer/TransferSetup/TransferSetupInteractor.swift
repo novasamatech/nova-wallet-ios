@@ -10,7 +10,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let web3NamesService: Web3NameServiceProtocol?
 
     private var xcmTransfers: XcmTransfers?
@@ -35,7 +35,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         web3NamesService: Web3NameServiceProtocol?,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
         self.whoChainAssetPeer = whoChainAssetPeer
@@ -46,7 +46,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
         self.web3NamesService = web3NamesService
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 
     deinit {
@@ -157,7 +157,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         fetchAllMetaAccountChainResponses(
             for: chain.accountRequest(),
             repository: accountRepository,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             DispatchQueue.main.async {
                 self?.handleFetchAccountsResult(result)

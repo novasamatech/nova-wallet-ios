@@ -93,7 +93,7 @@ final class VoteChildPresenterFactory {
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             jsonDataProviderFactory: jsonDataProviderFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             priceLocalSubscriptionFactory: priceProviderFactory,

@@ -77,7 +77,7 @@ struct StakingUnbondConfirmViewFactory {
         }
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         guard
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -92,7 +92,7 @@ struct StakingUnbondConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
@@ -111,7 +111,7 @@ struct StakingUnbondConfirmViewFactory {
             signingWrapperFactory: SigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

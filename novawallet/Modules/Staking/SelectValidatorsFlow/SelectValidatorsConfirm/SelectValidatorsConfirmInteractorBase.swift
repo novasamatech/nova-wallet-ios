@@ -15,7 +15,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     let extrinsicService: ExtrinsicServiceProtocol
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
     let signer: SigningWrapperProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -32,7 +32,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         signer: SigningWrapperProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -43,7 +43,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         self.extrinsicService = extrinsicService
         self.runtimeService = runtimeService
         self.durationOperationFactory = durationOperationFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.signer = signer
         self.chainAsset = chainAsset
         self.currencyManager = currencyManager
@@ -74,7 +74,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
 
         fetchStakingDuration(
             operationFactory: durationOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             self?.presenter.didReceiveStakingDuration(result: result)
         }

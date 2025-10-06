@@ -106,7 +106,7 @@ struct YourValidatorListViewFactory {
             accountRepositoryFactory: accountRepositoryFactory,
             eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: operationManager
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

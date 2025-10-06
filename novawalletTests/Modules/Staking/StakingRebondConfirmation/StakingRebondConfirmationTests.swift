@@ -70,8 +70,6 @@ class StakingRebondConfirmationTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
@@ -85,9 +83,7 @@ class StakingRebondConfirmationTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
         let stakingLedger = Staking.Ledger(
@@ -130,7 +126,7 @@ class StakingRebondConfirmationTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

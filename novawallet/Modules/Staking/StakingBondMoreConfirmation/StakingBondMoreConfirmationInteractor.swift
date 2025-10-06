@@ -23,6 +23,7 @@ final class StakingBondMoreConfirmationInteractor: AccountFetching {
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -60,10 +61,14 @@ private extension StakingBondMoreConfirmationInteractor {
     func handleStashMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
         )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(with: extrinsicService)
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
             for: response.metaId,
@@ -73,7 +78,7 @@ private extension StakingBondMoreConfirmationInteractor {
 
     func provideIsStakingMigrated() {
         runtimeProvider.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 let isStakingMigrated = coderFactory.hasBalancesHold(with: Staking.holdId)
                 self?.presenter?.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
@@ -122,7 +127,7 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
 
     func submit(for amount: Decimal) {
         guard
-            let extrinsicService = extrinsicService,
+            let extrinsicMonitorFactory,
             let signingWrapper = signingWrapper,
             let amountValue = amount.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
@@ -137,14 +142,18 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
             try builder.adding(call: bondExtra)
         }
 
-        extrinsicService.submit(
-            extrinsicClosure,
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                self?.presenter?.didSubmitBonding(result: result)
-            }
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: extrinsicClosure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter?.didSubmitBonding(result: result.mapToExtrinsicSubmittedResult())
+        }
     }
 }
 
@@ -182,7 +191,7 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
                 for: stashAccountId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: OperationManager(operationQueue: operationQueue)
+                operationQueue: operationQueue
             ) { [weak self] result in
                 if case let .success(maybeStash) = result, let stash = maybeStash {
                     self?.handleStashMetaAccount(response: stash)

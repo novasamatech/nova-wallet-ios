@@ -11,7 +11,7 @@ final class YourValidatorListInteractor: AccountFetching {
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let validatorOperationFactory: ValidatorOperationFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashControllerProvider: StreamableProvider<StashItem>?
     private var nominatorProvider: AnyDataProvider<DecodedNomination>?
@@ -28,7 +28,7 @@ final class YourValidatorListInteractor: AccountFetching {
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         validatorOperationFactory: ValidatorOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -36,7 +36,7 @@ final class YourValidatorListInteractor: AccountFetching {
         self.accountRepositoryFactory = accountRepositoryFactory
         self.eraValidatorService = eraValidatorService
         self.validatorOperationFactory = validatorOperationFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 
     func fetchController(for address: AccountAddress) {
@@ -47,7 +47,7 @@ final class YourValidatorListInteractor: AccountFetching {
                 for: accountId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] result in
                 self?.presenter.didReceiveController(result: result)
             }
@@ -132,18 +132,18 @@ final class YourValidatorListInteractor: AccountFetching {
             activeEra: activeEra
         )
 
-        validatorsWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let result = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveValidators(result: .success(result))
-                } catch {
-                    self?.presenter.didReceiveValidators(result: .failure(error))
-                }
+        execute(
+            wrapper: validatorsWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(validators):
+                self?.presenter.didReceiveValidators(result: .success(validators))
+            case let .failure(error):
+                self?.presenter.didReceiveValidators(result: .failure(error))
             }
         }
-
-        operationManager.enqueue(operations: validatorsWrapper.allOperations, in: .transient)
     }
 
     func createValidatorsWrapper(

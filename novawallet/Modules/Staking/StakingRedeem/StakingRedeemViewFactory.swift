@@ -82,12 +82,12 @@ final class StakingRedeemViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
@@ -99,7 +99,7 @@ final class StakingRedeemViewFactory {
         let keyFactory = StorageKeyFactory()
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: keyFactory,
-            operationManager: operationManager
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         return StakingRedeemInteractor(
@@ -114,10 +114,10 @@ final class StakingRedeemViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             slashesOperationFactory: SlashesOperationFactory(
                 storageRequestFactory: storageRequestFactory,
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
+                operationQueue: operationQueue
             ),
             feeProxy: feeProxy,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

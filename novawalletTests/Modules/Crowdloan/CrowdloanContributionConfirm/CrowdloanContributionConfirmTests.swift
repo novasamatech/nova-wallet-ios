@@ -245,7 +245,7 @@ class CrowdloanContributionConfirmTests: XCTestCase {
             jsonLocalSubscriptionFactory: jsonProviderFactory,
             signingWrapper: signingWrapper,
             bonusService: nil,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             currencyManager: CurrencyManagerStub()
         )
     }

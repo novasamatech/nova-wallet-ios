@@ -115,7 +115,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         fetchConstant(
             oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minStake):
@@ -130,7 +130,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: ParachainStaking.minDelegation,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minDelegation):
@@ -145,7 +145,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: ParachainStaking.maxDelegations,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<UInt32, Error>) in
             switch result {
             case let .success(maxDelegations):
@@ -246,7 +246,7 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         let identifier = callWrapper.extrinsicId()
 
         runtimeProvider.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] codingFactory in
                 guard let self else {
                     return
@@ -264,7 +264,7 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
 
     func confirm(with callWrapper: DelegationCallWrapper) {
         runtimeProvider.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] codingFactory in
                 self?.doConfirmExtrinsic(with: callWrapper, codingFactory: codingFactory)
             },

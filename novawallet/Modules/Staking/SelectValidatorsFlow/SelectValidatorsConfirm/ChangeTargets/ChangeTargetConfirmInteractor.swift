@@ -5,6 +5,7 @@ import Keystore_iOS
 final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBase, AccountFetching {
     let nomination: PreparedNomination<ExistingBonding>
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init?(
         chainAsset: ChainAsset,
@@ -12,9 +13,10 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         signer: SigningWrapperProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         nomination: PreparedNomination<ExistingBonding>,
@@ -26,6 +28,7 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
 
         self.nomination = nomination
         self.accountRepositoryFactory = accountRepositoryFactory
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
 
         super.init(
             balanceAccountAddress: balanceAccountAddress,
@@ -36,7 +39,7 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             signer: signer,
             currencyManager: currencyManager
         )
@@ -126,18 +129,15 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
 
         dependencies.forEach { mapOperation.addDependency($0) }
 
-        mapOperation.completionBlock = {
-            DispatchQueue.main.async {
-                do {
-                    let confirmationModel = try mapOperation.extractNoCancellableResultData()
-                    self.presenter.didReceiveModel(result: .success(confirmationModel))
-                } catch {
-                    self.presenter.didReceiveModel(result: .failure(error))
-                }
-            }
-        }
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
 
-        operationManager.enqueue(operations: dependencies + [mapOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didReceiveModel(result: result)
+        }
     }
 
     private func createExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure? {
@@ -188,12 +188,17 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
 
         presenter.didStartNomination()
 
-        extrinsicService.submit(
-            closure,
-            signer: signer,
-            runningIn: .main
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: closure,
+            signer: signer
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
         ) { [weak self] result in
-            switch result {
+            switch result.mapToExtrinsicSubmittedResult() {
             case let .success(model):
                 self?.presenter.didCompleteNomination(submission: model)
             case let .failure(error):

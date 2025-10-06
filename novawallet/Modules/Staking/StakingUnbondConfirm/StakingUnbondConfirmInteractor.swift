@@ -18,7 +18,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var minBondedProvider: AnyDataProvider<DecodedBigUInt>?
@@ -29,6 +29,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -45,7 +46,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -59,17 +60,21 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         self.stakingDurationOperationFactory = stakingDurationOperationFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     func handleControllerMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
         )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(with: extrinsicService)
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
             for: response.metaId,
@@ -123,7 +128,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
 
         fetchStakingDuration(
             operationFactory: stakingDurationOperationFactory,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             self?.presenter.didReceiveStakingDuration(result: result)
         }
@@ -132,7 +137,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -172,7 +177,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
 
     func submit(for amount: Decimal, resettingRewardDestination: Bool, chilling: Bool) {
         guard
-            let extrinsicService = extrinsicService,
+            let extrinsicMonitorFactory,
             let signingWrapper = signingWrapper else {
             presenter.didSubmitUnbonding(result: .failure(CommonError.undefined))
             return
@@ -191,14 +196,18 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
             )
         }
 
-        extrinsicService.submit(
-            builderClosure,
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                self?.presenter.didSubmitUnbonding(result: result)
-            }
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didSubmitUnbonding(result: result.mapToExtrinsicSubmittedResult())
+        }
     }
 }
 
@@ -234,7 +243,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(response):
