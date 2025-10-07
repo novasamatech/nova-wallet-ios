@@ -172,10 +172,13 @@ private extension StakingMainViewLayout {
 
     func setupAlertsView() {
         alertsContainerView.addSubview(alertsView)
-
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        stackView.insertArrangedSubview(alertsContainerView, at: 0)
+        if ahmAlertContainerView.superview != nil {
+            stackView.insertArranged(view: alertsContainerView, after: ahmAlertContainerView)
+        } else {
+            stackView.insertArrangedSubview(alertsContainerView, at: 0)
+        }
     }
 
     func hideAHMAlertWithAnimation() {
