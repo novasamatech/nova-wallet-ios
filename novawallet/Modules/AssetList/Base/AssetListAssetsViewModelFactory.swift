@@ -110,7 +110,7 @@ class AssetListAssetViewModelFactory {
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
 
-    lazy var formatterCache = FormatterCache(factory: assetFormatterFactory)
+    lazy var formattingCache = AssetFormattingCache(factory: assetFormatterFactory)
 
     private(set) lazy var cssColorFactory = CSSGradientFactory()
 
@@ -235,11 +235,11 @@ private extension AssetListAssetViewModelFactory {
     ) {
         let balanceViewModelFactory = balanceViewModelFactory(assetInfo: assetDisplayInfo)
 
-        let balanceFormatter = formatterCache.displayFormatter(for: assetDisplayInfo)
-
-        let balanceAmountString = balanceFormatter.value(for: genericParams.locale).stringFromDecimal(
-            balance
-        ) ?? ""
+        let balanceAmountString = formattingCache.formatDecimal(
+            balance,
+            info: assetDisplayInfo,
+            locale: genericParams.locale
+        )
 
         let loadedAmount: LoadableViewModelState<SecuredViewModel<String>> = .loaded(
             value: .wrapped(balanceAmountString, with: genericParams.privacyModeEnabled)
@@ -273,11 +273,11 @@ private extension AssetListAssetViewModelFactory {
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let balanceFormatter = formatterCache.displayFormatter(for: assetInfo)
-
-            let balanceAmountString = balanceFormatter.value(for: genericParams.locale).stringFromDecimal(
-                decimalBalance
-            ) ?? ""
+            let balanceAmountString = formattingCache.formatDecimal(
+                decimalBalance,
+                info: assetInfo,
+                locale: genericParams.locale
+            )
 
             let loadedAmount: LoadableViewModelState<SecuredViewModel<String>> = connected
                 ? .loaded(value: .wrapped(balanceAmountString, with: genericParams.privacyModeEnabled))
@@ -301,7 +301,8 @@ private extension AssetListAssetViewModelFactory {
     func balanceViewModelFactory(assetInfo: AssetBalanceDisplayInfo) -> BalanceViewModelFactoryProtocol {
         BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            formattingCache: formattingCache
         )
     }
 
@@ -317,8 +318,11 @@ private extension AssetListAssetViewModelFactory {
                 .stringFromDecimal(priceChangeValue) ?? ""
             let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
 
-            let priceFormatter = formatterCache.assetPriceFormatter(for: priceAssetInfo).value(for: locale)
-            let priceString = priceFormatter.stringFromDecimal(price) ?? ""
+            let priceString = formattingCache.formatPrice(
+                price,
+                info: priceAssetInfo,
+                locale: locale
+            )
 
             let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
                 ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)

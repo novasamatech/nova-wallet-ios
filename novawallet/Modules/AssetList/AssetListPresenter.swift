@@ -638,7 +638,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func togglePrivacyMode() {
-        // createHapticFeedback(style: .light)
+        createHapticFeedback(style: .light)
         privacyStateManager?.privacyModeEnabled.toggle()
     }
 }

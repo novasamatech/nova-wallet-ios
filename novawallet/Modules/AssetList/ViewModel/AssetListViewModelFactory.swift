@@ -71,12 +71,19 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 // MARK: - Private
 
 private extension AssetListViewModelFactory {
-    func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+    func formatPrice(
+        amount: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
 
-        let priceFormatter = formatterCache.assetPriceFormatter(for: assetDisplayInfo)
-        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+        return formattingCache.formatPrice(
+            amount,
+            info: assetDisplayInfo,
+            locale: locale
+        )
     }
 
     func calculateTotalPrice(from prices: [AssetListAssetAccountPrice]) -> Decimal {
@@ -100,12 +107,12 @@ private extension AssetListViewModelFactory {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
 
-        let priceFormatter = formatterCache.assetPriceFormatter(
-            for: assetDisplayInfo,
-            useSuffixForBigNumbers: false
+        return formattingCache.formatPrice(
+            price,
+            info: assetDisplayInfo,
+            useSuffixForBigNumbers: false,
+            locale: locale
         )
-
-        return priceFormatter.value(for: locale).stringFromDecimal(price) ?? ""
     }
 
     func createTotalPrice(
