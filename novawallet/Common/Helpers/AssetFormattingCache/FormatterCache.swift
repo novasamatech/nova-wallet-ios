@@ -56,7 +56,7 @@ final class FormatterCache {
 
     private let factory: AssetBalanceFormatterFactoryProtocol
 
-    private let queue = DispatchQueue(
+    private let syncQueue = DispatchQueue(
         label: "com.nova.wallet.formatter.cache",
         attributes: .concurrent
     )
@@ -77,14 +77,14 @@ extension FormatterCache: FormatterCacheProtocol {
             symbolValueSeparator: info.symbolValueSeparator
         )
 
-        return queue.sync {
+        return syncQueue.sync {
             if let cached = displayFormatters[key] {
                 return cached
             }
 
             let formatter = factory.createDisplayFormatter(for: info)
 
-            queue.async(flags: .barrier) {
+            syncQueue.async(flags: .barrier) {
                 self.displayFormatters[key] = formatter
             }
 
@@ -106,7 +106,7 @@ extension FormatterCache: FormatterCacheProtocol {
             useSuffixForBigNumbers: useSuffixForBigNumbers
         )
 
-        return queue.sync {
+        return syncQueue.sync {
             if let cached = tokenFormatters[key] {
                 return cached
             }
@@ -117,7 +117,7 @@ extension FormatterCache: FormatterCacheProtocol {
                 useSuffixForBigNumbers: useSuffixForBigNumbers
             )
 
-            queue.async(flags: .barrier) {
+            syncQueue.async(flags: .barrier) {
                 self.tokenFormatters[key] = formatter
             }
 
@@ -137,7 +137,7 @@ extension FormatterCache: FormatterCacheProtocol {
             useSuffixForBigNumbers: useSuffixForBigNumbers
         )
 
-        return queue.sync {
+        return syncQueue.sync {
             if let cached = assetPriceFormatters[key] {
                 return cached
             }
@@ -147,7 +147,7 @@ extension FormatterCache: FormatterCacheProtocol {
                 useSuffixForBigNumbers: useSuffixForBigNumbers
             )
 
-            queue.async(flags: .barrier) {
+            syncQueue.async(flags: .barrier) {
                 self.assetPriceFormatters[key] = formatter
             }
 
@@ -165,14 +165,14 @@ extension FormatterCache: FormatterCacheProtocol {
             symbolValueSeparator: info.symbolValueSeparator
         )
 
-        return queue.sync {
+        return syncQueue.sync {
             if let cached = inputFormatters[key] {
                 return cached
             }
 
             let formatter = factory.createInputFormatter(for: info)
 
-            queue.async(flags: .barrier) {
+            syncQueue.async(flags: .barrier) {
                 self.inputFormatters[key] = formatter
             }
 
@@ -181,7 +181,7 @@ extension FormatterCache: FormatterCacheProtocol {
     }
 
     func clearCache() {
-        queue.async(flags: .barrier) {
+        syncQueue.async(flags: .barrier) {
             self.displayFormatters.removeAll()
             self.tokenFormatters.removeAll()
             self.assetPriceFormatters.removeAll()
