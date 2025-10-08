@@ -5,15 +5,23 @@ typealias StakingDashboardActiveCell = BlurredCollectionViewCell<StakingDashboar
 
 final class StakingDashboardActiveCellView: UIView {
     private enum Constants {
+        static let assetIconLeadingOffset = 10
+        static let assetIconTopOffset = 8
         static let leadingOffset = 16
         static let topOffset = 16
+        static let assetIconSize = CGSize(width: 48, height: 48)
     }
 
-    let networkContainerView: GenericPairValueView<
-        LoadableAssetListChainView, BorderedIconLabelView
+    let assetContainerView: GenericPairValueView<
+        AssetIconView, BorderedIconLabelView
     > = .create { view in
         view.makeHorizontal()
         view.spacing = 4
+
+        view.fView.backgroundView.cornerRadius = Constants.assetIconSize.height / 2.0
+        view.fView.backgroundView.fillColor = .clear
+        view.fView.backgroundView.strokeColor = .clear
+
         view.sView.iconDetailsView.apply(style: .chips)
         view.sView.iconDetailsView.detailsLabel.numberOfLines = 1
         view.sView.iconDetailsView.iconWidth = 10
@@ -22,9 +30,9 @@ final class StakingDashboardActiveCellView: UIView {
         view.stackView.alignment = .center
     }
 
-    var networkView: LoadableAssetListChainView { networkContainerView.fView }
+    var assetView: AssetIconView { assetContainerView.fView }
 
-    var stakingTypeView: BorderedIconLabelView { networkContainerView.sView }
+    var stakingTypeView: BorderedIconLabelView { assetContainerView.sView }
 
     let detailsView: BlurredView<StakingDashboardActiveDetailsView> = .create { view in
         view.contentInsets = .zero
@@ -46,6 +54,8 @@ final class StakingDashboardActiveCellView: UIView {
         view.valueBottom.priceSecureView.preferredSecuredHeight = 20
 
         view.valueBottom.amountSecureView.privacyModeConfiguration = .largeBalanceChip
+
+        view.spacing = 6
     }
 
     var skeletonView: SkrullableView?
@@ -72,23 +82,20 @@ final class StakingDashboardActiveCellView: UIView {
     }
 
     func bind(viewModel: StakingDashboardEnabledViewModel, locale: Locale) {
+        assetView.bind(
+            viewModel: viewModel.chainAssetViewModel.assetViewModel.imageViewModel,
+            size: Constants.assetIconSize
+        )
+
+        setRewardsText(
+            with: viewModel.chainAssetViewModel,
+            locale: locale
+        )
+
         var newLoadingState: LoadingState = .none
-
-        networkView.stopLoadingIfNeeded()
-
-        switch viewModel.networkViewModel {
-        case .loading:
-            newLoadingState.formUnion(.network)
-        case let .cached(value):
-            networkView.bind(viewModel: value)
-            networkView.startLoadingIfNeeded()
-        case let .loaded(value):
-            networkView.bind(viewModel: value)
-        }
 
         if let stakingTypeViewModel = viewModel.stakingType {
             stakingTypeView.isHidden = false
-
             stakingTypeView.bind(viewModel: stakingTypeViewModel)
         } else {
             stakingTypeView.isHidden = true
@@ -107,8 +114,6 @@ final class StakingDashboardActiveCellView: UIView {
             locale: locale
         )
 
-        setupStaticLocalization(for: locale)
-
         stopLoadingIfNeeded()
 
         loadingState = newLoadingState
@@ -116,6 +121,16 @@ final class StakingDashboardActiveCellView: UIView {
         if loadingState != .none {
             startLoadingIfNeeded()
         }
+    }
+
+    func setRewardsText(
+        with viewModel: ChainAssetViewModel,
+        locale: Locale
+    ) {
+        rewardsView.valueTop.text = [
+            viewModel.assetName,
+            R.string.localizable.commonRewards(preferredLanguages: locale.rLanguages).lowercased()
+        ].joined(with: .space)
     }
 
     func bindLoadingState() {
@@ -128,12 +143,6 @@ final class StakingDashboardActiveCellView: UIView {
         startLoadingIfNeeded()
     }
 
-    private func setupStaticLocalization(for locale: Locale) {
-        rewardsView.valueTop.text = R.string.localizable.stakingRewardsTitle(
-            preferredLanguages: locale.rLanguages
-        )
-    }
-
     private func setupLayout() {
         addSubview(detailsView)
 
@@ -142,22 +151,22 @@ final class StakingDashboardActiveCellView: UIView {
             make.width.equalTo(130)
         }
 
-        addSubview(networkContainerView)
+        addSubview(assetContainerView)
 
-        networkContainerView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(Constants.leadingOffset)
-            make.top.equalToSuperview().inset(Constants.topOffset)
+        assetContainerView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Constants.assetIconLeadingOffset)
+            make.top.equalToSuperview().inset(Constants.assetIconTopOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
 
         addSubview(rewardsView)
         rewardsView.snp.makeConstraints { make in
-            make.top.equalTo(networkContainerView.snp.bottom).offset(24)
+            make.top.equalTo(assetContainerView.snp.bottom).offset(6)
             make.leading.equalToSuperview().inset(Constants.leadingOffset)
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
 
-        networkView.setContentCompressionResistancePriority(.low, for: .horizontal)
+        assetView.setContentCompressionResistancePriority(.low, for: .horizontal)
     }
 }
 
@@ -169,7 +178,6 @@ extension StakingDashboardActiveCellView: AnimationUpdatibleView {
             skeletonView?.restartSkrulling()
         }
 
-        networkView.updateLoadingAnimationIfActive()
         rewardsView.valueBottom.updateLoadingAnimationIfActive()
         detailsView.view.updateLoadingAnimationIfActive()
     }
@@ -183,7 +191,7 @@ extension StakingDashboardActiveCellView: SkeletonableView {
     var hidingViews: [UIView] {
         if loadingState == .all {
             return [
-                networkContainerView,
+                assetContainerView,
                 rewardsView
             ]
         }
@@ -191,7 +199,7 @@ extension StakingDashboardActiveCellView: SkeletonableView {
         var hidingViews: [UIView] = []
 
         if loadingState.contains(.network) {
-            hidingViews.append(networkContainerView)
+            hidingViews.append(assetContainerView)
         }
 
         if loadingState.contains(.rewards) {
