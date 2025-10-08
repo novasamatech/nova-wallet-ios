@@ -34,8 +34,6 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
 
-    private lazy var privacyEnabled: Bool = privacyModeEnabled
-
     private var organizerViewModel: AssetListOrganizerViewModel?
 
     private(set) var walletConnectSessionsCount: Int = 0
@@ -69,12 +67,13 @@ private extension AssetListPresenter {
         view?.didReceiveBanners(available: available)
     }
 
-    func provideHeaderViewModel() {
+    func createHeaderViewModel() -> AssetListHeaderViewModel? {
         guard
             let walletId = walletId,
             let walletType = walletType,
-            let name = name else {
-            return
+            let name = name
+        else {
+            return nil
         }
 
         guard case let .success(priceMapping) = model.priceResult, !model.balanceResults.isEmpty else {
@@ -96,16 +95,65 @@ private extension AssetListPresenter {
             )
 
             view?.didReceiveHeader(viewModel: viewModel)
-            return
+
+            return nil
         }
 
-        provideHeaderViewModel(
-            with: walletId,
-            priceMapping: priceMapping,
-            walletIdenticon: walletIdenticon,
-            walletType: walletType,
-            name: name
+        let externalBalances = externalBalanceModel(prices: priceMapping)
+        let totalValue = createHeaderPriceState(from: priceMapping, externalBalances: externalBalances)
+        let totalLocks = createHeaderLockState(from: priceMapping, externalBalances: externalBalances)
+
+        let viewModel = viewModelFactory.createHeaderViewModel(
+            params: .init(
+                title: name,
+                wallet: .init(
+                    identifier: walletId,
+                    walletIdenticon: walletIdenticon,
+                    walletType: walletType,
+                    walletConnectSessionsCount: walletConnectSessionsCount,
+                    hasWalletsUpdates: hasWalletsUpdates
+                ),
+                prices: totalValue,
+                locks: totalLocks,
+                hasSwaps: model.hasSwaps()
+            ),
+            genericParams: createGenericViewModelFactoryParams()
         )
+
+        return viewModel
+    }
+
+    func createAssetsViewModel() -> AssetListViewModel? {
+        guard let hidesZeroBalances, let assetListStyle else {
+            return nil
+        }
+
+        let viewModels = createGroupViewModels()
+
+        let isFilterOn = hidesZeroBalances == true
+
+        return if
+            viewModels.isEmpty, !model.balanceResults.isEmpty,
+            model.balanceResults.count >= model.allChains.count
+        {
+            .init(
+                isFiltered: isFilterOn,
+                listState: .empty,
+                listGroupStyle: assetListStyle
+            )
+        } else {
+            .init(
+                isFiltered: isFilterOn,
+                listState: .list(groups: viewModels),
+                listGroupStyle: assetListStyle
+            )
+        }
+    }
+
+    func provideHeaderViewModel() {
+        guard let viewModel = createHeaderViewModel() else { return }
+
+        view?.didReceiveHeader(viewModel: viewModel)
     }
 
     func createAssetAccountPrice(
@@ -159,37 +207,6 @@ private extension AssetListPresenter {
             balance: assetBalance.locked,
             price: priceData
         )
-    }
-
-    func provideHeaderViewModel(
-        with walletId: String,
-        priceMapping: [ChainAssetId: PriceData],
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    ) {
-        let externalBalances = externalBalanceModel(prices: priceMapping)
-        let totalValue = createHeaderPriceState(from: priceMapping, externalBalances: externalBalances)
-        let totalLocks = createHeaderLockState(from: priceMapping, externalBalances: externalBalances)
-
-        let viewModel = viewModelFactory.createHeaderViewModel(
-            params: .init(
-                title: name,
-                wallet: .init(
-                    identifier: walletId,
-                    walletIdenticon: walletIdenticon,
-                    walletType: walletType,
-                    walletConnectSessionsCount: walletConnectSessionsCount,
-                    hasWalletsUpdates: hasWalletsUpdates
-                ),
-                prices: totalValue,
-                locks: totalLocks,
-                hasSwaps: model.hasSwaps()
-            ),
-            genericParams: createGenericViewModelFactoryParams()
-        )
-
-        view?.didReceiveHeader(viewModel: viewModel)
     }
 
     func createHeaderPriceState(
@@ -266,26 +283,9 @@ private extension AssetListPresenter {
     }
 
     func provideAssetViewModels() {
-        guard let hidesZeroBalances, let assetListStyle else {
-            return
-        }
+        guard let viewModel = createAssetsViewModel() else { return }
 
-        let viewModels = createGroupViewModels()
-
-        let isFilterOn = hidesZeroBalances == true
-        if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
-            view?.didReceiveGroups(viewModel: .init(
-                isFiltered: isFilterOn,
-                listState: .empty,
-                listGroupStyle: assetListStyle
-            ))
-        } else {
-            view?.didReceiveGroups(viewModel: .init(
-                isFiltered: isFilterOn,
-                listState: .list(groups: viewModels),
-                listGroupStyle: assetListStyle
-            ))
-        }
+        view?.didReceiveGroups(viewModel: viewModel)
     }
 
     func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
@@ -479,7 +479,7 @@ private extension AssetListPresenter {
     func createGenericViewModelFactoryParams() -> ViewModelFactoryGenericParams {
         ViewModelFactoryGenericParams(
             locale: selectedLocale,
-            privacyModeEnabled: privacyEnabled
+            privacyModeEnabled: privacyModeEnabled
         )
     }
 
@@ -638,14 +638,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func togglePrivacyMode() {
-        createHapticFeedback(style: .light)
-        privacyEnabled.toggle()
-        provideHeaderViewModel()
-        provideOrganizerViewModel()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-            self.privacyStateManager?.privacyModeEnabled.toggle()
-        }
+        // createHapticFeedback(style: .light)
+        privacyStateManager?.privacyModeEnabled.toggle()
     }
 }
 
@@ -846,10 +840,29 @@ extension AssetListPresenter: IconAppearanceDepending {
 
 extension AssetListPresenter: PrivacyModeSupporting {
     func applyPrivacyMode() {
-        guard let view, view.isSetup else { return }
+        guard
+            let view,
+            view.isSetup,
+            let headerViewModel = createHeaderViewModel(),
+            let assetGroups = createAssetsViewModel()
+        else { return }
 
-        privacyEnabled = privacyModeEnabled
+        let organizerViewModel = viewModelFactory.createOrganizerViewModel(
+            from: model.nfts,
+            operations: model.pendingOperations,
+            genericParams: createGenericViewModelFactoryParams()
+        )
 
-        provideAssetViewModels()
+        if organizerViewModel != self.organizerViewModel {
+            self.organizerViewModel = organizerViewModel
+        }
+
+        let viewModel = AssetListFullUpdateViewModel(
+            header: headerViewModel,
+            assetGroups: assetGroups,
+            organizer: organizerViewModel
+        )
+
+        view.didReceiveFullUpdate(viewModel: viewModel)
     }
 }

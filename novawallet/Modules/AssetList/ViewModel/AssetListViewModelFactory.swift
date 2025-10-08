@@ -42,6 +42,8 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     let quantityFormatter: LocalizableResource<NumberFormatter>
     let nftDownloadService: NftFileDownloadServiceProtocol
 
+    private lazy var iconGenerator = NovaIconGenerator()
+
     init(
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -64,8 +66,6 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
             currencyManager: currencyManager
         )
     }
-
-    private lazy var iconGenerator = NovaIconGenerator()
 }
 
 // MARK: - Private
@@ -74,7 +74,8 @@ private extension AssetListViewModelFactory {
     func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
+
+        let priceFormatter = formatterCache.assetPriceFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 
@@ -99,7 +100,7 @@ private extension AssetListViewModelFactory {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
 
-        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(
+        let priceFormatter = formatterCache.assetPriceFormatter(
             for: assetDisplayInfo,
             useSuffixForBigNumbers: false
         )
