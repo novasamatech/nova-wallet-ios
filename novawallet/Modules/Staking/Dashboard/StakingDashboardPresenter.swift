@@ -21,6 +21,7 @@ final class StakingDashboardPresenter {
         viewModelFactory: StakingDashboardViewModelFactoryProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -29,6 +30,7 @@ final class StakingDashboardPresenter {
         self.logger = logger
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
+        self.appearanceFacade = appearanceFacade
     }
 }
 
@@ -188,6 +190,20 @@ extension StakingDashboardPresenter: Localizable {
 
 extension StakingDashboardPresenter: PrivacyModeSupporting {
     func applyPrivacyMode() {
+        guard
+            let view,
+            view.isSetup,
+            let lastResult
+        else { return }
+
+        reloadStakingView(using: lastResult.model)
+    }
+}
+
+// MARK: - IconAppearanceDepending
+
+extension StakingDashboardPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
         guard
             let view,
             view.isSetup,
