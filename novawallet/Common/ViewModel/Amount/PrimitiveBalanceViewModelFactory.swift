@@ -70,7 +70,20 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     func priceFormatter(for currencyId: Int?) -> LocalizableResource<TokenFormatter> {
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        return formattingCache.assetPriceFormatter(for: priceAssetInfo)
+
+        return LocalizableResource { [weak self] locale in
+            guard let self else {
+                return TokenFormatter(
+                    decimalFormatter: NumberFormatter(),
+                    tokenSymbol: ""
+                )
+            }
+
+            return formattingCache.assetPriceFormatter(
+                for: priceAssetInfo,
+                locale: locale
+            )
+        }
     }
 
     func unitsFromValue(

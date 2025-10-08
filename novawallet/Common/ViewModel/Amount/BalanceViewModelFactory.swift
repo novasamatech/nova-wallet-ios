@@ -57,8 +57,9 @@ final class BalanceViewModelFactory: PrimitiveBalanceViewModelFactory, BalanceVi
             }
 
             let formatter = formattingCache.inputFormatter(
-                for: targetAssetInfo
-            ).value(for: locale)
+                for: targetAssetInfo,
+                locale: locale
+            )
 
             return AmountInputViewModel(
                 symbol: symbol,

@@ -1975,11 +1975,9 @@
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DB2742C2E96D8F10082339E /* FormatterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB2742B2E96D8F10082339E /* FormatterCache.swift */; };
 		2DB2742E2E96DDE00082339E /* AssetListFullUpdateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB2742D2E96DDE00082339E /* AssetListFullUpdateViewModel.swift */; };
-		2DB274302E96F4490082339E /* FormattedStringCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB2742F2E96F4490082339E /* FormattedStringCache.swift */; };
 		2DB274322E96F4A80082339E /* AssetFormattingCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB274312E96F4A80082339E /* AssetFormattingCache.swift */; };
 		2DB274332E96FE440082339E /* AssetFormattingCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB274312E96F4A80082339E /* AssetFormattingCache.swift */; };
 		2DB274342E96FE490082339E /* FormatterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB2742B2E96D8F10082339E /* FormatterCache.swift */; };
-		2DB274352E96FE500082339E /* FormattedStringCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB2742F2E96F4490082339E /* FormattedStringCache.swift */; };
 		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
@@ -8515,7 +8513,6 @@
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DB2742B2E96D8F10082339E /* FormatterCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatterCache.swift; sourceTree = "<group>"; };
 		2DB2742D2E96DDE00082339E /* AssetListFullUpdateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListFullUpdateViewModel.swift; sourceTree = "<group>"; };
-		2DB2742F2E96F4490082339E /* FormattedStringCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedStringCache.swift; sourceTree = "<group>"; };
 		2DB274312E96F4A80082339E /* AssetFormattingCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFormattingCache.swift; sourceTree = "<group>"; };
 		2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel37.xcdatamodel; sourceTree = "<group>"; };
 		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
@@ -17796,7 +17793,6 @@
 			children = (
 				2DB274312E96F4A80082339E /* AssetFormattingCache.swift */,
 				2DB2742B2E96D8F10082339E /* FormatterCache.swift */,
-				2DB2742F2E96F4490082339E /* FormattedStringCache.swift */,
 			);
 			path = AssetFormattingCache;
 			sourceTree = "<group>";
@@ -30693,7 +30689,6 @@
 				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,
-				2DB274352E96FE500082339E /* FormattedStringCache.swift in Sources */,
 				2DC08BE62DCCF9B300C690D4 /* DisplayAddress.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -32229,7 +32224,6 @@
 				2DDF94C52E1924CB009B7F19 /* MultisigTxDetailsViewController.swift in Sources */,
 				8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */,
 				2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */,
-				2DB274302E96F4490082339E /* FormattedStringCache.swift in Sources */,
 				0CB64E602B00AD83008F268F /* GetTokenOptionsWireframe.swift in Sources */,
 				844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */,
 				AE6F7FE62685F2C3002BBC3E /* ValidatorListFilterViewModel.swift in Sources */,

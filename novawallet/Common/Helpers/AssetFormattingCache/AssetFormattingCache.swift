@@ -31,23 +31,27 @@ protocol AssetFormattingCacheProtocol {
     ) -> String
 
     func displayFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<LocalizableDecimalFormatting>
+        for info: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> LocalizableDecimalFormatting
 
     func inputFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<NumberFormatter>
+        for info: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> NumberFormatter
 
     func tokenFormatter(
         for info: AssetBalanceDisplayInfo,
         roundingMode: NumberFormatter.RoundingMode,
-        useSuffixForBigNumbers: Bool
-    ) -> LocalizableResource<TokenFormatter>
+        useSuffixForBigNumbers: Bool,
+        locale: Locale
+    ) -> TokenFormatter
 
     func assetPriceFormatter(
         for info: AssetBalanceDisplayInfo,
-        useSuffixForBigNumbers: Bool
-    ) -> LocalizableResource<TokenFormatter>
+        useSuffixForBigNumbers: Bool,
+        locale: Locale
+    ) -> TokenFormatter
 
     func clearCache()
 }
@@ -86,33 +90,35 @@ extension AssetFormattingCacheProtocol {
     func tokenFormatter(
         for info: AssetBalanceDisplayInfo,
         roundingMode: NumberFormatter.RoundingMode = .down,
-        useSuffixForBigNumbers: Bool = true
-    ) -> LocalizableResource<TokenFormatter> {
+        useSuffixForBigNumbers: Bool = true,
+        locale: Locale
+    ) -> TokenFormatter {
         tokenFormatter(
             for: info,
             roundingMode: roundingMode,
-            useSuffixForBigNumbers: useSuffixForBigNumbers
+            useSuffixForBigNumbers: useSuffixForBigNumbers,
+            locale: locale
         )
     }
 
     func assetPriceFormatter(
         for info: AssetBalanceDisplayInfo,
-        useSuffixForBigNumbers: Bool = true
-    ) -> LocalizableResource<TokenFormatter> {
+        useSuffixForBigNumbers: Bool = true,
+        locale: Locale
+    ) -> TokenFormatter {
         assetPriceFormatter(
             for: info,
-            useSuffixForBigNumbers: useSuffixForBigNumbers
+            useSuffixForBigNumbers: useSuffixForBigNumbers,
+            locale: locale
         )
     }
 }
 
 final class AssetFormattingCache {
     private let formatterCache: FormatterCacheProtocol
-    private let formattedStringCache: FormattedStringCacheProtocol
 
     init(factory: AssetBalanceFormatterFactoryProtocol) {
         formatterCache = FormatterCache(factory: factory)
-        formattedStringCache = FormattedStringCache()
     }
 }
 
@@ -124,17 +130,9 @@ extension AssetFormattingCache: AssetFormattingCacheProtocol {
         info: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> String {
-        formattedStringCache.getOrCreateDecimalString(
-            for: value,
-            info: info,
-            locale: locale
-        ) { [weak self] decimal in
-            guard let self else { return nil }
-
-            let formatter = formatterCache.displayFormatter(for: info)
-
-            return formatter.value(for: locale).stringFromDecimal(decimal)
-        }
+        formatterCache
+            .displayFormatter(for: info, locale: locale)
+            .stringFromDecimal(value) ?? ""
     }
 
     func formatBigUInt(
@@ -142,22 +140,17 @@ extension AssetFormattingCache: AssetFormattingCacheProtocol {
         info: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> String {
-        formattedStringCache.getOrCreateBigUIntString(
-            for: value,
-            info: info,
+        let decimal = Decimal.fromSubstrateAmount(
+            value,
+            precision: info.assetPrecision
+        ) ?? 0.0
+
+        let formatter = formatterCache.displayFormatter(
+            for: info,
             locale: locale
-        ) { [weak self] bigUInt in
-            guard let self else { return nil }
+        )
 
-            let decimal = Decimal.fromSubstrateAmount(
-                bigUInt,
-                precision: info.assetPrecision
-            ) ?? 0.0
-
-            let formatter = formatterCache.displayFormatter(for: info)
-
-            return formatter.value(for: locale).stringFromDecimal(decimal)
-        }
+        return formatter.stringFromDecimal(decimal) ?? ""
     }
 
     func formatToken(
@@ -167,21 +160,14 @@ extension AssetFormattingCache: AssetFormattingCacheProtocol {
         useSuffixForBigNumbers: Bool,
         locale: Locale
     ) -> String {
-        formattedStringCache.getOrCreateDecimalString(
-            for: value,
-            info: info,
-            locale: locale
-        ) { [weak self] decimal in
-            guard let self else { return nil }
-
-            let formatter = formatterCache.tokenFormatter(
+        formatterCache
+            .tokenFormatter(
                 for: info,
                 roundingMode: roundingMode,
-                useSuffixForBigNumbers: useSuffixForBigNumbers
+                useSuffixForBigNumbers: useSuffixForBigNumbers,
+                locale: locale
             )
-
-            return formatter.value(for: locale).stringFromDecimal(decimal)
-        }
+            .stringFromDecimal(value) ?? ""
     }
 
     func formatPrice(
@@ -190,59 +176,56 @@ extension AssetFormattingCache: AssetFormattingCacheProtocol {
         useSuffixForBigNumbers: Bool,
         locale: Locale
     ) -> String {
-        formattedStringCache.getOrCreatePriceString(
-            for: value,
-            info: info,
-            useSuffixForBigNumbers: useSuffixForBigNumbers,
-            locale: locale
-        ) { [weak self] decimal in
-            guard let self else { return nil }
-
-            let formatter = formatterCache.assetPriceFormatter(
+        formatterCache
+            .assetPriceFormatter(
                 for: info,
-                useSuffixForBigNumbers: useSuffixForBigNumbers
+                useSuffixForBigNumbers: useSuffixForBigNumbers,
+                locale: locale
             )
-
-            return formatter.value(for: locale).stringFromDecimal(decimal)
-        }
+            .stringFromDecimal(value) ?? ""
     }
 
     func displayFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<LocalizableDecimalFormatting> {
-        formatterCache.displayFormatter(for: info)
+        for info: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> LocalizableDecimalFormatting {
+        formatterCache.displayFormatter(for: info, locale: locale)
     }
 
     func inputFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<NumberFormatter> {
-        formatterCache.inputFormatter(for: info)
+        for info: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> NumberFormatter {
+        formatterCache.inputFormatter(for: info, locale: locale)
     }
 
     func tokenFormatter(
         for info: AssetBalanceDisplayInfo,
         roundingMode: NumberFormatter.RoundingMode,
-        useSuffixForBigNumbers: Bool
-    ) -> LocalizableResource<TokenFormatter> {
+        useSuffixForBigNumbers: Bool,
+        locale: Locale
+    ) -> TokenFormatter {
         formatterCache.tokenFormatter(
             for: info,
             roundingMode: roundingMode,
-            useSuffixForBigNumbers: useSuffixForBigNumbers
+            useSuffixForBigNumbers: useSuffixForBigNumbers,
+            locale: locale
         )
     }
 
     func assetPriceFormatter(
         for info: AssetBalanceDisplayInfo,
-        useSuffixForBigNumbers: Bool = true
-    ) -> LocalizableResource<TokenFormatter> {
+        useSuffixForBigNumbers: Bool,
+        locale: Locale
+    ) -> TokenFormatter {
         formatterCache.assetPriceFormatter(
             for: info,
-            useSuffixForBigNumbers: useSuffixForBigNumbers
+            useSuffixForBigNumbers: useSuffixForBigNumbers,
+            locale: locale
         )
     }
 
     func clearCache() {
         formatterCache.clearCache()
-        formattedStringCache.clearCache()
     }
 }
