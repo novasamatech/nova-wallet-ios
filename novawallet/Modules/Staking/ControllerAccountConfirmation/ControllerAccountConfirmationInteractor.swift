@@ -19,7 +19,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
     private var stashItemProvider: StreamableProvider<StashItem>?
@@ -42,7 +42,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -58,21 +58,23 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.signingWrapper = signingWrapper
         self.storageRequestFactory = storageRequestFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
-    private func createLedgerFetchOperation(_ accountId: AccountId) -> CompoundOperationWrapper<StakingLedger?> {
+    private func createLedgerFetchWrapper(
+        _ accountId: AccountId
+    ) -> CompoundOperationWrapper<Staking.Ledger?> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<StakingLedger>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.Ledger>]> = storageRequestFactory.queryItems(
             engine: connection,
             keyParams: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
             storagePath: Staking.stakingLedger
         )
 
-        let mapOperation = ClosureOperation<StakingLedger?> {
+        let mapOperation = ClosureOperation<Staking.Ledger?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
         }
 
@@ -121,7 +123,7 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
 
     func confirm() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 guard
                     let signingWrapper = self?.signingWrapper,
@@ -145,7 +147,7 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
 
     func estimateFee() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 guard
                     let extrinsicService = self?.extrinsicService,
@@ -170,22 +172,15 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
     func fetchLedger() {
         let accountId = controllerAccountItem.accountId
 
-        let ledgerOperataion = createLedgerFetchOperation(accountId)
-        ledgerOperataion.targetOperation.completionBlock = { [weak presenter] in
-            DispatchQueue.main.async {
-                do {
-                    let ledger = try ledgerOperataion.targetOperation.extractNoCancellableResultData()
-                    presenter?.didReceiveStakingLedger(result: .success(ledger))
-                } catch {
-                    presenter?.didReceiveStakingLedger(result: .failure(error))
-                }
-            }
-        }
+        let ledgerWrapper = createLedgerFetchWrapper(accountId)
 
-        operationManager.enqueue(
-            operations: ledgerOperataion.allOperations,
-            in: .transient
-        )
+        execute(
+            wrapper: ledgerWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak presenter] result in
+            presenter?.didReceiveStakingLedger(result: result)
+        }
     }
 }
 
@@ -214,7 +209,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                     for: stashId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeAccountResponse):

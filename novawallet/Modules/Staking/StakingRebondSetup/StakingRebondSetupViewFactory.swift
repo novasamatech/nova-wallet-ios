@@ -70,12 +70,12 @@ final class StakingRebondSetupViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
@@ -94,7 +94,7 @@ final class StakingRebondSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
             currencyManager: currencyManager,
-            operationManager: operationManager
+            operationQueue: operationQueue
         )
     }
 }

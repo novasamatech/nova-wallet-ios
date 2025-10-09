@@ -65,11 +65,46 @@ private extension AssetDetailsViewController {
     }
 
     func addHandlers() {
-        rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
-        rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
-        rootView.buySellButton.addTarget(self, action: #selector(didTapBuySellButton), for: .touchUpInside)
-        rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
-        rootView.balanceWidget.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+        rootView.sendButton.addTarget(
+            self,
+            action: #selector(didTapSendButton),
+            for: .touchUpInside
+        )
+        rootView.receiveButton.addTarget(
+            self,
+            action: #selector(didTapReceiveButton),
+            for: .touchUpInside
+        )
+        rootView.buySellButton.addTarget(
+            self,
+            action: #selector(didTapBuySellButton),
+            for: .touchUpInside
+        )
+        rootView.swapButton.addTarget(
+            self,
+            action: #selector(didTapSwapButton),
+            for: .touchUpInside
+        )
+        rootView.balanceWidget.lockCell.addTarget(
+            self,
+            action: #selector(didTapLocks),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.actionButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertAction),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.closeButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertClose),
+            for: .touchUpInside
+        )
+        rootView.ahmAlertView.learnMoreButton.addTarget(
+            self,
+            action: #selector(didTapAHMAlertLearnMore),
+            for: .touchUpInside
+        )
     }
 
     func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
@@ -116,6 +151,18 @@ private extension AssetDetailsViewController {
     @objc func didTapLocks() {
         presenter.handleLocks()
     }
+
+    @objc func didTapAHMAlertClose() {
+        presenter.handleAHMAlertClose()
+    }
+
+    @objc func didTapAHMAlertAction() {
+        presenter.handleAHMAlertAction()
+    }
+
+    @objc func didTapAHMAlertLearnMore() {
+        presenter.handleAHMAlertLearnMore()
+    }
 }
 
 extension AssetDetailsViewController: AssetDetailsViewProtocol {
@@ -145,6 +192,10 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         observable.observers.forEach {
             $0.observer?.didChangePreferredContentHeight(to: preferredContentHeight)
         }
+    }
+
+    func didReceive(ahmAlert: AHMAlertView.Model?) {
+        rootView.setAHMAlert(with: ahmAlert)
     }
 }
 

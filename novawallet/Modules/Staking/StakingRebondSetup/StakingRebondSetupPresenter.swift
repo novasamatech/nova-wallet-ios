@@ -19,7 +19,7 @@ final class StakingRebondSetupPresenter {
     private var priceData: PriceData?
     private var stashItem: StashItem?
     private var controller: ChainAccountResponse?
-    private var stakingLedger: StakingLedger?
+    private var stakingLedger: Staking.Ledger?
 
     var unbonding: Decimal? {
         if let value = stakingLedger?.unbonding() {
@@ -153,7 +153,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtoco
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             self.stakingLedger = stakingLedger

@@ -4,7 +4,7 @@ protocol SwipeGovViewModelFactoryProtocol {
     func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
         eligibleReferendums: Set<ReferendumIdLocal>,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsSection?
 
     func createVotingListViewModel(
@@ -22,7 +22,7 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
     func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
         eligibleReferendums: Set<ReferendumIdLocal>,
-        locale: Locale
+        genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumsSection? {
         let filteredReferendums = ReferendumFilter.EligibleForSwipeGov(
             referendums: referendumsState.referendums,
@@ -34,15 +34,17 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
             return nil
         }
 
+        let languages = genericParams.locale.rLanguages
+
         let titleText = R.string(
-            preferredLanguages: locale.rLanguages
+            preferredLanguages: languages
         ).localizable.commonCountedReferenda(filteredReferendums.count)
 
         return .swipeGov(
             SwipeGovBannerViewModel(
-                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSwipeGov(),
-                description: R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovBannerMessage(),
-                referendumCounterText: titleText
+                title: R.string(preferredLanguages: languages).localizable.commonSwipeGov(),
+                description: R.string(preferredLanguages: languages).localizable.swipeGovBannerMessage(),
+                referendumCounterText: .wrapped(titleText, with: genericParams.privacyModeEnabled)
             )
         )
     }

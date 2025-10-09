@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 protocol ExtrinsicSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
@@ -45,6 +46,23 @@ final class ExtrinsicSubmissionMonitorFactory {
         self.submissionService = submissionService
         self.statusService = statusService
         self.operationQueue = operationQueue
+    }
+
+    convenience init(
+        submissionService: ExtrinsicServiceProtocol,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeProviderProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
+        let statusService = ExtrinsicStatusService(
+            connection: connection,
+            runtimeProvider: runtimeService,
+            eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            logger: logger
+        )
+
+        self.init(submissionService: submissionService, statusService: statusService, operationQueue: operationQueue)
     }
 }
 

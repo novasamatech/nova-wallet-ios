@@ -19,13 +19,9 @@ final class VoteTableHeaderView: UIView {
         view.titleColor = R.color.colorTextSecondary()!
     }
 
-    let chainSelectionView: DetailsTriangularedView = {
-        let view = UIFactory.default.createChainAssetSelectionView()
-        view.borderWidth = 0.0
-        view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.actionView.tintColor = R.color.colorIconSecondary()!
-        return view
-    }()
+    let chainSelectionView: VoteTableChainSelectionControl = .create {
+        $0.preferredHeight = Constants.chainSelectionHeight
+    }
 
     var locale = Locale.current {
         didSet {
@@ -34,8 +30,6 @@ final class VoteTableHeaderView: UIView {
             }
         }
     }
-
-    private var viewModel: ChainBalanceViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,11 +44,15 @@ final class VoteTableHeaderView: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupLayout() {
+// MARK: - Private
+
+private extension VoteTableHeaderView {
+    func setupLayout() {
         addSubview(walletSwitch)
         walletSwitch.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10.0)
+            make.top.equalToSuperview().inset(Constants.walletSwitchTopInset)
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.size.equalTo(UIConstants.walletSwitchSize)
         }
@@ -62,33 +60,27 @@ final class VoteTableHeaderView: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(walletSwitch.snp.leading).inset(-8.0)
+            make.trailing.equalTo(walletSwitch.snp.leading).inset(-Constants.titleTrailingOffset)
             make.centerY.equalTo(walletSwitch)
         }
 
         addSubview(votingTypeSwitch)
         votingTypeSwitch.snp.makeConstraints { make in
-            make.top.equalTo(walletSwitch.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40.0)
+            make.top.equalTo(walletSwitch.snp.bottom).offset(Constants.votingTypeSwitchTopOffset)
+            make.leading.trailing.equalToSuperview().inset(Constants.standardHorizontalInset)
+            make.height.equalTo(Constants.votingTypeSwitchHeight)
         }
 
-        let chainBlur = BlockBackgroundView()
-        addSubview(chainBlur)
-        chainBlur.snp.makeConstraints { make in
-            make.top.equalTo(votingTypeSwitch.snp.bottom).offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(8)
-        }
-
-        chainBlur.addSubview(chainSelectionView)
+        addSubview(chainSelectionView)
         chainSelectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.height.equalTo(52.0)
+            make.top.equalTo(votingTypeSwitch.snp.bottom).offset(Constants.chainSelectionTopOffset)
+            make.leading.trailing.equalToSuperview().inset(Constants.standardHorizontalInset)
+            make.bottom.equalToSuperview().inset(Constants.chainSelectionBottomInset)
+            make.height.equalTo(Constants.chainSelectionHeight)
         }
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let languages = locale.rLanguages
 
         titleLabel.text = R.string(preferredLanguages: languages).localizable.tabbarVoteTitle()
@@ -100,23 +92,33 @@ final class VoteTableHeaderView: UIView {
     }
 }
 
+// MARK: - VoteChainViewProtocol
+
 extension VoteTableHeaderView: VoteChainViewProtocol {
-    func bind(viewModel: ChainBalanceViewModel) {
-        self.viewModel?.icon.cancel(on: chainSelectionView.iconView)
-        chainSelectionView.iconView.image = nil
-
-        self.viewModel = viewModel
-
-        chainSelectionView.title = viewModel.name
-        chainSelectionView.subtitle = viewModel.balance
-
-        let iconSize = 2 * chainSelectionView.iconRadius
-        viewModel.icon.loadImage(
-            on: chainSelectionView.iconView,
-            targetSize: CGSize(width: iconSize, height: iconSize),
-            animated: true
+    func bind(viewModel: SecuredViewModel<ChainBalanceViewModel>) {
+        chainSelectionView.bind(
+            title: viewModel.originalContent.name,
+            subtitle: viewModel.originalContent.balance,
+            privacyMode: viewModel.privacyMode
         )
 
+        chainSelectionView.bind(imageViewModel: viewModel.originalContent.icon)
+
         setNeedsLayout()
+    }
+}
+
+// MARK: - Constants
+
+private extension VoteTableHeaderView {
+    enum Constants {
+        static let walletSwitchTopInset: CGFloat = 10.0
+        static let titleTrailingOffset: CGFloat = 8.0
+        static let votingTypeSwitchTopOffset: CGFloat = 16.0
+        static let standardHorizontalInset: CGFloat = 16.0
+        static let votingTypeSwitchHeight: CGFloat = 40.0
+        static let chainSelectionTopOffset: CGFloat = 8.0
+        static let chainSelectionBottomInset: CGFloat = 8.0
+        static let chainSelectionHeight: CGFloat = 56.0
     }
 }

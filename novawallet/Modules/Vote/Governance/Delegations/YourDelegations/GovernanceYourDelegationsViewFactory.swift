@@ -54,7 +54,8 @@ struct GovernanceYourDelegationsViewFactory {
             let subscriptionFactory = state.subscriptionFactory,
             let referendumsOperationFactory = state.referendumsOperationFactory,
             let offchainOperationFactory = state.createOffchainDelegateListFactory(for: option),
-            let blockTimeService = state.blockTimeService
+            let timelineService = state.createChainTimelineFacade(),
+            let timepointThresholdService = state.timepointThresholdService
         else {
             return nil
         }
@@ -66,9 +67,7 @@ struct GovernanceYourDelegationsViewFactory {
             subscriptionFactory: subscriptionFactory,
             referendumsOperationFactory: referendumsOperationFactory,
             offchainOperationFactory: offchainOperationFactory,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: BlockTimeOperationFactory(chain: chain),
+            timepointThresholdService: timepointThresholdService,
             runtimeService: runtimeService,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: state.operationQueue

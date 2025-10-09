@@ -16,7 +16,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let moonbeamService: MoonbeamBonusServiceProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let signingWrapper: SigningWrapperProtocol
     let chainConnection: ChainConnection
     let logger: LoggerProtocol?
@@ -37,7 +37,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
         moonbeamService: MoonbeamBonusServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         signingWrapper: SigningWrapperProtocol,
         chainConnection: ChainConnection,
         currencyManager: CurrencyManagerProtocol,
@@ -54,7 +54,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.callFactory = callFactory
         self.moonbeamService = moonbeamService
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.signingWrapper = signingWrapper
         self.chainConnection = chainConnection
         self.logger = logger
@@ -133,18 +133,13 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
             extrinsicHash: extrinsicHash
         )
 
-        verifyOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let verified = try verifyOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveVerifyRemark(result: .success(verified))
-                } catch {
-                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
-                }
-            }
+        execute(
+            operation: verifyOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didReceiveVerifyRemark(result: result)
         }
-
-        operationManager.enqueue(operations: [verifyOperation], in: .transient)
     }
 }
 
@@ -163,7 +158,7 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             self?.presenter.didReceiveMinimumBalance(result: result)
         }
@@ -187,19 +182,25 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
         let statementOperation = moonbeamService.createStatementFetchOperation()
         let submitOperation = moonbeamService.createAgreeRemarkOperation(dependingOn: statementOperation)
 
-        submitOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let remark = try submitOperation.extractNoCancellableResultData()
-                    self?.submitRemarkToChain(remark)
-                } catch {
-                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
-                }
-            }
-        }
         submitOperation.addDependency(statementOperation)
 
-        operationManager.enqueue(operations: [statementOperation, submitOperation], in: .transient)
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: submitOperation,
+            dependencies: [statementOperation]
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(remark):
+                self?.submitRemarkToChain(remark)
+            case let .failure(error):
+                self?.presenter.didReceiveVerifyRemark(result: .failure(error))
+            }
+        }
     }
 }
 

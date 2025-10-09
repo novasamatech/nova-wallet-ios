@@ -5,7 +5,7 @@ final class PendingBondedState: BaseStashNextState {
         visitor.visit(state: self)
     }
 
-    override func process(ledgerInfo: StakingLedger?) {
+    override func process(ledgerInfo: Staking.Ledger?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -29,7 +29,7 @@ final class PendingBondedState: BaseStashNextState {
         stateMachine.transit(to: newState)
     }
 
-    override func process(nomination: Nomination?) {
+    override func process(nomination: Staking.Nomination?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -54,7 +54,7 @@ final class PendingBondedState: BaseStashNextState {
         stateMachine.transit(to: newState)
     }
 
-    override func process(validatorPrefs: ValidatorPrefs?) {
+    override func process(validatorPrefs: Staking.ValidatorPrefs?) {
         guard let stateMachine = stateMachine else {
             return
         }

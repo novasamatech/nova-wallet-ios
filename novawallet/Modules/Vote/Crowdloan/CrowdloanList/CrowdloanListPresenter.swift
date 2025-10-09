@@ -38,6 +38,7 @@ final class CrowdloanListPresenter {
         crowdloansCalculator: CrowdloansCalculatorProtocol,
         accountManagementFilter: AccountManagementFilterProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -49,6 +50,7 @@ final class CrowdloanListPresenter {
         self.accountManagementFilter = accountManagementFilter
         self.appearanceFacade = appearanceFacade
         self.localizationManager = localizationManager
+        self.privacyStateManager = privacyStateManager
     }
 
     private func updateChainView() {
@@ -77,7 +79,7 @@ final class CrowdloanListPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceive(chainInfo: viewModel)
+        view?.didReceive(chainInfo: .wrapped(viewModel, with: privacyModeEnabled))
     }
 
     private func createMetadataResult() -> Result<CrowdloanMetadata, Error>? {
@@ -450,6 +452,16 @@ extension CrowdloanListPresenter: Localizable {
 
 extension CrowdloanListPresenter: IconAppearanceDepending {
     func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        updateChainView()
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension CrowdloanListPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
         guard let view, view.isSetup else { return }
 
         updateChainView()

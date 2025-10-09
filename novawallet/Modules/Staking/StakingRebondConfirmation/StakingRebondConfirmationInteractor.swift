@@ -17,7 +17,7 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
@@ -25,6 +25,7 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -39,7 +40,7 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -51,16 +52,22 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     private func handleControllerMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
+        )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
         )
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
@@ -88,7 +95,7 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
     }
 
     func submit(for amount: Decimal) {
-        guard let extrinsicService = extrinsicService,
+        guard let extrinsicMonitorFactory,
               let signingWrapper = signingWrapper,
               let amountValue = amount.toSubstrateAmount(
                   precision: chainAsset.assetDisplayInfo.assetPrecision
@@ -103,14 +110,18 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
             try builder.adding(call: rebondCall)
         }
 
-        extrinsicService.submit(
-            builderClosure,
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                self?.presenter.didSubmitRebonding(result: result)
-            }
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didSubmitRebonding(result: result.mapToExtrinsicSubmittedResult())
+        }
     }
 
     func estimateFee(for amount: Decimal) {
@@ -155,7 +166,7 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeResponse):
@@ -182,7 +193,7 @@ extension StakingRebondConfirmationInteractor: StakingLocalStorageSubscriber, St
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

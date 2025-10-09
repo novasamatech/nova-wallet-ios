@@ -15,9 +15,9 @@ protocol StakingNPoolsInteractorInputProtocol: AnyObject {
 protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(totalActiveStake: BigUInt)
     func didReceive(minStake: BigUInt?)
-    func didReceive(activeEra: ActiveEraInfo?)
-    func didReceive(poolLedger: StakingLedger?)
-    func didReceive(poolNomination: Nomination?)
+    func didReceive(activeEra: Staking.ActiveEraInfo?)
+    func didReceive(poolLedger: Staking.Ledger?)
+    func didReceive(poolNomination: Staking.Nomination?)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(bondedPool: NominationPools.BondedPool?)
     func didReceive(subPools: NominationPools.SubPools?)

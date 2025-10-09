@@ -257,7 +257,7 @@ extension MythosStakingDetailsInteractor {
 
         if
             let address = selectedAccount.chainAccount.toChecksumedAddress(),
-            let rewardApi = chain.externalApis?.staking()?.first {
+            let rewardApi = chain.externalApis?.stakingRewards() {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
                 startTimestamp: totalRewardInterval?.startTimestamp,
@@ -369,7 +369,7 @@ extension MythosStakingDetailsInteractor: StakingRewardsLocalSubscriber, Staking
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: LocalChainExternalApi
+        api _: Set<LocalChainExternalApi>
     ) {
         switch result {
         case let .success(rewardItem):

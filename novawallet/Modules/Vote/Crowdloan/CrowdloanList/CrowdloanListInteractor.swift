@@ -13,7 +13,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let chainRegistry: ChainRegistryProtocol
     let crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
     var priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -29,6 +29,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
     private var priceProvider: StreamableProvider<PriceData>?
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
@@ -46,7 +47,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -60,7 +61,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.jsonDataProviderFactory = jsonDataProviderFactory
         self.crowdloanRemoteSubscriptionService = crowdloanRemoteSubscriptionService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
@@ -286,9 +287,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         fetchConstant(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BlockTime, Error>) in
             self?.presenter?.didReceiveBlockDuration(result: result)
         }
@@ -296,7 +297,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: .paraLeasingPeriod,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
             self?.presenter?.didReceiveLeasingPeriod(result: result)
         }
@@ -304,7 +305,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: .paraLeasingOffset,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingOffset, Error>) in
             self?.presenter?.didReceiveLeasingOffset(result: result)
         }

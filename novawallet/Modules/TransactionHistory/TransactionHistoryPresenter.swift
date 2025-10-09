@@ -11,6 +11,7 @@ final class TransactionHistoryPresenter {
     let logger: LoggerProtocol?
     let address: AccountAddress
 
+    private var ahmFullInfo: AHMFullInfo?
     private var items: [String: TransactionHistoryItem] = [:]
     private var filter: WalletHistoryFilter = .all
     private var priceCalculator: TokenPriceCalculatorProtocol?
@@ -44,20 +45,13 @@ final class TransactionHistoryPresenter {
 
         let models = Array(items.values).filter { localFilter.shouldDisplayOperation(model: $0) }
 
-        let viewModel = viewModelFactory.createGroupModel(
+        let sections = viewModelFactory.createGroupModel(
             models,
             priceCalculator: priceCalculator,
             address: address,
+            ahmInfo: ahmFullInfo,
             locale: selectedLocale
         )
-
-        let sections = viewModel.map {
-            TransactionSectionModel(
-                title: viewModelFactory.formatHeader(date: $0.key, locale: selectedLocale),
-                date: $0.key,
-                items: $0.value.sorted(by: { $0.timestamp > $1.timestamp })
-            )
-        }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
         view.didReceive(viewModel: sections)
     }
@@ -97,6 +91,20 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
             from: view,
             filter: filter,
             delegate: self
+        )
+    }
+
+    func actionViewRelay() {
+        guard let ahmFullInfo else { return }
+
+        let chainAsset = ChainAsset(
+            chain: ahmFullInfo.sourceChain,
+            asset: ahmFullInfo.asset
+        )
+
+        wireframe.showAssetDetails(
+            from: view,
+            chainAsset: chainAsset
         )
     }
 }
@@ -147,6 +155,14 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         } else {
             view?.startLoading()
         }
+    }
+
+    func didReceive(ahmFullInfo: AHMFullInfo) {
+        guard self.ahmFullInfo != ahmFullInfo else { return }
+
+        self.ahmFullInfo = ahmFullInfo
+
+        reloadView()
     }
 }
 

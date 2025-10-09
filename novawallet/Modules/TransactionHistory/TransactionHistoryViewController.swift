@@ -32,7 +32,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     private var originNavigationItemState: NavigationItemState?
     private var cleanNavigationItemState: NavigationItemState = .init(leftBarItem: .init())
 
-    private var viewModel: [TransactionSectionModel] = []
+    private var viewModel: [TransactionHistorySectionModel] = []
     private var isLoading: Bool = false
 
     private var compactInsets: UIEdgeInsets = .zero {
@@ -81,8 +81,14 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         applyContentInsets(for: draggableState)
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(HistoryItemTableViewCell.self)
-        dataSource = TransactionHistoryDataSource(tableView: rootView.tableView)
+        rootView.tableView.registerClassForCell(HistoryAHMTableViewCell.self)
+
+        dataSource = TransactionHistoryDataSource(
+            tableView: rootView.tableView,
+            ahmHintViewDelegate: self
+        )
         rootView.tableView.dataSource = dataSource
+
         setupLocalization()
         setupHandlers()
         presenter.setup()
@@ -386,12 +392,17 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
         reloadEmptyState(animated: false)
     }
 
-    func didReceive(viewModel: [TransactionSectionModel]) {
+    func didReceive(viewModel: [TransactionHistorySectionModel]) {
         self.viewModel = viewModel
-        var snapshot = NSDiffableDataSourceSnapshot<TransactionSectionModel, TransactionItemViewModel>()
+        var snapshot = NSDiffableDataSourceSnapshot<TransactionHistorySectionModel, TransactionHistoryItemModel>()
         snapshot.appendSections(viewModel)
         viewModel.forEach { section in
-            snapshot.appendItems(section.items, toSection: section)
+            switch section {
+            case let .ahmHint(item):
+                snapshot.appendItems([item], toSection: section)
+            case let .transaction(sectionModel):
+                snapshot.appendItems(sectionModel.items, toSection: section)
+            }
         }
         dataSource?.apply(snapshot, animatingDifferences: false)
         reloadEmptyState(animated: false)
@@ -403,23 +414,37 @@ extension TransactionHistoryViewController: UITableViewDelegate {
         Constants.cellHeight
     }
 
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        Constants.sectionHeight
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard case .transaction = dataSource?.snapshot().sectionIdentifiers[section] else {
+            return .zero
+        }
+
+        return Constants.sectionHeight
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let item = viewModel[indexPath.section].items[indexPath.row]
-        presenter.select(item: item)
+        let section = viewModel[indexPath.section]
+
+        switch section {
+        case let .transaction(sectionModel):
+            guard case let .transaction(item) = sectionModel.items[indexPath.row] else {
+                return
+            }
+            presenter.select(item: item)
+        case .ahmHint:
+            break
+        }
     }
 
     func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let dataSource = dataSource else {
+        guard case let .transaction(sectionModel) = dataSource?.snapshot().sectionIdentifiers[section] else {
             return nil
         }
+
         let headerView: TransactionHistoryHeaderView = .init(frame: .zero)
-        headerView.bind(title: dataSource.snapshot().sectionIdentifiers[section].title)
+        headerView.bind(title: sectionModel.title)
 
         return headerView
     }
@@ -498,6 +523,14 @@ extension TransactionHistoryViewController: EmptyStateDataSource {
 extension TransactionHistoryViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         dataSource?.snapshot().numberOfSections == 0 && isLoading == false
+    }
+}
+
+// MARK: - HistoryAHMViewDelegate
+
+extension TransactionHistoryViewController: HistoryAHMViewDelegate {
+    func didActionViewRelay() {
+        presenter.actionViewRelay()
     }
 }
 

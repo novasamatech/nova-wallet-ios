@@ -15,12 +15,12 @@ final class StakingNPoolsPresenter {
 
     private var totalActiveStake: BigUInt?
     private var minStake: BigUInt?
-    private var activeEra: ActiveEraInfo?
+    private var activeEra: Staking.ActiveEraInfo?
     private var poolMember: NominationPools.PoolMember?
     private var bondedPool: NominationPools.BondedPool?
     private var subPools: NominationPools.SubPools?
-    private var poolLedger: StakingLedger?
-    private var poolNomination: Nomination?
+    private var poolLedger: Staking.Ledger?
+    private var poolNomination: Staking.Nomination?
     private var poolBondedAccountId: AccountId?
     private var activePools: Set<NominationPools.PoolId>?
     private var duration: StakingDuration?
@@ -207,7 +207,7 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideStakingInfo()
     }
 
-    func didReceive(activeEra: ActiveEraInfo?) {
+    func didReceive(activeEra: Staking.ActiveEraInfo?) {
         logger.debug("Active era: \(String(describing: activeEra))")
 
         self.activeEra = activeEra
@@ -215,7 +215,7 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideState()
     }
 
-    func didReceive(poolLedger: StakingLedger?) {
+    func didReceive(poolLedger: Staking.Ledger?) {
         logger.debug("Pool Ledger: \(String(describing: poolLedger))")
 
         self.poolLedger = poolLedger
@@ -223,7 +223,7 @@ extension StakingNPoolsPresenter: StakingNPoolsInteractorOutputProtocol {
         provideState()
     }
 
-    func didReceive(poolNomination: Nomination?) {
+    func didReceive(poolNomination: Staking.Nomination?) {
         logger.debug("Pool nomination: \(String(describing: poolNomination))")
 
         self.poolNomination = poolNomination

@@ -84,11 +84,10 @@ struct GovRevokeDelegationConfirmViewFactory {
         guard
             let option = state.settings.value,
             let subscriptionFactory = state.subscriptionFactory,
-            let blockTimeService = state.blockTimeService,
+            let timelineService = state.createChainTimelineFacade(),
             let lockStateFactory = state.locksOperationFactory,
             let wallet = SelectedWalletSettings.shared.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: option.chain.accountRequest()),
-            let blockTimeOperationFactory = state.createBlockTimeOperationFactory(),
             let currencyManager = CurrencyManager.shared,
             let connection = state.chainRegistry.getConnection(for: option.chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: option.chain.chainId)
@@ -118,8 +117,7 @@ struct GovRevokeDelegationConfirmViewFactory {
             referendumsSubscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeOperationFactory,
+            timelineService: timelineService,
             chainRegistry: state.chainRegistry,
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,

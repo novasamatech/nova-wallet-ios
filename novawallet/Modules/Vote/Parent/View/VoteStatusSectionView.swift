@@ -6,14 +6,11 @@ final class VoteStatusSectionView: UITableViewHeaderFooterView {
     private var viewModel: LoadableViewModelState<Model>?
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorTextPrimary()
-        $0.font = .h3Title
+        $0.apply(style: .regularBodyPrimary)
     }
 
-    let countView: BorderedLabelView = .create {
-        $0.titleLabel.textColor = R.color.colorChipText()
-        $0.titleLabel.font = .semiBoldFootnote
-        $0.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
+    let countView: GenericBorderedView<DotsSecureView<UILabel>> = .create {
+        $0.contentView.originalView.apply(style: .semiboldChip)
     }
 
     override init(reuseIdentifier: String?) {
@@ -47,8 +44,8 @@ final class VoteStatusSectionView: UITableViewHeaderFooterView {
 
 extension VoteStatusSectionView {
     struct Model {
-        let title: String
-        let count: Int
+        let titleText: String
+        let countText: SecuredViewModel<String>
     }
 
     func bind(viewModel: LoadableViewModelState<Model>) {
@@ -58,8 +55,10 @@ extension VoteStatusSectionView {
             return
         }
 
-        titleLabel.text = value.title
-        countView.titleLabel.text = value.count.description
+        titleLabel.text = value.titleText
+        countView.contentView.originalView.text = value.countText.originalContent
+
+        countView.contentView.bind(value.countText.privacyMode)
     }
 }
 

@@ -10,6 +10,7 @@ final class Gov2DelegationTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId: ChainModel.Id = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
+        let blockTime: BlockTime = 6000
 
         guard let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry) else {
             return
@@ -18,7 +19,7 @@ final class Gov2DelegationTests: XCTestCase {
         // when
 
         let wrapper = operationFactory.fetchDelegateListWrapper(
-            for: recentBlockNumber
+            for: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -41,6 +42,7 @@ final class Gov2DelegationTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId: ChainModel.Id = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
+        let blockTime: BlockTime = 6000
         let delegates = [
             "FLKBjcL1hXtX7PHF5zrVwQTWQSKg7PCMQ5w6ZU7qvQGsvZR",
             "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE"
@@ -57,7 +59,7 @@ final class Gov2DelegationTests: XCTestCase {
         let delegateIds = Set(delegates.compactMap { try? $0.toAccountId(using: chain.chainFormat) })
         let wrapper = operationFactory.fetchDelegateListByIdsWrapper(
             from: Set(delegateIds),
-            activityStartBlock: recentBlockNumber
+            threshold: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -79,6 +81,7 @@ final class Gov2DelegationTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
+        let blockTime: BlockTime = 6000
         let delegate: AccountAddress = "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE"
 
         guard
@@ -93,7 +96,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         let wrapper = statsOperationFactory.fetchDetailsWrapper(
             for: delegate,
-            activityStartBlock: recentBlockNumber
+            threshold: .init(type: .block(blockNumber: recentBlockNumber, blockTime: blockTime))
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -176,6 +179,7 @@ final class Gov2DelegationTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = KnowChainId.kusama
+        let blockTime: BlockTime = 6000
 
         guard
             let chain = chainRegistry.getChain(for: chainId),
@@ -185,9 +189,18 @@ final class Gov2DelegationTests: XCTestCase {
 
         let statsOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
 
+        let threshold: TimepointThreshold? = if let block {
+            .init(type: .block(blockNumber: block, blockTime: blockTime))
+        } else {
+            nil
+        }
+
         // when
 
-        let wrapper = statsOperationFactory.createDirectVotesFetchOperation(for: address, from: block)
+        let wrapper = statsOperationFactory.createDirectVotesFetchOperation(
+            for: address,
+            from: threshold
+        )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 

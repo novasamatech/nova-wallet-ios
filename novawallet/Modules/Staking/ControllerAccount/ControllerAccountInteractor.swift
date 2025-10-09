@@ -18,7 +18,7 @@ final class ControllerAccountInteractor: AccountFetching {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
     private var stashItemProvider: StreamableProvider<StashItem>?
@@ -38,7 +38,7 @@ final class ControllerAccountInteractor: AccountFetching {
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -51,12 +51,12 @@ final class ControllerAccountInteractor: AccountFetching {
         self.feeProxy = feeProxy
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.storageRequestFactory = storageRequestFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 
     private func provideDeprecationFlag() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 let isDeprecated = Staking.SetController.isDeprecated(for: coderFactory)
                 self?.presenter.didReceiveIsDeprecated(result: .success(isDeprecated))
@@ -107,7 +107,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         fetchAllMetaAccountResponses(
             for: chainAsset.chain.accountRequest(),
             repository: repository,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(responses):
@@ -122,7 +122,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
 
     func estimateFee(for account: ChainAccountResponse) {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 self?.estimateFee(for: account, coderFactory: coderFactory)
             }, errorClosure: { [weak self] error in
@@ -135,21 +135,18 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         do {
             let accountId = try controllerAddress.toAccountId()
 
-            let accountInfoOperation = createAccountInfoFetchOperation(accountId)
-            accountInfoOperation.targetOperation.completionBlock = { [weak presenter] in
-                DispatchQueue.main.async {
-                    do {
-                        let accountInfo = try accountInfoOperation.targetOperation.extractNoCancellableResultData()
-                        presenter?.didReceiveControllerAccountInfo(
-                            result: .success(accountInfo),
-                            address: controllerAddress
-                        )
-                    } catch {
-                        presenter?.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
-                    }
-                }
+            let accountInfoWrapper = createAccountInfoFetchWrapper(accountId)
+
+            execute(
+                wrapper: accountInfoWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak presenter] result in
+                presenter?.didReceiveControllerAccountInfo(
+                    result: result,
+                    address: controllerAddress
+                )
             }
-            operationManager.enqueue(operations: accountInfoOperation.allOperations, in: .transient)
         } catch {
             presenter.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
         }
@@ -159,37 +156,32 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         do {
             let accountId = try controllerAddress.toAccountId()
 
-            let ledgerOperataion = createLedgerFetchOperation(accountId)
-            ledgerOperataion.targetOperation.completionBlock = { [weak presenter] in
-                DispatchQueue.main.async {
-                    do {
-                        let ledger = try ledgerOperataion.targetOperation.extractNoCancellableResultData()
-                        presenter?.didReceiveStakingLedger(result: .success(ledger))
-                    } catch {
-                        presenter?.didReceiveStakingLedger(result: .failure(error))
-                    }
-                }
+            let ledgerWrapper = createLedgerFetchWrapper(accountId)
+
+            execute(
+                wrapper: ledgerWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak presenter] result in
+                presenter?.didReceiveStakingLedger(result: result)
             }
-            operationManager.enqueue(
-                operations: ledgerOperataion.allOperations,
-                in: .transient
-            )
+
         } catch {
             presenter.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
-    private func createLedgerFetchOperation(_ accountId: AccountId) -> CompoundOperationWrapper<StakingLedger?> {
+    private func createLedgerFetchWrapper(_ accountId: AccountId) -> CompoundOperationWrapper<Staking.Ledger?> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<StakingLedger>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Staking.Ledger>]> = storageRequestFactory.queryItems(
             engine: connection,
             keyParams: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
             storagePath: Staking.stakingLedger
         )
 
-        let mapOperation = ClosureOperation<StakingLedger?> {
+        let mapOperation = ClosureOperation<Staking.Ledger?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
         }
 
@@ -202,7 +194,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    private func createAccountInfoFetchOperation(
+    private func createAccountInfoFetchWrapper(
         _ accountId: Data
     ) -> CompoundOperationWrapper<AccountInfo?> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
@@ -253,7 +245,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                     for: stashId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(accountResponse):
@@ -276,7 +268,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     if case let .success(maybeController) = result, let controller = maybeController {
                         self?.estimateFee(for: controller.chainAccount)
@@ -291,7 +283,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

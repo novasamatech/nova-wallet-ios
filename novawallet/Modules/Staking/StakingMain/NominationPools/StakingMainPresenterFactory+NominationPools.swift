@@ -7,7 +7,7 @@ extension StakingMainPresenterFactory {
         view: StakingMainViewProtocol
     ) -> StakingNPoolsPresenter? {
         guard
-            let consensus = ConsensusType(asset: chainAsset.asset),
+            let consensus = RelayStkConsensusType(asset: chainAsset.asset),
             let state = try? sharedStateFactory.createNominationPools(for: chainAsset, consensus: consensus),
             let currencyManager = CurrencyManager.shared,
             let interactor = createNominationPoolsInteractor(
@@ -56,8 +56,7 @@ extension StakingMainPresenterFactory {
 
         guard
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(for: accountRequest),
-            let runtimeService = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chainId),
-            let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: chainId) else {
+            let runtimeService = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chainId) else {
             return nil
         }
 
@@ -67,7 +66,6 @@ extension StakingMainPresenterFactory {
             state: state,
             selectedAccount: selectedAccount,
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
-            connection: connection,
             runtimeCodingService: runtimeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,

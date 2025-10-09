@@ -5,11 +5,11 @@ import BigInt
 typealias DecodedBigUInt = ChainStorageDecodedItem<StringScaleMapper<BigUInt>>
 typealias DecodedU32 = ChainStorageDecodedItem<StringScaleMapper<UInt32>>
 typealias DecodedBytes = ChainStorageDecodedItem<BytesCodable>
-typealias DecodedNomination = ChainStorageDecodedItem<Nomination>
-typealias DecodedValidator = ChainStorageDecodedItem<ValidatorPrefs>
-typealias DecodedLedgerInfo = ChainStorageDecodedItem<StakingLedger>
-typealias DecodedActiveEra = ChainStorageDecodedItem<ActiveEraInfo>
-typealias DecodedEraIndex = ChainStorageDecodedItem<StringScaleMapper<EraIndex>>
+typealias DecodedNomination = ChainStorageDecodedItem<Staking.Nomination>
+typealias DecodedValidator = ChainStorageDecodedItem<Staking.ValidatorPrefs>
+typealias DecodedLedgerInfo = ChainStorageDecodedItem<Staking.Ledger>
+typealias DecodedActiveEra = ChainStorageDecodedItem<Staking.ActiveEraInfo>
+typealias DecodedEraIndex = ChainStorageDecodedItem<StringScaleMapper<Staking.EraIndex>>
 typealias DecodedPayee = ChainStorageDecodedItem<Staking.RewardDestinationArg>
 typealias DecodedBlockNumber = ChainStorageDecodedItem<StringScaleMapper<BlockNumber>>
 typealias DecodedAccountInfo = ChainStorageDecodedItem<AccountInfo>

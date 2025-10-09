@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct EraStakersRemoteKey: JSONListConvertible {
-    let era: EraIndex
+    let era: Staking.EraIndex
     let validator: AccountId
 
     init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {

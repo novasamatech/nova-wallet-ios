@@ -192,6 +192,14 @@ struct StartStakingConfirmViewFactory {
             return nil
         }
 
+        let extrinsicMonitorFactory = ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
         return .init(
             stakingAmount: amountInPlank,
             stakingOption: stakingOption,
@@ -201,6 +209,7 @@ struct StartStakingConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             extrinsicFeeProxy: ExtrinsicFeeProxy(),
+            extrinsicSubmitMonitor: extrinsicMonitorFactory,
             restrictionsBuilder: restrictionsBuilder,
             extrinsicSubmissionProxy: extrinsicProxy,
             signingWrapper: signer,

@@ -15,7 +15,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let calculatorService: RewardCalculatorServiceProtocol
     let runtimeService: RuntimeCodingServiceProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
 
@@ -24,6 +24,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -38,7 +39,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         calculatorService: RewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         currencyManager: CurrencyManagerProtocol
@@ -52,7 +53,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         self.signingWrapperFactory = signingWrapperFactory
         self.calculatorService = calculatorService
         self.runtimeService = runtimeService
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
         self.currencyManager = currencyManager
@@ -61,9 +62,15 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
     private func setupExtrinsicService(_ response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
+        )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
         )
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
@@ -111,7 +118,7 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
     }
 
     func submit(rewardDestination: RewardDestination<AccountAddress>, for stashItem: StashItem) {
-        guard let extrinsicService = extrinsicService, let signingWrapper = signingWrapper else {
+        guard let extrinsicMonitorFactory, let signingWrapper else {
             presenter.didSubmitRewardDest(result: .failure(CommonError.undefined))
             return
         }
@@ -123,13 +130,19 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
                 try builder.adding(call: setPayeeCall)
             }
 
-            extrinsicService.submit(
-                builderClosure,
-                signer: signingWrapper,
-                runningIn: .main
+            let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: builderClosure,
+                signer: signingWrapper
+            )
+
+            execute(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
             ) { [weak self] result in
-                self?.presenter.didSubmitRewardDest(result: result)
+                self?.presenter.didSubmitRewardDest(result: result.mapToExtrinsicSubmittedResult())
             }
+
         } catch {
             presenter.didSubmitRewardDest(result: .failure(error))
         }
@@ -156,7 +169,7 @@ extension StakingRewardDestConfirmInteractor: StakingLocalStorageSubscriber,
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(accountResponse):

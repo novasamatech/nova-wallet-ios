@@ -65,8 +65,6 @@ class StakingUnbondSetupTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
@@ -82,12 +80,10 @@ class StakingUnbondSetupTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),
@@ -121,11 +117,14 @@ class StakingUnbondSetupTests: XCTestCase {
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingDurationOperationFactory: BabeStakingDurationFactory(),
+            stakingDurationOperationFactory: BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            ),
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

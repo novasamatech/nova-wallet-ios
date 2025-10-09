@@ -93,7 +93,7 @@ final class VoteChildPresenterFactory {
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             jsonDataProviderFactory: jsonDataProviderFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             priceLocalSubscriptionFactory: priceProviderFactory,
@@ -159,6 +159,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             crowdloansCalculator: CrowdloansCalculator(),
             accountManagementFilter: AccountManagementFilter(),
             appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared,
             logger: Logger.shared
         )
 
@@ -222,6 +223,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             govBalanceCalculatorFactory: GovBalanceCalculatorFactory(),
             localizationManager: localizationManager,
             appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared,
             logger: logger
         )
 

@@ -30,6 +30,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
     func updateBiometricAuthSettings(isOn: Bool)
     func updatePinConfirmationSettings(isOn: Bool)
     func connectWalletConnect(uri: String)
+    func toggleHideBalances()
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
@@ -42,6 +43,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(error: SettingsError)
     func didReceiveWalletsState(hasUpdates: Bool)
     func didReceive(pushNotificationsStatus: PushNotificationsStatus)
+    func didReceive(hideBalancesOnLaunch: Bool)
 }
 
 protocol SettingsWireframeProtocol:

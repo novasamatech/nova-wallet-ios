@@ -64,27 +64,17 @@ struct AddDelegationViewFactory {
 
         let chain = option.chain
 
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
         guard
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let blockTimeService = state.blockTimeService,
+            let timepointThresholdService = state.timepointThresholdService,
             let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: option) else {
             return nil
         }
 
-        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
-
         return AddDelegationInteractor(
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            connection: connection,
-            runtimeService: runtimeProvider,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            timepointThresholdService: timepointThresholdService,
             delegateListOperationFactory: delegateListOperationFactory,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeOperationFactory,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

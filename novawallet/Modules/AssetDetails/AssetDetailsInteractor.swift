@@ -1,8 +1,13 @@
 import UIKit
 import Operation_iOS
+import Keystore_iOS
 
 final class AssetDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: AssetDetailsInteractorOutputProtocol?
+
+    let chainRegistry: ChainRegistryProtocol
+    let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let settingsManager: SettingsManagerProtocol
     let chainAsset: ChainAsset
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -27,6 +32,9 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     }
 
     init(
+        chainRegistry: ChainRegistryProtocol,
+        ahmInfoFactory: AHMFullInfoFactoryProtocol,
+        settingsManager: SettingsManagerProtocol,
         selectedMetaAccount: MetaAccountModel,
         chainAsset: ChainAsset,
         rampProvider: RampProviderProtocol,
@@ -37,6 +45,9 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
+        self.chainRegistry = chainRegistry
+        self.ahmInfoFactory = ahmInfoFactory
+        self.settingsManager = settingsManager
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
@@ -152,6 +163,43 @@ private extension AssetDetailsInteractor {
         presenter?.didReceive(rampActions: rampActions)
         presenter?.didReceive(availableOperations: operations)
     }
+
+    func checkIfHasAHChainAccount(chainId: ChainModel.Id) -> Bool {
+        guard let chain = chainRegistry.getChain(for: chainId) else {
+            return false
+        }
+
+        let chainAccountRequest = chain.accountRequest()
+
+        return selectedMetaAccount.fetch(for: chainAccountRequest) != nil
+    }
+
+    func provideAHMInfo() {
+        let fetchWrapper = ahmInfoFactory.fetch(by: chainAsset.chain.chainId)
+
+        execute(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case let .success(info):
+                guard let info else {
+                    presenter?.didReceive(ahmInfo: nil)
+                    return
+                }
+                guard checkIfHasAHChainAccount(chainId: info.destinationChain.chainId) else {
+                    return
+                }
+
+                presenter?.didReceive(ahmInfo: info)
+            case let .failure(error):
+                presenter?.didReceive(error: .ahmInfo(error))
+            }
+        }
+    }
 }
 
 // MARK: AssetDetailsInteractorInputProtocol
@@ -161,6 +209,8 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         guard let accountId = accountId else {
             return
         }
+
+        provideAHMInfo()
 
         subscribePrice()
 
@@ -194,6 +244,11 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         setAvailableOperations(hasSwaps: false)
 
         setupSwapService()
+    }
+
+    func closeAHMAlert() {
+        settingsManager.ahmAssetDetailsAlertClosedChains.add(chainAsset.chain.chainId)
+        provideAHMInfo()
     }
 }
 

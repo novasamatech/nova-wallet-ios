@@ -71,8 +71,6 @@ class StakingUnbondConfirmTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
@@ -88,12 +86,10 @@ class StakingUnbondConfirmTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),
@@ -121,7 +117,10 @@ class StakingUnbondConfirmTests: XCTestCase {
             )
         )
 
-        let stakingDurationOperationFactory = BabeStakingDurationFactory()
+        let stakingDurationOperationFactory = BabeStakingDurationFactory(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry
+        )
 
         let interactor = StakingUnbondConfirmInteractor(
             selectedAccount: selectedAccount,
@@ -135,7 +134,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             signingWrapperFactory: DummySigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

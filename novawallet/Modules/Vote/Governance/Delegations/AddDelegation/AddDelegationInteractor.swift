@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 import SubstrateSdk
 import Operation_iOS
 import Keystore_iOS
@@ -9,77 +9,77 @@ final class AddDelegationInteractor {
     let chain: ChainModel
     let lastVotedDays: Int
     let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let timepointThresholdService: TimepointThresholdServiceProtocol
     private(set) var settings: SettingsManagerProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
     private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var currentBlockNumber: BlockNumber?
+    private var currentThreshold: TimepointThreshold?
 
     init(
         chain: ChainModel,
         lastVotedDays: Int,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        timepointThresholdService: TimepointThresholdServiceProtocol,
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.timepointThresholdService = timepointThresholdService
         self.delegateListOperationFactory = delegateListOperationFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
         self.govJsonProviderFactory = govJsonProviderFactory
         self.settings = settings
         self.operationQueue = operationQueue
     }
 
     private func fetchDelegates() {
-        guard let currentBlockNumber = currentBlockNumber else {
+        guard let currentThreshold else {
             return
         }
 
-        let wrapper = delegateListOperationFactory.fetchDelegateListByBlockNumber(
-            .init(
-                currentBlockNumber: currentBlockNumber,
-                lastVotedDays: lastVotedDays,
-                blockTimeService: blockTimeService,
-                blockTimeOperationFactory: blockTimeFactory
-            ),
-            runtimeService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
+        let thresholdIndays = currentThreshold.backIn(seconds: TimeInterval(lastVotedDays).secondsFromDays)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let delegates = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveDelegates(delegates ?? [])
-                } catch {
-                    self?.presenter?.didReceiveError(.delegateListFetchFailed(error))
-                }
+        let wrapper = delegateListOperationFactory.fetchDelegateListWrapper(for: thresholdIndays)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(delegates):
+                self?.presenter?.didReceiveDelegates(delegates)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.delegateListFetchFailed(error))
             }
         }
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+    private func subscribeTimepointThreshold() {
+        timepointThresholdService.remove(observer: self)
+
+        timepointThresholdService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, timepointThreshold in
+            guard let self, let timepointThreshold else { return }
+            let previousThreshold = currentThreshold
+            currentThreshold = timepointThreshold
+
+            if
+                case let .block(newBlockNumber, _) = timepointThreshold.type,
+                case let .block(previousBlockNumber, _) = previousThreshold?.type,
+                newBlockNumber.isNext(to: previousBlockNumber) {
+                return
+            }
+
+            fetchDelegates()
+        }
     }
 
     private func provideSettings() {
@@ -94,13 +94,14 @@ final class AddDelegationInteractor {
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
-        subscribeBlockNumber()
+        timepointThresholdService.setup()
+        subscribeTimepointThreshold()
         subscribeToDelegatesMetadata()
         provideSettings()
     }
 
     func remakeSubscriptions() {
-        subscribeBlockNumber()
+        subscribeTimepointThreshold()
         subscribeToDelegatesMetadata()
     }
 
@@ -110,28 +111,6 @@ extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
 
     func saveCloseBanner() {
         settings.governanceDelegateInfoSeen = true
-    }
-}
-
-extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(blockNumber):
-            guard let blockNumber = blockNumber else {
-                return
-            }
-
-            let optLastBlockNumber = currentBlockNumber
-            currentBlockNumber = blockNumber
-
-            if let lastBlockNumber = optLastBlockNumber, blockNumber.isNext(to: lastBlockNumber) {
-                return
-            }
-
-            fetchDelegates()
-        case let .failure(error):
-            presenter?.didReceiveError(.blockSubscriptionFailed(error))
-        }
     }
 }
 

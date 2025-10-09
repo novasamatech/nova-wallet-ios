@@ -12,7 +12,7 @@ final class SubqueryEraStakersInfoSource {
     }
 
     func fetch(
-        eraRangeClosure: @escaping () -> EraRange?
+        eraRangeClosure: @escaping () -> Staking.EraRange?
     ) -> CompoundOperationWrapper<[SubqueryEraValidatorInfo]?> {
         let requestFactory = createRequestFactory(eraRangeClosure: eraRangeClosure)
         let resultFactory = createResultFactory()
@@ -22,7 +22,7 @@ final class SubqueryEraStakersInfoSource {
     }
 
     private func createRequestFactory(
-        eraRangeClosure: @escaping () -> EraRange?
+        eraRangeClosure: @escaping () -> Staking.EraRange?
     ) -> NetworkRequestFactoryProtocol {
         BlockNetworkRequestFactory {
             var request = URLRequest(url: self.url)
@@ -49,7 +49,7 @@ final class SubqueryEraStakersInfoSource {
         }
     }
 
-    private func requestParams(accountAddress: AccountAddress, eraRange: EraRange?) -> String {
+    private func requestParams(accountAddress: AccountAddress, eraRange: Staking.EraRange?) -> String {
         let eraFilter: String = {
             guard let fistRange = eraRange?.start, let lastRange = eraRange?.end else { return "" }
             return "era:{greaterThanOrEqualTo: \(fistRange), lessThanOrEqualTo: \(lastRange)},"

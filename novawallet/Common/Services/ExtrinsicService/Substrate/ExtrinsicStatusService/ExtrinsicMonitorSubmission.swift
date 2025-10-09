@@ -16,4 +16,14 @@ extension Result where Success == ExtrinsicMonitorSubmission {
             throw failureStature.error
         }
     }
+
+    func mapToExtrinsicSubmittedResult() -> SubmitExtrinsicResult {
+        do {
+            let mapped = try getSuccessSubmittedModel()
+
+            return .success(mapped)
+        } catch {
+            return .failure(error)
+        }
+    }
 }

@@ -92,9 +92,10 @@ struct DelegateVotedReferendaViewFactory {
         guard
             let option = state.settings.value,
             let referendumOperationFactory = state.referendumsOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeOperationFactory = state.createBlockTimeOperationFactory(),
-            let apiUrl = option.chain.externalApis?.governanceDelegations()?.first?.url else {
+            let apiUrl = option.chain.externalApis?.governanceDelegations()?.first?.url,
+            let timelineService = state.createChainTimelineFacade(),
+            let timepointThresholdService = state.timepointThresholdService
+        else {
             return nil
         }
 
@@ -102,7 +103,8 @@ struct DelegateVotedReferendaViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: option.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: option.chain.chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: option.chain.chainId)
+        else {
             return nil
         }
 
@@ -121,10 +123,10 @@ struct DelegateVotedReferendaViewFactory {
             connection: connection,
             runtimeService: runtimeService,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            timepointThresholdService: timepointThresholdService,
+            timelineService: timelineService,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             fetchFactory: fetchFactory,
-            blockTimeService: blockTimeService,
-            blockTimeOperationFactory: blockTimeOperationFactory,
             dataFetchOption: dataFetchOption,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

@@ -82,6 +82,7 @@ final class ReferendumsPresenter {
         govBalanceCalculatorFactory: GovBalanceCalculatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
+        privacyStateManager: PrivacyStateManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -99,27 +100,20 @@ final class ReferendumsPresenter {
         self.logger = logger
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
+        self.privacyStateManager = privacyStateManager
     }
 
-    private func filterReferendums() {
-        filteredReferendums = sortedReferendums?.filter {
-            filter.match(
-                $0,
-                voting: observableState.voting,
-                offchainVoting: offchainVoting
-            )
-        }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
-            $0[$1.index] = $1
-        } ?? [:]
-        updateReferendumsView()
-    }
+    func updateTimeModels(
+        with newModels: [ReferendumIdLocal: StatusTimeViewModel?],
+        updatingMaxStatusTimeInterval: Bool
+    ) {
+        timeModels = newModels
 
-    private func refreshUnlockSchedule() {
-        guard let tracksVoting = observableState.voting?.value else {
-            return
+        if updatingMaxStatusTimeInterval {
+            maxStatusTimeInterval = newModels
+                .compactMap { $0.value?.timeInterval }
+                .max(by: <)
         }
-
-        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
 
     func clearState() {
@@ -139,21 +133,66 @@ final class ReferendumsPresenter {
         swipeGovEligibleReferendums = nil
     }
 
-    func updateTimeModels(
-        with newModels: [ReferendumIdLocal: StatusTimeViewModel?],
-        updatingMaxStatusTimeInterval: Bool
-    ) {
-        timeModels = newModels
+    func createGenericParams() -> ViewModelFactoryGenericParams {
+        .init(locale: selectedLocale, privacyModeEnabled: privacyModeEnabled)
+    }
 
-        if updatingMaxStatusTimeInterval {
-            maxStatusTimeInterval = newModels
-                .compactMap { $0.value?.timeInterval }
-                .max(by: <)
-        }
+    func provideLoadingViewModel() {
+        let sections = viewModelFactory.createLoadingViewModel(genericParams: createGenericParams())
+        let viewModel = ReferendumsViewModel(sections: sections)
+
+        view?.update(model: viewModel)
     }
 }
 
-// MARK: Timers
+// MARK: - Private
+
+private extension ReferendumsPresenter {
+    func createAccountValidationHandlers() -> (
+        success: () -> Void,
+        newAccount: () -> Void
+    ) {
+        let successHandler: () -> Void = { [weak self] in
+            guard let self, let view else { return }
+
+            wireframe.showSwipeGov(from: view)
+        }
+
+        let newAccountHandler: () -> Void = { [weak self] in
+            guard let self else { return }
+
+            wireframe.showWalletDetails(
+                from: view,
+                wallet: selectedMetaAccount
+            )
+        }
+
+        return (successHandler, newAccountHandler)
+    }
+
+    func filterReferendums() {
+        filteredReferendums = sortedReferendums?.filter {
+            filter.match(
+                $0,
+                voting: observableState.voting,
+                offchainVoting: offchainVoting
+            )
+        }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
+            $0[$1.index] = $1
+        } ?? [:]
+        updateReferendumsView()
+    }
+
+    func refreshUnlockSchedule() {
+        guard let tracksVoting = observableState.voting?.value else {
+            return
+        }
+
+        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
+    }
+}
+
+// MARK: - Timers
 
 extension ReferendumsPresenter {
     func invalidateTimer() {
@@ -173,7 +212,7 @@ extension ReferendumsPresenter {
     }
 }
 
-// MARK: ReferendumsPresenterProtocol
+// MARK: - ReferendumsPresenterProtocol
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     func showFilters() {
@@ -235,28 +274,6 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         }
     }
 
-    private func createAccountValidationHandlers() -> (
-        success: () -> Void,
-        newAccount: () -> Void
-    ) {
-        let successHandler: () -> Void = { [weak self] in
-            guard let self, let view else { return }
-
-            wireframe.showSwipeGov(from: view)
-        }
-
-        let newAccountHandler: () -> Void = { [weak self] in
-            guard let self else { return }
-
-            wireframe.showWalletDetails(
-                from: view,
-                wallet: selectedMetaAccount
-            )
-        }
-
-        return (successHandler, newAccountHandler)
-    }
-
     func selectSwipeGov() {
         guard let chain, let view else { return }
 
@@ -309,7 +326,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 }
 
-// MARK: ReferendumsInteractorOutputProtocol
+// MARK: - ReferendumsInteractorOutputProtocol
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
@@ -438,7 +455,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 }
 
-// MARK: GovernanceAssetSelectionDelegate
+// MARK: - GovernanceAssetSelectionDelegate
 
 extension ReferendumsPresenter: GovernanceChainSelectionDelegate {
     func governanceAssetSelection(
@@ -458,7 +475,7 @@ extension ReferendumsPresenter: GovernanceChainSelectionDelegate {
     }
 }
 
-// MARK: CountdownTimerDelegate
+// MARK: - CountdownTimerDelegate
 
 extension ReferendumsPresenter: CountdownTimerDelegate {
     func didStart(with _: TimeInterval) {
@@ -474,7 +491,7 @@ extension ReferendumsPresenter: CountdownTimerDelegate {
     }
 }
 
-// MARK: ReferendumsFiltersDelegate
+// MARK: - ReferendumsFiltersDelegate
 
 extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     func didUpdate(filter: ReferendumsFilter) {
@@ -483,7 +500,7 @@ extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     }
 }
 
-// MARK: ReferendumSearchDelegate
+// MARK: - ReferendumSearchDelegate
 
 extension ReferendumsPresenter: ReferendumSearchDelegate {
     func didSelectReferendum(referendumIndex: ReferendumIdLocal) {
@@ -491,7 +508,7 @@ extension ReferendumsPresenter: ReferendumSearchDelegate {
     }
 }
 
-// MARK: Localizable
+// MARK: - Localizable
 
 extension ReferendumsPresenter: Localizable {
     func applyLocalization() {
@@ -503,12 +520,23 @@ extension ReferendumsPresenter: Localizable {
     }
 }
 
-// MARK: IconAppearanceDepending
+// MARK: - IconAppearanceDepending
 
 extension ReferendumsPresenter: IconAppearanceDepending {
     func applyIconAppearance() {
         guard let view, view.isSetup else { return }
 
+        provideChainBalance()
+    }
+}
+
+// MARK: - PrivacyModeSupporting
+
+extension ReferendumsPresenter: PrivacyModeSupporting {
+    func applyPrivacyMode() {
+        guard let view, view.isSetup else { return }
+
+        updateReferendumsView()
         provideChainBalance()
     }
 }

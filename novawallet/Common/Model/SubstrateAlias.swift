@@ -14,14 +14,13 @@ typealias Slot = UInt64
 typealias SessionIndex = UInt32
 typealias EpochIndex = UInt64
 typealias Moment = UInt32
-typealias EraIndex = UInt32
-typealias EraRange = (start: EraIndex, end: EraIndex)
 typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
 typealias BlockHashData = Data
 typealias Percent = UInt8
+typealias Perbill = BigUInt
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {
@@ -58,7 +57,7 @@ extension BlockNumber {
         ).toHex(includePrefix: true)
     }
 
-    func blockBackInDays(_ days: Int, blockTime: BlockTime?) -> BlockNumber? {
+    func blockBackIn(_ seconds: TimeInterval, blockTime: BlockTime?) -> BlockNumber? {
         guard let blockTime = blockTime else {
             return nil
         }
@@ -67,13 +66,20 @@ extension BlockNumber {
             return self
         }
 
-        let blocksInPast = BlockNumber(TimeInterval(days).secondsFromDays / TimeInterval(blockTime).seconds)
+        let blocksInPast = BlockNumber(seconds / TimeInterval(blockTime).seconds)
 
         guard self > blocksInPast else {
             return 0
         }
 
         return self - blocksInPast
+    }
+
+    func blockBackInDays(_ days: Int, blockTime: BlockTime?) -> BlockNumber? {
+        blockBackIn(
+            TimeInterval(days).secondsFromDays,
+            blockTime: blockTime
+        )
     }
 
     func isNext(to blockNumber: BlockNumber) -> Bool {

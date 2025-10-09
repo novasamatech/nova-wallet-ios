@@ -102,6 +102,7 @@ final class SettingsTests: XCTestCase {
             biometryAuth: biometryAuthMock,
             walletNotificationService: walletNotificationService,
             pushNotificationsFacade: pushNotificationsFacade,
+            privacyStateManager: PrivacyStateManager.shared,
             operationQueue: operationQueue
         )
 

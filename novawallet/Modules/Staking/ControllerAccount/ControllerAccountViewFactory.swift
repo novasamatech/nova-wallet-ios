@@ -55,7 +55,6 @@ struct ControllerAccountViewFactory {
         }
 
         let facade = UserDataStorageFacade.shared
-        let operationManager = OperationManagerFacade.sharedManager
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: facade)
 
@@ -77,7 +76,7 @@ struct ControllerAccountViewFactory {
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
+            operationManager: OperationManagerFacade.sharedManager
         )
 
         return ControllerAccountInteractor(
@@ -92,7 +91,7 @@ struct ControllerAccountViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicServiceFactory: extrinsicServiceFactory,
             storageRequestFactory: storageRequestFactory,
-            operationManager: operationManager
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

@@ -14,12 +14,14 @@ final class NPoolsUnstakeConfirmInteractor: NPoolsUnstakeBaseInteractor {
     }
 
     let signingWrapper: SigningWrapperProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init(
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         signingWrapper: SigningWrapperProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
@@ -36,6 +38,7 @@ final class NPoolsUnstakeConfirmInteractor: NPoolsUnstakeBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -61,12 +64,21 @@ final class NPoolsUnstakeConfirmInteractor: NPoolsUnstakeBaseInteractor {
 
 extension NPoolsUnstakeConfirmInteractor: NPoolsUnstakeConfirmInteractorInputProtocol {
     func submit(unstakingPoints: BigUInt, needsMigration: Bool) {
-        extrinsicService.submit(
-            createExtrinsicClosure(for: unstakingPoints, accountId: accountId, needsMigration: needsMigration),
-            signer: signingWrapper,
-            runningIn: .main
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: createExtrinsicClosure(
+                for: unstakingPoints,
+                accountId: accountId,
+                needsMigration: needsMigration
+            ),
+            signer: signingWrapper
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceive(submissionResult: result)
+            self?.presenter?.didReceive(submissionResult: result.mapToExtrinsicSubmittedResult())
         }
     }
 }

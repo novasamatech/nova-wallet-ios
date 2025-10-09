@@ -187,7 +187,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             if let stakingLedger = stakingLedger {

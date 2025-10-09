@@ -25,7 +25,7 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(poolMember: NominationPools.PoolMember?)
     func didReceive(subPools: NominationPools.SubPools?)
-    func didReceive(activeEra: ActiveEraInfo?)
+    func didReceive(activeEra: Staking.ActiveEraInfo?)
     func didReceive(price: PriceData?)
     func didReceive(existentialDeposit: BigUInt?)
     func didReceive(fee: ExtrinsicFeeProtocol)

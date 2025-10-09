@@ -111,17 +111,23 @@ extension CrowdloanListViewManager: UITableViewDelegate {
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
             switch title {
-            case let .loaded(value):
-                headerView.bind(viewModel: .loaded(value: .init(title: value, count: cells.count)))
-            case let .cached(value):
-                headerView.bind(viewModel: .cached(value: .init(title: value, count: cells.count)))
+            case let .loaded(value), let .cached(value):
+                headerView.bind(
+                    viewModel: .loaded(
+                        value: .init(titleText: value, countText: .wrapped(cells.count.description, with: false))
+                    )
+                )
             case .loading:
                 headerView.bind(viewModel: .loading)
             }
             return headerView
         case let .empty(title):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            headerView.bind(viewModel: .loaded(value: .init(title: title, count: 0)))
+            headerView.bind(
+                viewModel: .loaded(
+                    value: .init(titleText: title, countText: .wrapped(0.description, with: false))
+                )
+            )
             return headerView
         default:
             return nil
@@ -178,7 +184,7 @@ extension CrowdloanListViewManager: ErrorStateViewDelegate {
 }
 
 extension CrowdloanListViewManager: CrowdloansViewProtocol {
-    func didReceive(chainInfo: ChainBalanceViewModel) {
+    func didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>) {
         chainSelectionView.bind(viewModel: chainInfo)
     }
 

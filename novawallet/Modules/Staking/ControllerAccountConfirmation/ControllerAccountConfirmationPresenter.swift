@@ -19,7 +19,7 @@ final class ControllerAccountConfirmationPresenter {
     private var fee: ExtrinsicFeeProtocol?
     private var priceData: PriceData?
     private var balance: Decimal?
-    private var stakingLedger: StakingLedger?
+    private var stakingLedger: Staking.Ledger?
 
     private lazy var addressViewModelFactory = DisplayAddressViewModelFactory()
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -173,7 +173,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             self.stakingLedger = stakingLedger

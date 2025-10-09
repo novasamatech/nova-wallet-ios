@@ -68,7 +68,7 @@ class StakingInfoTests: XCTestCase {
             for: chainAsset,
             stakingType: .relaychain,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            stakingDurationFactory: BabeStakingDurationFactory(),
+            stakingDurationFactory: BabeStakingDurationFactory(chainId: chain.chainId, chainRegistry: chainRegistry),
             validatorService: validatorService
         )
 

@@ -3,24 +3,30 @@ import UIKit
 import UIKit_iOS
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
+    let dAppMediator: DAppInteractionMediating
+    let walletNotificationService: WalletNotificationServiceProtocol
     let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
-        dappMediator: DAppInteractionMediating,
         assetListModelObservable: AssetListModelObservable,
+        dAppMediator: DAppInteractionMediating,
+        walletNotificationService: WalletNotificationServiceProtocol,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) {
-        self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable
+        self.dAppMediator = dAppMediator
+        self.walletNotificationService = walletNotificationService
         self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
-    func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+    func showAssetDetails(
+        from view: AssetListViewProtocol?,
+        chainAsset: ChainAsset
+    ) {
         let swapCompletionClosure: (ChainAsset) -> Void = { [weak self, weak view] chainAsset in
             view?.controller.navigationController?.popToRootViewController(animated: false)
-            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
+            self?.showAssetDetails(from: view, chainAsset: chainAsset)
         }
 
         let operationState = AssetOperationState(
@@ -29,8 +35,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
 
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
-            chain: chain,
-            asset: asset,
+            chainAsset: chainAsset,
             operationState: operationState
         ),
             let navigationController = view?.controller.navigationController else {
@@ -145,7 +150,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
         let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
-            self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
+            self?.showAssetDetails(from: view, chainAsset: chainAsset)
         }
         let selectClosure: SwapAssetSelectionClosure = { [weak self] chainAsset, state in
             self?.showSwapTokens(
@@ -216,7 +221,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     func showWalletConnect(from view: AssetListViewProtocol?) {
         guard
             let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
-                with: dappMediator
+                with: dAppMediator
             ) else {
             return
         }

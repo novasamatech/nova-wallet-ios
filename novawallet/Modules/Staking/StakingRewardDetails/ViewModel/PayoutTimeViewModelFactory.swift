@@ -4,7 +4,7 @@ import UIKit
 
 protocol PayoutTimeViewModelFactoryProtocol {
     func timeLeftAttributedString(
-        payoutEra: EraIndex,
+        payoutEra: Staking.EraIndex,
         historyDepth: UInt32,
         eraCountdown: EraCountdown?,
         locale: Locale
@@ -27,7 +27,7 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
     }
 
     func timeLeftAttributedString(
-        payoutEra: EraIndex,
+        payoutEra: Staking.EraIndex,
         historyDepth: UInt32,
         eraCountdown: EraCountdown?,
         locale: Locale

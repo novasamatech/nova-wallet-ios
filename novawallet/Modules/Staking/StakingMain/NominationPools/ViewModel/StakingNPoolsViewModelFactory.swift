@@ -6,10 +6,10 @@ struct StakingNPoolsViewModelParams {
     let poolMember: NominationPools.PoolMember?
     let bondedPool: NominationPools.BondedPool?
     let subPools: NominationPools.SubPools?
-    let poolLedger: StakingLedger?
-    let poolNomination: Nomination?
+    let poolLedger: Staking.Ledger?
+    let poolNomination: Staking.Nomination?
     let activePools: Set<NominationPools.PoolId>?
-    let activeEra: ActiveEraInfo?
+    let activeEra: Staking.ActiveEraInfo?
     let eraCountdown: EraCountdownDisplayProtocol?
     let totalRewards: TotalRewardItem?
     let totalRewardsFilter: StakingRewardFiltersPeriod?

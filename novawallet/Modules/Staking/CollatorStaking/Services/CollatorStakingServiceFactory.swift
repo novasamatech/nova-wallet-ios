@@ -7,6 +7,8 @@ class CollatorStakingServiceFactory {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    let blockTimeServiceFactory: BlockTimeEstimationServiceFactoryProtocol
+
     init(
         chainRegisty: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -19,24 +21,17 @@ class CollatorStakingServiceFactory {
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.logger = logger
-    }
 
-    func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
-        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chainId)
-        let connection = try chainRegisty.getConnectionOrError(for: chainId)
-
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        return BlockTimeEstimationService(
-            chainId: chainId,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: repository,
+        blockTimeServiceFactory = BlockTimeEstimationServiceFactory(
+            chainRegisty: chainRegisty,
+            storageFacade: storageFacade,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             logger: logger
         )
+    }
+
+    func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
+        try blockTimeServiceFactory.createService(for: chainId)
     }
 }

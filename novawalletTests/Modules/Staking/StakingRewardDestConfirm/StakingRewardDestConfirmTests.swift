@@ -69,8 +69,6 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let metaAccount = AccountGenerator.generateMetaAccount()
         let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let accountRepositoryFactory = AccountRepositoryFactory(
             storageFacade: UserDataStorageTestFacade()
         )
@@ -81,6 +79,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         )
 
         // save controller and payout
+        let operationQueue = OperationQueue()
         let saveControllerOperation = accountRepository
             .saveOperation({
                 if let payout = newPayout {
@@ -94,7 +93,8 @@ class StakingRewardDestConfirmTests: XCTestCase {
                     ]
                 }
             }, { [] })
-        OperationQueue().addOperations([saveControllerOperation], waitUntilFinished: true)
+
+        operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
         let calculatorService = RewardCalculatorServiceStub(engine: WestendStub.rewardCalculator)
@@ -102,7 +102,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let address = selectedAccount.toAddress()!
         let stashItem = StashItem(stash: address, controller: address, chainId: chain.chainId)
 
-        let ledgerInfo = StakingLedger(
+        let ledgerInfo = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(2e+12),
             active: BigUInt(2e+12),
@@ -130,9 +130,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
             )
         )
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let interactor = StakingRewardDestConfirmInteractor(
             selectedAccount: selectedAccount,
@@ -144,7 +142,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
             signingWrapperFactory: DummySigningWrapperFactory(),
             calculatorService: calculatorService,
             runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
             currencyManager: CurrencyManagerStub()

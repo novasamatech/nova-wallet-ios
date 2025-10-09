@@ -67,8 +67,6 @@ class StakingRedeemTests: XCTestCase {
         let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
         let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let nominatorAddress = selectedAccount.toAddress()!
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
@@ -84,17 +82,15 @@ class StakingRedeemTests: XCTestCase {
         let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress, chainId: chain.chainId)
-        let stakingLedger = StakingLedger(
+        let stakingLedger = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(3e+12),
             active: BigUInt(1e+12),
             unlocking: [
-                UnlockChunk(value: BigUInt(2e+12), era: 5)
+                Staking.UnlockChunk(value: BigUInt(2e+12), era: 5)
             ],
             claimedRewards: [],
             legacyClaimedRewards: nil
@@ -102,7 +98,7 @@ class StakingRedeemTests: XCTestCase {
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
             ledgerInfo: stakingLedger,
-            activeEra: ActiveEraInfo(index: 5),
+            activeEra: Staking.ActiveEraInfo(index: 5),
             stashItem: stashItem
         )
 
@@ -119,7 +115,10 @@ class StakingRedeemTests: XCTestCase {
             )
         )
 
-        let slashesOperationFactory = SlashesOperationFactoryStub(slashingSpans: nil)
+        let slashesOperationFactory = SlashesOperationFactoryStub(
+            slashingSpans: nil,
+            unappliedSlashes: [:]
+        )
 
         let interactor = StakingRedeemInteractor(
             selectedAccount: selectedAccount,
@@ -133,7 +132,7 @@ class StakingRedeemTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             slashesOperationFactory: slashesOperationFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

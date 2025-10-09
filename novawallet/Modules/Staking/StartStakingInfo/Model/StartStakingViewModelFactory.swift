@@ -32,7 +32,7 @@ protocol StartStakingViewModelFactoryProtocol {
         chain: ChainModel,
         locale: Locale
     ) -> ParagraphView.Model
-    func wikiModel(url: URL, chain: ChainModel, locale: Locale) -> StartStakingUrlModel
+    func wikiModel(url: URL, chainAsset: ChainAsset, locale: Locale) -> StartStakingUrlModel
     func termsModel(url: URL, locale: Locale) -> StartStakingUrlModel
     func balance(amount: BigUInt?, priceData: PriceData?, chainAsset: ChainAsset, locale: Locale) -> String
     func noAccount(chain: ChainModel, locale: Locale) -> String
@@ -252,11 +252,15 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
 
     func wikiModel(
         url: URL,
-        chain: ChainModel,
+        chainAsset: ChainAsset,
         locale: Locale
     ) -> StartStakingUrlModel {
         let linkName = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartWikiLink()
-        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartWiki(chain.name, linkName)
+
+        let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartWiki(
+            chainAsset.chainAssetName,
+            linkName
+        )
 
         return .init(text: text, url: url, urlName: linkName)
     }

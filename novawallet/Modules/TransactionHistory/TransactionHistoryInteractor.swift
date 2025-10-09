@@ -6,9 +6,12 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
     weak var presenter: TransactionHistoryInteractorOutputProtocol?
 
     let fetcherFactory: TransactionHistoryFetcherFactoryProtocol
+    let chainRegistry: ChainRegistryProtocol
     let chainAsset: ChainAsset
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol
+    let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let metaAccount: MetaAccountModel
     let accountId: AccountId
     let pageSize: Int
     let operationQueue: OperationQueue
@@ -21,19 +24,25 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
     init(
         accountId: AccountId,
         chainAsset: ChainAsset,
+        metaAccount: MetaAccountModel,
         fetcherFactory: TransactionHistoryFetcherFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
+        ahmInfoFactory: AHMFullInfoFactoryProtocol,
         operationQueue: OperationQueue,
         pageSize: Int
     ) {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.fetcherFactory = fetcherFactory
+        self.chainRegistry = chainRegistry
         self.localFilterFactory = localFilterFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.pageSize = pageSize
+        self.metaAccount = metaAccount
+        self.ahmInfoFactory = ahmInfoFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -41,8 +50,12 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
     deinit {
         clear(cancellable: &localFilterCancellable)
     }
+}
 
-    private func setupFetcher(for filter: WalletHistoryFilter) {
+// MARK: - Private
+
+private extension TransactionHistoryInteractor {
+    func setupFetcher(for filter: WalletHistoryFilter) {
         do {
             fetcher = try fetcherFactory.createFetcher(
                 for: accountId,
@@ -60,7 +73,7 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
         }
     }
 
-    private func setupPriceHistorySubscription() {
+    func setupPriceHistorySubscription() {
         guard let priceId = chainAsset.asset.priceId else {
             priceProvider = nil
             return
@@ -71,7 +84,7 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
         priceProvider = subscribeToPriceHistory(for: priceId, currency: selectedCurrency)
     }
 
-    private func provideLocalFilter() {
+    func provideLocalFilter() {
         clear(cancellable: &localFilterCancellable)
 
         let wrapper = localFilterFactory.createWrapper()
@@ -97,7 +110,48 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAut
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
+
+    func checkIfHasRelayChainAccount(relayChainId: ChainModel.Id) -> Bool {
+        guard let chain = chainRegistry.getChain(for: relayChainId) else {
+            return false
+        }
+
+        let chainAccountRequest = chain.accountRequest()
+
+        return metaAccount.fetch(for: chainAccountRequest) != nil
+    }
+
+    func provideAHMInfo() {
+        guard
+            let parentChainId = chainAsset.chain.parentId,
+            checkIfHasRelayChainAccount(relayChainId: parentChainId)
+        else {
+            return
+        }
+
+        let wrapper = ahmInfoFactory.fetch(by: parentChainId)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(fullInfo):
+                guard
+                    let fullInfo,
+                    fullInfo.destinationChain.chainId == self?.chainAsset.chain.chainId
+                else { return }
+
+                self?.presenter?.didReceive(ahmFullInfo: fullInfo)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .fetchFailed(error))
+            }
+        }
+    }
 }
+
+// MARK: - TransactionHistoryInteractorInputProtocol
 
 extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtocol {
     func loadNext() {
@@ -110,6 +164,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
     }
 
     func setup() {
+        provideAHMInfo()
         provideLocalFilter()
         setupPriceHistorySubscription()
         setupFetcher(for: .all)
@@ -127,6 +182,8 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
         setupFetcher(for: filter)
     }
 }
+
+// MARK: - PriceLocalStorageSubscriber
 
 extension TransactionHistoryInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePriceHistory(
@@ -146,6 +203,8 @@ extension TransactionHistoryInteractor: PriceLocalStorageSubscriber, PriceLocalS
     }
 }
 
+// MARK: - TransactionHistoryFetcherDelegate
+
 extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
     func didReceiveHistoryChanges(
         _: TransactionHistoryFetching,
@@ -163,6 +222,8 @@ extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
         presenter?.didReceiveFetchingState(isComplete: !fetcher.isFetching)
     }
 }
+
+// MARK: - SelectedCurrencyDepending
 
 extension TransactionHistoryInteractor: SelectedCurrencyDepending {
     func applyCurrency() {

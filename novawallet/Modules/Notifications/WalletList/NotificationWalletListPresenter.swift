@@ -104,9 +104,13 @@ private extension NotificationWalletListPresenter {
             let title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
             ).localizable.notificationsWalletListLimitErrorTitle(walletsLimit)
-            let message = R.string(preferredLanguages: selectedLocale.rLanguages
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
             ).localizable.notificationsWalletListLimitErrorMessage(walletsLimit)
-            let closeAction = R.string.localizable.commonCancel()
+            let closeAction = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonCancel()
+
             wireframe?.present(
                 message: message,
                 title: title,

@@ -13,6 +13,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let extrinsicFeeProxy: ExtrinsicFeeProxyProtocol
+    let extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
     let extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol
     let restrictionsBuilder: RelaychainStakingRestrictionsBuilding
@@ -30,6 +31,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicFeeProxy: ExtrinsicFeeProxyProtocol,
+        extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         extrinsicSubmissionProxy: StartStakingExtrinsicProxyProtocol,
         signingWrapper: SigningWrapperProtocol,
@@ -43,6 +45,7 @@ class StartStakingConfirmInteractor: AnyProviderAutoCleaning {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicSubmissionProxy = extrinsicSubmissionProxy
+        self.extrinsicSubmitMonitor = extrinsicSubmitMonitor
         self.extrinsicService = extrinsicService
         self.extrinsicFeeProxy = extrinsicFeeProxy
         self.restrictionsBuilder = restrictionsBuilder
@@ -111,7 +114,7 @@ extension StartStakingConfirmInteractor: StartStakingConfirmInteractorInputProto
         sharedOperation?.markSent()
 
         extrinsicSubmissionProxy.submit(
-            using: extrinsicService,
+            using: extrinsicSubmitMonitor,
             signer: signingWrapper,
             stakingOption: stakingOption,
             amount: stakingAmount

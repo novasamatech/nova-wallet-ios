@@ -145,7 +145,7 @@ final class SelectValidatorsConfirmViewFactory {
     ) -> SelectValidatorsConfirmInteractorBase? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let chainAsset = stakingState.stakingOption.chainAsset
 
@@ -159,13 +159,22 @@ final class SelectValidatorsConfirmViewFactory {
 
         let stakingDurationFactory = stakingState.createStakingDurationOperationFactory()
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedMetaAccount.chainAccount, chain: chainAsset.chain)
+        )
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedMetaAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
+        )
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
             for: selectedMetaAccount.metaId,
@@ -179,9 +188,10 @@ final class SelectValidatorsConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             runtimeService: runtimeService,
             durationOperationFactory: stakingDurationFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             signer: signer,
             nomination: nomination,
             currencyManager: currencyManager
@@ -195,7 +205,7 @@ final class SelectValidatorsConfirmViewFactory {
     ) -> SelectValidatorsConfirmInteractorBase? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let chainAsset = state.stakingOption.chainAsset
 
@@ -210,13 +220,22 @@ final class SelectValidatorsConfirmViewFactory {
 
         let extrinsicSender = nomination.bonding.controllerAccount
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: extrinsicSender.chainAccount, chain: chainAsset.chain)
+        )
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: extrinsicSender.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
+        )
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
             for: extrinsicSender.metaId,
@@ -231,9 +250,10 @@ final class SelectValidatorsConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             runtimeService: runtimeService,
             durationOperationFactory: stakingDurationFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             signer: signer,
             accountRepositoryFactory: accountRepository,
             nomination: nomination,

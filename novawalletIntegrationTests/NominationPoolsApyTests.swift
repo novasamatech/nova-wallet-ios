@@ -113,7 +113,10 @@ final class NominationPoolsApyTests: XCTestCase {
                 operationManager: OperationManager(operationQueue: operationQueue),
                 logger: Logger.shared
             ),
-            stakingDurationFactory: BabeStakingDurationFactory(),
+            stakingDurationFactory: BabeStakingDurationFactory(
+                chainId: chainId,
+                chainRegistry: chainRegistry
+            ),
             validatorService: eraValidatorService
         )
 

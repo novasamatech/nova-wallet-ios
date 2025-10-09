@@ -1,16 +1,16 @@
 import Foundation
 
 final class PendingNominatorState: BaseStashNextState {
-    private(set) var nomination: Nomination?
+    private(set) var nomination: Staking.Nomination?
 
-    private(set) var ledgerInfo: StakingLedger?
+    private(set) var ledgerInfo: Staking.Ledger?
 
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
-        ledgerInfo: StakingLedger?,
-        nomination: Nomination?,
+        ledgerInfo: Staking.Ledger?,
+        nomination: Staking.Nomination?,
         totalReward: TotalRewardItem?,
         payee: Staking.RewardDestinationArg?,
         bagListNode: BagList.Node?
@@ -32,7 +32,7 @@ final class PendingNominatorState: BaseStashNextState {
         visitor.visit(state: self)
     }
 
-    override func process(ledgerInfo: StakingLedger?) {
+    override func process(ledgerInfo: Staking.Ledger?) {
         self.ledgerInfo = ledgerInfo
 
         if let ledgerInfo = ledgerInfo, let nomination = nomination {
@@ -57,7 +57,7 @@ final class PendingNominatorState: BaseStashNextState {
         }
     }
 
-    override func process(nomination: Nomination?) {
+    override func process(nomination: Staking.Nomination?) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -103,7 +103,7 @@ final class PendingNominatorState: BaseStashNextState {
         stateMachine.transit(to: newState)
     }
 
-    override func process(validatorPrefs: ValidatorPrefs?) {
+    override func process(validatorPrefs: Staking.ValidatorPrefs?) {
         guard let stateMachine = stateMachine else {
             return
         }

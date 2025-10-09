@@ -322,21 +322,23 @@ extension ReferendumDetailsPresenter {
             return
         }
 
-        let chainInfo = ReferendumsModelFactoryInput.ChainInformation(
+        let chainInfo = ReferendumsModelFactoryParams.ChainInformation(
             chain: chain,
             currentBlock: blockNumber,
             blockDuration: blockTime
         )
 
+        let params = ReferendumsModelFactoryDetailsParams(
+            referendum: referendum,
+            metadata: referendumMetadata,
+            onchainVotes: accountVotes,
+            offchainVotes: nil,
+            chainInfo: chainInfo
+        )
+
         let referendumViewModel = referendumViewModelFactory.createViewModel(
-            input: .init(
-                referendum: referendum,
-                metadata: referendumMetadata,
-                onchainVotes: accountVotes,
-                offchainVotes: nil,
-                chainInfo: chainInfo,
-                selectedLocale: selectedLocale
-            )
+            params: params,
+            genericParams: .init(locale: selectedLocale)
         )
 
         let votes = referendumVotesFactory.createReferendumVotes(

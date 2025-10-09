@@ -6,7 +6,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
 
     let chain: ChainModel
     let selectedMetaAccount: MetaAccountModel
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol
@@ -20,7 +20,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
     init(
         chain: ChainModel,
         selectedMetaAccount: MetaAccountModel,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         runtimeService: RuntimeProviderProtocol,
         crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
         crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol,
@@ -29,7 +29,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
     ) {
         self.chain = chain
         self.selectedMetaAccount = selectedMetaAccount
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.runtimeService = runtimeService
         self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
         self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
@@ -62,9 +62,9 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
 
     private func provideConstants() {
         fetchConstant(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BlockTime, Error>) in
             switch result {
             case let .success(blockTime):
@@ -77,7 +77,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: .paraLeasingPeriod,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
             switch result {
             case let .success(period):
@@ -90,7 +90,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: .paraLeasingOffset,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingOffset, Error>) in
             switch result {
             case let .success(offset):
