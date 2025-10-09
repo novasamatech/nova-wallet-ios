@@ -72,13 +72,22 @@ struct NPoolsClaimRewardsViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
+        )
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
+        )
 
         let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)
 
@@ -87,6 +96,7 @@ struct NPoolsClaimRewardsViewFactory {
             chainAsset: chainAsset,
             runtimeService: runtimeService,
             extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             feeProxy: ExtrinsicFeeProxy(),
             signingWrapper: signingWrapper,
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,

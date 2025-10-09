@@ -111,13 +111,14 @@ final class CrowdloanYourContributionsTests: XCTestCase {
         )
         let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         
-        return CrowdloanYourContributionsInteractor(chain: chain,
-                                                    selectedMetaAccount: selectedMetaAccount,
-                                                    operationManager: OperationManager(),
-                                                    runtimeService: runtimeService,
-                                                    crowdloanLocalSubscriptionFactory: crowdloanSubscriptionFactory,
-                                                    crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory,
-                                                    priceLocalSubscriptionFactory: priceProviderFactory,
-                                                    currencyManager: CurrencyManagerStub())
+        return CrowdloanYourContributionsInteractor(
+            chain: chain,
+            selectedMetaAccount: selectedMetaAccount,
+            operationQueue: OperationQueue(),
+            runtimeService: runtimeService,
+            crowdloanLocalSubscriptionFactory: crowdloanSubscriptionFactory,
+            crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory,
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            currencyManager: CurrencyManagerStub())
     }
 }

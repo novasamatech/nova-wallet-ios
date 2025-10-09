@@ -138,7 +138,10 @@ private extension TransactionHistoryInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(fullInfo):
-                guard let fullInfo else { return }
+                guard
+                    let fullInfo,
+                    fullInfo.destinationChain.chainId == self?.chainAsset.chain.chainId
+                else { return }
 
                 self?.presenter?.didReceive(ahmFullInfo: fullInfo)
             case let .failure(error):

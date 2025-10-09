@@ -67,7 +67,6 @@ struct ControllerAccountConfirmationViewFactory {
 
         let facade = UserDataStorageFacade.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let operationManager = OperationManagerFacade.sharedManager
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
@@ -79,7 +78,7 @@ struct ControllerAccountConfirmationViewFactory {
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
+            operationManager: OperationManagerFacade.sharedManager
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
@@ -109,7 +108,7 @@ struct ControllerAccountConfirmationViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapper: signingWrapper,
             storageRequestFactory: storageRequestFactory,
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 

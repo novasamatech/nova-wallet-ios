@@ -10,6 +10,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let signingWrapper: SigningWrapperProtocol
     let runtimeService: RuntimeCodingServiceProtocol
@@ -41,6 +42,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
         chainAsset: ChainAsset,
         runtimeService: RuntimeCodingServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         signingWrapper: SigningWrapperProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
@@ -53,6 +55,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
         self.chainAsset = chainAsset
         self.runtimeService = runtimeService
         self.extrinsicService = extrinsicService
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
         self.feeProxy = feeProxy
         self.signingWrapper = signingWrapper
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
@@ -137,7 +140,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(existentialDeposit):
@@ -180,16 +183,21 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
     }
 
     func submit(for strategy: StakingClaimRewardsStrategy, needsMigration: Bool) {
-        extrinsicService.submit(
-            createExtrinsicBuilderClosure(
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: createExtrinsicBuilderClosure(
                 for: strategy,
                 accountId: accountId,
                 needsMigration: needsMigration
             ),
-            signer: signingWrapper,
-            runningIn: .main
+            signer: signingWrapper
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceive(submissionResult: result)
+            self?.presenter?.didReceive(submissionResult: result.mapToExtrinsicSubmittedResult())
         }
     }
 }

@@ -310,7 +310,7 @@ private extension TransferSetupViewFactory {
             chainsStore: chainsStore,
             accountRepository: accountRepository,
             web3NamesService: web3NameService,
-            operationManager: OperationManager()
+            operationQueue: operationQueue
         )
     }
 }

@@ -7,6 +7,7 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
 
     let proxyAccount: AccountAddress
     let signingWrapper: SigningWrapperProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init(
         proxyAccount: AccountAddress,
@@ -19,12 +20,14 @@ final class StakingConfirmProxyInteractor: StakingProxyBaseInteractor {
         callFactory: SubstrateCallFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         selectedAccount: ChainAccountResponse,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.proxyAccount = proxyAccount
         self.signingWrapper = signingWrapper
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
 
         super.init(
             runtimeService: runtimeService,
@@ -56,20 +59,26 @@ extension StakingConfirmProxyInteractor: StakingConfirmProxyInteractorInputProto
             type: .staking
         )
 
-        extrinsicService.submit(
-            { builder in
-                try builder.adding(call: call)
-            },
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                switch result {
-                case let .success(model):
-                    self?.presenter?.didSubmit(model: model)
-                case let .failure(error):
-                    self?.presenter?.didReceive(error: .submit(error))
-                }
-            }
+        let closure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: call)
+        }
+
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: closure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result.mapToExtrinsicSubmittedResult() {
+            case let .success(model):
+                self?.presenter?.didSubmit(model: model)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .submit(error))
+            }
+        }
     }
 }

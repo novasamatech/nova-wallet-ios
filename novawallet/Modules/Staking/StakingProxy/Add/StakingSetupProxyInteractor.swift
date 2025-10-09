@@ -8,7 +8,6 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
 
     let web3NamesService: Web3NameServiceProtocol?
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationManager: OperationManagerProtocol
 
     init(
         web3NamesService: Web3NameServiceProtocol?,
@@ -27,7 +26,7 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
     ) {
         self.web3NamesService = web3NamesService
         self.accountRepository = accountRepository
-        operationManager = OperationManager(operationQueue: operationQueue)
+
         super.init(
             runtimeService: runtimeService,
             sharedState: sharedState,
@@ -53,7 +52,7 @@ final class StakingSetupProxyInteractor: StakingProxyBaseInteractor, AccountFetc
         fetchAllMetaAccountChainResponses(
             for: chainAsset.chain.accountRequest(),
             repository: accountRepository,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] result in
             DispatchQueue.main.async {
                 self?.handleFetchAccountsResult(result)

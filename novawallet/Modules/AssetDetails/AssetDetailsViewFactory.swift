@@ -20,6 +20,7 @@ struct AssetDetailsViewFactory {
         )
 
         let interactor = AssetDetailsInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             ahmInfoFactory: ahmInfoFactory,
             settingsManager: SettingsManager.shared,
             selectedMetaAccount: selectedAccount,

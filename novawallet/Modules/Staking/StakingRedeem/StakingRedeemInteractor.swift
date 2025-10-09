@@ -19,7 +19,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let slashesOperationFactory: SlashesOperationFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
@@ -28,6 +28,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -44,7 +45,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         slashesOperationFactory: SlashesOperationFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -58,16 +59,22 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.slashesOperationFactory = slashesOperationFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     private func handleControllerMetaAccount(response: MetaChainAccountResponse) {
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
+        )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
         )
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
@@ -97,26 +104,21 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
             return
         }
 
+        let accountIdClosure = { try stash.toAccountId() }
+
         let wrapper = slashesOperationFactory.createSlashingSpansOperationForStash(
-            { try stash.toAccountId() },
+            accountIdClosure,
             engine: connection,
             runtimeService: registryService
         )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = wrapper.targetOperation.result {
-                    completionClosure(result)
-                } else {
-                    completionClosure(.failure(BaseOperationError.unexpectedDependentResult))
-                }
-            }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            completionClosure(result)
         }
-
-        operationManager.enqueue(
-            operations: wrapper.allOperations,
-            in: .transient
-        )
     }
 
     private func estimateFee(with numberOfSlasingSpans: UInt32) {
@@ -144,29 +146,35 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
 
     private func submit(with numberOfSlasingSpans: UInt32) {
         guard
-            let extrinsicService = extrinsicService,
+            let extrinsicMonitorFactory,
             let signingWrapper = signingWrapper else {
             presenter.didSubmitRedeeming(result: .failure(CommonError.undefined))
             return
         }
 
-        extrinsicService.submit(
-            { [weak self] builder in
-                guard let strongSelf = self else {
-                    throw CommonError.undefined
-                }
-
-                return try strongSelf.setupExtrinsicBuiler(
-                    builder,
-                    numberOfSlashingSpans: numberOfSlasingSpans
-                )
-            },
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                self?.presenter.didSubmitRedeeming(result: result)
+        let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            guard let strongSelf = self else {
+                throw CommonError.undefined
             }
+
+            return try strongSelf.setupExtrinsicBuiler(
+                builder,
+                numberOfSlashingSpans: numberOfSlasingSpans
+            )
+        }
+
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didSubmitRedeeming(result: result.mapToExtrinsicSubmittedResult())
+        }
     }
 }
 
@@ -190,7 +198,7 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -253,7 +261,7 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeResponse):
