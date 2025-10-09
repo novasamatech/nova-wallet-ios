@@ -16,7 +16,7 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
     private var selectedGovernanceType: GovernanceType?
     private var selectedChainId: ChainModel.Id?
 
-    private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+    private let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     private let balanceMapperFactory: GovBalanceCalculatorFactoryProtocol
 
     init(
@@ -24,14 +24,14 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
         wireframe: GovernanceChainSelectionWireframeProtocol,
         selectedChainId: ChainModel.Id?,
         selectedGovernanceType: GovernanceType?,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         balanceMapperFactory: GovBalanceCalculatorFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedChainId = selectedChainId
         self.selectedGovernanceType = selectedGovernanceType
-        self.assetIconViewModelFactory = assetIconViewModelFactory
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.balanceMapperFactory = balanceMapperFactory
 
         super.init(
@@ -48,8 +48,11 @@ final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter 
     ) -> SelectableIconDetailsListViewModel {
         let chain = chainAsset.chain
 
-        let icon = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
-        let title = governanceType.title(for: chain)
+        let icon = chainAssetViewModelFactory.createViewModel(
+            from: chainAsset
+        ).assetViewModel.imageViewModel
+
+        let title = governanceType.title(for: chainAsset)
         let isSelected = selectedChainId == chain.chainId && selectedGovernanceType == governanceType
 
         let balanceMapper = balanceMapperFactory.createCalculator(for: governanceType)

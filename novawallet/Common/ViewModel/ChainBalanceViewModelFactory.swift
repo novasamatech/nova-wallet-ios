@@ -22,7 +22,7 @@ final class ChainBalanceViewModelFactory {
         let displayInfo = chainAsset.assetDisplayInfo
         let tokenFormatter = formatterFactory.createTokenFormatter(for: displayInfo)
 
-        let icon = ImageViewModelFactory.createChainIconOrDefault(from: chainAsset.chain.icon)
+        let icon = assetIconViewModelFactory.createAssetIconViewModel(from: displayInfo)
 
         if
             let balanceInPlank = balanceInPlank,
