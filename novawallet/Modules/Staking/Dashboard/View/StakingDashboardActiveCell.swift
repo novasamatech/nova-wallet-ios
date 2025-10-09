@@ -198,10 +198,6 @@ extension StakingDashboardActiveCellView: SkeletonableView {
 
         var hidingViews: [UIView] = []
 
-        if loadingState.contains(.network) {
-            hidingViews.append(assetContainerView)
-        }
-
         if loadingState.contains(.rewards) {
             hidingViews.append(rewardsView.valueBottom)
         }
@@ -211,19 +207,6 @@ extension StakingDashboardActiveCellView: SkeletonableView {
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         var skeletons: [Skeletonable] = []
-
-        if loadingState.contains(.network) {
-            skeletons.append(
-                SingleSkeleton.createRow(
-                    on: self,
-                    containerView: self,
-                    spaceSize: spaceSize,
-                    offset: CGPoint(x: Constants.leadingOffset, y: Constants.topOffset),
-                    size: CGSize(width: 78, height: 20),
-                    cornerRadii: CGSize(width: 0.2, height: 0.2)
-                )
-            )
-        }
 
         if loadingState.contains(.rewards) {
             if loadingState == .all {
@@ -266,9 +249,8 @@ extension StakingDashboardActiveCellView {
     struct LoadingState: OptionSet {
         typealias RawValue = UInt8
 
-        static let network = LoadingState(rawValue: 1 << 0)
         static let rewards = LoadingState(rawValue: 1 << 1)
-        static let all: LoadingState = [.network, .rewards]
+        static let all: LoadingState = [.rewards]
         static let none: LoadingState = []
 
         let rawValue: UInt8
