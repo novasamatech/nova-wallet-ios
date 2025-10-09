@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "Twoja poprzednia historia transakcji %@ jest nadal dostępna na %@";
 "ahm.info.alert.staking.details.message" = "%@ staking jest dostępny na %@ od %@";
 "ahm.info.in.progress.title" = "Rozpoczynając %@ saldo %@, Staking i Governance są włączone na %@. Te funkcje mogą być niedostępne przez maksymalnie 24 godziny.";
+"common.rewards" = "Nagrody";
