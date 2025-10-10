@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "Votre historique de transactions %@ précédent est toujours disponible sur %@";
 "ahm.info.alert.staking.details.message" = "Le Staking %@ est en ligne sur %@ à partir de %@";
 "ahm.info.in.progress.title" = "À compter %@ de votre %@ solde, le Staking et la Gouvernance sont sur %@. Ces fonctionnalités peuvent être indisponibles pendant jusqu’à 24 heures.";
+"common.rewards" = "Récompenses";

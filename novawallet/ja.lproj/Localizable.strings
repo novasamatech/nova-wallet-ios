@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "以前の％@ トランザクション履歴は％@で引き続き利用可能です";
 "ahm.info.alert.staking.details.message" = "％@ Stakingは％@で開始します ％@";
 "ahm.info.in.progress.title" = "%@ の開始時点の %@ 残高、ステーキングとガバナンスは %@ 上にあります。これらの機能は最大24時間ご利用いただけない場合があります。";
+"common.rewards" = "報酬";
