@@ -6,6 +6,10 @@ struct ChainAssetViewModel: Identifiable {
         chainAssetId.stringValue
     }
 
+    var assetName: String {
+        assetViewModel.name ?? networkViewModel.name
+    }
+
     let chainAssetId: ChainAssetId
 
     let networkViewModel: NetworkViewModel

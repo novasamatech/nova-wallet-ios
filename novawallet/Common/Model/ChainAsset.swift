@@ -18,6 +18,10 @@ extension ChainAsset {
         ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
     }
 
+    var chainAssetName: String {
+        asset.name ?? chain.name
+    }
+
     var assetDisplayInfo: AssetBalanceDisplayInfo { asset.displayInfo(with: chain.icon) }
 
     var chainAssetInfo: ChainAssetDisplayInfo {

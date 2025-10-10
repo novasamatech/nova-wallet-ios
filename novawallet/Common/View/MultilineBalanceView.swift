@@ -88,6 +88,8 @@ final class ShimmerSecureMultibalanceView: GenericPairValueView<
     }
 
     func configure() {
+        stackView.alignment = .leading
+
         makeVertical()
         spacing = 2
     }

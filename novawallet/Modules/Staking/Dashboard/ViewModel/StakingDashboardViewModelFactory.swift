@@ -31,20 +31,20 @@ protocol StakingDashboardViewModelFactoryProtocol {
 }
 
 final class StakingDashboardViewModelFactory {
-    let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
 
     init(
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.assetFormatterFactory = assetFormatterFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
-        self.networkViewModelFactory = networkViewModelFactory
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.estimatedEarningsFormatter = estimatedEarningsFormatter
     }
 
@@ -161,9 +161,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
-        let networkViewModel = networkViewModelFactory.createViewModel(
-            from: chainAsset.chain
-        )
+        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
 
         let estimatedEarnings = createEstimatedEarnings(
             from: model.dashboardItem?.maxApy,
@@ -189,9 +187,6 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let status = createStakingStatus(for: model)
 
-        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
-            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
-
         let stakingType = createStakingType(
             for: model.stakingOption,
             singleActive: singleActive,
@@ -199,7 +194,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         )
 
         return .init(
-            networkViewModel: network,
+            chainAssetViewModel: chainAssetViewModel,
             totalRewards: .wrapped(totalRewards, with: privacyModeEnabled),
             status: status,
             yourStake: .wrapped(yourStake, with: privacyModeEnabled),
@@ -216,9 +211,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
-        let networkViewModel = networkViewModelFactory.createViewModel(
-            from: chainAsset.chain
-        )
+        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
 
         let estimatedEarnings = createEstimatedEarnings(
             from: model.maxApy,
@@ -234,13 +227,14 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             locale: locale
         ).value
 
-        let network: LoadableViewModelState<NetworkViewModel> = model.hasAnySync ?
-            .cached(value: networkViewModel) : .loaded(value: networkViewModel)
+        let loadableChainAsset: LoadableViewModelState<ChainAssetViewModel> = model.hasAnySync
+            ? .cached(value: chainAssetViewModel)
+            : .loaded(value: chainAssetViewModel)
 
         let stakingType = createStakingType(for: model, locale: locale)
 
         return .init(
-            networkViewModel: network,
+            chainAssetViewModel: loadableChainAsset,
             estimatedEarnings: estimatedEarnings,
             balance: .wrapped(balance, with: privacyModeEnabled),
             stakingType: stakingType

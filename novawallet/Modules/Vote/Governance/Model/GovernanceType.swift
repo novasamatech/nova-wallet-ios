@@ -4,22 +4,17 @@ enum GovernanceType: String, Equatable {
     case governanceV1 = "governance-v1"
     case governanceV2 = "governance"
 
-    func title(for chain: ChainModel) -> String {
-        guard let asset = chain.utilityAsset() else {
-            return ""
-        }
+    func title(for chainAsset: ChainAsset) -> String {
+        let chain = chainAsset.chain
+        let assetName = chainAsset.chainAssetName
 
-        let assetTitle = asset.name ?? chain.name
-
-        guard chain.hasGovernanceV1, chain.hasGovernanceV2 else {
-            return assetTitle
-        }
-
-        switch self {
-        case .governanceV1:
-            return assetTitle + " " + "Governance v1"
+        return switch self {
+        case .governanceV1 where chain.hasGovernanceV2:
+            [assetName, "Governance v1"].joined(with: .space)
         case .governanceV2:
-            return assetTitle + " " + "OpenGov"
+            [assetName, "OpenGov"].joined(with: .space)
+        case .governanceV1:
+            assetName
         }
     }
 

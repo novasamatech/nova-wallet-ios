@@ -100,7 +100,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         )
         let wikiUrl = startStakingViewModelFactory.wikiModel(
             url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
-            chain: chainAsset.chain,
+            chainAsset: chainAsset,
             locale: selectedLocale
         )
         let termsUrl = startStakingViewModelFactory.termsModel(

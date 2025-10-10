@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "A korábbi %@ tranzakció történeted még mindig elérhető a(z) %@-n";
 "ahm.info.alert.staking.details.message" = "A(z) %@ staking él a(z) %@-n, kezdve %@";
 "ahm.info.in.progress.title" = "%@ kezdő %@ egyenleggel, a Staking és a Governance %@ vannak. Ezek a funkciók akár 24 órán át nem biztos, hogy elérhetők.";
+"common.rewards" = "Jutalmak";

@@ -2,9 +2,9 @@ import UIKit
 import Rswift
 import Foundation_iOS
 
-final class ChainAssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {
-    override var selectableCellIdentifier: ReuseIdentifier<SelectionIconDetailsTableViewCell>! {
-        ReuseIdentifier(identifier: SelectionIconDetailsTableViewCell.reuseIdentifier)
+final class ChainAssetSelectionViewController: SelectionListViewController<ChainAssetSelectionTableViewCell> {
+    override var selectableCellIdentifier: ReuseIdentifier<ChainAssetSelectionTableViewCell>! {
+        ReuseIdentifier(identifier: ChainAssetSelectionTableViewCell.reuseIdentifier)
     }
 
     let localizedTitle: LocalizableResource<String>

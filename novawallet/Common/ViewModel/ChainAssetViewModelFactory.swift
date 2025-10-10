@@ -19,8 +19,14 @@ final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
     func createViewModel(from chainAsset: ChainAsset) -> ChainAssetViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
-        let assetIconViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
-        let assetViewModel = AssetViewModel(symbol: chainAsset.asset.symbol, imageViewModel: assetIconViewModel)
+        let assetIconViewModel = assetIconViewModelFactory.createAssetIconViewModel(
+            for: chainAsset.asset.icon
+        )
+        let assetViewModel = AssetViewModel(
+            symbol: chainAsset.asset.symbol,
+            name: chainAsset.asset.name,
+            imageViewModel: assetIconViewModel
+        )
 
         return ChainAssetViewModel(
             chainAssetId: chainAsset.chainAssetId,

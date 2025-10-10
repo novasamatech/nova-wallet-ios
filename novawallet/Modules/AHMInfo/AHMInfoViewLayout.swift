@@ -35,6 +35,9 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
 
     override func setupLayout() {
         super.setupLayout()
+
+        stackView.layoutMargins.top = Constants.topMargin
+
         addArrangedSubview(bannerContainer, spacingAfter: Constants.bannerToTitle)
 
         bannerContainer.snp.makeConstraints { make in
@@ -149,6 +152,7 @@ extension AHMInfoViewLayout {
         bannerContainer.snp.updateConstraints { make in
             make.height.equalTo(height)
         }
+        stackView.layoutIfNeeded()
     }
 }
 
@@ -156,6 +160,7 @@ extension AHMInfoViewLayout {
 
 private extension AHMInfoViewLayout {
     enum Constants {
+        static let topMargin: CGFloat = 12
         static let bannerToTitle: CGFloat = 16
         static let titleToSubtitle: CGFloat = 4
         static let subtitleToFeatures: CGFloat = 17

@@ -36,16 +36,15 @@ final class GovernanceChainSelectionViewFactory {
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         let localizationManager = LocalizationManager.shared
-        let assetIconViewModelFactory = AssetIconViewModelFactory()
 
         let presenter = GovernanceChainSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
             selectedChainId: chainId,
             selectedGovernanceType: governanceType,
+            chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             balanceMapperFactory: GovBalanceCalculatorFactory(),
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
-            assetIconViewModelFactory: assetIconViewModelFactory,
             localizationManager: localizationManager
         )
 

@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "Önceki %@ işlem geçmişiniz hâlâ %@ üzerinde mevcut";
 "ahm.info.alert.staking.details.message" = "%@ staking %@ itibariyle %@ üzerinde canlı";
 "ahm.info.in.progress.title" = "%@ bakiyeniz %@ ile başlayarak, Staking ve Governance %@ üzerinde. Bu özellikler 24 saate kadar kullanılamayabilir.";
+"common.rewards" = "Ödüller";

@@ -1,34 +1,32 @@
 import UIKit
 
-final class SelectionIconDetailsTableViewCell: UITableViewCell {
-    let radioButtonImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = R.image.iconRadioButtonUnselected()
-        return imageView
-    }()
+final class ChainAssetSelectionTableViewCell: UITableViewCell {
+    let radioButtonImageView: UIImageView = .create { view in
+        view.image = R.image.iconRadioButtonUnselected()
+    }
 
-    let iconImageView = UIImageView()
+    let assetIconView: AssetIconView = .create { view in
+        view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
+        view.backgroundView.fillColor = R.color.colorContainerBackground()!
+        view.backgroundView.highlightedFillColor = R.color.colorContainerBackground()!
+    }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .p1Paragraph
-        return label
-    }()
+    let titleLabel: UILabel = .create { view in
+        view.textColor = R.color.colorTextPrimary()
+        view.font = .p1Paragraph
+    }
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .p2Paragraph
-        return label
-    }()
+    let subtitleLabel: UILabel = .create { view in
+        view.textColor = R.color.colorTextSecondary()
+        view.font = .p2Paragraph
+    }
 
     private var viewModel: SelectableIconDetailsListViewModel?
 
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        viewModel?.icon?.cancel(on: iconImageView)
+        viewModel?.icon?.cancel(on: assetIconView.imageView)
         viewModel?.removeObserver(self)
     }
 
@@ -49,28 +47,28 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(iconImageView)
+        contentView.addSubview(assetIconView)
 
-        iconImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(16.0)
+        assetIconView.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(Constants.assetIconLeadingOffset)
             make.centerY.equalToSuperview()
-            make.size.equalTo(32.0)
+            make.size.equalTo(Constants.iconSize)
         }
 
         contentView.addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints { make in
-            make.left.equalTo(iconImageView.snp.right).offset(12.0)
+            make.left.equalTo(assetIconView.snp.right).offset(Constants.labelLeadingOffset)
             make.right.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(7.0)
+            make.top.equalToSuperview().inset(Constants.titleTopInset)
         }
 
         contentView.addSubview(subtitleLabel)
 
         subtitleLabel.snp.makeConstraints { make in
-            make.left.equalTo(iconImageView.snp.right).offset(12.0)
+            make.left.equalTo(assetIconView.snp.right).offset(Constants.labelLeadingOffset)
             make.right.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalToSuperview().inset(8.0)
+            make.bottom.equalToSuperview().inset(Constants.subtitleBottomInset)
         }
 
         contentView.addSubview(radioButtonImageView)
@@ -79,7 +77,7 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
             make.right.equalToSuperview().inset(UIConstants.horizontalInset)
             make.left.greaterThanOrEqualTo(titleLabel)
             make.centerY.equalToSuperview()
-            make.size.equalTo(20.0)
+            make.size.equalTo(Constants.radioButtonSize)
         }
     }
 
@@ -90,24 +88,20 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
     }
 }
 
-extension SelectionIconDetailsTableViewCell: SelectionItemViewProtocol {
+extension ChainAssetSelectionTableViewCell: SelectionItemViewProtocol {
     func bind(viewModel: SelectableViewModelProtocol) {
         guard let iconDetailsViewModel = viewModel as? SelectableIconDetailsListViewModel else {
             return
         }
-
-        self.viewModel?.icon?.cancel(on: iconImageView)
-        iconImageView.image = nil
 
         self.viewModel = iconDetailsViewModel
 
         titleLabel.text = iconDetailsViewModel.title
         subtitleLabel.text = iconDetailsViewModel.subtitle
 
-        iconDetailsViewModel.icon?.loadImage(
-            on: iconImageView,
-            targetSize: CGSize(width: 32.0, height: 32.0),
-            animated: true
+        assetIconView.bind(
+            viewModel: iconDetailsViewModel.icon,
+            size: Constants.iconSize
         )
 
         updateSelectionState()
@@ -116,8 +110,19 @@ extension SelectionIconDetailsTableViewCell: SelectionItemViewProtocol {
     }
 }
 
-extension SelectionIconDetailsTableViewCell: SelectionListViewModelObserver {
+extension ChainAssetSelectionTableViewCell: SelectionListViewModelObserver {
     func didChangeSelection() {
         updateSelectionState()
+    }
+}
+
+extension ChainAssetSelectionTableViewCell {
+    private enum Constants {
+        static let iconSize: CGSize = .init(width: 44.0, height: 44.0)
+        static let assetIconLeadingOffset: CGFloat = 16.0
+        static let labelLeadingOffset: CGFloat = 12.0
+        static let titleTopInset: CGFloat = 9.0
+        static let subtitleBottomInset: CGFloat = 9.0
+        static let radioButtonSize: CGFloat = 20.0
     }
 }

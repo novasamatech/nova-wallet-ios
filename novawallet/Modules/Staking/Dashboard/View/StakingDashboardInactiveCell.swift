@@ -5,12 +5,13 @@ final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashb
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        view.innerInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 12)
+        view.innerInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 8)
     }
 }
 
 final class StakingDashboardInactiveCellView: GenericTitleValueView<
-    LoadableGenericIconDetailsView<
+    GenericPairValueView<
+        AssetIconView,
         GenericPairValueView<
             GenericPairValueView<ShimmerLabel, BorderedIconLabelView>,
             GenericPairValueView<UILabel, DotsSecureView<UILabel>>
@@ -19,13 +20,14 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
 > {
     private enum Constants {
-        static let iconSize = CGSize(width: 36, height: 36)
+        static let iconSize = CGSize(width: 44, height: 44)
     }
 
-    var networkLabel: ShimmerLabel { titleView.detailsView.fView.fView }
-    var stakingTypeView: BorderedIconLabelView { titleView.detailsView.fView.sView }
+    var assetIconView: AssetIconView { titleView.fView }
+    var assetNameLabel: ShimmerLabel { titleView.sView.fView.fView }
+    var stakingTypeView: BorderedIconLabelView { titleView.sView.fView.sView }
 
-    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.detailsView.sView.sView }
+    var balanceSecureLabel: DotsSecureView<UILabel> { titleView.sView.sView.sView }
     var estimatedEarningsView: UIView { valueView.detailsView }
     var estimatedEarningsLabel: ShimmerLabel { valueView.detailsView.fView }
 
@@ -103,68 +105,76 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
         from model: StakingDashboardDisabledViewModel,
         locale: Locale
     ) -> Bool {
-        networkLabel.stopShimmering()
-        titleView.imageView.stopShimmeringOpacity()
+        assetNameLabel.stopShimmering()
+        assetIconView.imageView.stopShimmeringOpacity()
 
-        switch model.networkViewModel {
+        switch model.chainAssetViewModel {
         case .loading:
-            titleView.bind(imageViewModel: nil)
+            assetIconView.bind(viewModel: nil, size: Constants.iconSize)
             return true
         case let .cached(value):
-            setupNetworkView(from: value, balance: model.balance, locale: locale)
-            networkLabel.startShimmering()
-            titleView.imageView.startShimmeringOpacity()
+            setupAssetView(from: value, balance: model.balance, locale: locale)
+            assetNameLabel.startShimmering()
+            assetIconView.imageView.startShimmeringOpacity()
 
             return false
         case let .loaded(value):
-            setupNetworkView(from: value, balance: model.balance, locale: locale)
+            setupAssetView(from: value, balance: model.balance, locale: locale)
 
             return false
         }
     }
 
-    private func setupNetworkView(
-        from viewModel: NetworkViewModel,
+    private func setupAssetView(
+        from viewModel: ChainAssetViewModel,
         balance: SecuredViewModel<BalanceViewModelProtocol?>,
         locale: Locale
     ) {
-        titleView.bind(imageViewModel: viewModel.icon)
+        assetIconView.bind(
+            viewModel: viewModel.assetViewModel.imageViewModel,
+            size: Constants.iconSize
+        )
 
         if let balanceViewModel = balance.originalContent {
-            titleView.detailsView.sView.isHidden = false
-            titleView.detailsView.sView.fView.text = R.string.localizable.commonAvailablePrefix(
+            titleView.sView.sView.isHidden = false
+            titleView.sView.sView.fView.text = R.string.localizable.commonAvailablePrefix(
                 preferredLanguages: locale.rLanguages
             )
             balanceSecureLabel.originalView.text = balanceViewModel.amount
         } else {
-            titleView.detailsView.sView.isHidden = true
-            titleView.detailsView.sView.fView.text = nil
+            titleView.sView.sView.isHidden = true
+            titleView.sView.sView.fView.text = nil
             balanceSecureLabel.originalView.text = nil
         }
 
         balanceSecureLabel.bind(balance.privacyMode)
 
-        networkLabel.text = viewModel.name
+        assetNameLabel.text = viewModel.assetName
     }
 
     private func configure() {
-        titleView.iconWidth = Constants.iconSize.width
+        assetIconView.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
+        assetIconView.backgroundView.fillColor = R.color.colorTokenContainerBackground()!
+        assetIconView.backgroundView.highlightedFillColor = R.color.colorContainerBackground()!
+
+        titleView.makeHorizontal()
+
         titleView.spacing = 12
 
-        titleView.detailsView.makeVertical()
-        titleView.detailsView.spacing = 3
-        titleView.detailsView.stackView.alignment = .leading
+        titleView.sView.makeVertical()
+        titleView.sView.spacing = 3
+        titleView.sView.stackView.alignment = .leading
 
-        titleView.detailsView.fView.makeHorizontal()
-        titleView.detailsView.fView.spacing = 4
+        titleView.sView.fView.makeHorizontal()
+        titleView.sView.fView.spacing = 4
 
-        titleView.detailsView.sView.makeHorizontal()
-        titleView.detailsView.sView.spacing = 6
-        titleView.detailsView.sView.fView.apply(style: .caption1Secondary)
-        titleView.detailsView.sView.fView.textAlignment = .left
+        titleView.sView.sView.makeHorizontal()
+        titleView.sView.sView.spacing = 6
+        titleView.sView.sView.fView.apply(style: .caption1Secondary)
+        titleView.sView.sView.fView.textAlignment = .left
 
-        networkLabel.applyShimmer(style: .regularSubheadlinePrimary)
-        networkLabel.textAlignment = .left
+        assetNameLabel.applyShimmer(style: .regularSubheadlinePrimary)
+        assetNameLabel.textAlignment = .left
 
         stakingTypeView.iconDetailsView.apply(style: .chips)
         stakingTypeView.iconDetailsView.detailsLabel.numberOfLines = 1
@@ -175,6 +185,10 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         stakingTypeView.snp.makeConstraints { make in
             make.height.equalTo(16)
+        }
+
+        assetIconView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.iconSize)
         }
 
         balanceSecureLabel.preferredSecuredHeight = 16.0
@@ -280,7 +294,7 @@ extension StakingDashboardInactiveCellView: AnimationUpdatibleView {
             skeletonView?.restartSkrulling()
         }
 
-        networkLabel.updateShimmeringIfActive()
+        assetNameLabel.updateShimmeringIfActive()
         estimatedEarningsLabel.updateShimmeringIfActive()
     }
 }

@@ -23,7 +23,7 @@ struct StakingMoreOptionsViewFactory {
         let viewModelFactory = StakingDashboardViewModelFactory(
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
-            networkViewModelFactory: NetworkViewModelFactory(),
+            chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
         )
 

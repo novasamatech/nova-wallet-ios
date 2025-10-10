@@ -29,6 +29,8 @@ final class StackDepositCell: RowView<TitleAmountView> {
 
         rowContentView.titleView.imageView.image = R.image.iconLock()?
             .tinted(with: R.color.colorIconSecondary()!)
+        rowContentView.titleView.spacing = 8.0
+        rowContentView.titleView.iconWidth = 16.0
         rowContentView.titleView.detailsView.imageView.image = R.image.iconInfoFilled()
     }
 }

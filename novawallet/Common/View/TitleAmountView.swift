@@ -12,9 +12,10 @@ class TitleAmountView: UIView {
     }
 
     let titleView: IconDetailsGenericView<IconDetailsView> = .create { view in
-        view.spacing = 8.0
         view.detailsView.spacing = 8.0
 
+        view.spacing = .zero
+        view.iconWidth = .zero
         view.mode = .iconDetails
         view.detailsView.mode = .detailsIcon
     }
