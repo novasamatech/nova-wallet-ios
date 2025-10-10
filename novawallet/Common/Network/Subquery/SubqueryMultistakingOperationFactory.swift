@@ -7,42 +7,39 @@ final class SubqueryMultistakingOperationFactory: SubqueryBaseOperationFactory {
         for offchainFilters: Set<Multistaking.OffchainFilter>,
         stakingTypeMapping: (StakingType, ChainAsset) -> String
     ) throws -> SubqueryFilter {
-        let filterItems: [SubqueryFilter] = try offchainFilters.map { nextFilter in
-            let chain = nextFilter.chainAsset.chain
+        var addresses: Set<String> = []
+        var networkIds: Set<String> = []
+        var stakingTypes: Set<String> = []
+
+        for filter in offchainFilters {
+            let chain = filter.chainAsset.chain
             let address: AccountAddress
 
             if chain.isEthereumBased {
-                guard let ethAddress = nextFilter.accountId.toEthereumAddressWithChecksum() else {
+                guard let ethAddress = filter.accountId.toEthereumAddressWithChecksum() else {
                     throw CommonError.dataCorruption
                 }
-
                 address = ethAddress
             } else {
-                address = try nextFilter.accountId.toAddress(using: chain.chainFormat)
+                address = try filter.accountId.toAddress(using: chain.chainFormat)
             }
 
-            let networkFilter = SubqueryEqualToFilter(
-                fieldName: "networkId",
-                value: chain.chainId.withHexPrefix()
-            )
+            addresses.insert(address)
+            networkIds.insert(chain.chainId.withHexPrefix())
 
-            let addressFilter = SubqueryEqualToFilter(
-                fieldName: "address",
-                value: address
-            )
-
-            let typeFilterItems = nextFilter.stakingTypes.map { stakingType in
-                let stakingTypeKey = stakingTypeMapping(stakingType, nextFilter.chainAsset)
-
-                return SubqueryEqualToFilter(fieldName: "stakingType", value: stakingTypeKey)
+            for stakingType in filter.stakingTypes {
+                let stakingTypeKey = stakingTypeMapping(stakingType, filter.chainAsset)
+                stakingTypes.insert(stakingTypeKey)
             }
-
-            let typeFilter = SubqueryCompoundFilter.or(typeFilterItems)
-
-            return SubqueryCompoundFilter.and([networkFilter, addressFilter, typeFilter])
         }
 
-        return SubqueryCompoundFilter.or(filterItems)
+        let filters: [SubqueryFilter] = [
+            SubqueryFieldInFilter(fieldName: "address", values: Array(addresses)),
+            SubqueryFieldInFilter(fieldName: "networkId", values: Array(networkIds)),
+            SubqueryFieldInFilter(fieldName: "stakingType", values: Array(stakingTypes))
+        ]
+
+        return SubqueryCompoundFilter.and(filters)
     }
 
     private func buildQuery(
