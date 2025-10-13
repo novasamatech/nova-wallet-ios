@@ -1967,3 +1967,4 @@
 "ahm.info.alert.staking.details.message" = "%@ staking is live on %@ starting %@";
 "common.view" = "View";
 "ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
+"common.rewards" = "Rewards";

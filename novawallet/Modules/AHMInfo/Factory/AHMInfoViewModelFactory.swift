@@ -283,6 +283,10 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         info: AHMFullInfo,
         locale: Locale
     ) -> AHMAlertView.Model {
+        let sourceChainAsset = ChainAsset(
+            chain: info.sourceChain,
+            asset: info.asset
+        )
         let languages = locale.rLanguages
 
         let date = Date(timeIntervalSince1970: TimeInterval(info.info.timestamp))
@@ -293,7 +297,7 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             .string(from: date)
 
         let title = R.string.localizable.ahmInfoAlertStakingDetailsMessage(
-            info.sourceChain.name,
+            sourceChainAsset.chainAssetName,
             info.destinationChain.name,
             formattedDate,
             preferredLanguages: languages
