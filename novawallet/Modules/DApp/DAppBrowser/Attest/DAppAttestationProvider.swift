@@ -9,6 +9,7 @@ protocol DAppAttestationProviderProtocol {
 }
 
 final class DAppAttestationProvider {
+    private let deviceCheckProvider: DeviceCheckProviding
     private let appAttestService: AppAttestServiceProtocol
     private let remoteAttestationFactory: DAppRemoteAttestFactoryProtocol
     private let attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>
@@ -24,6 +25,7 @@ final class DAppAttestationProvider {
     private var pendingAssertions: [UUID: CancellableCallStore] = [:]
 
     init(
+        deviceCheckProvider: DeviceCheckProviding,
         appAttestService: AppAttestServiceProtocol,
         remoteAttestationFactory: DAppRemoteAttestFactoryProtocol,
         attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>,
@@ -31,6 +33,7 @@ final class DAppAttestationProvider {
         bundle: Bundle = Bundle.main,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.deviceCheckProvider = deviceCheckProvider
         self.appAttestService = appAttestService
         self.remoteAttestationFactory = remoteAttestationFactory
         self.attestationRepository = attestationRepository
@@ -146,6 +149,8 @@ private extension DAppAttestationProvider {
             return .createWithError(AppAttestError.invalidURL)
         }
 
+        let deviceTokenWrapper = deviceCheckProvider.fetchDeviceToken()
+        
         let challengeWrapper = remoteAttestationFactory.createGetChallengeWrapper(using: baseURL)
 
         let attestationWrapper = appAttestService.createAttestationWrapper(
@@ -175,6 +180,14 @@ private extension DAppAttestationProvider {
             guard let bundleId = bundle.bundleIdentifier else {
                 throw AppAttestServiceError.bundleIdUnavailable
             }
+            
+            guard
+                case let .supported(deviceToken) = try deviceTokenWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+            else {
+                throw DAppAttestError.unsupportedDevice
+            }
 
             try attestationInitSaveWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -182,12 +195,14 @@ private extension DAppAttestationProvider {
 
             return DAppAttestRequest(
                 challenge: attestationModel.challenge.toHexString(),
+                deviceToken: deviceToken,
                 attestation: attestationModel.result,
                 appIntegrityId: attestationModel.keyId,
                 bundleId: bundleId
             )
         }
 
+        remoteAttestationOperation.addDependency(deviceTokenWrapper.targetOperation)
         remoteAttestationOperation.addDependency(attestationInitSaveWrapper.targetOperation)
 
         let attestationSaveIfSuccessWrapper = saveLocalSettingsWrapper {
@@ -216,6 +231,7 @@ private extension DAppAttestationProvider {
         let preSaveDependencies = challengeWrapper.allOperations
             + attestationWrapper.allOperations
             + attestationInitSaveWrapper.allOperations
+            + deviceTokenWrapper.allOperations
         let remoteDependencies = [remoteAttestationOperation]
             + attestationSaveIfSuccessWrapper.allOperations
 
@@ -247,6 +263,7 @@ private extension DAppAttestationProvider {
         let callStore = CancellableCallStore()
         pendingAssertions[requestId] = callStore
 
+        let deviceTokenWrapper = deviceCheckProvider.fetchDeviceToken()
         let challengeWrapper = remoteAttestationFactory.createGetChallengeWrapper(using: baseURL)
         let assertionWrapper = appAttestService.createAssertionWrapper(
             challengeClosure: { try challengeWrapper.targetOperation.extractNoCancellableResultData() },
