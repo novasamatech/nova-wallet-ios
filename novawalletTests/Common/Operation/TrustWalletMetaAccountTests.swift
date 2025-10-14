@@ -18,8 +18,14 @@ final class TrustWalletMetaAccountTests: XCTestCase {
             cryptoType: .ed25519
         )
         
-        let expectedAccountId = try "16PfWao1oeVQXAK6Qvj4owWVg49toh9ARbRmuCA3F2Gwxi3z".toAccountId()
+        let expectedSubstrateAccountId = try "16PfWao1oeVQXAK6Qvj4owWVg49toh9ARbRmuCA3F2Gwxi3z".toAccountId()
         let expectedEthereumAddress = try "0x23502dd7D8357eB3E218269224031EE56A6DA84D".toEthereumAccountId()
+        let expectedKusamaAccountId = try "DCZqFzNYLtn68HSk4VXRucbQAKSSD9x9YBQCqrHrAR4Vg2e".toAccountId()
+        
+        let expectedChainAccountChainIds: Set<ChainModel.Id> = [
+            KnowChainId.kusama,
+            KnowChainId.kusamaAssetHub
+        ]
         
         let keystore = InMemoryKeychain()
         let factory = TrustWalletMetaAccountOperationFactory(keystore: keystore)
@@ -39,8 +45,11 @@ final class TrustWalletMetaAccountTests: XCTestCase {
             XCTAssertEqual(metaAccount.name, importRequest.username)
             XCTAssertEqual(metaAccount.substrateCryptoType, importRequest.cryptoType.rawValue)
             
-            XCTAssertEqual(metaAccount.substrateAccountId, expectedAccountId)
+            XCTAssertEqual(metaAccount.substrateAccountId, expectedSubstrateAccountId)
             XCTAssertEqual(metaAccount.ethereumAddress, expectedEthereumAddress)
+            
+            XCTAssert(metaAccount.chainAccounts.contains { $0.accountId == expectedKusamaAccountId })
+            XCTAssert(Set(metaAccount.chainAccounts.map { $0.chainId }) == expectedChainAccountChainIds)
             
             XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.entropyTagForMetaId(metaAccount.metaId)))
             XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.substrateSecretKeyTagForMetaId(metaAccount.metaId)))
