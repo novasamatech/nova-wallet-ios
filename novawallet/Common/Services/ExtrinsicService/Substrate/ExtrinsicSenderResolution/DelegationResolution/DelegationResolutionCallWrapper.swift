@@ -57,14 +57,11 @@ extension DelegationResolutionCallWrapper: DelegationResolutionCallWrapperProtoc
             ) { callAndDelegatedAccount, component in
                 let call = callAndDelegatedAccount.0
                 let delegatedAccountId = callAndDelegatedAccount.1
-                let delegationKey = DelegationResolution.DelegationKey(
-                    delegate: component.account.chainAccount.accountId,
-                    delegated: delegatedAccountId
-                )
 
                 let newCall = try component.delegationValue.wrapCall(
                     call,
-                    delegation: delegationKey,
+                    delegatedAccountId: delegatedAccountId,
+                    delegateAccountId: component.account.chainAccount.accountId,
                     context: context
                 )
 
