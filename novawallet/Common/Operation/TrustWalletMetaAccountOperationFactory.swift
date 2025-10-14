@@ -143,7 +143,6 @@ private extension TrustWalletMetaAccountOperationFactory {
             from: request.derivationPath
         )
 
-        let password = junctionResult?.password ?? ""
         let chaincodes = junctionResult?.chaincodes ?? []
 
         let seedResult = try deriveSeed(
@@ -198,11 +197,11 @@ private extension TrustWalletMetaAccountOperationFactory {
     func supportedChainAccountsDerivationPaths() -> [ChainModel.Id: ChainAccountDerivation] {
         [
             KnowChainId.kusama: ChainAccountDerivation(
-                derivationPath: "//44//434//0//0//0",
+                derivationPath: DerivationPathConstants.trustWalletKusama,
                 cryptoType: .ed25519
             ),
             KnowChainId.kusamaAssetHub: ChainAccountDerivation(
-                derivationPath: "//44//434//0//0//0",
+                derivationPath: DerivationPathConstants.trustWalletKusama,
                 cryptoType: .ed25519
             )
         ]
