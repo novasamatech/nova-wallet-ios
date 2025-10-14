@@ -41,7 +41,7 @@ private extension TrustWalletMetaAccountOperationFactory {
 
         try keystore.saveKey(secretKey, with: tag)
     }
-    
+
     func saveEntropy(
         _ entropy: Data,
         metaId: String,
@@ -108,9 +108,9 @@ private extension TrustWalletMetaAccountOperationFactory {
             throw MetaAccountOperationFactoryError.unsupportedCryptoType(request.cryptoType)
         }
     }
-    
+
     // MARK: - Chain Accounts
-    
+
     func populateChainAccounts(
         for metaId: MetaAccountModel.Id,
         mnemonic: String
@@ -131,14 +131,14 @@ private extension TrustWalletMetaAccountOperationFactory {
                 )
             }
     }
-    
+
     func populateChainAccount(
         for metaId: MetaAccountModel.Id,
         request: ChainAccountImportMnemonicRequest,
         chainId: ChainModel.Id
     ) throws -> ChainAccountModel {
         let ethereumBased = request.cryptoType == .ethereumEcdsa
-        
+
         let junctionResult = try getJunctionResult(
             from: request.derivationPath
         )
@@ -146,10 +146,10 @@ private extension TrustWalletMetaAccountOperationFactory {
         let password = junctionResult?.password ?? ""
         let chaincodes = junctionResult?.chaincodes ?? []
 
-        let seedResult = try self.deriveSeed(
+        let seedResult = try deriveSeed(
             from: request.mnemonic
         )
-        
+
         let keypair = try generateKeypair(
             from: seedResult.seed,
             chaincodes: chaincodes,
@@ -194,7 +194,7 @@ private extension TrustWalletMetaAccountOperationFactory {
             multisig: nil
         )
     }
-    
+
     func supportedChainAccountsDerivationPaths() -> [ChainModel.Id: ChainAccountDerivation] {
         [
             KnowChainId.kusama: ChainAccountDerivation(
@@ -260,7 +260,7 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
                 for: metaId,
                 mnemonic: mnemonic.toString()
             )
-            
+
             return MetaAccountModel(
                 metaId: metaId,
                 name: request.username,
