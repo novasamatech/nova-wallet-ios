@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "Ваша предыдущая история транзакций %@ всё ещё доступна на %@";
 "ahm.info.alert.staking.details.message" = "%@ Staking доступен на %@ начиная с %@";
 "ahm.info.in.progress.title" = "Начиная с %@ ваш баланс %@, Staking и Governance включены на %@. Эти функции могут быть недоступны до 24 часов.";
+"common.rewards" = "Награды";

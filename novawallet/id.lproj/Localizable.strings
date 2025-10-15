@@ -1967,3 +1967,4 @@
 "ahm.info.alert.transaction.history.message" = "Riwayat transaksi %@ Anda sebelumnya masih tersedia di %@";
 "ahm.info.alert.staking.details.message" = "Staking %@ aktif di %@ mulai %@";
 "ahm.info.in.progress.title" = "Mulai %@ saldo %@ Anda, Staking dan Governance di %@. Fitur-fitur ini mungkin tidak tersedia hingga 24 jam.";
+"common.rewards" = "Hadiah";

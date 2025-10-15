@@ -18,18 +18,33 @@ extension DelegationResolution {
     typealias GraphResult = [GraphPath]
 
     final class Graph {
+        struct DelegateWithClass: Hashable {
+            let delegateAccountId: AccountId
+            let delegationClass: DelegationClass
+        }
+
         struct Context {
             let partialPath: [GraphPath.PathComponent]
-            let visitedAccounts: Set<AccountId>
+            let visitedAccounts: Set<DelegateWithClass>
 
-            func isVisited(_ account: AccountId) -> Bool {
-                visitedAccounts.contains(account)
+            func isVisited(_ account: AccountId, delegationClass: DelegationClass) -> Bool {
+                visitedAccounts.contains(
+                    DelegateWithClass(
+                        delegateAccountId: account,
+                        delegationClass: delegationClass
+                    )
+                )
             }
 
-            func adding(pathComponent: GraphPath.PathComponent) -> Context {
-                .init(
+            func adding(pathComponent: GraphPath.PathComponent, delegationClass: DelegationClass) -> Context {
+                let delegateWithClass = DelegateWithClass(
+                    delegateAccountId: pathComponent.delegateId,
+                    delegationClass: delegationClass
+                )
+
+                return .init(
                     partialPath: partialPath + [pathComponent],
-                    visitedAccounts: visitedAccounts.union([pathComponent.delegateId])
+                    visitedAccounts: visitedAccounts.union([delegateWithClass])
                 )
             }
         }
@@ -41,8 +56,8 @@ extension DelegationResolution {
             self.delegationValues = delegationValues
 
             delegatedToDelegates = delegationValues.keys.reduce(into: [:]) { accum, key in
-                let delegateSet = accum[key.delegated] ?? Set()
-                accum[key.delegated] = delegateSet.union([key.delegate])
+                let delegateSet = accum[key.delegatedAccountId] ?? Set()
+                accum[key.delegatedAccountId] = delegateSet.union([key.delegateAccountId])
             }
         }
 
@@ -60,6 +75,7 @@ extension DelegationResolution {
 
         private func findDelegationPaths(
             for delegatedAccountId: AccountId,
+            delegationClass: DelegationClass,
             callPath: CallCodingPath,
             context: Context,
             depth: UInt
@@ -69,11 +85,15 @@ extension DelegationResolution {
             }
 
             return delegates.flatMap { delegateId -> [GraphPath] in
-                let key = DelegationKey(delegate: delegateId, delegated: delegatedAccountId)
+                let key = DelegationKey(
+                    delegateAccountId: delegateId,
+                    delegatedAccountId: delegatedAccountId,
+                    relationType: delegationClass
+                )
 
                 guard
                     let delegationValue = delegationValues[key],
-                    !context.isVisited(delegateId)
+                    !context.isVisited(delegateId, delegationClass: delegationClass)
                 else {
                     return derivePaths(from: context)
                 }
@@ -90,23 +110,31 @@ extension DelegationResolution {
                     delegationValue: nestedValue
                 )
 
-                let newContext = context.adding(pathComponent: component)
-
-                return findDelegationPaths(
-                    for: delegateId,
-                    callPath: callPath,
-                    context: newContext,
-                    depth: depth + 1
+                let newContext = context.adding(
+                    pathComponent: component,
+                    delegationClass: delegationClass
                 )
+
+                return DelegationClass.allCases.flatMap { delegationClass in
+                    findDelegationPaths(
+                        for: delegateId,
+                        delegationClass: delegationClass,
+                        callPath: callPath,
+                        context: newContext,
+                        depth: depth + 1
+                    )
+                }
             }
         }
 
         func resolveDelegations(
             for delegatedAccountId: AccountId,
+            delegationClass: DelegationClass,
             callPath: CallCodingPath
         ) -> GraphResult {
             findDelegationPaths(
                 for: delegatedAccountId,
+                delegationClass: delegationClass,
                 callPath: callPath,
                 context: .init(partialPath: [], visitedAccounts: []),
                 depth: 0

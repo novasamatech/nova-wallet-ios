@@ -4,7 +4,8 @@ import SubstrateSdk
 protocol AccountDelegationPathValue {
     func wrapCall(
         _ call: JSON,
-        delegation: DelegationResolution.DelegationKey,
+        delegatedAccountId: AccountId,
+        delegateAccountId: AccountId,
         context: RuntimeJsonContext
     ) throws -> JSON
 
@@ -210,11 +211,12 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationResolution.DelegationKey,
+            delegatedAccountId: AccountId,
+            delegateAccountId _: AccountId,
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
-                real: .accoundId(delegation.delegated),
+                real: .accoundId(delegatedAccountId),
                 forceProxyType: proxyType,
                 call: call
             )
@@ -237,11 +239,12 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationResolution.DelegationKey,
+            delegatedAccountId _: AccountId,
+            delegateAccountId: AccountId,
             context: RuntimeJsonContext
         ) throws -> JSON {
             let otherSignatories = signatories
-                .filter { $0 != delegation.delegate }
+                .filter { $0 != delegateAccountId }
                 .sorted { $0.lexicographicallyPrecedes($1) }
                 .map { BytesCodable(wrappedValue: $0) }
 
