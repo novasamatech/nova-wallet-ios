@@ -2,8 +2,9 @@ import Foundation
 
 extension DelegationResolution {
     struct DelegationKey: Hashable {
-        let delegate: AccountId
-        let delegated: AccountId
+        let delegateAccountId: AccountId
+        let delegatedAccountId: AccountId
+        let relationType: DelegationClass
     }
 }
 
@@ -123,8 +124,9 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             let proxiedChainAccount = proxyChainAccount(chainId: chain.chainId),
             let proxy = proxiedChainAccount.proxy {
             let key = DelegationResolution.DelegationKey(
-                delegate: proxy.accountId,
-                delegated: proxiedChainAccount.accountId
+                delegateAccountId: proxy.accountId,
+                delegatedAccountId: proxiedChainAccount.accountId,
+                relationType: .proxy
             )
             let value = DelegationResolution.Graph.ProxyResolutionNode(proxyTypes: [proxy.type])
 
@@ -135,9 +137,11 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             let allSignatories = multisig.otherSignatories + [multisig.signatory]
 
             let key = DelegationResolution.DelegationKey(
-                delegate: multisig.signatory,
-                delegated: multisig.accountId
+                delegateAccountId: multisig.signatory,
+                delegatedAccountId: multisig.accountId,
+                relationType: .multisig
             )
+
             let value = DelegationResolution.Graph.MultisigResolutionNode(
                 threshold: UInt16(multisig.threshold),
                 signatories: allSignatories

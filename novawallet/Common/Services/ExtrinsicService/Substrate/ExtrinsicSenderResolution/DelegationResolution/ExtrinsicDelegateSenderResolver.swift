@@ -1,6 +1,10 @@
 import Foundation
 import SubstrateSdk
 
+enum ExtrinsicDelegateSenderResolverError: Error {
+    case unexpectedDelegationClass
+}
+
 final class ExtrinsicDelegateSenderResolver {
     let wallets: [MetaAccountModel]
     let delegatedAccount: ChainAccountResponse
@@ -73,6 +77,14 @@ final class ExtrinsicDelegateSenderResolver {
             builders: builders
         )
     }
+
+    func ensureDelegationClass() throws -> DelegationClass {
+        guard let delegationClass = delegatedAccount.type.delegationClass else {
+            throw ExtrinsicDelegateSenderResolverError.unexpectedDelegationClass
+        }
+
+        return delegationClass
+    }
 }
 
 extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
@@ -83,6 +95,8 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
         let graph = DelegationResolution.Graph.build(from: wallets, chain: chain)
 
         let context = codingFactory.createRuntimeJsonContext()
+
+        let delegationClass = try ensureDelegationClass()
 
         let allCalls = try builders
             .flatMap { $0.getCalls() }
@@ -100,6 +114,7 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
 
             let paths = graph.resolveDelegations(
                 for: delegatedAccount.accountId,
+                delegationClass: delegationClass,
                 callPath: callPath
             ).filter { path in
                 path.components.first?.delegateId == delegateAccountId
