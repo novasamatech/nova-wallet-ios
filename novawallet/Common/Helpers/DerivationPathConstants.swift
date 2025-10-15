@@ -7,4 +7,5 @@ struct DerivationPathConstants {
     static let hardPasswordPlaceholder = "//hard///password"
     static let defaultEthereum = "//44//60//0/0/0"
     static let trustWalletSubstrate = "//44//354//0//0//0"
+    static let trustWalletKusama = "//44//434//0//0//0"
 }
