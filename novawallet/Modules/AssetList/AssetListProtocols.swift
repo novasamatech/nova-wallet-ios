@@ -65,6 +65,7 @@ protocol AssetListCollectionViewLayoutDelegate: AnyObject {
 // MARK: View
 
 protocol AssetListViewProtocol: ControllerBackedProtocol {
+    func didReceiveFullUpdate(viewModel: AssetListFullUpdateViewModel)
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?)
