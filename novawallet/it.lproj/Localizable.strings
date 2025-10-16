@@ -424,7 +424,7 @@
 "common.filter.sort.header" = "Ordina per:";
 "staking.recommended.hint3.addition" = "con almeno un contatto di identità";
 "staking.validator.total.stake.token" = "Stake totale (%@)";
-"staking.validator.apy.percent" = "Rendimento stimato (% APY)";
+"staking.validator.apy.percent" = "Rendimento stimato (%% APY)";
 "staking.pending.rewards" = "Ricompense in sospeso";
 "staking.rewards.destination.title" = "Destinazione delle ricompense";
 "staking.your.oversubscribed.message" = "I tuoi token sono assegnati ai validatori sovrasottoscritti. Non riceverai ricompense in questa era.";
@@ -757,7 +757,7 @@
 "parachain.staking.hint.rewards.format" = "I token in stake producono ricompense ad ogni round (%@)";
 "common.parastk.collators.count" = "Collator: %@";
 "parastk.collators.filter.own.stake" = "Deposito proprio del collator";
-"parastk.collators.filter.rewards" = "Ricompense stimate (% APR)";
+"parastk.collators.filter.rewards" = "Ricompense stimate (%% APR)";
 "common.parastk.delegators" = "Delegatori";
 "parastk.collator.info" = "Informazioni sul collator";
 "parachain.staking.waiting.next.round.format" = "in attesa del prossimo round (%@)";
