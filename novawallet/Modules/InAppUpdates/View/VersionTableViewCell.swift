@@ -96,27 +96,27 @@ extension VersionTableViewCell {
         titleLabel.text = model.title
         bind(severity: model.severity, locale: locale)
         latestLabel.isHidden = !model.isLatest
-        latestLabel.titleLabel.text = R.string.localizable.inAppUpdatesLatest(
+        latestLabel.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        ).uppercased()
+        ).localizable.inAppUpdatesLatest().uppercased()
         dateLabel.text = model.date
         bind(markdown: model.markdownText)
     }
 
     func bind(severity: ReleaseSeverity, locale: Locale) {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
         switch severity {
         case .normal:
             severityLabel.isHidden = true
         case .major:
             severityLabel.isHidden = false
             severityLabel.apply(style: .major)
-            let title = strings.inAppUpdatesSeverityMajor(preferredLanguages: locale.rLanguages)
+            let title = strings.inAppUpdatesSeverityMajor()
             severityLabel.titleLabel.text = title.uppercased()
         case .critical:
             severityLabel.isHidden = false
             severityLabel.apply(style: .critical)
-            let title = strings.inAppUpdatesSeverityCritical(preferredLanguages: locale.rLanguages)
+            let title = strings.inAppUpdatesSeverityCritical()
             severityLabel.titleLabel.text = title.uppercased()
         }
     }

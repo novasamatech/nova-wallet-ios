@@ -12,7 +12,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let presenter: StakingRewardDestSetupPresenter
         let outputProxy: StakingRewardDestSetupInteractorOutputProtocol
     }
-    
+
     func testRewardDestinationSetupSuccess() throws {
         // given
 
@@ -31,30 +31,28 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         changesApplied.expectedFulfillmentCount = 2
 
         stub(view) { stub in
-            when(stub).didReceiveRewardDestination(viewModel: any()).then { viewModel in
+            when(stub.didReceiveRewardDestination(viewModel: any())).then { viewModel in
                 if let viewModel = viewModel, viewModel.canApply {
                     changesApplied.fulfill()
                 }
             }
 
-            when(stub).localizationManager.get.then { nil }
-
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
-            when(stub).didCompletionAccountSelection().thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
+            when(stub.didCompletionAccountSelection()).thenDoNothing()
         }
 
         let payoutSelectionsExpectation = XCTestExpectation()
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).presentAccountSelection(
+            when(stub.presentAccountSelection(
                 any(),
                 selectedAccountItem: any(),
                 title: any(),
                 delegate: any(),
                 from: any(),
                 context: any()
-            ).then { (accounts, _, _, delegate, _, context) in
+            )).then { accounts, _, _, delegate, _, context in
                 if let index = accounts.firstIndex(
                     where: { newPayoutAccount.substrateAccountId == $0.substrateAccountId }) {
                     delegate.modalPickerDidSelectModelAtIndex(index, context: context)
@@ -65,7 +63,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 }
             }
 
-            when(stub).proceed(view: any(), rewardDestination: any()).then { _ in
+            when(stub.proceed(view: any(), rewardDestination: any())).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -191,7 +189,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         )
 
         let validationFactory = StakingDataValidatingFactory(presentable: wireframe)
-        
+
         let presenter = StakingRewardDestSetupPresenter(
             wireframe: wireframe,
             interactor: interactor,
@@ -199,11 +197,12 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: validationFactory,
             applicationConfig: ApplicationConfig.shared,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         let mockedPresenter = MockStakingRewardDestSetupInteractorOutputProtocol()
-        
+
         presenter.view = view
         interactor.presenter = mockedPresenter
         validationFactory.view = view
@@ -215,67 +214,67 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let balanceExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveFee(viewModel: any()).then { feeViewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { feeViewModel in
                 if feeViewModel != nil {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveRewardDestination(viewModel: any()).then { viewModel in
+            when(stub.didReceiveRewardDestination(viewModel: any())).then { viewModel in
                 if let viewModel = viewModel, !viewModel.canApply {
                     rewardDestinationExpectation.fulfill()
                 }
             }
         }
-        
+
         stub(mockedPresenter) { stub in
-            when(stub).didReceiveFee(result: any()).then { fee in
+            when(stub.didReceiveFee(result: any())).then { fee in
                 presenter.didReceiveFee(result: fee)
             }
-            
-            when(stub).didReceivePriceData(result: any()).then { result in
+
+            when(stub.didReceivePriceData(result: any())).then { result in
                 presenter.didReceivePriceData(result: result)
             }
-            
-            when(stub).didReceiveStashItem(result: any()).then { result in
+
+            when(stub.didReceiveStashItem(result: any())).then { result in
                 presenter.didReceiveStashItem(result: result)
             }
 
-            when(stub).didReceiveStakingLedger(result: any()).then { result in
+            when(stub.didReceiveStakingLedger(result: any())).then { result in
                 presenter.didReceiveStakingLedger(result: result)
             }
-            
-            when(stub).didReceiveController(result: any()).then { result in
+
+            when(stub.didReceiveController(result: any())).then { result in
                 presenter.didReceiveController(result: result)
             }
-            
-            when(stub).didReceiveStash(result: any()).then { result in
+
+            when(stub.didReceiveStash(result: any())).then { result in
                 presenter.didReceiveStash(result: result)
             }
-            
-            when(stub).didReceiveRewardDestinationAccount(result: any()).then { result in
+
+            when(stub.didReceiveRewardDestinationAccount(result: any())).then { result in
                 presenter.didReceiveRewardDestinationAccount(result: result)
             }
-            
-            when(stub).didReceiveRewardDestinationAddress(result: any()).then { result in
+
+            when(stub.didReceiveRewardDestinationAddress(result: any())).then { result in
                 presenter.didReceiveRewardDestinationAddress(result: result)
             }
 
-            when(stub).didReceiveCalculator(result: any()).then { result in
+            when(stub.didReceiveCalculator(result: any())).then { result in
                 presenter.didReceiveCalculator(result: result)
             }
-            
-            when(stub).didReceiveAccounts(result: any()).then { result in
+
+            when(stub.didReceiveAccounts(result: any())).then { result in
                 presenter.didReceiveAccounts(result: result)
             }
-            
-            when(stub).didReceiveNomination(result: any()).then { result in
+
+            when(stub.didReceiveNomination(result: any())).then { result in
                 presenter.didReceiveNomination(result: result)
             }
-            
-            when(stub).didReceiveAccountBalance(result: any()).then { result in
+
+            when(stub.didReceiveAccountBalance(result: any())).then { result in
                 presenter.didReceiveAccountBalance(result: result)
-                
+
                 if case .success = result {
                     balanceExpectation.fulfill()
                 }
@@ -290,5 +289,4 @@ class StakingRewardDestinationSetupTests: XCTestCase {
 
         return PresenterSetupResult(presenter: presenter, outputProxy: mockedPresenter)
     }
-
 }

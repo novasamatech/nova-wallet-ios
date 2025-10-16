@@ -424,7 +424,7 @@
 "common.filter.sort.header" = "ソート順:";
 "staking.recommended.hint3.addition" = "少なくとも1つのアイデンティティ連絡先を持つ";
 "staking.validator.total.stake.token" = "合計ステーク (%@)";
-"staking.validator.apy.percent" = "推定報酬 (% APY)";
+"staking.validator.apy.percent" = "推定報酬 (%% APY)";
 "staking.pending.rewards" = "未決報酬";
 "staking.rewards.destination.title" = "報酬の宛先";
 "staking.your.oversubscribed.message" = "あなたのトークンはオーバーサブスクライブされたバリデータに割り当てられています。この時代では報酬を受け取れません。";
@@ -757,7 +757,7 @@
 "parachain.staking.hint.rewards.format" = "ステーキングされたトークンは各ラウンドで報酬を生成します (%@)";
 "common.parastk.collators.count" = "コレーター数: %@";
 "parastk.collators.filter.own.stake" = "コレーターの自分のStake";
-"parastk.collators.filter.rewards" = "推定報酬 (% APR)";
+"parastk.collators.filter.rewards" = "推定報酬 (%% APR)";
 "common.parastk.delegators" = "デリゲーター";
 "parastk.collator.info" = "コレーター情報";
 "parachain.staking.waiting.next.round.format" = "次のラウンドを待っています (%@)";

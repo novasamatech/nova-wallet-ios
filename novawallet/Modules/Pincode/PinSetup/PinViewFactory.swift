@@ -11,7 +11,7 @@ class PinViewFactory: PinViewFactoryProtocol {
         pinSetupView.mode = .create
 
         pinSetupView.localizableTopTitle = LocalizableResource { locale in
-            R.string.localizable.pincodeCreateTopTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.pincodeCreateTopTitle()
         }
 
         let presenter = PinSetupPresenter()
@@ -43,7 +43,7 @@ class PinViewFactory: PinViewFactoryProtocol {
         pinChangeView.mode = .create
 
         pinChangeView.localizableTopTitle = LocalizableResource { locale in
-            R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.profilePincodeChangeTitle()
         }
 
         let presenter = PinSetupPresenter()

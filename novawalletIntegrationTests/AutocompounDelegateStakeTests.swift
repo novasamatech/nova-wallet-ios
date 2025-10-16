@@ -15,7 +15,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
 
         let request = ParaStkYieldBoostRequest(
-            amountToStake: 1000000000000,
+            amountToStake: 1_000_000_000_000,
             collator: "6AEG2WKRVvZteWWT3aMkk2ZE21FvURqiJkYpXimukub8Zb9C"
         )
 
@@ -153,15 +153,15 @@ class AutocompounDelegateStakeTests: XCTestCase {
         accountMinimum: BigUInt
     ) throws {
         // given
-        
+
         let wallet = AccountGenerator.generateMetaAccount()
-        
+
         let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
+
         // when
-        
+
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
@@ -191,9 +191,9 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let executionTime = try executionTimeWrapper.targetOperation.extractNoCancellableResultData()
 
         let senderResolutionFactory = ExtrinsicSenderResolutionFactoryStub(accountId: delegator, chain: chain)
-        
+
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
-        
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
@@ -203,7 +203,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -212,7 +212,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
@@ -242,7 +242,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
         extrinsicService?.estimateFee(
             { builder in
                 try builder.adding(call: call.runtimeCall)
-        },
+            },
             runningIn: .main
         ) { result in
             feeResult = result
@@ -266,15 +266,15 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
     private func performCancelTaskFeeEstimation(for taskId: AutomationTime.TaskId) {
         // given
-        
+
         let wallet = AccountGenerator.generateMetaAccount()
-        
+
         let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
+
         // when
-        
+
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
@@ -284,16 +284,16 @@ class AutocompounDelegateStakeTests: XCTestCase {
             XCTFail("Can't find chain \(chainId)")
             return
         }
-        
+
         let senderResolutionFactory = ExtrinsicSenderResolutionFactoryStub(
             accountId: AccountId.random(of: chain.accountIdSize)!,
             chain: chain
         )
-        
+
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
 
         let operationQueue = OperationQueue()
-        
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
@@ -303,7 +303,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -312,7 +312,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
@@ -337,7 +337,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
         extrinsicService?.estimateFee(
             { builder in
                 try builder.adding(call: call.runtimeCall)
-        },
+            },
             runningIn: .main
         ) { result in
             feeResult = result

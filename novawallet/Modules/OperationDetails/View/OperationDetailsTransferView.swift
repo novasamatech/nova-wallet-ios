@@ -58,22 +58,15 @@ final class OperationDetailsTransferView: LocalizableView {
     }
 
     private func setupLocalization() {
-        senderView.titleLabel.text = R.string.localizable.commonSender(
-            preferredLanguages: locale.rLanguages
-        )
+        senderView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonSender()
 
-        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
-        )
+        networkView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetwork()
 
         networkFeeView.rowContentView.locale = locale
 
-        recepientView.titleLabel.text = R.string.localizable.commonRecipient(
-            preferredLanguages: locale.rLanguages
-        )
+        recepientView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonRecipient()
 
-        transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
-            preferredLanguages: locale.rLanguages
-        )
+        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxId()
     }
 
     private func setupLayout() {

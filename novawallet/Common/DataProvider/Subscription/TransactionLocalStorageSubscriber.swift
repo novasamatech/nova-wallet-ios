@@ -22,8 +22,7 @@ extension TransactionLocalStorageSubscriber {
             chainId: chainId
         )
 
-        let updateClosure = {
-            [weak self] (changes: [DataProviderChange<TransactionHistoryItem>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<TransactionHistoryItem>]) in
             self?.transactionLocalSubscriptionHandler.handleTransactions(
                 result: .success(changes)
             )

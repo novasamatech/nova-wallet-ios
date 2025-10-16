@@ -1,4 +1,5 @@
 import Keystore_iOS
+import Foundation
 
 protocol OpenScreenUrlParsingServiceFactoryProtocol {
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol?

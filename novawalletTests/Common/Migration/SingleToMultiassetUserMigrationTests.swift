@@ -209,7 +209,7 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
             }
         }
 
-        let orders = Set(newEntities.map { $0.order })
+        let orders = Set(newEntities.map(\.order))
         XCTAssertEqual(newEntities.count, orders.count)
 
         let hasSelected = newEntities.contains { $0.isSelected }
@@ -253,7 +253,7 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
         let semaphore = DispatchSemaphore(value: 0)
         var newEntities: [NewEntity]?
 
-        dbService.performAsync { (context, error) in
+        dbService.performAsync { context, _ in
             defer {
                 semaphore.signal()
             }
@@ -302,13 +302,13 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
     ) throws -> [OldAccount] {
         let dbService = createCoreDataService(for: .version1)
 
-        let accounts = try (0..<count).map { _ in
+        let accounts = try (0 ..< count).map { _ in
             try generateOldAccount(hasEntropy: hasEntropy, hasSeed: hasSeed, hasDerivationPath: hasDerivationPath)
         }
 
         let semaphore = DispatchSemaphore(value: 0)
 
-        dbService.performAsync { (context, error) in
+        dbService.performAsync { context, _ in
             defer {
                 semaphore.signal()
             }

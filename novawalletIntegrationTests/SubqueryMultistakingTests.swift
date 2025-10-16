@@ -11,7 +11,6 @@ final class SubqueryMultistakingTests: XCTestCase {
         Logger.shared.info("Result: \(result)")
     }
 
-
     private func performSubqueryStateFetch(
         for substrateAddress: AccountAddress,
         ethereumAddress: AccountAddress?
@@ -50,7 +49,7 @@ final class SubqueryMultistakingTests: XCTestCase {
         let chainAssets = ChainsStore(chainRegistry: chainRegistry).getAllStakebleAssets()
 
         let operationQueue = OperationQueue()
-        
+
         let operationFactory = SubqueryMultistakingProxy(
             configProvider: GlobalConfigProvider(configUrl: ApplicationConfig.shared.globalConfigURL),
             operationQueue: operationQueue

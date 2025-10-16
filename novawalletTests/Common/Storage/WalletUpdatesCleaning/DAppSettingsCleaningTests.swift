@@ -9,16 +9,16 @@ final class DAppSettingsCleaningTests: XCTestCase {
         let context = TestContext.create()
         let removedWallet = createTestWallet()
         let keepWallet = createTestWallet(isSelected: true, order: 1)
-        
+
         let removedSettings = createDAppSettings(dAppId: "google.com", for: removedWallet)
         let keepSettings = createDAppSettings(dAppId: "novasama.io", for: keepWallet)
-        
+
         saveSettings([removedSettings, keepSettings], to: context.repository, using: context.operationQueue)
-        
+
         let cleaner = RemovedWalletDAppSettingsCleaner(
             authorizedDAppRepository: context.repository
         )
-        
+
         let providers = createProviders(
             changes: [.delete(deletedIdentifier: removedWallet.identifier)],
             walletsBeforeChanges: [
@@ -26,10 +26,10 @@ final class DAppSettingsCleaningTests: XCTestCase {
                 keepWallet.identifier: keepWallet
             ]
         )
-        
+
         // when
         try executeCleanerAndVerify(cleaner, providers: providers, using: context.operationQueue)
-        
+
         // then
         let remainingSettings = try fetchAllSettings(from: context.repository, using: context.operationQueue)
         XCTAssertEqual(remainingSettings.count, 1)
@@ -44,13 +44,13 @@ private extension DAppSettingsCleaningTests {
         let operationQueue: OperationQueue
         let facade: UserDataStorageTestFacade
         let repository: AnyDataProviderRepository<DAppSettings>
-        
+
         static func create() -> TestContext {
             let queue = OperationQueue()
             let facade = UserDataStorageTestFacade()
             let mapper = DAppSettingsMapper()
             let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
-            
+
             return TestContext(
                 operationQueue: queue,
                 facade: facade,
@@ -58,9 +58,9 @@ private extension DAppSettingsCleaningTests {
             )
         }
     }
-    
+
     // MARK: - Helpers
-    
+
     func createTestWallet(
         isSelected: Bool = false,
         order: UInt32 = 0
@@ -71,7 +71,7 @@ private extension DAppSettingsCleaningTests {
             order: order
         )
     }
-    
+
     func createDAppSettings(
         dAppId: String,
         for wallet: ManagedMetaAccountModel
@@ -82,7 +82,7 @@ private extension DAppSettingsCleaningTests {
             source: nil
         )
     }
-    
+
     func createProviders(
         changes: [DataProviderChange<ManagedMetaAccountModel>],
         walletsBeforeChanges: [String: ManagedMetaAccountModel]
@@ -92,7 +92,7 @@ private extension DAppSettingsCleaningTests {
             walletsBeforeChangesProvider: { walletsBeforeChanges }
         )
     }
-    
+
     func saveSettings(
         _ settings: [DAppSettings],
         to repository: AnyDataProviderRepository<DAppSettings>,
@@ -101,7 +101,7 @@ private extension DAppSettingsCleaningTests {
         let saveOperation = repository.saveOperation({ settings }, { [] })
         queue.addOperations([saveOperation], waitUntilFinished: true)
     }
-    
+
     func fetchAllSettings(
         from repository: AnyDataProviderRepository<DAppSettings>,
         using queue: OperationQueue
@@ -110,7 +110,7 @@ private extension DAppSettingsCleaningTests {
         queue.addOperations([fetchOperation], waitUntilFinished: true)
         return try fetchOperation.extractNoCancellableResultData()
     }
-    
+
     func executeCleanerAndVerify(
         _ cleaner: WalletStorageCleaning,
         providers: WalletStorageCleaningProviders,

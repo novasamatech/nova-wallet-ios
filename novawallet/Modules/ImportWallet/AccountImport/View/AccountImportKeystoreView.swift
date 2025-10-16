@@ -144,21 +144,20 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = R.string.localizable.walletImportKeystoreTitle(preferredLanguages: locale?.rLanguages)
-        uploadView.titleLabel.text = R.string.localizable.importRecoveryJson(
-            preferredLanguages: locale?.rLanguages
-        )
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletImportKeystoreTitle()
+        uploadView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.importRecoveryJson()
 
-        passwordView.title = R.string.localizable
-            .accountImportPasswordPlaceholder(preferredLanguages: locale?.rLanguages)
+        passwordView.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.accountImportPasswordPlaceholder()
 
-        usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
+        usernameTextField.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletUsernameSetupChooseTitle_v2_2_0()
 
-        usernameHintLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
+        usernameHintLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletNicknameCreateCaption_v2_2_0()
 
         updateUploadView()
     }
@@ -199,7 +198,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         } else {
             uploadView.subtitleLabel?.textColor = R.color.colorTextSecondary()
 
-            uploadView.subtitle = R.string.localizable.recoverJsonHint(preferredLanguages: locale?.rLanguages)
+            uploadView.subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.recoverJsonHint()
         }
     }
 
@@ -271,29 +270,29 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, viewModel.inputHandler.value.isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoJsonTitle(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.walletImportNoJsonTitle()
         } else if let viewModel = passwordViewModel, viewModel.inputHandler.required,
                   (passwordView.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoPassword(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.walletImportNoPassword()
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonEnterWalletNameDisabled(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonEnterWalletNameDisabled()
         } else {
             proceedButton.applyEnabledStyle()
             proceedButton.isUserInteractionEnabled = true
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonContinue()
         }
     }
 

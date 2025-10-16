@@ -424,7 +424,7 @@
 "common.filter.sort.header" = "Şuna göre sırala:";
 "staking.recommended.hint3.addition" = "En az bir kimlik iletişimine sahip";
 "staking.validator.total.stake.token" = "Toplam stake (%@)";
-"staking.validator.apy.percent" = "Tahmini ödül (% APY)";
+"staking.validator.apy.percent" = "Tahmini ödül (%% APY)";
 "staking.pending.rewards" = "Bekleyen ödüller";
 "staking.rewards.destination.title" = "Ödüllerin hedefi";
 "staking.your.oversubscribed.message" = "Tokenleriniz aşırı abone olan doğrulayıcılara tahsis edildi. Bu dönemde ödül almayacaksınız.";
@@ -757,7 +757,7 @@
 "parachain.staking.hint.rewards.format" = "Stake'teki token'lar, her rauntta (%@) ödül üretir";
 "common.parastk.collators.count" = "Collator'lar: %@";
 "parastk.collators.filter.own.stake" = "Collator'un kendi stake'i";
-"parastk.collators.filter.rewards" = "Tahmini ödüller (% APR)";
+"parastk.collators.filter.rewards" = "Tahmini ödüller (%% APR)";
 "common.parastk.delegators" = "Delegator'lar";
 "parastk.collator.info" = "Collator bilgisi";
 "parachain.staking.waiting.next.round.format" = "Bir sonraki raunt için bekleniyor (%@)";

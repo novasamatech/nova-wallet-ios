@@ -10,8 +10,8 @@ final class CrowdloanOffchainProviderFactoryStub: CrowdloanOffchainProviderFacto
     }
 
     func getExternalContributionProvider(
-        for accountId: AccountId,
-        chain: ChainModel
+        for _: AccountId,
+        chain _: ChainModel
     ) throws -> AnySingleValueProvider<[ExternalContribution]> {
         let provider = SingleValueProviderStub(item: externalContributions)
         return AnySingleValueProvider(provider)

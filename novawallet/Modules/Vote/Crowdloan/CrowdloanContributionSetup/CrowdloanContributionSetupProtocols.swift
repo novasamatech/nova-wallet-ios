@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import Foundation_iOS
 
-protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
+protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAsset(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)

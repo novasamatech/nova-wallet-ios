@@ -5,7 +5,6 @@ import Cuckoo
 import Foundation_iOS
 
 class ReferralCrowdloanTests: XCTestCase {
-
     let displayInfo = CrowdloanDisplayInfo(
         paraid: "2000",
         name: "Karura",
@@ -63,19 +62,19 @@ class ReferralCrowdloanTests: XCTestCase {
         let referralReceived = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didStartLoading().thenDoNothing()
-            when(stub).didStopLoading().thenDoNothing()
-            when(stub).isSetup.get.thenReturn(true, false)
+            when(stub.didStartLoading()).thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
+            when(stub.isSetup.get).thenReturn(true, false)
 
-            when(stub).didReceiveInput(viewModel: any()).then { _ in
+            when(stub.didReceiveInput(viewModel: any())).then { _ in
                 inputViewModelReceived.fulfill()
             }
 
-            when(stub).didReceiveLearnMore(viewModel: any()).then { _ in
+            when(stub.didReceiveLearnMore(viewModel: any())).then { _ in
                 learnMoreReceived.fulfill()
             }
 
-            when(stub).didReceiveReferral(viewModel: any()).then { _ in
+            when(stub.didReceiveReferral(viewModel: any())).then { _ in
                 referralReceived.fulfill()
             }
         }
@@ -86,7 +85,7 @@ class ReferralCrowdloanTests: XCTestCase {
 
         // when
 
-        var actualCode: String? = nil
+        var actualCode: String?
 
         let completionExpectation = XCTestExpectation()
 
@@ -97,7 +96,7 @@ class ReferralCrowdloanTests: XCTestCase {
         }
 
         stub(delegate) { stub in
-            when(stub).didReceive(bonusService: any()).then { service in
+            when(stub.didReceive(bonusService: any())).then { service in
                 actualCode = service.referralCode
             }
         }

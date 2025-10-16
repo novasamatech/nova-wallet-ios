@@ -4,6 +4,7 @@ import Keystore_iOS
 import UIKit_iOS
 import Foundation_iOS
 import SubstrateSdk
+import UIKit
 
 typealias TransactionSigningResult = Result<IRSignatureProtocol, Error>
 typealias TransactionSigningClosure = (TransactionSigningResult) -> Void

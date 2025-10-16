@@ -42,22 +42,23 @@ final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = localizableTitle.value(for: selectedLocale)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonConfirm()
 
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
+        rootView.walletCell.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonWallet()
+
+        rootView.accountCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string.localizable.parachainStakingCollator(
+        rootView.collatorCell.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.parachainStakingCollator()
     }
 
     private func setupHandlers() {

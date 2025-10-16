@@ -30,9 +30,9 @@ class CrowdloanListTests: XCTestCase {
     ]
 
     let externalContributions: [ExternalContribution] = [
-        ExternalContribution(source: nil, amount: BigUInt(1000000), paraId: 2000)
+        ExternalContribution(source: nil, amount: BigUInt(1_000_000), paraId: 2000)
     ]
-    
+
     let endedCrowdloans: [Crowdloan] = [
         Crowdloan(
             paraId: 2001,
@@ -72,17 +72,20 @@ class CrowdloanListTests: XCTestCase {
     ]
 
     let leaseInfo: ParachainLeaseInfoList = [
-        ParachainLeaseInfo(param: LeaseParam(paraId: 2000, bidderKey: 1),
-                           fundAccountId: Data(repeating: 10, count: 32),
-                           leasedAmount: nil
+        ParachainLeaseInfo(
+            param: LeaseParam(paraId: 2000, bidderKey: 1),
+            fundAccountId: Data(repeating: 10, count: 32),
+            leasedAmount: nil
         ),
-        ParachainLeaseInfo(param: LeaseParam(paraId: 2001, bidderKey: 2),
-                           fundAccountId: Data(repeating: 11, count: 32),
-                           leasedAmount: nil
+        ParachainLeaseInfo(
+            param: LeaseParam(paraId: 2001, bidderKey: 2),
+            fundAccountId: Data(repeating: 11, count: 32),
+            leasedAmount: nil
         ),
-        ParachainLeaseInfo(param: LeaseParam(paraId: 2002, bidderKey: 3) ,
-                           fundAccountId: Data(repeating: 12, count: 32),
-                           leasedAmount: 1000
+        ParachainLeaseInfo(
+            param: LeaseParam(paraId: 2002, bidderKey: 3),
+            fundAccountId: Data(repeating: 12, count: 32),
+            leasedAmount: 1000
         )
     ]
 
@@ -93,14 +96,14 @@ class CrowdloanListTests: XCTestCase {
         let wireframe = MockCrowdloanListWireframeProtocol()
 
         let expectedActiveParaIds: Set<ParaId> = activeCrowdloans
-            .reduce(into: Set<ParaId>()) { (result, crowdloan) in
-            result.insert(crowdloan.paraId)
-        }
+            .reduce(into: Set<ParaId>()) { result, crowdloan in
+                result.insert(crowdloan.paraId)
+            }
 
         let expectedCompletedParaIds: Set<ParaId> = (endedCrowdloans + wonCrowdloans)
-            .reduce(into: Set<ParaId>()) { (result, crowdloan) in
-            result.insert(crowdloan.paraId)
-        }
+            .reduce(into: Set<ParaId>()) { result, crowdloan in
+                result.insert(crowdloan.paraId)
+            }
 
         var actualViewModel: CrowdloansViewModel?
 
@@ -120,9 +123,9 @@ class CrowdloanListTests: XCTestCase {
                     case let .yourContributions(model):
                         return model.value != nil
                     case let .active(section, cells):
-                        return section.value != nil && cells.allSatisfy({ $0.value != nil })
+                        return section.value != nil && cells.allSatisfy { $0.value != nil }
                     case let .completed(section, cells):
-                        return section.value != nil && cells.allSatisfy({ $0.value != nil })
+                        return section.value != nil && cells.allSatisfy { $0.value != nil }
                     case .about, .empty, .error:
                         return true
                     }
@@ -134,7 +137,7 @@ class CrowdloanListTests: XCTestCase {
                 }
             }
 
-            stub.didReceive(chainInfo: any()).then { state in
+            stub.didReceive(chainInfo: any()).then { _ in
                 chainCompletionExpectation.fulfill()
             }
         }
@@ -161,7 +164,7 @@ class CrowdloanListTests: XCTestCase {
                 return 0
             }
         }()
-        
+
         let actualActiveParaIds: Set<ParaId> = {
             let activeSection = actualViewModel!.sections[1]
             if case let .active(_, cellViewModels) = activeSection {
@@ -216,10 +219,11 @@ class CrowdloanListTests: XCTestCase {
         let wireframe = MockCrowdloanListWireframeProtocol()
 
         let currencyManager = CurrencyManagerStub()
-        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory:  PriceAssetInfoFactory(currencyManager: currencyManager))
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
         let viewModelFactory = CrowdloansViewModelFactory(
             amountFormatterFactory: AssetBalanceFormatterFactory(),
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade)
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
 
         let presenter = CrowdloanListPresenter(
             interactor: interactor,
@@ -287,7 +291,7 @@ class CrowdloanListTests: XCTestCase {
             crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionService,
             crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory
         )
-        
+
         let priceProviderFactory = PriceProviderFactoryStub(
             priceData: PriceData(
                 identifier: "id",
@@ -296,7 +300,7 @@ class CrowdloanListTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-        
+
         return CrowdloanListInteractor(
             eventCenter: EventCenter.shared,
             selectedMetaAccount: selectedAccount,

@@ -74,9 +74,9 @@ private extension MultisigCallDataImportViewController {
     }
 
     func setupLocalization() {
-        title = R.string.localizable.enterCallData(
+        title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.enterCallData()
 
         applyActionStyle()
     }
@@ -85,15 +85,15 @@ private extension MultisigCallDataImportViewController {
         if let viewModel = rootView.callDataView.inputViewModel, viewModel.inputHandler.completed {
             rootView.actionButton.isEnabled = true
             rootView.actionButton.applyEnabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonSave(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonSave()
         } else {
             rootView.actionButton.isEnabled = false
             rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.enterCallData(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.enterCallData()
         }
     }
 

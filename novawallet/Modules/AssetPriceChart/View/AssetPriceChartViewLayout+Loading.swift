@@ -1,5 +1,6 @@
 import Foundation
 import UIKit_iOS
+import UIKit
 
 extension AssetPriceChartViewLayout {
     struct LoadingState: OptionSet {

@@ -40,7 +40,7 @@ class SelectedAccountSettingsTests: XCTestCase {
 
         // when
 
-        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in }
 
         XCTAssertNil(common.selectedAccountSettings.value)
 
@@ -70,7 +70,7 @@ class SelectedAccountSettingsTests: XCTestCase {
 
         // when
 
-        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in }
 
         XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
@@ -108,7 +108,7 @@ class SelectedAccountSettingsTests: XCTestCase {
 
         // when
 
-        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in }
 
         XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
@@ -125,7 +125,7 @@ class SelectedAccountSettingsTests: XCTestCase {
 
         let expectedWallets = [otherWallet.info].reduceToDict()
 
-        let actualWallets = allMetaAccounts.map({ $0.info }).reduceToDict()
+        let actualWallets = allMetaAccounts.map(\.info).reduceToDict()
 
         XCTAssertEqual(expectedWallets, actualWallets)
 
@@ -146,7 +146,7 @@ class SelectedAccountSettingsTests: XCTestCase {
 
         // when
 
-        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in }
 
         XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 

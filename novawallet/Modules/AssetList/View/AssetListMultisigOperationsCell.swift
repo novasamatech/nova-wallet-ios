@@ -93,8 +93,6 @@ private extension AssetListMultisigOperationsView {
     }
 
     func setupLocalization() {
-        titleLabel.text = R.string.localizable.multisigTransactionsToSign(
-            preferredLanguages: locale.rLanguages
-        )
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.multisigTransactionsToSign()
     }
 }

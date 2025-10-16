@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 
 typealias Web3TransferRecipientResponse = [Caip19.AssetId: [Web3TransferRecipient]]

@@ -90,7 +90,7 @@ private extension ManualBackupKeyListPresenter {
         chains.forEach { chain in
             if accountsChainIds.contains(chain.key) {
                 customChains.append(chain.value)
-            } else if let _ = metaAccount.fetch(for: chain.value.accountRequest()) {
+            } else if metaAccount.fetch(for: chain.value.accountRequest()) != nil {
                 defaultChains.append(chain.value)
             }
         }

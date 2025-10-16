@@ -17,8 +17,7 @@ extension DAppBrowserTabLocalSubscriber {
     ) -> StreamableProvider<DAppBrowserTab.PersistenceModel> {
         let provider = tabsSubscriptionFactory.getTabsProvider(metaId)
 
-        let updateClosure = {
-            [weak self] (changes: [DataProviderChange<DAppBrowserTab.PersistenceModel>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DAppBrowserTab.PersistenceModel>]) in
             self?.tabsLocalSubscriptionHandler.handleBrowserTabs(result: .success(changes))
             return
         }

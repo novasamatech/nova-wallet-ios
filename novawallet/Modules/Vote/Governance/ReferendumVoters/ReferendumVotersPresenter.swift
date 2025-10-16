@@ -121,23 +121,23 @@ final class ReferendumVotersPresenter {
         switch type {
         case .ayes:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersAye(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersAye()
             }
 
         case .nays:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersNay()
             }
         case .abstains:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersAbstain(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersAbstain()
             }
         }
     }
 
     private var emptyViewTitle: LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.govVotersEmpty(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.govVotersEmpty()
         }
     }
 }

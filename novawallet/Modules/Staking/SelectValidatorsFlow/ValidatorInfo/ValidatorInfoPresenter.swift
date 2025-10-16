@@ -53,9 +53,9 @@ final class ValidatorInfoPresenter {
         } catch {
             logger?.error("Did receive error: \(error)")
 
-            let error = R.string.localizable.commonErrorNoDataRetrieved(
+            let error = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonErrorNoDataRetrieved()
 
             view?.didRecieve(state: .error(error))
         }

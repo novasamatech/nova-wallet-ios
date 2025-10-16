@@ -38,7 +38,7 @@ extension ReferendumDisplayStringFactoryProtocol {
             return nil
         }
 
-        return R.string.localizable.govCommonVotesFormat(votesValueString, preferredLanguages: locale.rLanguages)
+        return R.string(preferredLanguages: locale.rLanguages).localizable.govCommonVotesFormat(votesValueString)
     }
 
     func createVotesDetails(
@@ -62,11 +62,8 @@ extension ReferendumDisplayStringFactoryProtocol {
         let optAmountString = tokenFormatter.stringFromDecimal(amountDecimal)
 
         if let convictionString = optConvictionString, let amountString = optAmountString {
-            return R.string.localizable.govCommonAmountConvictionFormat(
-                amountString,
-                convictionString,
-                preferredLanguages: locale.rLanguages
-            )
+            return R.string(preferredLanguages: locale.rLanguages
+            ).localizable.govCommonAmountConvictionFormat(amountString, convictionString)
         } else {
             return nil
         }

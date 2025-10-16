@@ -34,19 +34,19 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+        rootView.amountView.titleView.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
+        rootView.amountView.detailsTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonStakedPrefix()
 
-        rootView.transferableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
+        rootView.transferableView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.walletBalanceAvailable()
 
         rootView.networkFeeView.locale = selectedLocale
 
@@ -59,8 +59,9 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAmount()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -69,9 +70,9 @@ final class NPoolsUnstakeSetupViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 

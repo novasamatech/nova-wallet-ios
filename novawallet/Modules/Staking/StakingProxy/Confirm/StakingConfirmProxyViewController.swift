@@ -39,22 +39,20 @@ final class StakingConfirmProxyViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
+        rootView.networkCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonNetwork()
+        rootView.proxiedWalletCell.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
-        rootView.proxiedWalletCell.titleLabel.text = R.string.localizable.stakingConfirmProxyWallet(
+        ).localizable.stakingConfirmProxyWallet()
+        rootView.proxiedAddressCell.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
-        rootView.proxiedAddressCell.titleLabel.text = R.string.localizable.stakingConfirmProxyAccountProxied(
+        ).localizable.stakingConfirmProxyAccountProxied()
+        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
-        rootView.proxyDepositView.titleButton.imageWithTitleView?.title = R.string.localizable.stakingSetupProxyDeposit(
-            preferredLanguages: languages
-        )
+        ).localizable.stakingSetupProxyDeposit()
         rootView.feeCell.rowContentView.locale = selectedLocale
-        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonConfirm()
         title = localizableTitle.value(for: selectedLocale)
     }
 

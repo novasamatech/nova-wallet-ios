@@ -40,15 +40,17 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
         onConfirm: @escaping () -> Void
     ) {
         let confirmationAction = AlertPresentableAction(
-            title: R.string.localizable.commonApply(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonApply(),
             handler: onConfirm
         )
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.cloudBackupAlertRemoveWalletsTitle(preferredLanguages: locale.rLanguages),
-            message: R.string.localizable.cloudBackupAlertRemoveWalletsMessage(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupAlertRemoveWalletsTitle(),
+            message: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.cloudBackupAlertRemoveWalletsMessage(),
             actions: [confirmationAction],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         )
 
         present(viewModel: viewModel, style: .alert, from: view)

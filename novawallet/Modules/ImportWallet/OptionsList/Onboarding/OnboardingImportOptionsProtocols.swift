@@ -9,8 +9,8 @@ protocol OnboardingImportOptionsInteractorOutputProtocol: AnyObject {
     func didReceive(error: OnboardingImportOptionsInteractorError)
 }
 
-protocol OnboardingImportOptionsWireframeProtocol: WalletImportOptionsWireframeProtocol, AlertPresentable, ErrorPresentable,
-    CloudBackupErrorPresentable {
+protocol OnboardingImportOptionsWireframeProtocol: WalletImportOptionsWireframeProtocol, AlertPresentable,
+    ErrorPresentable, CloudBackupErrorPresentable {
     func showCloudImport(from view: WalletImportOptionsViewProtocol?)
 }
 

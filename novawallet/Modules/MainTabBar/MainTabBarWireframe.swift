@@ -136,7 +136,7 @@ private extension MainTabBarWireframe {
         present(
             message: localizedModel.description,
             title: localizedModel.title,
-            closeAction: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonGotIt(),
             from: controller
         )
     }
@@ -369,7 +369,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             switch screen {
             case let .error(error):
                 if let errorContent = error.content(for: locale) {
-                    let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                    let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonOk()
                     present(
                         message: errorContent.message,
                         title: errorContent.title,

@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class Gov2UnlockScheduleTests: XCTestCase {
-
     func testShouldHandleEmpty() {
         GovernanceUnlocksTestBuilding.run(atBlock: 0) {
             GovernanceUnlocksTestBuilding.given {}
@@ -479,7 +478,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
             }
         }
     }
-    
+
     func testShouldNotDuplicateUnlockWhenClaimingMultipleChunks() {
         GovernanceUnlocksTestBuilding.run(atBlock: 1100) {
             GovernanceUnlocksTestBuilding.given {
@@ -491,7 +490,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                     }
                 }
             }
-            
+
             GovernanceUnlocksTestBuilding.expect {
                 UnlockScheduleTestBuilding.ScheduleResult.availableItem(amount: 10) {
                     GovernanceUnlockSchedule.Action.unvote(track: 1, index: 1)
@@ -501,7 +500,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
             }
         }
     }
-    
+
     func testAbstainVotesMustBeAccounted() {
         GovernanceUnlocksTestBuilding.run(atBlock: 1100) {
             GovernanceUnlocksTestBuilding.given(
@@ -518,7 +517,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                     }
                 }
             }
-            
+
             GovernanceUnlocksTestBuilding.expect {
                 UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
                     UnlockScheduleTestBuilding.unlock(amount: 2, atBlock: 1210) {

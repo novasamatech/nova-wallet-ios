@@ -78,23 +78,25 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
         switch error {
         case .unauthorized:
             baseWireframe.askOpenApplicationSettings(
-                with: R.string.localizable.commonBluetoothUnauthorizedMessage(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.commonBluetoothUnauthorizedTitle(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.commonBluetoothUnauthorizedMessage(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonBluetoothUnauthorizedTitle(),
                 from: view,
                 locale: locale
             )
         case .unsupported:
             baseWireframe.present(
-                message: R.string.localizable.commonBluetoothUnsupportedMessage(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonBluetoothUnsupportedMessage(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle(),
+                closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
                 from: view
             )
         case .unknown:
             baseWireframe.present(
-                message: R.string.localizable.commonBluetoothUnknownMessage(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.commonBluetoothUnknownMessage(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle(),
+                closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
                 from: view
             )
         case .unavailable:

@@ -33,9 +33,9 @@ final class WalletImportOptionsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable.walletImportTitle(
+        rootView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletImportTitle()
     }
 }
 

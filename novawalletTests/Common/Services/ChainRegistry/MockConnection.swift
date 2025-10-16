@@ -3,7 +3,7 @@ import Foundation
 import SubstrateSdk
 
 final class MockConnection {
-    let internalConnection = MockJSONRPCEngine()
+    let internalConnection = MockTestJSONRPCEngine()
     let autobalancing = MockConnectionAutobalancing()
     let stateReporting = MockConnectionStateReporting()
 }
@@ -21,14 +21,14 @@ extension MockConnection: ChainConnection {
 
     func connect() {}
 
-    func disconnect(_ force: Bool) {}
+    func disconnect(_: Bool) {}
 
     func subscribe<P, T>(
         _ method: String, params: P?,
         unsubscribeMethod: String,
         updateClosure: @escaping (T) -> Void,
         failureClosure: @escaping (Error, Bool) -> Void
-    ) throws -> UInt16 where P : Encodable, T : Decodable {
+    ) throws -> UInt16 where P: Encodable, T: Decodable {
         try internalConnection.subscribe(
             method,
             params: params,
@@ -38,7 +38,7 @@ extension MockConnection: ChainConnection {
         )
     }
 
-    func callMethod<P, T>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16 where P : Encodable, T : Decodable {
+    func callMethod<P, T>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16 where P: Encodable, T: Decodable {
         try internalConnection.callMethod(
             method,
             params: params,
@@ -67,7 +67,7 @@ extension MockConnection: ChainConnection {
         _ method: String,
         params: P?,
         batchId: JSONRPCBatchId
-    ) throws where P : Encodable {
+    ) throws where P: Encodable {
         try internalConnection.addBatchCallMethod(
             method,
             params: params,

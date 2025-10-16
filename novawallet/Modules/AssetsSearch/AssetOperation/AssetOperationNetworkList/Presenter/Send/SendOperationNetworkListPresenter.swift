@@ -22,10 +22,8 @@ final class SendOperationNetworkListPresenter: AssetOperationNetworkListPresente
     }
 
     override func provideTitle() {
-        let title = R.string.localizable.sendOperationNetworkListTitle(
-            multichainToken.symbol,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.sendOperationNetworkListTitle(multichainToken.symbol)
 
         view?.updateHeader(with: title)
     }

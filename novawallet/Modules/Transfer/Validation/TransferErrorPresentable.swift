@@ -35,15 +35,13 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentReceiverBalanceTooLow(from view: ControllerBackedProtocol, locale: Locale?) {
-        let title = R.string.localizable.walletSendDeadRecipientTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendDeadRecipientTitle()
 
-        let message = R.string.localizable.walletSendDeadRecipientMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendDeadRecipientMessage()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -53,44 +51,49 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.walletSendDeadRecipientCommissionAssetTitle(
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendDeadRecipientCommissionAssetTitle()
+
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendDeadRecipientCommissionAssetMessage(
+            assetSymbol
         )
 
-        let message = R.string.localizable.walletSendDeadRecipientCommissionAssetMessage(
-            assetSymbol,
-            preferredLanguages: locale?.rLanguages
-        )
-
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentSameReceiver(from view: ControllerBackedProtocol, locale: Locale?) {
-        let title = R.string.localizable.commonValidationInvalidAddressTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonValidationInvalidAddressTitle()
 
-        let message = R.string.localizable.commonSameReceiveAddressMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonSameReceiveAddressMessage()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentReceivedBlocked(from view: ControllerBackedProtocol?, locale: Locale?) {
-        let title = R.string.localizable.walletSendRecipientBlockedTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendRecipientBlockedTitle()
 
-        let message = R.string.localizable.walletSendRecipientBlockedMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendRecipientBlockedMessage()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -100,16 +103,17 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonValidationInvalidAddressTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonValidationInvalidAddressTitle()
 
-        let message = R.string.localizable.commonValidationInvalidAddressMessage(
-            chainName,
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonValidationInvalidAddressMessage(chainName)
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -120,14 +124,17 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         balance: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonNotEnoughCrosschainFeeMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonInsufficientBalance()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNotEnoughCrosschainFeeMessage(
             feeString,
-            balance,
-            preferredLanguages: locale?.rLanguages
+            balance
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -137,13 +144,14 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         availableBalance: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.xcmDeliveryFeeEdErrorMessage(
-            availableBalance,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonInsufficientBalance()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.xcmDeliveryFeeEdErrorMessage(
+            availableBalance
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -153,13 +161,16 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         minBalance: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.swapDeliveryFeeErrorMessage(
-            minBalance,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonInsufficientBalance()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapDeliveryFeeErrorMessage(
+            minBalance
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

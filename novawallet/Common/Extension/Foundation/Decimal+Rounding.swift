@@ -13,7 +13,6 @@ extension Decimal {
             )
         }
 
-        // swiftlint:disable:next identifier_name
         static func up(scale: Int32) -> NSDecimalNumberHandler {
             .init(
                 roundingMode: .up,

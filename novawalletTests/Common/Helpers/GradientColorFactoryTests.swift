@@ -14,7 +14,7 @@ class GradientColorFactoryTests: XCTestCase {
                 UIColor(hex: "#D43079")!,
                 UIColor(hex: "#F93C90")!
             ],
-            locations: [ 0.0, 1.0]
+            locations: [0.0, 1.0]
         )
 
         // when
@@ -57,7 +57,7 @@ class GradientColorFactoryTests: XCTestCase {
                 UIColor(hex: "#E65659")!,
                 UIColor(hex: "#FFBF12")!
             ],
-            locations: [ 0.0, 0.4032, 0.6021, 0.8019, 1.0]
+            locations: [0.0, 0.4032, 0.6021, 0.8019, 1.0]
         )
 
         // when
@@ -81,7 +81,7 @@ class GradientColorFactoryTests: XCTestCase {
                 UIColor(hex: "#E40C5B")!,
                 UIColor(hex: "#645AFD")!
             ],
-            locations: [ 0.0, 1.0]
+            locations: [0.0, 1.0]
         )
 
         // when

@@ -9,15 +9,10 @@ final class SelectedValidatorListViewModelFactory {
         totalValidatorsCount: Int,
         locale: Locale
     ) -> TitleWithSubtitleViewModel {
-        let title = R.string.localizable
-            .stakingCustomHeaderValidatorsTitle(
-                displayValidatorsCount,
-                totalValidatorsCount,
-                preferredLanguages: locale.rLanguages
-            )
+        let title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.stakingCustomHeaderValidatorsTitle(displayValidatorsCount, totalValidatorsCount)
 
-        let subtitle = R.string.localizable
-            .stakingFilterTitleRewards(preferredLanguages: locale.rLanguages)
+        let subtitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingFilterTitleRewards()
 
         return TitleWithSubtitleViewModel(
             title: title,

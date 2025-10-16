@@ -4,7 +4,7 @@ import BigInt
 extension ParaStkStakeConfirmPresenter {
     func provideStakeMoreHintsViewModel() {
         let hints: [String] = [
-            R.string.localizable.parastkHintRewardBondMore(preferredLanguages: selectedLocale.rLanguages)
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkHintRewardBondMore()
         ]
 
         view?.didReceiveHints(viewModel: hints)

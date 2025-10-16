@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import BigInt
 import SubstrateSdk
-import HydraMath
+import HydraMathApi
 
 final class HydraStableswapQuoteFactory {
     let flowState: HydraStableswapFlowState

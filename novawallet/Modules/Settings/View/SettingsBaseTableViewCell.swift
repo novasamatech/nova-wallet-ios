@@ -2,7 +2,8 @@ import UIKit
 import SnapKit
 import UIKit_iOS
 
-class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning, ActivatableTableViewCell where AccessoryView: UIView {
+class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning,
+    ActivatableTableViewCell where AccessoryView: UIView {
     let iconImageView = UIImageView()
 
     let titleLabel: UILabel = .create {

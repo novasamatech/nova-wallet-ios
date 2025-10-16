@@ -7,12 +7,6 @@ struct DAppBrowserWidgetViewFactory {
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
-        let walletListLocalSubscriptionFactory = WalletListLocalSubscriptionFactory(
-            storageFacade: storageFacade,
-            operationManager: operationManager,
-            logger: logger
-        )
-
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = DAppBrowserWidgetInteractor(

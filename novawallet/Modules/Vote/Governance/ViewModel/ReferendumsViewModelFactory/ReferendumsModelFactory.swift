@@ -4,7 +4,6 @@ import BigInt
 
 final class ReferendumsModelFactory {
     typealias Params = ReferendumsModelFactoryParams
-    typealias Strings = R.string.localizable
 
     struct StatusParams {
         let referendum: ReferendumLocal

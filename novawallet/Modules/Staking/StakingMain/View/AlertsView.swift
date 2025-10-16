@@ -60,9 +60,7 @@ final class AlertsView: UIView {
     }
 
     private func applyLocalization() {
-        titleView.detailsLabel.text = R.string.localizable.stakingAlertsTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        titleView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingAlertsTitle()
     }
 
     private func setupLayout() {

@@ -36,22 +36,22 @@ class GovBaseEditDelegationViewController: GovernanceSelectTracksViewController 
     override func setupLocalization() {
         super.setupLocalization()
 
-        editDelegationLayout?.availableTracksLabel.text = R.string.localizable.govAvailableTracks(
+        editDelegationLayout?.availableTracksLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.govAvailableTracks()
 
         let unavailableButton = editDelegationLayout?.unavailableTracksButton
-        unavailableButton?.imageWithTitleView?.title = R.string.localizable.govUnavailableTracks(
+        unavailableButton?.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.govUnavailableTracks()
 
         editDelegationLayout?.unavailableTracksButton.invalidateLayout()
     }
 
     override func updateEmptyStateLocalization() {
-        editDelegationLayout?.emptyStateView?.title = R.string.localizable.govAddDelegationTracksEmpty(
+        editDelegationLayout?.emptyStateView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.govAddDelegationTracksEmpty()
     }
 
     private func setupHandlers() {

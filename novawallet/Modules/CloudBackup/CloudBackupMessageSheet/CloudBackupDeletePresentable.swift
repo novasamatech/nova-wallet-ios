@@ -47,20 +47,16 @@ extension CloudBackupDeletePresentable {
     ) {
         let confirmationClosure: MessageSheetCallback = {
             let action = AlertPresentableAction(
-                title: R.string.localizable.commonDeleteBackup(
-                    preferredLanguages: locale.rLanguages
-                ),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonDeleteBackup(),
                 style: .destructive,
                 handler: deleteClosure
             )
 
             let viewModel = AlertPresentableViewModel(
                 title: nil,
-                message: R.string.localizable.cloudBackupDeleteConfirmation(
-                    preferredLanguages: locale.rLanguages
-                ),
+                message: R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupDeleteConfirmation(),
                 actions: [action],
-                closeAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
             )
 
             self.present(viewModel: viewModel, style: .actionSheet, from: view)

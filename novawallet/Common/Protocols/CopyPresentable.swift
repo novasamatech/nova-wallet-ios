@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import UIKit
 
 protocol CopyPresentable {
     func presentCopy(
@@ -17,7 +18,7 @@ extension CopyPresentable where Self: AlertPresentable {
     ) {
         UIPasteboard.general.string = value
 
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonCopied()
         let controller = ModalAlertFactory.createSuccessAlert(title)
 
         view?.controller.present(
@@ -32,7 +33,7 @@ extension CopyPresentable where Self: AlertPresentable {
         value: String,
         locale: Locale
     ) {
-        let copyTitle = R.string.localizable.commonCopy(preferredLanguages: locale.rLanguages)
+        let copyTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCopy()
 
         let title = value.twoLineString(with: 16)
 
@@ -47,7 +48,7 @@ extension CopyPresentable where Self: AlertPresentable {
             title: title,
             message: nil,
             actions: [action],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         )
 
         present(viewModel: viewModel, style: .actionSheet, from: view)

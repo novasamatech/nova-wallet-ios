@@ -47,24 +47,18 @@ class GovernanceDelegateViewModelFactory {
 
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegateStats.recentVotes))
 
-        let formattedDays = R.string.localizable.commonDaysFormat(
-            format: lastVotedDays,
+        let formattedDays = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonDaysFormat(format: lastVotedDays)
 
         return .init(
-            delegationsTitle: R.string.localizable.delegationsDelegations(
-                preferredLanguages: locale.rLanguages
-            ),
+            delegationsTitle: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsDelegations(),
             delegations: delegations,
-            votesTitle: R.string.localizable.delegationsDelegatedVotes(
-                preferredLanguages: locale.rLanguages
-            ),
+            votesTitle: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsDelegatedVotes(),
             votes: totalVotes,
-            lastVotesTitle: R.string.localizable.delegationsLastVoted(
-                formattedDays,
+            lastVotesTitle: R.string(
                 preferredLanguages: locale.rLanguages
-            ),
+            ).localizable.delegationsLastVoted(formattedDays),
             lastVotes: lastVotes
         )
     }

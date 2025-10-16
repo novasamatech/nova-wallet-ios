@@ -68,7 +68,7 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         let resetBarButtonItem = UIBarButtonItem(
-            title: R.string.localizable.commonReset(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReset(),
             style: .plain,
             target: self,
             action: #selector(actionReset)
@@ -80,12 +80,16 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable
-            .confirmMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
-        rootView.continueButton.imageWithTitleView?.title = R.string.localizable
-            .confirmMnemonicSelectWord(preferredLanguages: selectedLocale.rLanguages)
-        rootView.skipButton.imageWithTitleView?.title = R.string.localizable
-            .commonSkip(preferredLanguages: selectedLocale.rLanguages)
+        rootView.titleLabel.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            .confirmMnemonicTitle()
+        rootView.continueButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable
+            .confirmMnemonicSelectWord()
+        rootView.skipButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable
+            .commonSkip()
     }
 }
 
@@ -184,11 +188,11 @@ private extension AccountConfirmViewController {
 
         if words.count == wordsUnits.count {
             rootView.setButtonEnabled(
-                with: R.string.localizable.commonContinue(preferredLanguages: selectedLocale.rLanguages)
+                with: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
             )
         } else {
             rootView.setButtonDisabled(
-                with: R.string.localizable.confirmMnemonicSelectWord(preferredLanguages: selectedLocale.rLanguages)
+                with: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.confirmMnemonicSelectWord()
             )
         }
     }

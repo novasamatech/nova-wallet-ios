@@ -8,21 +8,20 @@ enum GovernanceDelegatesOrder: Equatable {
 
 extension GovernanceDelegatesOrder {
     static func title(for locale: Locale) -> String {
-        R.string.localizable.delegationsSortTitle(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortTitle()
     }
 
     func value(for locale: Locale) -> String {
         switch self {
         case .delegations:
-            return R.string.localizable.delegationsSortDelegations(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortDelegations()
         case .delegatedVotes:
-            return R.string.localizable.delegationsSortDelegatedVotes(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortDelegatedVotes()
         case let .lastVoted(days):
-            let formattedDays = R.string.localizable.commonDaysFormat(
-                format: days,
+            let formattedDays = R.string(
                 preferredLanguages: locale.rLanguages
-            )
-            return R.string.localizable.delegationsSortLastVoted(formattedDays, preferredLanguages: locale.rLanguages)
+            ).localizable.commonDaysFormat(format: days)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortLastVoted(formattedDays)
         }
     }
 }

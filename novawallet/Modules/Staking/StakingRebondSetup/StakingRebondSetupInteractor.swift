@@ -1,5 +1,6 @@
 import Operation_iOS
 import Keystore_iOS
+import Foundation
 
 final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingRebondSetupInteractorOutputProtocol!

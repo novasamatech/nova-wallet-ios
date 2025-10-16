@@ -120,8 +120,8 @@ class MapKeyEncodingOperation<T: Encodable>: BaseOperation<[Data]> {
         callback(.success(keys))
     }
 
-    private func encodeParam<T: Encodable>(
-        _ param: T,
+    private func encodeParam<P: Encodable>(
+        _ param: P,
         factory: RuntimeCoderFactoryProtocol,
         type: String
     ) throws -> Data {

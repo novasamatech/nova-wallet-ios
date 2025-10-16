@@ -106,9 +106,9 @@ class CalculatorServiceTests: XCTestCase {
             let codingFactory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
 
             guard let era = try fetchActiveEra(
-                    for: chainId,
-                    storageFacade: storageFacade,
-                    codingFactory: codingFactory
+                for: chainId,
+                storageFacade: storageFacade,
+                codingFactory: codingFactory
             ) else {
                 XCTFail("No era found")
                 return
@@ -131,7 +131,6 @@ class CalculatorServiceTests: XCTestCase {
         }
     }
 
-
     func testFetchingLocalElectedValidatorsForKusama() {
         let storageFacade = SubstrateDataStorageFacade.shared
         let chainId = KnowChainId.kusama
@@ -141,9 +140,11 @@ class CalculatorServiceTests: XCTestCase {
         measure {
             do {
                 let codingFactory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
-                try performDatabaseTest(for: chainId,
-                                        storageFacade: storageFacade,
-                                        codingFactory: codingFactory)
+                try performDatabaseTest(
+                    for: chainId,
+                    storageFacade: storageFacade,
+                    codingFactory: codingFactory
+                )
             } catch {
                 XCTFail("Unexpected error \(error)")
             }
@@ -159,7 +160,7 @@ class CalculatorServiceTests: XCTestCase {
 
         measure {
             do {
-                let _ = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
+                _ = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
             } catch {
                 XCTFail("Unexpected error \(error)")
             }
@@ -177,7 +178,7 @@ class CalculatorServiceTests: XCTestCase {
         measure {
             do {
                 let factory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
-                let _ = try fetchActiveEra(for: chainId, storageFacade: facade, codingFactory: factory)
+                _ = try fetchActiveEra(for: chainId, storageFacade: facade, codingFactory: factory)
             } catch {
                 XCTFail("Unexpected error \(error)")
             }
@@ -195,17 +196,21 @@ class CalculatorServiceTests: XCTestCase {
 
             let factory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
 
-            guard let activeEra = try fetchActiveEra(for: chainId,
-                                                     storageFacade: storageFacade,
-                                                     codingFactory: factory) else {
+            guard let activeEra = try fetchActiveEra(
+                for: chainId,
+                storageFacade: storageFacade,
+                codingFactory: factory
+            ) else {
                 XCTFail("No era")
                 return
             }
 
-            let items = try fetchLocalEncodedValidators(for: chainId,
-                                                        era: activeEra,
-                                                        coderFactory: factory,
-                                                        storageFacade: storageFacade)
+            let items = try fetchLocalEncodedValidators(
+                for: chainId,
+                era: activeEra,
+                coderFactory: factory,
+                storageFacade: storageFacade
+            )
 
             let identifiers: [Data] = try items.map { item in
                 let key = try Data(hexString: item.identifier)
@@ -214,10 +219,12 @@ class CalculatorServiceTests: XCTestCase {
 
             measure {
                 do {
-                    let prefs = try fetchRemoteEncodedValidatorPrefs(identifiers,
-                                                                     era: activeEra,
-                                                                     engine: connection,
-                                                                     codingFactory: factory)
+                    let prefs = try fetchRemoteEncodedValidatorPrefs(
+                        identifiers,
+                        era: activeEra,
+                        engine: connection,
+                        codingFactory: factory
+                    )
                     XCTAssertEqual(prefs.count, identifiers.count)
                 } catch {
                     XCTFail("Unexpected error: \(error)")
@@ -241,17 +248,21 @@ class CalculatorServiceTests: XCTestCase {
 
                 let factory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
 
-                guard let activeEra = try fetchActiveEra(for: chainId,
-                                                         storageFacade: storageFacade,
-                                                         codingFactory: factory) else {
+                guard let activeEra = try fetchActiveEra(
+                    for: chainId,
+                    storageFacade: storageFacade,
+                    codingFactory: factory
+                ) else {
                     XCTFail("No era")
                     return
                 }
 
-                let items = try fetchLocalEncodedValidators(for: chainId,
-                                                            era: activeEra,
-                                                            coderFactory: factory,
-                                                            storageFacade: storageFacade)
+                let items = try fetchLocalEncodedValidators(
+                    for: chainId,
+                    era: activeEra,
+                    coderFactory: factory,
+                    storageFacade: storageFacade
+                )
 
                 _ = try decodeEncodedValidators(items, codingFactory: factory)
 
@@ -260,10 +271,12 @@ class CalculatorServiceTests: XCTestCase {
                     return key.getAccountIdFromKey()
                 }
 
-                let prefs = try fetchRemoteEncodedValidatorPrefs(identifiers,
-                                                                 era: activeEra,
-                                                                 engine: connection,
-                                                                 codingFactory: factory)
+                let prefs = try fetchRemoteEncodedValidatorPrefs(
+                    identifiers,
+                    era: activeEra,
+                    engine: connection,
+                    codingFactory: factory
+                )
                 XCTAssertEqual(prefs.count, identifiers.count)
             } catch {
                 XCTFail("Unexpected error: \(error)")
@@ -282,16 +295,18 @@ class CalculatorServiceTests: XCTestCase {
 
                 let path = Staking.activeEra
                 let localKey = try localFactory.createFromStoragePath(path, chainId: chainId)
-                let eraDataProvider = SubstrateDataProviderFactory(facade: storageFacade,
-                                                                   operationManager: OperationManager())
-                    .createStorageProvider(for: localKey)
+                let eraDataProvider = SubstrateDataProviderFactory(
+                    facade: storageFacade,
+                    operationManager: OperationManager()
+                )
+                .createStorageProvider(for: localKey)
 
                 let expectation = XCTestExpectation()
 
                 let updateClosure: ([DataProviderChange<ChainStorageItem>]) -> Void = { changes in
-                    let finalValue: ChainStorageItem? = changes.reduce(nil) { (_, item) in
+                    let finalValue: ChainStorageItem? = changes.reduce(nil) { _, item in
                         switch item {
-                        case .insert(let newItem), .update(let newItem):
+                        case let .insert(newItem), let .update(newItem):
                             return newItem
                         case .delete:
                             return nil
@@ -303,20 +318,24 @@ class CalculatorServiceTests: XCTestCase {
                     }
                 }
 
-                let failureClosure: (Error) -> Void = { (error) in
+                let failureClosure: (Error) -> Void = { error in
                     XCTFail("Unexpected error: \(error)")
                     expectation.fulfill()
                 }
 
-                let options = StreamableProviderObserverOptions(alwaysNotifyOnRefresh: false,
-                                                                waitsInProgressSyncOnAdd: false,
-                                                                initialSize: 0,
-                                                                refreshWhenEmpty: false)
-                eraDataProvider.addObserver(self,
-                                            deliverOn: syncQueue,
-                                            executing: updateClosure,
-                                            failing: failureClosure,
-                                            options: options)
+                let options = StreamableProviderObserverOptions(
+                    alwaysNotifyOnRefresh: false,
+                    waitsInProgressSyncOnAdd: false,
+                    initialSize: 0,
+                    refreshWhenEmpty: false
+                )
+                eraDataProvider.addObserver(
+                    self,
+                    deliverOn: syncQueue,
+                    executing: updateClosure,
+                    failing: failureClosure,
+                    options: options
+                )
 
                 wait(for: [expectation], timeout: 10.0)
             } catch {
@@ -327,15 +346,19 @@ class CalculatorServiceTests: XCTestCase {
 
     // MARK: Private
 
-    private func performDatabaseTest(for chainId: ChainModel.Id,
-                                     storageFacade: StorageFacadeProtocol,
-                                     codingFactory: RuntimeCoderFactoryProtocol) throws {
+    private func performDatabaseTest(
+        for chainId: ChainModel.Id,
+        storageFacade: StorageFacadeProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws {
         let operationQueue = OperationQueue()
 
-        guard let activeEra = try fetchActiveEra(for: chainId,
-                                                 storageFacade: storageFacade,
-                                                 codingFactory: codingFactory,
-                                                 operationQueue: operationQueue) else {
+        guard let activeEra = try fetchActiveEra(
+            for: chainId,
+            storageFacade: storageFacade,
+            codingFactory: codingFactory,
+            operationQueue: operationQueue
+        ) else {
             XCTFail("No active era")
             return
         }
@@ -349,8 +372,10 @@ class CalculatorServiceTests: XCTestCase {
         let anyRepository = AnyDataProviderRepository(repository)
 
         let localValidatorsWrapper =
-            createLocalValidatorsWrapper(repository: anyRepository,
-                                         codingFactory: codingFactory)
+            createLocalValidatorsWrapper(
+                repository: anyRepository,
+                codingFactory: codingFactory
+            )
 
         operationQueue.addOperations(localValidatorsWrapper.allOperations, waitUntilFinished: true)
 
@@ -359,9 +384,11 @@ class CalculatorServiceTests: XCTestCase {
         XCTAssert(!validators.isEmpty)
     }
 
-    private func createLocalValidatorsWrapper(repository: AnyDataProviderRepository<ChainStorageItem>,
-                                              codingFactory: RuntimeCoderFactoryProtocol)
-    -> CompoundOperationWrapper<[(Data, Staking.ValidatorExposure)]> {
+    private func createLocalValidatorsWrapper(
+        repository: AnyDataProviderRepository<ChainStorageItem>,
+        codingFactory: RuntimeCoderFactoryProtocol
+    )
+        -> CompoundOperationWrapper<[(Data, Staking.ValidatorExposure)]> {
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
         let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: Staking.erasStakers)
@@ -374,7 +401,7 @@ class CalculatorServiceTests: XCTestCase {
                     return
                 }
 
-                decodingOperation.dataList = validators.map { $0.data }
+                decodingOperation.dataList = validators.map(\.data)
             } catch {
                 decodingOperation.result = .failure(error)
             }
@@ -393,16 +420,20 @@ class CalculatorServiceTests: XCTestCase {
 
         mapOperation.addDependency(decodingOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation,
-                                        dependencies: [fetchOperation, decodingOperation])
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation, decodingOperation]
+        )
     }
 
-    private func fetchRemoteEncodedValidatorPrefs(_ identifers: [Data],
-                                                  era: UInt32,
-                                                  engine: JSONRPCEngine,
-                                                  codingFactory: RuntimeCoderFactoryProtocol,
-                                                  queue: OperationQueue = OperationQueue()) throws
-    -> [StorageResponse<Staking.ValidatorPrefs>] {
+    private func fetchRemoteEncodedValidatorPrefs(
+        _ identifers: [Data],
+        era: UInt32,
+        engine: JSONRPCEngine,
+        codingFactory: RuntimeCoderFactoryProtocol,
+        queue: OperationQueue = OperationQueue()
+    ) throws
+        -> [StorageResponse<Staking.ValidatorPrefs>] {
         let params1: () throws -> [String] = {
             Array(repeating: String(era), count: identifers.count)
         }
@@ -417,23 +448,27 @@ class CalculatorServiceTests: XCTestCase {
         )
 
         let queryWrapper: CompoundOperationWrapper<[StorageResponse<Staking.ValidatorPrefs>]> =
-            requestFactory.queryItems(engine: engine,
-                                      keyParams1: params1,
-                                      keyParams2: params2,
-                                      factory: { codingFactory },
-                                      storagePath: Staking.eraValidatorPrefs)
+            requestFactory.queryItems(
+                engine: engine,
+                keyParams1: params1,
+                keyParams2: params2,
+                factory: { codingFactory },
+                storagePath: Staking.eraValidatorPrefs
+            )
 
         queue.addOperations(queryWrapper.allOperations, waitUntilFinished: true)
 
         return try queryWrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    private func fetchLocalEncodedValidators(for chainId: ChainModel.Id,
-                                             era: UInt32,
-                                             coderFactory: RuntimeCoderFactoryProtocol,
-                                             storageFacade: StorageFacadeProtocol,
-                                             queue: OperationQueue = OperationQueue()) throws
-    -> [ChainStorageItem] {
+    private func fetchLocalEncodedValidators(
+        for chainId: ChainModel.Id,
+        era: UInt32,
+        coderFactory _: RuntimeCoderFactoryProtocol,
+        storageFacade: StorageFacadeProtocol,
+        queue: OperationQueue = OperationQueue()
+    ) throws
+        -> [ChainStorageItem] {
         let localKey = try createEraStakersPrefixKey(for: chainId, era: era)
 
         let filter = NSPredicate.filterByIdPrefix(localKey)
@@ -448,13 +483,15 @@ class CalculatorServiceTests: XCTestCase {
         return try fetchOperation.extractNoCancellableResultData()
     }
 
-    private func decodeEncodedValidators(_ validators: [ChainStorageItem],
-                                         codingFactory: RuntimeCoderFactoryProtocol,
-                                         operationQueue: OperationQueue = OperationQueue()) throws
-    -> [Staking.ValidatorExposure] {
+    private func decodeEncodedValidators(
+        _ validators: [ChainStorageItem],
+        codingFactory: RuntimeCoderFactoryProtocol,
+        operationQueue: OperationQueue = OperationQueue()
+    ) throws
+        -> [Staking.ValidatorExposure] {
         let decodingOperation = StorageDecodingListOperation<Staking.ValidatorExposure>(path: Staking.erasStakers)
         decodingOperation.codingFactory = codingFactory
-        decodingOperation.dataList = validators.map { $0.data }
+        decodingOperation.dataList = validators.map(\.data)
 
         operationQueue.addOperations([decodingOperation], waitUntilFinished: true)
         return try decodingOperation.extractNoCancellableResultData()
@@ -511,7 +548,6 @@ class CalculatorServiceTests: XCTestCase {
     }
 
     private func createEraStakersPrefixKey(for chainId: ChainModel.Id, era: UInt32?) throws -> String {
-
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             Staking.erasStakers,
             chainId: chainId
@@ -535,17 +571,21 @@ class CalculatorServiceTests: XCTestCase {
 
             let codingFactory = try fetchCoderFactory(for: chainId, chainRegistry: chainRegistry)
 
-            guard let era = try fetchActiveEra(for: chainId,
-                                               storageFacade: storageFacade,
-                                               codingFactory: codingFactory) else {
+            guard let era = try fetchActiveEra(
+                for: chainId,
+                storageFacade: storageFacade,
+                codingFactory: codingFactory
+            ) else {
                 XCTFail("No era found")
                 return
             }
 
-            let items = try fetchLocalEncodedValidators(for: chainId,
-                                                        era: era,
-                                                        coderFactory: codingFactory,
-                                                        storageFacade: storageFacade)
+            let items = try fetchLocalEncodedValidators(
+                for: chainId,
+                era: era,
+                coderFactory: codingFactory,
+                storageFacade: storageFacade
+            )
             XCTAssert(!items.isEmpty)
 
             measure {
@@ -602,7 +642,7 @@ class CalculatorServiceTests: XCTestCase {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-        
+
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
@@ -614,7 +654,7 @@ class CalculatorServiceTests: XCTestCase {
             for: chainId,
             localSubscriptionFactory: stakingLocalSubscriptionFactory
         )
-        
+
         validatorService.setup()
 
         let calculatorService = try serviceFactory.createRewardCalculatorService(

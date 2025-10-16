@@ -25,11 +25,11 @@ final class WalletUpdateMediatorTests: XCTestCase {
             let coreDataRepository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
             repository = AnyDataProviderRepository(coreDataRepository)
             walletStorageCleaner = walletCleaner
-            
+
             stub(walletCleaner) { stub in
                 when(stub.cleanStorage(using: any())).thenReturn(.createWithResult(()))
             }
-            
+
             walletUpdateMediator = WalletUpdateMediator(
                 selectedWalletSettings: selectedAccountSettings,
                 repository: repository,
@@ -37,20 +37,20 @@ final class WalletUpdateMediatorTests: XCTestCase {
                 operationQueue: operationQueue
             )
         }
-        
+
         func setup(with wallets: [ManagedMetaAccountModel]) {
             save(wallets: wallets)
         }
-        
+
         func save(wallets: [ManagedMetaAccountModel]) {
             let saveOperation = repository.saveOperation({
                 wallets
             }, { [] })
-            
+
             operationQueue.addOperations([saveOperation], waitUntilFinished: true)
             selectedAccountSettings.setup()
         }
-        
+
         func select(walletId: MetaAccountModel.Id) throws {
             let wallets = try allWallets().map { wallet in
                 ManagedMetaAccountModel(
@@ -59,10 +59,10 @@ final class WalletUpdateMediatorTests: XCTestCase {
                     order: wallet.order
                 )
             }
-            
+
             save(wallets: wallets)
         }
-        
+
         func update(
             with newOrUpdate: [ManagedMetaAccountModel],
             remove: [ManagedMetaAccountModel]
@@ -70,91 +70,91 @@ final class WalletUpdateMediatorTests: XCTestCase {
             let wrapper = walletUpdateMediator.saveChanges {
                 SyncChanges(newOrUpdatedItems: newOrUpdate, removedItems: remove)
             }
-            
+
             operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-            
+
             return try wrapper.targetOperation.extractNoCancellableResultData()
         }
-        
+
         func allWallets() throws -> [ManagedMetaAccountModel] {
             let operation = repository.fetchAllOperation(with: .init())
             operationQueue.addOperations([operation], waitUntilFinished: true)
-            
+
             return try operation.extractNoCancellableResultData()
         }
     }
-    
+
     struct ProxyWallets {
         var proxyWallet1: ManagedMetaAccountModel
-        
+
         var proxyWallet2: ManagedMetaAccountModel
-        
+
         var proxiedForWallet1: ManagedMetaAccountModel
-        
+
         var proxiedForWallet2: ManagedMetaAccountModel
-        
+
         var proxiedForProxiedWallet1: ManagedMetaAccountModel
-        
+
         var recursiveProxiedForProxiedWallet1: ManagedMetaAccountModel
-        
+
         init(reversedOrder: Bool = false) {
-            let allOrders: [UInt32] = (0...5).map({ $0 })
+            let allOrders: [UInt32] = (0 ... 5).map { $0 }
             let orders = reversedOrder ? allOrders.reversed() : allOrders
-            
+
             let chainId = Data.random(of: 32)!.toHex()
-            
+
             proxyWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
                 isSelected: false,
                 order: orders[0]
             )
-            
+
             proxyWallet2 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 0),
                 isSelected: false,
                 order: orders[1]
             )
-            
+
             let proxied1ChainAccount = AccountGenerator.generateProxiedChainAccount(for: .init(
                 type: .any,
                 accountId: proxyWallet1.info.substrateAccountId!,
                 status: .active
             ), chainId: chainId)
-            
+
             proxiedForWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied1ChainAccount], type: .proxied),
                 isSelected: true,
                 order: orders[2]
             )
-            
+
             let proxied2ChainAccount = AccountGenerator.generateProxiedChainAccount(for: .init(
                 type: .staking,
                 accountId: proxyWallet2.info.substrateAccountId!,
                 status: .active
             ), chainId: chainId)
-            
+
             proxiedForWallet2 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied2ChainAccount], type: .proxied),
                 isSelected: false,
                 order: orders[3]
             )
-            
+
             // include nested proxied for wallet1
-            
+
             let proxied3ChainAccount = AccountGenerator.generateProxiedChainAccount(for: .init(
                 type: .any,
                 accountId: proxied1ChainAccount.accountId,
                 status: .active
             ), chainId: chainId)
-            
+
             proxiedForProxiedWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied3ChainAccount], type: .proxied),
                 isSelected: false,
                 order: orders[4]
             )
-            
+
             // and cyclic proxied from proxied1 to proxied3
-            
+
             let proxied4ChainAccount = ChainAccountModel(
                 chainId: proxied1ChainAccount.chainId,
                 accountId: proxied1ChainAccount.accountId,
@@ -167,113 +167,113 @@ final class WalletUpdateMediatorTests: XCTestCase {
                 ),
                 multisig: nil
             )
-            
+
             recursiveProxiedForProxiedWallet1 = ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(with: [proxied4ChainAccount], type: .proxied),
                 isSelected: false,
                 order: orders[5]
             )
         }
-        
+
         var allWithoutRecursive: [ManagedMetaAccountModel] {
             [proxyWallet1, proxyWallet2, proxiedForWallet1, proxiedForWallet2, proxiedForProxiedWallet1]
         }
-        
+
         var all: [ManagedMetaAccountModel] {
             [proxyWallet1, proxyWallet2, proxiedForWallet1, proxiedForWallet2, proxiedForProxiedWallet1, recursiveProxiedForProxiedWallet1]
         }
     }
-    
+
     func testAutoSwitchWalletIfSelectedOneRemoved() {
         // given
-        
+
         let common = Common()
-        
-        let wallets = (0..<20).map { index in
+
+        let wallets = (0 ..< 20).map { index in
             ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
                 isSelected: index == 0,
                 order: index
             )
         }
-        
+
         common.setup(with: wallets)
-        
+
         let removedWallet = wallets[0]
-        
+
         XCTAssertTrue(common.selectedAccountSettings.value.identifier == removedWallet.identifier)
-        
+
         do {
             // when
-            
+
             let result = try common.update(with: [], remove: [removedWallet])
-            
+
             // then
-            
+
             XCTAssertTrue(result.isWalletSwitched)
             XCTAssertTrue(result.selectedWallet != nil)
             XCTAssertTrue(common.selectedAccountSettings.value.identifier != removedWallet.identifier)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testNoSwitchWalletIfNoSelectedAccountsRemoved() {
         // given
-        
+
         let common = Common()
-        
-        let wallets = (0..<20).map { index in
+
+        let wallets = (0 ..< 20).map { index in
             ManagedMetaAccountModel(
                 info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
                 isSelected: index == 0,
                 order: index
             )
         }
-        
+
         common.setup(with: wallets)
-        
+
         let selectedWallet = wallets[0]
         let removedWallet = wallets[wallets.count - 1]
-        
+
         XCTAssertTrue(common.selectedAccountSettings.value.identifier == selectedWallet.identifier)
-        
+
         // then
-        
+
         do {
             let result = try common.update(with: [], remove: [removedWallet])
-            
+
             XCTAssertTrue(!result.isWalletSwitched)
             XCTAssertTrue(result.selectedWallet != nil)
             XCTAssertTrue(common.selectedAccountSettings.value.identifier == selectedWallet.identifier)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testRemoveNestedProxiedsWhenProxyRemovedAndAutoswitchSelectedWallet() throws {
         // given
-        
+
         let common = Common()
         let proxyWallets = ProxyWallets(reversedOrder: true)
-        
+
         common.setup(with: proxyWallets.allWithoutRecursive)
         try common.select(walletId: proxyWallets.proxiedForWallet1.identifier)
-        
+
         XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxiedForWallet1.identifier)
-        
+
         // then
-        
+
         do {
             let result = try common.update(with: [], remove: [proxyWallets.proxyWallet1])
-            
+
             let remainedWallets = try common.allWallets()
-            let remainedIdentifiers = remainedWallets.map { $0.identifier }
-            
+            let remainedIdentifiers = remainedWallets.map(\.identifier)
+
             XCTAssertTrue(result.isWalletSwitched)
             XCTAssertEqual(result.selectedWallet?.identifier, common.selectedAccountSettings.value.identifier)
             XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxyWallet2.identifier)
@@ -281,29 +281,29 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testRemoveRecursiveProxiedsWhenProxyRemoved() throws {
         // given
-        
+
         let common = Common()
         let proxyWallets = ProxyWallets(reversedOrder: true)
-        
+
         common.setup(with: proxyWallets.all)
         try common.select(walletId: proxyWallets.proxiedForWallet1.identifier)
-        
+
         XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxiedForWallet1.identifier)
-        
+
         // then
-        
+
         do {
             let result = try common.update(with: [], remove: [proxyWallets.proxyWallet1])
-            
+
             let remainedWallets = try common.allWallets()
-            let remainedIdentifiers = remainedWallets.map { $0.identifier }
-            
+            let remainedIdentifiers = remainedWallets.map(\.identifier)
+
             XCTAssertTrue(result.isWalletSwitched)
             XCTAssertEqual(result.selectedWallet?.identifier, common.selectedAccountSettings.value.identifier)
             XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxyWallet2.identifier)
@@ -311,29 +311,29 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testRecursiveWalletNotRemovedIfReachable() throws {
         // given
-        
+
         let common = Common()
         let proxyWallets = ProxyWallets(reversedOrder: true)
-        
+
         common.setup(with: proxyWallets.all)
         try common.select(walletId: proxyWallets.proxiedForWallet2.identifier)
-        
+
         XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxiedForWallet2.identifier)
-        
+
         // then
-        
+
         do {
             let result = try common.update(with: [], remove: [proxyWallets.proxyWallet2])
-            
+
             let remainedWallets = try common.allWallets()
-            let remainedIdentifiers = remainedWallets.map { $0.identifier }
-            
+            let remainedIdentifiers = remainedWallets.map(\.identifier)
+
             XCTAssertTrue(result.isWalletSwitched)
             XCTAssertEqual(result.selectedWallet?.identifier, common.selectedAccountSettings.value.identifier)
             XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxyWallets.proxyWallet1.identifier)
@@ -349,78 +349,78 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testAutoSwitchWalletIfProxiedRevoked() throws {
         // given
-        
+
         let common = Common()
         let proxyWallets = ProxyWallets()
-        
+
         common.setup(with: proxyWallets.all)
-        
+
         let proxied = proxyWallets.proxiedForWallet2
         try common.select(walletId: proxied.identifier)
-        
+
         XCTAssertEqual(common.selectedAccountSettings.value.identifier, proxied.identifier)
-        
+
         // when
-        
+
         let newProxied = proxied.replacingInfo(
             proxied.info.replacingChainAccount(
                 proxied.info.chainAccounts.first!.replacingProxyStatus(from: .active, to: .revoked)
             )
         )
-        
+
         // then
-        
+
         do {
             let result = try common.update(with: [newProxied], remove: [])
             XCTAssertTrue(result.isWalletSwitched)
-            
+
             let maybeSelected: Set<MetaAccountModel.Id> = [proxyWallets.proxyWallet1.identifier, proxyWallets.proxyWallet2.identifier]
             XCTAssertTrue(maybeSelected.contains(common.selectedAccountSettings.value.identifier))
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
-    
+
     func testAutoSwitchNewWalletIfAllRemoved() throws {
         // given
-        
+
         let common = Common()
-        
-        let allWallets = (0..<6).map { (index: UInt32) in
+
+        let allWallets = (0 ..< 6).map { (index: UInt32) in
             let metaAccount = AccountGenerator.generateMetaAccount(generatingChainAccounts: 0)
-            
+
             return ManagedMetaAccountModel(info: metaAccount, isSelected: false, order: index)
         }
-        
-        let oldWallets = Array(allWallets[0..<3])
-        let newWallets = Array(allWallets[3..<6])
-        
+
+        let oldWallets = Array(allWallets[0 ..< 3])
+        let newWallets = Array(allWallets[3 ..< 6])
+
         common.setup(with: oldWallets)
         try common.select(walletId: oldWallets[0].identifier)
-        
+
         // when
-        
+
         let result = try common.update(with: newWallets, remove: oldWallets)
-        
+
         // then
-        
+
         XCTAssertTrue(result.isWalletSwitched)
-        
+
         if let selectedWallet = result.selectedWallet {
             XCTAssertTrue(selectedWallet.isSelected)
             XCTAssertTrue(newWallets.contains(where: { $0.identifier == selectedWallet.identifier }))
         } else {
             XCTFail("Selected wallet expected")
         }
-        
+
         verify(common.walletStorageCleaner, times(1)).cleanStorage(using: any())
     }
 }

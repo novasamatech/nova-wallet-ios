@@ -6,7 +6,7 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     let extrinsicService: ExtrinsicServiceProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
-    
+
     init(
         extrinsicService: ExtrinsicServiceProtocol = ExtrinsicServiceStub.dummy(),
         extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol = ExtrinsicOperationFactoryStub(),
@@ -18,41 +18,41 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     }
 
     func createService(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        extensions: [TransactionExtending]
+        account _: ChainAccountResponse,
+        chain _: ChainModel,
+        extensions _: [TransactionExtending]
     ) -> ExtrinsicServiceProtocol {
         extrinsicService
     }
-    
+
     func createService(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        extensions: [TransactionExtending],
-        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+        account _: ChainAccountResponse,
+        chain _: ChainModel,
+        extensions _: [TransactionExtending],
+        customFeeEstimatingFactory _: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicServiceProtocol {
         extrinsicService
     }
 
     func createOperationFactory(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        extensions: [TransactionExtending]
+        account _: ChainAccountResponse,
+        chain _: ChainModel,
+        extensions _: [TransactionExtending]
     ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicOperationFactory
     }
-    
+
     func createOperationFactory(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        extensions: [TransactionExtending],
-        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+        account _: ChainAccountResponse,
+        chain _: ChainModel,
+        extensions _: [TransactionExtending],
+        customFeeEstimatingFactory _: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicOperationFactory
     }
-    
+
     func createExtrinsicSubmissionMonitor(
-        with extrinsicService: ExtrinsicServiceProtocol
+        with _: ExtrinsicServiceProtocol
     ) -> ExtrinsicSubmitMonitorFactoryProtocol {
         extrinsicMonitorFactory
     }

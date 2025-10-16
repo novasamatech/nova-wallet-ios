@@ -54,18 +54,16 @@ final class StakingPayoutConfirmationViewController: UIViewController, ViewHolde
 extension StakingPayoutConfirmationViewController: Localizable {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        title = R.string.localizable.stakingPayoutTitle(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.stakingPayoutTitle()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: languages
-        )
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonConfirm()
 
         applyFeeViewModel()
         applyConfirmationViewModel()

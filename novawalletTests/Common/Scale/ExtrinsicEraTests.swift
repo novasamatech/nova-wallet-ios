@@ -19,7 +19,7 @@ class ExtrinsicEraTests: XCTestCase {
         switch era {
         case .immortal:
             XCTFail("Mortal era expected")
-        case .mortal(let period, let phase):
+        case let .mortal(period, phase):
             XCTAssertEqual(period, 32768)
             XCTAssertEqual(phase, 20000)
         }

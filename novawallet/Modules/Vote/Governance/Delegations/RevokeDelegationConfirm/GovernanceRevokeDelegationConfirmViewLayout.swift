@@ -86,7 +86,7 @@ final class GovRevokeDelegationConfirmViewLayout: UIView {
     }
 
     func addYourDelegationCell(for viewModel: GovernanceYourDelegationViewModel, locale: Locale) {
-        let title = R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.govYourDelegation()
 
         let cell = delegateTableView.addTitleMultiValue(
             for: title,

@@ -111,10 +111,7 @@ private extension DAppListViewModelFactory {
 
     func sortedDAppViewModels(from viewModels: [DAppViewModel]) -> [DAppViewModel] {
         viewModels.sorted { lhsModel, rhsModel in
-            let lhsIsFavorite = lhsModel.isFavorite ? 1 : 0
-            let rhsIsFavorite = rhsModel.isFavorite ? 1 : 0
-
-            return if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
+            if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
                 lhsOrder < rhsOrder
             } else if lhsModel.order != nil {
                 false
@@ -140,7 +137,7 @@ private extension DAppListViewModelFactory {
             dAppList: dAppList
         )
 
-        let name = R.string.localizable.commonFavorites(preferredLanguages: locale.rLanguages)
+        let name = R.string(preferredLanguages: locale.rLanguages).localizable.commonFavorites()
 
         return DAppListSection(
             title: name,
@@ -164,7 +161,7 @@ private extension DAppListViewModelFactory {
         let categoriesById: [String: DAppCategory] = dAppList.categories
             .reduce(into: [:]) { $0[$1.identifier] = $1 }
 
-        let categoryName = R.string.localizable.dappListSectionPopular(preferredLanguages: locale.rLanguages)
+        let categoryName = R.string(preferredLanguages: locale.rLanguages).localizable.dappListSectionPopular()
 
         return createCategorySection(
             categoryName: categoryName,

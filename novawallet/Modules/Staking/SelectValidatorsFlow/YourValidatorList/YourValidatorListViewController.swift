@@ -74,10 +74,11 @@ final class YourValidatorListViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingYourValidatorsTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourValidatorsTitle()
 
-        navigationItem.rightBarButtonItem?.title = R.string.localizable
-            .commonChange(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonChange()
     }
 
     private func setupNavigationItem() {
@@ -222,9 +223,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
     private func configureWarning(headerView: YourValidatorListWarningSectionView, validatorsCount: Int) {
         configureElected(headerView: headerView, validatorsCount: validatorsCount)
 
-        let text = R.string.localizable.stakingYourOversubscribedMessage(
+        let text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingYourOversubscribedMessage()
 
         headerView.bind(warningText: text)
 
@@ -234,15 +235,14 @@ extension YourValidatorListViewController: UITableViewDelegate {
     private func configureElected(headerView: YourValidatorListStatusSectionView, validatorsCount: Int) {
         let icon = R.image.iconAlgoItem()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
-            R.string.localizable.stakingYourElectedFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourElectedFormat(
+                $0
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourAllocatedDescription_2_2_0(
+        let description = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingYourAllocatedDescription_2_2_0()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextPrimary()
 
@@ -253,9 +253,9 @@ extension YourValidatorListViewController: UITableViewDelegate {
     }
 
     private func configureNotAllocated(headerView: YourValidatorListDescSectionView, section: Int) {
-        let description = R.string.localizable.stakingYourNotAllocatedDescription_v2_2_0(
+        let description = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingYourNotAllocatedDescription_v2_2_0()
 
         headerView.bind(description: description)
 
@@ -273,15 +273,14 @@ extension YourValidatorListViewController: UITableViewDelegate {
     ) {
         let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
-            R.string.localizable.stakingYourNotElectedFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourNotElectedFormat(
+                $0
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourInactiveDescription_v2_2_0(
+        let description = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingYourInactiveDescription_v2_2_0()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -302,15 +301,14 @@ extension YourValidatorListViewController: UITableViewDelegate {
     ) {
         let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
-            R.string.localizable.stakingYourSelectedFormat(
-                $0,
-                preferredLanguages: selectedLocale.rLanguages
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingYourSelectedFormat(
+                $0
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourValidatorsChangingTitle(
+        let description = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingYourValidatorsChangingTitle()
 
         headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
@@ -357,9 +355,9 @@ extension YourValidatorListViewController: EmptyStateDataSource {
             return errorView
         case .loading:
             let loadingView = ListLoadingView()
-            loadingView.titleLabel.text = R.string.localizable.stakingLoadingValidators(
+            loadingView.titleLabel.text = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.stakingLoadingValidators()
             loadingView.start()
             return loadingView
         case .validatorList:
@@ -390,7 +388,7 @@ extension YourValidatorListViewController: YourValidatorListViewProtocol {
     }
 }
 
-extension YourValidatorListViewController {
+extension YourValidatorListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

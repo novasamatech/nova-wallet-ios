@@ -73,21 +73,13 @@ final class TokensManageViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.tokensManageTitle(
-            preferredLanguages: languages
-        )
+        title = R.string(preferredLanguages: languages).localizable.tokensManageTitle()
 
-        rootView.addTokenButton.title = R.string.localizable.commonAddToken(
-            preferredLanguages: languages
-        )
+        rootView.addTokenButton.title = R.string(preferredLanguages: languages).localizable.commonAddToken()
 
-        let placeholder = R.string.localizable.assetsSearchPlaceholder(
-            preferredLanguages: languages
-        )
+        let placeholder = R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()
 
-        rootView.filterLabel.text = R.string.localizable.assetsManageHideZeroBalances(
-            preferredLanguages: languages
-        )
+        rootView.filterLabel.text = R.string(preferredLanguages: languages).localizable.assetsManageHideZeroBalances()
 
         rootView.searchTextField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
@@ -179,9 +171,7 @@ extension TokensManageViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconLoadingError()!
-        emptyView.title = R.string.localizable.assetsSearchEmpty(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.assetsSearchEmpty()
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView

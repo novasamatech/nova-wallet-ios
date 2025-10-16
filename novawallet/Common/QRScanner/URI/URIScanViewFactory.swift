@@ -7,18 +7,18 @@ struct URIScanViewFactory {
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
         let scanTitle = LocalizableResource { locale in
-            R.string.localizable.walletConnectScanMessage(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletConnectScanMessage()
         }
 
         let details = LocalizableResource { locale in
-            let title = R.string.localizable.commonWalletConnectV2(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletConnectV2()
             let icon = R.image.iconWalletConnect()?.tinted(with: R.color.colorTextPrimary()!)
 
             return TitleIconViewModel(title: title, icon: icon)
         }
 
         let qrExtractionError = LocalizableResource { locale in
-            R.string.localizable.walletConnectScanError(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletConnectScanError()
         }
 
         return createView(

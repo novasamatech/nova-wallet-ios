@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRewardDestConfirmTests: XCTestCase {
-
     func testRewardDestinationConfirmSuccess() throws {
         // given
 
@@ -25,21 +24,21 @@ class StakingRewardDestConfirmTests: XCTestCase {
 
         stub(view) { stub in
 
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveConfirmation(viewModel: any())).thenDoNothing()
 
-            when(stub).localizationManager.get.then { nil }
+            when(stub.didStartLoading()).thenDoNothing()
 
-            when(stub).didStartLoading().thenDoNothing()
-
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
-                from: any(),
-                params: any()
+            when(
+                stub.presentExtrinsicSubmission(
+                    from: any(),
+                    params: any()
+                )
             ).then { _ in
                 completionExpectation.fulfill()
             }
@@ -94,7 +93,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
                     ]
                 }
             }, { [] })
-        
+
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
@@ -168,7 +167,8 @@ class StakingRewardDestConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidating,
             assetInfo: assetInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -181,13 +181,13 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let rewardDestinationExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveFee(viewModel: any()).then { feeViewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { feeViewModel in
                 if feeViewModel != nil {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveConfirmation(viewModel: any()).then { _ in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 rewardDestinationExpectation.fulfill()
             }
         }
@@ -211,5 +211,4 @@ class StakingRewardDestConfirmTests: XCTestCase {
 
         return presenter
     }
-
 }

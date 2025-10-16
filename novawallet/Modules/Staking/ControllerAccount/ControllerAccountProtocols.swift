@@ -1,6 +1,6 @@
 import Foundation_iOS
 
-protocol ControllerAccountViewProtocol: ControllerBackedProtocol, Localizable {
+protocol ControllerAccountViewProtocol: ControllerBackedProtocol {
     func reload(with viewModel: ControllerAccountViewModel)
     func didCompleteControllerSelection()
 }

@@ -88,10 +88,11 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale
 
-        title = R.string.localizable.walletChainManagementTitle(preferredLanguages: locale?.rLanguages)
+        title = R.string(preferredLanguages: locale.rLanguages).localizable.walletChainManagementTitle()
 
-        walletNameTextField.title = R.string.localizable
-            .walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
+        walletNameTextField.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletUsernameSetupChooseTitle_v2_2_0()
 
         applyWalletViewModel()
     }

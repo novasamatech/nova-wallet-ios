@@ -1,4 +1,6 @@
+import UIKit
 import Operation_iOS
+
 typealias IdentifiableImageViewModelProtocol = ImageViewModelProtocol & Identifiable
 
 final class IdentifiableDrawableIconViewModel: IdentifiableImageViewModelProtocol {

@@ -28,34 +28,31 @@ enum ValidatorListFilterRow: Int, CaseIterable {
         case .slashed:
             return LocalizableResource { locale in
                 TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingRecommendedHint4(preferredLanguages: locale.rLanguages)
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint4()
                 )
             }
 
         case .oversubscribed:
             return LocalizableResource { locale in
                 TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingRecommendedHint2(preferredLanguages: locale.rLanguages)
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint2()
                 )
             }
 
         case .clusterLimit:
             return LocalizableResource { locale in
                 TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingRecommendedHint5(preferredLanguages: locale.rLanguages)
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint5()
                 )
             }
 
         case .withoutIdentity:
             return LocalizableResource { locale in
                 TitleWithSubtitleViewModel(
-                    title: R.string.localizable
-                        .stakingRecommendedHint3(preferredLanguages: locale.rLanguages),
-                    subtitle: R.string.localizable
-                        .stakingRecommendedHint3Addition(preferredLanguages: locale.rLanguages)
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingRecommendedHint3(),
+                    subtitle: R.string(
+                        preferredLanguages: locale.rLanguages
+                    ).localizable.stakingRecommendedHint3Addition()
                 )
             }
         }

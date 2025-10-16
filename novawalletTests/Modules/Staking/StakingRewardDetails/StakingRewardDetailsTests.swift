@@ -6,7 +6,6 @@ import Keystore_iOS
 @testable import novawallet
 
 class StakingRewardDetailsTests: XCTestCase {
-
     func testSetupAndHandlePayout() {
         let chain = ChainModelGenerator.generateChain(
             generatingAssets: 2,
@@ -69,7 +68,7 @@ class StakingRewardDetailsTests: XCTestCase {
             targetAssetInfo: assetInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
-        
+
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
             chainFormat: chain.chainFormat
@@ -97,19 +96,19 @@ class StakingRewardDetailsTests: XCTestCase {
         let remainedTimeExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(amountViewModel: any()).then { _ in
+            when(stub.didReceive(amountViewModel: any())).then { _ in
                 amountExpectation.fulfill()
             }
 
-            when(stub).didReceive(validatorViewModel: any()).then { _ in
+            when(stub.didReceive(validatorViewModel: any())).then { _ in
                 validatorExpectation.fulfill()
             }
 
-            when(stub).didReceive(eraViewModel: any()).then { _ in
+            when(stub.didReceive(eraViewModel: any())).then { _ in
                 eraExpectation.fulfill()
             }
 
-            when(stub).didReceive(remainedTime: any()).then { _ in
+            when(stub.didReceive(remainedTime: any())).then { _ in
                 remainedTimeExpectation.fulfill()
             }
         }
@@ -127,7 +126,7 @@ class StakingRewardDetailsTests: XCTestCase {
 
         let handlePayoutActionExpectation = XCTestExpectation(description: "wireframe method is called")
         stub(wireframe) { stub in
-            when(stub).showPayoutConfirmation(from: any(), payoutInfo: any()).then { _ in
+            when(stub.showPayoutConfirmation(from: any(), payoutInfo: any())).then { _ in
                 handlePayoutActionExpectation.fulfill()
             }
         }

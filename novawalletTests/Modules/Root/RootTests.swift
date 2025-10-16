@@ -13,8 +13,10 @@ class RootTests: XCTestCase {
         let settings = InMemorySettingsManager()
 
         let expectedPincode = "123456"
-        try keystore.saveKey(expectedPincode.data(using: .utf8)!,
-                             with: KeystoreTag.pincode.rawValue)
+        try keystore.saveKey(
+            expectedPincode.data(using: .utf8)!,
+            with: KeystoreTag.pincode.rawValue
+        )
 
         let walletSettings = SelectedWalletSettings(
             storageFacade: UserDataStorageTestFacade(),
@@ -31,7 +33,7 @@ class RootTests: XCTestCase {
         let onboardingExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showOnboarding(on: any()).then { _ in
+            when(stub.showOnboarding(on: any())).then { _ in
                 onboardingExpectation.fulfill()
             }
         }
@@ -66,15 +68,17 @@ class RootTests: XCTestCase {
 
         let keystore = InMemoryKeychain()
 
-        let presenter = createPresenter(wireframe: wireframe,
-                                        walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore)
+        let presenter = createPresenter(
+            wireframe: wireframe,
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore
+        )
 
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showPincodeSetup(on: any()).then { _ in
+            when(stub.showPincodeSetup(on: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -105,18 +109,22 @@ class RootTests: XCTestCase {
         walletSettings.save(value: selectedAccount)
 
         let expectedPincode = "123456"
-        try keystore.saveKey(expectedPincode.data(using: .utf8)!,
-                             with: KeystoreTag.pincode.rawValue)
+        try keystore.saveKey(
+            expectedPincode.data(using: .utf8)!,
+            with: KeystoreTag.pincode.rawValue
+        )
 
-        let presenter = createPresenter(wireframe: wireframe,
-                                        walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore)
+        let presenter = createPresenter(
+            wireframe: wireframe,
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore
+        )
 
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showLocalAuthentication(on: any()).then { _ in
+            when(stub.showLocalAuthentication(on: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -147,20 +155,22 @@ class RootTests: XCTestCase {
             let mockLayer = MockSecurityLayerInteractorInputProtocol()
 
             stub(mockLayer) { stub in
-                when(stub).setup().thenDoNothing()
+                when(stub.setup()).thenDoNothing()
             }
 
             actualSecurityLayerInteractor = mockLayer
         }
 
-        let interactor = RootInteractor(walletSettings: walletSettings,
-                                        settings: settings,
-                                        keystore: keystore,
-                                        applicationConfig: ApplicationConfig.shared,
-                                        securityLayerInteractor: actualSecurityLayerInteractor,
-                                        chainRegistryClosure: { chainRegistry },
-                                        eventCenter: MockEventCenterProtocol(),
-                                        migrators: migrators)
+        let interactor = RootInteractor(
+            walletSettings: walletSettings,
+            settings: settings,
+            keystore: keystore,
+            applicationConfig: ApplicationConfig.shared,
+            securityLayerInteractor: actualSecurityLayerInteractor,
+            chainRegistryClosure: { chainRegistry },
+            eventCenter: MockEventCenterProtocol(),
+            migrators: migrators
+        )
         let presenter = RootPresenter()
 
         presenter.view = UIWindow()
@@ -168,13 +178,11 @@ class RootTests: XCTestCase {
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-
-
         stub(wireframe) { stub in
-            when(stub).showOnboarding(on: any()).thenDoNothing()
-            when(stub).showLocalAuthentication(on: any()).thenDoNothing()
-            when(stub).showPincodeSetup(on: any()).thenDoNothing()
-            when(stub).showBroken(on: any()).thenDoNothing()
+            when(stub.showOnboarding(on: any())).thenDoNothing()
+            when(stub.showLocalAuthentication(on: any())).thenDoNothing()
+            when(stub.showPincodeSetup(on: any())).thenDoNothing()
+            when(stub.showBroken(on: any())).thenDoNothing()
         }
 
         return presenter

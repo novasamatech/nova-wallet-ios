@@ -6,24 +6,32 @@ import Operation_iOS
 
 class KeystoreExportWrapperTests: XCTestCase {
     func testSrAccountExport() {
-        performExportTestForFilename(Constants.validSrKeystoreName,
-                                     password: Constants.validSrKeystorePassword)
+        performExportTestForFilename(
+            Constants.validSrKeystoreName,
+            password: Constants.validSrKeystorePassword
+        )
     }
 
     func testEd25519AccountExport() {
-        performExportTestForFilename(Constants.validEd25519KeystoreName,
-                                    password: Constants.validEd25519KeystorePassword)
+        performExportTestForFilename(
+            Constants.validEd25519KeystoreName,
+            password: Constants.validEd25519KeystorePassword
+        )
     }
 
     func testEcdsaAccountExport() {
-        performExportTestForFilename(Constants.validEcdsaKeystoreName,
-                                    password: Constants.validEcdsaKeystorePassword)
+        performExportTestForFilename(
+            Constants.validEcdsaKeystoreName,
+            password: Constants.validEcdsaKeystorePassword
+        )
     }
 
     // MARK: Private
 
-    private func performExportTestForFilename(_ name: String,
-                                              password: String) {
+    private func performExportTestForFilename(
+        _ name: String,
+        password: String
+    ) {
         do {
             // given
             let facade = UserDataStorageTestFacade()

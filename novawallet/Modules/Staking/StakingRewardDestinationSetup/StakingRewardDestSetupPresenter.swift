@@ -13,6 +13,7 @@ final class StakingRewardDestSetupPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var rewardDestination: RewardDestination<MetaChainAccountResponse>?
@@ -35,6 +36,7 @@ final class StakingRewardDestSetupPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         applicationConfig: ApplicationConfigProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -44,6 +46,7 @@ final class StakingRewardDestSetupPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.applicationConfig = applicationConfig
         self.assetInfo = assetInfo
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -129,7 +132,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupPresenterProtoc
     }
 
     func proceed() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 controller: controllerAccount?.chainAccount,
@@ -283,8 +286,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
                 let context = PrimitiveContextWrapper(value: operatableAccounts)
 
                 let title = LocalizableResource { locale in
-                    R.string.localizable
-                        .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardPayoutAccount()
                 }
 
                 let payoutAccount = rewardDestination?.payoutAccount

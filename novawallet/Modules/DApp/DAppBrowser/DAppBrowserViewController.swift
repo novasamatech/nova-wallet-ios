@@ -606,17 +606,13 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
         let languages = selectedLocale.rLanguages
-        let confirmTitle = R.string.localizable.commonConfirmTitle(
-            preferredLanguages: languages
-        )
+        let confirmTitle = R.string(preferredLanguages: languages).localizable.commonConfirmTitle()
 
         alertController.addAction(UIAlertAction(title: confirmTitle, style: .default, handler: { _ in
             completionHandler(true)
         }))
 
-        let cancelTitle = R.string.localizable.commonCancel(
-            preferredLanguages: languages
-        )
+        let cancelTitle = R.string(preferredLanguages: languages).localizable.commonCancel()
 
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { _ in
             completionHandler(false)
@@ -634,9 +630,7 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
         let languages = selectedLocale.rLanguages
-        let okTitle = R.string.localizable.commonOk(
-            preferredLanguages: languages
-        )
+        let okTitle = R.string(preferredLanguages: languages).localizable.commonOk()
 
         alertController.addAction(UIAlertAction(title: okTitle, style: .default, handler: { _ in
             completionHandler()

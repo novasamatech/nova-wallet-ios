@@ -23,7 +23,8 @@ class SelectedValidatorListTests: XCTestCase {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedValidatorList: selectedvalidatorList,
-            maxTargets: 16)
+            maxTargets: 16
+        )
 
         presenter.view = view
 
@@ -33,7 +34,7 @@ class SelectedValidatorListTests: XCTestCase {
         let removeLastExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReload(any()).then { viewModel in
+            when(stub.didReload(any())).then { viewModel in
                 XCTAssertEqual(viewModel.cellViewModels.count, selectedvalidatorList.count)
                 reloadExpectation.fulfill()
             }
@@ -42,9 +43,11 @@ class SelectedValidatorListTests: XCTestCase {
         presenter.setup()
 
         stub(view) { stub in
-            when(stub).didChangeViewModel(
-                any(),
-                byRemovingItemAt: any()
+            when(
+                stub.didChangeViewModel(
+                    any(),
+                    byRemovingItemAt: any()
+                )
             ).then { viewModel, index in
                 XCTAssertEqual(index, viewModel.cellViewModels.count)
                 removeLastExpectation.fulfill()

@@ -44,7 +44,7 @@ final class StakingBondMoreConfirmationVC: UIViewController, ViewHolder, Importa
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingBondMore_v190(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingBondMore_v190()
 
         rootView.locale = selectedLocale
 

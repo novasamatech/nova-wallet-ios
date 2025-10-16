@@ -82,7 +82,7 @@ final class DAppOperationConfirmPresenter {
 
     private func showConfirmationError(_ error: ErrorContentConvertible) {
         let rejectAction = AlertPresentableAction(
-            title: R.string.localizable.commonReject(preferredLanguages: selectedLocale.rLanguages)
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonReject()
         ) { [weak self] in
             self?.interactor.reject()
         }
@@ -93,7 +93,7 @@ final class DAppOperationConfirmPresenter {
             title: errorContent.title,
             message: errorContent.message,
             actions: [rejectAction],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+            closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
         )
 
         wireframe.present(viewModel: viewModel, style: .alert, from: view)

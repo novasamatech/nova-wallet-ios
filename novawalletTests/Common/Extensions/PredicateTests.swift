@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class PredicateTests: XCTestCase {
-
     func testDerivationPathPredicate() {
         XCTAssertTrue(NSPredicate.deriviationPathHardSoftPassword.evaluate(with: "/1//2///3"))
         XCTAssertTrue(NSPredicate.deriviationPathHardSoftPassword.evaluate(with: "/привет//мир///пароль"))

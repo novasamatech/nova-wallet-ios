@@ -11,20 +11,19 @@ enum WalletHistoryFilterRow: Int, CaseIterable {
         switch self {
         case .transfers:
             return LocalizableResource { locale in
-                R.string.localizable.walletFiltersTransfers(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.walletFiltersTransfers()
             }
         case .rewardsAndSlashes:
             return LocalizableResource { locale in
-                R.string.localizable
-                    .walletFiltersRewardsAndSlashes(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.walletFiltersRewardsAndSlashes()
             }
         case .extrinsics:
             return LocalizableResource { locale in
-                R.string.localizable.walletFiltersExtrinsics(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.walletFiltersExtrinsics()
             }
         case .swaps:
             return LocalizableResource { locale in
-                R.string.localizable.commonSwapTitle(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonSwapTitle()
             }
         }
     }
