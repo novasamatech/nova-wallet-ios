@@ -59,14 +59,10 @@ class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
                 return callJson
             }
 
-            let delegationKey = DelegationResolution.DelegationKey(
-                delegate: component.account.chainAccount.accountId,
-                delegated: delegatedAccount.accountId
-            )
-
             return try component.delegationValue.wrapCall(
                 callJson,
-                delegation: delegationKey,
+                delegatedAccountId: delegatedAccount.accountId,
+                delegateAccountId: component.account.chainAccount.accountId,
                 context: context
             )
         }.batchingCalls(with: coderFactory.metadata)

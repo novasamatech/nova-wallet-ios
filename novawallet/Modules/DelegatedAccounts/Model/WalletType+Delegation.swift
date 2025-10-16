@@ -21,4 +21,15 @@ extension MetaAccountModelType {
             7
         }
     }
+
+    var delegationClass: DelegationClass? {
+        switch self {
+        case .multisig:
+            .multisig
+        case .proxied:
+            .proxy
+        case .secrets, .polkadotVault, .paritySigner, .genericLedger, .ledger, .watchOnly:
+            nil
+        }
+    }
 }
