@@ -74,10 +74,10 @@ extension ReferendumsPersonalActivityView {
         locale: Locale
     ) {
         valueBorderedView.isHidden = false
-        titleLabel.text = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletBalanceLocked()
         valueLabel.text = viewModel.originalContent.totalLock
         detailsLabel.text = viewModel.originalContent.hasUnlock ?
-            R.string.localizable.commonUnlock(preferredLanguages: locale.rLanguages) : ""
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonUnlock() : ""
         titleView.fView.imageView.image = R.image.iconLockClosed()
 
         valueSecureView.bind(viewModel.privacyMode)
@@ -92,13 +92,13 @@ extension ReferendumsPersonalActivityView {
         viewModel: SecuredViewModel<ReferendumsDelegationViewModel>,
         locale: Locale
     ) {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
         switch viewModel.originalContent {
         case .addDelegation:
-            titleLabel.text = strings.delegationsAddTitle(preferredLanguages: locale.rLanguages)
+            titleLabel.text = strings.delegationsAddTitle()
             valueBorderedView.isHidden = true
         case let .delegations(total):
-            titleLabel.text = strings.governanceReferendumsYourDelegations(preferredLanguages: locale.rLanguages)
+            titleLabel.text = strings.governanceReferendumsYourDelegations()
             valueBorderedView.isHidden = false
             valueLabel.text = total
         }

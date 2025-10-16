@@ -65,7 +65,7 @@ class ValidatorInfoTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didRecieve(state: any()).then { _ in
+            when(stub.didRecieve(state: any())).then { _ in
                 expectation.fulfill()
             }
         }
@@ -138,7 +138,7 @@ class ValidatorInfoTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didRecieve(state: any()).then { state in
+            when(stub.didRecieve(state: any())).then { state in
                 switch state {
                 case .validatorInfo:
                     expectation.fulfill()

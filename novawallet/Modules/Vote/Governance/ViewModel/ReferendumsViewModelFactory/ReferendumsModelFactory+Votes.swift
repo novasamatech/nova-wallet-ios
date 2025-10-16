@@ -49,10 +49,9 @@ extension ReferendumsModelFactory {
                 locale: locale
             )
 
-            return Strings.delegateVoteBy(
+            return R.string(preferredLanguages: locale.rLanguages).localizable.delegateVoteBy(
                 votesString ?? "",
-                delegateName ?? votes.delegateAddress,
-                preferredLanguages: locale.rLanguages
+                delegateName ?? votes.delegateAddress
             )
         }
 
@@ -60,13 +59,17 @@ extension ReferendumsModelFactory {
         let isAye = votes.delegateVote.vote.aye
 
         let ayesModel = isAye ? YourVoteView.Model(
-            title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceAye().uppercased(),
             description: formatVotes(votesValue),
             style: .aye
         ) : nil
 
         let naysModel = !isAye ? YourVoteView.Model(
-            title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceNay().uppercased(),
             description: formatVotes(votesValue),
             style: .nay
         ) : nil
@@ -92,33 +95,39 @@ extension ReferendumsModelFactory {
             )
 
             if let voterName = voterName {
-                return Strings.govVoteBy(
+                return R.string(preferredLanguages: locale.rLanguages).localizable.govVoteBy(
                     votesString ?? "",
-                    voterName,
-                    preferredLanguages: locale.rLanguages
+                    voterName
                 )
             } else {
-                return Strings.governanceReferendumsYourVote(
-                    votesString ?? "",
+                return R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.governanceReferendumsYourVote(
+                    votesString ?? ""
                 )
             }
         }
 
         let ayesModel = votes.hasAyeVotes ? YourVoteView.Model(
-            title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceAye().uppercased(),
             description: formatVotes(votes.ayes),
             style: .aye
         ) : nil
 
         let naysModel = votes.hasNayVotes ? YourVoteView.Model(
-            title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceNay().uppercased(),
             description: formatVotes(votes.nays),
             style: .nay
         ) : nil
 
         let abstainModel = votes.hasAbstainVotes ? YourVoteView.Model(
-            title: Strings.governanceAbstain(preferredLanguages: locale.rLanguages).uppercased(),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceAbstain().uppercased(),
             description: formatVotes(votes.abstains),
             style: .abstain
         ) : nil
@@ -168,10 +177,11 @@ extension ReferendumsModelFactory {
             amountFormatter.value(for: locale).stringFromDecimal($0) ?? ""
         } ?? ""
 
-        let text = R.string.localizable.governanceReferendumsThreshold(
-            thresholdString,
-            targetThresholdString,
+        let text = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.governanceReferendumsThreshold(
+            thresholdString,
+            targetThresholdString
         )
 
         let titleIcon = TitleIconViewModel(title: text, icon: image)
@@ -203,9 +213,15 @@ extension ReferendumsModelFactory {
         return .init(
             passThreshold: passThreshold,
             ayeProgress: supportAndVotes.approvalFraction,
-            ayeMessage: Strings.governanceAyesFormat(ayeProgressString, preferredLanguages: locale.rLanguages),
-            passMessage: Strings.governanceToPassFormat(passThresholdString, preferredLanguages: locale.rLanguages),
-            nayMessage: Strings.governanceNaysFormat(nayProgressString, preferredLanguages: locale.rLanguages)
+            ayeMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceAyesFormat(ayeProgressString),
+            passMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceToPassFormat(passThresholdString),
+            nayMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceNaysFormat(nayProgressString)
         )
     }
 
@@ -232,9 +248,15 @@ extension ReferendumsModelFactory {
         return .init(
             passThreshold: passThreshold,
             ayeProgress: votingThreshold.approvalFraction,
-            ayeMessage: Strings.governanceAyesFormat(ayeProgressString, preferredLanguages: locale.rLanguages),
-            passMessage: Strings.governanceToPassFormat(passThresholdString, preferredLanguages: locale.rLanguages),
-            nayMessage: Strings.governanceNaysFormat(nayProgressString, preferredLanguages: locale.rLanguages)
+            ayeMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceAyesFormat(ayeProgressString),
+            passMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceToPassFormat(passThresholdString),
+            nayMessage: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.governanceNaysFormat(nayProgressString)
         )
     }
 

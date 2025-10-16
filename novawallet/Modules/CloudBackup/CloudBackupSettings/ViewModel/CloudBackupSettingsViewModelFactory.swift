@@ -128,13 +128,13 @@ final class CloudBackupSettingsViewModelFactory {
     private func createTitle(for status: CloudBackupSettingsViewModel.Status, locale: Locale) -> String {
         switch status {
         case .disabled:
-            return R.string.localizable.cloudBackupDisabled(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupDisabled()
         case .syncing:
-            return R.string.localizable.cloudBackupSyncing(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSyncing()
         case .unsynced, .unavailable:
-            return R.string.localizable.cloudBackupUnsynced(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupUnsynced()
         case .synced:
-            return R.string.localizable.cloudBackupSynced(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSynced()
         }
     }
 
@@ -145,14 +145,13 @@ final class CloudBackupSettingsViewModelFactory {
     ) -> String? {
         switch status {
         case .disabled:
-            return R.string.localizable.cloudBackupDisabledDescription(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupDisabledDescription()
         case .syncing, .unsynced, .synced, .unavailable:
             if let lastSync {
                 let formattedDate = dateFormatter.value(for: locale).string(from: lastSync)
-                return R.string.localizable.cloudBackupLastSyncedFormat(
-                    formattedDate,
+                return R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.cloudBackupLastSyncedFormat(formattedDate)
             } else {
                 return nil
             }
@@ -162,13 +161,13 @@ final class CloudBackupSettingsViewModelFactory {
     private func createIssue(from type: CloudBackupSettingsIssue, locale: Locale) -> String {
         switch type {
         case .reviewUpdates:
-            return R.string.localizable.cloudBackupReviewBackupUpdates(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupReviewBackupUpdates()
         case .enterPassword:
-            return R.string.localizable.cloudBackupEnterPasswordIssue(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupEnterPasswordIssue()
         case .emptyOrBroken:
-            return R.string.localizable.cloudBackupSettingsEmptyOrBroken(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupSettingsEmptyOrBroken()
         case .icloudError:
-            return R.string.localizable.cloudBackupReviewIcloudIssue(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupReviewIcloudIssue()
         }
     }
 }

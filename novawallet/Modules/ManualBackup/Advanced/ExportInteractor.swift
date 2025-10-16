@@ -1,3 +1,4 @@
+import Foundation
 import Keystore_iOS
 
 final class ExportInteractor {

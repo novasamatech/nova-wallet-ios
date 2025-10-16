@@ -7,14 +7,15 @@ struct MnemonicViewModelFactory {
     func createCardTitle() -> NSAttributedString {
         NSAttributedString.coloredItems(
             [
-                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                )
+                ).localizable.mnemonicCardRevealedHeaderMessageHighlighted()
             ],
             formattingClosure: { items in
-                R.string.localizable.mnemonicCardRevealedHeaderMessage(
-                    items[0],
+                R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0]
                 )
             },
             color: R.color.colorTextPrimary()!
@@ -41,12 +42,12 @@ struct MnemonicViewModelFactory {
 
     func createMnemonicCardHiddenModel() -> HiddenMnemonicCardView.CoverModel {
         .init(
-            title: R.string.localizable.mnemonicCardCoverMessageTitle(
+            title: R.string(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
-            message: R.string.localizable.mnemonicCardCoverMessageMessage(
+            ).localizable.mnemonicCardCoverMessageTitle(),
+            message: R.string(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
-            )
+            ).localizable.mnemonicCardCoverMessageMessage()
         )
     }
 }

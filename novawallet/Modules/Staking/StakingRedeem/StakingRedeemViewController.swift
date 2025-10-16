@@ -44,7 +44,7 @@ final class StakingRedeemViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingRedeem(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRedeem()
 
         rootView.locale = selectedLocale
 

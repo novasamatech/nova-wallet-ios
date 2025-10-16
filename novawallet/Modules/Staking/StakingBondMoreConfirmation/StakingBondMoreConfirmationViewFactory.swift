@@ -64,6 +64,7 @@ struct StakingBondMoreConfirmViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chain,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
     }

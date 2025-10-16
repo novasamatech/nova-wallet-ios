@@ -27,7 +27,7 @@ class AssetsSearchCollectionViewDataSource: NSObject {
             for: indexPath
         )!
 
-        let text = R.string.localizable.assetsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.assetsSearchEmpty()
         cell.view.bind(text: text)
         cell.actionButton.isHidden = true
         return cell

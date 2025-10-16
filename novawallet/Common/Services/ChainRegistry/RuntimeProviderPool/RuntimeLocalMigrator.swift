@@ -16,10 +16,6 @@ enum RuntimeLocalVersion {
 
 struct RuntimeLocalMigrator: RuntimeLocalMigrating {
     let version: UInt32
-
-    init(version: UInt32) {
-        self.version = version
-    }
 }
 
 extension RuntimeLocalMigrator {

@@ -113,11 +113,11 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
         guard
             getSubstrateAccountId() != nil,
             let substrateAddress = partialSubstrateAddress else {
-            let languages = view?.selectedLocale.rLanguages
+            let languages = view?.selectedLocale.rLanguages ?? []
             wireframe.present(
-                message: R.string.localizable.commonInvalidSubstrateAddress(preferredLanguages: languages),
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: languages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: languages),
+                message: R.string(preferredLanguages: languages).localizable.commonInvalidSubstrateAddress(),
+                title: R.string(preferredLanguages: languages).localizable.commonErrorGeneralTitle(),
+                closeAction: R.string(preferredLanguages: languages).localizable.commonClose(),
                 from: view
             )
 
@@ -126,11 +126,11 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
 
         let evmAddressEmpty = (partialEvmAddress ?? "").isEmpty
         if !evmAddressEmpty, getEVMAccountId() == nil {
-            let languages = view?.selectedLocale.rLanguages
+            let languages = view?.selectedLocale.rLanguages ?? []
             wireframe.present(
-                message: R.string.localizable.commonInvalidEvmAddress(preferredLanguages: languages),
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: languages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: languages),
+                message: R.string(preferredLanguages: languages).localizable.commonInvalidEvmAddress(),
+                title: R.string(preferredLanguages: languages).localizable.commonErrorGeneralTitle(),
+                closeAction: R.string(preferredLanguages: languages).localizable.commonClose(),
                 from: view
             )
             return

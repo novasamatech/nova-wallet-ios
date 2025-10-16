@@ -85,8 +85,9 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
     }
 
     func saved(on view: ControllerBackedProtocol?) {
-        let title = R.string.localizable
-            .commonSaved(preferredLanguages: localizationManager.selectedLocale.rLanguages)
+        let title = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.commonSaved()
 
         presentSuccessNotification(title, from: view) {
             // Completion is called after viewDidAppear so we need to schedule transition to the next run loop

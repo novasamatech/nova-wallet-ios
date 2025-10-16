@@ -9,16 +9,14 @@ extension UIAlertController {
         locale: Locale,
         displayName paramValue: String
     ) -> UIAlertController {
-        let title = R.string.localizable
-            .walletSendPhishingWarningTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.walletSendPhishingWarningTitle()
 
-        let message = R.string.localizable
-            .walletSendPhishingWarningText(paramValue, preferredLanguages: locale.rLanguages)
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletSendPhishingWarningText(paramValue)
 
-        let cancelTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale.rLanguages)
-        let proceedTitle = R.string.localizable
-            .commonContinue(preferredLanguages: locale.rLanguages)
+        let cancelTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
+        let proceedTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
 
         let proceedAction = UIAlertAction(title: proceedTitle, style: .default) { _ in onConfirm() }
         let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { _ in onCancel() }

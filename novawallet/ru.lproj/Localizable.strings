@@ -424,7 +424,7 @@
 "common.filter.sort.header" = "Сортировать по:";
 "staking.recommended.hint3.addition" = "хотя бы с одним контактом";
 "staking.validator.total.stake.token" = "Общий стейк (%@)";
-"staking.validator.apy.percent" = "Примерное вознаграждение (% APY)";
+"staking.validator.apy.percent" = "Примерное вознаграждение (%% APY)";
 "staking.pending.rewards" = "Ожидаемые вознаграждения";
 "staking.rewards.destination.title" = "Назначение вознаграждений";
 "staking.your.oversubscribed.message" = "Ваши токены попали к валидатору, превысившему лимит номинаторов. В этой эре вы не получите награду от этого валидатора. ";
@@ -757,7 +757,7 @@
 "parachain.staking.hint.rewards.format" = "Застейканые токены приносят вознаграждение раз в раунд (%@)";
 "common.parastk.collators.count" = "Коллаторы: %@";
 "parastk.collators.filter.own.stake" = "Собственный стейк коллатора";
-"parastk.collators.filter.rewards" = "Примерная награда (% APR)";
+"parastk.collators.filter.rewards" = "Примерная награда (%% APR)";
 "common.parastk.delegators" = "Делегаторы";
 "parastk.collator.info" = "Информация о коллаторе";
 "parachain.staking.waiting.next.round.format" = "ожидание следующего раунда (%@)";

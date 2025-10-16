@@ -32,8 +32,6 @@ final class ValidatorListFilterViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.view = self
-
         setupResetButton()
         setupApplyButton()
         setupTableView()
@@ -215,14 +213,17 @@ extension ValidatorListFilterViewController: ValidatorListFilterViewProtocol {
 
 extension ValidatorListFilterViewController: Localizable {
     func applyLocalization() {
-        title = R.string.localizable
-            .walletFiltersTitle(preferredLanguages: selectedLocale.rLanguages)
+        guard isViewLoaded else { return }
 
-        navigationItem.rightBarButtonItem?.title = R.string.localizable
-            .commonReset(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletFiltersTitle()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable
-            .commonApply(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonReset()
+
+        rootView.applyButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonApply()
 
         rootView.tableView.reloadData()
     }

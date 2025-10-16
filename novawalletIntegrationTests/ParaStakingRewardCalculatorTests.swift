@@ -11,8 +11,8 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
 
         guard let calculator = try setupCalculator(
             for: chainId,
-               storageFacade: storageFacade,
-               chainRegistry: chainRegistry
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry
         ) else {
             XCTFail("Can't construct calculator")
             return

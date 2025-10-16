@@ -72,9 +72,7 @@ class CustomNetworkBasePresenter {
         let title: String = if completed {
             completeButtonTitle()
         } else {
-            R.string.localizable.networkNodeAddButtonEnterDetails(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkNodeAddButtonEnterDetails()
         }
 
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
@@ -97,7 +95,7 @@ class CustomNetworkBasePresenter {
     func provideNameViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialName ?? "",
-            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages),
+            placeholder: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonName(),
             spacesAllowed: true
         )
         view?.didReceiveName(viewModel: inputViewModel)
@@ -106,9 +104,7 @@ class CustomNetworkBasePresenter {
     func provideCurrencySymbolViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCurrencySymbol ?? "",
-            placeholder: R.string.localizable.commonToken(
-                preferredLanguages: selectedLocale.rLanguages
-            ).uppercased()
+            placeholder: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonToken().uppercased()
         )
         view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
     }
@@ -299,9 +295,7 @@ private extension CustomNetworkBasePresenter {
     }
 
     func provideTitle() {
-        let title = R.string.localizable.networkAddTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.networkAddTitle()
         view?.didReceiveTitle(text: title)
     }
 
@@ -355,7 +349,7 @@ private extension CustomNetworkBasePresenter {
             message: errorContent.message,
             actions: [
                 .init(
-                    title: R.string.localizable.commonModify(preferredLanguages: selectedLocale.rLanguages),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonModify(),
                     style: .normal,
                     handler: { [weak self] in
                         guard let self else { return }
@@ -377,7 +371,7 @@ private extension CustomNetworkBasePresenter {
                     }
                 )
             ],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+            closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
         )
 
         return viewModel
@@ -392,7 +386,7 @@ private extension CustomNetworkBasePresenter {
             message: errorContent.message,
             actions: [
                 .init(
-                    title: R.string.localizable.commonApply(preferredLanguages: selectedLocale.rLanguages),
+                    title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonApply(),
                     style: .normal,
                     handler: { [weak self] in
                         guard let self else { return }
@@ -406,7 +400,7 @@ private extension CustomNetworkBasePresenter {
                     }
                 )
             ],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+            closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose()
         )
 
         return viewModel

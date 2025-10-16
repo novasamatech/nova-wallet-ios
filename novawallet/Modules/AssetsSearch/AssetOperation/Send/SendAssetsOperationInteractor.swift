@@ -1,3 +1,4 @@
+import Foundation
 import BigInt
 import Keystore_iOS
 

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Foundation_iOS
 
 final class CollatorStkPartialUnstakeSetupVC: CollatorStkBaseUnstakeSetupVC<CollatorStkPartialUnstakeSetupLayout> {

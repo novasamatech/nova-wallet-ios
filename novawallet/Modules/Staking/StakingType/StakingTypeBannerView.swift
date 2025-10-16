@@ -1,3 +1,4 @@
+import UIKit
 import UIKit_iOS
 
 final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBannerView {

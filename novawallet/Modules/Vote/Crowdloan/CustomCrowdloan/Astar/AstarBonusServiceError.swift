@@ -7,10 +7,12 @@ enum AstarBonusServiceError: Error, ErrorContentConvertible {
         switch self {
         case .invalidReferral:
             return ErrorContent(
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.crowdloanAstarInvalidReferralMessage(
-                    preferredLanguages: locale?.rLanguages
-                )
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonErrorGeneralTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.crowdloanAstarInvalidReferralMessage()
             )
         }
     }

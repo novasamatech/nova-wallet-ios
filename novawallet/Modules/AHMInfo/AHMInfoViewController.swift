@@ -42,7 +42,9 @@ final class AHMInfoViewController: UIViewController, ViewHolder {
 private extension AHMInfoViewController {
     func setupNavigation() {
         let barButtonItem = UIBarButtonItem(
-            title: R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonLearnMore(),
             style: .plain,
             target: self,
             action: #selector(actionLearnMore)

@@ -529,11 +529,6 @@ private struct AssetsPalletBalanceState {
     let account: PalletAssets.Account?
     let details: PalletAssets.Details?
 
-    init(account: PalletAssets.Account?, details: PalletAssets.Details?) {
-        self.account = account
-        self.details = details
-    }
-
     func applying(change: AssetsPalletBalanceStateChange) -> Self {
         .init(
             account: change.account.valueWhenDefined(else: account),

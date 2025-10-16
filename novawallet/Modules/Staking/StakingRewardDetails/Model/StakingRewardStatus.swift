@@ -9,11 +9,13 @@ extension StakingRewardStatus {
     func titleForLocale(_ locale: Locale?) -> String {
         switch self {
         case .claimable:
-            return R.string.localizable
-                .stakingRewardDetailsStatusClaimable(preferredLanguages: locale?.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingRewardDetailsStatusClaimable()
         case .received:
-            return R.string.localizable
-                .stakingRewardDetailsStatusReceived(preferredLanguages: locale?.rLanguages)
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingRewardDetailsStatusReceived()
         }
     }
 

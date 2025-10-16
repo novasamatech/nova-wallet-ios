@@ -185,19 +185,15 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
 
         balanceWidget.set(locale: locale)
 
-        sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
-            preferredLanguages: languages
-        )
+        sendButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletSendTitle()
         sendButton.invalidateLayout()
 
-        receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
+        receiveButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.walletAssetReceive()
         receiveButton.invalidateLayout()
 
-        swapButton.imageWithTitleView?.title = R.string.localizable.commonSwapAction(
-            preferredLanguages: languages
-        )
+        swapButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonSwapAction()
         swapButton.invalidateLayout()
     }
 

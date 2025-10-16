@@ -15,9 +15,9 @@ class MetaAccountMapperTests: XCTestCase {
         let maxChainAccountCount = 3
         let accountCount = 10
 
-        let metaAccounts: [ManagedMetaAccountModel] = (0..<accountCount).map { _ in
+        let metaAccounts: [ManagedMetaAccountModel] = (0 ..< accountCount).map { _ in
             let account = AccountGenerator.generateMetaAccount(
-                generatingChainAccounts: (0..<maxChainAccountCount).randomElement()!
+                generatingChainAccounts: (0 ..< maxChainAccountCount).randomElement()!
             )
 
             return ManagedMetaAccountModel(
@@ -29,7 +29,7 @@ class MetaAccountMapperTests: XCTestCase {
 
         // when
 
-        let saveOperation = repository.saveOperation( { metaAccounts }, { [] })
+        let saveOperation = repository.saveOperation({ metaAccounts }, { [] })
         operationQueue.addOperations([saveOperation], waitUntilFinished: true)
 
         // then

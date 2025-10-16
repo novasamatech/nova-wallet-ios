@@ -95,7 +95,7 @@ final class AssetListNftsView: UIView {
 
 private extension AssetListNftsView {
     func setupLocalization() {
-        titleLabel.text = R.string.localizable.walletListYourNftsTitle(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletListYourNftsTitle()
     }
 
     func bind(

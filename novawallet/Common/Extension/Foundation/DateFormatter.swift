@@ -66,10 +66,10 @@ extension DateFormatter {
         let dateFormatterBuilder = CompoundDateFormatterBuilder()
 
         let today = LocalizableResource { locale in
-            R.string.localizable.commonToday(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonToday()
         }
         let yesterday = LocalizableResource { locale in
-            R.string.localizable.commonYesterday(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonYesterday()
         }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMMM"

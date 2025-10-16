@@ -227,7 +227,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
 
         var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
-            let match = SearchMatch<ChainAsset>.matchInclusion(
+            let match = SearchMatch.matchInclusion(
                 for: query,
                 recordField: chain.name,
                 record: chain

@@ -9,11 +9,6 @@ protocol RuntimeConnectionStoring {
 struct ChainRegistryRuntimeConnectionStore {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
-
-    init(chainId: ChainModel.Id, chainRegistry: ChainRegistryProtocol) {
-        self.chainId = chainId
-        self.chainRegistry = chainRegistry
-    }
 }
 
 extension ChainRegistryRuntimeConnectionStore: RuntimeConnectionStoring {
@@ -29,11 +24,6 @@ extension ChainRegistryRuntimeConnectionStore: RuntimeConnectionStoring {
 struct StaticRuntimeConnectionStore {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-
-    init(connection: JSONRPCEngine, runtimeProvider: RuntimeProviderProtocol) {
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
-    }
 }
 
 extension StaticRuntimeConnectionStore: RuntimeConnectionStoring {

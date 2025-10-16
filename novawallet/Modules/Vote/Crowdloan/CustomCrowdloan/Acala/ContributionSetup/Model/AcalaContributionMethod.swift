@@ -9,9 +9,9 @@ extension AcalaContributionMethod {
     func title(for locale: Locale) -> String {
         switch self {
         case .direct:
-            return R.string.localizable.crowdloanAcalaDirect(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanAcalaDirect()
         case .liquid:
-            return R.string.localizable.crowdloanAcalaLiquid(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanAcalaLiquid()
         }
     }
 }

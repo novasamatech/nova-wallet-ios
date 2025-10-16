@@ -424,7 +424,7 @@
 "common.filter.sort.header" = "Urutkan berdasarkan:";
 "staking.recommended.hint3.addition" = "dengan setidaknya satu kontak identitas";
 "staking.validator.total.stake.token" = "Total taruhan (%@)";
-"staking.validator.apy.percent" = "Imbalan Estimasi (% APY)";
+"staking.validator.apy.percent" = "Imbalan Estimasi (%% APY)";
 "staking.pending.rewards" = "Reward tertunda";
 "staking.rewards.destination.title" = "Tujuan imbalan";
 "staking.your.oversubscribed.message" = "Token anda dialokasikan kepada validator yang oversubscribed. Anda tidak akan menerima hadiah pada era ini.";
@@ -757,7 +757,7 @@
 "parachain.staking.hint.rewards.format" = "Token yang distake menghasilkan reward setiap putaran (%@)";
 "common.parastk.collators.count" = "Kolator: %@";
 "parastk.collators.filter.own.stake" = "Stake Kolator Sendiri";
-"parastk.collators.filter.rewards" = "Perkiraan hadiah (% APR)";
+"parastk.collators.filter.rewards" = "Perkiraan hadiah (%% APR)";
 "common.parastk.delegators" = "Delegator";
 "parastk.collator.info" = "Informasi Kolator";
 "parachain.staking.waiting.next.round.format" = "menunggu ronde berikutnya (%@)";

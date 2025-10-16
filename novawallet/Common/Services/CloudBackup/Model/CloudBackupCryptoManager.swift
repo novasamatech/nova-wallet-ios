@@ -1,5 +1,5 @@
 import Foundation
-import NovaCrypto
+import Scrypt
 import TweetNacl
 
 protocol CloudBackupCryptoManagerProtocol {
@@ -15,11 +15,24 @@ enum CloudBackupCryptoManagerError: Error {
 
 final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtocol {
     static let saltLength: Int = 32
-    static let scryptN: UInt = 16384
-    static let scryptP: UInt = 1
-    static let scryptR: UInt = 8
+    static let scryptN: UInt64 = 16384
+    static let scryptP: UInt32 = 1
+    static let scryptR: UInt32 = 8
     static let nonceLength = 24
-    static let encryptionKeyLength: UInt = 32
+    static let encryptionKeyLength: Int = 32
+
+    private func deriveEncryptionKey(password: Data, salt: Data) throws -> Data {
+        let encryptionKeyBytes = try Scrypt.scrypt(
+            password: password.bytes,
+            salt: salt.bytes,
+            length: Self.encryptionKeyLength,
+            N: Self.scryptN,
+            r: Self.scryptR,
+            p: Self.scryptP
+        )
+
+        return Data(encryptionKeyBytes)
+    }
 
     func normalize(password: String) -> Data? {
         password.decomposedStringWithCompatibilityMapping.data(using: .utf8)
@@ -34,14 +47,7 @@ final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtoco
             throw CloudBackupCryptoManagerError.invalidPasswordFormat
         }
 
-        let encryptionKey = try IRScryptKeyDeriviation().deriveKey(
-            from: passwordData,
-            salt: salt,
-            scryptN: Self.scryptN,
-            scryptP: Self.scryptP,
-            scryptR: Self.scryptR,
-            length: Self.encryptionKeyLength
-        )
+        let encryptionKey = try deriveEncryptionKey(password: passwordData, salt: salt)
 
         guard let nonce = Data.random(of: Self.nonceLength) else {
             throw CloudBackupCryptoManagerError.randomFunctionFailed
@@ -65,14 +71,7 @@ final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtoco
         let nonce = Data(data[Self.saltLength ..< minimumDataLength])
         let encryptedData = Data(data[minimumDataLength...])
 
-        let encryptionKey = try IRScryptKeyDeriviation().deriveKey(
-            from: passwordData,
-            salt: salt,
-            scryptN: Self.scryptN,
-            scryptP: Self.scryptP,
-            scryptR: Self.scryptR,
-            length: Self.encryptionKeyLength
-        )
+        let encryptionKey = try deriveEncryptionKey(password: passwordData, salt: salt)
 
         return try NaclSecretBox.open(box: encryptedData, nonce: nonce, key: encryptionKey)
     }

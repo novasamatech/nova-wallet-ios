@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 
 struct WalletConnectChainsResolution {
     let resolved: [Blockchain: ChainModel]

@@ -69,8 +69,9 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable
-            .accountBackupMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
+        rootView.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.accountBackupMnemonicTitle()
     }
 
     // MARK: - Actions

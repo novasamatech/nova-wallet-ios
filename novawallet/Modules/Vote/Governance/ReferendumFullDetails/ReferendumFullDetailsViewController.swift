@@ -31,7 +31,7 @@ final class ReferendumFullDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.govFullDetails(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govFullDetails()
     }
 
     @objc private func actionProposer() {

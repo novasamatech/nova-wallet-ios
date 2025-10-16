@@ -215,9 +215,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 
     func submit() {
         let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
-        guard
-            let amountInPlank = amount.flatMap({ $0.toSubstrateAmount(precision: assetPrecision) }),
-            let utilityAsset = chainAsset.chain.utilityAsset() else {
+        guard let amountInPlank = amount.flatMap({ $0.toSubstrateAmount(precision: assetPrecision) }) else {
             return
         }
 

@@ -1,3 +1,5 @@
+import Foundation
+import UIKit
 import UIKit_iOS
 import Foundation_iOS
 
@@ -21,9 +23,8 @@ extension EstimatedCountdownViewModelFactory: EstimatedCountdownViewModelFactory
         from remainedInterval: TimeInterval,
         locale: Locale
     ) throws -> String {
-        R.string.localizable.commonEstimatedTimer(
-            try timeFormatter.string(from: remainedInterval),
-            preferredLanguages: locale.rLanguages
+        R.string(preferredLanguages: locale.rLanguages).localizable.commonEstimatedTimer(
+            try timeFormatter.string(from: remainedInterval)
         )
     }
 }

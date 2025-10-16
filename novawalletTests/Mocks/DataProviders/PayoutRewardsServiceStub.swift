@@ -3,7 +3,6 @@ import Operation_iOS
 @testable import novawallet
 
 final class PayoutRewardsServiceStub: PayoutRewardsServiceProtocol {
-
     let result: Result<Staking.PayoutsInfo, Error>
 
     var fetchPayoutsCounter = 0
@@ -20,7 +19,6 @@ final class PayoutRewardsServiceStub: PayoutRewardsServiceProtocol {
         case let .failure(error):
             return CompoundOperationWrapper.createWithError(error)
         }
-
     }
 }
 
@@ -37,6 +35,6 @@ extension PayoutRewardsServiceStub {
     }
 
     static func error() -> PayoutRewardsServiceStub {
-        return PayoutRewardsServiceStub(result: .failure(PayoutRewardsServiceError.unknown))
+        PayoutRewardsServiceStub(result: .failure(PayoutRewardsServiceError.unknown))
     }
 }

@@ -118,9 +118,9 @@ extension ParitySignerTxScanPresenter: ParitySignerTxScanInteractorOutputProtoco
 
         scanWireframe.presentTryAgainOperation(
             on: view,
-            title: R.string.localizable.paritySignerTxScanInvalidTitle(preferredLanguages: locale.rLanguages),
-            message: R.string.localizable.paritySignerTxScanInvalidMessage(preferredLanguages: locale.rLanguages),
-            actionTitle: R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages)
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerTxScanInvalidTitle(),
+            message: R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerTxScanInvalidMessage(),
+            actionTitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonTryAgain()
         ) { [weak self] in
             self?.setLastCode(nil)
         }

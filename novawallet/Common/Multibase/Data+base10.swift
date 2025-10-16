@@ -8,7 +8,8 @@ extension Data {
         guard let big = BigInt(input) else {
             return nil
         }
-        var bytes = big.serialize().drop(while: { $0 == 0 })
+
+        let bytes = big.serialize().drop(while: { $0 == 0 })
 
         self = Array(repeating: 0, count: leadingZeroCount) + bytes
     }

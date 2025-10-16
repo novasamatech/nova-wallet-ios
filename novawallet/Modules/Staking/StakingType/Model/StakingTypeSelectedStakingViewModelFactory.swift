@@ -14,13 +14,13 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
         switch stakingType {
         case .direct:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingTypeDirect(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeDirect(),
+                subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonRecommended()
             )
         case .pool:
             return RecommendedStakingTypeViewModel(
-                title: R.string.localizable.stakingTypeNominationPool(preferredLanguages: locale.rLanguages),
-                subtitle: R.string.localizable.commonRecommended(preferredLanguages: locale.rLanguages)
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingTypeNominationPool(),
+                subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonRecommended()
             )
         }
     }
@@ -30,24 +30,23 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
         displaysRecommended: Bool,
         locale: Locale
     ) -> DirectStakingTypeViewModel.ValidatorModel {
-        let strings = R.string.localizable.self
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
 
         if displaysRecommended {
             return .init(
-                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
-                subtitle: strings.commonRecommended(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(),
+                subtitle: strings.commonRecommended(),
                 isRecommended: true,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
             )
         } else {
             let validatorsString = strings.stakingSetupAmountDirectTypeSubtitle(
                 validators.targets.count,
-                validators.maxTargets,
-                preferredLanguages: locale.rLanguages
+                validators.maxTargets
             )
 
             return .init(
-                title: strings.stakingRecommendedTitle(preferredLanguages: locale.rLanguages),
+                title: strings.stakingRecommendedTitle(),
                 subtitle: validatorsString,
                 isRecommended: false,
                 count: countFormatter.value(for: locale).string(from: NSNumber(value: validators.targets.count)) ?? ""
@@ -69,9 +68,9 @@ extension SelectedStakingTypeViewModelFactory: SelectedStakingViewModelFactoryPr
 
         let title = pool.title(for: chainAsset.chain.chainFormat) ?? ""
 
-        let subtitle = displaysRecommended ? R.string.localizable.commonRecommended(
+        let subtitle = displaysRecommended ? R.string(
             preferredLanguages: locale.rLanguages
-        ) : nil
+        ).localizable.commonRecommended() : nil
 
         return PoolStakingTypeViewModel.PoolAccountModel(
             icon: iconViewModel,

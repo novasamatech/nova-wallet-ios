@@ -4,7 +4,6 @@ import SubstrateSdk
 
 struct EtherscanERC20HistoryResponse: Decodable {
     struct Element: Decodable {
-        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case blockNumber
             case transactionIndex

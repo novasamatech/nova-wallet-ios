@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UIKit_iOS
 
 /// Extension of the TriangularedView to support design through Interface Builder

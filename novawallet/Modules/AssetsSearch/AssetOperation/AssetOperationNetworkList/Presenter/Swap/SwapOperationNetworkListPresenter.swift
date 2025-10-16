@@ -29,10 +29,8 @@ final class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresente
     }
 
     override func provideTitle() {
-        let title = R.string.localizable.swapOperationNetworkListTitle(
-            multichainToken.symbol,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.swapOperationNetworkListTitle(multichainToken.symbol)
 
         view?.updateHeader(with: title)
     }

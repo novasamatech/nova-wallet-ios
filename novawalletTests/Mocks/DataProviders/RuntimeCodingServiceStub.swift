@@ -3,7 +3,7 @@ import Foundation
 import Operation_iOS
 
 final class RuntimeCodingServiceStub {
-    let factory : RuntimeCoderFactoryProtocol
+    let factory: RuntimeCoderFactoryProtocol
 
     init(factory: RuntimeCoderFactoryProtocol) {
         self.factory = factory

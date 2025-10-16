@@ -51,15 +51,17 @@ extension ExternalAssetBalance.BalanceType {
     var lockTitle: LocalizableResource<String> {
         switch self {
         case .crowdloan:
-            return LocalizableResource { R.string.localizable.tabbarCrowdloanTitle(preferredLanguages: $0.rLanguages) }
+            return LocalizableResource {
+                R.string(
+                    preferredLanguages: $0.rLanguages
+                ).localizable.tabbarCrowdloanTitle()
+            }
         case .nominationPools:
             return LocalizableResource {
-                R.string.localizable.stakingTypeNominationPool(
-                    preferredLanguages: $0.rLanguages
-                )
+                R.string(preferredLanguages: $0.rLanguages).localizable.stakingTypeNominationPool()
             }
         case .unknown:
-            return LocalizableResource { R.string.localizable.commonUnknown(preferredLanguages: $0.rLanguages) }
+            return LocalizableResource { R.string(preferredLanguages: $0.rLanguages).localizable.commonUnknown() }
         }
     }
 }

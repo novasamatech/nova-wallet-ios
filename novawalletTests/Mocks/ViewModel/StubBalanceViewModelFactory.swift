@@ -5,27 +5,27 @@ import Foundation_iOS
 
 struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
     func priceFromFiatAmount(
-        _ decimalValue: Decimal,
-        currencyId: Int?
+        _: Decimal,
+        currencyId _: Int?
     ) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"
         }
     }
-    
-    func priceFromAmount(_ amount: Decimal, priceData: PriceData) -> LocalizableResource<String> {
+
+    func priceFromAmount(_: Decimal, priceData _: PriceData) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"
         }
     }
 
-    func amountFromValue(_ value: Decimal, roundingMode: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
+    func amountFromValue(_: Decimal, roundingMode _: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"
         }
     }
-    
-    func unitsFromValue(_ value: Decimal, roundingMode: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
+
+    func unitsFromValue(_: Decimal, roundingMode _: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "100"
         }
@@ -34,7 +34,7 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
     func balanceFromPrice(
         _ amount: Decimal,
         priceData: PriceData?,
-        roundingMode: NumberFormatter.RoundingMode
+        roundingMode _: NumberFormatter.RoundingMode
     ) -> LocalizableResource<BalanceViewModelProtocol> {
         LocalizableResource { _ in
             BalanceViewModel(amount: amount.description, price: priceData?.price.description)
@@ -65,7 +65,7 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
     }
 
-    func createAssetBalanceViewModel(_ amount: Decimal, balance: Decimal?, priceData: PriceData?) -> LocalizableResource<AssetBalanceViewModelProtocol> {
+    func createAssetBalanceViewModel(_: Decimal, balance: Decimal?, priceData: PriceData?) -> LocalizableResource<AssetBalanceViewModelProtocol> {
         LocalizableResource { _ in
             AssetBalanceViewModel(
                 symbol: "KSM",

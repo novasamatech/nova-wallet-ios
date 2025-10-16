@@ -39,15 +39,13 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
     }
 
     override func provideStakingType() {
-        let stakingType = R.string.localizable.stakingTypeDirect(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let stakingType = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingTypeDirect()
 
         view?.didReceiveStakingType(viewModel: stakingType)
     }
 
     override func provideStakingDetails() {
-        let title = R.string.localizable.stakingRecommendedTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRecommendedTitle()
 
         let selectedString = quantityFormatter.value(
             for: selectedLocale
@@ -57,11 +55,8 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
             for: selectedLocale
         ).string(from: .init(value: model.targets.count)) ?? ""
 
-        let details = R.string.localizable.stakingValidatorInfoNominators(
-            selectedString,
-            maxString,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let details = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingValidatorInfoNominators(selectedString, maxString)
 
         view?.didReceiveStakingDetails(
             title: title,

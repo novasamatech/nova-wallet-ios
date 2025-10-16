@@ -135,24 +135,25 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+        detailsView.titleControl.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.swapsSetupDetailsTitle()
 
-        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
-            preferredLanguages: locale.rLanguages)
-
-        routeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsRoute(
+        rateCell.titleButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.swapsSetupDetailsRate()
 
-        execTimeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsExecTime(
+        routeCell.titleButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.swapsDetailsRoute()
 
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
+        execTimeCell.titleButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.swapsDetailsExecTime()
+
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsDetailsTotalFee()
 
         rateCell.titleButton.invalidateLayout()
         routeCell.titleButton.invalidateLayout()

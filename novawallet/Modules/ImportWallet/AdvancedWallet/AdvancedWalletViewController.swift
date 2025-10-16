@@ -104,30 +104,30 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonAdvanced(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonAdvanced()
 
         let substrateCryptoView = rootView.substrateCryptoTypeView.actionControl.contentView
-        substrateCryptoView?.titleLabel.text = R.string.localizable.commonCryptoTypeSubstrate(
+        substrateCryptoView?.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonCryptoTypeSubstrate()
 
-        rootView.substrateTitleLabel.text = R.string.localizable.commonSecretDerivationPathSubstrate(
+        rootView.substrateTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonSecretDerivationPathSubstrate()
 
         let ethereumCryptoView = rootView.ethereumCryptoTypeView.actionControl.contentView
-        ethereumCryptoView?.titleLabel.text = R.string.localizable.commonCryptoTypeEthereum(
+        ethereumCryptoView?.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonCryptoTypeEthereum()
 
-        rootView.ethereumTitleLabel.text = R.string.localizable.commonSecretDerivationPathEthereum(
+        rootView.ethereumTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonSecretDerivationPathEthereum()
 
         if let applyButton = rootView.applyButton {
-            applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+            applyButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonApply()
         }
     }
 

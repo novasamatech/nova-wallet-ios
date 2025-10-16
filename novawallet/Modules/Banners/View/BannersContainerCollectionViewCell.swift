@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UIKit_iOS
 
 class BannersContainerCollectionViewCell: CollectionViewContainerCell<UIView> {

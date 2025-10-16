@@ -35,13 +35,9 @@ private extension MultisigOperationFetchProxyPresenter {
     func showConfirmationEnded() {
         let languages = localizationManager.selectedLocale.rLanguages
 
-        let title = R.string.localizable.multisigOperationEndedAlertTitle(
-            preferredLanguages: languages
-        )
-        let message = R.string.localizable.multisigOperationEndedAlertMessage(
-            preferredLanguages: languages
-        )
-        let actionTitle = R.string.localizable.commonGotIt(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.multisigOperationEndedAlertTitle()
+        let message = R.string(preferredLanguages: languages).localizable.multisigOperationEndedAlertMessage()
+        let actionTitle = R.string(preferredLanguages: languages).localizable.commonGotIt()
         let action = AlertPresentableAction(title: actionTitle, style: .cancel) { [weak self] in
             self?.wireframe.close(from: self?.view)
         }

@@ -3,8 +3,7 @@ import Foundation
 final class ParaStkYieldBoostStartWireframe: ParaStkYieldBoostStartWireframeProtocol,
     ModalAlertPresenting {
     func complete(on view: ParaStkYieldBoostStartViewProtocol?, locale: Locale) {
-        let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonTransactionSubmitted()
 
         let presenter = view?.controller.navigationController?.presentingViewController
 

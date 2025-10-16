@@ -13,7 +13,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testPolkadotNotExistingBalance() throws {
         do {
             let accountId = try "123gpPmcSD3BjqXJboFNLT3ArShcsZ9veDdZnmiHNF3sNQng".toAccountId()
@@ -23,7 +23,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testInterlayExistingBalance() throws {
         do {
             let accountId = try "wd7haPUigB22TB9HEKs2k2JrwBf1onbtdNXWZAXHnRN7FVHMf".toAccountId()
@@ -36,7 +36,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testInterlayNotExistingBalance() throws {
         do {
             let accountId = try "wd8YZxMqvBtUnkbPLUKEWhT8KRo7zVZc7rmJP3eV5fse18stt".toAccountId()
@@ -49,7 +49,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testEquilibriumExistingBalance() throws {
         do {
             let accountId = try "cg7h2eLBseFrAbdeZ4X1CHkiWybwwCfhxGBDhvrmFNUBuzs1o".toAccountId()
@@ -62,7 +62,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testEquilibriumNotExistingBalance() throws {
         do {
             let accountId = try "cg49kkSwuqAkkP2GZqq7tNRieU3y2wqrt6D89FsVcXAxyA8EN".toAccountId()
@@ -75,7 +75,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testMoonbeamExistingBalance() throws {
         do {
             let accountId = try "0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00".toAccountId()
@@ -88,7 +88,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testMoonbeamNotExistingBalance() throws {
         do {
             let accountId = try "0x7aa98aeb3afacf10021539d5412c7ac6afe0fc00".toAccountId()
@@ -101,7 +101,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testStatemineExistingBalance() throws {
         do {
             let accountId = try "F53d3jeyFvb2eYsgAERhjC8mogao4Kg4GsdezrqiT8aj55v".toAccountId()
@@ -115,7 +115,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     func testStatemineNotExistingBalance() throws {
         do {
             let accountId = try "Cn1mVjBBvLJUWE8GQoeR7JduGt2GxhUXrx191ob3Si6HA9E".toAccountId()
@@ -129,27 +129,27 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             XCTFail("Did receive error: \(error)")
         }
     }
-    
+
     private func performQuery(for accountId: AccountId, chainId: ChainModel.Id, assetId: AssetModel.Id = 0) throws -> AssetBalance {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let operationQueue = OperationQueue()
-        
+
         let chain = try chainRegistry.getChainOrError(for: chainId)
         let chainAsset = try chain.chainAssetOrError(for: assetId)
-        
+
         let operationFactory = WalletRemoteQueryWrapperFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
-        
+
         let queryWrapper = operationFactory.queryBalance(
             for: accountId,
             chainAsset: chainAsset
         )
-        
+
         operationQueue.addOperations(queryWrapper.allOperations, waitUntilFinished: true)
-        
+
         return try queryWrapper.targetOperation.extractNoCancellableResultData()
     }
 }

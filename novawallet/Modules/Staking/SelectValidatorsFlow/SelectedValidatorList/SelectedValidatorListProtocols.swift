@@ -1,6 +1,7 @@
+import Foundation
 import Foundation_iOS
 
-protocol SelectedValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
+protocol SelectedValidatorListViewProtocol: ControllerBackedProtocol {
     func didReload(_ viewModel: SelectedValidatorListViewModel)
     func didChangeViewModel(
         _ viewModel: SelectedValidatorListViewModel,

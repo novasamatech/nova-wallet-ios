@@ -40,8 +40,9 @@ final class WalletManagePresenter: WalletsListPresenter {
     private func askAndPerformRemoveItem(at index: Int, section: Int, completion: @escaping (Bool) -> Void) {
         let locale = localizationManager?.selectedLocale
 
-        let removeTitle = R.string.localizable
-            .accountDeleteConfirm(preferredLanguages: locale?.rLanguages)
+        let removeTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.accountDeleteConfirm()
 
         let removeAction = AlertPresentableAction(title: removeTitle, style: .destructive) { [weak self] in
             self?.performRemoveItem(at: index, section: section)
@@ -49,15 +50,17 @@ final class WalletManagePresenter: WalletsListPresenter {
             completion(true)
         }
 
-        let cancelTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        let cancelTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         let cancelAction = AlertPresentableAction(title: cancelTitle, style: .cancel) {
             completion(false)
         }
 
-        let title = R.string.localizable
-            .walletDeleteConfirmationTitle(preferredLanguages: locale?.rLanguages)
-        let details = R.string.localizable
-            .walletDeleteConfirmationDescription(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletDeleteConfirmationTitle()
+        let details = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.walletDeleteConfirmationDescription()
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: details,
@@ -179,13 +182,13 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
         }
 
         let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.onboardingCreateWallet(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.onboardingCreateWallet()
 
             return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
         }
 
         let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.walletImportExisting(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.walletImportExisting()
 
             return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
         }
@@ -206,7 +209,7 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
             actions: [createAction, importAction],
             title: LocalizableResource(
                 closure: { locale in
-                    R.string.localizable.walletHowAdd(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.walletHowAdd()
                 }
             ),
             delegate: self,

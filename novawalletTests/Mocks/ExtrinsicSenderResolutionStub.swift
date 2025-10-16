@@ -4,13 +4,13 @@ import Operation_iOS
 
 final class ExtrinsicSenderResolutionFactoryStub {
     let resolver: ExtrinsicSenderResolving
-    
+
     convenience init(address: String, chain: ChainModel) throws {
         let accountId = try address.toAccountId(using: chain.chainFormat)
-        
+
         self.init(accountId: accountId, chain: chain)
     }
-    
+
     init(accountId: AccountId, chain: ChainModel) {
         resolver = ExtrinsicCurrentSenderResolver(
             currentAccount: .init(
@@ -27,7 +27,7 @@ final class ExtrinsicSenderResolutionFactoryStub {
             )
         )
     }
-    
+
     init(resolver: ExtrinsicSenderResolving) {
         self.resolver = resolver
     }
@@ -42,7 +42,7 @@ extension ExtrinsicSenderResolutionFactoryStub: ExtrinsicSenderResolutionFactory
 final class ExtrinsicSenderResolutionFacadeStub: ExtrinsicSenderResolutionFacadeProtocol {
     func createResolutionFactory(
         for chainAccount: ChainAccountResponse,
-        chainModel: ChainModel
+        chainModel _: ChainModel
     ) -> ExtrinsicSenderResolutionFactoryProtocol {
         ExtrinsicSenderResolutionFactoryStub(
             resolver: ExtrinsicCurrentSenderResolver(

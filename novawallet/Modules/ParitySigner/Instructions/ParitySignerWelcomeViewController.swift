@@ -59,14 +59,13 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.welcomeParitySignerTitle(
-            type.getName(for: selectedLocale),
-            preferredLanguages: languages
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.welcomeParitySignerTitle(
+            type.getName(for: selectedLocale)
         )
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonScanQrCode(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonScanQrCode()
 
         rootView.actionButton.invalidateLayout()
 
@@ -84,41 +83,41 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
         let marker = AttributedReplacementStringDecorator.marker
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomeParitySignerStep1Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep1Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomeParitySignerStep1(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep1(marker)
             )
         )
 
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomeParitySignerStep2Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep2Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomeParitySignerStep2(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep2(marker)
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string.localizable.welcomeParitySignerStep2Details(
+        rootView.step2DetailsView.detailsLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.welcomeParitySignerStep2Details()
 
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomeParitySignerStep3Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomeParitySignerStep3(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3(marker)
             )
         )
     }
@@ -129,41 +128,41 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
         let marker = AttributedReplacementStringDecorator.marker
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomePolkadotVaultStep1Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep1Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomePolkadotVaultStep1(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep1(marker)
             )
         )
 
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomePolkadotVaultStep2Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomePolkadotVaultStep2(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2(marker)
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string.localizable.welcomePolkadotVaultStep2Details(
+        rootView.step2DetailsView.detailsLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.welcomePolkadotVaultStep2Details()
 
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.welcomePolkadotVaultStep3Highlighted(preferredLanguages: languages)],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.welcomePolkadotVaultStep3(marker, preferredLanguages: languages)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3(marker)
             )
         )
     }

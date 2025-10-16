@@ -11,7 +11,6 @@ struct BannersViewFactory {
         locale: Locale
     ) -> BannersViewProtocol? {
         let appConfig = ApplicationConfig.shared
-        let jsonDataProviderFactory = JsonDataProviderFactory.shared
 
         let imageManager = KingfisherManager.shared
         let remoteImageProvider = CommonRemoteImageProvider(imageManager: imageManager)

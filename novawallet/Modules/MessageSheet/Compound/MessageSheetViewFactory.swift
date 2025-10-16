@@ -12,11 +12,11 @@ struct MessageSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.noKeyTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.noKeyTitle()
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.noKeyMessage(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.noKeyMessage()
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
@@ -56,49 +56,35 @@ struct MessageSheetViewFactory {
         switch type {
         case .sell where walletType == .proxied:
             title = LocalizableResource<String> { locale in
-                R.string.localizable.featureUnsupportedSheetTitleSellProxied(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetTitleSellProxied()
             }
             message = LocalizableResource { locale in
-                R.string.localizable.featureUnsupportedSheetMessageSellProxied(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetMessageSellProxied()
             }
         case .card where walletType == .proxied:
             title = LocalizableResource<String> { locale in
-                R.string.localizable.featureUnsupportedSheetTitleCardProxied(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetTitleCardProxied()
             }
             message = LocalizableResource { locale in
-                R.string.localizable.featureUnsupportedSheetMessageCard(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetMessageCard()
             }
         case .sell:
             title = LocalizableResource<String> { locale in
-                R.string.localizable.featureUnsupportedSheetTitleSell(
-                    walletType.description(for: locale).capitalized,
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetTitleSell(
+                    walletType.description(for: locale).capitalized
                 )
             }
             message = LocalizableResource { locale in
-                R.string.localizable.featureUnsupportedSheetMessageSell(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetMessageSell()
             }
         case .card:
             title = LocalizableResource<String> { locale in
-                R.string.localizable.featureUnsupportedSheetTitleCard(
-                    walletType.description(for: locale).capitalized,
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetTitleCard(
+                    walletType.description(for: locale).capitalized
                 )
             }
             message = LocalizableResource { locale in
-                R.string.localizable.featureUnsupportedSheetMessageCard(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.featureUnsupportedSheetMessageCard()
             }
         }
 
@@ -133,7 +119,7 @@ struct MessageSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonSigningNotSupportedTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSigningNotSupportedTitle()
         }
 
         let icon: UIImage?
@@ -143,33 +129,31 @@ struct MessageSheetViewFactory {
         case .paritySigner:
             icon = R.image.iconParitySignerInSheet()
             message = LocalizableResource { locale in
-                R.string.localizable.commonParitySignerNotSupportedMessage(
-                    ParitySignerType.legacy.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonParitySignerNotSupportedMessage(
+                    ParitySignerType.legacy.getName(for: locale)
                 )
             }
         case .polkadotVault:
             icon = R.image.iconPolkadotVaultInSheet()
             message = LocalizableResource { locale in
-                R.string.localizable.commonParitySignerNotSupportedMessage(
-                    ParitySignerType.vault.getName(for: locale),
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonParitySignerNotSupportedMessage(
+                    ParitySignerType.vault.getName(for: locale)
                 )
             }
         case .ledger:
             icon = R.image.iconLedgerInSheet()
             message = LocalizableResource { locale in
-                R.string.localizable.commonLedgerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerNotSupportedMessage()
             }
         case .proxy:
             icon = R.image.imageProxy()
             message = LocalizableResource { locale in
-                R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.proxySigningIsNotSupportedMessage()
             }
         case .multisig:
             icon = R.image.imageMultisig()
             message = LocalizableResource { locale in
-                R.string.localizable.multisigSigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.multisigSigningIsNotSupportedMessage()
             }
         }
 

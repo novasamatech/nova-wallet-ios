@@ -35,37 +35,27 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
             )
         case .ledger:
             return .init(
-                title: R.string.localizable.commonLedgerLegacy(
-                    preferredLanguages: locale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonLedgerLegacy().uppercased(),
                 icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
-                title: R.string.localizable.commonProxieds(
-                    preferredLanguages: locale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonProxieds().uppercased(),
                 icon: R.image.iconProxy()
             )
         case .multisig:
             return .init(
-                title: R.string.localizable.commonMultisig(
-                    preferredLanguages: locale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisig().uppercased(),
                 icon: R.image.iconMultisig()
             )
         case .watchOnly:
             return .init(
-                title: R.string.localizable.commonWatchOnly(
-                    preferredLanguages: locale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonWatchOnly().uppercased(),
                 icon: R.image.iconWatchOnly()
             )
         case .genericLedger:
             return .init(
-                title: R.string.localizable.commonLedger(
-                    preferredLanguages: locale.rLanguages
-                ).uppercased(),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonLedger().uppercased(),
                 icon: R.image.iconLedger()
             )
         }

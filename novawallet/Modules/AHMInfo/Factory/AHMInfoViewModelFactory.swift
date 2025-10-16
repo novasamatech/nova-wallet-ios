@@ -69,11 +69,12 @@ private extension AHMInfoViewModelFactory {
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "👛",
-                text: R.string.localizable.ahmInfoFeatureMinBalance(
+                text: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoFeatureMinBalance(
                     minBalanceReduction,
                     sourceMinBalance,
-                    destMinBalance,
-                    preferredLanguages: locale.rLanguages
+                    destMinBalance
                 )
             )
         )
@@ -98,11 +99,12 @@ private extension AHMInfoViewModelFactory {
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "💸",
-                text: R.string.localizable.ahmInfoFeatureFees(
+                text: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoFeatureFees(
                     feeReduction,
                     sourceFee,
-                    destFee,
-                    preferredLanguages: locale.rLanguages
+                    destFee
                 )
             )
         )
@@ -112,9 +114,10 @@ private extension AHMInfoViewModelFactory {
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "🪙",
-                text: R.string.localizable.ahmInfoFeatureTokens(
-                    tokensList,
+                text: R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoFeatureTokens(
+                    tokensList
                 )
             )
         )
@@ -123,9 +126,10 @@ private extension AHMInfoViewModelFactory {
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "🗂️",
-                text: R.string.localizable.ahmInfoFeatureUnified(
-                    sourceAsset.symbol,
+                text: R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoFeatureUnified(
+                    sourceAsset.symbol
                 )
             )
         )
@@ -134,7 +138,9 @@ private extension AHMInfoViewModelFactory {
         features.append(
             AHMInfoViewModel.Feature(
                 emoji: "🧾",
-                text: R.string.localizable.ahmInfoFeaturePayFees(preferredLanguages: locale.rLanguages)
+                text: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoFeaturePayFees()
             )
         )
 
@@ -184,24 +190,26 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         let tokenSymbol = sourceAsset?.symbol ?? ""
 
         let title = if info.migrationInProgress {
-            R.string.localizable.ahmInfoInProgressTitle(
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.ahmInfoInProgressTitle(
                 dateFormatter.value(for: locale).string(from: date),
                 tokenSymbol,
-                destinationChain.name,
-                preferredLanguages: locale.rLanguages
+                destinationChain.name
             )
         } else {
-            R.string.localizable.ahmInfoTitle(
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.ahmInfoTitle(
                 dateFormatter.value(for: locale).string(from: date),
                 tokenSymbol,
-                destinationChain.name,
-                preferredLanguages: locale.rLanguages
+                destinationChain.name
             )
         }
 
-        let subtitle = R.string.localizable.ahmInfoSubtitle(
+        let subtitle = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.ahmInfoSubtitle()
 
         let features = createFeatures(
             from: info,
@@ -213,16 +221,17 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
         let info: [AHMInfoViewModel.Info] = [
             AHMInfoViewModel.Info(
                 type: .history,
-                text: R.string.localizable.ahmInfoHistoryInfo(
-                    sourceChain.name,
+                text: R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.ahmInfoHistoryInfo(
+                    sourceChain.name
                 )
             ),
             AHMInfoViewModel.Info(
                 type: .migration,
-                text: R.string.localizable.ahmInfoMigrationInfo(
+                text: R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.ahmInfoMigrationInfo()
             )
         ]
 
@@ -232,7 +241,9 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             subtitle: subtitle,
             features: features,
             info: info,
-            actionButtonTitle: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages)
+            actionButtonTitle: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonGotIt()
         )
     }
 
@@ -249,26 +260,29 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             .value(for: locale)
             .string(from: date)
 
-        let title = R.string.localizable.ahmInfoAlertAssetDetailsTitle(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.ahmInfoAlertAssetDetailsTitle(
             info.asset.symbol,
-            info.destinationChain.name,
-            preferredLanguages: languages
+            info.destinationChain.name
         )
-        let message = R.string.localizable.ahmInfoAlertAssetDetailsMessage(
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.ahmInfoAlertAssetDetailsMessage(
             formattedDate,
             info.asset.symbol,
-            info.destinationChain.name,
-            preferredLanguages: languages
+            info.destinationChain.name
         )
         let learnMoreModel = LearnMoreViewModel(
             iconViewModel: nil,
-            title: R.string.localizable.commonLearnMore(
-                preferredLanguages: languages
-            )
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonLearnMore()
         )
-        let actionTitle = R.string.localizable.ahmInfoAlertAssetDetailsAction(
-            info.destinationChain.name,
-            preferredLanguages: languages
+        let actionTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.ahmInfoAlertAssetDetailsAction(
+            info.destinationChain.name
         )
 
         return AHMAlertView.Model(
@@ -296,17 +310,18 @@ extension AHMInfoViewModelFactory: AHMInfoViewModelFactoryProtocol {
             .value(for: locale)
             .string(from: date)
 
-        let title = R.string.localizable.ahmInfoAlertStakingDetailsMessage(
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.ahmInfoAlertStakingDetailsMessage(
             sourceChainAsset.chainAssetName,
             info.destinationChain.name,
-            formattedDate,
-            preferredLanguages: languages
+            formattedDate
         )
         let learnMoreModel = LearnMoreViewModel(
             iconViewModel: nil,
-            title: R.string.localizable.commonLearnMore(
-                preferredLanguages: languages
-            )
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonLearnMore()
         )
 
         return AHMAlertView.Model(

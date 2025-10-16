@@ -167,13 +167,13 @@ private extension SignatoryListExpandableView {
 
         switch state {
         case .collapsed:
-            headerCell.valueLabel.text = R.string.localizable.commonShow(
+            headerCell.valueLabel.text = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.commonShow()
         case .expanded:
-            headerCell.valueLabel.text = R.string.localizable.commonHide(
+            headerCell.valueLabel.text = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.commonHide()
         }
     }
 

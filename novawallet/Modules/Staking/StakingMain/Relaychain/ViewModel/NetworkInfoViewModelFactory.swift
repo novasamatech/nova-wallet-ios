@@ -126,9 +126,7 @@ final class NetworkInfoViewModelFactory {
 
     private func createStakingPeriod() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.stakingNetworkInfoStakingPeriodValue(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingNetworkInfoStakingPeriodValue()
         }
     }
 }

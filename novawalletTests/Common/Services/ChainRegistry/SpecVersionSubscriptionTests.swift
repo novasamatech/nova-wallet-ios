@@ -9,7 +9,7 @@ class SpecVersionSubscriptionTests: XCTestCase {
 
         let chain = ChainModelGenerator.generate(count: 1).first!
         let runtimeSyncService = MockRuntimeSyncServiceProtocol()
-        let connection = MockJSONRPCEngine()
+        let connection = MockTestJSONRPCEngine()
 
         let subscription = SpecVersionSubscription(
             chainId: chain.chainId,
@@ -22,12 +22,14 @@ class SpecVersionSubscriptionTests: XCTestCase {
         // when
 
         stub(connection) { stub in
-            stub.subscribe(
-                any(),
-                params: any([String].self),
-                unsubscribeMethod: any(),
-                updateClosure: any(),
-                failureClosure: any()
+            when(
+                stub.subscribe(
+                    any(),
+                    params: any([String].self),
+                    unsubscribeMethod: any(),
+                    updateClosure: any(),
+                    failureClosure: any()
+                )
             ).then { (_, _, _, updateClosure: @escaping (RuntimeVersionUpdate) -> Void, _) in
                 DispatchQueue.global().async {
                     let update = RuntimeVersionUpdate(
@@ -49,7 +51,7 @@ class SpecVersionSubscriptionTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(runtimeSyncService) { stub in
-            stub.apply(version: any(), for: any()).then { actualVersion, chainId in
+            stub.apply(version: any(), for: any()).then { actualVersion, _ in
                 XCTAssertEqual(version, actualVersion)
                 expectation.fulfill()
             }

@@ -38,10 +38,7 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
     private func applyReferendaCount() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.swipeGovConfirmTitle(
-            referendaCount ?? 0,
-            preferredLanguages: languages
-        )
+        title = R.string(preferredLanguages: languages).localizable.swipeGovConfirmTitle(referendaCount ?? 0)
     }
 }
 

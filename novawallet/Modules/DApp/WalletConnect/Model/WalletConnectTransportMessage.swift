@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 
 enum WalletConnectTransportMessage {
     case proposal(Session.Proposal)

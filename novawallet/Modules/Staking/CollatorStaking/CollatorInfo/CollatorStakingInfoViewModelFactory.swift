@@ -76,9 +76,10 @@ final class CollatorStakingInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
         let nominators = formatter.string(from: NSNumber(value: delegatorsCount)) ?? ""
 
-        let maxNominatorsRewardedString = R.string.localizable.stakingMaxNominatorRewardedFormat(
-            formatter.string(from: NSNumber(value: collatorInfo.maxRewardedDelegations)) ?? "",
+        let maxNominatorsRewardedString = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingMaxNominatorRewardedFormat(
+            formatter.string(from: NSNumber(value: collatorInfo.maxRewardedDelegations)) ?? ""
         )
 
         let myNomination: ValidatorInfoViewModel.MyNomination?
@@ -127,19 +128,19 @@ final class CollatorStakingInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
     private func createOwnStakeTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.stakingValidatorOwnStake(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingValidatorOwnStake()
         }
     }
 
     private func createDelegatorsStakeTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonParastkDelegators(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonParastkDelegators()
         }
     }
 
     private func createTotalTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletTransferTotalTitle()
         }
     }
 

@@ -1,8 +1,9 @@
+import Foundation
 import Foundation_iOS
 import Operation_iOS
 import BigInt
 
-protocol StakingBondMoreViewProtocol: ControllerBackedProtocol, Localizable {
+protocol StakingBondMoreViewProtocol: ControllerBackedProtocol {
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
