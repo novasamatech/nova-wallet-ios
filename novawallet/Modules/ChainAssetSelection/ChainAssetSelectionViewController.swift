@@ -44,6 +44,8 @@ extension ChainAssetSelectionViewController: ChainAssetSelectionViewProtocol {}
 
 extension ChainAssetSelectionViewController: Localizable {
     func applyLocalization() {
+        guard isViewLoaded else { return }
+
         title = localizedTitle.value(for: selectedLocale)
     }
 }
