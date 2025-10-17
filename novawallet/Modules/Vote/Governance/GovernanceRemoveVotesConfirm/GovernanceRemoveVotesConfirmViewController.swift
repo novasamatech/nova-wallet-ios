@@ -52,15 +52,16 @@ final class GovRemoveVotesConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.govRemoveVotes(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.govRemoveVotes()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
     }
 
     @objc private func actionConfirm() {
@@ -90,7 +91,7 @@ extension GovRemoveVotesConfirmViewController: GovernanceRemoveVotesConfirmViewP
     }
 
     func didReceiveTracks(viewModel: GovernanceTracksViewModel) {
-        let title = R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govTracks()
 
         if viewModel.canExpand {
             let cell = rootView.setSelectableTracks(for: title, tracks: viewModel.details)

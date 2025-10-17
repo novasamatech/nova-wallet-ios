@@ -78,17 +78,17 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         switch vote.voteAction {
         case .aye:
-            voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
+            voteSideString = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceAye()
             voteSideStyle = .ayeInverse
         case .nay:
-            voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
+            voteSideString = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceNay()
             voteSideStyle = .nayInverse
         case .abstain:
-            voteSideString = R.string.localizable.governanceAbstain(preferredLanguages: selectedLocale.rLanguages)
+            voteSideString = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.governanceAbstain()
             voteSideStyle = .abstainInverse
         }
 
-        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
+        let voteDescription = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govYourVote()
 
         let viewModel = YourVoteRow.Model(
             vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),

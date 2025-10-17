@@ -72,20 +72,18 @@ final class OperationDetailsSwapView: LocalizableView {
     }
 
     private func setup(locale: Locale) {
-        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
-            preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
-            preferredLanguages: locale.rLanguages)
+        rateCell.titleButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupDetailsRate()
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNetworkFee()
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
 
-        walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: locale.rLanguages)
-        accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: locale.rLanguages)
-        transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
-            preferredLanguages: locale.rLanguages
-        )
+        walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
+        accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
+        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxId()
     }
 
     func setupStyle() {

@@ -1,5 +1,7 @@
 import SnapKit
 import UIKit_iOS
+import UIKit
+import CoreGraphics
 
 protocol PercentInputViewDelegateProtocol: AnyObject {
     func didSelect(percent: SlippagePercentViewModel, sender: Any?)
@@ -89,7 +91,7 @@ final class PercentInputView: BackgroundedContentControl {
 
         if !buttonsStack.isHidden, !buttonsStack.arrangedSubviews.isEmpty {
             var buttonsWidth: CGFloat = buttonsStack.arrangedSubviews.reduce(into: 0) {
-                $0 = $0 + $1.intrinsicContentSize.width
+                $0 += $1.intrinsicContentSize.width
             }
             buttonsWidth += CGFloat(buttonsStack.arrangedSubviews.count - 1) * 8
             let height: CGFloat = buttonsStack.arrangedSubviews.max(by: {
@@ -186,7 +188,7 @@ extension PercentInputView: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         updateViewsVisibility(for: "")
         if let text = textField.text {
-            inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
+            _ = inputViewModel?.didReceiveReplacement("", for: NSRange(location: 0, length: text.count))
             textField.text = ""
             return false
         }

@@ -1,6 +1,6 @@
 import Foundation_iOS
 
-protocol RecommendedValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
+protocol RecommendedValidatorListViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: RecommendedValidatorListViewModelProtocol)
 }
 

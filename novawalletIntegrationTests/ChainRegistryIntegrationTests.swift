@@ -84,7 +84,7 @@ class ChainRegistryIntegrationTests: XCTestCase {
 
             let mapOperation: BaseOperation<AccountInfo?> = ClosureOperation {
                 guard let response = try queryWrapper.targetOperation.extractNoCancellableResultData()
-                        .first else {
+                    .first else {
                     throw BaseOperationError.unexpectedDependentResult
                 }
 
@@ -95,7 +95,8 @@ class ChainRegistryIntegrationTests: XCTestCase {
 
             let wrapper = CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [factoryOperation] + queryWrapper.allOperations)
+                dependencies: [factoryOperation] + queryWrapper.allOperations
+            )
 
             let queryExpectation = XCTestExpectation()
 

@@ -5,7 +5,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
     var deepLinkURL: URL {
         ApplicationConfig.shared.deepLinkURL
     }
-    
+
     func testStakingLinkConverstion() {
         performTest(
             for: [
@@ -16,7 +16,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
             expectedQueryItems: [:]
         )
     }
-    
+
     func testOpenGovLinkConverstion() {
         performTest(
             for: [
@@ -34,7 +34,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
             ]
         )
     }
-    
+
     func testDappLinkConverstion() {
         performTest(
             for: [
@@ -48,7 +48,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
             ]
         )
     }
-    
+
     func testMnemonicLinkConverstion() {
         performTest(
             for: [
@@ -68,7 +68,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
             ]
         )
     }
-    
+
     func testAHMLinkConverstion() {
         performTest(
             for: [
@@ -82,7 +82,7 @@ final class BranchToInternalConvertionTests: XCTestCase {
             ]
         )
     }
-    
+
     func testBranchParamsIgnored() {
         performTest(
             for: [
@@ -94,31 +94,31 @@ final class BranchToInternalConvertionTests: XCTestCase {
             expectedQueryItems: [:]
         )
     }
-    
+
     private func performTest(
         for params: ExternalUniversalLinkParams,
         expectedPath: String,
         expectedQueryItems: [String: String]
     ) {
         guard let resultLink = BranchToDeepLinkConversionFactory(
-                baseUrl: deepLinkURL
+            baseUrl: deepLinkURL
         ).createInternalLink(from: params) else {
             XCTFail("Can't create link")
             return
         }
-        
+
         XCTAssert(resultLink.isSameUniversalLinkDomain(deepLinkURL))
         XCTAssertEqual(resultLink.path(percentEncoded: false), expectedPath)
-        
+
         guard let components = URLComponents(url: resultLink, resolvingAgainstBaseURL: false) else {
             XCTFail("Can't create URLComponents")
             return
         }
-        
+
         let actualQueryItems = (components.queryItems ?? []).reduce(into: [:]) { result, item in
             result[item.name] = item.value
         }
-        
+
         XCTAssertEqual(actualQueryItems, expectedQueryItems)
     }
 }

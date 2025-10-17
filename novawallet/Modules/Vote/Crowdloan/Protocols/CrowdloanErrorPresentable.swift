@@ -28,71 +28,82 @@ extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresenta
         from view: ControllerBackedProtocol,
         locale: Locale?
     ) {
-        let message = R.string.localizable.crowdloanTooSmallContributionMessage(
-            value,
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanTooSmallContributionMessage(value)
 
-        let title = R.string.localizable.crowdloanTooSmallContributionTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanTooSmallContributionTitle()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentCapReachedError(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.crowdloanCapReachedRaisedMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanCapReachedRaisedMessage()
 
-        let title = R.string.localizable.crowdloanCapReachedTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanCapReachedTitle()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentAmountExceedsCapError(_ amount: String, from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.crowdloanCapReachedAmountMessage(
-            amount, preferredLanguages: locale?.rLanguages
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanCapReachedAmountMessage(
+            amount
         )
-        let title = R.string.localizable.crowdloanCapReachedTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanCapReachedTitle()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentCrowdloanEnded(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.crowdloanEndedTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanEndedTitle()
 
-        let title = R.string.localizable.crowdloanEndedMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanEndedMessage()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentCrowdloanPrivateNotSupported(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.crowdloanPrivateCrowdloanMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanPrivateCrowdloanMessage()
 
-        let title = R.string.localizable.crowdloanPrivateCrowdloanTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanPrivateCrowdloanTitle()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -102,15 +113,23 @@ extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresenta
         locale: Locale?,
         action: @escaping (Bool) -> Void
     ) {
-        let title = R.string.localizable.crowdloanHavenotAppliedBonusTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.crowdloanHavenotAppliedBonusMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanHavenotAppliedBonusTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanHavenotAppliedBonusMessage()
 
-        let applyTitle = R.string.localizable.crowdloanHavenotAppliedBonusApply(preferredLanguages: locale?.rLanguages)
+        let applyTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanHavenotAppliedBonusApply()
         let applyAction = AlertPresentableAction(title: applyTitle) {
             action(true)
         }
 
-        let skipTitle = R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
+        let skipTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonSkip()
         let skipAction = AlertPresentableAction(title: skipTitle, style: .destructive) {
             action(false)
         }

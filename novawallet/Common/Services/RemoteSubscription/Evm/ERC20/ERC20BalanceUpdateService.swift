@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import web3swift
-import Core
+import Web3Core
 import SubstrateSdk
 import BigInt
 

@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 struct StakingRewardFiltersViewModel: Equatable {
@@ -15,24 +16,24 @@ struct StakingRewardFiltersViewModel: Equatable {
 
         var name: LocalizableResource<String> {
             LocalizableResource<String> { selectedLocale in
-                let strings = R.string.localizable.self
                 let languages = selectedLocale.rLanguages
+                let strings = R.string(preferredLanguages: languages).localizable.self
 
                 switch self {
                 case .allTime:
-                    return strings.stakingRewardFiltersPeriodAllTime(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodAllTime()
                 case .lastWeek:
-                    return strings.stakingRewardFiltersPeriodLastWeek(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastWeek()
                 case .lastMonth:
-                    return strings.stakingRewardFiltersPeriodLastMonth(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastMonth()
                 case .lastThreeMonths:
-                    return strings.stakingRewardFiltersPeriodLastThreeMonths(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastThreeMonths()
                 case .lastSixMonths:
-                    return strings.stakingRewardFiltersPeriodLastSixMonths(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastSixMonths()
                 case .lastYear:
-                    return strings.stakingRewardFiltersPeriodLastYear(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodLastYear()
                 case .custom:
-                    return strings.stakingRewardFiltersPeriodCustom(preferredLanguages: languages)
+                    return strings.stakingRewardFiltersPeriodCustom()
                 }
             }
         }

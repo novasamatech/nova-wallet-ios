@@ -337,7 +337,7 @@ private extension SwipeGovReferendumDetailsPresenter {
                 kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
             ),
             time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
-            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govDetailsVotingStatus()
         )
     }
 }

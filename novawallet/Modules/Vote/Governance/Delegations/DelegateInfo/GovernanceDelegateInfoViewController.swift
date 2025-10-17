@@ -32,7 +32,7 @@ final class GovernanceDelegateInfoViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.delegationsInfoTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsInfoTitle()
     }
 
     @objc private func actionReadMore() {
@@ -98,18 +98,14 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let delegatedVotes = viewModel.delegatedVotes {
             statsTable.addTitleValueCell(
-                for: R.string.localizable.delegationsDelegatedVotes(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsDelegatedVotes(),
                 value: delegatedVotes
             )
         }
 
         if let delegations = viewModel.delegations {
             let cell = statsTable.addInfoCell(
-                for: R.string.localizable.delegationsDelegations(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsDelegations(),
                 value: delegations
             )
 
@@ -118,9 +114,8 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let recentVotes = viewModel.recentVotes {
             let cell = statsTable.addInfoCell(
-                for: R.string.localizable.delegationsLastVoted(
-                    recentVotes.period,
-                    preferredLanguages: selectedLocale.rLanguages
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsLastVoted(
+                    recentVotes.period
                 ),
                 value: recentVotes.value
             )
@@ -130,9 +125,7 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let allVotes = viewModel.allVotes {
             let cell = statsTable.addInfoCell(
-                for: R.string.localizable.delegationsInfoVotedAll(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
+                for: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsInfoVotedAll(),
                 value: allVotes
             )
 

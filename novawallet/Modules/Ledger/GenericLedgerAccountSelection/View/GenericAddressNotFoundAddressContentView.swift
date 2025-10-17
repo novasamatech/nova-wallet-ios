@@ -36,6 +36,6 @@ final class GenericLedgerNotFoundAddressContentView: GenericTitleValueView<UILab
     func bind(title: String, locale: Locale) {
         titleLabel.text = title
 
-        detailsLabel.text = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+        detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundCaption()
     }
 }

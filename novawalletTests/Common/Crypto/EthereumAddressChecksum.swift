@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class EthereumAddressChecksum: XCTestCase {
-
     func testChecksumValid() {
         XCTAssertTrue("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed".isEthereumChecksumValid())
         XCTAssertTrue("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359".isEthereumChecksumValid())

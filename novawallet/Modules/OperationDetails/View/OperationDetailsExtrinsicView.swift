@@ -55,24 +55,15 @@ final class OperationDetailsExtrinsicView: LocalizableView {
     }
 
     private func setupLocalization() {
-        senderView.titleLabel.text = R.string.localizable.commonSender(
-            preferredLanguages: locale.rLanguages
-        )
+        senderView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonSender()
 
-        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
-        )
+        networkView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetwork()
 
-        transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
-            preferredLanguages: locale.rLanguages
-        )
+        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxId()
 
-        moduleView.titleLabel.text = R.string.localizable.commonModule(
-            preferredLanguages: locale.rLanguages
-        )
+        moduleView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonModule()
 
-        callView.titleLabel.text = R.string.localizable.commonCall(
-            preferredLanguages: locale.rLanguages
-        )
+        callView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonCall()
     }
 
     private func setupLayout() {

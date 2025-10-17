@@ -100,10 +100,10 @@ extension MultisigTxDetailsPresenter: MultisigTxDetailsPresenterProtocol {
         wireframe.showInfo(
             from: view,
             title: .init(closure: { locale in
-                R.string.localizable.commonMultisigDeposit(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigDeposit()
             }),
             details: .init(closure: { locale in
-                R.string.localizable.multisigDepositInfoMessage(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.multisigDepositInfoMessage()
             })
         )
     }

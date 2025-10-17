@@ -29,21 +29,13 @@ final class CollatorStakingSelectFiltersPresenter {
     private func createTitle(for sorting: CollatorsSortType) -> String {
         switch sorting {
         case .rewards:
-            return R.string.localizable.parastkCollatorsFilterRewards(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkCollatorsFilterRewards()
         case .minStake:
-            return R.string.localizable.stakingMainMinimumStakeTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingMainMinimumStakeTitle()
         case .totalStake:
-            return R.string.localizable.stakingValidatorTotalStake(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingValidatorTotalStake()
         case .ownStake:
-            return R.string.localizable.parastkCollatorsFilterOwnStake(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            return R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parastkCollatorsFilterOwnStake()
         }
     }
 

@@ -201,10 +201,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             return
         }
         if accountManagementFilter.canAddAccount(to: wallet, chain: chainAsset.chain) {
-            let message = R.string.localizable.commonChainAccountMissingMessageFormat(
-                chainAsset.chain.name,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let message = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonChainAccountMissingMessageFormat(chainAsset.chain.name)
             wireframe.presentAddAccount(
                 from: view,
                 chainName: chainAsset.chain.name,

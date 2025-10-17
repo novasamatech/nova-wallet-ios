@@ -54,7 +54,7 @@ class PinSetupInteractor {
     private func handleFaceId() {
         state = .waitingBiometrics
 
-        let reason = R.string.localizable.askBiometryReason(preferredLanguages: locale.rLanguages)
+        let reason = R.string(preferredLanguages: locale.rLanguages).localizable.askBiometryReason()
         biometryAuth
             .authenticate(localizedReason: reason, completionQueue: .main) { [weak self] result in
                 self?.processResponseForBiometrics(result: result)

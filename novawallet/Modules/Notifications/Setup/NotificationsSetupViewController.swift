@@ -33,34 +33,19 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let strings = R.string.localizable.self
-        rootView.titleLabel.text = strings.notificationsSetupTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.subtitleLabel.text = strings.notificationsSetupSubtitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.enableButton.imageWithTitleView?.title = strings.notificationsSetupEnablePushNotifications(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.notNowButton.imageWithTitleView?.title = strings.commonNotNow(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.notifications.contentView.titleView.text = strings.notificationsSetupNotificationTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.notifications.contentView.subtitleView.text = strings.notificationsSetupNotificationSubtitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.notifications.contentView.accessoryView.text = strings.notificationsSetupNotificationAccessory(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
+        rootView.titleLabel.text = strings.notificationsSetupTitle()
+        rootView.subtitleLabel.text = strings.notificationsSetupSubtitle()
+        rootView.enableButton.imageWithTitleView?.title = strings.notificationsSetupEnablePushNotifications()
+        rootView.notNowButton.imageWithTitleView?.title = strings.commonNotNow()
+        rootView.notifications.contentView.titleView.text = strings.notificationsSetupNotificationTitle()
+        rootView.notifications.contentView.subtitleView.text = strings.notificationsSetupNotificationSubtitle()
+        rootView.notifications.contentView.accessoryView.text = strings.notificationsSetupNotificationAccessory()
 
         let marker = AttributedReplacementStringDecorator.marker
         let termsText = strings.notificationsSetupTerms(
             marker,
-            marker,
-            preferredLanguages: selectedLocale.rLanguages
+            marker
         )
 
         let attributedText = NSAttributedString(string: termsText)

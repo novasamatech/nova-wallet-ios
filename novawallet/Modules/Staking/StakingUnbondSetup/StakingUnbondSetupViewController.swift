@@ -50,23 +50,23 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingUnbond_v190()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+        rootView.amountView.titleView.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
+        rootView.amountView.detailsTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonStakedPrefix()
 
-        rootView.transferrableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
+        rootView.transferrableView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletBalanceAvailable()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonContinue()
 
         rootView.networkFeeView.locale = selectedLocale
         rootView.hintListView.locale = selectedLocale

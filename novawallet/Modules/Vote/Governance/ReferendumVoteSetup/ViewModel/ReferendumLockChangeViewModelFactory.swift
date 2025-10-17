@@ -311,17 +311,15 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
             if fromPeriod < toPeriod, (toPeriod - fromPeriod).hoursFromSeconds > 0 {
                 change = .init(
                     isIncrease: true,
-                    value: R.string.localizable.commonMaximum(
-                        (toPeriod - fromPeriod).localizedDaysHoursIncludingZero(for: locale),
-                        preferredLanguages: locale.rLanguages
+                    value: R.string(preferredLanguages: locale.rLanguages).localizable.commonMaximum(
+                        (toPeriod - fromPeriod).localizedDaysHoursIncludingZero(for: locale)
                     )
                 )
             } else if fromPeriod > toPeriod, (fromPeriod - toPeriod).hoursFromSeconds > 0 {
                 change = .init(
                     isIncrease: false,
-                    value: R.string.localizable.commonMaximum(
-                        (fromPeriod - toPeriod).localizedDaysHoursIncludingZero(for: locale),
-                        preferredLanguages: locale.rLanguages
+                    value: R.string(preferredLanguages: locale.rLanguages).localizable.commonMaximum(
+                        (fromPeriod - toPeriod).localizedDaysHoursIncludingZero(for: locale)
                     )
                 )
             } else {

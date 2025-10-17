@@ -45,7 +45,7 @@ final class YieldBoostCollatorSelectionFactory: YieldBoostCollatorSelectionFacto
                 if let apr = collator.apr {
                     return self?.formatter.value(for: locale).stringFromDecimal(apr) ?? ""
                 } else {
-                    return R.string.localizable.commonNotAvailable(preferredLanguages: locale.rLanguages)
+                    return R.string(preferredLanguages: locale.rLanguages).localizable.commonNotAvailable()
                 }
             }
 
@@ -55,9 +55,9 @@ final class YieldBoostCollatorSelectionFactory: YieldBoostCollatorSelectionFacto
 
             return LocalizableResource { locale in
                 let detailsTitle = localizedAprString.value(for: locale)
-                let detailsSubtitle = isYieldBoosted ? R.string.localizable.commonYieldBoosted(
+                let detailsSubtitle = isYieldBoosted ? R.string(
                     preferredLanguages: locale.rLanguages
-                ) : ""
+                ).localizable.commonYieldBoosted() : ""
 
                 let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)
 

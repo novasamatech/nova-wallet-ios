@@ -145,24 +145,18 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
 
 private extension CustomNetworkViewLayout {
     func applyLocalization() {
-        urlTitleLabel.text = R.string.localizable.networkAddRpcUrl(
+        urlTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.networkAddRpcUrl()
+        nameTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.networkAddName()
+        currencySymbolTitleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
-        nameTitleLabel.text = R.string.localizable.networkAddName(
+        ).localizable.networkAddCurrencySymbol()
+        chainIdTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.networkAddChainId()
+        blockExplorerUrlTitleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
-        currencySymbolTitleLabel.text = R.string.localizable.networkAddCurrencySymbol(
+        ).localizable.networkAddBlockExplorerUrl()
+        coingeckoUrlTitleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
-        chainIdTitleLabel.text = R.string.localizable.networkAddChainId(
-            preferredLanguages: locale.rLanguages
-        )
-        blockExplorerUrlTitleLabel.text = R.string.localizable.networkAddBlockExplorerUrl(
-            preferredLanguages: locale.rLanguages
-        )
-        coingeckoUrlTitleLabel.text = R.string.localizable.networkAddCoingeckoUrl(
-            preferredLanguages: locale.rLanguages
-        )
+        ).localizable.networkAddCoingeckoUrl()
 
         urlInput.locale = locale
         blockExplorerUrlInput.locale = locale

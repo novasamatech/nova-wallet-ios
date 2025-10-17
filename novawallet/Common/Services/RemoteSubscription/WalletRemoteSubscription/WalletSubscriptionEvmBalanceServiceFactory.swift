@@ -1,5 +1,5 @@
 import Foundation
-import Core
+import Web3Core
 
 final class WalletSubscriptionEvmBalanceServiceFactory {
     let chainRegistry: ChainRegistryProtocol

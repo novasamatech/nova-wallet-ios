@@ -1,5 +1,6 @@
 import Foundation
 import UIKit_iOS
+import UIKit
 
 final class ShakeAnimator: ViewAnimatorProtocol {
     let duration: TimeInterval

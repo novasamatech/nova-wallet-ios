@@ -13,16 +13,17 @@ final class SlashesOperationFactoryStub: SlashesOperationFactoryProtocol {
     }
 
     func createSlashingSpansOperationForStash(
-        _ stashAccount: @escaping () throws -> AccountId,
-        engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol) -> CompoundOperationWrapper<Staking.SlashingSpans?> {
-        return CompoundOperationWrapper.createWithResult(slashingSpans)
+        _: @escaping () throws -> AccountId,
+        engine _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<Staking.SlashingSpans?> {
+        CompoundOperationWrapper.createWithResult(slashingSpans)
     }
-    
+
     func createUnappliedSlashesWrapper(
         erasClosure: @escaping () throws -> [Staking.EraIndex]?,
-        engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        engine _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<RelayStkUnappliedSlashes> {
         let operation = ClosureOperation<RelayStkUnappliedSlashes> {
             if let eras = try erasClosure() {
@@ -32,7 +33,7 @@ final class SlashesOperationFactoryStub: SlashesOperationFactoryProtocol {
                 return self.unappliedSlashes
             }
         }
-        
+
         return CompoundOperationWrapper(targetOperation: operation)
     }
 }

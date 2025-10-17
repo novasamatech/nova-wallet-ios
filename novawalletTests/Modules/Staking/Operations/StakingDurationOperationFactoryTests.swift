@@ -5,14 +5,14 @@ class StakingDurationOperationFactoryTests: XCTestCase {
     func testWestend() {
         do {
             // given
-            
+
             let chain = ChainModelGenerator.generateChain(
                 generatingAssets: 2,
                 addressPrefix: 42,
                 assetPresicion: 12,
                 hasStaking: true
             )
-            
+
             let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
 
             let operationFactory = BabeStakingDurationFactory(

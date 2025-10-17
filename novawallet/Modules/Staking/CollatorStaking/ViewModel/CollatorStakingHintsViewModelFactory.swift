@@ -11,21 +11,22 @@ final class CollatorStakingHintsViewModelFactory: CollatorStakingHintsViewModelF
     func unstakeHint(for duration: TimeInterval, locale: Locale) -> String {
         let unstakingPeriod = duration.localizedDaysHoursOrFallbackMinutes(for: locale)
 
-        return R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-            unstakingPeriod.approximately(),
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.stakingHintUnstakeFormat_v2_2_0(
+            unstakingPeriod.approximately()
         )
     }
 
     func unstakingRewards(for locale: Locale) -> String {
-        R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintNoRewards_v2_2_0()
     }
 
     func unstakingRedeem(for locale: Locale) -> String {
-        R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRedeem_v2_2_0()
     }
 
     func unstakingRebond(for locale: Locale) -> String {
-        R.string.localizable.parastkRebondHint(preferredLanguages: locale.rLanguages)
+        R.string(preferredLanguages: locale.rLanguages).localizable.parastkRebondHint()
     }
 }

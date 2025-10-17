@@ -45,11 +45,11 @@ final class GovernanceDelegateSearchViewController: BaseTableSearchViewControlle
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearch()
 
-        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
+        rootView.searchField.placeholder = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.searchByAddressNamePlaceholder()
     }
 
     private func applyState() {
@@ -141,14 +141,14 @@ extension GovernanceDelegateSearchViewController: EmptyStateDataSource {
         switch emptyStateType {
         case .notFound:
             emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable.walletSearchEmptyTitle_v1100(
+            emptyView.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.walletSearchEmptyTitle_v1100()
         case .start:
             emptyView.image = R.image.iconStartSearch()
-            emptyView.title = R.string.localizable.commonSearchStartTitle_v2_2_0(
+            emptyView.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonSearchStartTitle_v2_2_0()
         }
 
         emptyView.titleColor = R.color.colorTextSecondary()!

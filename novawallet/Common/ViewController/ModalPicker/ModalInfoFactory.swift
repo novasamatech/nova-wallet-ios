@@ -17,15 +17,15 @@ struct ModalInfoFactory {
         symbol: String
     ) -> UIViewController {
         let title = LocalizableResource { locale in
-            R.string.localizable.stakingEstimateEarningTitle_v190(symbol, preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingEstimateEarningTitle_v190(symbol)
         }
 
         let maxRewardTitle = LocalizableResource { locale in
-            R.string.localizable.parastkRewardInfoMax(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.parastkRewardInfoMax()
         }
 
         let avgRewardTitle = LocalizableResource { locale in
-            R.string.localizable.parastkRewardInfoAvg(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.parastkRewardInfoAvg()
         }
 
         return createRewardDetails(
@@ -42,15 +42,15 @@ struct ModalInfoFactory {
         avgReward: Decimal
     ) -> UIViewController {
         let title = LocalizableResource { locale in
-            R.string.localizable.stakingRewardInfoTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardInfoTitle()
         }
 
         let maxRewardTitle = LocalizableResource { locale in
-            R.string.localizable.stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardInfoMax()
         }
 
         let avgRewardTitle = LocalizableResource { locale in
-            R.string.localizable.stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingRewardInfoAvg()
         }
 
         return createRewardDetails(
@@ -133,7 +133,7 @@ struct ModalInfoFactory {
         viewController.separatorColor = R.color.colorDivider()
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletBalanceLocked()
         }
 
         viewController.modalPresentationStyle = .custom
@@ -306,7 +306,7 @@ struct ModalInfoFactory {
         precision: Int16
     ) -> LocksSortingViewModel {
         let title = LocalizableResource { locale in
-            R.string.localizable.walletBalanceReserved(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.walletBalanceReserved()
         }
 
         let totalHolds = balanceContext.balanceHolds.reduce(BigUInt(0)) { $0 + $1.amount }

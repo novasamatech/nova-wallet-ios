@@ -37,24 +37,17 @@ final class WalletConnectSessionViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonWalletConnect(
-            preferredLanguages: languages
-        )
+        title = R.string(preferredLanguages: languages).localizable.commonWalletConnect()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: languages
-        )
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 
-        rootView.dappCell.titleLabel.text = R.string.localizable.commonDapp(
-            preferredLanguages: languages
-        )
+        rootView.dappCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonDapp()
 
-        rootView.statusCell.titleLabel.text = R.string.localizable.commonStatus(
-            preferredLanguages: languages
-        )
+        rootView.statusCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonStatus()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonDisconnect(preferredLanguages: languages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonDisconnect()
     }
 
     private func setupHandlers() {

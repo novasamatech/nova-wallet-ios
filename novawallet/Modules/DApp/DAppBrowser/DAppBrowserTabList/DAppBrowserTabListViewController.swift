@@ -85,12 +85,8 @@ private extension DAppBrowserTabListViewController {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.doneButtonItem.title = R.string.localizable.commonDone(
-            preferredLanguages: languages
-        )
-        rootView.closeAllButtonItem.title = R.string.localizable.commonCloseAll(
-            preferredLanguages: languages
-        )
+        rootView.doneButtonItem.title = R.string(preferredLanguages: languages).localizable.commonDone()
+        rootView.closeAllButtonItem.title = R.string(preferredLanguages: languages).localizable.commonCloseAll()
     }
 
     func setupActions() {

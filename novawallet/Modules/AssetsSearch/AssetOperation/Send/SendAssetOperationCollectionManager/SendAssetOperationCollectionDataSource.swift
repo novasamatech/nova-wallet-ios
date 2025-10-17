@@ -21,11 +21,12 @@ class SendAssetOperationCollectionDataSource: AssetsSearchCollectionViewDataSour
             for: indexPath
         )!
 
-        let text = R.string.localizable.assetOperationSendEmptyStateMessage(
-            preferredLanguages: selectedLocale.rLanguages)
-        let actionTitle = R.string.localizable.walletListEmptyActionTitle(
+        let text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.assetOperationSendEmptyStateMessage()
+        let actionTitle = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.walletListEmptyActionTitle()
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)

@@ -119,8 +119,9 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     func updateBalanceButton(text: String, locale: Locale) {
         balanceLabel.text = text
-        actionView.actionButton.imageWithTitleView?.title = R.string.localizable.stakingStartTitle(
-            preferredLanguages: locale.rLanguages)
+        actionView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingStartTitle()
     }
 
     private func set(title: AccentTextModel) {

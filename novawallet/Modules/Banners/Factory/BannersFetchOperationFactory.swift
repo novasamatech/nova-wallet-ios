@@ -129,7 +129,7 @@ extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
             dependingOn: bannersFetchOperation
         )
         let mapOperation: BaseOperation<[Banner]> = ClosureOperation { [weak self] in
-            guard let self else {
+            guard self != nil else {
                 throw BaseOperationError.parentOperationCancelled
             }
 

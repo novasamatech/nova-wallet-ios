@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 import Operation_iOS
 
 protocol WalletConnectTransportProtocol: DAppTransportProtocol {

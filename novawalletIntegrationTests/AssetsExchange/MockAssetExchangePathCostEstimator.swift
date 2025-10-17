@@ -6,7 +6,7 @@ final class MockAssetsExchangePathCostEstimator {}
 
 extension MockAssetsExchangePathCostEstimator: AssetsExchangePathCostEstimating {
     func costEstimationWrapper(
-        for path: AssetExchangeGraphPath
+        for _: AssetExchangeGraphPath
     ) -> CompoundOperationWrapper<AssetsExchangePathCost> {
         CompoundOperationWrapper.createWithResult(.zero)
     }

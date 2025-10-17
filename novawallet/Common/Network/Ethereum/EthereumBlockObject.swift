@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import Core
+import Web3Core
 
 struct EthereumBlockObject: Codable {
     struct Transaction: Codable {

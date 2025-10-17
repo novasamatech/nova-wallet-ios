@@ -69,8 +69,8 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func setupNavigationItem() {
-        navigationItem.title = R.string.localizable.inAppUpdatesTitle(preferredLanguages: selectedLocale.rLanguages)
-        let skipButtonTitle = R.string.localizable.commonSkip(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.inAppUpdatesTitle()
+        let skipButtonTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSkip()
         navigationItem.rightBarButtonItem = .init(
             title: skipButtonTitle,
             style: .plain,
@@ -83,18 +83,17 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
 
     private func setupInstallButton() {
         let preferredLanguages = selectedLocale.rLanguages
-        rootView.installButton.imageWithTitleView?.title =
-            R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
+        rootView.installButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: preferredLanguages
+        ).localizable.inAppUpdatesInstallButtonTitle()
         rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)
     }
 
     private func setupLocalization() {
-        let strings = R.string.localizable.self
-        let preferredLanguages = selectedLocale.rLanguages
-        navigationItem.title = strings.inAppUpdatesTitle(preferredLanguages: preferredLanguages)
-        navigationItem.rightBarButtonItem?.title = strings.commonSkip(preferredLanguages: preferredLanguages)
-        rootView.installButton.imageWithTitleView?.title =
-            strings.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
+        navigationItem.title = strings.inAppUpdatesTitle()
+        navigationItem.rightBarButtonItem?.title = strings.commonSkip()
+        rootView.installButton.imageWithTitleView?.title = strings.inAppUpdatesInstallButtonTitle()
         rootView.tableView.reloadData()
     }
 

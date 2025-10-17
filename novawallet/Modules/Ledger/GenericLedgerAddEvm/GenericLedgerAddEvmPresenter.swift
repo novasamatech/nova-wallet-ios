@@ -39,12 +39,12 @@ private extension GenericLedgerAddEvmPresenter {
     private func provideWarningIfNeeded(for account: GenericLedgerAccountModel) {
         if account.hasMissingEvmAddress {
             let viewModel = TitleWithSubtitleViewModel(
-                title: R.string.localizable.genericLedgerUpdateTitle(
+                title: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ),
-                subtitle: R.string.localizable.genericLedgerNoEvmMessage(
+                ).localizable.genericLedgerUpdateTitle(),
+                subtitle: R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                )
+                ).localizable.genericLedgerNoEvmMessage()
             )
 
             view?.didReceive(warningViewModel: viewModel, canLoadMore: false)

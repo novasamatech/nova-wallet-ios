@@ -72,7 +72,7 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
             let title = button.model.title(for: locale)
             button.imageWithTitleView?.title = title
         }
-        titleLabel.text = R.string.localizable.crowdloanAcalaLearnMore(preferredLanguages: locale.rLanguages)
+        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanAcalaLearnMore()
     }
 
     func bind(selectedMethod: AcalaContributionMethod) {

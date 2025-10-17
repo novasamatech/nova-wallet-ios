@@ -43,41 +43,38 @@ final class MultisigNotificationsPresenter {
 private extension MultisigNotificationsPresenter {
     func provideViewModel() {
         let enableModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.notificationsManagementEnableNotifications(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.notificationsManagementEnableNotifications(),
             icon: nil,
             isOn: settings.isEnabled,
             action: actionEnableNotifications
         )
         let signatureRequestedModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.notificationsManagementMultisigSignatureRequested(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.notificationsManagementMultisigSignatureRequested(),
             icon: nil,
             isOn: settings.signatureRequested,
             action: actionSignatureRequested
         )
         let signedBySignatoryModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.notificationsManagementMultisigSignedBySignatory(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
+            title: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.notificationsManagementMultisigSignedBySignatory(),
             icon: nil,
             isOn: settings.signedBySignatory,
             action: actionSignedBySignatory
         )
         let signedTransactionExecutedModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.commonMultisigExecuted(
+            title: R.string(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
+            ).localizable.commonMultisigExecuted(),
             icon: nil,
             isOn: settings.transactionExecuted,
             action: actionTransactionExecuted
         )
         let signedTransactionRejectedModel = SwitchTitleIconViewModel(
-            title: R.string.localizable.commonMultisigRejected(
+            title: R.string(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ),
+            ).localizable.commonMultisigRejected(),
             icon: nil,
             isOn: settings.transactionRejected,
             action: actionTransactionRejected
@@ -133,18 +130,16 @@ private extension MultisigNotificationsPresenter {
     }
 
     func showNoMultisigWalletsAlert() {
-        let title = R.string.localizable.notificationsManagementMultisigNoWalletsAlertTitle(
+        let title = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.notificationsManagementMultisigNoWalletsAlertTitle()
+        let message = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.notificationsManagementMultisigNoWalletsAlertMessage()
+        let learnMoreActionTitle = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
-        let message = R.string.localizable.notificationsManagementMultisigNoWalletsAlertMessage(
+        ).localizable.commonLearnMore()
+        let gotItActionTitle = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
-        let learnMoreActionTitle = R.string.localizable.commonLearnMore(
-            preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
-        let gotItActionTitle = R.string.localizable.commonGotIt(
-            preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
+        ).localizable.commonGotIt()
 
         let actions = [
             AlertPresentableAction(

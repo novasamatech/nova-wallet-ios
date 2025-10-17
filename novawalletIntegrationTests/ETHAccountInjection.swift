@@ -5,12 +5,11 @@ import NovaCrypto
 
 class ETHAccountInjectionTest: XCTestCase {
     func testInjectETHAccount() throws {
-        ///For inject account in simulator or device you should do:
-        ///1. Find account that you want to add which operation in ETH chain
-        ///2. Run script: https://github.com/stepanLav/helpful-utils/blob/master/derive_eth_publick_key_from_transaction.py
-        ///3. Replace ethAddress,ethPublicKey with the values from the script above. And set the name.
-        ///4. Run test
-
+        /// For inject account in simulator or device you should do:
+        /// 1. Find account that you want to add which operation in ETH chain
+        /// 2. Run script: https://github.com/stepanLav/helpful-utils/blob/master/derive_eth_publick_key_from_transaction.py
+        /// 3. Replace ethAddress,ethPublicKey with the values from the script above. And set the name.
+        /// 4. Run test
 
         // given
         let ethAddress = "0xE07c0A140F0Cb694a594Be70F84A74dcDB3BbFb0"

@@ -63,34 +63,34 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         )
     }
 
-    func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance> {
+    func getAccountBalanceProvider(for _: AccountId) throws -> StreamableProvider<AssetBalance> {
         throw CommonError.undefined
     }
 
     func getAllBalancesProvider() throws -> StreamableProvider<AssetBalance> {
         throw CommonError.undefined
     }
-    
-    func getLocksProvider(for accountId: AccountId) throws -> StreamableProvider<AssetLock> {
+
+    func getLocksProvider(for _: AccountId) throws -> StreamableProvider<AssetLock> {
         throw CommonError.undefined
     }
 
     func getLocksProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
+        for _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) throws -> StreamableProvider<AssetLock> {
         throw CommonError.undefined
     }
-    
-    func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold> {
+
+    func getHoldsProvider(for _: AccountId) throws -> StreamableProvider<AssetHold> {
         throw CommonError.undefined
     }
-    
+
     func getHoldsProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
+        for _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) throws -> StreamableProvider<AssetHold> {
         throw CommonError.undefined
     }

@@ -19,83 +19,63 @@ extension CloudBackupErrorPresentable where Self: AlertPresentable {
             title: title,
             message: message,
             actions: [],
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
     }
 
     func presentCloudBackupUnavailable(from view: ControllerBackedProtocol, locale: Locale) {
-        let title = R.string.localizable.cloudBackupNotAvailableTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotAvailableTitle()
 
-        let message = R.string.localizable.cloudBackupNotAvailableMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotAvailableMessage()
 
         presentOpenSettings(from: view, title: title, message: message, locale: locale)
     }
 
     func presentNotEnoughStorageForBackup(from view: ControllerBackedProtocol, locale: Locale) {
-        let title = R.string.localizable.cloudBackupNotEnoughStorageTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotEnoughStorageTitle()
 
-        let message = R.string.localizable.cloudBackupNotEnoughStorageMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotEnoughStorageMessage()
 
         presentOpenSettings(from: view, title: title, message: message, locale: locale)
     }
 
     func presentNoCloudConnection(from view: ControllerBackedProtocol, locale: Locale) {
-        let title = R.string.localizable.connectionErrorTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.connectionErrorTitle()
 
-        let message = R.string.localizable.connectionErrorMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.connectionErrorMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
 
     func presentBackupNotFound(from view: ControllerBackedProtocol, locale: Locale) {
-        let title = R.string.localizable.cloudBackupNotFoundTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotFoundTitle()
 
-        let message = R.string.localizable.cloudBackupNotFoundMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupNotFoundMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }
 
     func presentInvalidBackupPassword(from view: ControllerBackedProtocol, locale: Locale) {
-        let title = R.string.localizable.commonPasswordInvalidTitle(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonPasswordInvalidTitle()
 
-        let message = R.string.localizable.commonPasswordInvalidMessage(
-            preferredLanguages: locale.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonPasswordInvalidMessage()
 
         present(
             message: message,
             title: title,
-            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             from: view
         )
     }

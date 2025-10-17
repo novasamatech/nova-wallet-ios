@@ -15,7 +15,6 @@ class MortalEraFactoryTests: XCTestCase {
         performMortalEraCalculation(chainId: KnowChainId.westend)
     }
 
-
     func performMortalEraCalculation(chainId: ChainModel.Id) {
         // given
         let logger = Logger.shared

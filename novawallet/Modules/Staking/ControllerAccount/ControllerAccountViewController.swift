@@ -67,8 +67,7 @@ final class ControllerAccountViewController: UIViewController, ViewHolder {
 extension ControllerAccountViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .stakingControllerAccountTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingControllerAccountTitle()
             rootView.locale = selectedLocale
         }
     }

@@ -27,11 +27,11 @@ class StakingInfoTests: XCTestCase {
     }
 
     // MARK: - Private
+
     private func performCalculatorServiceTest(
         address: String,
         chainId: ChainModel.Id
     ) throws {
-
         // given
         let logger = Logger.shared
 
@@ -51,7 +51,7 @@ class StakingInfoTests: XCTestCase {
             operationQueue: OperationQueue(),
             logger: logger
         )
-        
+
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
@@ -103,9 +103,11 @@ class StakingInfoTests: XCTestCase {
 
             let rewards: [(String, Decimal)] = try info.validators.map { validator in
                 let reward = try calculator
-                    .calculateValidatorReturn(validatorAccountId: validator.accountId,
-                                              isCompound: false,
-                                              period: .year)
+                    .calculateValidatorReturn(
+                        validatorAccountId: validator.accountId,
+                        isCompound: false,
+                        period: .year
+                    )
 
                 let address = try validator.accountId.toAddress(using: chainAsset.chain.chainFormat)
                 return (address, reward * 100.0)
@@ -120,8 +122,10 @@ class StakingInfoTests: XCTestCase {
         // then
 
         let operationQueue = OperationQueue()
-        operationQueue.addOperations([validatorsOperation, calculatorOperation, mapOperation],
-                                     waitUntilFinished: true)
+        operationQueue.addOperations(
+            [validatorsOperation, calculatorOperation, mapOperation],
+            waitUntilFinished: true
+        )
 
         let result = try mapOperation.extractNoCancellableResultData()
         logger.info("Reward: \(result)")

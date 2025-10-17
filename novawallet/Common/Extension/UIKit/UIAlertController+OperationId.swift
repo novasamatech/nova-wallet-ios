@@ -76,8 +76,7 @@ extension UIAlertController {
             preferredStyle: .actionSheet
         )
 
-        let copyTitle = R.string.localizable
-            .commonCopyId(preferredLanguages: locale.rLanguages)
+        let copyTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCopyId()
 
         let copy = UIAlertAction(title: copyTitle, style: .default) { _ in
             copyClosure()
@@ -91,10 +90,9 @@ extension UIAlertController {
                 return nil
             }
 
-            let title = R.string.localizable.commmonViewInFormat(
-                namedTemplate.name,
+            let title = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.commmonViewInFormat(namedTemplate.name)
 
             return UIAlertAction(title: title, style: .default) { _ in
                 urlClosure(url)
@@ -103,8 +101,7 @@ extension UIAlertController {
 
         actions.forEach { alertController.addAction($0) }
 
-        let cancelTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale.rLanguages)
+        let cancelTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         let cancel = UIAlertAction(title: cancelTitle, style: .cancel, handler: nil)
 
         alertController.addAction(cancel)

@@ -34,11 +34,11 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
         case .now:
             lockView.valueView.hidesIcon = true
             detailsLabel.textColor = R.color.colorTextPositive()
-            detailsLabel.text = R.string.localizable.commonUnlockable(preferredLanguages: locale.rLanguages)
+            detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonUnlockable()
         case .delegation:
             lockView.valueView.hidesIcon = true
             detailsLabel.textColor = R.color.colorTextSecondary()
-            detailsLabel.text = R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+            detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.govYourDelegation()
         }
     }
 

@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import BigInt
 
-protocol SelectValidatorsConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
+protocol SelectValidatorsConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(confirmationViewModel: SelectValidatorsConfirmViewModel)
     func didReceive(hintsViewModel: LocalizableResource<[String]>)
     func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>?)

@@ -9,18 +9,30 @@ enum CrowdloanBonusServiceError: Error, ErrorContentConvertible {
         switch self {
         case .invalidReferral:
             return ErrorContent(
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.crowdloanReferralCodeInvalid(preferredLanguages: locale?.rLanguages)
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonErrorGeneralTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.crowdloanReferralCodeInvalid()
             )
         case .internalError:
             return ErrorContent(
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.crowdloanReferralCodeInternal(preferredLanguages: locale?.rLanguages)
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonErrorGeneralTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.crowdloanReferralCodeInternal()
             )
         case .veficationFailed:
             return ErrorContent(
-                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.crowdloanBonusVerificationError(preferredLanguages: locale?.rLanguages)
+                title: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.commonErrorGeneralTitle(),
+                message: R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.crowdloanBonusVerificationError()
             )
         }
     }

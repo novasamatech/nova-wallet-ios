@@ -190,10 +190,9 @@ final class GovernanceDelegateSearchPresenter {
         }
 
         if !viewModels.isEmpty {
-            let title = R.string.localizable.commonSearchResultsNumber(
-                viewModels.count,
+            let title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonSearchResultsNumber(viewModels.count)
 
             view?.didReceive(
                 viewModel: .found(title: .init(title: title), items: viewModels)

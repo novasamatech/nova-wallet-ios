@@ -2,7 +2,7 @@ import Foundation
 
 final class DAppAddFavoriteWireframe: DAppAddFavoriteWireframeProtocol, ModalAlertPresenting {
     func complete(view: DAppAddFavoriteViewProtocol?, locale: Locale) {
-        let title = R.string.localizable.commonSaved(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonSaved()
 
         let presenter = view?.controller.navigationController?.presentingViewController
 

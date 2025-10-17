@@ -15,17 +15,17 @@ extension CancelOperationPresentable where Self: AlertPresentable {
         destructiveClosure: @escaping () -> Void
     ) {
         let action = AlertPresentableAction(
-            title: R.string.localizable.commonCancelOperationAction(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancelOperationAction(),
             style: .destructive
         ) {
             destructiveClosure()
         }
 
         let viewModel = AlertPresentableViewModel(
-            title: R.string.localizable.commonCancelOperationMessage(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancelOperationMessage(),
             message: nil,
             actions: [action],
-            closeAction: R.string.localizable.commonKeepEditingAction(preferredLanguages: locale.rLanguages)
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonKeepEditingAction()
         )
 
         present(viewModel: viewModel, style: .actionSheet, from: view)

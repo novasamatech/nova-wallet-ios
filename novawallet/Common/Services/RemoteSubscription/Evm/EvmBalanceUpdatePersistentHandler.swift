@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import Core
+import Web3Core
 
 final class EvmBalanceUpdatePersistentHandler {
     let repository: AnyDataProviderRepository<AssetBalance>
@@ -109,7 +109,7 @@ extension EvmBalanceUpdatePersistentHandler: EvmBalanceUpdateHandling {
     func onBalanceUpdateWrapper(
         balances: [ChainAssetId: Balance],
         holder: AccountAddress,
-        block _: Core.BlockNumber?
+        block _: Web3Core.BlockNumber?
     ) -> CompoundOperationWrapper<Bool> {
         createSaveWrapper(balances: balances, holder: holder)
     }

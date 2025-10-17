@@ -27,9 +27,9 @@ private extension SwapFeeDetailsViewModelFactory {
     ) -> String {
         switch operation.label {
         case .swap:
-            R.string.localizable.swapsLabelSwap(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelSwap()
         case .transfer:
-            R.string.localizable.swapsLabelTransfer(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsLabelTransfer()
         }
     }
 
@@ -151,7 +151,7 @@ private extension SwapFeeDetailsViewModelFactory {
         if !networkFees.isEmpty {
             feeGroups.append(
                 SwapOperationFeeView.FeeGroup(
-                    title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),
                     amounts: networkFees
                 )
             )
@@ -160,7 +160,7 @@ private extension SwapFeeDetailsViewModelFactory {
         if !crosschainFees.isEmpty {
             feeGroups.append(
                 SwapOperationFeeView.FeeGroup(
-                    title: R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChainFee(),
                     amounts: crosschainFees
                 )
             )

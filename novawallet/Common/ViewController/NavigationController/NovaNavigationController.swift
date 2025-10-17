@@ -104,7 +104,7 @@ class NovaNavigationController: UINavigationController, UINavigationControllerDe
     // MARK: Private
 
     private func updateNavigationBarState(in viewController: UIViewController) {
-        let isHidden = viewController as? HiddableBarWhenPushed != nil
+        let isHidden = viewController is HiddableBarWhenPushed
         setNavigationBarHidden(isHidden, animated: true)
 
         if let navigationDependable = viewController as? NavigationDependable {

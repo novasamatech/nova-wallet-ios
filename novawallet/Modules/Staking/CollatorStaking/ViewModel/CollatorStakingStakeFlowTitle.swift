@@ -11,11 +11,11 @@ enum CollatorStakingStakeScreenTitle {
     ) -> LocalizableResource<String> {
         if hasStake {
             return LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondMore_v190()
             }
         } else {
             return LocalizableResource { locale in
-                R.string.localizable.stakingStakeFormat(assetSymbol, preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingStakeFormat(assetSymbol)
             }
         }
     }
@@ -23,11 +23,11 @@ enum CollatorStakingStakeScreenTitle {
     private func getConfirmTitle(hasStake: Bool) -> LocalizableResource<String> {
         if hasStake {
             LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondMore_v190()
             }
         } else {
             LocalizableResource { locale in
-                R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartTitle()
             }
         }
     }

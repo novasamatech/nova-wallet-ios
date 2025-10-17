@@ -85,7 +85,7 @@ final class NftListViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.walletListYourNftsTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListYourNftsTitle()
     }
 
     private func preferredItemWidth(from totalWidth: CGFloat) -> CGFloat {

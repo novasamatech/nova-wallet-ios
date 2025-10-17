@@ -1,6 +1,6 @@
 import Foundation_iOS
 
-protocol YourValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
+protocol YourValidatorListViewProtocol: ControllerBackedProtocol {
     func reload(state: YourValidatorListViewState)
 }
 

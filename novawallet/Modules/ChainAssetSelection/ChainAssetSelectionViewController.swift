@@ -1,6 +1,6 @@
 import UIKit
-import Rswift
 import Foundation_iOS
+import RswiftResources
 
 final class ChainAssetSelectionViewController: SelectionListViewController<ChainAssetSelectionTableViewCell> {
     override var selectableCellIdentifier: ReuseIdentifier<ChainAssetSelectionTableViewCell>! {
@@ -44,6 +44,8 @@ extension ChainAssetSelectionViewController: ChainAssetSelectionViewProtocol {}
 
 extension ChainAssetSelectionViewController: Localizable {
     func applyLocalization() {
+        guard isViewLoaded else { return }
+
         title = localizedTitle.value(for: selectedLocale)
     }
 }

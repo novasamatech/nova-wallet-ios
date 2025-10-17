@@ -65,7 +65,7 @@ final class BackupAttentionViewLayout: ScrollableContainerLayoutView {
         self.viewModel = viewModel
 
         switch viewModel.button {
-        case let .active(title, action):
+        case let .active(title, _):
             agreeButton.imageWithTitleView?.title = title
             agreeButton.applyEnabledStyle()
             agreeButton.isEnabled = true

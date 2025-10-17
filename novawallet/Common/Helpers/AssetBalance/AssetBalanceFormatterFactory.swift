@@ -89,7 +89,7 @@ class AssetBalanceFormatterFactory {
         }
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     private func createCompoundFormatter(
         for preferredPrecision: UInt16,
         roundingMode: NumberFormatter.RoundingMode = .down,

@@ -1,4 +1,5 @@
 import SnapKit
+import UIKit
 import UIKit_iOS
 
 final class WalletConnectionsView: UIView {

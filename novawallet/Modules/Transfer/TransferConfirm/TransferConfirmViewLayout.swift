@@ -65,7 +65,7 @@ final class TransferConfirmViewLayout: UIView {
         if crossChainFeeCell == nil {
             let crossChainFeeCell = StackNetworkFeeCell()
             crossChainFeeCell.rowContentView.title = LocalizableResource { locale in
-                R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChainFee()
             }
 
             senderTableView.addArrangedSubview(crossChainFeeCell)

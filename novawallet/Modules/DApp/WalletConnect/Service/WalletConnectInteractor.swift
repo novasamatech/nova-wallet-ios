@@ -1,5 +1,5 @@
 import UIKit
-import WalletConnectSwiftV2
+import WalletConnectPairing
 
 final class WalletConnectInteractor {
     let presenter: WalletConnectInteractorOutputProtocol

@@ -60,9 +60,8 @@ extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryProtocol {
         }
 
         return GenericLedgerAccountViewModel(
-            title: R.string.localizable.commonIndexedAccount(
-                "\(account.index + 1)",
-                preferredLanguages: locale.rLanguages
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonIndexedAccount(
+                "\(account.index + 1)"
             ),
             icon: icon,
             addresses: addressViewModels

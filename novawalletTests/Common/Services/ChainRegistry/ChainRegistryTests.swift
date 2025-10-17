@@ -36,9 +36,9 @@ class ChainRegistryTests: XCTestCase {
         let remoteSubstrateChains = ChainModelGenerator.generateRemote(count: substrateChainsCount)
         let remoteNoRuntimeChains = ChainModelGenerator.generateRemote(count: noRuntimeChainsCount, hasSubstrateRuntime: false)
         let remoteChains = remoteSubstrateChains + remoteNoRuntimeChains
-        
+
         let converter = ChainModelConverter()
-        let expectedChains = remoteChains.enumerated().compactMap { (index, remoteModel) in
+        let expectedChains = remoteChains.enumerated().compactMap { index, remoteModel in
             converter.update(
                 localModel: nil,
                 remoteModel: remoteModel,
@@ -46,14 +46,14 @@ class ChainRegistryTests: XCTestCase {
                 order: Int64(index)
             )
         }
-        
-        let expectedChainIds = Set(expectedChains.map { $0.chainId })
-        let substrateChainIds = Set(remoteSubstrateChains.map { $0.chainId })
+
+        let expectedChainIds = Set(expectedChains.map(\.chainId))
+        let substrateChainIds = Set(remoteSubstrateChains.map(\.chainId))
         let chainsData = try JSONEncoder().encode(remoteChains)
         let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
         let chainURL = URL(string: "https://github.com")!
         let evmAssetURL = URL(string: "https://google.com")!
-        
+
         stub(dataOperationFactory) { stub in
             stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
             stub.fetchData(from: evmAssetURL).thenReturn(BaseOperation.createWithResult(evmTokensData))

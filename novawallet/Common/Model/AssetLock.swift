@@ -1,5 +1,6 @@
 import BigInt
 import Operation_iOS
+import Foundation
 
 enum AssetLockStorage: String {
     case locks = "Locks"

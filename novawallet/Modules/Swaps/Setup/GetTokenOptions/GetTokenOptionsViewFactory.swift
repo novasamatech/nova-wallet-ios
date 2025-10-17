@@ -26,10 +26,9 @@ enum GetTokenOptionsViewFactory {
         let view = GetTokenOptionsViewController(operationPresenter: presenter)
 
         view.localizedTitle = .init {
-            R.string.localizable.swapsSetupDepositTitle(
-                destinationChainAsset.asset.symbol,
+            R.string(
                 preferredLanguages: $0.rLanguages
-            )
+            ).localizable.swapsSetupDepositTitle(destinationChainAsset.asset.symbol)
         }
 
         view.selectedIndex = NSNotFound

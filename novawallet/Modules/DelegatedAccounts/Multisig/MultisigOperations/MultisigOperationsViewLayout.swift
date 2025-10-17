@@ -77,9 +77,9 @@ private extension MultisigOperationsViewLayout {
     }
 
     func setupLocalization() {
-        emptyStateView?.title = R.string.localizable.multisigOperationsEmptyText(
-            preferredLanguages: locale?.rLanguages
-        )
+        emptyStateView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.multisigOperationsEmptyText()
     }
 }
 

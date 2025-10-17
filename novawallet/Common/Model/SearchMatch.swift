@@ -27,7 +27,7 @@ enum SearchMatch<T> {
 }
 
 extension SearchMatch {
-    static func matchString<T>(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
+    static func matchString(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
         if let match = matchFullString(for: query, recordField: recordField, record: record) {
             return match
         }
@@ -43,7 +43,7 @@ extension SearchMatch {
         return nil
     }
 
-    static func matchFullString<T>(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
+    static func matchFullString(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
         isFullMatch(query: query.lowercased(), field: recordField.lowercased()) ? .full(record) : nil
     }
 
@@ -51,7 +51,7 @@ extension SearchMatch {
         field == query
     }
 
-    static func matchPrefix<T>(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
+    static func matchPrefix(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
         isPrefixMatch(query: query.lowercased(), field: recordField.lowercased()) ? .prefix(record) : nil
     }
 
@@ -59,7 +59,7 @@ extension SearchMatch {
         field.hasPrefix(query)
     }
 
-    static func matchInclusion<T>(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
+    static func matchInclusion(for query: String, recordField: String, record: T) -> SearchMatch<T>? {
         isInclusionMatch(query: query.lowercased(), field: recordField.lowercased()) ? .inclusion(record) : nil
     }
 

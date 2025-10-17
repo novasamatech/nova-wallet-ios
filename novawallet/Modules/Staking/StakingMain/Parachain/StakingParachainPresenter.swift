@@ -1,10 +1,12 @@
 import Foundation
+import Foundation_iOS
 
 final class StakingParachainPresenter {
     weak var view: StakingMainViewProtocol?
 
     let interactor: StakingParachainInteractorInputProtocol
     let wireframe: StakingParachainWireframeProtocol
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
     let stateMachine: ParaStkStateMachineProtocol
@@ -18,12 +20,14 @@ final class StakingParachainPresenter {
         networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.stateViewModelFactory = stateViewModelFactory
+        self.localizationManager = localizationManager
         self.logger = logger
         self.priceAssetInfoFactory = priceAssetInfoFactory
 
@@ -51,7 +55,7 @@ final class StakingParachainPresenter {
                 from: model,
                 chainAsset: chainAsset,
                 price: optCommonData?.price,
-                locale: view?.selectedLocale ?? Locale.current
+                locale: localizationManager.selectedLocale
             )
 
             view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
@@ -124,7 +128,7 @@ final class StakingParachainPresenter {
                 return
             }
 
-            wireframe.presentNoUnstakingOptions(view, locale: view.selectedLocale)
+            wireframe.presentNoUnstakingOptions(view, locale: localizationManager.selectedLocale)
         }
     }
 

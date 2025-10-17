@@ -4,7 +4,7 @@ import Foundation
 final class MockCloudBackupFileManager {
     let baseUrl: URL
     let name: String
-    
+
     init(
         baseUrl: URL = URL(string: "file://home/dummy")!,
         name: String = CloudBackup.walletsFilename
@@ -16,13 +16,13 @@ final class MockCloudBackupFileManager {
 
 extension MockCloudBackupFileManager: CloudBackupFileManaging {
     func getFileName() -> String {
-        return name
+        name
     }
-    
+
     func getFileUrl() -> URL? {
         (getBaseUrl() as? NSURL)?.appendingPathComponent(getFileName())
     }
-    
+
     func getBaseUrl() -> URL? {
         baseUrl
     }

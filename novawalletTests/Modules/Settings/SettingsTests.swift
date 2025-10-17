@@ -26,22 +26,22 @@ final class SettingsTests: XCTestCase {
         let sectionsExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).isSetup.get.thenReturn(false, true)
+            when(stub.isSetup.get).thenReturn(false, true)
 
-            when(stub).didLoad(userViewModel: any()).then { _ in
+            when(stub.didLoad(userViewModel: any())).then { _ in
                 accountViewModelExpectation.fulfill()
             }
 
-            when(stub).reload(sections: any()).then { _ in
+            when(stub.reload(sections: any())).then { _ in
                 sectionsExpectation.fulfill()
             }
         }
-        
+
         let biometryAuthMock = MockBiometryAuth()
-        
+
         stub(biometryAuthMock) { stub in
-            when(stub).availableBiometryType.get.thenReturn(.none)
-            when(stub).supportedBiometryType.get.thenReturn(.none)
+            when(stub.availableBiometryType.get).thenReturn(.none)
+            when(stub.supportedBiometryType.get).thenReturn(.none)
         }
 
         let wireframe = MockSettingsWireframeProtocol()
@@ -51,7 +51,7 @@ final class SettingsTests: XCTestCase {
             facade: SubstrateStorageTestFacade(),
             operationManager: OperationManagerFacade.sharedManager
         )
-        
+
         let walletConnect = MockWalletConnectDelegateInputProtocol()
         let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
             chainRegistry: ChainRegistryProtocolStub(),
@@ -70,25 +70,25 @@ final class SettingsTests: XCTestCase {
             multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
-        
+
         stub(walletConnect) { stub in
-            when(stub).add(delegate: any()).thenDoNothing()
-            when(stub).connect(uri: any(), completion: any()).thenDoNothing()
-            when(stub).remove(delegate: any()).thenDoNothing()
-            when(stub).getSessionsCount().thenReturn(0)
-            when(stub).fetchSessions(any()).then { closure in
+            when(stub.add(delegate: any())).thenDoNothing()
+            when(stub.connect(uri: any(), completion: any())).thenDoNothing()
+            when(stub.remove(delegate: any())).thenDoNothing()
+            when(stub.getSessionsCount()).thenReturn(0)
+            when(stub.fetchSessions(any())).then { closure in
                 closure(.success([]))
             }
-            when(stub).disconnect(from: any(), completion: any()).then { session, completion in
+            when(stub.disconnect(from: any(), completion: any())).then { _, completion in
                 completion(nil)
             }
         }
-        
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-      
+
         let pushNotificationsFacade = MockPushNotificationsServiceFacadeProtocol()
         stub(pushNotificationsFacade) { stub in
-            when(stub).subscribeStatus(any(), closure: any()).then { _, closure in
+            when(stub.subscribeStatus(any(), closure: any())).then { _, closure in
                 closure(.unknown, .active)
             }
         }
@@ -121,7 +121,7 @@ final class SettingsTests: XCTestCase {
         )
 
         stub(eventCenter) { stub in
-            when(stub).add(observer: any(), dispatchIn: any()).thenDoNothing()
+            when(stub.add(observer: any(), dispatchIn: any())).thenDoNothing()
         }
 
         presenter.view = view

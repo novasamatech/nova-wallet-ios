@@ -74,7 +74,7 @@ final class CoingeckoOperationFactory {
     ) -> URL? {
         let queryItems = [
             URLQueryItem(name: "vs_currency", value: currency),
-            URLQueryItem(name: "days", value: period.rawValue),
+            URLQueryItem(name: "days", value: period.rawValue)
         ]
 
         return buildURLForPriceHistory(

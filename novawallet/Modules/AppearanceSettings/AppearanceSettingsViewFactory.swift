@@ -4,7 +4,6 @@ import Foundation_iOS
 
 struct AppearanceSettingsViewFactory {
     static func createView() -> AppearanceSettingsViewProtocol? {
-        let settingsManager = SettingsManager.shared
         let appearanceFacade = AppearanceFacade.shared
 
         let wireframe = AppearanceSettingsWireframe()

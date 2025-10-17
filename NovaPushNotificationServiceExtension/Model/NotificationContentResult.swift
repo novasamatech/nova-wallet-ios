@@ -19,9 +19,9 @@ struct NotificationContentResult {
 extension NotificationContentResult {
     static func createUnsupportedResult(for locale: Locale) -> NotificationContentResult {
         .init(
-            title: R.string.localizable.pushNotificationDefaultTitle(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationDefaultTitle(),
             subtitle: nil,
-            body: R.string.localizable.pushNotificationUnsupportedBody(preferredLanguages: locale.rLanguages)
+            body: R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationUnsupportedBody()
         )
     }
 }

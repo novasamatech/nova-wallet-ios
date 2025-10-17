@@ -50,23 +50,23 @@ extension StakingStatusView {
             glowingView.outerFillColor = R.color.colorTextPositive()!.withAlphaComponent(0.4)
             glowingView.innerFillColor = R.color.colorTextPositive()!
             detailsLabel.textColor = R.color.colorTextPositive()!
-            detailsLabel.text = R.string.localizable.stakingNominatorStatusActive(
+            detailsLabel.text = R.string(
                 preferredLanguages: locale.rLanguages
-            ).uppercased()
+            ).localizable.stakingNominatorStatusActive().uppercased()
         case .inactive:
             glowingView.outerFillColor = R.color.colorTextNegative()!.withAlphaComponent(0.4)
             glowingView.innerFillColor = R.color.colorTextNegative()!
             detailsLabel.textColor = R.color.colorTextNegative()!
-            detailsLabel.text = R.string.localizable.stakingNominatorStatusInactive(
+            detailsLabel.text = R.string(
                 preferredLanguages: locale.rLanguages
-            ).uppercased()
+            ).localizable.stakingNominatorStatusInactive().uppercased()
         case .waiting:
             glowingView.outerFillColor = R.color.colorTextSecondary()!.withAlphaComponent(0.4)
             glowingView.innerFillColor = R.color.colorTextSecondary()!
             detailsLabel.textColor = R.color.colorTextPrimary()!
-            detailsLabel.text = R.string.localizable.commonWaiting(
+            detailsLabel.text = R.string(
                 preferredLanguages: locale.rLanguages
-            ).uppercased()
+            ).localizable.commonWaiting().uppercased()
         }
     }
 }

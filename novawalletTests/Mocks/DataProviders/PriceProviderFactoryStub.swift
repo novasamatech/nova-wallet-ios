@@ -18,13 +18,13 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
     }
 
     func getPriceStreamableProvider(
-        for priceId: AssetModel.PriceId,
-        currency: Currency
+        for _: AssetModel.PriceId,
+        currency _: Currency
     ) -> StreamableProvider<PriceData> {
         createProvider(from: createRepository())
     }
 
-    func getAllPricesStreamableProvider(currency: Currency) -> StreamableProvider<PriceData> {
+    func getAllPricesStreamableProvider(currency _: Currency) -> StreamableProvider<PriceData> {
         createProvider(from: createRepository())
     }
 
@@ -43,7 +43,7 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
     }
 
     private func createProvider(from repository: AnyDataProviderRepository<PriceData>) -> StreamableProvider<PriceData> {
-        return StreamableProvider(
+        StreamableProvider(
             source: AnyStreamableSource(EmptyStreamableSource()),
             repository: repository,
             observable: AnyDataProviderRepositoryObservable(DataProviderObservableStub()),
@@ -51,19 +51,19 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
         )
     }
 
-    func getPriceProvider(for priceId: AssetModel.PriceId, currency: Currency) -> AnySingleValueProvider<PriceData> {
+    func getPriceProvider(for _: AssetModel.PriceId, currency _: Currency) -> AnySingleValueProvider<PriceData> {
         let provider = SingleValueProviderStub(item: priceData)
         return AnySingleValueProvider(provider)
     }
 
-    func getPriceListProvider(for priceIds: [AssetModel.PriceId], currency: Currency) -> AnySingleValueProvider<[PriceData]> {
+    func getPriceListProvider(for _: [AssetModel.PriceId], currency _: Currency) -> AnySingleValueProvider<[PriceData]> {
         let priceList = priceData.map { [$0] } ?? []
         let provider = SingleValueProviderStub(item: priceList)
         return AnySingleValueProvider(provider)
     }
 
     func getPriceHistoryProvider(
-        for priceId: AssetModel.PriceId,
+        for _: AssetModel.PriceId,
         currency: Currency
     ) -> AnySingleValueProvider<PriceHistory> {
         let priceHistory = PriceHistory(currencyId: currency.id, items: [])

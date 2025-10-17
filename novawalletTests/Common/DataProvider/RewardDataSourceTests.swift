@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 class RewardDataSourceTests: NetworkBaseTests {
-
     func testCorrectSync() {
         do {
             // given
@@ -18,7 +17,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let urls = chain.externalApis?.stakingRewards()?.compactMap({ $0.url }),
+                let urls = chain.externalApis?.stakingRewards()?.compactMap(\.url),
                 !urls.isEmpty,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
@@ -64,7 +63,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let urls = chain.externalApis?.stakingRewards()?.compactMap({ $0.url }),
+                let urls = chain.externalApis?.stakingRewards()?.compactMap(\.url),
                 !urls.isEmpty,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
@@ -98,10 +97,11 @@ class RewardDataSourceTests: NetworkBaseTests {
         }
     }
 
-    func performRewardRequest(for repository: AnyDataProviderRepository<SingleValueProviderObject>,
-                              address: String,
-                              urls: [URL],
-                              assetPrecision: Int16
+    func performRewardRequest(
+        for repository: AnyDataProviderRepository<SingleValueProviderObject>,
+        address: String,
+        urls: [URL],
+        assetPrecision: Int16
     ) throws -> Result<TotalRewardItem?, Error> {
         let operationFactory = SubqueryRewardAggregatingWrapperFactory(
             factories: urls.map { SubqueryRewardOperationFactory(url: $0) }
@@ -125,8 +125,8 @@ class RewardDataSourceTests: NetworkBaseTests {
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 2
 
-        var totalReward: TotalRewardItem? = nil
-        var totalRewardError: Error? = nil
+        var totalReward: TotalRewardItem?
+        var totalRewardError: Error?
 
         let changesClosure = { (changes: [DataProviderChange<TotalRewardItem>]) -> Void in
             totalReward = changes.reduceToLastChange()
@@ -138,14 +138,18 @@ class RewardDataSourceTests: NetworkBaseTests {
             expectation.fulfill()
         }
 
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true,
-                                                  waitsInProgressSyncOnAdd: false)
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: true,
+            waitsInProgressSyncOnAdd: false
+        )
 
-        provider.addObserver(self,
-                             deliverOn: .main,
-                             executing: changesClosure,
-                             failing: failureClosure,
-                             options: options)
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: changesClosure,
+            failing: failureClosure,
+            options: options
+        )
 
         wait(for: [expectation], timeout: 10.0)
 

@@ -110,11 +110,11 @@ private extension AssetPriceChartViewModelFactory {
 
         if lastEntry.startedAt == allEntries.last?.startedAt {
             changeDateText = switch selectedPeriod {
-            case .day: R.string.localizable.commonToday(preferredLanguages: languages)
-            case .week: R.string.localizable.chartPeriodWeek(preferredLanguages: languages)
-            case .month: R.string.localizable.chartPeriodMonth(preferredLanguages: languages)
-            case .year: R.string.localizable.chartPeriodYear(preferredLanguages: languages)
-            case .allTime: R.string.localizable.chartPeriodMax(preferredLanguages: languages)
+            case .day: R.string(preferredLanguages: languages).localizable.commonToday()
+            case .week: R.string(preferredLanguages: languages).localizable.chartPeriodWeek()
+            case .month: R.string(preferredLanguages: languages).localizable.chartPeriodMonth()
+            case .year: R.string(preferredLanguages: languages).localizable.chartPeriodYear()
+            case .allTime: R.string(preferredLanguages: languages).localizable.chartPeriodMax()
             }
         } else {
             let date = Date(timeIntervalSince1970: TimeInterval(lastEntry.startedAt))
@@ -137,15 +137,15 @@ private extension AssetPriceChartViewModelFactory {
         let periods: [PriceChartPeriodViewModel] = availablePeriods.map {
             let text = switch $0 {
             case .day:
-                R.string.localizable.commonPeriod1d(preferredLanguages: languages).uppercased()
+                R.string(preferredLanguages: languages).localizable.commonPeriod1d().uppercased()
             case .week:
-                R.string.localizable.commonPeriod7d(preferredLanguages: languages).uppercased()
+                R.string(preferredLanguages: languages).localizable.commonPeriod7d().uppercased()
             case .month:
-                R.string.localizable.commonPeriod30d(preferredLanguages: languages).uppercased()
+                R.string(preferredLanguages: languages).localizable.commonPeriod30d().uppercased()
             case .year:
-                R.string.localizable.commonPeriod1y(preferredLanguages: languages).uppercased()
+                R.string(preferredLanguages: languages).localizable.commonPeriod1y().uppercased()
             case .allTime:
-                R.string.localizable.commonPeriodAll(preferredLanguages: languages).capitalized(with: locale)
+                R.string(preferredLanguages: languages).localizable.commonPeriodAll().capitalized(with: locale)
             }
 
             return PriceChartPeriodViewModel(period: $0, text: text)
@@ -206,7 +206,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
     func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel {
         let title = [
             params.asset.symbol,
-            R.string.localizable.commonPrice(preferredLanguages: params.locale.rLanguages)
+            R.string(preferredLanguages: params.locale.rLanguages).localizable.commonPrice()
         ].joined(with: .space)
 
         let periodControlViewModel = createPeriodsControlViewModel(

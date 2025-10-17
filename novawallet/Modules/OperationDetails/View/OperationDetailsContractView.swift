@@ -59,26 +59,19 @@ final class OperationDetailsContractView: LocalizableView {
     }
 
     private func setupLocalization() {
-        senderView.titleLabel.text = R.string.localizable.commonSender(
-            preferredLanguages: locale.rLanguages
-        )
+        senderView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonSender()
 
-        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
-        )
+        networkView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetwork()
 
-        contractView.titleLabel.text = R.string.localizable.evmContract(
-            preferredLanguages: locale.rLanguages
-        )
+        contractView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.evmContract()
 
-        transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
-            preferredLanguages: locale.rLanguages
-        )
+        transactionHashView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonTxId()
     }
 
     private func setupFunctionFieldLocalization() {
-        functionView?.titleLabel.text = R.string.localizable.evmContractFunction(
+        functionView?.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.evmContractFunction()
     }
 
     private func setupFunctionName(for value: String?) {

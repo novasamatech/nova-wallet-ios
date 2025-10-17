@@ -32,7 +32,7 @@ final class ManualBackupWalletListViewController: WalletsListViewController<
     // MARK: Table View Delegate
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        let title = R.string.localizable.backupSelectWalletTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.backupSelectWalletTitle()
         let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.titleView.detailsLabel.apply(style: .boldTitle2Primary)
         headerView.titleView.bind(viewModel: .init(title: title, icon: nil))

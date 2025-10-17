@@ -1,4 +1,5 @@
 import SubstrateSdk
+import Foundation
 
 protocol PushNotificationSettingsFactoryProtocol {
     func createWalletSettings(

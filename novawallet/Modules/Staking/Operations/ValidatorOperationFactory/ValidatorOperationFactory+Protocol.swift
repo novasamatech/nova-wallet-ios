@@ -227,7 +227,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     func wannabeValidatorsOperation(
         for accountIdList: [AccountId]
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {

@@ -57,20 +57,15 @@ extension OpenScreenUrlParsingError.GovScreenError {
 
         return switch self {
         case .govTypeIsNotSpecified:
-            R.string.localizable.deeplinkErrorNoGovernanceTypeMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorNoGovernanceTypeMessage()
         case .invalidChainId:
-            R.string.localizable.deeplinkErrorInvalidChainIdMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
         case .invalidReferendumId:
-            R.string.localizable.deeplinkErrorInvalidReferendumIdMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidReferendumIdMessage()
         case .chainNotSupportsGovType, .chainNotSupportsGov:
-            R.string.localizable.deeplinkErrorInvalidGovernanceTypeMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidGovernanceTypeMessage()
         case .chainNotFound:
-            R.string.localizable.deeplinkErrorInvalidChainIdMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidChainIdMessage()
         }
     }
 }
@@ -81,8 +76,7 @@ extension OpenScreenUrlParsingError.DAppError {
 
         return switch self {
         case .invalidURL:
-            R.string.localizable.deeplinkErrorInvalidDappUrlMessage(
-                preferredLanguages: languages)
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidDappUrlMessage()
         case .loadListFailed, .unknownURL:
             nil
         }
@@ -95,7 +89,9 @@ extension OpenScreenUrlParsingError.AHMError {
 
         return switch self {
         case .migrationDataNotFound:
-            R.string.localizable.ahmInfoNotFoundError(preferredLanguages: languages)
+            R.string(
+                preferredLanguages: languages
+            ).localizable.ahmInfoNotFoundError()
         }
     }
 }

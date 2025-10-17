@@ -28,6 +28,7 @@ struct ControllerAccountViewFactory {
             assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
             chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

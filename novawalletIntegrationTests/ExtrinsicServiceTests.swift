@@ -6,7 +6,6 @@ import NovaCrypto
 import Operation_iOS
 
 class ExtrinsicServiceTests: XCTestCase {
-
     private func createExtrinsicBuilderClosure(amount: BigUInt) -> ExtrinsicBuilderClosure {
         let callFactory = SubstrateCallFactory()
 
@@ -26,7 +25,7 @@ class ExtrinsicServiceTests: XCTestCase {
                     validatorStash: payout.validator,
                     era: payout.era
                 ).runtimeCall()
-                
+
                 _ = try builder.adding(call: payoutCall)
             }
 
@@ -38,12 +37,12 @@ class ExtrinsicServiceTests: XCTestCase {
 
     func testEstimateFeeForBondExtraCall() throws {
         let wallet = AccountGenerator.generateMetaAccount()
-        
+
         let chainId = KnowChainId.kusama
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
-        guard 
+
+        guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
             let chain = chainRegistry.getChain(for: chainId),
@@ -56,16 +55,16 @@ class ExtrinsicServiceTests: XCTestCase {
         let assetPrecision: Int16 = 12
 
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
-        
+
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
-        
+
         let operationQueue = OperationQueue()
-        
+
         let metadataHashOperationFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
             operationQueue: operationQueue
         )
-        
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
@@ -75,7 +74,7 @@ class ExtrinsicServiceTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -84,7 +83,7 @@ class ExtrinsicServiceTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
@@ -119,11 +118,11 @@ class ExtrinsicServiceTests: XCTestCase {
 
     func testEstimateFeeForPayoutRewardsCall() throws {
         let wallet = AccountGenerator.generateMetaAccount()
-        
+
         let chainId = KnowChainId.kusama
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        
+
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
@@ -136,18 +135,18 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
-        
+
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
 
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
-        
+
         let operationQueue = OperationQueue()
-        
+
         let metadataHashOperationFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
             operationQueue: operationQueue
         )
-        
+
         let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
@@ -157,7 +156,7 @@ class ExtrinsicServiceTests: XCTestCase {
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
@@ -166,7 +165,7 @@ class ExtrinsicServiceTests: XCTestCase {
             ),
             feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
-        
+
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
@@ -203,5 +202,4 @@ class ExtrinsicServiceTests: XCTestCase {
 
         wait(for: [feeExpectation], timeout: 20)
     }
-
 }
