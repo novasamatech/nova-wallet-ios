@@ -20,7 +20,7 @@ final class GiftsOnboardingHeaderView: GenericPairValueView<MultiValueView, Link
             updateLocalization()
         }
     }
-    
+
     var learnMoreView: LinkView {
         sView
     }
