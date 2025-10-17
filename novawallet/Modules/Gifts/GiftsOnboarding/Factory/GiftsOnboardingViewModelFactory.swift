@@ -8,7 +8,7 @@ protocol GiftsOnboardingViewModelFactoryProtocol {
 final class GiftsOnboardingViewModelFactory {
     private let highlightedAttributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: R.color.colorTextPrimary()!,
-        .font: UIFont.semiBoldBody
+        .font: UIFont.regularBody
     ]
 
     private func createAttributedString(
@@ -29,40 +29,40 @@ extension GiftsOnboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtoc
     func createViewModel(locale: Locale) -> GiftsOnboardingViewModel {
         let languages = locale.rLanguages
 
-        // Step 1
-        let step1Template = R.string.localizable.giftsOnboardingStep1Template(
-            AttributedReplacementStringDecorator.marker,
+        let step1Template = R.string(
             preferredLanguages: languages
+        ).localizable.giftsOnboardingStep1Template(
+            AttributedReplacementStringDecorator.marker
         )
-        let step1Highlighted = R.string.localizable.giftsOnboardingStep1Highlighted(
+        let step1Highlighted = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.giftsOnboardingStep1Highlighted()
         let step1Attributed = createAttributedString(
             template: step1Template,
             highlighted: step1Highlighted
         )
 
-        // Step 2
-        let step2Template = R.string.localizable.giftsOnboardingStep2Template(
+        let step2Template = R.string(
+            preferredLanguages: languages
+        ).localizable.giftsOnboardingStep2Template(
             AttributedReplacementStringDecorator.marker,
-            preferredLanguages: languages
         )
-        let step2Highlighted = R.string.localizable.giftsOnboardingStep2Highlighted(
+        let step2Highlighted = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.giftsOnboardingStep2Highlighted()
         let step2Attributed = createAttributedString(
             template: step2Template,
             highlighted: step2Highlighted
         )
 
-        // Step 3
-        let step3Template = R.string.localizable.giftsOnboardingStep3Template(
-            AttributedReplacementStringDecorator.marker,
+        let step3Template = R.string(
             preferredLanguages: languages
+        ).localizable.giftsOnboardingStep3Template(
+            AttributedReplacementStringDecorator.marker
         )
-        let step3Highlighted = R.string.localizable.giftsOnboardingStep3Highlighted(
+        let step3Highlighted = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.giftsOnboardingStep3Highlighted()
         let step3Attributed = createAttributedString(
             template: step3Template,
             highlighted: step3Highlighted
@@ -75,11 +75,9 @@ extension GiftsOnboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtoc
         ]
 
         return GiftsOnboardingViewModel(
-            title: R.string.localizable.giftsOnboardingTitle(preferredLanguages: languages),
-            subtitle: R.string.localizable.giftsOnboardingSubtitle(preferredLanguages: languages),
             steps: steps,
-            learnMoreTitle: R.string.localizable.commonLearnMore(preferredLanguages: languages),
-            actionTitle: R.string.localizable.giftsActionCreateGift(preferredLanguages: languages)
+            actionTitle: R.string(preferredLanguages: languages).localizable.giftsActionCreateGift(),
+            locale: locale
         )
     }
 }

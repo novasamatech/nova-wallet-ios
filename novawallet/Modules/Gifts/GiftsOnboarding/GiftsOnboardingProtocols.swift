@@ -10,14 +10,6 @@ protocol GiftsOnboardingPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol GiftsOnboardingInteractorInputProtocol: AnyObject {
-    func setup()
-}
-
-protocol GiftsOnboardingInteractorOutputProtocol: AnyObject {
-    func didCompleteSetup()
-}
-
-protocol GiftsOnboardingWireframeProtocol: WebPresentable, ErrorPresentable {
-    func proceed(from view: GiftsOnboardingViewProtocol?)
+protocol GiftsOnboardingWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable {
+    func showCreateGift(from view: GiftsOnboardingViewProtocol?)
 }

@@ -179,6 +179,19 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
+    func showGift(from view: AssetListViewProtocol?) {
+        guard let giftFlowView = GiftsOnboardingViewFactory.createView() else { return }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: giftFlowView.controller
+        )
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
+    }
+
     func showNfts(from view: AssetListViewProtocol?) {
         guard let nftListView = NftListViewFactory.createView() else {
             return

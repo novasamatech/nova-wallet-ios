@@ -6,9 +6,7 @@ struct GiftsOnboardingViewModel {
         let attributedDescription: NSAttributedString
     }
 
-    let title: String
-    let subtitle: String?
     let steps: [Step]
-    let learnMoreTitle: String
     let actionTitle: String
+    let locale: Locale
 }

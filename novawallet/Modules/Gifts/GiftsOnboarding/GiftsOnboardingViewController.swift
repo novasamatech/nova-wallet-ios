@@ -6,13 +6,9 @@ final class GiftsOnboardingViewController: UIViewController, ViewHolder {
 
     let presenter: GiftsOnboardingPresenterProtocol
 
-    init(
-        presenter: GiftsOnboardingPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
-    ) {
+    init(presenter: GiftsOnboardingPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -30,40 +26,38 @@ final class GiftsOnboardingViewController: UIViewController, ViewHolder {
         setupHandlers()
         presenter.setup()
     }
+}
 
-    private func setupHandlers() {
+// MARK: - Private
+
+private extension GiftsOnboardingViewController {
+    func setupHandlers() {
         rootView.actionButton.addTarget(
             self,
             action: #selector(actionProceed),
             for: .touchUpInside
         )
 
-        rootView.learnMoreView.actionButton.addTarget(
+        rootView.headerView.learnMoreView.actionButton.addTarget(
             self,
             action: #selector(actionLearnMore),
             for: .touchUpInside
         )
     }
 
-    @objc private func actionProceed() {
+    @objc func actionProceed() {
         presenter.proceed()
     }
 
-    @objc private func actionLearnMore() {
+    @objc func actionLearnMore() {
         presenter.activateLearnMore()
     }
 }
 
+// MARK: - GiftsOnboardingViewProtocol
+
 extension GiftsOnboardingViewController: GiftsOnboardingViewProtocol {
     func didReceive(viewModel: GiftsOnboardingViewModel) {
         rootView.bind(viewModel: viewModel)
-    }
-}
-
-extension GiftsOnboardingViewController: Localizable {
-    func applyLocalization() {
-        if isViewLoaded {
-            presenter.setup()
-        }
     }
 }

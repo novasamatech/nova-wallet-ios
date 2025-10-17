@@ -221,6 +221,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.swap()
     }
 
+    func actionGift() {
+        presenter.gift()
+    }
+
     func actionCardOpen() {
         presenter.presentCard()
     }

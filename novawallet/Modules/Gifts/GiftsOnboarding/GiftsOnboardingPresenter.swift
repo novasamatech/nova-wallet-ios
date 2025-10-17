@@ -3,20 +3,17 @@ import Foundation_iOS
 
 final class GiftsOnboardingPresenter {
     weak var view: GiftsOnboardingViewProtocol?
-    
+
     let wireframe: GiftsOnboardingWireframeProtocol
-    let interactor: GiftsOnboardingInteractorInputProtocol
     let viewModelFactory: GiftsOnboardingViewModelFactoryProtocol
     let learnMoreUrl: URL
-    
+
     init(
-        interactor: GiftsOnboardingInteractorInputProtocol,
         wireframe: GiftsOnboardingWireframeProtocol,
         viewModelFactory: GiftsOnboardingViewModelFactoryProtocol,
         learnMoreUrl: URL,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.learnMoreUrl = learnMoreUrl
@@ -37,31 +34,21 @@ private extension GiftsOnboardingPresenter {
 
 extension GiftsOnboardingPresenter: GiftsOnboardingPresenterProtocol {
     func setup() {
-        interactor.setup()
+        provideViewModel()
     }
-    
+
     func activateLearnMore() {
-        guard let view = view else {
-            return
-        }
-        
+        guard let view else { return }
+
         wireframe.showWeb(
             url: learnMoreUrl,
             from: view,
             style: .automatic
         )
     }
-    
+
     func proceed() {
-        wireframe.proceed(from: view)
-    }
-}
-
-// MARK: - GiftsOnboardingInteractorOutputProtocol
-
-extension GiftsOnboardingPresenter: GiftsOnboardingInteractorOutputProtocol {
-    func didCompleteSetup() {
-        provideViewModel()
+        wireframe.showCreateGift(from: view)
     }
 }
 
@@ -69,8 +56,8 @@ extension GiftsOnboardingPresenter: GiftsOnboardingInteractorOutputProtocol {
 
 extension GiftsOnboardingPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {
-            provideViewModel()
-        }
+        guard let view, view.isSetup else { return }
+
+        provideViewModel()
     }
 }
