@@ -63,7 +63,7 @@ private extension GiftsOnboardingViewLayout {
     enum Constants {
         static let headerToStepsSpacing: CGFloat = 16
         static let stepsToImageSpacing: CGFloat = 35.5
-        static let imageHeight: CGFloat = 180
+        static let imageHeight: CGFloat = 221
         static let stepsSpacing: CGFloat = 24
         static let topMargin: CGFloat = 16
     }
