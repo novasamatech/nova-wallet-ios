@@ -28,7 +28,7 @@ extension StakingStateViewModelFactory {
 
     private func findRedeemUnbondedAlert(
         commonData: StakingStateCommonData,
-        ledgerInfo: StakingLedger
+        ledgerInfo: Staking.Ledger
     ) -> StakingAlert? {
         guard
             let era = commonData.eraStakersInfo?.activeEra,
@@ -49,7 +49,7 @@ extension StakingStateViewModelFactory {
 
     private func findMinStakeNotSatisfied(
         commonData: StakingStateCommonData,
-        ledgerInfo: StakingLedger
+        ledgerInfo: Staking.Ledger
     ) -> StakingAlert? {
         if let minStake = commonData.minStake, ledgerInfo.active < minStake {
             guard

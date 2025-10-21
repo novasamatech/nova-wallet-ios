@@ -6,13 +6,34 @@ protocol AssetDetailsViewLayoutDelegate: AnyObject {
     func didUpdateHeight(_ height: CGFloat)
 }
 
-final class AssetDetailsViewLayout: UIView {
+final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     weak var delegate: AssetDetailsViewLayoutDelegate?
 
     private let layoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
         duration: 0.2,
         options: [.curveEaseInOut]
     )
+    private let alertLayoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.3,
+        delay: 0.2,
+        options: [.curveEaseInOut]
+    )
+    private let alertAppearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: 0.3,
+        options: [.curveEaseInOut]
+    )
+    private let alertDisappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 1.0,
+        to: 0.0,
+        duration: 0.15,
+        options: [.curveLinear]
+    )
+
+    lazy var ahmAlertView: AHMAlertView = .create { view in
+        view.isHidden = true
+    }
 
     let chartContainerView: UIView = .create { view in
         view.backgroundColor = R.color.colorBlockBackground()
@@ -20,7 +41,6 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     let backgroundView = MultigradientView.background
-    let chainView = AssetListChainView()
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
@@ -35,19 +55,6 @@ final class AssetDetailsViewLayout: UIView {
         textAlignment: .center
     )
 
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(
-            top: 6,
-            left: 16,
-            bottom: .zero,
-            right: 16
-        )
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
-        return view
-    }()
-
     lazy var balanceWidget: AssetDetailsBalanceWidget = .create { view in
         view.delegate = self
     }
@@ -57,7 +64,8 @@ final class AssetDetailsViewLayout: UIView {
     let buySellButton: RoundedButton = createOperationButton(icon: R.image.iconBuy(), enabled: true)
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
 
-    private var currentBalanceHeight = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
+    private var currentBalanceHeight: CGFloat = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
+    private var currentAHMAlertHeight: CGFloat = .zero
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
@@ -65,17 +73,6 @@ final class AssetDetailsViewLayout: UIView {
     )
 
     private var chartViewHeight: CGFloat = .zero
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     private static func createOperationButton(
         icon: UIImage?,
@@ -92,8 +89,11 @@ final class AssetDetailsViewLayout: UIView {
         return button
     }
 
-    private func setupLayout() {
-        addSubview(backgroundView)
+    override func setupLayout() {
+        super.setupLayout()
+
+        insertSubview(backgroundView, belowSubview: containerView)
+
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -116,30 +116,68 @@ final class AssetDetailsViewLayout: UIView {
             $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.top).offset(-7.0)
         }
 
-        addSubview(chainView)
-        chainView.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-16)
-            $0.leading.greaterThanOrEqualTo(assetView.snp.trailing).offset(8)
-            $0.centerY.equalTo(assetView.snp.centerY)
-        }
-        addSubview(containerView)
-        containerView.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalToSuperview().inset(Constants.containerViewTopOffset)
-        }
-
         balanceWidget.snp.makeConstraints { make in
             make.height.equalTo(balanceWidget.state.height)
         }
 
         containerView.stackView.spacing = Constants.sectionSpace
-        containerView.stackView.addArrangedSubview(balanceWidget)
-        containerView.stackView.addArrangedSubview(buttonsRow)
-        containerView.stackView.addArrangedSubview(chartContainerView)
+
+        addArrangedSubview(balanceWidget)
+        addArrangedSubview(buttonsRow)
+        addArrangedSubview(chartContainerView)
 
         chartContainerView.snp.makeConstraints { make in
             make.height.equalTo(chartViewHeight)
         }
+    }
+
+    private func hideAlertWithAnimation() {
+        alertDisappearanceAnimator.animate(
+            view: ahmAlertView,
+            completionBlock: nil
+        )
+        layoutChangesAnimator.animate(
+            block: { [weak self] in
+                self?.ahmAlertView.isHidden = true
+                self?.containerView.stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                self?.ahmAlertView.removeFromSuperview()
+            }
+        )
+
+        currentAHMAlertHeight = .zero
+        delegate?.didUpdateHeight(prefferedHeight)
+    }
+
+    private func showAlertWithAnimation() {
+        ahmAlertView.alpha = 0
+
+        insertArrangedSubview(
+            ahmAlertView,
+            before: balanceWidget,
+            spacingAfter: Constants.alertSpacingAfter
+        )
+
+        alertLayoutChangesAnimator.animate(
+            block: { [weak self] in
+                guard let self else { return }
+
+                ahmAlertView.isHidden = false
+                containerView.stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                guard let self else { return }
+
+                alertAppearanceAnimator.animate(
+                    view: ahmAlertView,
+                    completionBlock: nil
+                )
+            }
+        )
+
+        currentAHMAlertHeight = ahmAlertView.frame.height
+        delegate?.didUpdateHeight(prefferedHeight)
     }
 
     func set(locale: Locale) {
@@ -170,7 +208,6 @@ final class AssetDetailsViewLayout: UIView {
             animated: true
         )
         assetLabel.text = assetDetailsModel.tokenName
-        chainView.bind(viewModel: assetDetailsModel.network)
     }
 
     func setChartViewHeight(_ height: CGFloat) {
@@ -194,6 +231,25 @@ final class AssetDetailsViewLayout: UIView {
         containerView.stackView.layoutMargins.bottom = inset + Constants.bottomOffset
     }
 
+    func setAHMAlert(with model: AHMAlertView.Model?) {
+        if let model {
+            guard ahmAlertView.superview == nil else {
+                ahmAlertView.bind(model)
+                return
+            }
+
+            ahmAlertView.bind(model)
+
+            showAlertWithAnimation()
+        } else {
+            guard ahmAlertView.superview != nil else {
+                return
+            }
+
+            hideAlertWithAnimation()
+        }
+    }
+
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset
             + currentBalanceHeight
@@ -207,6 +263,7 @@ final class AssetDetailsViewLayout: UIView {
             + Constants.chartWidgetInset * 2
             + chartViewHeight
             + Constants.bottomOffset
+            + currentAHMAlertHeight
     }
 }
 
@@ -238,5 +295,6 @@ extension AssetDetailsViewLayout {
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
         static let chartWidgetInset: CGFloat = 16
+        static let alertSpacingAfter: CGFloat = 8
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct EraStakersPagedRemoteKey: JSONListConvertible {
-    let era: EraIndex
+    let era: Staking.EraIndex
     let validator: AccountId
     let page: UInt32
 

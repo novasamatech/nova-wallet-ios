@@ -92,7 +92,11 @@ struct YourValidatorListViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityProxyFactory: identityProxyFactory
+            identityProxyFactory: identityProxyFactory,
+            slashesOperationFactory: SlashesOperationFactory(
+                storageRequestFactory: storageRequestFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         )
 
         return YourValidatorListInteractor(
@@ -102,7 +106,7 @@ struct YourValidatorListViewFactory {
             accountRepositoryFactory: accountRepositoryFactory,
             eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: operationManager
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

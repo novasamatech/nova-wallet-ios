@@ -9,8 +9,6 @@ class EraCountdownOperationFactoryTests: XCTestCase {
 
         let chainId = KnowChainId.kusama
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: SubstrateStorageTestFacade())
-        let connection = chainRegistry.getConnection(for: chainId)!
-        let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
 
         let keyFactory = StorageKeyFactory()
         let storageRequestFactory = StorageRequestFactory(
@@ -18,13 +16,23 @@ class EraCountdownOperationFactoryTests: XCTestCase {
             operationManager: operationManager
         )
 
-        let factory = BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
+        let factory = RelayStkEraCountdownOperationFactory(
+            chainId: chainId,
+            chainRegistry: chainRegistry,
+            storageRequestFactory: storageRequestFactory,
+            timelineOperationFactory: BabeTimelineParamsOperationFactory(
+                chainId: chainId,
+                chainRegistry: chainRegistry,
+                storageRequestFactory: storageRequestFactory
+            ),
+            eraStartOperationFactory: RelayStkEraStartOperationFactory(
+                chainRegistry: chainRegistry,
+                storageRequestFactory: storageRequestFactory
+            )
+        )
 
         let timeExpectation = XCTestExpectation()
-        let operationWrapper = factory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let operationWrapper = factory.fetchCountdownOperationWrapper()
         operationWrapper.targetOperation.completionBlock = {
             do {
                 let eraCountdown = try operationWrapper.targetOperation.extractNoCancellableResultData()

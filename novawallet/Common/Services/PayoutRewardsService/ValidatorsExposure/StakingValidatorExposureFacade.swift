@@ -5,7 +5,7 @@ import BigInt
 
 struct StakingValidatorExposure {
     let accountId: AccountId
-    let era: EraIndex
+    let era: Staking.EraIndex
     let totalStake: BigUInt
     let ownStake: BigUInt
     let pages: [[Staking.IndividualExposure]]
@@ -18,7 +18,7 @@ struct StakingValidatorExposure {
 protocol StakingValidatorExposureFacadeProtocol {
     func createWrapper(
         dependingOn validatorsClosure: @escaping () throws -> Set<ResolvedValidatorEra>,
-        exposurePagedEra: @escaping () throws -> EraIndex?,
+        exposurePagedEra: @escaping () throws -> Staking.EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingValidatorExposure]>
@@ -69,7 +69,7 @@ final class StakingValidatorExposureFacade {
 extension StakingValidatorExposureFacade: StakingValidatorExposureFacadeProtocol {
     func createWrapper(
         dependingOn validatorsClosure: @escaping () throws -> Set<ResolvedValidatorEra>,
-        exposurePagedEra: @escaping () throws -> EraIndex?,
+        exposurePagedEra: @escaping () throws -> Staking.EraIndex?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingValidatorExposure]> {

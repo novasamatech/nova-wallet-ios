@@ -205,7 +205,10 @@ final class StakingUnbondingsView: UIView {
         }
     }
 
-    private func createTimeLeft(unbondingEra: EraIndex, eraCountdown: EraCountdownDisplayProtocol?) -> String? {
+    private func createTimeLeft(
+        unbondingEra: Staking.EraIndex,
+        eraCountdown: EraCountdownDisplayProtocol?
+    ) -> String? {
         guard let eraCountdown = eraCountdown else { return "" }
 
         guard unbondingEra > eraCountdown.activeEra else {

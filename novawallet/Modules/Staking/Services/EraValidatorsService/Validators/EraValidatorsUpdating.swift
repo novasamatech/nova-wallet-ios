@@ -8,7 +8,7 @@ struct EraValidatorResultItem {
 
 protocol EraValidatorsUpdating: AnyObject {
     func fetchValidators(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         runningIn completionQueue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     )
@@ -18,15 +18,15 @@ protocol EraValidatorsUpdating: AnyObject {
 
 final class EraValidatorsUpdater {
     private var legacySyncService: StorageListSyncService<
-        StringScaleMapper<EraIndex>, EraStakersRemoteKey, Staking.ValidatorExposure
+        StringScaleMapper<Staking.EraIndex>, EraStakersRemoteKey, Staking.ValidatorExposure
     >?
 
     private var overviewSyncService: StorageListSyncService<
-        StringScaleMapper<EraIndex>, EraStakersRemoteKey, Staking.ValidatorOverview
+        StringScaleMapper<Staking.EraIndex>, EraStakersRemoteKey, Staking.ValidatorOverview
     >?
 
     private var exposureSyncService: StorageListSyncService<
-        StringScaleMapper<EraIndex>, EraStakersPagedRemoteKey, Staking.ValidatorExposurePage
+        StringScaleMapper<Staking.EraIndex>, EraStakersPagedRemoteKey, Staking.ValidatorExposurePage
     >?
 
     private var callableStore = CancellableCallStore()
@@ -91,7 +91,7 @@ final class EraValidatorsUpdater {
     }
 
     private func syncValidatorsExposure(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         overview: [AccountId: Staking.ValidatorOverview],
         runningIn queue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
@@ -114,7 +114,7 @@ final class EraValidatorsUpdater {
     }
 
     private func syncValidatorsOverview(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         runningIn queue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     ) {
@@ -149,7 +149,7 @@ final class EraValidatorsUpdater {
     }
 
     private func syncPagedValidatorsIfNeeded(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         runningIn queue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     ) {
@@ -177,7 +177,7 @@ final class EraValidatorsUpdater {
     }
 
     private func syncLegacyValidators(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         runningIn queue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     ) {
@@ -220,7 +220,7 @@ final class EraValidatorsUpdater {
 
 extension EraValidatorsUpdater: EraValidatorsUpdating {
     func fetchValidators(
-        for era: EraIndex,
+        for era: Staking.EraIndex,
         runningIn queue: DispatchQueue,
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     ) {

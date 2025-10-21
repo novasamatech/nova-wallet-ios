@@ -158,7 +158,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         fetchConstant(
             oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minStake):
@@ -173,7 +173,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: ParachainStaking.minDelegation,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(minDelegation):
@@ -188,7 +188,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         fetchConstant(
             for: ParachainStaking.maxDelegations,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<UInt32, Error>) in
             switch result {
             case let .success(maxDelegations):
@@ -277,7 +277,7 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         let identifier = callWrapper.extrinsicId()
 
         runtimeProvider.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] codingFactory in
                 guard let self else {
                     return

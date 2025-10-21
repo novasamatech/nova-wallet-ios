@@ -213,6 +213,8 @@ extension ValidatorListFilterViewController: ValidatorListFilterViewProtocol {
 
 extension ValidatorListFilterViewController: Localizable {
     func applyLocalization() {
+        guard isViewLoaded else { return }
+
         title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletFiltersTitle()
 
         navigationItem.rightBarButtonItem?.title = R.string(

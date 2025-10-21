@@ -109,7 +109,7 @@ extension ReferendumsPresenter {
         invalidateTimer()
         clearState()
 
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
+        provideLoadingViewModel()
     }
 
     func provideChainBalance() {
@@ -120,16 +120,18 @@ extension ReferendumsPresenter {
             return
         }
 
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
         let govBalanceCalculator = govBalanceCalculatorFactory.createCalculator(for: governanceType)
         let balanceInPlank = govBalanceCalculator.availableBalanceElseZero(from: balance)
 
         let viewModel = chainBalanceFactory.createViewModel(
-            from: governanceType.title(for: chain),
+            from: governanceType.title(for: chainAsset),
             chainAsset: ChainAsset(chain: chain, asset: asset),
             balanceInPlank: balanceInPlank,
             locale: selectedLocale
         )
 
-        view?.didReceiveChainBalance(viewModel: viewModel)
+        view?.didReceiveChainBalance(viewModel: .wrapped(viewModel, with: privacyModeEnabled))
     }
 }

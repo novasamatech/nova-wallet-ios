@@ -195,7 +195,7 @@ extension StakingBondMorePresenter: StakingBondMoreInteractorOutputProtocol {
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(ledger):
             if let ledger = ledger {

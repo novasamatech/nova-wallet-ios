@@ -149,7 +149,7 @@ final class PoolsMultistakingUpdateService: ObservableSyncService, RuntimeConsta
         fetchCompoundConstant(
             for: NominationPools.palletIdPath,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationQueue: operationQueue,
             fallbackValue: nil,
             callbackQueue: workingQueue
         ) { [weak self] (result: Result<BytesCodable, Error>) in

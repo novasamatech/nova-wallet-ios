@@ -4,12 +4,12 @@ import Keystore_iOS
 
 struct AssetListViewFactory {
     static func createView(
-        with dappMediator: DAppInteractionMediating,
+        dAppMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
-              let walletConnect = dappMediator.children.first(
+              let walletConnect = dAppMediator.children.first(
                   where: { $0 is WalletConnectDelegateInputProtocol }
               ) as? WalletConnectDelegateInputProtocol else {
             return nil
@@ -35,8 +35,9 @@ struct AssetListViewFactory {
         )
 
         let wireframe = AssetListWireframe(
-            dappMediator: dappMediator,
             assetListModelObservable: assetListModelObservable,
+            dAppMediator: dAppMediator,
+            walletNotificationService: walletNotificationService,
             delegatedAccountSyncService: delegatedAccountSyncService
         )
 
@@ -65,6 +66,7 @@ struct AssetListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            privacyStateManager: PrivacyStateManager.shared,
             localizationManager: localizationManager,
             appearanceFacade: appearanceFacade
         )

@@ -111,8 +111,7 @@ struct SwipeGovSetupViewFactory {
             let wallet: MetaAccountModel = SelectedWalletSettings.shared.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: option.chain.accountRequest()),
             let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeFactory = state.createBlockTimeOperationFactory(),
+            let timelineService = state.createChainTimelineFacade(),
             let connection = state.chainRegistry.getConnection(for: option.chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: option.chain.chainId)
         else {
@@ -133,8 +132,7 @@ struct SwipeGovSetupViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
+            timelineService: timelineService,
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,

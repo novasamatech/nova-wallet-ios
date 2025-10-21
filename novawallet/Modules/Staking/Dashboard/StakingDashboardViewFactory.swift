@@ -27,7 +27,7 @@ struct StakingDashboardViewFactory {
         let viewModelFactory = StakingDashboardViewModelFactory(
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
-            networkViewModelFactory: NetworkViewModelFactory(),
+            chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
         )
 
@@ -35,7 +35,9 @@ struct StakingDashboardViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            privacyStateManager: PrivacyStateManager.shared,
             localizationManager: LocalizationManager.shared,
+            appearanceFacade: AppearanceFacade.shared,
             logger: Logger.shared
         )
 

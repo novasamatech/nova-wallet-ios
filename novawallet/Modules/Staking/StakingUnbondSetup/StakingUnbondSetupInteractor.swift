@@ -2,6 +2,7 @@ import Keystore_iOS
 import Operation_iOS
 import BigInt
 import SubstrateSdk
+import Foundation
 
 final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetching,
     StakingDurationFetching {
@@ -17,7 +18,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
@@ -39,7 +40,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -52,7 +53,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -82,19 +83,18 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
             presenter.didReceivePriceData(result: .success(nil))
         }
 
-        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
-            fetchStakingDuration(
-                runtimeCodingService: runtimeService,
-                operationFactory: stakingDurationOperationFactory,
-                operationManager: operationManager
-            ) { [weak self] result in
-                self?.presenter.didReceiveStakingDuration(result: result)
-            }
+        fetchStakingDuration(
+            operationFactory: stakingDurationOperationFactory,
+            operationQueue: operationQueue
+        ) { [weak self] result in
+            self?.presenter.didReceiveStakingDuration(result: result)
+        }
 
+        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] (result: Result<BigUInt, Error>) in
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
@@ -158,7 +158,7 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                 for: controllerId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
+                operationQueue: operationQueue
             ) { [weak self] result in
 
                 if case let .success(maybeController) = result, let controller = maybeController {
@@ -182,7 +182,7 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

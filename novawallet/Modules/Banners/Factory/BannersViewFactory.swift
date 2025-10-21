@@ -56,7 +56,7 @@ struct BannersViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             locale: locale,
-            closeActionAvailable: bannerAvailability(for: domain)
+            closeActionAvailable: closeFeatureAvailability(for: domain)
         )
 
         let view = BannersViewController(presenter: presenter)
@@ -70,10 +70,12 @@ struct BannersViewFactory {
         return view
     }
 
-    private static func bannerAvailability(for domain: Banners.Domain) -> Bool {
+    private static func closeFeatureAvailability(for domain: Banners.Domain) -> Bool {
         switch domain {
-        case .dApps: false
-        case .assets: true
+        case .dApps, .ahmKusama, .ahmPolkadot:
+            false
+        case .assets:
+            true
         }
     }
 }

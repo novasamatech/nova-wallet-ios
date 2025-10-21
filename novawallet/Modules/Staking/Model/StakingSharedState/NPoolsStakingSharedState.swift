@@ -45,10 +45,11 @@ final class NPoolsStakingSharedState {
     private var relaychainGlobalSubscription: UUID?
     private var npoolsGlobalSubscription: UUID?
 
-    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+    private let consensusDependingFactory: RelaychainConsensusStateDepending
 
     init(
         chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
         relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         timeModel: StakingTimeModel,
         relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
@@ -71,6 +72,10 @@ final class NPoolsStakingSharedState {
         self.activePoolsService = activePoolsService
         self.npLocalSubscriptionFactory = npLocalSubscriptionFactory
         self.logger = logger
+
+        consensusDependingFactory = RelaychainConsensusStateDependingFactory(
+            chainRegistry: chainRegistry
+        )
     }
 }
 

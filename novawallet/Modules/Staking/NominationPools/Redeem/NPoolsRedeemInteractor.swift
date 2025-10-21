@@ -10,6 +10,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicServiceMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let slashesOperationFactory: SlashesOperationFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
@@ -42,6 +43,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicServiceMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         signingWrapper: SigningWrapperProtocol,
         slashesOperationFactory: SlashesOperationFactoryProtocol,
@@ -58,6 +60,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
         self.extrinsicService = extrinsicService
+        self.extrinsicServiceMonitor = extrinsicServiceMonitor
         self.feeProxy = feeProxy
         self.signingWrapper = signingWrapper
         self.slashesOperationFactory = slashesOperationFactory
@@ -104,7 +107,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
 
     private func fetchSlashingSpansForStash(
         poolId: NominationPools.PoolId,
-        completionClosure: @escaping (Result<SlashingSpans?, Error>) -> Void
+        completionClosure: @escaping (Result<Staking.SlashingSpans?, Error>) -> Void
     ) {
         let bondedAccountWrapper = npoolsOperationFactory.createBondedAccountsWrapper(
             for: { [poolId] },
@@ -180,16 +183,21 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
     }
 
     func submit(for numberOfSlashingSpans: UInt32, needsMigration: Bool) {
-        extrinsicService.submit(
-            createExtrinsicBuilderClosure(
+        let wrapper = extrinsicServiceMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: createExtrinsicBuilderClosure(
                 for: accountId,
                 numOfSlashingSpans: numberOfSlashingSpans,
                 needsMigration: needsMigration
             ),
-            signer: signingWrapper,
-            runningIn: .main
+            signer: signingWrapper
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceive(submissionResult: result)
+            self?.presenter?.didReceive(submissionResult: result.mapToExtrinsicSubmittedResult())
         }
     }
 
@@ -197,7 +205,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(existentialDeposit):
@@ -335,7 +343,7 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
 }
 
 extension NPoolsRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
+    func handleActiveEra(result: Result<Staking.ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(activeEra):
             presenter?.didReceive(activeEra: activeEra)

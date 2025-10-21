@@ -27,7 +27,7 @@ protocol StakingRewardPayoutsInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingRewardPayoutsInteractorOutputProtocol: AnyObject {
-    func didReceive(result: Result<PayoutsInfo, PayoutRewardsServiceError>)
+    func didReceive(result: Result<Staking.PayoutsInfo, PayoutRewardsServiceError>)
     func didReceive(priceResult: Result<PriceData?, Error>)
     func didReceive(eraCountdownResult: Result<EraCountdown, Error>)
 }
@@ -35,27 +35,27 @@ protocol StakingRewardPayoutsInteractorOutputProtocol: AnyObject {
 protocol StakingRewardPayoutsWireframeProtocol: AnyObject {
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
-        payoutInfo: PayoutInfo,
+        payoutInfo: Staking.PayoutInfo,
         historyDepth: UInt32,
         eraCountdown: EraCountdown
     )
 
     func showPayoutConfirmation(
-        for payouts: [PayoutInfo],
+        for payouts: [Staking.PayoutInfo],
         from view: ControllerBackedProtocol?
     )
 }
 
 protocol StakingPayoutViewModelFactoryProtocol {
     func createPayoutsViewModel(
-        payoutsInfo: PayoutsInfo,
+        payoutsInfo: Staking.PayoutsInfo,
         priceData: PriceData?,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<StakingPayoutViewModel>
 
     func timeLeftString(
         at index: Int,
-        payoutsInfo: PayoutsInfo,
+        payoutsInfo: Staking.PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString>
 }

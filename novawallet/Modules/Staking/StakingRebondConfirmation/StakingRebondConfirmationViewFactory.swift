@@ -89,12 +89,12 @@ struct StakingRebondConfirmationViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
@@ -113,7 +113,7 @@ struct StakingRebondConfirmationViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

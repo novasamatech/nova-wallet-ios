@@ -23,7 +23,7 @@ final class ControllerAccountPresenter {
     private var fee: ExtrinsicFeeProtocol?
     private var balance: Decimal?
     private var controllerBalance: Decimal?
-    private var stakingLedger: StakingLedger?
+    private var stakingLedger: Staking.Ledger?
     private var isDeprecated: Bool = false
 
     init(
@@ -285,7 +285,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             self.stakingLedger = stakingLedger

@@ -64,15 +64,19 @@ final class DelegateVotedReferendaPresenter {
             return
         }
 
-        let referendumsViewModels = viewModelFactory.createReferendumsViewModel(input: .init(
+        let params = ReferendumsModelFactoryParams(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: offchainVotes,
             offchainVotes: nil,
             chainInfo: .init(chain: chain, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale,
             voterName: name
-        ))
+        )
+
+        let referendumsViewModels = viewModelFactory.createReferendumsViewModel(
+            params: params,
+            genericParams: .init(locale: selectedLocale)
+        )
 
         view.update(viewModels: referendumsViewModels)
     }
@@ -214,20 +218,22 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
     }
 
     func didReceiveError(_ error: DelegateVotedReferendaError) {
-        switch error {
-        case .blockNumberSubscriptionFailed, .metadataSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscription()
-            }
+        let retryAction: () -> Void = switch error {
+        case .metadataSubscriptionFailed, .blockNumberSubscriptionFailed:
+            interactor.remakeSubscription
         case .offchainVotingFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryOffchainVotingFetch()
-            }
+            interactor.retryOffchainVotingFetch
+        case .timepointThresholdFetchFailed:
+            interactor.retryTimepointThreshold
         case .blockTimeFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryBlockTime()
-            }
+            interactor.retryBlockTime
         }
+
+        wireframe.presentRequestStatus(
+            on: view,
+            locale: selectedLocale,
+            retryAction: retryAction
+        )
     }
 }
 

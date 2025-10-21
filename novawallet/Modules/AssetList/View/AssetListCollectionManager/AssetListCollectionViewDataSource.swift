@@ -73,6 +73,13 @@ private extension AssetListCollectionViewDataSource {
         totalBalanceCell.locale = selectedLocale
 
         let totalBalanceView = totalBalanceCell.totalView
+
+        totalBalanceView.privacyToggleButton.addTarget(
+            self,
+            action: #selector(actionTogglePrivacy),
+            for: .touchUpInside
+        )
+
         totalBalanceView.locksView.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
             action: #selector(actionLocks)
@@ -282,7 +289,7 @@ private extension AssetListCollectionViewDataSource {
     func provideYourNftsCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath,
-        model: AssetListNftsViewModel,
+        model: SecuredViewModel<AssetListNftsViewModel>,
         addsSeparator: Bool
     ) -> AssetListNftsCell {
         let cell = collectionView.dequeueReusableCellWithType(
@@ -406,6 +413,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionRefresh() {
         actionsDelegate?.actionRefresh()
+    }
+
+    @objc func actionTogglePrivacy() {
+        actionsDelegate?.actionTogglePrivacy()
     }
 }
 

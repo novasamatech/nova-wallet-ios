@@ -73,13 +73,22 @@ struct NPoolsRedeemViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
+        )
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
+        )
 
         let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)
 
@@ -88,13 +97,17 @@ struct NPoolsRedeemViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let slashesOperationFactory = SlashesOperationFactory(storageRequestFactory: storageRequestFactory)
+        let slashesOperationFactory = SlashesOperationFactory(
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
         let npoolsOperationFactory = NominationPoolsOperationFactory(operationQueue: operationQueue)
 
         return NPoolsRedeemInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             extrinsicService: extrinsicService,
+            extrinsicServiceMonitor: extrinsicMonitorFactory,
             feeProxy: ExtrinsicFeeProxy(),
             signingWrapper: signingWrapper,
             slashesOperationFactory: slashesOperationFactory,

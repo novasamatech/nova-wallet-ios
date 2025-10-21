@@ -10,7 +10,9 @@ final class TrustWalletMetaAccountOperationFactory {
     init(keystore: KeystoreProtocol) {
         self.keystore = keystore
     }
+}
 
+private extension TrustWalletMetaAccountOperationFactory {
     // MARK: - Derivation functions
 
     func getJunctionResult(from derivationPath: String) throws -> JunctionResult? {
@@ -30,23 +32,29 @@ final class TrustWalletMetaAccountOperationFactory {
     func saveSecretKey(
         _ secretKey: Data,
         metaId: String,
+        accountId: AccountId? = nil,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased ?
-            KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId) :
-            KeystoreTagV2.substrateSecretKeyTagForMetaId(metaId)
+            KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId) :
+            KeystoreTagV2.substrateSecretKeyTagForMetaId(metaId, accountId: accountId)
 
         try keystore.saveKey(secretKey, with: tag)
     }
 
-    func saveEntropy(_ entropy: Data, metaId: String) throws {
-        let tag = KeystoreTagV2.entropyTagForMetaId(metaId)
+    func saveEntropy(
+        _ entropy: Data,
+        metaId: String,
+        accountId: AccountId? = nil
+    ) throws {
+        let tag = KeystoreTagV2.entropyTagForMetaId(metaId, accountId: accountId)
         try keystore.saveKey(entropy, with: tag)
     }
 
     func saveDerivationPath(
         _ derivationPath: String,
         metaId: String,
+        accountId: AccountId? = nil,
         ethereumBased: Bool
     ) throws {
         guard !derivationPath.isEmpty,
@@ -54,8 +62,8 @@ final class TrustWalletMetaAccountOperationFactory {
         else { return }
 
         let tag = ethereumBased ?
-            KeystoreTagV2.ethereumDerivationTagForMetaId(metaId) :
-            KeystoreTagV2.substrateDerivationTagForMetaId(metaId)
+            KeystoreTagV2.ethereumDerivationTagForMetaId(metaId, accountId: accountId) :
+            KeystoreTagV2.substrateDerivationTagForMetaId(metaId, accountId: accountId)
 
         try keystore.saveKey(derivationPathData, with: tag)
     }
@@ -63,11 +71,12 @@ final class TrustWalletMetaAccountOperationFactory {
     func saveSeed(
         _ seed: Data,
         metaId: String,
+        accountId: AccountId? = nil,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased ?
-            KeystoreTagV2.ethereumSeedTagForMetaId(metaId) :
-            KeystoreTagV2.substrateSeedTagForMetaId(metaId)
+            KeystoreTagV2.ethereumSeedTagForMetaId(metaId, accountId: accountId) :
+            KeystoreTagV2.substrateSeedTagForMetaId(metaId, accountId: accountId)
 
         try keystore.saveKey(seed, with: tag)
     }
@@ -99,7 +108,107 @@ final class TrustWalletMetaAccountOperationFactory {
             throw MetaAccountOperationFactoryError.unsupportedCryptoType(request.cryptoType)
         }
     }
+
+    // MARK: - Chain Accounts
+
+    func populateChainAccounts(
+        for metaId: MetaAccountModel.Id,
+        mnemonic: String
+    ) -> [ChainAccountModel] {
+        supportedChainAccountsDerivationPaths()
+            .mapValues {
+                ChainAccountImportMnemonicRequest(
+                    mnemonic: mnemonic,
+                    derivationPath: $0.derivationPath,
+                    cryptoType: $0.cryptoType
+                )
+            }
+            .compactMap {
+                try? populateChainAccount(
+                    for: metaId,
+                    request: $0.value,
+                    chainId: $0.key
+                )
+            }
+    }
+
+    func populateChainAccount(
+        for metaId: MetaAccountModel.Id,
+        request: ChainAccountImportMnemonicRequest,
+        chainId: ChainModel.Id
+    ) throws -> ChainAccountModel {
+        let ethereumBased = request.cryptoType == .ethereumEcdsa
+
+        let junctionResult = try getJunctionResult(
+            from: request.derivationPath
+        )
+
+        let chaincodes = junctionResult?.chaincodes ?? []
+
+        let seedResult = try deriveSeed(
+            from: request.mnemonic
+        )
+
+        let keypair = try generateKeypair(
+            from: seedResult.seed,
+            chaincodes: chaincodes,
+            isEthereumBased: ethereumBased
+        )
+
+        let publicKey = keypair.publicKey
+        let accountId = ethereumBased
+            ? try publicKey.ethereumAddressFromPublicKey()
+            : try publicKey.publicKeyToAccountId()
+
+        try saveSecretKey(
+            keypair.secretKey,
+            metaId: metaId,
+            accountId: accountId,
+            ethereumBased: ethereumBased
+        )
+        try saveDerivationPath(
+            request.derivationPath,
+            metaId: metaId,
+            accountId: accountId,
+            ethereumBased: ethereumBased
+        )
+        try saveSeed(
+            seedResult.seed,
+            metaId: metaId,
+            accountId: accountId,
+            ethereumBased: ethereumBased
+        )
+        try saveEntropy(
+            seedResult.mnemonic.entropy(),
+            metaId: metaId,
+            accountId: accountId
+        )
+
+        return ChainAccountModel(
+            chainId: chainId,
+            accountId: accountId,
+            publicKey: publicKey,
+            cryptoType: request.cryptoType.rawValue,
+            proxy: nil,
+            multisig: nil
+        )
+    }
+
+    func supportedChainAccountsDerivationPaths() -> [ChainModel.Id: ChainAccountDerivation] {
+        [
+            KnowChainId.kusama: ChainAccountDerivation(
+                derivationPath: DerivationPathConstants.trustWalletKusama,
+                cryptoType: .ed25519
+            ),
+            KnowChainId.kusamaAssetHub: ChainAccountDerivation(
+                derivationPath: DerivationPathConstants.trustWalletKusama,
+                cryptoType: .ed25519
+            )
+        ]
+    }
 }
+
+// MARK: - MetaAccountOperationFactoryProtocol
 
 extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
     func newSecretsMetaAccountOperation(
@@ -146,6 +255,11 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
 
             try saveEntropy(mnemonic.entropy(), metaId: metaId)
 
+            let chainAccounts = populateChainAccounts(
+                for: metaId,
+                mnemonic: mnemonic.toString()
+            )
+
             return MetaAccountModel(
                 metaId: metaId,
                 name: request.username,
@@ -154,7 +268,7 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
                 substratePublicKey: substrateKeypair.publicKey,
                 ethereumAddress: ethereumAddress,
                 ethereumPublicKey: ethereumKeypair.publicKey,
-                chainAccounts: [],
+                chainAccounts: Set(chainAccounts),
                 type: .secrets,
                 multisig: nil
             )
@@ -193,5 +307,14 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
         chainId _: ChainModel.Id
     ) -> BaseOperation<MetaAccountModel> {
         .createWithError(MetaAccountOperationFactoryError.unsupportedMethod)
+    }
+}
+
+// MARK: - Private Types
+
+private extension TrustWalletMetaAccountOperationFactory {
+    struct ChainAccountDerivation {
+        let derivationPath: String
+        let cryptoType: MultiassetCryptoType
     }
 }

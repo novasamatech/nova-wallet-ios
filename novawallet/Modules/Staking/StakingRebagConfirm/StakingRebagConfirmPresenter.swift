@@ -19,7 +19,7 @@ final class StakingRebagConfirmPresenter {
     private var balance: AssetBalance?
     private var networkInfo: NetworkStakingInfo?
     private var currentBagListNode: BagList.Node?
-    private var ledgerInfo: StakingLedger?
+    private var ledgerInfo: Staking.Ledger?
     private var totalIssuance: BigUInt?
     private var stashItem: StashItem?
 
@@ -224,7 +224,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
         provideCurrentBagListViewModel()
     }
 
-    func didReceive(ledgerInfo: StakingLedger?) {
+    func didReceive(ledgerInfo: Staking.Ledger?) {
         self.ledgerInfo = ledgerInfo
         provideNewBagListViewModel()
     }

@@ -78,12 +78,12 @@ struct StakingRewardDestSetupViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
@@ -100,7 +100,7 @@ struct StakingRewardDestSetupViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             calculatorService: rewardCalculationService,
             runtimeService: runtimeService,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
             currencyManager: currencyManager

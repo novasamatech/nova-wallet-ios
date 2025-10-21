@@ -34,8 +34,7 @@ class AssetDetailsBalanceWidget: UIView {
         $0.contentInsets = Constants.contentInsets
     }
 
-    let headerCell: StackTableHeaderCell = .create {
-        $0.titleLabel.apply(style: .regularSubhedlineSecondary)
+    let chainCell: StackIconChainCell = .create {
         $0.contentInsets = Constants.headerCellInsets
     }
 
@@ -106,12 +105,12 @@ private extension AssetDetailsBalanceWidget {
     }
 
     func setupBalanceTableViewLayout() {
-        balanceTableView.addArrangedSubview(headerCell)
+        balanceTableView.addArrangedSubview(chainCell)
         balanceTableView.addArrangedSubview(totalCell)
         balanceTableView.addArrangedSubview(transferrableCell)
         balanceTableView.addArrangedSubview(lockCell)
 
-        headerCell.snp.makeConstraints { make in
+        chainCell.snp.makeConstraints { make in
             make.height.equalTo(Constants.headerCellHeight)
         }
         totalCell.snp.makeConstraints { make in
@@ -183,6 +182,8 @@ private extension AssetDetailsBalanceWidget {
 
 extension AssetDetailsBalanceWidget {
     func bind(with model: AssetDetailsBalanceModel) {
+        chainCell.chainView.bind(viewModel: model.chain)
+
         totalCell.bind(with: model.total.balance)
         totalCell.canSelect = model.total.interactive
 
@@ -195,11 +196,13 @@ extension AssetDetailsBalanceWidget {
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
-        headerCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalancesWidgetTitle()
         transferrableCell.titleLabel.text = R.string(
             preferredLanguages: languages
         ).localizable.walletBalanceAvailable()
-        lockCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletBalanceLocked()
+
+        lockCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.walletBalanceLocked()
     }
 }
 
@@ -224,14 +227,14 @@ extension AssetDetailsBalanceWidget {
 extension AssetDetailsBalanceWidget {
     enum Constants {
         static let balanceCellHeight: CGFloat = 48.0
-        static let headerCellHeight: CGFloat = 44.0
+        static let headerCellHeight: CGFloat = 56.0
         static let totalCellHeight: CGFloat = 52.0
-        static let collapsedStateHeight: CGFloat = 112.0
-        static let expandedStateHeight: CGFloat = 204.0
+        static let collapsedStateHeight: CGFloat = 124.0
+        static let expandedStateHeight: CGFloat = 216.0
         static let arrowImageViewSize: CGSize = .init(width: 32, height: 32)
 
         static let headerCellInsets: UIEdgeInsets = .init(
-            top: 14,
+            top: 16,
             left: 16,
             bottom: 0,
             right: 16

@@ -3,12 +3,12 @@ import Foundation_iOS
 import BigInt
 
 final class ReferendumsModelFactory {
-    typealias Input = ReferendumsModelFactoryInput
+    typealias Params = ReferendumsModelFactoryParams
 
     struct StatusParams {
         let referendum: ReferendumLocal
         let metadata: ReferendumMetadataLocal?
-        let chainInfo: Input.ChainInformation
+        let chainInfo: Params.ChainInformation
         let onchainVotes: ReferendumAccountVoteLocal?
         let offchainVotes: GovernanceOffchainVotesLocal.Single?
     }

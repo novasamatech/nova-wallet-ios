@@ -93,7 +93,11 @@ final class SelectValidatorsStartViewFactory {
             storageRequestFactory: storageOperationFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityProxyFactory: identityProxyFactory
+            identityProxyFactory: identityProxyFactory,
+            slashesOperationFactory: SlashesOperationFactory(
+                storageRequestFactory: storageOperationFactory,
+                operationQueue: operationQueue
+            )
         )
 
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)

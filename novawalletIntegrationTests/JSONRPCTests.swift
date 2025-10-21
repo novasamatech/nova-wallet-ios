@@ -363,8 +363,8 @@ class JSONRPCTests: XCTestCase {
 
         let accountId = try address.toAccountId()
 
-        let keyParams1: () throws -> [StringScaleMapper<EraIndex>] = {
-            (0 ..< EraIndex(keysCount)).map { StringScaleMapper(value: $0) }
+        let keyParams1: () throws -> [StringScaleMapper<Staking.EraIndex>] = {
+            (0 ..< Staking.EraIndex(keysCount)).map { StringScaleMapper(value: $0) }
         }
 
         let keyParams2: () throws -> [AccountId] = {

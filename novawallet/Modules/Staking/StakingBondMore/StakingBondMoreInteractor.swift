@@ -66,7 +66,7 @@ private extension StakingBondMoreInteractor {
 
     func provideIsStakingMigrated() {
         runtimeProvider.fetchCoderFactory(
-            runningIn: OperationManager(operationQueue: operationQueue),
+            runningIn: operationQueue,
             completion: { [weak self] coderFactory in
                 let isStakingMigrated = coderFactory.hasBalancesHold(with: Staking.holdId)
                 self?.presenter.didReceiveStakingMigratedToHold(result: .success(isStakingMigrated))
@@ -146,7 +146,7 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
                 for: stashAccountId,
                 accountRequest: chainAsset.chain.accountRequest(),
                 repositoryFactory: accountRepositoryFactory,
-                operationManager: OperationManager(operationQueue: operationQueue)
+                operationQueue: operationQueue
             ) { [weak self] result in
                 if case let .success(maybeStash) = result, let stash = maybeStash {
                     self?.handleStashMetaAccount(response: stash)
@@ -169,7 +169,7 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

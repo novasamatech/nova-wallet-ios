@@ -124,7 +124,7 @@ final class CrowdloanYourContributionsTests: XCTestCase {
         return CrowdloanYourContributionsInteractor(
             chain: chain,
             selectedMetaAccount: selectedMetaAccount,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             runtimeService: runtimeService,
             crowdloanLocalSubscriptionFactory: crowdloanSubscriptionFactory,
             crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory,

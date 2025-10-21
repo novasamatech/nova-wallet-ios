@@ -61,6 +61,11 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                     isOn: parameters.isPinConfirmationOn,
                     locale: locale
                 ),
+                createSwitchViewModel(
+                    row: .hideBalances,
+                    isOn: parameters.isHideBalancesOn,
+                    locale: locale
+                ),
                 createCommonViewViewModel(row: .changePin, locale: locale)
             ].compactMap { $0 }),
             (.support, [

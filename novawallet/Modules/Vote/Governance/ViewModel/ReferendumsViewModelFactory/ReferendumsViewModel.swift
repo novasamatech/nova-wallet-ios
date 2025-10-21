@@ -6,20 +6,20 @@ enum ReferendumsSection {
     case personalActivities([ReferendumPersonalActivity])
     case swipeGov(SwipeGovBannerViewModel)
     case settings(isFilterOn: Bool)
-    case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
-    case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
+    case active(ReferendumsCellsSectionViewModel)
+    case completed(ReferendumsCellsSectionViewModel)
     case empty(ReferendumsEmptyModel)
 }
 
 enum ReferendumPersonalActivity {
-    case locks(ReferendumsUnlocksViewModel)
-    case delegations(ReferendumsDelegationViewModel)
+    case locks(SecuredViewModel<ReferendumsUnlocksViewModel>)
+    case delegations(SecuredViewModel<ReferendumsDelegationViewModel>)
 }
 
 struct SwipeGovBannerViewModel {
     let title: String
     let description: String
-    let referendumCounterText: String?
+    let referendumCounterText: SecuredViewModel<String?>
 }
 
 struct ReferendumsCellViewModel: Hashable {
@@ -33,6 +33,12 @@ struct ReferendumsCellViewModel: Hashable {
 
     var referendumIndex: ReferendumIdLocal
     var viewModel: LoadableViewModelState<ReferendumView.Model>
+}
+
+struct ReferendumsCellsSectionViewModel {
+    let titleText: LoadableViewModelState<String>
+    let countText: SecuredViewModel<String>
+    let cells: [SecuredViewModel<ReferendumsCellViewModel>]
 }
 
 enum ReferendumsEmptyModel {

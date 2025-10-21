@@ -20,7 +20,7 @@ protocol YourValidatorListInteractorOutputProtocol: AnyObject {
     func didReceiveValidators(result: Result<YourValidatorsModel?, Error>)
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveLedger(result: Result<StakingLedger?, Error>)
+    func didReceiveLedger(result: Result<Staking.Ledger?, Error>)
     func didReceiveRewardDestination(result: Result<Staking.RewardDestinationArg?, Error>)
 }
 

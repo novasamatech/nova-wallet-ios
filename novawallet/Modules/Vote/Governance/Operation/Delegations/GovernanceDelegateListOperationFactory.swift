@@ -86,16 +86,16 @@ final class GovernanceDelegateListOperationFactory {
 
 extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for activityStartBlock: BlockNumber
+        for threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
-        let statsWrapper = statsOperationFactory.fetchStatsWrapper(for: activityStartBlock)
+        let statsWrapper = statsOperationFactory.fetchStatsWrapper(for: threshold)
 
         return createDelegateListWrapper(from: statsWrapper)
     }
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        activityStartBlock: BlockNumber
+        threshold: TimepointThreshold
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let addresses = delegateIds.compactMap { accountId in
             try? accountId.toAddress(using: chain.chainFormat)
@@ -103,7 +103,7 @@ extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryP
 
         let statsWrapper = statsOperationFactory.fetchStatsByIdsWrapper(
             from: Set(addresses),
-            activityStartBlock: activityStartBlock
+            threshold: threshold
         )
 
         return createDelegateListWrapper(from: statsWrapper)

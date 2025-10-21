@@ -15,6 +15,7 @@ enum UniversalLink {
         case governance = "gov"
         case dApp = "dapp"
         case card
+        case assetHubMigration = "ahm"
     }
 
     enum GovScreen {
@@ -69,6 +70,12 @@ enum UniversalLink {
     enum DAppScreen {
         enum QueryKey {
             static let url = "url"
+        }
+    }
+
+    enum AssetHubMigration {
+        enum QueryKey {
+            static let chainId = "chainId"
         }
     }
 

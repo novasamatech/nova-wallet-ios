@@ -67,6 +67,19 @@ extension TriangularedButton {
         changesContentOpacityWhenHighlighted = true
     }
 
+    func applySecondaryEnabledAccentStyle() {
+        triangularedView?.shadowOpacity = 0.0
+        triangularedView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
+        triangularedView?.strokeColor = .clear
+        triangularedView?.highlightedStrokeColor = .clear
+
+        imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()!
+        imageWithTitleView?.titleFont = .semiBoldSubheadline
+
+        changesContentOpacityWhenHighlighted = true
+    }
+
     func applyDestructiveEnabledStyle() {
         triangularedView?.shadowOpacity = 0.0
         triangularedView?.fillColor = R.color.colorButtonBackgroundReject()!

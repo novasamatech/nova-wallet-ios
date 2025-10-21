@@ -2,7 +2,7 @@ import Foundation
 
 protocol RelaychainStartStakingStateProtocol: AnyObject {
     var stakingType: StakingType? { get }
-    var consensus: ConsensusType { get }
+    var consensus: RelayStkConsensusType { get }
     var chainAsset: ChainAsset { get }
 
     var recommendsMultipleStakings: Bool { get }
@@ -41,7 +41,7 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
 
 final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let stakingType: StakingType?
-    let consensus: ConsensusType
+    let consensus: RelayStkConsensusType
     let chainAsset: ChainAsset
 
     let relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol
@@ -64,7 +64,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     private var npGlobalSubscriptionId: UUID?
     private var npAccountService: NominationPoolsAccountUpdatingService?
 
-    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+    private let consensusDependingFactory: RelaychainConsensusStateDepending
 
     var recommendsMultipleStakings: Bool {
         stakingType == nil && chainAsset.asset.hasMultipleStakingOptions
@@ -72,8 +72,9 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
     init(
         stakingType: StakingType?,
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
         relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol,
         timeModel: StakingTimeModel,
@@ -102,6 +103,10 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.activePoolsService = activePoolsService
         self.preferredValidatorsProvider = preferredValidatorsProvider
         self.logger = logger
+
+        consensusDependingFactory = RelaychainConsensusStateDependingFactory(
+            chainRegistry: chainRegistry
+        )
     }
 
     func setup(for accountId: AccountId?) throws {

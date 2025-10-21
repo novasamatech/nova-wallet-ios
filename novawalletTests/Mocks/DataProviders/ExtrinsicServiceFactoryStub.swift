@@ -5,13 +5,16 @@ import SubstrateSdk
 final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     let extrinsicService: ExtrinsicServiceProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init(
-        extrinsicService: ExtrinsicServiceProtocol,
-        extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol = ExtrinsicOperationFactoryStub()
+        extrinsicService: ExtrinsicServiceProtocol = ExtrinsicServiceStub.dummy(),
+        extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol = ExtrinsicOperationFactoryStub(),
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol = ExtrinsicSubmitMonitorFactoryStub.dummy()
     ) {
         self.extrinsicService = extrinsicService
         self.extrinsicOperationFactory = extrinsicOperationFactory
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
     }
 
     func createService(
@@ -51,6 +54,6 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     func createExtrinsicSubmissionMonitor(
         with _: ExtrinsicServiceProtocol
     ) -> ExtrinsicSubmitMonitorFactoryProtocol {
-        fatalError("Unsupported factory method")
+        extrinsicMonitorFactory
     }
 }

@@ -40,6 +40,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionSwap()
     func actionChangeAssetListStyle()
     func actionCardOpen()
+    func actionTogglePrivacy()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
@@ -91,6 +92,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func swap()
     func presentWalletConnect()
     func toggleAssetListStyle()
+    func togglePrivacyMode()
 }
 
 // MARK: Interactor
@@ -131,7 +133,7 @@ protocol AssetListWireframeProtocol: AnyObject,
     MessageSheetPresentable,
     FeatureSupportChecking
 {
-    func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
+    func showAssetDetails(from view: AssetListViewProtocol?, chainAsset: ChainAsset)
     func showTokensManage(from view: AssetListViewProtocol?)
 
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)

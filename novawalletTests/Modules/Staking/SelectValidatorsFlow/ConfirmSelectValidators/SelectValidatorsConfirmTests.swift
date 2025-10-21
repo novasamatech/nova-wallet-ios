@@ -55,6 +55,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let signer = try DummySigner(cryptoType: MultiassetCryptoType.sr25519)
 
         let extrinsicService = ExtrinsicServiceStub.dummy()
+        let extrinsicMonitorFactory = ExtrinsicSubmitMonitorFactoryStub.dummy()
 
         let selectedMetaAccount = AccountGenerator.generateMetaAccount()
         let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chain.accountRequest())!
@@ -80,9 +81,13 @@ class SelectValidatorsConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             runtimeService: runtimeService,
-            durationOperationFactory: BabeStakingDurationFactory(),
-            operationManager: OperationManager(),
+            durationOperationFactory: BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            ),
+            operationQueue: OperationQueue(),
             signer: signer,
             nomination: initiatedBoding,
             currencyManager: CurrencyManagerStub()

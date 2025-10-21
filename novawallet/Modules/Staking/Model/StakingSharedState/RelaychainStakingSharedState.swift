@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol RelaychainStakingSharedStateProtocol: AnyObject {
-    var consensus: ConsensusType { get }
+    var consensus: RelayStkConsensusType { get }
     var stakingOption: Multistaking.ChainAssetOption { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
@@ -26,7 +26,7 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
 }
 
 final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
-    let consensus: ConsensusType
+    let consensus: RelayStkConsensusType
     let timeModel: StakingTimeModel
     let stakingOption: Multistaking.ChainAssetOption
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
@@ -42,12 +42,13 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
 
     private var globalSubscriptionId: UUID?
 
-    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+    private let consensusDependingFactory: RelaychainConsensusStateDepending
 
     var chain: ChainModel { stakingOption.chainAsset.chain }
 
     init(
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
+        chainRegistry: ChainRegistryProtocol,
         stakingOption: Multistaking.ChainAssetOption,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
@@ -74,6 +75,10 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.preferredValidatorsProvider = preferredValidatorsProvider
         self.timeModel = timeModel
         self.logger = logger
+
+        consensusDependingFactory = RelaychainConsensusStateDependingFactory(
+            chainRegistry: chainRegistry
+        )
     }
 
     func setup(for accountId: AccountId?) throws {

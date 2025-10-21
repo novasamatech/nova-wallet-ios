@@ -36,6 +36,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     private var bagListModuleNameCancellable: CancellableCall?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol?
     private var signingWrapper: SigningWrapperProtocol?
     private var moduleName: String?
 
@@ -103,9 +104,15 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         }
         let chain = chainAsset.chain
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        let extrinsicService = extrinsicServiceFactory.createService(
             account: response.chainAccount,
             chain: chain
+        )
+
+        self.extrinsicService = extrinsicService
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
         )
 
         signingWrapper = signingWrapperFactory.createSigningWrapper(
@@ -164,7 +171,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             for: stashAccountId,
             accountRequest: chainAsset.chain.accountRequest(),
             repositoryFactory: accountRepositoryFactory,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
             case let .success(response):
@@ -250,31 +257,38 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     }
 
     private func confirmRebag(stashItem: StashItem?) {
-        guard let extrinsicService = extrinsicService,
-              let signingWrapper = signingWrapper,
-              let accountId = stashAccountId(stashItem: stashItem),
-              let moduleName = moduleName else {
+        guard
+            let extrinsicMonitorFactory,
+            let signingWrapper,
+            let accountId = stashAccountId(stashItem: stashItem),
+            let moduleName = moduleName else {
             presenter.didReceive(error: .submitFailed(CommonError.undefined))
             return
         }
 
         let rebagCall = callFactory.rebag(accountId: accountId, module: moduleName)
 
-        extrinsicService.submit(
-            { builder in
-                try builder.adding(call: rebagCall)
-            },
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                switch result {
-                case .success:
-                    self?.presenter.didSubmitRebag()
-                case let .failure(error):
-                    self?.presenter.didReceive(error: .submitFailed(error))
-                }
-            }
+        let closure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: rebagCall)
+        }
+
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: closure,
+            signer: signingWrapper
         )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result.mapToExtrinsicSubmittedResult() {
+            case .success:
+                self?.presenter.didSubmitRebag()
+            case let .failure(error):
+                self?.presenter.didReceive(error: .submitFailed(error))
+            }
+        }
     }
 
     private func continueSetup() {
@@ -357,7 +371,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

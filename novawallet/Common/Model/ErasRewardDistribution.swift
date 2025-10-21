@@ -2,6 +2,6 @@ import Foundation
 import BigInt
 
 struct ErasRewardDistribution {
-    let totalValidatorRewardByEra: [EraIndex: BigUInt]
-    let validatorPointsDistributionByEra: [EraIndex: EraRewardPoints]
+    let totalValidatorRewardByEra: [Staking.EraIndex: BigUInt]
+    let validatorPointsDistributionByEra: [Staking.EraIndex: Staking.EraRewardPoints]
 }

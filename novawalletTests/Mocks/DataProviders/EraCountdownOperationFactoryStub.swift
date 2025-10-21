@@ -6,10 +6,7 @@ import SubstrateSdk
 struct EraCountdownOperationFactoryStub: EraCountdownOperationFactoryProtocol {
     let eraCountdown: EraCountdown
 
-    func fetchCountdownOperationWrapper(
-        for _: JSONRPCEngine,
-        runtimeService _: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<EraCountdown> {
+    func fetchCountdownOperationWrapper() -> CompoundOperationWrapper<EraCountdown> {
         CompoundOperationWrapper.createWithResult(eraCountdown)
     }
 }
@@ -27,6 +24,7 @@ extension EraCountdown {
             currentSlot: 271_216_483,
             genesisSlot: 262_493_679,
             blockCreationTime: 6000,
+            eraDelayInBlocks: 0,
             createdAtDate: Date()
         )
     }

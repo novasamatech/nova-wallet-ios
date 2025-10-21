@@ -105,7 +105,7 @@ final class StakingStateViewModelFactory {
     private func createNominationViewModel(
         for chainAsset: ChainAsset,
         commonData: StakingStateCommonData,
-        ledgerInfo: StakingLedger,
+        ledgerInfo: Staking.Ledger,
         viewStatus: NominationViewStatus
     ) -> LocalizableResource<NominationViewModel> {
         let balanceViewModelFactory = getBalanceViewModelFactory(for: chainAsset)
@@ -155,7 +155,7 @@ final class StakingStateViewModelFactory {
     }
 
     private func createUnbondingViewModel(
-        from stakingLedger: StakingLedger,
+        from stakingLedger: Staking.Ledger,
         chainAsset: ChainAsset,
         eraCountdown: EraCountdown?
     ) -> StakingUnbondingViewModel? {

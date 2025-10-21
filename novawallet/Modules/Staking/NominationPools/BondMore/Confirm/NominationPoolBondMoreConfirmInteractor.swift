@@ -8,6 +8,7 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
     }
 
     let signingWrapper: SigningWrapperProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
@@ -26,6 +27,16 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
         signingWrapper: SigningWrapperProtocol
     ) {
         self.signingWrapper = signingWrapper
+
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicService
+        )
+
         super.init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
@@ -34,7 +45,7 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             callFactory: callFactory,
-            extrinsicServiceFactory: extrinsicServiceFactory,
+            extrinsicService: extrinsicService,
             npoolsOperationFactory: npoolsOperationFactory,
             npoolsLocalSubscriptionFactory: npoolsLocalSubscriptionFactory,
             assetStorageInfoFactory: assetStorageInfoFactory,
@@ -46,12 +57,21 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
 
 extension NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreConfirmInteractorInputProtocol {
     func submit(amount: BigUInt, needsMigration: Bool) {
-        extrinsicService.submit(
-            createExtrinsicClosure(for: amount, accountId: accountId, needsMigration: needsMigration),
-            signer: signingWrapper,
-            runningIn: .main
+        let wrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: createExtrinsicClosure(
+                for: amount,
+                accountId: accountId,
+                needsMigration: needsMigration
+            ),
+            signer: signingWrapper
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceive(submissionResult: result)
+            self?.presenter?.didReceive(submissionResult: result.mapToExtrinsicSubmittedResult())
         }
     }
 }

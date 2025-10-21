@@ -7,7 +7,7 @@ final class StakingRewardPayoutsPresenter {
     var wireframe: StakingRewardPayoutsWireframeProtocol!
     var interactor: StakingRewardPayoutsInteractorInputProtocol!
 
-    private var payoutsInfo: PayoutsInfo?
+    private var payoutsInfo: Staking.PayoutsInfo?
     private var priceData: PriceData?
     private var eraCountdown: EraCountdown?
     private let viewModelFactory: StakingPayoutViewModelFactoryProtocol
@@ -85,7 +85,7 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsPresenterProtocol {
 }
 
 extension StakingRewardPayoutsPresenter: StakingRewardPayoutsInteractorOutputProtocol {
-    func didReceive(result: Result<PayoutsInfo, PayoutRewardsServiceError>) {
+    func didReceive(result: Result<Staking.PayoutsInfo, PayoutRewardsServiceError>) {
         view?.reload(with: .loading(false))
 
         switch result {

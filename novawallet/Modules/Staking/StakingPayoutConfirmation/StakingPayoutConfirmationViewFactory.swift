@@ -7,7 +7,7 @@ import Operation_iOS
 final class StakingPayoutConfirmationViewFactory {
     static func createView(
         for state: RelaychainStakingSharedStateProtocol,
-        payouts: [PayoutInfo]
+        payouts: [Staking.PayoutInfo]
     ) -> StakingPayoutConfirmationViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
@@ -64,7 +64,7 @@ final class StakingPayoutConfirmationViewFactory {
     private static func createInteractor(
         state: RelaychainStakingSharedStateProtocol,
         keystore: KeystoreProtocol,
-        payouts: [PayoutInfo]
+        payouts: [Staking.PayoutInfo]
     ) -> StakingPayoutConfirmationInteractor? {
         let chainAsset = state.stakingOption.chainAsset
 

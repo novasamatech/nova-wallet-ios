@@ -23,18 +23,18 @@ struct StakingDashboardEnabledViewModel {
         }
     }
 
-    let networkViewModel: LoadableViewModelState<NetworkViewModel>
-    let totalRewards: LoadableViewModelState<BalanceViewModelProtocol>
+    let chainAssetViewModel: ChainAssetViewModel
+    let totalRewards: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let status: LoadableViewModelState<Status>
-    let yourStake: LoadableViewModelState<BalanceViewModelProtocol>
+    let yourStake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let estimatedEarnings: LoadableViewModelState<String?>
     let stakingType: TitleIconViewModel?
 }
 
 struct StakingDashboardDisabledViewModel {
-    let networkViewModel: LoadableViewModelState<NetworkViewModel>
+    let chainAssetViewModel: LoadableViewModelState<ChainAssetViewModel>
     let estimatedEarnings: LoadableViewModelState<String?>
-    let balance: String?
+    let balance: SecuredViewModel<BalanceViewModelProtocol?>
     let stakingType: TitleIconViewModel?
 }
 

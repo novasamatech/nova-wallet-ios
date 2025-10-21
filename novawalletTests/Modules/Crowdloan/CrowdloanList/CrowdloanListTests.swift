@@ -233,7 +233,8 @@ class CrowdloanListTests: XCTestCase {
             localizationManager: localizationManager,
             crowdloansCalculator: CrowdloansCalculator(),
             accountManagementFilter: AccountManagementFilter(),
-            appearanceFacade: AppearanceFacade.shared
+            appearanceFacade: AppearanceFacade.shared,
+            privacyStateManager: PrivacyStateManager.shared
         )
 
         presenter.view = view
@@ -309,7 +310,7 @@ class CrowdloanListTests: XCTestCase {
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             applicationHandler: ApplicationHandler(),
             currencyManager: CurrencyManagerStub(),
             priceLocalSubscriptionFactory: priceProviderFactory

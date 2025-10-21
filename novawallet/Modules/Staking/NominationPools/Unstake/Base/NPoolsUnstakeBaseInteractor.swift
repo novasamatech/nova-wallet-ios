@@ -42,7 +42,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var cancellableNeedsMigration = CancellableCallStore()
 
     private var bondedAccountIdCancellable: CancellableCall?
-    private var eraCountdownCancellable: CancellableCall?
+    private let eraCountdownCallStore = CancellableCallStore()
     private var durationCancellable: CancellableCall?
     private var unstakeLimitsCancellable: CancellableCall?
 
@@ -95,9 +95,10 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
 
     func clearCancellable() {
         clear(cancellable: &bondedAccountIdCancellable)
-        clear(cancellable: &eraCountdownCancellable)
         clear(cancellable: &durationCancellable)
         clear(cancellable: &unstakeLimitsCancellable)
+
+        eraCountdownCallStore.cancel()
     }
 
     func provideBondedAccountId() {
@@ -192,39 +193,29 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     }
 
     func provideEraCountdown() {
-        clear(cancellable: &eraCountdownCancellable)
+        eraCountdownCallStore.cancel()
 
-        let wrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+        let wrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper()
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.eraCountdownCancellable else {
-                    return
-                }
-
-                self?.eraCountdownCancellable = nil
-
-                do {
-                    let eraCountdown = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.basePresenter?.didReceive(eraCountdown: eraCountdown)
-                } catch {
-                    self?.basePresenter?.didReceive(error: .eraCountdown(error))
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: eraCountdownCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(eraCountdown):
+                self?.basePresenter?.didReceive(eraCountdown: eraCountdown)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(error: .eraCountdown(error))
             }
         }
-
-        eraCountdownCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     func provideStakingDuration() {
         clear(cancellable: &durationCancellable)
 
-        let wrapper = durationFactory.createDurationOperation(from: runtimeService)
+        let wrapper = durationFactory.createDurationOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -302,7 +293,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             switch result {
             case let .success(existentialDeposit):
@@ -484,7 +475,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
 
 extension NPoolsUnstakeBaseInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

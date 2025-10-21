@@ -158,7 +158,7 @@ private extension MythosStkUnstakeInteractor {
         fetchConstant(
             for: MythosStakingPallet.maxStakedCandidatesPath,
             runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<UInt32, Error>) in
             switch result {
             case let .success(maxCandidatesPerStaker):

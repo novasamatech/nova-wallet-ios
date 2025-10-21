@@ -167,8 +167,8 @@ struct StakingDashboardModel: Equatable {
 extension Array where Element: StakingDashboardItemModelCommonProtocol {
     static var totalStakeOrder: [ChainModel.Id: Int] {
         [
-            KnowChainId.polkadot: 0,
-            KnowChainId.kusama: 1,
+            KnowChainId.polkadotAssetHub: 0,
+            KnowChainId.kusamaAssetHub: 1,
             KnowChainId.alephZero: 2,
             KnowChainId.moonbeam: 3,
             KnowChainId.moonriver: 4,

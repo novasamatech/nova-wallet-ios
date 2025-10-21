@@ -98,8 +98,6 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let metaAccount = AccountGenerator.generateMetaAccount()
         let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest())!
 
-        let operationManager = OperationManager()
-
         let accountRepositoryFactory = AccountRepositoryFactory(
             storageFacade: UserDataStorageTestFacade()
         )
@@ -110,6 +108,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         )
 
         // save controller and payout
+        let operationQueue = OperationQueue()
         let saveControllerOperation = accountRepository
             .saveOperation({
                 if let payout = newPayout {
@@ -123,14 +122,14 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                     ]
                 }
             }, { [] })
-        OperationQueue().addOperations([saveControllerOperation], waitUntilFinished: true)
+        operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
         let calculatorService = RewardCalculatorServiceStub(engine: WestendStub.rewardCalculator)
 
         let address = selectedAccount.toAddress()!
         let stashItem = StashItem(stash: address, controller: address, chainId: chain.chainId)
-        let ledgerInfo = StakingLedger(
+        let ledgerInfo = Staking.Ledger(
             stash: selectedAccount.accountId,
             total: BigUInt(2e+12),
             active: BigUInt(2e+12),
@@ -158,9 +157,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             )
         )
 
-        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy()
-        )
+        let extrinsicServiceFactory = ExtrinsicServiceFactoryStub()
 
         let interactor = StakingRewardDestSetupInteractor(
             selectedAccount: selectedAccount,
@@ -171,7 +168,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             extrinsicServiceFactory: extrinsicServiceFactory,
             calculatorService: calculatorService,
             runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
             currencyManager: CurrencyManagerStub()

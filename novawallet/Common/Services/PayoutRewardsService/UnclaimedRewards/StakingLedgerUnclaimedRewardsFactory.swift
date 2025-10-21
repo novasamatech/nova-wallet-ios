@@ -32,13 +32,15 @@ final class StakingLedgerUnclaimedRewardsFactory {
     }
 
     func createUnclaimedErasOperation(
-        ledgersClosure: @escaping () throws -> [StakingLedger],
+        ledgersClosure: @escaping () throws -> [Staking.Ledger],
         validatorsClosure: @escaping () throws -> [StakingValidatorExposure]
     ) -> BaseOperation<[StakingUnclaimedReward]> {
         ClosureOperation<[StakingUnclaimedReward]> {
             let ledgers = try ledgersClosure()
 
-            let indexedValidator = try validatorsClosure().reduce(into: [AccountId: Set<EraIndex>]()) { accum, item in
+            let indexedValidator = try validatorsClosure().reduce(
+                into: [AccountId: Set<Staking.EraIndex>]()
+            ) { accum, item in
                 let currentEras = accum[item.accountId] ?? Set()
                 accum[item.accountId] = currentEras.union([item.era])
             }
@@ -80,7 +82,7 @@ extension StakingLedgerUnclaimedRewardsFactory: StakingUnclaimedRewardsOperation
             try controllersWrapper.targetOperation.extractNoCancellableResultData()
         }
 
-        let ledgersWrapper: CompoundOperationWrapper<[StakingLedger]> = createFetchAndMapOperation(
+        let ledgersWrapper: CompoundOperationWrapper<[Staking.Ledger]> = createFetchAndMapOperation(
             dependingOn: controllersClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,

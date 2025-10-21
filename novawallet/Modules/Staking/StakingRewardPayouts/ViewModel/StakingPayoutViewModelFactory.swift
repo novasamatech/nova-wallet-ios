@@ -19,7 +19,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
     }
 
     func createPayoutsViewModel(
-        payoutsInfo: PayoutsInfo,
+        payoutsInfo: Staking.PayoutsInfo,
         priceData: PriceData?,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<StakingPayoutViewModel> {
@@ -50,7 +50,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
 
     func timeLeftString(
         at index: Int,
-        payoutsInfo: PayoutsInfo,
+        payoutsInfo: Staking.PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString> {
         let viewModelFactory = timeViewModelFactory
@@ -67,7 +67,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
     }
 
     private func createCellViewModels(
-        for payoutsInfo: PayoutsInfo,
+        for payoutsInfo: Staking.PayoutsInfo,
         priceData: PriceData?,
         eraCountdown: EraCountdown?,
         locale: Locale
@@ -89,7 +89,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         }
     }
 
-    private func addressTitle(_ payout: PayoutInfo) -> String {
+    private func addressTitle(_ payout: Staking.PayoutInfo) -> String {
         if let displayName = payout.identity?.displayName {
             return displayName
         }
@@ -116,7 +116,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
     }
 
     private func defineBottomButtonTitle(
-        for payouts: [PayoutInfo],
+        for payouts: [Staking.PayoutInfo],
         locale: Locale
     ) -> String {
         let totalReward = payouts

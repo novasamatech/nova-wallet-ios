@@ -139,8 +139,7 @@ struct ReferendumDetailsViewFactory {
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let blockTimeService = state.blockTimeService,
-            let blockTimeFactory = state.createBlockTimeOperationFactory(),
+            let timelineService = state.createChainTimelineFacade(),
             let subscriptionFactory = state.subscriptionFactory else {
             return nil
         }
@@ -185,8 +184,7 @@ struct ReferendumDetailsViewFactory {
             spendingAmountExtractor: spendingExtractor,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
+            timelineService: timelineService,
             identityProxyFactory: identityProxyFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

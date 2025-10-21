@@ -1,11 +1,11 @@
 import Foundation
 
 final class BlockCountdownDisplay {
-    let activeEra: EraIndex
+    let activeEra: Staking.EraIndex
     let blockTime: TimeInterval
     let createdAtDate: Date
 
-    init(activeEra: EraIndex, blockTime: TimeInterval, createdAtDate: Date = Date()) {
+    init(activeEra: Staking.EraIndex, blockTime: TimeInterval, createdAtDate: Date = Date()) {
         self.activeEra = activeEra
         self.blockTime = blockTime
         self.createdAtDate = createdAtDate
@@ -13,7 +13,7 @@ final class BlockCountdownDisplay {
 }
 
 extension BlockCountdownDisplay: EraCountdownDisplayProtocol {
-    func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval {
+    func timeIntervalTillStart(targetEra: Staking.EraIndex) -> TimeInterval {
         guard targetEra > activeEra else {
             return 0
         }

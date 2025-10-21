@@ -1,5 +1,6 @@
 import Operation_iOS
 import Keystore_iOS
+import Foundation
 
 final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingRebondSetupInteractorOutputProtocol!
@@ -12,7 +13,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
@@ -32,7 +33,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         currencyManager: CurrencyManagerProtocol,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -42,7 +43,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -116,7 +117,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
+                    operationQueue: operationQueue
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeResponse):
@@ -144,7 +145,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
     }
 
     func handleLedgerInfo(
-        result: Result<StakingLedger?, Error>,
+        result: Result<Staking.Ledger?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {

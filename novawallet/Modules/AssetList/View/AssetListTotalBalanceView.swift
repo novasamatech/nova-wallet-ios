@@ -3,15 +3,6 @@ import UIKit_iOS
 import Kingfisher
 
 final class AssetListTotalBalanceView: UIView {
-    private enum Constants {
-        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
-        static let amountTitleSpacing: CGFloat = 15
-        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
-        static let elementMovingMotion: CGFloat = 5
-        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
-        static let infoIconSize = CGSize(width: 12, height: 12)
-    }
-
     let backgroundBlurView = GladingCardView()
 
     let displayContentView: UIView = .create { view in
@@ -22,18 +13,32 @@ final class AssetListTotalBalanceView: UIView {
         view.apply(style: .semiboldSubhedlineSecondary)
     }
 
-    let amountLabel: UILabel = .create { view in
-        view.textColor = R.color.colorTextPrimary()
-        view.font = .boldLargeTitle
+    let privacyToggleButton: UIButton = .create { button in
+        button.imageView?.contentMode = .scaleAspectFit
     }
 
-    let locksView: GenericBorderedView<IconDetailsGenericView<IconDetailsView>> = .create {
+    let amountLabel: DotsSecureView<AssetListTotalAmountLabel> = .create { view in
+        view.privacyModeConfiguration = .largeBalanceChip
+        view.preferredSecuredHeight = Constants.totalBalanceSecureHeight
+        view.originalView.textColor = R.color.colorTextSecondary()
+        view.originalView.font = .boldLargeTitle
+    }
+
+    let locksView: GenericBorderedView<
+        IconDetailsGenericView<
+            IconDetailsGenericView<
+                DotsSecureView<UILabel>
+            >
+        >
+    > = .create {
         $0.contentInsets = Constants.locksContentInsets
         $0.backgroundView.apply(style: .chipsOnCard)
         $0.setupContentView = { contentView in
             contentView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(R.color.colorIconChip()!)
-            contentView.detailsView.detailsLabel.font = .regularFootnote
-            contentView.detailsView.detailsLabel.textColor = R.color.colorChipText()!
+            contentView.detailsView.detailsView.privacyModeConfiguration = .smallBalanceChip
+            contentView.detailsView.detailsView.preferredSecuredHeight = Constants.locksSecureViewHeight
+            contentView.detailsView.detailsView.originalView.font = .regularFootnote
+            contentView.detailsView.detailsView.originalView.textColor = R.color.colorChipText()!
             contentView.spacing = 4
             contentView.detailsView.spacing = 4
             contentView.detailsView.mode = .detailsIcon
@@ -135,7 +140,8 @@ final class AssetListTotalBalanceView: UIView {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.attributedText = totalAmountString(from: value)
+            amountLabel.originalView.bind(value.originalContent)
+            amountLabel.bind(value.privacyMode)
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -145,60 +151,38 @@ final class AssetListTotalBalanceView: UIView {
 
             stopLoadingIfNeeded()
         case .loading:
-            amountLabel.text = ""
+            amountLabel.originalView.text = ""
             setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
 
         swapButton.isEnabled = viewModel.hasSwaps
+
+        setupPrivacyModeToggle(enabled: viewModel.privacyModelEnabled)
     }
 
-    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
-        let defaultAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorTextPrimary()!,
-            .font: UIFont.boldLargeTitle
-        ]
+    private func setupPrivacyModeToggle(enabled: Bool) {
+        let icon = enabled ? R.image.iconEyeHide() : R.image.iconEyeShow()
 
-        let amount = model.amount
-
-        if
-            let lastChar = model.amount.last?.asciiValue,
-            !NSCharacterSet.decimalDigits.contains(UnicodeScalar(lastChar)) {
-            return .init(string: amount, attributes: defaultAttributes)
-        } else {
-            guard let decimalSeparator = model.decimalSeparator,
-                  let range = amount.range(of: decimalSeparator) else {
-                return .init(string: amount, attributes: defaultAttributes)
-            }
-
-            let amountAttributedString = NSMutableAttributedString(string: amount)
-            let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
-
-            let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
-
-            amountAttributedString.setAttributes(
-                defaultAttributes,
-                range: intPartRange
-            )
-
-            amountAttributedString.setAttributes(
-                [.foregroundColor: R.color.colorTextSecondary()!,
-                 .font: UIFont.boldTitle3],
-                range: fractionPartRange
-            )
-
-            return amountAttributedString
-        }
+        privacyToggleButton.setImage(
+            icon,
+            for: .normal
+        )
+        privacyToggleButton.setImage(
+            icon?.withTintColor(
+                R.color.colorIconSecondary()!.withAlphaComponent(0.5)
+            ),
+            for: .highlighted
+        )
     }
 
-    private func setupStateWithLocks(amount: String) {
+    private func setupStateWithLocks(amount: SecuredViewModel<String>) {
         locksView.isHidden = false
-
-        locksView.contentView.detailsView.detailsLabel.text = amount
+        locksView.contentView.detailsView.detailsView.originalView.text = amount.originalContent
+        locksView.contentView.detailsView.detailsView.bind(amount.privacyMode)
     }
 
     private func setupStateWithoutLocks() {
-        locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
@@ -245,6 +229,7 @@ final class AssetListTotalBalanceView: UIView {
         displayContentView.addSubview(locksView)
         locksView.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview()
+            make.height.equalTo(Constants.locksViewHeight)
         }
 
         displayContentView.addSubview(titleLabel)
@@ -252,6 +237,13 @@ final class AssetListTotalBalanceView: UIView {
             make.leading.equalToSuperview()
             make.centerY.equalTo(locksView.snp.centerY)
             make.trailing.lessThanOrEqualTo(locksView.snp.leading).offset(-8)
+        }
+
+        displayContentView.addSubview(privacyToggleButton)
+        privacyToggleButton.snp.makeConstraints { make in
+            make.centerY.equalTo(titleLabel)
+            make.leading.equalTo(titleLabel.snp.trailing).offset(8)
+            make.size.equalTo(Constants.privacyButtonSize)
         }
 
         displayContentView.addSubview(amountLabel)
@@ -338,8 +330,10 @@ final class AssetListTotalBalanceView: UIView {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
-        let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
-            amountLabel.font.lineHeight / 2.0 - bigRowSize.height / 2.0
+        let offsetY = Constants.insets.top
+            + titleLabel.font.lineHeight
+            + Constants.amountTitleSpacing
+            + amountLabel.originalView.font.lineHeight / 2.0 - bigRowSize.height / 2.0
 
         let offset = CGPoint(
             x: UIConstants.horizontalInset + Constants.insets.left,
@@ -383,5 +377,22 @@ extension AssetListTotalBalanceView: AnimationUpdatibleView {
         actionsGladingView.updateLayerAnimationIfActive()
 
         skeletonView?.restartSkrulling()
+    }
+}
+
+// MARK: - Constants
+
+private extension AssetListTotalBalanceView {
+    enum Constants {
+        static let insets = UIEdgeInsets(top: 13, left: 12, bottom: 12, right: 12)
+        static let amountTitleSpacing: CGFloat = 15
+        static let cardMotionAngle: CGFloat = 2 * CGFloat.pi / 180
+        static let elementMovingMotion: CGFloat = 5
+        static let locksContentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        static let infoIconSize = CGSize(width: 12, height: 12)
+        static let locksSecureViewHeight: CGFloat = 15.0
+        static let locksViewHeight: CGFloat = 22.0
+        static let privacyButtonSize = CGSize(width: 20, height: 20)
+        static let totalBalanceSecureHeight: CGFloat = 47.0
     }
 }

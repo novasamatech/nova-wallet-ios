@@ -15,7 +15,7 @@ final class StakingRedeemPresenter {
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
-    private var stakingLedger: StakingLedger?
+    private var stakingLedger: Staking.Ledger?
     private var activeEra: UInt32?
     private var balance: Decimal?
     private var minimalBalance: BigUInt?
@@ -173,7 +173,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
     }
 
-    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+    func didReceiveStakingLedger(result: Result<Staking.Ledger?, Error>) {
         switch result {
         case let .success(stakingLedger):
             self.stakingLedger = stakingLedger
@@ -245,7 +245,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
     }
 
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>) {
+    func didReceiveActiveEra(result: Result<Staking.ActiveEraInfo?, Error>) {
         switch result {
         case let .success(eraInfo):
             activeEra = eraInfo?.index

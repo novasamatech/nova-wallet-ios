@@ -16,7 +16,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let jsonLocalSubscriptionFactory: JsonDataProviderFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
 
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -38,7 +38,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         jsonLocalSubscriptionFactory: JsonDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.paraId = paraId
@@ -53,15 +53,15 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.jsonLocalSubscriptionFactory = jsonLocalSubscriptionFactory
 
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     private func provideConstants() {
         fetchConstant(
-            for: .babeBlockTime,
+            for: BabePallet.blockTimePath,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BlockTime, Error>) in
             self?.presenter.didReceiveBlockDuration(result: result)
         }
@@ -69,7 +69,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         fetchConstant(
             for: .paraLeasingPeriod,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
             self?.presenter.didReceiveLeasingPeriod(result: result)
         }
@@ -77,7 +77,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         fetchConstant(
             for: .paraLeasingOffset,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<LeasingOffset, Error>) in
             self?.presenter.didReceiveLeasingOffset(result: result)
         }
@@ -85,7 +85,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             self?.presenter.didReceiveMinimumBalance(result: result)
         }
@@ -93,7 +93,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         fetchConstant(
             for: .minimumContribution,
             runtimeCodingService: runtimeService,
-            operationManager: operationManager
+            operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
             self?.presenter.didReceiveMinimumContribution(result: result)
         }

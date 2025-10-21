@@ -16,7 +16,7 @@ struct WestendStub {
     }()
 
     static let activeEra: DecodedActiveEra = {
-        let era = ActiveEraInfo(index: 777)
+        let era = Staking.ActiveEraInfo(index: 777)
         return DecodedActiveEra(
             identifier: KnowChainId.westend + "_active_era",
             item: era
@@ -49,7 +49,7 @@ struct WestendStub {
     }()
 
     static let nomination: DecodedNomination = {
-        let nomination = Nomination(
+        let nomination = Staking.Nomination(
             targets: [],
             submittedIn: 0
         )
@@ -63,7 +63,7 @@ struct WestendStub {
     static let ledgerInfo: DecodedLedgerInfo = {
         let address = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
         let accountId = try! address.toAccountId()
-        let info = StakingLedger(
+        let info = Staking.Ledger(
             stash: accountId,
             total: BigUInt(1e+12),
             active: BigUInt(1e+12),
@@ -76,7 +76,7 @@ struct WestendStub {
     }()
 
     static let validator: DecodedValidator = {
-        let prefs = ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
+        let prefs = Staking.ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
 
         return DecodedValidator(
             identifier: "5EJQtTE1ZS9cBdqiuUcjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
@@ -148,7 +148,7 @@ struct WestendStub {
                 own: BigUInt(1e+13),
                 others: []
             ),
-            prefs: ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
+            prefs: Staking.ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
         )
 
         return [validator]

@@ -1,10 +1,10 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
 
 struct AssetDetailsViewFactory {
     static func createView(
-        chain: ChainModel,
-        asset: AssetModel,
+        chainAsset: ChainAsset,
         operationState: AssetOperationState,
         swapState: SwapTokensFlowStateProtocol
     ) -> AssetDetailsViewProtocol? {
@@ -15,9 +15,14 @@ struct AssetDetailsViewFactory {
             return nil
         }
 
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
+        let ahmInfoFactory = AHMFullInfoFactory(
+            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
+        )
 
         let interactor = AssetDetailsInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            ahmInfoFactory: ahmInfoFactory,
+            settingsManager: SettingsManager.shared,
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
             rampProvider: RampAggregator.defaultAggregator(),
@@ -29,7 +34,10 @@ struct AssetDetailsViewFactory {
             currencyManager: currencyManager
         )
 
-        let wireframe = AssetDetailsWireframe(operationState: operationState, swapState: swapState)
+        let wireframe = AssetDetailsWireframe(
+            operationState: operationState,
+            swapState: swapState
+        )
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(
@@ -47,13 +55,14 @@ struct AssetDetailsViewFactory {
             localizableManager: localizationManager,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            ahmViewModelFactory: AHMInfoViewModelFactory(),
             viewModelFactory: viewModelFactory,
             wireframe: wireframe,
             logger: Logger.shared
         )
 
         guard let chartView = createChartView(
-            asset: asset,
+            asset: chainAsset.asset,
             locale: localizationManager.selectedLocale,
             currency: currencyManager.selectedCurrency,
             output: presenter,

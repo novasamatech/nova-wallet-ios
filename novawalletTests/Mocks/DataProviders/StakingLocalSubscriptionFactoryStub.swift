@@ -10,11 +10,11 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let maxNominatorsCount: UInt32?
     let bagListSize: UInt32?
     let bagListNode: BagList.Node?
-    let nomination: Nomination?
-    let validatorPrefs: ValidatorPrefs?
-    let ledgerInfo: StakingLedger?
-    let activeEra: ActiveEraInfo?
-    let currentEra: EraIndex?
+    let nomination: Staking.Nomination?
+    let validatorPrefs: Staking.ValidatorPrefs?
+    let ledgerInfo: Staking.Ledger?
+    let activeEra: Staking.ActiveEraInfo?
+    let currentEra: Staking.EraIndex?
     let payee: Staking.RewardDestinationArg?
     let totalReward: TotalRewardItem?
     let totalIssuance: BigUInt?
@@ -28,11 +28,11 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         maxNominatorsCount: UInt32? = nil,
         bagListSize: UInt32? = nil,
         bagListNode: BagList.Node? = nil,
-        nomination: Nomination? = nil,
-        validatorPrefs: ValidatorPrefs? = nil,
-        ledgerInfo: StakingLedger? = nil,
-        activeEra: ActiveEraInfo? = nil,
-        currentEra: EraIndex? = nil,
+        nomination: Staking.Nomination? = nil,
+        validatorPrefs: Staking.ValidatorPrefs? = nil,
+        ledgerInfo: Staking.Ledger? = nil,
+        activeEra: Staking.ActiveEraInfo? = nil,
+        currentEra: Staking.EraIndex? = nil,
         payee: Staking.RewardDestinationArg? = nil,
         totalIssuance: BigUInt? = nil,
         totalReward: TotalRewardItem? = nil,

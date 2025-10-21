@@ -50,7 +50,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
     }
 
     // swiftlint:disable:next function_body_length
-    func fetchPayoutsOperationWrapper() -> CompoundOperationWrapper<PayoutsInfo> {
+    func fetchPayoutsOperationWrapper() -> CompoundOperationWrapper<Staking.PayoutsInfo> {
         do {
             let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
 
