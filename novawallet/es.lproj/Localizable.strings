@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "Ordenar por:";
 "staking.recommended.hint3.addition" = "con al menos un contacto de identidad";
 "staking.validator.total.stake.token" = "Apuesta total (%@)";
-"staking.validator.apy.percent" = "Recompensa estimada (%% APY)";
 "staking.pending.rewards" = "Recompensas pendientes";
 "staking.rewards.destination.title" = "Destino de las recompensas";
 "staking.your.oversubscribed.message" = "Tus tokens están asignados a los validadores sobresuscritos. No recibirás recompensas en esta era.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Los tokens en staking producen recompensas cada ronda (%@)";
 "common.parastk.collators.count" = "Coladores: %@";
 "parastk.collators.filter.own.stake" = "Stake propio del colador";
-"parastk.collators.filter.rewards" = "Recompensas estimadas (%% APR)";
 "common.parastk.delegators" = "Delegadores";
 "parastk.collator.info" = "Información sobre el colador";
 "parachain.staking.waiting.next.round.format" = "esperando el próximo ronda (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "El Staking de %@ está activo en %@ a partir de %@";
 "ahm.info.in.progress.title" = "A partir de %@ tu saldo de %@, el Staking y la Gobernanza estarán en %@. Es posible que estas funciones no estén disponibles durante un máximo de 24 horas.";
 "common.rewards" = "Recompensas";
+"staking.validator.apy.percent" = "Recompensa estimada (%% APY)";
+"parastk.collators.filter.rewards" = "Recompensas estimadas (%% APR)";
