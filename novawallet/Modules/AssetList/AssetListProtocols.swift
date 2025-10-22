@@ -164,7 +164,11 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 
-    func showGift(from view: AssetListViewProtocol?)
+    func showGift(
+        from view: AssetListViewProtocol?,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    )
 
     func showStaking(from view: AssetListViewProtocol?)
 

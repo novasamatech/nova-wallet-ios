@@ -1978,3 +1978,4 @@
 "gifts.onboarding.subtitle" = "Send gifts fast, easy, and securely in Nova";
 "gifts.action.create.gift" = "Create Gift";
 "common.gift" = "Gift";
+"asset.operation.gift.title" = "Select token to Gift";

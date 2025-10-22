@@ -12,6 +12,7 @@ protocol HydraPoolTokensFactoryProtocol {
 
 protocol HydraTokensFactoryProtocol: HydraPoolTokensFactoryProtocol {
     func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
+    func filterCanPayFee(for chainAssets: [ChainAsset]) -> CompoundOperationWrapper<[ChainAsset]>
 }
 
 final class HydraTokensFactory {
@@ -135,6 +136,40 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
         return allFeeRemoteAssets
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: mappingOperation)
+    }
+
+    func filterCanPayFee(for chainAssets: [ChainAsset]) -> CompoundOperationWrapper<[ChainAsset]> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let allFeeRemoteAssets = createRemoteFeeAssetsWrapper(dependingOn: codingFactoryOperation)
+
+        allFeeRemoteAssets.addDependency(operations: [codingFactoryOperation])
+
+        let filterOperationOperation = ClosureOperation<[ChainAsset]> {
+            let allFeeRemoteAssets = try allFeeRemoteAssets.targetOperation.extractNoCancellableResultData()
+
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let filteredChainAssets = try chainAssets.filter { chainAsset in
+                guard !chainAsset.isUtilityAsset else { return true }
+
+                let remoteAssetId = try HydraDxTokenConverter.convertToRemote(
+                    chainAsset: chainAsset,
+                    codingFactory: codingFactory
+                )
+
+                return allFeeRemoteAssets.contains(remoteAssetId.remoteAssetId)
+            }
+
+            return filteredChainAssets
+        }
+
+        filterOperationOperation.addDependency(allFeeRemoteAssets.targetOperation)
+        filterOperationOperation.addDependency(codingFactoryOperation)
+
+        return allFeeRemoteAssets
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: filterOperationOperation)
     }
 }
 

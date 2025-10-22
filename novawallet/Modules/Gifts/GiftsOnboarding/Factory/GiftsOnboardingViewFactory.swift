@@ -2,8 +2,16 @@ import Foundation
 import Foundation_iOS
 
 struct GiftsOnboardingViewFactory {
-    static func createView() -> GiftsOnboardingViewProtocol? {
-        let wireframe = GiftsOnboardingWireframe()
+    static func createView(
+        stateObservable: AssetListModelObservable,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) -> GiftsOnboardingViewProtocol? {
+        let wireframe = GiftsOnboardingWireframe(
+            stateObservable: stateObservable,
+            transferCompletion: transferCompletion,
+            buyTokensClosure: buyTokensClosure
+        )
         let viewModelFactory = GiftsOnboardingViewModelFactory()
 
         let presenter = GiftsOnboardingPresenter(
