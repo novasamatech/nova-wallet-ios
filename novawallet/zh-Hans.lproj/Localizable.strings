@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "排序依据：";
 "staking.recommended.hint3.addition" = "至少有一个身份联系方式";
 "staking.validator.total.stake.token" = "总质押量（%@）";
-"staking.validator.apy.percent" = "预计奖励（% APY）";
 "staking.pending.rewards" = "待处理奖励";
 "staking.rewards.destination.title" = "奖励去向";
 "staking.your.oversubscribed.message" = "你的代币被分配给了超额认购的验证者。在这个时代，你将不会收到来自这个验证者的奖励。";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "每轮质押的代币都会产生奖励（%@）";
 "common.parastk.collators.count" = "担保人：%@";
 "parastk.collators.filter.own.stake" = "担保人自己的股份";
-"parastk.collators.filter.rewards" = "预计奖励（％APR）";
 "common.parastk.delegators" = "委托人";
 "parastk.collator.info" = "担保人信息";
 "parachain.staking.waiting.next.round.format" = "等待下一轮（%@）";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "%@ 质押在 %@ 上线，始于 %@";
 "ahm.info.in.progress.title" = "从 %@ 您的 %@ 余额开始，质押和治理在 %@ 上可用。这些功能可能在长达 24 小时内不可用。";
 "common.rewards" = "奖励";
+"staking.validator.apy.percent" = "预计奖励（%% APY）";
+"parastk.collators.filter.rewards" = "预计奖励（%% APR）";
