@@ -1800,6 +1800,7 @@
 		2D51D68C2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* RampActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
+		2D5421322EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -8351,6 +8352,7 @@
 		2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPromoService.swift; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
+		2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -17180,6 +17182,7 @@
 			isa = PBXGroup;
 			children = (
 				4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */,
+				2D54214F2EAA798F0020E64B /* Gift */,
 				2D65F6C72CCED75C00CC6F72 /* Swap */,
 				2D4F552D2CCC387400B65B76 /* Receive */,
 				2D4F552E2CCC387A00B65B76 /* Ramp */,
@@ -17194,6 +17197,14 @@
 				2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */,
 			);
 			path = MultisigNotificationsPromo;
+			sourceTree = "<group>";
+		};
+		2D54214F2EAA798F0020E64B /* Gift */ = {
+			isa = PBXGroup;
+			children = (
+				2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */,
+			);
+			path = Gift;
 			sourceTree = "<group>";
 		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
@@ -33959,6 +33970,7 @@
 				A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */,
 				7731E9C42A14DA3F0085B5FF /* BorderedActionControlView.swift in Sources */,
 				84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */,
+				2D5421322EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
 				8461CC8126BBFF70007460E4 /* ImmortalEraOperationFactory.swift in Sources */,
 				6D5851FB5F830D55EFDB8B7D /* StakingUnbondSetupProtocols.swift in Sources */,

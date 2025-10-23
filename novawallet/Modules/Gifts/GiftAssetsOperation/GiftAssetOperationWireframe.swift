@@ -19,13 +19,15 @@ final class GiftAssetOperationWireframe: AssetOperationWireframe, GiftAssetOpera
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken
     ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSendView(
-            with: multichainToken,
-            stateObservable: stateObservable,
-            transferCompletion: transferCompletion
-        ) else {
-            return
-        }
+        guard
+            let buyTokensClosure,
+            let transferCompletion,
+            let selectNetworkView = AssetOperationNetworkListViewFactory.createGiftsView(
+                with: multichainToken,
+                stateObservable: stateObservable,
+                transferCompletion: transferCompletion,
+                buyTokensClosure: buyTokensClosure
+            ) else { return }
 
         view?.controller.navigationController?.pushViewController(
             selectNetworkView.controller,
@@ -33,7 +35,7 @@ final class GiftAssetOperationWireframe: AssetOperationWireframe, GiftAssetOpera
         )
     }
 
-    func showSendTokens(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {
+    func showGiftTokens(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {
         guard let transferSetupView = TransferSetupViewFactory.createView(
             from: chainAsset,
             recepient: nil,

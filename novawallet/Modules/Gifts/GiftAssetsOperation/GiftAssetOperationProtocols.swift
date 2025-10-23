@@ -3,7 +3,7 @@ protocol GiftAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol {
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken
     )
-    func showSendTokens(
+    func showGiftTokens(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset
     )

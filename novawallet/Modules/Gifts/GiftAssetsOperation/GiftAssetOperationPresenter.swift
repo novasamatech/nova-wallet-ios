@@ -48,7 +48,7 @@ final class GiftAssetOperationPresenter: AssetsSearchPresenter {
 
     private func processAssetSelected(_ chainAsset: ChainAsset) {
         if TokenOperation.checkTransferOperationAvailable() {
-            giftAssetWireframe?.showSendTokens(
+            giftAssetWireframe?.showGiftTokens(
                 from: view,
                 chainAsset: chainAsset
             )

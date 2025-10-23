@@ -1979,3 +1979,4 @@
 "gifts.action.create.gift" = "Create Gift";
 "common.gift" = "Gift";
 "asset.operation.gift.title" = "Select token to Gift";
+"gift.operation.network.list.title" = "Select network for %@ gift";
