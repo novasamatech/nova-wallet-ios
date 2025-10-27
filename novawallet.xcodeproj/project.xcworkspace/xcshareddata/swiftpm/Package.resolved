@@ -519,8 +519,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/WalletConnectSwiftV2.git",
       "state" : {
-        "revision" : "167de9777cbd0efdb7956dda1ca6f8675098292b",
-        "version" : "1.9.8"
+        "revision" : "1d9d78b5e37f48b689d1c4c07d2ef79dd33158f5",
+        "version" : "1.9.9"
       }
     },
     {
