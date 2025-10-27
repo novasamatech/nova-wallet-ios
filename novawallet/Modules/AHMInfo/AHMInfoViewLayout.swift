@@ -33,6 +33,12 @@ final class AHMInfoViewLayout: SCSingleActionLayoutView {
         genericActionView
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        bannerContainer.layoutIfNeeded()
+    }
+
     override func setupLayout() {
         super.setupLayout()
 
