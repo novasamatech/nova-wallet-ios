@@ -59,9 +59,7 @@ private extension AHMInfoViewController {
             on: self,
             view: rootView.bannerContainer
         )
-
-        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
-        rootView.updateBannerHeight(bannerHeight)
+        updateBannerHeight()
     }
 
     func setupHandlers() {
@@ -70,6 +68,11 @@ private extension AHMInfoViewController {
             action: #selector(actionGotIt),
             for: .touchUpInside
         )
+    }
+
+    func updateBannerHeight() {
+        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
+        rootView.updateBannerHeight(bannerHeight)
     }
 
     @objc func actionGotIt() {
@@ -86,6 +89,7 @@ private extension AHMInfoViewController {
 extension AHMInfoViewController: AHMInfoViewProtocol {
     func didReceive(viewModel: AHMInfoViewModel) {
         rootView.bind(viewModel)
+        updateBannerHeight()
     }
 }
 
