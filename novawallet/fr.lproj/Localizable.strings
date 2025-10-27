@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "Trier par :";
 "staking.recommended.hint3.addition" = "avec au moins une info d'identité";
 "staking.validator.total.stake.token" = "Participation totale (%@)";
-"staking.validator.apy.percent" = "Récompense estimée (%% APY)";
 "staking.pending.rewards" = "Récompenses en attente";
 "staking.rewards.destination.title" = "Destination des récompenses";
 "staking.your.oversubscribed.message" = "Vos actifs sont attribués à des validateurs sursouscrits. Vous ne recevrez pas de récompenses durant cette ère.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Les jetons misés produisent des récompenses à chaque tour (%@)";
 "common.parastk.collators.count" = "Collateurs : %@";
 "parastk.collators.filter.own.stake" = "Participation propre de collateur";
-"parastk.collators.filter.rewards" = "Récompenses estimées (%% APR)";
 "common.parastk.delegators" = "Délégants";
 "parastk.collator.info" = "Informations sur le collateur";
 "parachain.staking.waiting.next.round.format" = "en attente du prochain tour (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "Le Staking %@ est en ligne sur %@ à partir de %@";
 "ahm.info.in.progress.title" = "À compter %@ de votre %@ solde, le Staking et la Gouvernance sont sur %@. Ces fonctionnalités peuvent être indisponibles pendant jusqu’à 24 heures.";
 "common.rewards" = "Récompenses";
+"staking.validator.apy.percent" = "Récompense estimée (%% APY)";
+"parastk.collators.filter.rewards" = "Récompenses estimées (%% APR)";
