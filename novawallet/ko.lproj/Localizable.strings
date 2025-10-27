@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "정렬 기준:";
 "staking.recommended.hint3.addition" = "최소 하나의 신원 연락처 있음";
 "staking.validator.total.stake.token" = "총 스테이크 (%@)";
-"staking.validator.apy.percent" = "예상 보상 (%% APY)";
 "staking.pending.rewards" = "보류 중인 보상";
 "staking.rewards.destination.title" = "보상 목적지";
 "staking.your.oversubscribed.message" = "당신의 토큰이 초과 할당된 검증자에게 할당됩니다. 이번 시대에는 보상을 받을 수 없습니다.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Stake된 토큰은 각 라운드마다 보상을 생성합니다 (%@)";
 "common.parastk.collators.count" = "Collators: %@";
 "parastk.collators.filter.own.stake" = "Collator의 자체 stake";
-"parastk.collators.filter.rewards" = "예상 보상 (%% APR)";
 "common.parastk.delegators" = "Delegators";
 "parastk.collator.info" = "Collator 정보";
 "parachain.staking.waiting.next.round.format" = "다음 라운드를 기다리는 중 (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "%@ Staking은 %@에서 %@부터 활성화됩니다";
 "ahm.info.in.progress.title" = "%@에 있는 your %@ 잔액을 기준으로, 스테이킹과 거버넌스는 %@에 있습니다. 이러한 기능은 최대 24시간 동안 사용 불가능할 수 있습니다.";
 "common.rewards" = "리워드";
+"staking.validator.apy.percent" = "예상 보상 (%% APY)";
+"parastk.collators.filter.rewards" = "예상 보상 (%% APR)";

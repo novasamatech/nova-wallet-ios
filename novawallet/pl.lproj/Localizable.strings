@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "Sortuj według:";
 "staking.recommended.hint3.addition" = "z przynajmniej jednym kontaktem";
 "staking.validator.total.stake.token" = "Całkowity Stake (%@)";
-"staking.validator.apy.percent" = "Szacowana nagroda (%% APY)";
 "staking.pending.rewards" = "Oczekujące nagrody";
 "staking.rewards.destination.title" = "Miejsce przeznaczenia nagród";
 "staking.your.oversubscribed.message" = "Twoje tokeny są przydzielane do przeliczonych validatorów. Nie otrzymasz nagród w tej erze.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Tokeny w stake przynoszą nagrody w każdej rundzie (%@)";
 "common.parastk.collators.count" = "Kolatorzy: %@";
 "parastk.collators.filter.own.stake" = "Własny stake kolatora";
-"parastk.collators.filter.rewards" = "Szacowane nagrody (%% APR)";
 "common.parastk.delegators" = "Delegatorzy";
 "parastk.collator.info" = "Informacje o kolatorze";
 "parachain.staking.waiting.next.round.format" = "oczekiwanie na następny runda (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "%@ staking jest dostępny na %@ od %@";
 "ahm.info.in.progress.title" = "Rozpoczynając %@ saldo %@, Staking i Governance są włączone na %@. Te funkcje mogą być niedostępne przez maksymalnie 24 godziny.";
 "common.rewards" = "Nagrody";
+"staking.validator.apy.percent" = "Szacowana nagroda (%% APY)";
+"parastk.collators.filter.rewards" = "Szacowane nagrody (%% APR)";
