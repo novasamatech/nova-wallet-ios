@@ -337,6 +337,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
     }
 
+    var giftsWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki")!
+    }
+
     var externalUniversalLinkURL: URL {
         URL(string: "https://nova-wallet.app.link")!
     }

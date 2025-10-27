@@ -1968,3 +1968,15 @@
 "common.view" = "View";
 "ahm.info.in.progress.title" = "Starting %@ your %@ balance, Staking and Governance are on %@. These features might be unavailable for up to 24 hours.";
 "common.rewards" = "Rewards";
+"gifts.onboarding.step1.template" = "%@ and a personal message";
+"gifts.onboarding.step1.highlighted" = "Enter a gift amount";
+"gifts.onboarding.step2.template" = "%@ with friends or family via a special link and invite them to use Nova Wallet";
+"gifts.onboarding.step2.highlighted" = "Share your gift directly";
+"gifts.onboarding.step3.template" = "%@ and you can return it anytime from this device";
+"gifts.onboarding.step3.highlighted" = "The gift is available instantly,";
+"gifts.onboarding.title" = "Gift crypto to anyone, anywhere in the world";
+"gifts.onboarding.subtitle" = "Send gifts fast, easy, and securely in Nova";
+"gifts.action.create.gift" = "Create Gift";
+"common.gift" = "Gift";
+"asset.operation.gift.title" = "Select token to Gift";
+"gift.operation.network.list.title" = "Select network for %@ gift";

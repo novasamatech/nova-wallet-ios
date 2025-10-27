@@ -11,6 +11,7 @@ protocol AssetHubSwapOperationFactoryProtocol: AssetQuoteFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
     func availableDirectionsForAsset(_ chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Set<ChainAssetId>>
     func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
+    func filterCanPayFee(for chainAssets: [ChainAsset]) -> CompoundOperationWrapper<[ChainAsset]>
 }
 
 final class AssetHubSwapOperationFactory {
@@ -265,5 +266,32 @@ extension AssetHubSwapOperationFactory: AssetHubSwapOperationFactoryProtocol {
         mergeOperation.addDependency(availableDirectionsWrapper.targetOperation)
 
         return availableDirectionsWrapper.insertingTail(operation: mergeOperation)
+    }
+
+    func filterCanPayFee(for chainAssets: [ChainAsset]) -> CompoundOperationWrapper<[ChainAsset]> {
+        guard let utilityAssetId = chain.utilityChainAssetId() else {
+            return CompoundOperationWrapper.createWithResult([])
+        }
+
+        let availableDirectionsWrapper = availableDirections()
+
+        let filterOperation = ClosureOperation<[ChainAsset]> {
+            let availableDirections = try availableDirectionsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let canPayFeeAssets = chainAssets.filter { chainAsset in
+                guard chainAsset.chainAssetId != utilityAssetId else { return true }
+
+                return availableDirections[chainAsset.chainAssetId]?.contains(utilityAssetId) ?? false
+            }
+
+            return canPayFeeAssets
+        }
+
+        filterOperation.addDependency(availableDirectionsWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: filterOperation,
+            dependencies: availableDirectionsWrapper.allOperations
+        )
     }
 }
