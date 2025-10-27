@@ -179,8 +179,16 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showGift(from view: AssetListViewProtocol?) {
-        guard let giftFlowView = GiftsOnboardingViewFactory.createView() else { return }
+    func showGift(
+        from view: AssetListViewProtocol?,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) {
+        guard let giftFlowView = GiftsOnboardingViewFactory.createView(
+            stateObservable: assetListModelObservable,
+            transferCompletion: transferCompletion,
+            buyTokensClosure: buyTokensClosure
+        ) else { return }
 
         let navigationController = NovaNavigationController(
             rootViewController: giftFlowView.controller

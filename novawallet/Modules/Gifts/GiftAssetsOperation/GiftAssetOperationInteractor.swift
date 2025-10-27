@@ -2,25 +2,28 @@ import Foundation
 import BigInt
 import Keystore_iOS
 
-final class SendAssetsOperationInteractor {
+final class GiftAssetsOperationInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
     let stateObservable: AssetListModelObservable
     let filter: ChainAssetsFilter
     let settingsManager: SettingsManagerProtocol
+    let assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol
     let logger: LoggerProtocol
 
-    private var builder: SpendAssetSearchBuilder?
+    private var builder: GiftAssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,
         filter: @escaping ChainAssetsFilter,
         settingsManager: SettingsManagerProtocol,
+        assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.filter = filter
         self.settingsManager = settingsManager
+        self.assetTransferAggregationFactory = assetTransferAggregationFactory
         self.logger = logger
     }
 
@@ -31,14 +34,14 @@ final class SendAssetsOperationInteractor {
     }
 }
 
-extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
+extension GiftAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
     func setup() {
         provideAssetsGroupStyle()
 
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 1
 
         builder = .init(
+            assetTransferAggregationFactory: assetTransferAggregationFactory,
             filter: filter,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,

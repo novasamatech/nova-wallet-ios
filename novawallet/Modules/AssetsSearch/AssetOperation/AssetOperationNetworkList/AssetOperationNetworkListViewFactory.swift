@@ -2,6 +2,29 @@ import Foundation
 import Foundation_iOS
 
 struct AssetOperationNetworkListViewFactory {
+    private static func createViewModelFactory(
+        with currencyManager: CurrencyManager
+    ) -> AssetOperationNetworkListViewModelFactory {
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(
+            networkViewModelFactory: networkViewModelFactory
+        )
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let assetFormatterFactory = AssetBalanceFormatterFactory()
+
+        let viewModelFactory = AssetOperationNetworkListViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            assetFormatterFactory: assetFormatterFactory
+        )
+
+        return viewModelFactory
+    }
+}
+
+// MARK: - SEND
+
+extension AssetOperationNetworkListViewFactory {
     static func createSendView(
         with multichainToken: MultichainToken,
         stateObservable: AssetListModelObservable,
@@ -56,28 +79,9 @@ struct AssetOperationNetworkListViewFactory {
             localizationManager: LocalizationManager.shared
         )
     }
-
-    private static func createViewModelFactory(
-        with currencyManager: CurrencyManager
-    ) -> AssetOperationNetworkListViewModelFactory {
-        let networkViewModelFactory = NetworkViewModelFactory()
-        let chainAssetViewModelFactory = ChainAssetViewModelFactory(
-            networkViewModelFactory: networkViewModelFactory
-        )
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let assetFormatterFactory = AssetBalanceFormatterFactory()
-
-        let viewModelFactory = AssetOperationNetworkListViewModelFactory(
-            chainAssetViewModelFactory: chainAssetViewModelFactory,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            assetFormatterFactory: assetFormatterFactory
-        )
-
-        return viewModelFactory
-    }
 }
 
-// MARK: RAMP
+// MARK: - RAMP
 
 extension AssetOperationNetworkListViewFactory {
     static func createRampView(
@@ -150,7 +154,7 @@ extension AssetOperationNetworkListViewFactory {
     }
 }
 
-// MARK: RECEIVE
+// MARK: - RECEIVE
 
 extension AssetOperationNetworkListViewFactory {
     static func createReceiveView(
@@ -206,7 +210,7 @@ extension AssetOperationNetworkListViewFactory {
     }
 }
 
-// MARK: SWAPS
+// MARK: - SWAPS
 
 extension AssetOperationNetworkListViewFactory {
     static func createSwapsView(
@@ -274,6 +278,69 @@ extension AssetOperationNetworkListViewFactory {
     }
 }
 
+// MARK: - GIFTS
+
+extension AssetOperationNetworkListViewFactory {
+    static func createGiftsView(
+        with multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) -> AssetOperationNetworkListViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let logger = Logger.shared
+
+        let interactor = AssetOperationNetworkListInteractor(
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            logger: logger
+        )
+
+        let presenter = createGiftsPresenter(
+            dependencies: GiftPresenterDependencies(
+                interactor: interactor,
+                multichainToken: multichainToken,
+                stateObservable: stateObservable,
+                currencyManager: currencyManager,
+                transferCompletion: transferCompletion,
+                buyTokensClosure: buyTokensClosure
+            )
+        )
+
+        let view = AssetOperationNetworkListViewController(presenter: presenter)
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createGiftsPresenter(
+        dependencies: GiftPresenterDependencies
+    ) -> GiftOperationNetworkListPresenter {
+        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
+
+        let wireframe = GiftAssetOperationWireframe(
+            stateObservable: dependencies.stateObservable,
+            buyTokensClosure: dependencies.buyTokensClosure,
+            transferCompletion: dependencies.transferCompletion
+        )
+
+        return GiftOperationNetworkListPresenter(
+            interactor: dependencies.interactor,
+            wireframe: wireframe,
+            multichainToken: dependencies.multichainToken,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
+        )
+    }
+}
+
+// MARK: - Private types
+
 private extension AssetOperationNetworkListViewFactory {
     struct SendPresenterDependencies {
         let interactor: AssetOperationNetworkListInteractor
@@ -308,5 +375,14 @@ private extension AssetOperationNetworkListViewFactory {
         let currencyManager: CurrencyManager
         let selectClosure: SwapAssetSelectionClosure
         let selectClosureStrategy: SubmoduleNavigationStrategy
+    }
+
+    struct GiftPresenterDependencies {
+        let interactor: AssetOperationNetworkListInteractor
+        let multichainToken: MultichainToken
+        let stateObservable: AssetListModelObservable
+        let currencyManager: CurrencyManager
+        let transferCompletion: TransferCompletionClosure
+        let buyTokensClosure: BuyTokensClosure
     }
 }
