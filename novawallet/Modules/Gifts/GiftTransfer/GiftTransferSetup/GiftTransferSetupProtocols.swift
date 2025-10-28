@@ -31,9 +31,8 @@ protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     PhishingErrorPresentable,
     FeeRetryable {
     func showConfirmation(
-        from view: TransferSetupChildViewProtocol?,
+        from view: GiftTransferSetupViewProtocol?,
         chainAsset: ChainAsset,
-        sendingAmount: OnChainTransferAmount<Decimal>,
-        recepient: AccountAddress
+        sendingAmount: OnChainTransferAmount<Decimal>
     )
 }

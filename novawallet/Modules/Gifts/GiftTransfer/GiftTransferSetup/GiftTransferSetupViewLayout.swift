@@ -37,4 +37,10 @@ final class GiftTransferSetupViewLayout: SCSingleActionLayoutView {
             make.height.equalTo(64)
         }
     }
+
+    override func setupStyle() {
+        super.setupStyle()
+
+        genericActionView.imageWithTitleView?.titleFont = .semiBoldSubheadline
+    }
 }

@@ -68,25 +68,11 @@ class GiftTransferPresenter {
 
     func baseValidators(
         for sendingAmount: Decimal?,
-        recepientAddress: AccountAddress?,
         feeAssetInfo: AssetBalanceDisplayInfo,
         view: ControllerBackedProtocol?,
         selectedLocale: Locale
     ) -> [DataValidating] {
         var validators: [DataValidating] = [
-            dataValidatingFactory.receiverMatchesChain(
-                recepient: recepientAddress,
-                chainFormat: chainAsset.chain.chainFormat,
-                chainName: chainAsset.chain.name,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.receiverDiffers(
-                recepient: recepientAddress,
-                sender: senderAccountAddress,
-                locale: selectedLocale
-            ),
-
             dataValidatingFactory.has(
                 fee: fee?.value,
                 locale: selectedLocale
@@ -94,14 +80,12 @@ class GiftTransferPresenter {
                 self?.refreshFee()
                 return
             },
-
             dataValidatingFactory.canSpendAmountInPlank(
                 balance: assetBalance?.transferable,
                 spendingAmount: sendingAmount,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
-
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderFeeAssetTransferable,
                 fee: fee?.value,
@@ -109,7 +93,6 @@ class GiftTransferPresenter {
                 asset: feeAssetInfo,
                 locale: selectedLocale
             ),
-
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
                 total: senderFeeBalanceCountingEd,

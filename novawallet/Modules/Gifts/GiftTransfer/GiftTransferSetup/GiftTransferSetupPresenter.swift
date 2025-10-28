@@ -7,9 +7,6 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
     let wireframe: GiftTransferSetupWireframeProtocol
     let interactor: GiftTransferSetupInteractorInputProtocol
 
-    private(set) var partialRecepientAddress: AccountAddress?
-
-    let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     var inputResult: AmountInputResult?
@@ -25,16 +22,13 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
-        phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
-        partialRecepientAddress = initialState.recepient
         inputResult = initialState.amount
-        self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -47,10 +41,6 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         )
 
         self.localizationManager = localizationManager
-    }
-
-    func getRecepientAccountId() -> AccountId? {
-        try? partialRecepientAddress?.toAccountId(using: chainAsset.chain.chainFormat)
     }
 
     // MARK: Overrides
@@ -254,10 +244,54 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
     }
 
     func updateAmount(_ newValue: Decimal?) {
-        print(newValue)
+        inputResult = newValue.map { .absolute($0) }
+
+        refreshFee()
+        updateAmountPriceView()
     }
 
-    func proceed() {}
+    func proceed() {
+        let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+        var validators: [DataValidating] = baseValidators(
+            for: sendingAmount,
+            feeAssetInfo: feeAsset.assetDisplayInfo,
+            view: view,
+            selectedLocale: selectedLocale
+        )
+
+        validators.append(contentsOf: [
+            dataValidatingFactory.willBeReaped(
+                amount: sendingAmount,
+                fee: fee?.value,
+                totalAmount: assetBalance?.balanceCountingEd,
+                minBalance: assetExistence?.minBalance,
+                locale: selectedLocale
+            )
+        ])
+
+        DataValidationRunner(validators: validators).runValidation { [weak self] in
+            guard
+                let self,
+                let sendingAmount
+            else { return }
+
+            logger?.debug("Did complete validation")
+
+            let amount: OnChainTransferAmount<Decimal>
+
+            if let inputResult = inputResult, inputResult.isMax {
+                amount = .all(value: sendingAmount)
+            } else {
+                amount = .concrete(value: sendingAmount)
+            }
+
+            wireframe.showConfirmation(
+                from: view,
+                chainAsset: chainAsset,
+                sendingAmount: amount
+            )
+        }
+    }
 }
 
 // MARK: - Localizable

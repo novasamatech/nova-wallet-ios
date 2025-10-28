@@ -2,9 +2,8 @@ import Foundation
 
 final class GiftTransferSetupWireframe: GiftTransferSetupWireframeProtocol {
     func showConfirmation(
-        from _: (any TransferSetupChildViewProtocol)?,
+        from _: (any GiftTransferSetupViewProtocol)?,
         chainAsset _: ChainAsset,
-        sendingAmount _: OnChainTransferAmount<Decimal>,
-        recepient _: AccountAddress
+        sendingAmount _: OnChainTransferAmount<Decimal>
     ) {}
 }

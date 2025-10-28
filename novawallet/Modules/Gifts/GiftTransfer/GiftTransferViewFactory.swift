@@ -41,13 +41,6 @@ final class GiftTransferViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()
-        let phishingValidatingFactory = PhishingAddressValidatorFactory(
-            repository: phishingRepository,
-            presentable: wireframe,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
         let presenter = GiftTransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -59,7 +52,6 @@ final class GiftTransferViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             senderAccountAddress: selectedAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            phishingValidatingFactory: phishingValidatingFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -71,6 +63,7 @@ final class GiftTransferViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
