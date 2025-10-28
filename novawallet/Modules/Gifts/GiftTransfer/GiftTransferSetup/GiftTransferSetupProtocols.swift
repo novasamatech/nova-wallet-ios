@@ -18,6 +18,12 @@ protocol GiftTransferSetupInteractorInputProtocol: AnyObject {
 
 protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {}
 
+protocol GiftTransferSetupPresenterProtocol: AnyObject {
+    func setup()
+    func updateAmount(_ newValue: Decimal?)
+    func proceed()
+}
+
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     TransferErrorPresentable,

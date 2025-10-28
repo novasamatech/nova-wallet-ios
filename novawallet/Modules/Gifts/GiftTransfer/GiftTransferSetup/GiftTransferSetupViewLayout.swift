@@ -15,8 +15,6 @@ final class GiftTransferSetupViewLayout: SCSingleActionLayoutView {
         super.init(frame: frame)
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        setupLayout()
     }
 
     @available(*, unavailable)
