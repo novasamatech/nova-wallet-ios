@@ -19,7 +19,7 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
     private var sendingAssetInfo: AssetStorageInfo?
 
     private(set) var feeAsset: ChainAsset?
-    
+
     private var pendingFees: [TransactionFeeId: FeeType] = [:]
 
     private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
@@ -27,7 +27,7 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
             substrateStorageFacade.createRepository()
         return AnyDataProviderRepository(storage)
     }()
-    
+
     private let assetStorageCallStore = CancellableCallStore()
 
     init(
@@ -65,7 +65,7 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
 
         self.currencyManager = currencyManager
     }
-    
+
     override func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
@@ -84,7 +84,7 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
                 accountId == selectedAccount.accountId,
                 asset.assetId == assetId
             else { return }
-            
+
             presenter?.didReceiveSendingAssetSenderBalance(balance)
         case .failure:
             presenter?.didReceiveError(CommonError.databaseSubscription)
@@ -138,7 +138,7 @@ private extension GiftTransferInteractor {
             return (builder, nil)
         }
     }
-    
+
     func addingOrmlTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -295,13 +295,13 @@ private extension GiftTransferInteractor {
 
     func provideMinBalance() {
         guard let sendingAssetInfo else { return }
-        
+
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: sendingAssetInfo,
             chainId: chain.chainId,
             asset: asset
         )
-        
+
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -321,23 +321,23 @@ private extension GiftTransferInteractor {
         setupCall = nil
         cancellingCall?.cancel()
     }
-    
+
     func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
         feeType: FeeType
     ) {
         let recepientAccountId = AccountId.zeroAccountId(of: chain.accountIdSize)
 
-        let transactionId = TransactionFeeId(
+        let transactionId = GiftTransactionFeeId(
             recepientAccountId: recepientAccountId,
             amount: amount
         )
-        
-        pendingFees[transactionId] = feeType
-        
+
+        pendingFees[transactionId.rawValue] = feeType
+
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: transactionId,
+            reuseIdentifier: transactionId.rawValue,
             payingIn: feeAsset?.chainAssetId
         ) { [weak self] builder in
             let (newBuilder, _) = try self?.addingTransferCommand(
@@ -380,7 +380,7 @@ extension GiftTransferInteractor {
     func change(feeAsset: ChainAsset?) {
         self.feeAsset = feeAsset
     }
-    
+
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>) {
         estimateFee(for: amount, feeType: .claimGift)
     }
@@ -394,12 +394,13 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
         for transactionFeeId: TransactionFeeId
     ) {
         guard let feeType = pendingFees[transactionFeeId] else { return }
-        
+
         pendingFees[transactionFeeId] = nil
-        
+
         switch result {
         case let .success(info) where feeType == .claimGift:
-            let amount = transactionFeeId.amount.map { $0 + info.amount }
+            guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
+            let amount = giftTransactionFeeId.amount.map { $0 + info.amount }
             estimateFee(for: amount, feeType: .createGift)
         case let .success(info):
             let feeModel = FeeOutputModel(value: info, validationProvider: nil)
@@ -416,5 +417,51 @@ private extension GiftTransferInteractor {
     enum FeeType: Hashable {
         case createGift
         case claimGift
+    }
+
+    struct GiftTransactionFeeId: Hashable, RawRepresentable {
+        let recepientAccountId: AccountId
+        let amount: OnChainTransferAmount<BigUInt>
+
+        var rawValue: String {
+            [
+                String(amount.value),
+                recepientAccountId.toHex(),
+                amount.name
+            ].joined(with: .dash)
+        }
+
+        init(
+            recepientAccountId: AccountId,
+            amount: OnChainTransferAmount<BigUInt>
+        ) {
+            self.recepientAccountId = recepientAccountId
+            self.amount = amount
+        }
+
+        init?(rawValue: String) {
+            let splitted = rawValue.split(by: .dash)
+
+            guard
+                splitted.count == 3,
+                let amountValue = BigUInt(splitted[0]),
+                let recepientAccountId = try? AccountId(hexString: String(splitted[1]))
+            else {
+                return nil
+            }
+
+            let amountName = String(splitted[2])
+
+            switch amountName {
+            case "all":
+                amount = .all(value: amountValue)
+            case "concrete":
+                amount = .concrete(value: amountValue)
+            default:
+                return nil
+            }
+
+            self.recepientAccountId = recepientAccountId
+        }
     }
 }

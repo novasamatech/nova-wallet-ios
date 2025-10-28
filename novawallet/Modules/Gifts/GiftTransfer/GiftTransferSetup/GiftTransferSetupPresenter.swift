@@ -162,7 +162,7 @@ private extension GiftTransferSetupPresenter {
             view?.didReceiveOriginFee(viewModel: .loading)
             return
         }
-        
+
         let assetInfo = feeAsset.asset.displayInfo
 
         let feeDecimal = Decimal.fromSubstrateAmount(
@@ -187,7 +187,7 @@ private extension GiftTransferSetupPresenter {
 
     func updateTransferableBalance() {
         guard let assetBalance else { return }
-        
+
         let precision = chainAsset.asset.displayInfo.assetPrecision
         let balanceDecimal = Decimal.fromSubstrateAmount(
             assetBalance.transferable,
@@ -207,7 +207,7 @@ private extension GiftTransferSetupPresenter {
             view?.didReceiveAmountInputPrice(viewModel: nil)
             return
         }
-        
+
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         let priceData = assetPrice ?? PriceData.zero()
@@ -240,7 +240,7 @@ private extension GiftTransferSetupPresenter {
 extension GiftTransferSetupPresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
-        
+
         updateChainAssetViewModel()
         updateFeeView()
         updateTransferableBalance()

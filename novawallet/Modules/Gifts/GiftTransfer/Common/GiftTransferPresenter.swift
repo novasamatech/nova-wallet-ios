@@ -137,7 +137,7 @@ class GiftTransferPresenter {
     func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
         assetBalance = balance
     }
-    
+
     func didReceiveFee(result: Result<FeeOutputModel, Error>) {
         switch result {
         case let .success(fee):
@@ -146,26 +146,26 @@ class GiftTransferPresenter {
             askFeeRetry()
         }
     }
-    
+
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         assetPrice = priceData
     }
-    
+
     func didReceiveSendingAssetExistence(_ value: AssetBalanceExistence) {
         assetExistence = value
     }
 
-    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance) {}
+    func didReceiveUtilityAssetSenderBalance(_: AssetBalance) {}
 
-    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance) {}
+    func didReceiveSendingAssetRecepientBalance(_: AssetBalance) {}
 
-    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance) {}
+    func didReceiveUtilityAssetRecepientBalance(_: AssetBalance) {}
 
-    func didReceiveCustomAssetFeeAvailable(_ available: Bool) {}
+    func didReceiveCustomAssetFeeAvailable(_: Bool) {}
 
-    func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {}
+    func didReceiveUtilityAssetPrice(_: PriceData?) {}
 
-    func didReceiveUtilityAssetMinBalance(_ value: BigUInt) {}
+    func didReceiveUtilityAssetMinBalance(_: BigUInt) {}
 
     func didCompleteSetup() {}
 

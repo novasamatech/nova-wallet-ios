@@ -153,7 +153,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
             return (builder, nil)
         }
     }
-    
+
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
@@ -173,10 +173,10 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
             return newBuilder
         }
     }
-    
+
     func processFee(
         result: Result<ExtrinsicFeeProtocol, Error>,
-        for transactionFeeId: TransactionFeeId
+        for _: TransactionFeeId
     ) {
         switch result {
         case let .success(info):

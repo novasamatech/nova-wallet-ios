@@ -1,6 +1,16 @@
 import BigInt
 import Foundation
 
+protocol GiftTransferSetupViewProtocol: ControllerBackedProtocol {
+    func didReceiveTransferableBalance(viewModel: String)
+    func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
+    func didReceiveFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveAmountInputPrice(viewModel: String?)
+    func didReceive(issues: [GiftSetupViewIssue])
+    func didReceiveGetTokensAvailable(title: String?)
+}
+
 protocol GiftTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>)
@@ -9,10 +19,10 @@ protocol GiftTransferSetupInteractorInputProtocol: AnyObject {
 protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {}
 
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
-                                             ErrorPresentable,
-                                             TransferErrorPresentable,
-                                             PhishingErrorPresentable,
-                                             FeeRetryable {
+    ErrorPresentable,
+    TransferErrorPresentable,
+    PhishingErrorPresentable,
+    FeeRetryable {
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,

@@ -1802,6 +1802,11 @@
 		2D533C4A2EB0B4000005FF8A /* GiftTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */; };
 		2D533C4F2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */; };
 		2D533C542EB0CAB80005FF8A /* GiftTransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */; };
+		2D533C6B2EB0E5D80005FF8A /* GiftSetupViewIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */; };
+		2D533C732EB0E74A0005FF8A /* GiftTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */; };
+		2D533C7C2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */; };
+		2D533C842EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */; };
+		2D533C8C2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* RampActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D5421322EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */; };
@@ -8359,6 +8364,11 @@
 		2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupProtocols.swift; sourceTree = "<group>"; };
 		2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupPresenter.swift; sourceTree = "<group>"; };
 		2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferPresenter.swift; sourceTree = "<group>"; };
+		2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupViewIssue.swift; sourceTree = "<group>"; };
+		2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewController.swift; sourceTree = "<group>"; };
+		2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewLayout.swift; sourceTree = "<group>"; };
+		2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerView.swift; sourceTree = "<group>"; };
+		2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerViewModel.swift; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
@@ -17221,11 +17231,32 @@
 		2D533C362EB0B3520005FF8A /* GiftTransferSetup */ = {
 			isa = PBXGroup;
 			children = (
+				2D533C822EB0EAFE0005FF8A /* Views */,
+				2D533C692EB0E5CC0005FF8A /* Model */,
 				2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */,
+				2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */,
+				2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */,
 				2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */,
 				2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */,
 			);
 			path = GiftTransferSetup;
+			sourceTree = "<group>";
+		};
+		2D533C692EB0E5CC0005FF8A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */,
+				2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2D533C822EB0EAFE0005FF8A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		2D54214F2EAA798F0020E64B /* Gift */ = {
@@ -30814,6 +30845,7 @@
 				2D06CC382E3BBC450093CA84 /* IntegrityCheckMessage.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				0CFF821B2D8AF98F00DB17A4 /* XcmDynamicCrosschainFeeCalculator.swift in Sources */,
+				2D533C7C2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
 				8434C9E425401EF3009E4191 /* TransactionHistoryItem.swift in Sources */,
 				88421062289BBD1900306F2C /* JsonFileRepository.swift in Sources */,
@@ -32562,6 +32594,7 @@
 				778215BF2B91421C006C7D13 /* CurrencyManager+shared.swift in Sources */,
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
 				84E172D128BF383B00DC85B6 /* Array+Dictionary.swift in Sources */,
+				2D533C6B2EB0E5D80005FF8A /* GiftSetupViewIssue.swift in Sources */,
 				84D8754028EB1A59004065BD /* ReferendumsInteractorError.swift in Sources */,
 				883DB17C297A520300EFB7D8 /* GovernanceDelegatesFilter.swift in Sources */,
 				77ED167A2A0CF41700E1FC8C /* StakingRewardFiltersViewModel.swift in Sources */,
@@ -34412,6 +34445,7 @@
 				0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */,
 				BE8CF97B6EA62C75277B78AA /* MoonbeamTermsProtocols.swift in Sources */,
 				2D8F0ECA2CEE4CC300A22074 /* UIView+StateRender.swift in Sources */,
+				2D533C842EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
 				0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */,
@@ -35656,6 +35690,7 @@
 				1B3E22DE61BAC810106A7D1A /* GovernanceDelegateSearchProtocols.swift in Sources */,
 				8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */,
 				C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */,
+				2D533C8C2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift in Sources */,
 				0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */,
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,
 				2DD018D32D65E36F0063F9BB /* PriceChartViewModel.swift in Sources */,
@@ -35717,6 +35752,7 @@
 				51FB88BCF778805D142DD8A9 /* WalletConnectProtocols.swift in Sources */,
 				5619C10BFFAEAF89883227B4 /* WalletConnectPresenter.swift in Sources */,
 				2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */,
+				2D533C732EB0E74A0005FF8A /* GiftTransferSetupViewController.swift in Sources */,
 				EB11BF594D7E16A8885D47DD /* WalletConnectServiceFactory.swift in Sources */,
 				C8171AF2893A4723F4F63E23 /* WalletConnectSessionsProtocols.swift in Sources */,
 				0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */,
