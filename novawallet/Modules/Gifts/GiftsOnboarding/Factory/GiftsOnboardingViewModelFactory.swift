@@ -45,7 +45,7 @@ extension GiftsOnboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtoc
         let step2Template = R.string(
             preferredLanguages: languages
         ).localizable.giftsOnboardingStep2Template(
-            AttributedReplacementStringDecorator.marker,
+            AttributedReplacementStringDecorator.marker
         )
         let step2Highlighted = R.string(
             preferredLanguages: languages

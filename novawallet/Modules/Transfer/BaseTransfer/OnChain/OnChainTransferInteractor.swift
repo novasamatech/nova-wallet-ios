@@ -153,6 +153,39 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
             return (builder, nil)
         }
     }
+    
+    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
+
+        let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
+
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier,
+            payingIn: feeAsset?.chainAssetId
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
+
+            return newBuilder
+        }
+    }
+    
+    func processFee(
+        result: Result<ExtrinsicFeeProtocol, Error>,
+        for transactionFeeId: TransactionFeeId
+    ) {
+        switch result {
+        case let .success(info):
+            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
+            presenter?.didReceiveFee(result: .success(feeModel))
+        case let .failure(error):
+            presenter?.didReceiveFee(result: .failure(error))
+        }
+    }
 }
 
 private extension OnChainTransferInteractor {
@@ -529,26 +562,6 @@ extension OnChainTransferInteractor {
         self.feeAsset = feeAsset
     }
 
-    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
-        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
-
-        let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
-
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: identifier,
-            payingIn: feeAsset?.chainAssetId
-        ) { [weak self] builder in
-            let (newBuilder, _) = try self?.addingTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepientAccountId
-            ) ?? (builder, nil)
-
-            return newBuilder
-        }
-    }
-
     func requestFeePaymentAvailability(for chainAsset: ChainAsset) {
         let wrapper = transferAggregationWrapperFactory.createCanPayFeeWrapper(in: chainAsset)
 
@@ -589,14 +602,8 @@ extension OnChainTransferInteractor {
 extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<ExtrinsicFeeProtocol, Error>,
-        for _: TransactionFeeId
+        for transactionFeeId: TransactionFeeId
     ) {
-        switch result {
-        case let .success(info):
-            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
-            presenter?.didReceiveFee(result: .success(feeModel))
-        case let .failure(error):
-            presenter?.didReceiveFee(result: .failure(error))
-        }
+        processFee(result: result, for: transactionFeeId)
     }
 }
