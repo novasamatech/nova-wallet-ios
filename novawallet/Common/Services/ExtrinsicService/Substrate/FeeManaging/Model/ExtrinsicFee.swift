@@ -29,6 +29,8 @@ protocol ExtrinsicFeeProtocol {
     var amount: BigUInt { get }
     var payer: ExtrinsicFeePayer? { get }
     var weight: Substrate.Weight { get }
+
+    func accumulatingAmount(with other: ExtrinsicFeeProtocol) -> ExtrinsicFeeProtocol
 }
 
 extension ExtrinsicFeeProtocol {
@@ -60,5 +62,13 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
 
     static func zero() -> ExtrinsicFee {
         .init(amount: 0, payer: nil, weight: .zero)
+    }
+
+    func accumulatingAmount(with other: ExtrinsicFeeProtocol) -> ExtrinsicFeeProtocol {
+        ExtrinsicFee(
+            amount: amount + other.amount,
+            payer: payer,
+            weight: weight
+        )
     }
 }

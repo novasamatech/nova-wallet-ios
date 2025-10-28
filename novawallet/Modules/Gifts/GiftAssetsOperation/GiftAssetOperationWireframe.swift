@@ -36,10 +36,10 @@ final class GiftAssetOperationWireframe: AssetOperationWireframe, GiftAssetOpera
     }
 
     func showGiftTokens(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {
-        guard let transferSetupView = TransferSetupViewFactory.createView(
+        guard let transferSetupView = GiftTransferViewFactory.createTransferSetupView(
             from: chainAsset,
-            recepient: nil,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            buyTokenClosure: buyTokensClosure
         ) else {
             return
         }

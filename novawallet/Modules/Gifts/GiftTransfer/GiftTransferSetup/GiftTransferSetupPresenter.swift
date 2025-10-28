@@ -3,8 +3,8 @@ import Foundation_iOS
 import BigInt
 
 final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetupInteractorOutputProtocol {
-    weak var view: TransferSetupChildViewProtocol?
-    let wireframe: OnChainTransferSetupWireframeProtocol
+    weak var view: GiftTransferSetupViewProtocol?
+    let wireframe: GiftTransferSetupWireframeProtocol
     let interactor: GiftTransferSetupInteractorInputProtocol
 
     private(set) var partialRecepientAddress: AccountAddress?
@@ -16,7 +16,7 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
 
     init(
         interactor: GiftTransferSetupInteractorInputProtocol,
-        wireframe: OnChainTransferSetupWireframeProtocol,
+        wireframe: GiftTransferSetupWireframeProtocol,
         chainAsset: ChainAsset,
         feeAsset: ChainAsset,
         initialState: TransferSetupInputState,
@@ -100,7 +100,6 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         switch result {
         case .success:
             updateFeeView()
-            provideAmountInputViewModelIfRate()
             updateAmountPriceView()
         case let .failure(error):
             logger?.error("Did receive fee error: \(result)")
@@ -135,14 +134,6 @@ private extension GiftTransferSetupPresenter {
         view?.didReceiveInputChainAsset(viewModel: viewModel)
     }
 
-    func provideAmountInputViewModelIfRate() {
-        guard case .rate = inputResult else {
-            return
-        }
-
-        provideAmountInputViewModel()
-    }
-
     func provideAmountInputViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
 
@@ -153,13 +144,9 @@ private extension GiftTransferSetupPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    func provideCanSendMySelf() {
-        view?.didReceiveCanSendMySelf(false)
-    }
-
     func updateFeeView() {
         guard let fee else {
-            view?.didReceiveOriginFee(viewModel: .loading)
+            view?.didReceiveFee(viewModel: .loading)
             return
         }
 
@@ -182,7 +169,7 @@ private extension GiftTransferSetupPresenter {
 
         let loadableViewModel = LoadableViewModelState<NetworkFeeInfoViewModel>.loaded(value: viewModel)
 
-        view?.didReceiveOriginFee(viewModel: loadableViewModel)
+        view?.didReceiveFee(viewModel: loadableViewModel)
     }
 
     func updateTransferableBalance() {
@@ -233,6 +220,44 @@ private extension GiftTransferSetupPresenter {
 
         return balance - fee
     }
+
+    func updateTitle() {
+        let strings = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable
+
+        let titleText = strings.giftTransferSetupTokenTitle()
+        let onText = strings.walletTransferOn()
+
+        let viewModel = GiftSetupNetworkContainerViewModel(
+            titleText: titleText,
+            onText: onText,
+            chainAssetModel: chainAssetViewModelFactory.createViewModel(from: chainAsset)
+        )
+
+        view?.didReceive(title: viewModel)
+    }
+}
+
+// MARK: - GiftTransferSetupPresenterProtocol
+
+extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
+    func setup() {
+        updateChainAssetViewModel()
+        updateFeeView()
+        provideAmountInputViewModel()
+        updateAmountPriceView()
+        updateTitle()
+
+        interactor.setup()
+        refreshFee()
+    }
+
+    func updateAmount(_ newValue: Decimal?) {
+        print(newValue)
+    }
+
+    func proceed() {}
 }
 
 // MARK: - Localizable

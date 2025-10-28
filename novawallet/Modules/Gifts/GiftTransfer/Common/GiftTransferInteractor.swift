@@ -377,12 +377,9 @@ extension GiftTransferInteractor {
         }
     }
 
-    func change(feeAsset: ChainAsset?) {
-        self.feeAsset = feeAsset
-    }
-
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>) {
-        estimateFee(for: amount, feeType: .claimGift)
+        let builder = CumulativeFeeBuilder()
+        estimateFee(for: amount, feeType: .claimGift(builder))
     }
 }
 
@@ -397,15 +394,19 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
 
         pendingFees[transactionFeeId] = nil
 
-        switch result {
-        case let .success(info) where feeType == .claimGift:
+        switch (result, feeType) {
+        case let (.success(fee), .claimGift(builder)):
             guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
-            let amount = giftTransactionFeeId.amount.map { $0 + info.amount }
-            estimateFee(for: amount, feeType: .createGift)
-        case let .success(info):
-            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
+
+            let amount = giftTransactionFeeId.amount.map { $0 + fee.amount }
+            let newBuilder = builder.adding(fee: fee)
+            estimateFee(for: amount, feeType: .createGift(newBuilder))
+        case let (.success(fee), .createGift(builder)):
+            guard let totalFee = builder.adding(fee: fee).build() else { return }
+
+            let feeModel = FeeOutputModel(value: totalFee, validationProvider: nil)
             presenter?.didReceiveFee(result: .success(feeModel))
-        case let .failure(error):
+        case let (.failure(error), _):
             presenter?.didReceiveFee(result: .failure(error))
         }
     }
@@ -414,9 +415,29 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
 // MARK: - Private types
 
 private extension GiftTransferInteractor {
-    enum FeeType: Hashable {
-        case createGift
-        case claimGift
+    enum FeeType {
+        case createGift(CumulativeFeeBuilder)
+        case claimGift(CumulativeFeeBuilder)
+    }
+
+    struct CumulativeFeeBuilder {
+        private let cumulatedFee: ExtrinsicFeeProtocol?
+
+        init(cumulatedFee: ExtrinsicFeeProtocol? = nil) {
+            self.cumulatedFee = cumulatedFee
+        }
+
+        func adding(fee: ExtrinsicFeeProtocol) -> Self {
+            guard let cumulatedFee else {
+                return .init(cumulatedFee: fee)
+            }
+
+            return CumulativeFeeBuilder(cumulatedFee: cumulatedFee.accumulatingAmount(with: fee))
+        }
+
+        func build() -> ExtrinsicFeeProtocol? {
+            cumulatedFee
+        }
     }
 
     struct GiftTransactionFeeId: Hashable, RawRepresentable {

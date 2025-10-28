@@ -128,31 +128,35 @@ extension GiftTransferSetupViewController: GiftTransferSetupViewProtocol {
 
         rootView.amountView.detailsValueLabel.text = viewModel
     }
-    
+
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
         rootView.amountInputView.bind(assetViewModel: viewModel.assetViewModel)
     }
-    
+
     func didReceiveFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.feeView.bind(loadableViewModel: viewModel)
     }
-    
+
     func didReceiveAmount(inputViewModel: any AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
         updateActionButtonState()
     }
-    
+
     func didReceiveAmountInputPrice(viewModel: String?) {
         rootView.amountInputView.bind(priceViewModel: viewModel)
     }
-    
+
     func didReceive(issues: [GiftSetupViewIssue]) {
         print(issues)
     }
-    
+
     func didReceiveGetTokensAvailable(title: String?) {
         print(title)
+    }
+
+    func didReceive(title: GiftSetupNetworkContainerViewModel) {
+        rootView.networkContainerView.bind(viewModel: title)
     }
 }
 
@@ -193,7 +197,7 @@ extension GiftTransferSetupViewController: KeyboardAdoptable {
 // MARK: - AmountInputAccessoryViewDelegate
 
 extension GiftTransferSetupViewController: AmountInputAccessoryViewDelegate {
-    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {}
+    func didSelect(on _: AmountInputAccessoryView, percentage _: Float) {}
 
     func didSelectDone(on _: AmountInputAccessoryView) {
         rootView.amountInputView.textField.resignFirstResponder()
@@ -205,7 +209,7 @@ extension GiftTransferSetupViewController: AmountInputAccessoryViewDelegate {
 extension GiftTransferSetupViewController: Localizable {
     func applyLocalization() {
         guard isViewLoaded else { return }
-        
+
         setupLocalization()
     }
 }
