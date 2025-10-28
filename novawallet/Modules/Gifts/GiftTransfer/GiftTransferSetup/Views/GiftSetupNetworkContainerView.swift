@@ -6,14 +6,14 @@ final class GiftSetupNetworkContainerView: UIView {
         view.textColor = R.color.colorTextPrimary()
         view.font = .boldTitle3
     }
-    
+
     private let onLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
         view.font = .boldTitle3
     }
-    
+
     private let networkView = AssetListChainView()
-    
+
     private var calculatedIntrinsicSize: CGSize = .zero
     private var viewModel: GiftSetupNetworkContainerViewModel?
 
@@ -37,7 +37,7 @@ final class GiftSetupNetworkContainerView: UIView {
         self.viewModel = viewModel
 
         networkView.bind(viewModel: viewModel.chainAssetModel.networkViewModel)
-        
+
         titleLabel.text = viewModel.titleText
         onLabel.text = viewModel.onText
     }
@@ -104,7 +104,7 @@ final class GiftSetupNetworkContainerView: UIView {
             abs(calculatedIntrinsicSize.width - bounds.width) > CGFloat.leastNormalMagnitude
             || abs(calculatedIntrinsicSize.height - intrinsicHeight) > CGFloat.leastNormalMagnitude
         else { return }
-        
+
         calculatedIntrinsicSize = CGSize(width: bounds.width, height: intrinsicHeight)
         invalidateIntrinsicContentSize()
     }
