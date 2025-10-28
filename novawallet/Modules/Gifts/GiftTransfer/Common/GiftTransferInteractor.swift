@@ -104,30 +104,30 @@ private extension GiftTransferInteractor {
             return (builder, nil)
         }
 
-        switch sendingAssetInfo {
+        return switch sendingAssetInfo {
         case let .orml(info), let .ormlHydrationEvm(info):
-            return try addingOrmlTransferCommand(
+            try addingOrmlTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
                 tokenStorageInfo: info
             )
         case let .statemine(info):
-            return try addingAssetsTransferCommand(
+            try addingAssetsTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
                 info: info
             )
         case let .native(info):
-            return try addingNativeTransferCommand(
+            try addingNativeTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
                 info: info
             )
         case let .equilibrium(extras):
-            return try addingEquilibriumTransferCommand(
+            try addingEquilibriumTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
@@ -135,7 +135,7 @@ private extension GiftTransferInteractor {
             )
         case .erc20, .evmNative:
             // we have a separate flow for evm
-            return (builder, nil)
+            (builder, nil)
         }
     }
 
@@ -314,12 +314,6 @@ private extension GiftTransferInteractor {
                 self?.presenter?.didReceiveError(error)
             }
         }
-    }
-
-    func cancelSetupCall() {
-        let cancellingCall = setupCall
-        setupCall = nil
-        cancellingCall?.cancel()
     }
 
     func estimateFee(
