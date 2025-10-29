@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-class GiftTransferInteractor: OnChainTransferBaseInteractor {
+class GiftTransferInteractor: GiftTransferBaseInteractor {
     let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicService: ExtrinsicServiceProtocol
@@ -19,8 +19,6 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
     private var sendingAssetInfo: AssetStorageInfo?
 
     private(set) var feeAsset: ChainAsset?
-
-    private var pendingFees: [TransactionFeeId: FeeType] = [:]
 
     private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
         let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -88,6 +86,26 @@ class GiftTransferInteractor: OnChainTransferBaseInteractor {
             presenter?.didReceiveSendingAssetSenderBalance(balance)
         case .failure:
             presenter?.didReceiveError(CommonError.databaseSubscription)
+        }
+    }
+    
+    override func estimateFee(
+        for amount: OnChainTransferAmount<BigUInt>,
+        transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,
+        recepientAccountId: AccountId
+    ) {
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: transactionId.rawValue,
+            payingIn: feeAsset?.chainAssetId
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
+
+            return newBuilder
         }
     }
 }
@@ -315,34 +333,6 @@ private extension GiftTransferInteractor {
             }
         }
     }
-
-    func estimateFee(
-        for amount: OnChainTransferAmount<BigUInt>,
-        feeType: FeeType
-    ) {
-        let recepientAccountId = AccountId.zeroAccountId(of: chain.accountIdSize)
-
-        let transactionId = GiftTransactionFeeId(
-            recepientAccountId: recepientAccountId,
-            amount: amount
-        )
-
-        pendingFees[transactionId.rawValue] = feeType
-
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: transactionId.rawValue,
-            payingIn: feeAsset?.chainAssetId
-        ) { [weak self] builder in
-            let (newBuilder, _) = try self?.addingTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepientAccountId
-            ) ?? (builder, nil)
-
-            return newBuilder
-        }
-    }
 }
 
 // MARK: - Internal
@@ -369,11 +359,6 @@ extension GiftTransferInteractor {
                 self?.presenter?.didReceiveError(error)
             }
         }
-    }
-
-    func estimateFee(for amount: OnChainTransferAmount<BigUInt>) {
-        let builder = CumulativeFeeBuilder()
-        estimateFee(for: amount, feeType: .claimGift(builder))
     }
 }
 
@@ -402,81 +387,6 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
             presenter?.didReceiveFee(result: .success(feeModel))
         case let (.failure(error), _):
             presenter?.didReceiveFee(result: .failure(error))
-        }
-    }
-}
-
-// MARK: - Private types
-
-private extension GiftTransferInteractor {
-    enum FeeType {
-        case createGift(CumulativeFeeBuilder)
-        case claimGift(CumulativeFeeBuilder)
-    }
-
-    struct CumulativeFeeBuilder {
-        private let cumulatedFee: ExtrinsicFeeProtocol?
-
-        init(cumulatedFee: ExtrinsicFeeProtocol? = nil) {
-            self.cumulatedFee = cumulatedFee
-        }
-
-        func adding(fee: ExtrinsicFeeProtocol) -> Self {
-            guard let cumulatedFee else {
-                return .init(cumulatedFee: fee)
-            }
-
-            return CumulativeFeeBuilder(cumulatedFee: cumulatedFee.accumulatingAmount(with: fee))
-        }
-
-        func build() -> ExtrinsicFeeProtocol? {
-            cumulatedFee
-        }
-    }
-
-    struct GiftTransactionFeeId: Hashable, RawRepresentable {
-        let recepientAccountId: AccountId
-        let amount: OnChainTransferAmount<BigUInt>
-
-        var rawValue: String {
-            [
-                String(amount.value),
-                recepientAccountId.toHex(),
-                amount.name
-            ].joined(with: .dash)
-        }
-
-        init(
-            recepientAccountId: AccountId,
-            amount: OnChainTransferAmount<BigUInt>
-        ) {
-            self.recepientAccountId = recepientAccountId
-            self.amount = amount
-        }
-
-        init?(rawValue: String) {
-            let splitted = rawValue.split(by: .dash)
-
-            guard
-                splitted.count == 3,
-                let amountValue = BigUInt(splitted[0]),
-                let recepientAccountId = try? AccountId(hexString: String(splitted[1]))
-            else {
-                return nil
-            }
-
-            let amountName = String(splitted[2])
-
-            switch amountName {
-            case "all":
-                amount = .all(value: amountValue)
-            case "concrete":
-                amount = .concrete(value: amountValue)
-            default:
-                return nil
-            }
-
-            self.recepientAccountId = recepientAccountId
         }
     }
 }

@@ -2005,6 +2005,8 @@
 		2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */; };
 		2DA4D5372EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */; };
 		2DA4D5442EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */; };
+		2DA4D5732EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */; };
+		2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8554,6 +8556,8 @@
 		2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssuesViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssueCheckParams.swift; sourceTree = "<group>"; };
+		2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferInteractor.swift; sourceTree = "<group>"; };
+		2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferBaseInteractor.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17230,7 +17234,7 @@
 		2D533C322EB0B3430005FF8A /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2D54215E2EAB69BC0020E64B /* GiftTransferInteractor.swift */,
+				2DA4D57E2EB267BD006FCCC0 /* Interactor */,
 				2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */,
 			);
 			path = Common;
@@ -17841,6 +17845,16 @@
 				2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */,
 			);
 			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DA4D57E2EB267BD006FCCC0 /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */,
+				2D54215E2EAB69BC0020E64B /* GiftTransferInteractor.swift */,
+				2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */,
+			);
+			path = Interactor;
 			sourceTree = "<group>";
 		};
 		2DA85A692C7F366C00591900 /* CardTopUp */ = {
@@ -35166,6 +35180,7 @@
 				843125D1299BBC5F0063745B /* GovernanceRevokeDelegationInteractorError.swift in Sources */,
 				30542C0BD486FD1583F36BA2 /* LedgerNetworkSelectionProtocols.swift in Sources */,
 				84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */,
+				2DA4D5732EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift in Sources */,
 				0C7CF4D42BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift in Sources */,
 				2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */,
 				8490111429E68FCB005D688B /* WalletConnectService.swift in Sources */,
@@ -35630,6 +35645,7 @@
 				0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */,
 				C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */,
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,
+				2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */,
 				4883346B78B82D2037DEBA56 /* GovernanceRemoveVotesConfirmViewLayout.swift in Sources */,
 				893CA0DF4EAD03CC118A2733 /* GovernanceRemoveVotesConfirmViewFactory.swift in Sources */,
 				0C8C8F812D6C3E2D00441FB3 /* PriceProviderFactory.swift in Sources */,
