@@ -4,8 +4,9 @@ import Foundation_iOS
 final class GiftTransferViewFactory {
     static func createTransferSetupView(
         from chainAsset: ChainAsset,
-        transferCompletion _: TransferCompletionClosure?,
-        buyTokenClosure _: BuyTokensClosure?
+        assetListStateObservable: AssetListModelObservable,
+        transferCompletion: TransferCompletionClosure?,
+        buyTokenClosure: BuyTokensClosure?
     ) -> GiftTransferSetupViewProtocol? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
@@ -18,7 +19,11 @@ final class GiftTransferViewFactory {
             )
         else { return nil }
 
-        let wireframe = GiftTransferSetupWireframe()
+        let wireframe = GiftTransferSetupWireframe(
+            assetListStateObservable: assetListStateObservable,
+            buyTokensClosure: buyTokenClosure,
+            transferCompletion: transferCompletion
+        )
 
         let initPresenterState = TransferSetupInputState(recepient: nil, amount: nil)
 

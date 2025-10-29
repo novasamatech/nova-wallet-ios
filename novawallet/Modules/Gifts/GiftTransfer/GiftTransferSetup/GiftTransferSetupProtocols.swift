@@ -22,16 +22,28 @@ protocol GiftTransferSetupPresenterProtocol: AnyObject {
     func setup()
     func updateAmount(_ newValue: Decimal?)
     func proceed()
+    func getTokens()
 }
 
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     TransferErrorPresentable,
     PhishingErrorPresentable,
+    RampPresentable,
     FeeRetryable {
     func showConfirmation(
         from view: GiftTransferSetupViewProtocol?,
         chainAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>
+    )
+    func showGetTokenOptions(
+        from view: ControllerBackedProtocol?,
+        purchaseHadler: RampFlowManaging & RampDelegate,
+        destinationChainAsset: ChainAsset,
+        locale: Locale
+    )
+    func popTopControllers(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping () -> Void
     )
 }

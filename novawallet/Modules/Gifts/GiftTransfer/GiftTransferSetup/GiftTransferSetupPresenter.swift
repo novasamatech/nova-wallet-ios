@@ -95,7 +95,7 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
             updateFeeView()
             updateAmountPriceView()
         case let .failure(error):
-            logger?.error("Did receive fee error: \(result)")
+            logger?.error("Did receive fee error: \(error)")
         }
     }
 
@@ -311,6 +311,34 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
                 from: view,
                 chainAsset: chainAsset,
                 sendingAmount: amount
+            )
+        }
+    }
+    
+    func getTokens() {
+        wireframe.showGetTokenOptions(
+            from: view,
+            purchaseHadler: self,
+            destinationChainAsset: chainAsset,
+            locale: selectedLocale
+        )
+    }
+}
+
+// MARK: - RampFlowManaging, RampDelegate
+
+extension GiftTransferSetupPresenter: RampFlowManaging, RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset _: ChainAsset
+    ) {
+        wireframe.popTopControllers(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
             )
         }
     }
