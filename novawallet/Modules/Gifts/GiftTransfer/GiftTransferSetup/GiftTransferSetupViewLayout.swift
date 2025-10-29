@@ -12,7 +12,15 @@ final class GiftTransferSetupViewLayout: SCSingleActionLayoutView {
 
     let amountInputView = NewAmountInputView()
 
-    var issueLabel: UILabel?
+    var issueLabel: UILabel = .create { view in
+        view.apply(style: .caption1Negative)
+        view.numberOfLines = 0
+    }
+
+    let getTokenButton: TriangularedButton = .create {
+        $0.applySecondaryDefaultStyle()
+        $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,6 +47,9 @@ final class GiftTransferSetupViewLayout: SCSingleActionLayoutView {
         amountInputView.snp.makeConstraints { make in
             make.height.equalTo(64)
         }
+        getTokenButton.snp.makeConstraints { make in
+            make.height.equalTo(44)
+        }
     }
 
     override func setupStyle() {
@@ -51,20 +62,18 @@ final class GiftTransferSetupViewLayout: SCSingleActionLayoutView {
 // MARK: - Private
 
 private extension GiftTransferSetupViewLayout {
-    func setupIssueLabel() -> UILabel {
-        if let issueLabel {
-            return issueLabel
-        }
+    func setupIssueLabel() {
+        guard issueLabel.superview == nil else { return }
 
-        let label = UILabel(style: .caption1Negative)
-        label.numberOfLines = 0
-
-        insertArrangedSubview(label, after: amountInputView, spacingAfter: 16.0)
+        insertArrangedSubview(issueLabel, after: amountInputView, spacingAfter: 16.0)
         stackView.setCustomSpacing(8.0, after: amountInputView)
+    }
 
-        issueLabel = label
+    func setupGetTokenButton() {
+        guard getTokenButton.superview == nil else { return }
 
-        return label
+        insertArrangedSubview(getTokenButton, after: issueLabel, spacingAfter: 16.0)
+        stackView.setCustomSpacing(12.0, after: issueLabel)
     }
 }
 
@@ -72,8 +81,8 @@ private extension GiftTransferSetupViewLayout {
 
 extension GiftTransferSetupViewLayout {
     func hideIssues() {
-        issueLabel?.removeFromSuperview()
-        issueLabel = nil
+        issueLabel.removeFromSuperview()
+        getTokenButton.removeFromSuperview()
 
         stackView.setCustomSpacing(16, after: amountInputView)
 
@@ -81,9 +90,16 @@ extension GiftTransferSetupViewLayout {
     }
 
     func displayIssue(with attributes: GiftSetupViewIssue.IssueAttributes) {
-        let issueLabel = setupIssueLabel()
+        setupIssueLabel()
         issueLabel.text = attributes.issueText
 
         amountInputView.applyErrorStyle()
+
+        guard attributes.getTokensButtonVisible else {
+            getTokenButton.removeFromSuperview()
+            return
+        }
+
+        setupGetTokenButton()
     }
 }

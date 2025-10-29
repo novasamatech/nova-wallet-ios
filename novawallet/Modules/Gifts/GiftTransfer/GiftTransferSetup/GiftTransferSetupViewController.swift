@@ -11,6 +11,8 @@ final class GiftTransferSetupViewController: UIViewController, ViewHolder {
 
     var issues: [GiftSetupViewIssue] = []
 
+    var chainAsset: ChainAssetViewModel?
+
     init(
         presenter: GiftTransferSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -68,22 +70,31 @@ private extension GiftTransferSetupViewController {
             action: #selector(actionProceed),
             for: .touchUpInside
         )
+        rootView.getTokenButton.addTarget(
+            self,
+            action: #selector(actionGetTokens),
+            for: .touchUpInside
+        )
     }
 
     func setupLocalization() {
-        rootView.genericActionView.imageWithTitleView?.title = R.string(
+        let localizedStrings = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonContinue()
+        ).localizable
 
-        rootView.amountView.titleView.text = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.walletSendAmountTitle()
+        rootView.genericActionView.imageWithTitleView?.title = localizedStrings.commonContinue()
 
-        rootView.feeView.titleButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonNetworkFee()
+        rootView.amountView.titleView.text = localizedStrings.walletSendAmountTitle()
+
+        rootView.feeView.titleButton.imageWithTitleView?.title = localizedStrings.commonNetworkFee()
 
         updateActionButtonState()
+
+        guard let chainAsset else { return }
+
+        rootView.getTokenButton.imageWithTitleView?.title = localizedStrings.swapsSetupDepositButtonTitle(
+            chainAsset.assetViewModel.symbol
+        )
     }
 
     func updateActionButtonState() {
@@ -128,6 +139,10 @@ private extension GiftTransferSetupViewController {
     @objc func actionProceed() {
         presenter.proceed()
     }
+
+    @objc func actionGetTokens() {
+        presenter.getTokens()
+    }
 }
 
 // MARK: - GiftTransferSetupViewProtocol
@@ -142,7 +157,9 @@ extension GiftTransferSetupViewController: GiftTransferSetupViewProtocol {
     }
 
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
+        chainAsset = viewModel
         rootView.amountInputView.bind(assetViewModel: viewModel.assetViewModel)
+        setupLocalization()
     }
 
     func didReceiveFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
