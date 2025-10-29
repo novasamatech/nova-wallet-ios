@@ -8,6 +8,7 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
     let interactor: GiftTransferSetupInteractorInputProtocol
 
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
+    let issueViewModelFactory: GiftSetupIssueViewModelFactoryProtocol
 
     var inputResult: AmountInputResult?
 
@@ -20,6 +21,7 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        issueViewModelFactory: GiftSetupIssueViewModelFactoryProtocol,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -28,6 +30,7 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
+        self.issueViewModelFactory = issueViewModelFactory
         inputResult = initialState.amount
 
         super.init(
@@ -227,6 +230,24 @@ private extension GiftTransferSetupPresenter {
 
         view?.didReceive(title: viewModel)
     }
+
+    func getIssueParams() -> GiftSetupIssueCheckParams {
+        .init(
+            chainAsset: chainAsset,
+            enteredAmount: inputResult?.absoluteValue(from: balanceMinusFee()),
+            assetBalance: assetBalance,
+            assetExistence: assetExistence,
+            fee: fee?.value
+        )
+    }
+
+    func provideIssues() {
+        let issues = issueViewModelFactory.detectIssues(
+            in: getIssueParams(),
+            locale: selectedLocale
+        )
+        view?.didReceive(issues: issues)
+    }
 }
 
 // MARK: - GiftTransferSetupPresenterProtocol
@@ -248,6 +269,7 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
 
         refreshFee()
         updateAmountPriceView()
+        provideIssues()
     }
 
     func proceed() {

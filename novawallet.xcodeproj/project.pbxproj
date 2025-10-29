@@ -2003,6 +2003,8 @@
 		2DA3AE992E5DB34C00689F65 /* Xcm+LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */; };
 		2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */; };
 		2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */; };
+		2DA4D5372EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */; };
+		2DA4D5442EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8550,6 +8552,8 @@
 		2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateWireframe.swift; sourceTree = "<group>"; };
 		2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
+		2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssuesViewModelFactory.swift; sourceTree = "<group>"; };
+		2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssueCheckParams.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17235,6 +17239,7 @@
 		2D533C362EB0B3520005FF8A /* GiftTransferSetup */ = {
 			isa = PBXGroup;
 			children = (
+				2DA4D5302EB21DB1006FCCC0 /* Factory */,
 				2D533C822EB0EAFE0005FF8A /* Views */,
 				2D533C692EB0E5CC0005FF8A /* Model */,
 				2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */,
@@ -17251,6 +17256,7 @@
 			isa = PBXGroup;
 			children = (
 				2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */,
+				2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */,
 				2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */,
 			);
 			path = Model;
@@ -17827,6 +17833,14 @@
 				2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */,
 			);
 			path = DelegatedAccountsUpdate;
+			sourceTree = "<group>";
+		};
+		2DA4D5302EB21DB1006FCCC0 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */,
+			);
+			path = Factory;
 			sourceTree = "<group>";
 		};
 		2DA85A692C7F366C00591900 /* CardTopUp */ = {
@@ -31896,6 +31910,7 @@
 				77F033972A8142D1006BC67E /* StakingSetupAmountStyles.swift in Sources */,
 				AEF507F72625A3280098574D /* ValidatorState+Status.swift in Sources */,
 				8434B5FA298D284300FACF4C /* GovernanceBaseEditDelegationViewController.swift in Sources */,
+				2DA4D5372EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift in Sources */,
 				843910D9253F8DFB00E3C217 /* StatusPresentable.swift in Sources */,
 				847C963D255351BB002D288F /* ScrollableContainerView.swift in Sources */,
 				842A736B27DB7A2E006EE1EA /* OperationDetailsViewModel.swift in Sources */,
@@ -32343,6 +32358,7 @@
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
 				2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */,
 				0C2B18AE2BFE378B00206EDE /* CloudBackupSyncService+Create.swift in Sources */,
+				2DA4D5442EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift in Sources */,
 				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
 				2D2B6AF22D6DCD77002F8C77 /* BrowserNavigationPresenter.swift in Sources */,
 				845B811F28F451A40040CE84 /* GovernanceActionOperationFactory.swift in Sources */,

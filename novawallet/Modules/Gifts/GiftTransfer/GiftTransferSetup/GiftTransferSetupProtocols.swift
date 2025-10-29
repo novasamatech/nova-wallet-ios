@@ -8,7 +8,6 @@ protocol GiftTransferSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(viewModel: String?)
     func didReceive(issues: [GiftSetupViewIssue])
-    func didReceiveGetTokensAvailable(title: String?)
     func didReceive(title: GiftSetupNetworkContainerViewModel)
 }
 

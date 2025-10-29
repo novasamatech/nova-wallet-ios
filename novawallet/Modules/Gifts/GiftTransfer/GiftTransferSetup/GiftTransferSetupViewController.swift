@@ -9,6 +9,8 @@ final class GiftTransferSetupViewController: UIViewController, ViewHolder {
 
     var keyboardHandler: KeyboardHandler?
 
+    var issues: [GiftSetupViewIssue] = []
+
     init(
         presenter: GiftTransferSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -85,6 +87,16 @@ private extension GiftTransferSetupViewController {
     }
 
     func updateActionButtonState() {
+        guard issues.isEmpty else {
+            rootView.genericActionView.applyDisabledStyle()
+            rootView.genericActionView.isUserInteractionEnabled = false
+
+            rootView.genericActionView.imageWithTitleView?.title = issues.last?.actionText
+            rootView.genericActionView.invalidateLayout()
+
+            return
+        }
+
         guard rootView.amountInputView.completed else {
             rootView.genericActionView.applyDisabledStyle()
             rootView.genericActionView.isUserInteractionEnabled = false
@@ -148,11 +160,18 @@ extension GiftTransferSetupViewController: GiftTransferSetupViewProtocol {
     }
 
     func didReceive(issues: [GiftSetupViewIssue]) {
-        print(issues)
-    }
+        self.issues = issues
 
-    func didReceiveGetTokensAvailable(title: String?) {
-        print(title)
+        rootView.hideIssues()
+
+        issues.forEach { issue in
+            switch issue {
+            case let .insufficientBalance(attributes):
+                rootView.displayIssue(with: attributes)
+            case let .minAmountViolation(attributes):
+                rootView.displayIssue(with: attributes)
+            }
+        }
     }
 
     func didReceive(title: GiftSetupNetworkContainerViewModel) {

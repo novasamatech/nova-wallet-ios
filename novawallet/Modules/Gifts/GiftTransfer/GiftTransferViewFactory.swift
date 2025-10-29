@@ -28,9 +28,14 @@ final class GiftTransferViewFactory {
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let issueViewModelFactory = GiftSetupIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let dataValidatingFactory = TransferDataValidatorFactory(
@@ -50,6 +55,7 @@ final class GiftTransferViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            issueViewModelFactory: issueViewModelFactory,
             senderAccountAddress: selectedAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: localizationManager,
