@@ -5,17 +5,17 @@ final class GiftTransferSetupWireframe {
     let assetListObservable: AssetListModelObservable
     let buyTokensClosure: BuyTokensClosure?
     let transferCompletion: TransferCompletionClosure?
-    
+
     init(
         assetListStateObservable: AssetListModelObservable,
         buyTokensClosure: BuyTokensClosure?,
         transferCompletion: TransferCompletionClosure?
     ) {
-        self.assetListObservable = assetListStateObservable
+        assetListObservable = assetListStateObservable
         self.buyTokensClosure = buyTokensClosure
         self.transferCompletion = transferCompletion
     }
-    
+
     func showGetTokensByCrosschain(
         from view: ControllerBackedProtocol?,
         origins: [ChainAsset],
@@ -61,7 +61,7 @@ extension GiftTransferSetupWireframe: GiftTransferSetupWireframeProtocol {
         chainAsset _: ChainAsset,
         sendingAmount _: OnChainTransferAmount<Decimal>
     ) {}
-    
+
     func showGetTokenOptions(
         from view: ControllerBackedProtocol?,
         purchaseHadler: RampFlowManaging & RampDelegate,
@@ -109,7 +109,7 @@ extension GiftTransferSetupWireframe: GiftTransferSetupWireframeProtocol {
 
         view?.controller.present(bottomSheet.controller, animated: true)
     }
-    
+
     func popTopControllers(
         from view: ControllerBackedProtocol?,
         completion: @escaping () -> Void

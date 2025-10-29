@@ -314,7 +314,7 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
             )
         }
     }
-    
+
     func getTokens() {
         wireframe.showGetTokenOptions(
             from: view,
