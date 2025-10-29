@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class StakingRebondSetupTests: XCTestCase {
-
     func testRebondSetupAndAmountProvidingSuccess() throws {
         // given
 
@@ -20,17 +19,15 @@ class StakingRebondSetupTests: XCTestCase {
         let presenter = try setupPresenter(for: view, wireframe: wireframe)
 
         stub(view) { stub in
-            when(stub).localizationManager.get.then { nil }
-
-            when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
-            when(stub).didReceiveTransferable(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveAsset(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveTransferable(viewModel: any())).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).proceed(view: any(), amount: any()).then { (view, amount) in
+            when(stub.proceed(view: any(), amount: any())).then { _, _ in
                 completionExpectation.fulfill()
             }
         }
@@ -133,7 +130,8 @@ class StakingRebondSetupTests: XCTestCase {
             interactor: interactor,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -148,23 +146,23 @@ class StakingRebondSetupTests: XCTestCase {
         let transferableExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAsset(viewModel: any())).then { viewModel in
                 if let balance = viewModel.value(for: Locale.current).balance, !balance.isEmpty {
                     assetExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if let fee = viewModel?.value(for: Locale.current).amount, !fee.isEmpty {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveInput(viewModel: any()).then { _ in
+            when(stub.didReceiveInput(viewModel: any())).then { _ in
                 inputExpectation.fulfill()
             }
 
-            when(stub).didReceiveTransferable(viewModel: any()).then { optViewModel in
+            when(stub.didReceiveTransferable(viewModel: any())).then { optViewModel in
                 if optViewModel != nil {
                     transferableExpectation.fulfill()
                 }

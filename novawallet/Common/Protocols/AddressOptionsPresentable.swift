@@ -241,7 +241,7 @@ enum AddressOptionsPresentableFactory {
         copyClosure: @escaping () -> Void
     ) -> ChainAddressDetailsModelBuilder {
         let copyTitle = LocalizableResource { locale in
-            R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCopyAddress()
         }
 
         let builder = ChainAddressDetailsModelBuilder(
@@ -264,7 +264,7 @@ enum AddressOptionsPresentableFactory {
         urlClosure: @escaping (URL) -> Void
     ) -> ChainAddressDetailsModelBuilder {
         let copyTitle = LocalizableResource { locale in
-            R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCopyAddress()
         }
 
         var builder = ChainAddressDetailsModelBuilder(
@@ -287,9 +287,8 @@ enum AddressOptionsPresentableFactory {
             }
 
             let title = LocalizableResource { locale in
-                R.string.localizable.commmonViewInFormat(
-                    explorer.name,
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.commmonViewInFormat(
+                    explorer.name
                 )
             }
 

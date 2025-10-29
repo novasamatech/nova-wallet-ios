@@ -3,7 +3,6 @@ import XCTest
 import Cuckoo
 
 class WalletHistoryFilterTests: XCTestCase {
-
     func testSetup() {
         // given
 
@@ -19,7 +18,7 @@ class WalletHistoryFilterTests: XCTestCase {
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(viewModel: any()).then { viewModel in
+            when(stub.didReceive(viewModel: any())).then { viewModel in
                 XCTAssertTrue(viewModel.items[WalletHistoryFilterRow.transfers.rawValue].isOn)
                 XCTAssertFalse(viewModel.items[WalletHistoryFilterRow.rewardsAndSlashes.rawValue].isOn)
                 XCTAssertFalse(viewModel.items[WalletHistoryFilterRow.rewardsAndSlashes.rawValue].isOn)

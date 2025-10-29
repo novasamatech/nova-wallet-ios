@@ -46,35 +46,35 @@ enum ReferendumTrackType {
     static func title(for trackName: String, locale: Locale) -> String {
         switch trackName {
         case Self.root:
-            return R.string.localizable.govTrackRoot(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackRoot()
         case Self.whiteListedCaller:
-            return R.string.localizable.govTrackWhitelistedCaller(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackWhitelistedCaller()
         case Self.stakingAdmin:
-            return R.string.localizable.govTrackStakingAdmin(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackStakingAdmin()
         case Self.treasurer:
-            return R.string.localizable.govTrackTreasurer(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackTreasurer()
         case Self.leaseAdmin:
-            return R.string.localizable.govTrackLeaseAdmin(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackLeaseAdmin()
         case Self.fellowshipAdmin:
-            return R.string.localizable.govTrackFellowshipAdmin(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackFellowshipAdmin()
         case Self.generalAdmin:
-            return R.string.localizable.govTrackGeneralAdmin(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackGeneralAdmin()
         case Self.auctionAdmin:
-            return R.string.localizable.govTrackAuctionAdmin(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackAuctionAdmin()
         case Self.referendumCanceller:
-            return R.string.localizable.govTrackReferendumCanceller(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackReferendumCanceller()
         case Self.referendumKiller:
-            return R.string.localizable.govTrackReferendumKiller(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackReferendumKiller()
         case Self.smallTipper:
-            return R.string.localizable.govTrackSmallTipper(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackSmallTipper()
         case Self.bigTipper:
-            return R.string.localizable.govTrackBigTipper(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackBigTipper()
         case Self.smallSpender:
-            return R.string.localizable.govTrackSmallSpender(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackSmallSpender()
         case Self.mediumSpender:
-            return R.string.localizable.govTrackMediumSpender(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackMediumSpender()
         case Self.bigSpender:
-            return R.string.localizable.govTrackBigSpender(preferredLanguages: locale.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.govTrackBigSpender()
         default:
             return trackName.replacingSnakeCase()
         }

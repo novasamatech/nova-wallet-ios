@@ -9,30 +9,34 @@ enum DAppOperationConfirmInteractorError: Error {
 
 extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
-        let title: String = R.string.localizable.commonErrorGeneralTitle(
-            preferredLanguages: locale?.rLanguages
-        )
+        let title: String = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonErrorGeneralTitle()
 
         let message: String
 
         switch self {
         case let .addressMismatch(actual, expected):
-            message = R.string.localizable.dappConfirmationAddressMismatch(
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappConfirmationAddressMismatch(
                 actual,
-                expected,
-                preferredLanguages: locale?.rLanguages
+                expected
             )
         case let .extrinsicBadField(name):
-            message = R.string.localizable.dappConfirmationBadField(
-                name,
-                preferredLanguages: locale?.rLanguages
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappConfirmationBadField(
+                name
             )
         case .invalidRawSignature:
-            message = R.string.localizable.dappConfirmationInvalidSignature(
-                preferredLanguages: locale?.rLanguages
-            )
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappConfirmationInvalidSignature()
         case .signingFailed:
-            message = R.string.localizable.dappSignExtrinsicFailed(preferredLanguages: locale?.rLanguages)
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.dappSignExtrinsicFailed()
         }
 
         return ErrorContent(title: title, message: message)

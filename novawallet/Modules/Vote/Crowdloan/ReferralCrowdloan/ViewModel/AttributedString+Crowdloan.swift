@@ -13,14 +13,17 @@ extension NSAttributedString {
             .foregroundColor: R.color.colorButtonTextAccent()!
         ]
 
-        let termsConditions = R.string.localizable.crowdloanTermsValue(preferredLanguages: locale?.rLanguages)
+        let termsConditions = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanTermsValue()
         let termDecorator = HighlightingAttributedStringDecorator(
             pattern: termsConditions,
             attributes: highlightAttributes
         )
 
-        let resultString = R.string.localizable
-            .crowdloanTermsFormat(termsConditions, preferredLanguages: locale?.rLanguages)
+        let resultString = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanTermsFormat(termsConditions)
 
         return CompoundAttributedStringDecorator(
             decorators: [rangeDecorator, termDecorator]

@@ -25,8 +25,7 @@ enum MultibaseEncoding: Character {
     case base64urlPad = "U"
     case proquint = "p"
 
-    // swiftlint:disable cyclomatic_complexity
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next cyclomatic_complexity
     func decode(_ input: String) -> Data? {
         switch self {
         case .base2:
@@ -77,6 +76,4 @@ enum MultibaseEncoding: Character {
             return Data(proquint: input)
         }
     }
-    // swiftlint:enable cyclomatic_complexity
-    // swiftlint:enable function_body_length
 }

@@ -42,7 +42,9 @@ final class AHMInfoViewController: UIViewController, ViewHolder {
 private extension AHMInfoViewController {
     func setupNavigation() {
         let barButtonItem = UIBarButtonItem(
-            title: R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonLearnMore(),
             style: .plain,
             target: self,
             action: #selector(actionLearnMore)
@@ -57,9 +59,7 @@ private extension AHMInfoViewController {
             on: self,
             view: rootView.bannerContainer
         )
-
-        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
-        rootView.updateBannerHeight(bannerHeight)
+        updateBannerHeight()
     }
 
     func setupHandlers() {
@@ -68,6 +68,11 @@ private extension AHMInfoViewController {
             action: #selector(actionGotIt),
             for: .touchUpInside
         )
+    }
+
+    func updateBannerHeight() {
+        let bannerHeight = bannersViewProvider.getMaxBannerHeight()
+        rootView.updateBannerHeight(bannerHeight)
     }
 
     @objc func actionGotIt() {
@@ -84,6 +89,7 @@ private extension AHMInfoViewController {
 extension AHMInfoViewController: AHMInfoViewProtocol {
     func didReceive(viewModel: AHMInfoViewModel) {
         rootView.bind(viewModel)
+        updateBannerHeight()
     }
 }
 

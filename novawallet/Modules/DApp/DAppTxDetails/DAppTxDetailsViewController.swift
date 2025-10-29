@@ -33,10 +33,10 @@ final class DAppTxDetailsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonTxDetails(preferredLanguages: languages)
-        rootView.titleLabel.text = R.string.localizable.dappSignOperationDetailsSubtitle(
+        title = R.string(preferredLanguages: languages).localizable.commonTxDetails()
+        rootView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.dappSignOperationDetailsSubtitle()
     }
 }
 

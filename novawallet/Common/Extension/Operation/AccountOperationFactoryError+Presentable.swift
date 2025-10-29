@@ -7,15 +7,19 @@ extension AccountOperationFactoryError: ErrorContentConvertible {
 
         switch self {
         case .decryption:
-            title = R.string.localizable
-                .accountImportKeystoreDecryptionErrorTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable
-                .accountImportKeystoreDecryptionErrorMessage(preferredLanguages: locale?.rLanguages)
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.accountImportKeystoreDecryptionErrorTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.accountImportKeystoreDecryptionErrorMessage()
         default:
-            title = R.string.localizable
-                .commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-            message = R.string.localizable
-                .commonUndefinedErrorMessage(preferredLanguages: locale?.rLanguages)
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonErrorGeneralTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonUndefinedErrorMessage()
         }
 
         return ErrorContent(title: title, message: message)

@@ -1,5 +1,6 @@
 import Foundation
 import DGCharts
+import UIKit
 
 final class AssetPriceChartRenderer: LineChartRenderer {
     private let highlightColor: UIColor

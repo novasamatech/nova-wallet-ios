@@ -11,9 +11,7 @@ struct DelegationReferendumVotersViewFactory {
     ) -> DelegationReferendumVotersViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        guard let chain = state.settings.value?.chain,
-              let connection = chainRegistry.getConnection(for: chain.chainId),
-              let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+        guard let chain = state.settings.value?.chain else {
             return nil
         }
 

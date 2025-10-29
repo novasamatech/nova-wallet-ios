@@ -172,7 +172,7 @@ private extension MainTabBarViewFactory {
         }
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarAssetsTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarAssetsTitle()
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
@@ -212,7 +212,7 @@ private extension MainTabBarViewFactory {
         )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarStakingTitle()
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
@@ -254,7 +254,7 @@ private extension MainTabBarViewFactory {
         let navigationController = NovaNavigationController(rootViewController: viewController)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarSettingsTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarSettingsTitle()
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
@@ -295,7 +295,7 @@ private extension MainTabBarViewFactory {
         let navigationController = NovaNavigationController(rootViewController: view.controller)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarVoteTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarVoteTitle()
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
@@ -336,7 +336,7 @@ private extension MainTabBarViewFactory {
         let navigationController = NovaNavigationController(rootViewController: dappsView.controller)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarDappsTitle_2_4_3(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.tabbarDappsTitle_2_4_3()
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)

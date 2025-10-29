@@ -51,23 +51,23 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable.cloudBackupImportTitle(
+        rootView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.cloudBackupImportTitle()
 
         switch flow {
         case .importBackup, .changePassword:
-            rootView.subtitleLabel.text = R.string.localizable.cloudBackupImportSubtitle(
+            rootView.subtitleLabel.text = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.cloudBackupImportSubtitle()
         case .enterPassword:
-            rootView.subtitleLabel.text = R.string.localizable.cloudBackupEnterPasswordSetMessage(
+            rootView.subtitleLabel.text = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.cloudBackupEnterPasswordSetMessage()
         }
 
         let passwordPlaceholder = NSAttributedString(
-            string: R.string.localizable.commonBackupPassword(preferredLanguages: selectedLocale.rLanguages),
+            string: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackupPassword(),
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
@@ -76,9 +76,9 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
 
         rootView.passwordView.textField.attributedPlaceholder = passwordPlaceholder
 
-        rootView.forgetPasswordButton.imageWithTitleView?.title = R.string.localizable.commonForgotPasswordButton(
+        rootView.forgetPasswordButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonForgotPasswordButton()
 
         applyActionStyle()
     }
@@ -87,15 +87,15 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
         if let viewModel = rootView.passwordView.inputViewModel, viewModel.inputHandler.completed {
             rootView.actionButton.isEnabled = true
             rootView.actionButton.applyEnabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonContinue()
         } else {
             rootView.actionButton.isEnabled = false
             rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonEnterPassword(
+            rootView.actionButton.imageWithTitleView?.title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonEnterPassword()
         }
     }
 

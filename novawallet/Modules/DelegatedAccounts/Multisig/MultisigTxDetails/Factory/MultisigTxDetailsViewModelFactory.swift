@@ -45,7 +45,7 @@ private extension MultisigTxDetailsViewModelFactory {
             chain: depositAsset.chain
         )
         let depositorField = MultisigTxDetailsViewModel.SectionField(
-            title: R.string.localizable.commonDepositor(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonDepositor(),
             value: depositorViewModel
         )
         let depositViewModel = createDepositViewModel(
@@ -55,7 +55,7 @@ private extension MultisigTxDetailsViewModelFactory {
             locale: locale
         )
         let depositField = MultisigTxDetailsViewModel.SectionField(
-            title: R.string.localizable.commonMultisigDeposit(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigDeposit(),
             value: depositViewModel
         )
         let sectionModel = MultisigTxDetailsViewModel.Deposit(
@@ -75,7 +75,7 @@ private extension MultisigTxDetailsViewModelFactory {
             imageViewModel: nil
         )
         let callHashField = MultisigTxDetailsViewModel.SectionField(
-            title: R.string.localizable.commonCallHash(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCallHash(),
             value: callHashModel
         )
 
@@ -88,7 +88,7 @@ private extension MultisigTxDetailsViewModelFactory {
             )
 
             callDataField = MultisigTxDetailsViewModel.SectionField(
-                title: R.string.localizable.commonCallData(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCallData(),
                 value: callDataModel
             )
         }
@@ -107,9 +107,10 @@ private extension MultisigTxDetailsViewModelFactory {
     ) -> MultisigTxDetailsViewModel.Section? {
         guard let prettifiedJsonString else { return nil }
 
-        let title = R.string.localizable.operationDetailsCheckHint(
+        let title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.operationDetailsCheckHint()
+
         let field = MultisigTxDetailsViewModel.SectionField(
             title: title,
             value: prettifiedJsonString
@@ -168,7 +169,7 @@ extension MultisigTxDetailsViewModelFactory: MultisigTxDetailsViewModelFactoryPr
         ].compactMap { $0 }
 
         return MultisigTxDetailsViewModel(
-            title: R.string.localizable.commonTxDetails(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonTxDetails(),
             sections: sections
         )
     }
@@ -187,7 +188,7 @@ extension MultisigTxDetailsViewModelFactory: MultisigTxDetailsViewModelFactoryPr
         )
 
         return MultisigTxDetailsViewModel.SectionField(
-            title: R.string.localizable.commonMultisigDeposit(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigDeposit(),
             value: depositViewModel
         )
     }

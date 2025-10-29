@@ -7,7 +7,6 @@ import Operation_iOS
 import Cuckoo
 
 class AccountManagementTests: XCTestCase {
-
     // FIXME: Fix test
 //    func testAccountSuccessfullySelected() throws {
 //        // given

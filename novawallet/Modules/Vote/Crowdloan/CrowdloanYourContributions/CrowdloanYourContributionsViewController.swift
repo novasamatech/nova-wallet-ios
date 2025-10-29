@@ -53,12 +53,11 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
         if let returnIn = returnInTimeIntervals.first(where: { $0.index == cellModel.index }),
            let interval = returnIn.interval {
-            subtitle = R.string.localizable.crowdloanReturnsInFormat(
-                interval,
-                preferredLanguages: selectedLocale.rLanguages
+            subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanReturnsInFormat(
+                interval
             )
         } else {
-            subtitle = R.string.localizable.crowdloanReturnInProgress(preferredLanguages: selectedLocale.rLanguages)
+            subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanReturnInProgress()
         }
 
         cell.bind(returnInViewModel: subtitle)
@@ -91,8 +90,8 @@ extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsVi
 extension CrowdloanYourContributionsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .crowdloanYouContributionsTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string(preferredLanguages: selectedLocale.rLanguages)
+                .localizable.crowdloanYouContributionsTitle()
         }
     }
 }

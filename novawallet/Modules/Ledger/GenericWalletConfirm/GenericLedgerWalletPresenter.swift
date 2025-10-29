@@ -59,7 +59,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     private func provideDescriptionViewModel() {
         let languages = selectedLocale.rLanguages
         let viewModel = TitleWithSubtitleViewModel(
-            title: R.string.localizable.paritySignerAddressesTitle(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.paritySignerAddressesTitle(),
             subtitle: ""
         )
 

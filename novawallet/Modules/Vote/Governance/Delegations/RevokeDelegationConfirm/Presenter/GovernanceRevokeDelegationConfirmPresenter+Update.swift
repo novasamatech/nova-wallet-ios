@@ -123,9 +123,7 @@ extension GovRevokeDelegationConfirmPresenter {
     }
 
     func provideHints() {
-        let hint = R.string.localizable.govRevokeDelegationConfirmHint(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let hint = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govRevokeDelegationConfirmHint()
 
         view?.didReceiveHints(viewModel: [hint])
     }

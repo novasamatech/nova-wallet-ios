@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Foundation_iOS
 import SubstrateSdk
 import NovaCrypto
@@ -98,8 +99,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     }
 
     private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profileLanguageTitle(preferredLanguages: locale.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.profileLanguageTitle()
 
         let subtitle = language?.title(in: locale)?.capitalized
 
@@ -162,8 +162,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         isOn: Bool,
         locale: Locale
     ) -> SettingsCellViewModel {
-        let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.commonOff(preferredLanguages: locale.rLanguages)
+        let accessory = isOn ? R.string(preferredLanguages: locale.rLanguages).localizable.commonOn() :
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOff()
 
         return SettingsCellViewModel(
             row: row,

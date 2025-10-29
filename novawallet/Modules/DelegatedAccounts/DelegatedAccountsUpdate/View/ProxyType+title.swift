@@ -6,44 +6,45 @@ extension Proxy.ProxyType {
 
         switch self {
         case .any:
-            typeString = R.string.localizable.proxyAnyTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyAnyTypeTitle()
         case .nonTransfer:
-            typeString = R.string.localizable.proxyNonTransferTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyNonTransferTypeTitle()
         case .governance:
-            typeString = R.string.localizable.proxyGovernanceTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyGovernanceTypeTitle()
         case .staking:
-            typeString = R.string.localizable.proxyStakingTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyStakingTypeTitle()
         case .nominationPools:
-            typeString = R.string.localizable.proxyNominationPoolsTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyNominationPoolsTypeTitle()
         case .identityJudgement:
-            typeString = R.string.localizable.proxyIdentityTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyIdentityTypeTitle()
         case .cancelProxy:
-            typeString = R.string.localizable.proxyCancelProxyTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyCancelProxyTypeTitle()
         case .auction:
-            typeString = R.string.localizable.proxyAuctionTypeTitle(
+            typeString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.proxyAuctionTypeTitle()
         case let .other(type):
             typeString = type
         }
 
-        return R.string.localizable.proxyUpdatesOtherTypeTitle(
-            typeString,
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.proxyUpdatesOtherTypeTitle(
+            typeString
         )
     }
 

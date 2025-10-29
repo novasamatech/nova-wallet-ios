@@ -29,9 +29,7 @@ extension DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryPr
         let title: String? = if tabs.count > 1 {
             [
                 "\(tabs.count)",
-                R.string.localizable.tabbarDappsTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.tabbarDappsTitle()
             ].joined(with: .space)
         } else {
             tabs.values.first?.name

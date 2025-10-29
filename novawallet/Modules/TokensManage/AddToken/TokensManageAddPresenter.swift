@@ -200,8 +200,8 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
         switch error {
         case .evmDetailsFetchFailed:
             let languages = localizationManager.selectedLocale.rLanguages
-            let title = R.string.localizable.addTokenContractMetadataErrorTitle(preferredLanguages: languages)
-            let message = R.string.localizable.addTokenContractMetadataErrorMessage(preferredLanguages: languages)
+            let title = R.string(preferredLanguages: languages).localizable.addTokenContractMetadataErrorTitle()
+            let message = R.string(preferredLanguages: languages).localizable.addTokenContractMetadataErrorMessage()
 
             wireframe.presentRequestStatus(
                 on: view,

@@ -44,7 +44,7 @@ final class CollatorStkYourCollatorsViewModelFactory {
             imageViewModel: nil
         )
 
-        let detailsName = R.string.localizable.commonStakedPrefix(preferredLanguages: locale.rLanguages)
+        let detailsName = R.string(preferredLanguages: locale.rLanguages).localizable.commonStakedPrefix()
 
         let stakedDecimal = Decimal.fromSubstrateAmount(staked, precision: assetPrecision) ?? 0
         let details = balanceViewModeFactory.amountFromValue(stakedDecimal).value(for: locale)

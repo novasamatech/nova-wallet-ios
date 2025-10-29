@@ -1,3 +1,4 @@
+import Foundation
 import Foundation_iOS
 
 struct NotificationsManagementParameters {
@@ -39,7 +40,12 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
 
         return [
             (.main(warning: warning), [
-                createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, isActive: true, locale: locale),
+                createSwitchViewModel(
+                    row: .enableNotifications,
+                    isOn: parameters.isNotificationsOn,
+                    isActive: true,
+                    locale: locale
+                ),
                 createViewModel(row: .wallets, count: parameters.wallets, isActive: true, locale: locale)
             ]),
             (.general, [
@@ -95,9 +101,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
             return nil
         }
 
-        return R.string.localizable.notificationsManagementWalletsWarning(
-            preferredLanguages: locale.rLanguages
-        )
+        return R.string(preferredLanguages: locale.rLanguages).localizable.notificationsManagementWalletsWarning()
     }
 
     private func createSwitchViewModel(
@@ -123,8 +127,8 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         isActive: Bool,
         locale: Locale
     ) -> NotificationsManagementCellModel {
-        let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
-            R.string.localizable.commonOff(preferredLanguages: locale.rLanguages)
+        let accessory = isOn ? R.string(preferredLanguages: locale.rLanguages).localizable.commonOn() :
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOff()
 
         return .init(
             row: row,

@@ -90,9 +90,9 @@ private extension MultisigOperationsViewController {
     }
 
     func setupLocalization() {
-        title = R.string.localizable.multisigTransactionsToSign(
+        title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.multisigTransactionsToSign()
         rootView.locale = selectedLocale
     }
 

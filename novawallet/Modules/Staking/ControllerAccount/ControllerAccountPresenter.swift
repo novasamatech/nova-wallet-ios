@@ -10,6 +10,8 @@ final class ControllerAccountPresenter {
     let assetInfo: AssetBalanceDisplayInfo
     let chain: ChainModel
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let localizationManager: LocalizationManagerProtocol
+
     weak var view: ControllerAccountViewProtocol?
 
     private let logger: LoggerProtocol?
@@ -32,6 +34,7 @@ final class ControllerAccountPresenter {
         assetInfo: AssetBalanceDisplayInfo,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.wireframe = wireframe
@@ -41,6 +44,7 @@ final class ControllerAccountPresenter {
         self.assetInfo = assetInfo
         self.dataValidatingFactory = dataValidatingFactory
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -84,7 +88,7 @@ final class ControllerAccountPresenter {
     }
 
     private func proceedWithStash() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFeeIfNeeded()
@@ -101,7 +105,7 @@ final class ControllerAccountPresenter {
     }
 
     private func proceedWithChoosenAccount() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFeeIfNeeded()
@@ -146,9 +150,7 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
         if !operatableAccounts.isEmpty {
             let context = PrimitiveContextWrapper(value: operatableAccounts)
             let title = LocalizableResource<String> { locale in
-                R.string.localizable.stakingControllerSelectTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingControllerSelectTitle()
             }
 
             wireframe.presentAccountSelection(
@@ -173,7 +175,7 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
             from: view,
             address: address,
             chain: chain,
-            locale: view.localizationManager?.selectedLocale ?? .current
+            locale: localizationManager.selectedLocale
         )
     }
 

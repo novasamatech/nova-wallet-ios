@@ -234,7 +234,7 @@ extension ReferendumDetailsPresenter {
         ).value(for: selectedLocale)
 
         let viewModel: RequestedAmountRow.Model = .init(
-            title: R.string.localizable.commonRequestedAmount(preferredLanguages: selectedLocale.rLanguages),
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonRequestedAmount(),
             amount: .init(
                 topValue: balanceViewModel.amount,
                 bottomValue: balanceViewModel.price
@@ -378,7 +378,7 @@ extension ReferendumDetailsPresenter {
                 kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
             ),
             time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
-            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govDetailsVotingStatus()
         )
     }
 
@@ -387,9 +387,9 @@ extension ReferendumDetailsPresenter {
 
         if referendum.canVote, votingAvailable {
             if accountVotes != nil {
-                button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
+                button = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govRevote()
             } else {
-                button = R.string.localizable.govVote(preferredLanguages: selectedLocale.rLanguages)
+                button = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govVote()
             }
         } else {
             button = nil
@@ -447,10 +447,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             return
         }
 
-        let addAccountAskMessage = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let addAccountAskMessage = R.string(preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonChainCrowdloanAccountMissingMessage(chain.name)
 
         let handlers = createAccountValidationHandlers()
 

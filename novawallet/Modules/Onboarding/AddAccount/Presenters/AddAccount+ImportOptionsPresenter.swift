@@ -26,12 +26,12 @@ extension AddAccount {
                                 backgroundImage: R.image.bgMnemonicImport()!.resizableCenterImage(),
                                 mainImage: R.image.iconMnemonicImportRight()!,
                                 mainImagePosition: .right,
-                                title: R.string.localizable.commonPassphrase(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
-                                subtitle: R.string.localizable.passphraseImportDescription(
+                                ).localizable.commonPassphrase(),
+                                subtitle: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.passphraseImportDescription(),
                                 onAction: { [weak self] in
                                     self?.wireframe.showPassphraseImport(from: self?.view)
                                 }
@@ -42,12 +42,12 @@ extension AddAccount {
                                 backgroundImage: R.image.bgHardwareWalletImport()!.resizableCenterImage(),
                                 mainImage: R.image.iconHardwareWalletImport()!,
                                 mainImagePosition: .center,
-                                title: R.string.localizable.commonHardwareWallet(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
-                                subtitle: R.string.localizable.hardwareWalletImportDescription(
+                                ).localizable.commonHardwareWallet(),
+                                subtitle: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.hardwareWalletImportDescription(),
                                 onAction: { [weak self] in
                                     guard let self else {
                                         return
@@ -64,12 +64,12 @@ extension AddAccount {
                                 backgroundImage: R.image.bgTrustWalletImport()!.resizableCenterImage(),
                                 mainImage: R.image.iconTrustWalletImport()!,
                                 mainImagePosition: .center,
-                                title: R.string.localizable.commonTrustWallet(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
-                                subtitle: R.string.localizable.trustWalletImportDescription(
+                                ).localizable.commonTrustWallet(),
+                                subtitle: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.trustWalletImportDescription(),
                                 onAction: { [weak self] in
                                     self?.wireframe.showTrustWalletImport(from: self?.view)
                                 }
@@ -80,12 +80,12 @@ extension AddAccount {
                                 backgroundImage: R.image.bgWatchOnlyImport()!.resizableCenterImage(),
                                 mainImage: R.image.iconWatchOnlyImport()!,
                                 mainImagePosition: .center,
-                                title: R.string.localizable.commonWatchOnly(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
-                                subtitle: R.string.localizable.createWatchOnlyDetails(
+                                ).localizable.commonWatchOnly(),
+                                subtitle: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.createWatchOnlyDetails(),
                                 onAction: { [weak self] in
                                     self?.wireframe.showWatchOnlyImport(from: self?.view)
                                 }
@@ -96,9 +96,9 @@ extension AddAccount {
                         WalletImportOptionViewModel.RowItem.secondary(
                             .init(
                                 image: R.image.iconSeed()!,
-                                title: R.string.localizable.importRawSeed(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.importRawSeed(),
                                 onAction: { [weak self] in
                                     self?.wireframe.showSeedImport(from: self?.view)
                                 }
@@ -107,9 +107,9 @@ extension AddAccount {
                         WalletImportOptionViewModel.RowItem.secondary(
                             .init(
                                 image: R.image.iconRestoreJson()!,
-                                title: R.string.localizable.importRecoveryJson(
+                                title: R.string(
                                     preferredLanguages: selectedLocale.rLanguages
-                                ),
+                                ).localizable.importRecoveryJson(),
                                 onAction: { [weak self] in
                                     self?.wireframe.showRestoreJsonImport(from: self?.view)
                                 }

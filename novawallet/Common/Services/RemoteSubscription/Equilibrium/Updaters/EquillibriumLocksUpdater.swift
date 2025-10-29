@@ -1,4 +1,5 @@
 import Operation_iOS
+import Foundation
 
 protocol EquillibriumLocksUpdaterProtocol {
     func handle(value: Data?, blockHash: Data?)

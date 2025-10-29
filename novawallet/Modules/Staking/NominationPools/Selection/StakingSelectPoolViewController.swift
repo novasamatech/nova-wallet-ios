@@ -44,11 +44,11 @@ final class StakingSelectPoolViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingSelectPoolTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectPoolTitle()
 
-        let buttonTitle = R.string.localizable.stakingSelectValidatorsRecommendedButtonTitle(
+        let buttonTitle = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.stakingSelectValidatorsRecommendedButtonTitle()
 
         rootView.recommendedButton.imageWithTitleView?.title = buttonTitle
     }
@@ -152,11 +152,10 @@ extension StakingSelectPoolViewController: UITableViewDelegate {
             return nil
         }
         let header: StakingSelectPoolListHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let title = R.string.localizable.stakingSelectPoolCount(
-            viewModels.count,
+        let title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
-        let details = R.string.localizable.stakingSelectPoolMembers(preferredLanguages: selectedLocale.rLanguages)
+        ).localizable.stakingSelectPoolCount(viewModels.count)
+        let details = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingSelectPoolMembers()
         header.bind(
             title: title,
             details: details

@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class BondMoreConfirmTests: XCTestCase {
-
     func testBondMoreConfirmationSuccess() throws {
         // given
 
@@ -22,24 +21,22 @@ class BondMoreConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveAmount(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
 
-            when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+            when(stub.didReceiveConfirmation(viewModel: any())).thenDoNothing()
 
-            when(stub).localizationManager.get.then { nil }
+            when(stub.didStartLoading()).thenDoNothing()
 
-            when(stub).didStartLoading().thenDoNothing()
-
-            when(stub).didStopLoading().thenDoNothing()
+            when(stub.didStopLoading()).thenDoNothing()
         }
 
         stub(wireframe) { stub in
-            when(stub).presentExtrinsicSubmission(
+            when(stub.presentExtrinsicSubmission(
                 from: any(),
                 params: any()
-            ).then { _ in
+            )).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -98,7 +95,7 @@ class BondMoreConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
-        
+
         let runtimeProvider = MockRuntimeProviderProtocol().applyDefault(for: KnowChainId.westend)
 
         let interactor = StakingBondMoreConfirmationInteractor(
@@ -132,7 +129,8 @@ class BondMoreConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            chain: chainAsset.chain
+            chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -145,7 +143,7 @@ class BondMoreConfirmTests: XCTestCase {
         let confirmViewModelExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+            when(stub.didReceiveAmount(viewModel: any())).then { viewModel in
                 let balance = viewModel.value(for: Locale.current).amount
 
                 if !balance.isEmpty {
@@ -153,13 +151,13 @@ class BondMoreConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceiveFee(viewModel: any()).then { viewModel in
+            when(stub.didReceiveFee(viewModel: any())).then { viewModel in
                 if let fee = viewModel?.value(for: Locale.current).amount, !fee.isEmpty {
                     feeExpectation.fulfill()
                 }
             }
 
-            when(stub).didReceiveConfirmation(viewModel: any()).then { viewModel in
+            when(stub.didReceiveConfirmation(viewModel: any())).then { _ in
                 confirmViewModelExpectation.fulfill()
             }
         }
@@ -183,5 +181,4 @@ class BondMoreConfirmTests: XCTestCase {
 
         return presenter
     }
-
 }

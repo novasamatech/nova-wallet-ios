@@ -119,9 +119,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         priceData: PriceData?,
         locale: Locale
     ) -> YourContributionsView.Model {
-        let title = R.string.localizable.crowdloanYouContributionsTotal(
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanYouContributionsTotal()
         let balance = balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: chainAsset.asset,
             amount: amount,
@@ -216,11 +214,8 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let iconViewModel = createIconViewModel(model: crowdloan, displayInfo: displayInfo, chainAsset: chainAsset)
 
-        let title: String = R.string.localizable.crowdloanCustomContribFormat(
-            titlePrefix,
-            externalContribution.source ?? "",
-            preferredLanguages: locale.rLanguages
-        )
+        let title: String = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.crowdloanCustomContribFormat(titlePrefix, externalContribution.source ?? "")
 
         let viewModel = CrowdloanContributionViewModel(
             index: index,

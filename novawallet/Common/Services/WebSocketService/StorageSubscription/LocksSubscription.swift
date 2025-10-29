@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 
 final class OrmLocksSubscription: LocksSubscription {

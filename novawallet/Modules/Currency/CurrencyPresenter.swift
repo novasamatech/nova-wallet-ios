@@ -52,15 +52,15 @@ final class CurrencyPresenter {
 
         return [
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryCryptocurrencies(preferredLanguages: languages),
+                title: R.string(preferredLanguages: languages).localizable.currencyCategoryCryptocurrencies(),
                 cells: cryptocurrencyModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryPopularFiat(preferredLanguages: languages),
+                title: R.string(preferredLanguages: languages).localizable.currencyCategoryPopularFiat(),
                 cells: popularFiatModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryFiat(preferredLanguages: languages),
+                title: R.string(preferredLanguages: languages).localizable.currencyCategoryFiat(),
                 cells: fiatModels
             )
         ].filter { !$0.cells.isEmpty }

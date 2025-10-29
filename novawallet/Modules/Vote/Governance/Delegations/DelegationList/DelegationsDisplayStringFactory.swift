@@ -1,3 +1,4 @@
+import Foundation
 import BigInt
 
 protocol DelegationsDisplayStringFactoryProtocol {
@@ -20,9 +21,10 @@ final class DelegationsDisplayStringFactory: DelegationsDisplayStringFactoryProt
     }
 
     func createVotesDetailsInMultipleTracks(count: Int, locale: Locale) -> String? {
-        R.string.localizable.delegationsListMultipleTracks(
-            "\(count)",
+        R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.delegationsListMultipleTracks(
+            "\(count)"
         )
     }
 

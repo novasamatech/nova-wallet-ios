@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import web3swift
-import Core
+import Web3Core
 
 extension EvmTransactionBuilderProtocol {
     func erc20Transfer(

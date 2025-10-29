@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 class NftSyncIntegrationTests: XCTestCase {
-
     func testUniquesSync() {
         let address = "Hn7GWG6eevwpYCJhG2SAWXo2H2PoMiMk4uPPS5pVtcE8Miz"
 
@@ -49,7 +48,7 @@ class NftSyncIntegrationTests: XCTestCase {
 
             var chains: [ChainModel] = []
 
-            let chainsExpectation: XCTestExpectation = XCTestExpectation()
+            let chainsExpectation = XCTestExpectation()
 
             chainRegistry.chainsSubscribe(self, runningInQueue: .global()) { changes in
                 let newChains: [ChainModel] = changes.allChangedItems()
@@ -100,7 +99,8 @@ class NftSyncIntegrationTests: XCTestCase {
                 failing: { error in
                     XCTFail("Unexpected error \(error)")
                     nftsExpectation.fulfill()
-                })
+                }
+            )
 
             // then
 

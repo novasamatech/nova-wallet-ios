@@ -15,12 +15,13 @@ extension BondedState {
     }
 
     private func createInactiveStatus(locale: Locale?) -> AlertPresentableViewModel {
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusAlertInactiveTitle(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertInactiveTitle()
         let message: String
 
-        message = R.string.localizable.stakingBondedInactive(preferredLanguages: locale?.rLanguages)
+        message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingBondedInactive()
 
         return AlertPresentableViewModel(
             title: title,

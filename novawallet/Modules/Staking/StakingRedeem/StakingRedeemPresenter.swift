@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingRedeemPresenter {
@@ -11,6 +12,7 @@ final class StakingRedeemPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
     let chain: ChainModel
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var stakingLedger: Staking.Ledger?
@@ -30,6 +32,7 @@ final class StakingRedeemPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -39,6 +42,7 @@ final class StakingRedeemPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -108,7 +112,7 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
     }
 
     func confirm() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
         DataValidationRunner(validators: [
             dataValidatingFactory.hasRedeemable(
                 stakingLedger: stakingLedger,
@@ -141,7 +145,7 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
     func selectAccount() {
         guard let view = view, let address = stashItem?.controller else { return }
 
-        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         wireframe.presentAccountOptions(
             from: view,
@@ -266,14 +270,14 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
                 from: view,
                 sender: model.sender,
                 completionAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale
+                locale: localizationManager.selectedLocale
             )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,
                 closeAction: .dismiss,
-                locale: view.localizationManager?.selectedLocale,
+                locale: localizationManager.selectedLocale,
                 completionClosure: nil
             )
         }

@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "Sắp xếp theo:";
 "staking.recommended.hint3.addition" = "với ít nhất một liên hệ danh tính";
 "staking.validator.total.stake.token" = "Tổng cộng Staked (%@)";
-"staking.validator.apy.percent" = "Phần thưởng ước tính (% APY)";
 "staking.pending.rewards" = "Phần thưởng chờ xử lý";
 "staking.rewards.destination.title" = "Đích đến phần thưởng";
 "staking.your.oversubscribed.message" = "Token của bạn được phân bổ cho các validator đã vượt quá hạn mức. Bạn sẽ không nhận được phần thưởng trong kỷ nguyên này.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Các token trong stake tạo ra phần thưởng mỗi vòng (%@)";
 "common.parastk.collators.count" = "Người soạn thảo: %@";
 "parastk.collators.filter.own.stake" = "Stake riêng của người soạn thảo";
-"parastk.collators.filter.rewards" = "Phần thưởng ước tính (% APR)";
 "common.parastk.delegators" = "Người ủy nhiệm";
 "parastk.collator.info" = "Thông tin người soạn thảo";
 "parachain.staking.waiting.next.round.format" = "đang chờ đợi vòng tiếp theo (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "Staking %@ đang hoạt động trên %@ bắt đầu từ %@";
 "ahm.info.in.progress.title" = "Bắt đầu %@ số dư %@ của bạn, Staking và Governance trị đang ở %@. Những tính năng này có thể không khả dụng trong tối đa 24 giờ.";
 "common.rewards" = "Phần thưởng";
+"staking.validator.apy.percent" = "Phần thưởng ước tính (%% APY)";
+"parastk.collators.filter.rewards" = "Phần thưởng ước tính (%% APR)";

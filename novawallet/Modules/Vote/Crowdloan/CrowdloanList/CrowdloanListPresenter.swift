@@ -271,10 +271,8 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
                 return
             }
 
-            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-                chain.name,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            let message = R.string(preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonChainCrowdloanAccountMissingMessage(chain.name)
 
             wireframe.presentAddAccount(
                 from: view,

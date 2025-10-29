@@ -2,6 +2,7 @@ import Keystore_iOS
 import Operation_iOS
 import BigInt
 import SubstrateSdk
+import Foundation
 
 final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetching,
     StakingDurationFetching {

@@ -39,12 +39,12 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = R.string.localizable.ledgerAccountConfirmTitle(
+        rootView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.ledgerAccountConfirmTitle()
 
         rootView.loadMoreButton.setTitle(
-            R.string.localizable.commonLoadMoreAccounts(preferredLanguages: selectedLocale.rLanguages)
+            R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLoadMoreAccounts()
         )
     }
 

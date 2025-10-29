@@ -63,26 +63,26 @@ final class GovernanceDelegateSetupViewController: UIViewController, ViewHolder 
 
         title = delegateTitle.value(for: selectedLocale)
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+        rootView.amountView.titleView.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.walletSendAmountTitle()
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
+        rootView.amountView.detailsTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonAvailablePrefix()
 
-        rootView.convictionView.titleLabel.text = R.string.localizable.govVoteConvictionTitle(
+        rootView.convictionView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.govVoteConvictionTitle()
 
-        rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
-        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(
+        rootView.lockAmountTitleLabel.text = R.string(preferredLanguages: languages).localizable.commonGovLock()
+        rootView.undelegatingPeriodTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.govUndelegatingPeriod()
 
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.proceedButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonContinue()
 
         setupAmountInputAccessoryView(for: selectedLocale)
     }

@@ -26,7 +26,7 @@ class ConnectionPoolTests: XCTestCase {
 
             let chainModels: [ChainModel] = ChainModelGenerator.generate(count: 10)
 
-            let connections: [JSONRPCEngine] = try chainModels.reduce([]) { (allConnections, chain) in
+            let connections: [JSONRPCEngine] = try chainModels.reduce([]) { allConnections, chain in
                 let connection = try connectionPool.setupConnection(for: chain)
                 return allConnections + [connection]
             }
@@ -34,7 +34,7 @@ class ConnectionPoolTests: XCTestCase {
             // then
 
             let actualChainIds = Set(connectionPool.connections.keys)
-            let expectedChainIds = Set(chainModels.map { $0.chainId })
+            let expectedChainIds = Set(chainModels.map(\.chainId))
 
             XCTAssertEqual(expectedChainIds, actualChainIds)
             XCTAssertEqual(connections.count, expectedChainIds.count)
@@ -60,7 +60,7 @@ class ConnectionPoolTests: XCTestCase {
 
                     stub.urls.get.thenReturn(urls)
                 }
-                
+
                 stub(mockConnection.stateReporting) { stub in
                     stub.state.get.thenReturn(.notConnected(url: nil))
                 }
@@ -89,17 +89,17 @@ class ConnectionPoolTests: XCTestCase {
 
             let newConnections: [MockConnection] = try chainModels.reduce(
                 []
-            ) { (allConnections, chain) in
+            ) { allConnections, chain in
                 if let connection = try connectionPool.setupConnection(for: chain) as? MockConnection {
                     return allConnections + [connection]
                 } else {
                     return allConnections
                 }
             }
-            
+
             let updatedConnections: [MockConnection] = try chainModels.reduce(
                 []
-            ) { (allConnections, chain) in
+            ) { allConnections, chain in
                 if let connection = try connectionPool.setupConnection(for: chain) as? MockConnection {
                     return allConnections + [connection]
                 } else {
@@ -110,12 +110,12 @@ class ConnectionPoolTests: XCTestCase {
             // then
 
             let actualChainIds = Set(connectionPool.connections.keys)
-            let expectedChainIds = Set(chainModels.map { $0.chainId })
+            let expectedChainIds = Set(chainModels.map(\.chainId))
 
             XCTAssertEqual(expectedChainIds, actualChainIds)
             XCTAssertEqual(newConnections.count, updatedConnections.count)
 
-            for index in 0..<newConnections.count {
+            for index in 0 ..< newConnections.count {
                 XCTAssertTrue(newConnections[index] === updatedConnections[index])
             }
         } catch {

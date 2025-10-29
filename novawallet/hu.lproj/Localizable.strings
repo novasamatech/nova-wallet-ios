@@ -424,7 +424,6 @@
 "common.filter.sort.header" = "Rendezés:";
 "staking.recommended.hint3.addition" = "legalább egy kapcsolattartóval";
 "staking.validator.total.stake.token" = "Teljes stake (%@)";
-"staking.validator.apy.percent" = "Becsült jutalom (% APY)";
 "staking.pending.rewards" = "Függőben lévő jutalmak";
 "staking.rewards.destination.title" = "Jutalmak érkezési helye";
 "staking.your.oversubscribed.message" = "Tokenjeid túljelentkezett validátorhoz lettek szétosztva. Ebben a korszakban nem fogsz jutalmat kapni.";
@@ -757,7 +756,6 @@
 "parachain.staking.hint.rewards.format" = "Stake-elt tokenek minden körben jutalmat generálnak (%@)";
 "common.parastk.collators.count" = "Kollátorok: %@";
 "parastk.collators.filter.own.stake" = "Kollátor saját stake-je";
-"parastk.collators.filter.rewards" = "Becsült jutalmak (% APR)";
 "common.parastk.delegators" = "Delegálók";
 "parastk.collator.info" = "Kollátor információ";
 "parachain.staking.waiting.next.round.format" = "várakozás a következő körre (%@)";
@@ -1968,3 +1966,5 @@
 "ahm.info.alert.staking.details.message" = "A(z) %@ staking él a(z) %@-n, kezdve %@";
 "ahm.info.in.progress.title" = "%@ kezdő %@ egyenleggel, a Staking és a Governance %@ vannak. Ezek a funkciók akár 24 órán át nem biztos, hogy elérhetők.";
 "common.rewards" = "Jutalmak";
+"staking.validator.apy.percent" = "Becsült jutalom (%% APY)";
+"parastk.collators.filter.rewards" = "Becsült jutalmak (%% APR)";

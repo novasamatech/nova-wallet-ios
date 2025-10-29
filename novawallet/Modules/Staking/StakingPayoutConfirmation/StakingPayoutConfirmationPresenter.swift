@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import BigInt
 
 final class StakingPayoutConfirmationPresenter {
@@ -17,6 +18,7 @@ final class StakingPayoutConfirmationPresenter {
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let assetInfo: AssetBalanceDisplayInfo
     private let chain: ChainModel
+    private let localizationManager: LocalizationManagerProtocol
     private let logger: LoggerProtocol?
 
     init(
@@ -25,6 +27,7 @@ final class StakingPayoutConfirmationPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -32,6 +35,7 @@ final class StakingPayoutConfirmationPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -64,7 +68,7 @@ final class StakingPayoutConfirmationPresenter {
     }
 
     private func handle(error: Error) {
-        let locale = view?.localizationManager?.selectedLocale
+        let locale = localizationManager.selectedLocale
 
         wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
             error,
@@ -84,7 +88,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
     }
 
     func proceed() {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         let feeDecimal = fee.map { $0.amount.decimal(assetInfo: assetInfo) }
 
@@ -119,7 +123,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
             return
         }
 
-        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         wireframe.presentAccountOptions(
             from: view,
@@ -187,7 +191,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
             from: view,
             sender: sender,
             completionAction: .dismiss,
-            locale: view?.selectedLocale
+            locale: localizationManager.selectedLocale
         )
     }
 

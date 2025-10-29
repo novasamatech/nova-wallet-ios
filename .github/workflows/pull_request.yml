@@ -11,6 +11,7 @@ env:
   scheme: default
   platform: iOS Simulator
   device: iPhone 16
+  RUN_IN_CI: true
 
 jobs:
   build:
@@ -28,17 +29,19 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
+      - name: Cache Mint packages
         uses: actions/cache@v4
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          path: ${{ github.workspace }}/mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('**/CIMintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap --mintfile CIMintfile
 
       - name: Set Default Scheme
         run: |
@@ -55,7 +58,7 @@ jobs:
 
           echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
-      - name: Build
+      - name: Build app
         env:
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
           MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
@@ -68,19 +71,21 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
+          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
+          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -skipPackagePluginValidation
 
-      - name: Test
+      - name: Run tests
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -skipPackagePluginValidation

@@ -1,5 +1,6 @@
 import Foundation
 import DGCharts
+import UIKit
 
 protocol AssetPriceChartViewDataSourceProtocol {
     func createChartData(

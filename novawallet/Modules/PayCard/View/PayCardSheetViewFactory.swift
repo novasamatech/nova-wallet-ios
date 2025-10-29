@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UIKit_iOS
 import Foundation_iOS
 
@@ -16,26 +17,20 @@ enum PayCardSheetViewFactory {
         let title = LocalizableResource { locale in
             switch mode {
             case .issue:
-                return R.string.localizable.cardOpenPendingSheetTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.cardOpenPendingSheetTitle()
             case .topup:
-                return R.string.localizable.cardTopupPendingSheetTitle(
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.cardTopupPendingSheetTitle()
             }
         }
 
         let message = LocalizableResource { locale in
-            let minutesString = R.string.localizable.commonMinutesFormat(
-                format: totalTime.minutesFromSeconds,
+            let minutesString = R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.commonMinutesFormat(format: totalTime.minutesFromSeconds)
 
-            return R.string.localizable.cardOpenPendingSheetMessage(
-                minutesString,
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.cardOpenPendingSheetMessage(minutesString)
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerLabel.ContentViewModel>(

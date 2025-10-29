@@ -25,7 +25,7 @@ protocol ValidatorInfoProtocol {
 
 // MARK: - View
 
-protocol ValidatorInfoViewProtocol: ControllerBackedProtocol, Localizable {
+protocol ValidatorInfoViewProtocol: ControllerBackedProtocol {
     func didRecieve(state: ValidatorInfoState)
 }
 

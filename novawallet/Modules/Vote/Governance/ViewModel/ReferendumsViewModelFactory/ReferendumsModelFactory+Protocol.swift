@@ -73,6 +73,8 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         params: ReferendumsModelFactoryParams,
         genericParams: ViewModelFactoryGenericParams
     ) -> [ReferendumsSection] {
+        let languages = genericParams.locale.rLanguages
+
         let referendumsCellViewModels = createReferendumsCellViewModels(
             params: params,
             genericParams: genericParams
@@ -93,7 +95,9 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         var sections: [ReferendumsSection] = []
 
         if !secureCellModels.active.isEmpty {
-            let title = Strings.governanceReferendumsActive(preferredLanguages: genericParams.locale.rLanguages)
+            let title = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsActive()
             let countText = "\(secureCellModels.active.count)"
             let viewModel = ReferendumsCellsSectionViewModel(
                 titleText: .loaded(value: title),
@@ -103,7 +107,9 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             sections.append(.active(viewModel))
         }
         if !secureCellModels.completed.isEmpty {
-            let title = Strings.commonCompleted(preferredLanguages: genericParams.locale.rLanguages)
+            let title = R.string(
+                preferredLanguages: languages
+            ).localizable.commonCompleted()
             let countText = "\(secureCellModels.completed.count)"
             let viewModel = ReferendumsCellsSectionViewModel(
                 titleText: .loaded(value: title),
@@ -190,6 +196,8 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         params: StatusParams,
         genericParams: ViewModelFactoryGenericParams
     ) -> ReferendumView.Model {
+        let languages = genericParams.locale.rLanguages
+
         let status: ReferendumInfoView.Status
         switch state {
         case let .preparing(model):
@@ -213,29 +221,29 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
                 locale: genericParams.locale
             )
         case .rejected:
-            let statusName = Strings.governanceReferendumsStatusRejected(
-                preferredLanguages: genericParams.locale.rLanguages
-            )
+            let statusName = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsStatusRejected()
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .cancelled:
-            let statusName = Strings.governanceReferendumsStatusCancelled(
-                preferredLanguages: genericParams.locale.rLanguages
-            )
+            let statusName = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsStatusCancelled()
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .timedOut:
-            let statusName = Strings.governanceReferendumsStatusTimedOut(
-                preferredLanguages: genericParams.locale.rLanguages
-            )
+            let statusName = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsStatusTimedOut()
             status = .init(name: statusName.uppercased(), kind: .neutral)
         case .killed:
-            let statusName = Strings.governanceReferendumsStatusKilled(
-                preferredLanguages: genericParams.locale.rLanguages
-            )
+            let statusName = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsStatusKilled()
             status = .init(name: statusName.uppercased(), kind: .negative)
         case .executed:
-            let statusName = Strings.governanceReferendumsStatusExecuted(
-                preferredLanguages: genericParams.locale.rLanguages
-            )
+            let statusName = R.string(
+                preferredLanguages: languages
+            ).localizable.governanceReferendumsStatusExecuted()
             status = .init(name: statusName.uppercased(), kind: .positive)
         }
 

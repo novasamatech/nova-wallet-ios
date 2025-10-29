@@ -7,7 +7,7 @@ final class MockCloudBackupServiceFactory {
     let availablityService: CloudBackupAvailabilityServiceProtocol
     let operationFactory: CloudBackupOperationFactoryProtocol
     let fileManager: CloudBackupFileManaging
-    
+
     init(
         availablityService: CloudBackupAvailabilityServiceProtocol = MockCloudBackupAvailabilityService(),
         operationFactory: CloudBackupOperationFactoryProtocol = MockCloudBackupOperationFactory(),
@@ -21,33 +21,33 @@ final class MockCloudBackupServiceFactory {
 
 extension MockCloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
     func createAvailabilityService() -> CloudBackupAvailabilityServiceProtocol {
-       availablityService
+        availablityService
     }
-    
+
     func createOperationFactory() -> CloudBackupOperationFactoryProtocol {
         operationFactory
     }
-    
+
     func createSyncStatusMonitoring() -> CloudBackupSyncMonitoring {
         MockCloudBackupSyncMonitor()
     }
-    
+
     func createFileManager() -> CloudBackupFileManaging {
         fileManager
     }
-    
+
     func createCodingManager() -> CloudBackupCoding {
         CloudBackupCoder()
     }
-    
+
     func createCryptoManager() -> CloudBackupCryptoManagerProtocol {
         CloudBackupScryptSalsaCryptoManager()
     }
-    
+
     func createDiffCalculator() -> CloudBackupDiffCalculating {
         CloudBackupDiffCalculator(converter: CloudBackupFileModelConverter())
     }
-    
+
     func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting {
         CloudBackupSecretsExporter(
             walletConverter: CloudBackupFileModelConverter(),
@@ -56,7 +56,7 @@ extension MockCloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             keychain: keychain
         )
     }
-    
+
     func createSecretsImporter(to keychain: KeystoreProtocol) -> CloudBackupSecretsImporting {
         CloudBackupSecretsImporter(
             walletConverter: CloudBackupFileModelConverter(),

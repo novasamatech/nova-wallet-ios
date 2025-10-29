@@ -9,7 +9,7 @@ public final class MockKeychain: KeystoreProtocol {
     public init(rawStore: [String: Data]) {
         keystore = rawStore
     }
-    
+
     public func addKey(_ key: Data, with identifier: String) throws {
         keystore[identifier] = key
     }
@@ -27,7 +27,7 @@ public final class MockKeychain: KeystoreProtocol {
     }
 
     public func checkKey(for identifier: String) throws -> Bool {
-        return keystore[identifier] != nil
+        keystore[identifier] != nil
     }
 
     public func deleteKey(for identifier: String) throws {
@@ -37,24 +37,29 @@ public final class MockKeychain: KeystoreProtocol {
             throw KeystoreError.noKeyFound
         }
     }
-    
+
     public func getRawStore() -> [String: Data] {
         keystore
     }
 }
 
 extension MockKeychain: SecretStoreManagerProtocol {
-    public func loadSecret(for identifier: String,
-                    completionQueue: DispatchQueue,
-                    completionBlock: @escaping (SecretDataRepresentable?) -> Void) {
+    public func loadSecret(
+        for identifier: String,
+        completionQueue: DispatchQueue,
+        completionBlock: @escaping (SecretDataRepresentable?) -> Void
+    ) {
         completionQueue.async {
             completionBlock(self.keystore[identifier])
         }
     }
 
-    public func saveSecret(_ secret: SecretDataRepresentable,
-                    for identifier: String,
-                    completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void) {
+    public func saveSecret(
+        _ secret: SecretDataRepresentable,
+        for identifier: String,
+        completionQueue: DispatchQueue,
+        completionBlock: @escaping (Bool) -> Void
+    ) {
         keystore[identifier] = secret.asSecretData()
 
         completionQueue.async {
@@ -62,8 +67,11 @@ extension MockKeychain: SecretStoreManagerProtocol {
         }
     }
 
-    public func removeSecret(for identifier: String, completionQueue: DispatchQueue,
-                      completionBlock: @escaping (Bool) -> Void) {
+    public func removeSecret(
+        for identifier: String,
+        completionQueue: DispatchQueue,
+        completionBlock: @escaping (Bool) -> Void
+    ) {
         keystore[identifier] = nil
 
         completionQueue.async {
@@ -71,8 +79,11 @@ extension MockKeychain: SecretStoreManagerProtocol {
         }
     }
 
-    public func checkSecret(for identifier: String, completionQueue: DispatchQueue,
-                     completionBlock: @escaping (Bool) -> Void) {
+    public func checkSecret(
+        for identifier: String,
+        completionQueue: DispatchQueue,
+        completionBlock: @escaping (Bool) -> Void
+    ) {
         let exists = keystore[identifier] != nil
 
         completionQueue.async {
@@ -81,6 +92,6 @@ extension MockKeychain: SecretStoreManagerProtocol {
     }
 
     public func checkSecret(for identifier: String) -> Bool {
-        return keystore[identifier] != nil
+        keystore[identifier] != nil
     }
 }

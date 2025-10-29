@@ -1,3 +1,4 @@
+import UIKit
 import Foundation_iOS
 
 final class NotificationsManagementViewController: UIViewController, ViewHolder {
@@ -48,20 +49,19 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
     }
 
     private func setupLocalization() {
-        let rightBarButtonItemTitle = R.string.localizable.commonSave(
-            preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.title = R.string.localizable.settingsPushNotifications(
+        let rightBarButtonItemTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSave()
+        navigationItem.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.settingsPushNotifications()
         navigationItem.rightBarButtonItem?.title = rightBarButtonItemTitle
-        rootView.footerView.titleLabel.text = R.string.localizable.notificationsManagementPoweredBy(
+        rootView.footerView.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.notificationsManagementPoweredBy()
         rootView.tableView.reloadData()
     }
 
     private func setupNavigationItem() {
-        let title = R.string.localizable.commonSave(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSave()
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: title,
             style: .plain,

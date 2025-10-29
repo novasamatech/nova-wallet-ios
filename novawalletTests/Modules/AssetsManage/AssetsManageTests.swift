@@ -16,14 +16,14 @@ class AssetsManageTests: XCTestCase {
         settingsManager.hidesZeroBalances = true
 
         let storageFacade = SubstrateStorageTestFacade()
-        
+
         let mapper = ChainModelMapper()
         let repository: CoreDataRepository<ChainModel, CDChain> = storageFacade.createRepository(
             mapper: AnyCoreDataMapper(mapper)
         )
         let operationQueue = OperationQueue()
         let eventCenter = MockEventCenterProtocol()
-        
+
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
 
         let interactor = TokensManageInteractor(
@@ -34,12 +34,12 @@ class AssetsManageTests: XCTestCase {
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: storageFacade),
             operationQueue: operationQueue
         )
-        
+
         let viewModelFactory = TokensManageViewModelFactory(
-            quantityFormater: NumberFormatter.positiveQuantity.localizableResource(), 
+            quantityFormater: NumberFormatter.positiveQuantity.localizableResource(),
             assetIconViewModelFactory: AssetIconViewModelFactory()
         )
-        
+
         let presenter = TokensManagePresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -60,10 +60,10 @@ class AssetsManageTests: XCTestCase {
         stub(view) { stub in
             stub.didReceive(hidesZeroBalances: any()).then { hidesZeroBalances in
                 reeceivedFilter = hidesZeroBalances
-                
+
                 setupCompletion.fulfill()
             }
-            
+
             stub.didReceive(viewModels: any()).thenDoNothing()
         }
 
@@ -80,7 +80,7 @@ class AssetsManageTests: XCTestCase {
         let notificationExpectation = XCTestExpectation()
 
         stub(eventCenter) { stub in
-            stub.notify(with: any()).then { event in
+            stub.notify(with: any()).then { _ in
                 notificationExpectation.fulfill()
             }
         }

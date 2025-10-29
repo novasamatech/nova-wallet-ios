@@ -58,7 +58,7 @@ final class DAppAuthSettingsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.dappAuthorizedTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappAuthorizedTitle()
     }
 }
 
@@ -138,9 +138,7 @@ extension DAppAuthSettingsViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconEmptyHistory()
-        emptyView.title = R.string.localizable.dappAuthorizedEmpty(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.dappAuthorizedEmpty()
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView

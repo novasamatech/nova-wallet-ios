@@ -132,9 +132,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.walletHistoryTitle_v190(
-            preferredLanguages: languages
-        )
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.walletHistoryTitle_v190()
     }
 
     private func updateHeaderHeight(

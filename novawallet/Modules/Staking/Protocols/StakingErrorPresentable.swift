@@ -76,9 +76,9 @@ protocol StakingErrorPresentable: StakingBaseErrorPresentable {
 
 extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.stakingSetupAmountTooLow(value, preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupAmountTooLow(value)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.amountTooLow()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -88,10 +88,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         address: AccountAddress,
         locale: Locale?
     ) {
-        let message = R.string.localizable
-            .stakingAddController(address, preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingAddController(address)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -101,30 +101,30 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         address: AccountAddress,
         locale: Locale?
     ) {
-        let message = R.string.localizable
-            .stakingStashMissingMessage(address, preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingStashMissingMessage(address)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentUnbondingTooHigh(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable
-            .stakingRedeemNoTokensMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingRedeemNoTokensMessage()
+        let title = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.commonInsufficientBalance()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentRebondingTooHigh(from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable
-            .stakingRebondInsufficientBondings(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingRebondInsufficientBondings()
+        let title = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.commonInsufficientBalance()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -134,10 +134,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable
-            .commonConfirmationTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingWarningTinyPayout(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.commonConfirmationTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingWarningTinyPayout()
 
         presentWarning(
             for: title,
@@ -153,10 +153,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable
-            .commonConfirmationTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingControllerAccountZeroBalance(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.commonConfirmationTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingControllerAccountZeroBalance()
 
         presentWarning(
             for: title,
@@ -168,26 +168,26 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
     }
 
     func presentUnbondingLimitReached(from view: ControllerBackedProtocol?, locale: Locale?) {
-        let message = R.string.localizable.stakingUnbondingLimitReachedTitle(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingUnbondingLimitReachedTitle()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentNoRedeemables(from view: ControllerBackedProtocol?, locale: Locale?) {
-        let message = R.string.localizable
-            .stakingRedeemNoTokensMessage(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingRedeemNoTokensMessage()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentControllerIsAlreadyUsed(from view: ControllerBackedProtocol?, locale: Locale?) {
-        let message = R.string.localizable.stakingAccountIsUsedAsController(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingAccountIsUsedAsController()
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -197,10 +197,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable
-            .commonConfirmationTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingCustomDeselectWarning(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.commonConfirmationTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingCustomDeselectWarning()
 
         presentWarning(
             for: title,
@@ -216,15 +216,12 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         stakingType: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingMaxNominatorsReachedMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingMaxNominatorsReachedMessage()
 
-        let title = R.string.localizable.stakingIsNotAvailableTitle(
-            stakingType,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingIsNotAvailableTitle(
+            stakingType
         )
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -235,10 +232,9 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         minStake: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingMinStakeViolatedMessage(
-            minStake,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.amountTooLow()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingMinStakeViolatedMessage(
+            minStake
         )
 
         presentWarning(
@@ -257,18 +253,15 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         directRewardableToStake: String,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingLockedPoolViolationError(
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingLockedPoolViolationError(
             lockReason,
             availableToStake,
             directRewardableToStake,
-            lockReason,
-            preferredLanguages: locale?.rLanguages
+            lockReason
         )
 
-        let title = R.string.localizable.stakingLockedPoolViolationTitle(
-            preferredLanguages: locale?.rLanguages
-        )
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingLockedPoolViolationTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -279,13 +272,12 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         onClose: @escaping () -> Void,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingStartAlreadyHaveAnyStaking(
-            networkName,
-            preferredLanguages: locale?.rLanguages
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartAlreadyHaveAnyStaking(
+            networkName
         )
 
         let closeAction = AlertPresentableAction(
-            title: R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonClose(),
             handler: onClose
         )
 
@@ -303,14 +295,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         from view: ControllerBackedProtocol?,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingSetupConflictMessage(
-            preferredLanguages: locale?.rLanguages
-        )
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupConflictMessage()
 
-        let title = R.string.localizable.stakingSetupConflictTitle(
-            preferredLanguages: locale?.rLanguages
-        )
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSetupConflictTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }

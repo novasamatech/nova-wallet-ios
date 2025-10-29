@@ -70,28 +70,23 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
         title = localizableTitle.value(for: selectedLocale)
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
-            preferredLanguages: languages
-        )
+        rootView.walletCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonWallet()
 
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
-            preferredLanguages: languages
-        )
+        rootView.accountCell.titleLabel.text = R.string(preferredLanguages: languages).localizable.commonAccount()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonConfirm()
 
         rootView.actionButton.invalidateLayout()
 
-        rootView.validatorsCell.titleLabel.text = R.string.localizable.stakingSelectedValidatorsTitle(
+        rootView.validatorsCell.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.stakingSelectedValidatorsTitle()
 
-        rootView.rewardDestinationCell.titleLabel.text = R.string.localizable
-            .stakingRewardsDestinationTitle_v2_0_0(
-                preferredLanguages: languages
-            )
+        rootView.rewardDestinationCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingRewardsDestinationTitle_v2_0_0()
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
@@ -127,22 +122,25 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             rootView.removeRewardDestinationIfNeeded()
         }
 
-        rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
-            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
-            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? "",
+        rootView.validatorsCell.detailsLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingValidatorInfoNominators(
+            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
+            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
         )
     }
 
     private func applyRewardDestinationViewModel(_ viewModel: RewardDestinationTypeViewModel) {
         switch viewModel {
         case .restake:
-            rootView.rewardDestinationCell.detailsLabel.text = R.string.localizable
-                .stakingRestakeTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            rootView.rewardDestinationCell.detailsLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingRestakeTitle_v2_2_0()
             rootView.removePayoutAccountIfNeeded()
         case let .payout(details):
-            rootView.rewardDestinationCell.detailsLabel.text = R.string.localizable
-                .stakingPayoutTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            rootView.rewardDestinationCell.detailsLabel.text = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingPayoutTitle_v2_2_0()
             rootView.addPayoutAccountIfNeeded()
 
             rootView.payoutAccountCell?.addTarget(
@@ -152,9 +150,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             )
 
             rootView.payoutAccountCell?.titleLabel.text =
-                R.string.localizable.stakingRewardPayoutAccount(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
+                R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingRewardPayoutAccount()
 
             rootView.payoutAccountCell?.bind(viewModel: details.displayAddress().cellViewModel)
         }
@@ -220,7 +216,7 @@ extension SelectValidatorsConfirmViewController: SelectValidatorsConfirmViewProt
     }
 }
 
-extension SelectValidatorsConfirmViewController {
+extension SelectValidatorsConfirmViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             applyLocalization()

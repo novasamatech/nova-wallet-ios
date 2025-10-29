@@ -1,3 +1,4 @@
+import Foundation
 import Keystore_iOS
 
 enum SharedSettingsKey: String, CaseIterable {

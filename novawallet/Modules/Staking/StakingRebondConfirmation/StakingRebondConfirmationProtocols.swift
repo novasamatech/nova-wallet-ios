@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import BigInt
 
-protocol StakingRebondConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
+protocol StakingRebondConfirmationViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveConfirmation(viewModel: StakingRebondConfirmationViewModel)
     func didReceiveAmount(viewModel: LocalizableResource<BalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)

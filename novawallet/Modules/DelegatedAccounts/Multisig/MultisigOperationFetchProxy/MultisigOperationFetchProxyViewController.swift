@@ -38,9 +38,9 @@ final class MultisigOperationFetchProxyViewController: UIViewController, ViewHol
 
 private extension MultisigOperationFetchProxyViewController {
     func setupLocalization() {
-        rootView.loadingView.titleLabel.text = R.string.localizable.multisigOperationLoadingPlaceholderText(
+        rootView.loadingView.titleLabel.text = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
-        )
+        ).localizable.multisigOperationLoadingPlaceholderText()
     }
 }
 

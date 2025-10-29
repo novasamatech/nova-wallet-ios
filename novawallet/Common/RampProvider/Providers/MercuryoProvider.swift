@@ -96,7 +96,7 @@ private extension MercuryoProvider {
             type: .onRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.mercuryoBuyActionDescription()
             },
             urlFactory: urlFactory,
             displayURLString: displayURL,
@@ -131,7 +131,7 @@ private extension MercuryoProvider {
             type: .offRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.mercuryoSellActionDescription()
             },
             urlFactory: urlFactory,
             displayURLString: displayURL,

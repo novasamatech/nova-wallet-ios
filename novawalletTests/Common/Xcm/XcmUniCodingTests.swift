@@ -3,7 +3,6 @@ import XCTest
 import SubstrateSdk
 
 final class XcmUniCodingTests: XCTestCase {
-
     func testEncodeDecodeParachainAccountId32Location() throws {
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
@@ -25,7 +24,7 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeParachainAccountId20Location() throws {
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
@@ -47,7 +46,7 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeRelaychainAccountId32Location() throws {
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
@@ -68,7 +67,7 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeRelaychainAccountId20Location() throws {
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
@@ -89,7 +88,7 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeAssetFromAssets() throws {
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
@@ -110,11 +109,11 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeAssetFromOrml() throws {
         let generalKeyData = try! Data(hexString: "0x0080")
         let generalKey = XcmUni.GeneralKeyValue(data: generalKeyData)
-        
+
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
                 for: XcmUni.Versioned(
@@ -133,7 +132,7 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     func testEncodeDecodeMessage() throws {
         let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: 2000)
         let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: 2002)
@@ -212,7 +211,7 @@ final class XcmUniCodingTests: XCTestCase {
                 )
             )
         ]
-        
+
         for version in Xcm.Version.allCases {
             try performEncodeDecodeTest(
                 for: XcmUni.VersionedMessage(
@@ -222,13 +221,13 @@ final class XcmUniCodingTests: XCTestCase {
             )
         }
     }
-    
+
     private func performEncodeDecodeTest<T: Equatable & XcmUniCodable>(
         for versionedEntity: XcmUni.Versioned<T>
     ) throws {
         let encoded = try JSONEncoder().encode(versionedEntity)
         let decoded = try JSONDecoder().decode(XcmUni.Versioned<T>.self, from: encoded)
-        
+
         XCTAssertEqual(versionedEntity, decoded)
     }
 }

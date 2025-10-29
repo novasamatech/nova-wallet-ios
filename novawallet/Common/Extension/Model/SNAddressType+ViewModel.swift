@@ -1,5 +1,6 @@
 import Foundation
 import NovaCrypto
+import UIKit
 
 extension SNAddressType {
     func titleForLocale(_: Locale) -> String {

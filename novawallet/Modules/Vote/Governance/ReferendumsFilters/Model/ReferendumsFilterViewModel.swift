@@ -11,15 +11,15 @@ extension ReferendumsFilter {
         switch self {
         case .all:
             return .init {
-                R.string.localizable.governanceReferendumsFilterAll(preferredLanguages: $0.rLanguages)
+                R.string(preferredLanguages: $0.rLanguages).localizable.governanceReferendumsFilterAll()
             }
         case .notVoted:
             return .init {
-                R.string.localizable.governanceReferendumsFilterNotVoted(preferredLanguages: $0.rLanguages)
+                R.string(preferredLanguages: $0.rLanguages).localizable.governanceReferendumsFilterNotVoted()
             }
         case .voted:
             return .init {
-                R.string.localizable.governanceReferendumsFilterVoted(preferredLanguages: $0.rLanguages)
+                R.string(preferredLanguages: $0.rLanguages).localizable.governanceReferendumsFilterVoted()
             }
         }
     }

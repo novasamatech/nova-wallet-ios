@@ -78,16 +78,17 @@ private extension RampFlowManaging {
         locale: Locale,
         delegate: RampDelegate
     ) {
-        let title = R.string.localizable.commonAlertExternalLinkDisclaimerTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.commonAlertExternalLinkDisclaimerMessage(
-            action.displayURLString,
+        let title = R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.commonAlertExternalLinkDisclaimerTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonAlertExternalLinkDisclaimerMessage(
+            action.displayURLString
         )
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale.rLanguages)
-        let continueTitle = R.string.localizable
-            .commonContinue(preferredLanguages: locale.rLanguages)
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
+        let continueTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
         let continueAction = AlertPresentableAction(title: continueTitle) {
             wireframe?.showRampAction(
                 from: view,

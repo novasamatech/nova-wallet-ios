@@ -4,7 +4,7 @@ import Operation_iOS
 
 extension WalletStorageCleanerFactory {
     static func createTestCleaner(
-        operationQueue: OperationQueue,
+        operationQueue _: OperationQueue,
         storageFacade: UserDataStorageTestFacade
     ) -> WalletStorageCleaning {
         let dAppSettingsCleaner = createDAppSettingsCleaner(storageFacade: storageFacade)
@@ -17,7 +17,7 @@ extension WalletStorageCleanerFactory {
 
         return mainCleaner
     }
-    
+
     private static func createDAppSettingsCleaner(storageFacade: StorageFacadeProtocol) -> WalletStorageCleaning {
         let mapper = DAppSettingsMapper()
 
@@ -27,11 +27,11 @@ extension WalletStorageCleanerFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
         let authorizedDAppRepository = AnyDataProviderRepository(repository)
-        
+
         let dappSettingsCleaner = RemovedWalletDAppSettingsCleaner(
             authorizedDAppRepository: authorizedDAppRepository
         )
-        
+
         return dappSettingsCleaner
     }
 }

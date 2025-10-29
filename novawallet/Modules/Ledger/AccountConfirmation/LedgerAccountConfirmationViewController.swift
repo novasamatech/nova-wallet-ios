@@ -43,13 +43,13 @@ final class LedgerAccountConfirmationViewController: UIViewController, ViewHolde
     }
 
     private func setupLocalization() {
-        rootView.headerView.valueTop.text = R.string.localizable.ledgerAccountConfirmTitle(
+        rootView.headerView.valueTop.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.ledgerAccountConfirmTitle()
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonLoadMoreAccounts(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonLoadMoreAccounts()
     }
 
     @objc private func actionLoadNext() {

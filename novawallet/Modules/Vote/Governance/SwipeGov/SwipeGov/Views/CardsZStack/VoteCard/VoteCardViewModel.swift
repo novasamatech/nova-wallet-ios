@@ -248,9 +248,10 @@ private extension VoteCardViewModel {
         if let summary, !summary.isEmpty {
             summary
         } else {
-            R.string.localizable.govReferendumTitleFallback(
-                "\(id)",
+            R.string(
                 preferredLanguages: locale.rLanguages
+            ).localizable.govReferendumTitleFallback(
+                "\(id)"
             )
         }
     }

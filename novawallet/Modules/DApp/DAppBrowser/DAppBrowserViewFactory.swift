@@ -95,7 +95,8 @@ struct DAppBrowserViewFactory {
 
         let mapper = AnyCoreDataMapper(AppAttestBrowserSettingsMapper())
 
-        let coreDataRepository: CoreDataRepository<AppAttestBrowserSettings, CDAppAttestBrowserSettings> = storageFacade.createRepository(mapper: mapper)
+        let coreDataRepository: CoreDataRepository<AppAttestBrowserSettings, CDAppAttestBrowserSettings>
+        coreDataRepository = storageFacade.createRepository(mapper: mapper)
 
         let attestationProvider = DAppAttestationProvider(
             appAttestService: appAttestService,

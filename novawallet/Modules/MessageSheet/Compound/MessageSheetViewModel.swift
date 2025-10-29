@@ -94,7 +94,7 @@ struct MessageSheetViewModel<IType, CType> {
 extension MessageSheetAction {
     static func retryAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonRetry(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonRetry()
         }
 
         return MessageSheetAction(title: title, handler: handler)
@@ -102,7 +102,7 @@ extension MessageSheetAction {
 
     static func cancelAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         }
 
         return MessageSheetAction(title: title, handler: handler)
@@ -110,7 +110,7 @@ extension MessageSheetAction {
 
     static func notNowAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonNotNow()
         }
 
         return MessageSheetAction(title: title, handler: handler)
@@ -118,7 +118,7 @@ extension MessageSheetAction {
 
     static func okBackAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonOkBack(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOkBack()
         }
 
         return MessageSheetAction(title: title, handler: handler)
@@ -126,7 +126,7 @@ extension MessageSheetAction {
 
     static func continueAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
         }
 
         return MessageSheetAction(title: title, handler: handler)

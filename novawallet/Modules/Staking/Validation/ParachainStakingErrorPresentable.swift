@@ -39,14 +39,15 @@ protocol ParachainStakingErrorPresentable: CollatorStakingErrorPresentable {
 
 extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentCantStakeCollator(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?) {
-        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.amountTooLow()
 
-        let message = R.string.localizable.parachainStakingCollatorGreaterMinstkMessage(
-            minStake,
-            preferredLanguages: locale?.rLanguages
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorGreaterMinstkMessage(
+            minStake
         )
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -57,10 +58,13 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.parachainStakingCollatorGreaterMinstkMessage(
-            minStake,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNoRewardsTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorGreaterMinstkMessage(
+            minStake
         )
 
         presentWarning(
@@ -73,10 +77,10 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     }
 
     func presentUnstakingAmountTooHigh(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let title = R.string.localizable.parastkCantUnstakeTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.parastkCantUnstakeAmountMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.parastkCantUnstakeTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.parastkCantUnstakeAmountMessage()
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -87,10 +91,13 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.parachainStakingCollatorLessMinstkMessage(
-            minStake,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonNoRewardsTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.parachainStakingCollatorLessMinstkMessage(
+            minStake
         )
 
         presentWarning(
@@ -108,10 +115,9 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.parastkUnstakeAllTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.parastkUnstakeAllMessageFormat(
-            minStake,
-            preferredLanguages: locale?.rLanguages
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.parastkUnstakeAllTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.parastkUnstakeAllMessageFormat(
+            minStake
         )
 
         presentWarning(
@@ -124,65 +130,61 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     }
 
     func presentNoUnstakingOptions(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.parastkUnstakeNoCollatorsTitle(
-            preferredLanguages: languages
-        )
+        let title = R.string(preferredLanguages: languages).localizable.parastkUnstakeNoCollatorsTitle()
 
-        let message = R.string.localizable.parastkUnstakeNoCollatorsMessage(
-            preferredLanguages: languages
-        )
+        let message = R.string(preferredLanguages: languages).localizable.parastkUnstakeNoCollatorsMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+        let close = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
 
     func presentCantRedeem(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.parastkCantRedeemTitle(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.parastkCantRedeemTitle()
 
-        let message = R.string.localizable.parastkCantRedeemMessage(preferredLanguages: languages)
+        let message = R.string(preferredLanguages: languages).localizable.parastkCantRedeemMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+        let close = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
 
     func presentCantRebond(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.parastkCantRebondTitle(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.parastkCantRebondTitle()
 
-        let message = R.string.localizable.parastkCantRebondMessage(preferredLanguages: languages)
+        let message = R.string(preferredLanguages: languages).localizable.parastkCantRebondMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+        let close = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
 
     func presentCantStakeMoreWhileRevoking(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.parastkCantBondMoreTitle(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.parastkCantBondMoreTitle()
 
-        let message = R.string.localizable.parastkPendingRevokeMessage(preferredLanguages: languages)
+        let message = R.string(preferredLanguages: languages).localizable.parastkPendingRevokeMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+        let close = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }
 
     func presentCantStakeInactiveCollator(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let languages = locale?.rLanguages
+        let languages = locale.rLanguages
 
-        let title = R.string.localizable.parastkNotActiveCollatorTitle(preferredLanguages: languages)
+        let title = R.string(preferredLanguages: languages).localizable.parastkNotActiveCollatorTitle()
 
-        let message = R.string.localizable.parastkNotActiveCollatorMessage(preferredLanguages: languages)
+        let message = R.string(preferredLanguages: languages).localizable.parastkNotActiveCollatorMessage()
 
-        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+        let close = R.string(preferredLanguages: languages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: close, from: view)
     }

@@ -12,7 +12,7 @@ final class AssetListCollectionManager {
     private var groupsViewModel: AssetListViewModel
 
     private let collectionViewDataSource: AssetListCollectionViewDataSource
-    // swiftlint:disable weak_delegate
+    // swiftlint:disable:next weak_delegate
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
     init(

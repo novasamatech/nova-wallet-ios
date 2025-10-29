@@ -25,11 +25,11 @@ enum ChainAccountSectionType {
             return model.title
         case .customSecret:
             return LocalizableResource { locale in
-                R.string.localizable.chainAccountsSectionTitleCustomSecret(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.chainAccountsSectionTitleCustomSecret()
             }
         case .sharedSecret:
             return LocalizableResource { locale in
-                R.string.localizable.chainAccountsSectionTitleSharedSecret(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.chainAccountsSectionTitleSharedSecret()
             }
         case .noSection:
             return nil

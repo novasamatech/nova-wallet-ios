@@ -196,10 +196,7 @@ final class OperationDetailsViewModelFactory {
         let eraString: String? = model.era.map { era in
             if let eraString = quantityFormatter.value(for: locale)
                 .string(from: NSNumber(value: era)) {
-                return R.string.localizable.commonEraFormat(
-                    eraString,
-                    preferredLanguages: locale.rLanguages
-                )
+                return R.string(preferredLanguages: locale.rLanguages).localizable.commonEraFormat(eraString)
             } else {
                 return ""
             }

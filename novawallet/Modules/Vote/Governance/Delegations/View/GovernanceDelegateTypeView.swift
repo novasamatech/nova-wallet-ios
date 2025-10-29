@@ -42,17 +42,17 @@ final class GovernanceDelegateTypeView: BorderedIconLabelView {
 
         switch type {
         case .individual:
-            let title = R.string.localizable.delegationsShowChipIndividual(
+            let title = R.string(
                 preferredLanguages: locale.rLanguages
-            ).uppercased()
+            ).localizable.delegationsShowChipIndividual().uppercased()
             iconDetailsView.bind(viewModel: .init(
                 title: title,
                 icon: R.image.iconIndividual()
             ))
         case .organization:
-            let title = R.string.localizable.delegationsShowChipOrganization(
+            let title = R.string(
                 preferredLanguages: locale.rLanguages
-            ).uppercased()
+            ).localizable.delegationsShowChipOrganization().uppercased()
 
             iconDetailsView.bind(viewModel: .init(
                 title: title,

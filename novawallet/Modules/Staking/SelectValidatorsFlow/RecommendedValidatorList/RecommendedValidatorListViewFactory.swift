@@ -57,8 +57,6 @@ final class RecommendedValidatorListViewFactory {
         presenter.view = view
         presenter.wireframe = wireframe
 
-        view.localizationManager = LocalizationManager.shared
-
         return view
     }
 }

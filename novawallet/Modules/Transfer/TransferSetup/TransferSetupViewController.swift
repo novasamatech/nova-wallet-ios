@@ -92,21 +92,21 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonContinue()
 
-        rootView.recepientTitleLabel.text = R.string.localizable.commonRecipient(
+        rootView.recepientTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonRecipient()
 
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+        rootView.amountView.titleView.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletSendAmountTitle()
 
-        rootView.originFeeView.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
+        rootView.originFeeView.titleButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonNetworkFee()
 
         rootView.recepientInputView.locale = selectedLocale
 
@@ -118,9 +118,9 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
         updateActionButtonState()
 
-        let selectYourWalletTitle = R.string.localizable.assetsSelectSendYourWallets(
+        let selectYourWalletTitle = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.assetsSelectSendYourWallets()
         rootView.yourWalletsControl.bind(model: .init(
             name: selectYourWalletTitle,
             image: R.image.iconUsers()
@@ -145,8 +145,9 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAddress(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAddress()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -156,8 +157,9 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.transferSetupEnterAmount()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -166,9 +168,9 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         rootView.actionButton.applyEnabledStyle()
         rootView.actionButton.isUserInteractionEnabled = true
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonContinue()
         rootView.actionButton.invalidateLayout()
     }
 
@@ -254,9 +256,9 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         let detailsTitleLabel = rootView.amountView.detailsTitleLabel
         let detailsValueLabel = rootView.amountView.detailsValueLabel
 
-        detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+        detailsTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonTransferablePrefix()
 
         detailsValueLabel.text = viewModel
     }

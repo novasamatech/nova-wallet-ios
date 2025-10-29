@@ -53,7 +53,7 @@ final class StakingMoreOptionsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.multistakingMoreOptions(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.multistakingMoreOptions()
         rootView.collectionView.reloadData()
     }
 
@@ -122,7 +122,9 @@ extension StakingMoreOptionsViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             header?.bind(
-                title: R.string.localizable.stakingMoreOptionsDAppsTitle(preferredLanguages: selectedLocale.rLanguages)
+                title: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingMoreOptionsDAppsTitle()
             )
             header?.titleLabel.apply(style: .title3Primary)
             header?.contentInsets = .zero

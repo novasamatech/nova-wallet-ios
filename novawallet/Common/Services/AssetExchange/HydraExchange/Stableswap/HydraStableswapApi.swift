@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import HydraMath
+import HydraMathApi
 import BigInt
 
 enum HydraStableswapApiError: Error {

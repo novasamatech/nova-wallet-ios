@@ -1,4 +1,5 @@
 import Operation_iOS
+import Foundation
 
 protocol DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(

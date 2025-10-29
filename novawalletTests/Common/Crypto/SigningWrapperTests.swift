@@ -157,8 +157,10 @@ class SigningWrapperTests: XCTestCase {
 
     // MARK: Private
 
-    private func performSr25519SigningTest(keychain: KeystoreProtocol,
-                                           settings: SelectedWalletSettings) throws {
+    private func performSr25519SigningTest(
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
         let originalData = Self.message.data(using: .utf8)!
 
         guard let metaAccount = settings.value else { return }
@@ -182,13 +184,17 @@ class SigningWrapperTests: XCTestCase {
         let publicKey = try SNPublicKey(rawData: publicKeyData)
         let irsignature = try SNSignature(rawData: signature.rawData())
 
-        XCTAssertTrue(verifier.verify(irsignature,
-                                      forOriginalData: originalData,
-                                      using: publicKey))
+        XCTAssertTrue(verifier.verify(
+            irsignature,
+            forOriginalData: originalData,
+            using: publicKey
+        ))
     }
 
-    private func performEd25519SigningTest(keychain: KeystoreProtocol,
-                                           settings: SelectedWalletSettings) throws {
+    private func performEd25519SigningTest(
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
         let originalData = Self.message.data(using: .utf8)!
 
         guard let metaAccount = settings.value else { return }
@@ -211,13 +217,17 @@ class SigningWrapperTests: XCTestCase {
 
         let publicKey = try EDPublicKey(rawData: publicKeyData)
 
-        XCTAssertTrue(verifier.verify(signature,
-                                      forOriginalData: originalData,
-                                      usingPublicKey: publicKey))
+        XCTAssertTrue(verifier.verify(
+            signature,
+            forOriginalData: originalData,
+            usingPublicKey: publicKey
+        ))
     }
 
-    private func performSubstrateEcdsaSigningTest(keychain: KeystoreProtocol,
-                                           settings: SelectedWalletSettings) throws {
+    private func performSubstrateEcdsaSigningTest(
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
         let originalData = Self.message.data(using: .utf8)!
 
         guard let metaAccount = settings.value else { return }
@@ -241,13 +251,17 @@ class SigningWrapperTests: XCTestCase {
         let publicKey = try SECPublicKey(rawData: publicKeyData)
 
         let verificationData = try originalData.blake2b32()
-        XCTAssertTrue(verifier.verify(signature,
-                                      forOriginalData: verificationData,
-                                      usingPublicKey: publicKey))
+        XCTAssertTrue(verifier.verify(
+            signature,
+            forOriginalData: verificationData,
+            usingPublicKey: publicKey
+        ))
     }
 
-    private func performEthereumEcdsaSigningTest(keychain: KeystoreProtocol,
-                                           settings: SelectedWalletSettings) throws {
+    private func performEthereumEcdsaSigningTest(
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
         let originalData = Self.message.data(using: .utf8)!
 
         guard let metaAccount = settings.value else { return }
@@ -270,8 +284,10 @@ class SigningWrapperTests: XCTestCase {
         let publicKey = try SECPublicKey(rawData: publicKeyData)
 
         let verificationData = try originalData.keccak256()
-        XCTAssertTrue(verifier.verify(signature,
-                                      forOriginalData: verificationData,
-                                      usingPublicKey: publicKey))
+        XCTAssertTrue(verifier.verify(
+            signature,
+            forOriginalData: verificationData,
+            usingPublicKey: publicKey
+        ))
     }
 }

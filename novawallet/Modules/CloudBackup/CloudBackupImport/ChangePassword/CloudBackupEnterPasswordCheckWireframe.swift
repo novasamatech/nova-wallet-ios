@@ -6,7 +6,9 @@ final class CloudBackupEnterPasswordCheckWireframe: ImportCloudPasswordWireframe
         password: String,
         locale _: Locale
     ) {
-        guard let updatePasswordView = CloudBackupCreateViewFactory.createViewForUpdatePassword(password: password) else {
+        guard let updatePasswordView = CloudBackupCreateViewFactory.createViewForUpdatePassword(
+            password: password
+        ) else {
             return
         }
 
@@ -18,9 +20,7 @@ final class CloudBackupEnterPasswordCheckWireframe: ImportCloudPasswordWireframe
         navigationController?.popViewController(animated: true)
 
         presentMultilineSuccessNotification(
-            R.string.localizable.cloudBackupDeleted(
-                preferredLanguages: locale.rLanguages
-            ),
+            R.string(preferredLanguages: locale.rLanguages).localizable.cloudBackupDeleted(),
             from: view
         )
     }

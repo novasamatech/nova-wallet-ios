@@ -55,18 +55,16 @@ final class StakingRebondConfirmationLayout: UIView {
     }
 
     private func applyLocalization() {
-        walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: locale.rLanguages)
-        accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
+        walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
+        accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()
 
-        hintView.detailsLabel.text = R.string.localizable.stakingRebondHint(
-            preferredLanguages: locale.rLanguages
-        )
+        hintView.detailsLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebondHint()
 
         networkFeeCell.rowContentView.locale = locale
 
-        actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonConfirm()
 
         setNeedsLayout()
     }

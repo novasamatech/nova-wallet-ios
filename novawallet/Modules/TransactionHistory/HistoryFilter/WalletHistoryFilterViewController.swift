@@ -73,14 +73,18 @@ final class WalletHistoryFilterViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let languages = localizationManager?.selectedLocale.rLanguages
+        let languages = localizationManager?.selectedLocale.rLanguages ?? []
 
-        title = R.string.localizable.walletFiltersTitle(preferredLanguages: languages)
-        navigationItem.rightBarButtonItem?.title = R.string.localizable
-            .commonReset(preferredLanguages: languages)
+        title = R.string(
+            preferredLanguages: languages
+        ).localizable.walletFiltersTitle()
+        navigationItem.rightBarButtonItem?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonReset()
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable
-            .commonApply(preferredLanguages: languages)
+        rootView.applyButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: languages
+        ).localizable.commonApply()
         rootView.applyButton.invalidateLayout()
     }
 
@@ -124,9 +128,7 @@ extension WalletHistoryFilterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
 
-        let title = R.string.localizable.walletFiltersHeader(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletFiltersHeader()
 
         view.bind(title: title, icon: nil)
 

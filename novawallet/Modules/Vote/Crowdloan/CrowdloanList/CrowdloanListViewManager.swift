@@ -73,8 +73,7 @@ extension CrowdloanListViewManager: UITableViewDataSource {
             return cell
         case .empty:
             let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-            let text = R.string.localizable
-                .crowdloanEmptyMessage_v3_9_1(preferredLanguages: locale.rLanguages)
+            let text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanEmptyMessage_v3_9_1()
             cell.view.bind(
                 image: R.image.iconEmptyHistory(),
                 text: text

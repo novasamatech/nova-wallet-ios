@@ -51,7 +51,7 @@ final class NftListItemWithPriceCell: NftListItemCell {
 
         } else {
             tokensLabel.textColor = R.color.colorTextSecondary()!
-            tokensLabel.text = R.string.localizable.nftListNotListed(preferredLanguages: locale.rLanguages)
+            tokensLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.nftListNotListed()
 
             fiatLabel.text = ""
         }

@@ -50,7 +50,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
             }
 
             let proposerCell = createAccountCell(
-                with: R.string.localizable.govProposer(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govProposer(),
                 viewModel: viewModel.proposer
             )
 
@@ -60,7 +60,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
             if let deposit = viewModel.deposit {
                 let depositCell = createBalanceCell(
-                    with: R.string.localizable.govDeposit(preferredLanguages: locale.rLanguages),
+                    with: R.string(preferredLanguages: locale.rLanguages).localizable.govDeposit(),
                     viewModel: deposit
                 )
                 proposerTableView?.addArrangedSubview(depositCell)
@@ -85,7 +85,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
             }
 
             let beneficiaryCell = createAccountCell(
-                with: R.string.localizable.govBeneficiary(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govBeneficiary(),
                 viewModel: viewModel.account
             )
 
@@ -95,7 +95,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
             if let amount = viewModel.amount {
                 let amountCell = createBalanceCell(
-                    with: R.string.localizable.commonRequestedAmount(preferredLanguages: locale.rLanguages),
+                    with: R.string(preferredLanguages: locale.rLanguages).localizable.commonRequestedAmount(),
                     viewModel: amount
                 )
 
@@ -123,18 +123,18 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 curveAndHashTableView?.addArrangedSubview($0)
             }
             let turnoutCell = createBalanceCell(
-                with: R.string.localizable.govTurnout(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govTurnout(),
                 viewModel: viewModel.turnout
             )
             let elecorateCell = createBalanceCell(
-                with: R.string.localizable.govElectorate(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govElectorate(),
                 viewModel: viewModel.electorate
             )
             curveAndHashTableView?.addArrangedSubview(turnoutCell)
             curveAndHashTableView?.addArrangedSubview(elecorateCell)
             if let callHash = viewModel.callHash {
                 let callHashCell = createInfoCell(
-                    with: R.string.localizable.govCallHash(preferredLanguages: locale.rLanguages),
+                    with: R.string(preferredLanguages: locale.rLanguages).localizable.govCallHash(),
                     value: callHash
                 )
 
@@ -174,7 +174,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
             }
 
-            jsonView.valueTop.text = R.string.localizable.govParametersJson(preferredLanguages: locale.rLanguages)
+            jsonView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.govParametersJson()
 
             jsonView.valueBottom.view.text = viewModel
             containerView.stackView.addArrangedSubview(jsonView)
@@ -202,11 +202,11 @@ final class ReferendumFullDetailsViewLayout: UIView {
             $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 24, right: 12)
         }
 
-        jsonView.valueTop.text = R.string.localizable.govParametersJson(preferredLanguages: locale.rLanguages)
+        jsonView.valueTop.text = R.string(preferredLanguages: locale.rLanguages).localizable.govParametersJson()
 
-        jsonView.valueBottom.view.title = R.string.localizable.commonTooLongPreview(
+        jsonView.valueBottom.view.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonTooLongPreview()
 
         containerView.stackView.addArrangedSubview(jsonView)
 
@@ -220,17 +220,17 @@ final class ReferendumFullDetailsViewLayout: UIView {
         switch viewModel {
         case let .supportAndVotes(approveCurve, supportCurve):
             let approveCurveCell = createTitleValueCell(
-                with: R.string.localizable.govApproveCurve(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govApproveCurve(),
                 value: approveCurve
             )
             let supportCurveCell = createTitleValueCell(
-                with: R.string.localizable.govSupportCurve(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govSupportCurve(),
                 value: supportCurve
             )
             return [approveCurveCell, supportCurveCell]
         case let .threshold(function):
             let thresholdFunctionCell = createTitleValueCell(
-                with: R.string.localizable.govVoteThreshold(preferredLanguages: locale.rLanguages),
+                with: R.string(preferredLanguages: locale.rLanguages).localizable.govVoteThreshold(),
                 value: function
             )
             return [thresholdFunctionCell]

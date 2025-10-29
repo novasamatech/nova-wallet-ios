@@ -46,9 +46,9 @@ private extension MultisigOperationsViewModelFactory {
         locale: Locale
     ) -> String {
         guard let call else {
-            return R.string.localizable.multisigOperationTypeUnknown(
+            return R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.multisigOperationTypeUnknown()
         }
 
         return switch call.definition {
@@ -57,9 +57,7 @@ private extension MultisigOperationsViewModelFactory {
         case let .batch(batch):
             batch.type.callDescription.value(for: locale)
         case .transfer:
-            R.string.localizable.transferTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferTitle()
         }
     }
 
@@ -81,9 +79,10 @@ private extension MultisigOperationsViewModelFactory {
             if let address = try? transfer.account.accountId.toAddress(
                 using: chain.chainFormat
             ) {
-                R.string.localizable.walletHistoryTransferOutgoingDetails(
-                    address.truncated,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.walletHistoryTransferOutgoingDetails(
+                    address.truncated
                 )
             } else {
                 nil
@@ -99,10 +98,11 @@ private extension MultisigOperationsViewModelFactory {
         let currentApprovals = definition.approvals.count
         let requiredApprovals = multisigContext.threshold
 
-        return R.string.localizable.multisigOperationSigningProgressFormat(
-            currentApprovals,
-            requiredApprovals,
+        return R.string(
             preferredLanguages: locale.rLanguages
+        ).localizable.multisigOperationSigningProgressFormat(
+            currentApprovals,
+            requiredApprovals
         ).uppercased()
     }
 
@@ -118,12 +118,12 @@ private extension MultisigOperationsViewModelFactory {
 
         if createdByUser {
             return .createdByUser(
-                R.string.localizable.multisigOperationStatusCreated(preferredLanguages: languages)
+                R.string(preferredLanguages: languages).localizable.multisigOperationStatusCreated()
             )
         } else if signedByUser {
             return .signed(
                 TitleIconViewModel(
-                    title: R.string.localizable.multisigOperationStatusSigned(preferredLanguages: languages),
+                    title: R.string(preferredLanguages: languages).localizable.multisigOperationStatusSigned(),
                     icon: R.image.iconCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
                 )
             )
@@ -163,7 +163,7 @@ private extension MultisigOperationsViewModelFactory {
         else { return nil }
 
         return MultisigOperationViewModel.DelegatedAccount(
-            title: R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.delegatedAccountOnBehalfOf(),
             model: displayAddressModel
         )
     }

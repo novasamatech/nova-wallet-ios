@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 final class MythosStakingDetailsPresenter {
     weak var view: StakingMainViewProtocol?
@@ -6,6 +7,7 @@ final class MythosStakingDetailsPresenter {
     let interactor: MythosStakingDetailsInteractorInputProtocol
     let viewModelFactory: MythosStkStateViewModelFactoryProtocol
     let networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
     let stateMachine: MythosStakingStateMachineProtocol
@@ -27,12 +29,14 @@ final class MythosStakingDetailsPresenter {
         wireframe: MythosStakingDetailsWireframeProtocol,
         viewModelFactory: MythosStkStateViewModelFactoryProtocol,
         networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
+        self.localizationManager = localizationManager
         self.logger = logger
 
         let stateMachine = MythosStakingStateMachine()
@@ -62,7 +66,7 @@ private extension MythosStakingDetailsPresenter {
                 from: model,
                 chainAsset: chainAsset,
                 price: optCommonData?.price,
-                locale: view?.selectedLocale ?? Locale.current
+                locale: localizationManager.selectedLocale
             )
 
             view?.didRecieveNetworkStakingInfo(viewModel: viewModel)

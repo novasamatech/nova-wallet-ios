@@ -5,7 +5,6 @@ import Keystore_iOS
 @testable import novawallet
 
 final class CurrencyRepositoryTests: XCTestCase {
-  
     func testFetchAvailableCurrencies() throws {
         let currencyRepository = CurrencyRepository()
         let queue = OperationQueue()
@@ -15,7 +14,7 @@ final class CurrencyRepositoryTests: XCTestCase {
         XCTAssertNotNil(currencies)
         XCTAssertFalse(currencies!.isEmpty)
     }
-    
+
     func testParsingCurrencyJson() throws {
         let currencyRepository = CurrencyRepository()
         let queue = OperationQueue()
@@ -23,7 +22,7 @@ final class CurrencyRepositoryTests: XCTestCase {
         queue.addOperations([operation], waitUntilFinished: true)
         let currencies = try operation.extractResultData() ?? []
         XCTAssertFalse(currencies.isEmpty)
-       
+
         let currency = currencies[0]
         XCTAssertEqual(currency.id, 0)
         XCTAssertEqual(currency.code, "USD")
@@ -33,7 +32,7 @@ final class CurrencyRepositoryTests: XCTestCase {
         XCTAssertEqual(currency.isPopular, true)
         XCTAssertEqual(currency.coingeckoId, "usd")
     }
-    
+
     private func json(_ name: String) -> URL? {
         guard let path = Bundle(for: CurrencyRepositoryTests.self).path(forResource: name, ofType: "json") else {
             return nil

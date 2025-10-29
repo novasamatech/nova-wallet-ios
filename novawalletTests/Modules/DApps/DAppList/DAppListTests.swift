@@ -43,7 +43,7 @@ class DAppListTests: XCTestCase {
             facade: SubstrateStorageTestFacade(),
             operationManager: OperationManagerFacade.sharedManager
         )
-        
+
         let mapper = DAppFavoriteMapper()
         let dappsFavoriteRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
@@ -63,7 +63,7 @@ class DAppListTests: XCTestCase {
             multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
-        
+
         let interactor = DAppListInteractor(
             walletSettings: walletSettings,
             eventCenter: EventCenter.shared,
@@ -74,7 +74,7 @@ class DAppListTests: XCTestCase {
             walletNotificationService: walletNotificationService,
             logger: Logger.shared
         )
-        
+
         let viewModelFactory = DAppListViewModelFactory(
             dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
             dappIconViewModelFactory: DAppIconViewModelFactory()
@@ -95,7 +95,7 @@ class DAppListTests: XCTestCase {
 
         let iconExpectation = XCTestExpectation()
         let stateExpectation = XCTestExpectation()
-        
+
         var sectionsModels: [DAppListSectionViewModel] = []
 
         stub(view) { stub in
@@ -106,27 +106,27 @@ class DAppListTests: XCTestCase {
                 else {
                     return
                 }
-                
+
                 sectionsModels = sections
-                
+
                 stateExpectation.fulfill()
-                
+
                 let walletSection = sections
                     .first { section in
                         section.model.cells.contains(
                             where: { cell in
                                 guard case let .header(header) = cell else { return false }
-                                
+
                                 return true
                             }
                         )
                     }
-                
+
                 guard walletSection != nil else { return }
-                
+
                 iconExpectation.fulfill()
             }
-            
+
             stub.didCompleteRefreshing().thenDoNothing()
         }
 
@@ -144,10 +144,10 @@ class DAppListTests: XCTestCase {
                 false
             }
         }
-        
+
         guard unexpectedFinalStates.isEmpty else {
             XCTFail("Unexpected final state")
-            
+
             return
         }
 

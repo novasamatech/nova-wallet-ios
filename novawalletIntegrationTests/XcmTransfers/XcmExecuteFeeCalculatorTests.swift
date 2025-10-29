@@ -13,13 +13,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTHydrationPolkadot() throws {
         do {
             let fee = try calculateFee(
@@ -28,13 +28,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.polkadot,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTPolkadotPolkadotAssetHub() throws {
         do {
             let fee = try calculateFee(
@@ -43,13 +43,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.polkadotAssetHub,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTPolkadotAssetHubPolkadot() throws {
         do {
             let fee = try calculateFee(
@@ -58,13 +58,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.polkadot,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTHydraMoonbeam() throws {
         do {
             let fee = try calculateFee(
@@ -73,13 +73,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.moonbeam,
                 destinationAssetSymbol: "xcDOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTMoonbeamHydra() throws {
         do {
             let fee = try calculateFee(
@@ -88,13 +88,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTAstarHydra() throws {
         do {
             let fee = try calculateFee(
@@ -103,13 +103,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTBifrostHydra() throws {
         do {
             let fee = try calculateFee(
@@ -118,13 +118,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testUSDTAssetHubHydra() throws {
         do {
             let fee = try calculateFee(
@@ -133,13 +133,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "USDT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testWNDWestendWestmint() throws {
         do {
             let fee = try calculateFee(
@@ -148,13 +148,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.westmint,
                 destinationAssetSymbol: "WND"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testMythMythosHydration() throws {
         do {
             let fee = try calculateFee(
@@ -163,13 +163,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "MYTH"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testMythPAHMythos() throws {
         do {
             let fee = try calculateFee(
@@ -178,13 +178,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.mythos,
                 destinationAssetSymbol: "MYTH"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTCollectivesPAH() throws {
         do {
             let fee = try calculateFee(
@@ -193,13 +193,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.polkadotAssetHub,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTCollectivesBridgeHub() throws {
         do {
             let fee = try calculateFee(
@@ -208,13 +208,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: "dcf691b5a3fbe24adc99ddc959c0561b973e329b1aef4c4b22e7bb2ddecb4464",
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTBridgeHubCollectives() throws {
         do {
             let fee = try calculateFee(
@@ -223,13 +223,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: "46ee89aa2eedd13e988962630ec9fb7565964cf5023bb351f2b6b25c1b68b0b2",
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     func testDOTBridgeHubPAH() throws {
         do {
             let fee = try calculateFee(
@@ -238,13 +238,13 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 destinationChainId: KnowChainId.polkadotAssetHub,
                 destinationAssetSymbol: "DOT"
             )
-            
+
             Logger.shared.debug("Fee: \(fee)")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-    
+
     private func calculateFee(
         for originChainId: ChainModel.Id,
         originAssetSymbol: String,
@@ -253,7 +253,7 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
     ) throws -> XcmFeeModelProtocol {
         let substrateStorageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
-        
+
         let operationQueue = OperationQueue()
         let feeService = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
@@ -268,16 +268,16 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-        
+
         let originChain = try chainRegistry.getChainOrError(for: originChainId)
         let originChainAsset = try originChain.chainAssetForSymbolOrError(originAssetSymbol)
         let destinationChain = try chainRegistry.getChainOrError(for: destinationChainId)
         let destinationChainAsset = try destinationChain.chainAssetForSymbolOrError(destinationAssetSymbol)
-        
+
         let destinationAccountId = Data.random(of: destinationChain.accountIdSize)!
-        
+
         let transfers = try XcmTransfersSyncService.setupForIntegrationTest(for: ApplicationConfig.shared)
-        
+
         let transferResolver = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
             paraIdOperationFactory: ParaIdOperationFactory(
@@ -285,7 +285,7 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
                 operationQueue: operationQueue
             )
         )
-        
+
         let transferResolutionWrapper = transferResolver.createResolutionWrapper(
             for: originChainAsset.chainAssetId,
             transferDestinationId: XcmTransferDestinationId(
@@ -294,16 +294,16 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
             ),
             xcmTransfers: transfers
         )
-        
+
         operationQueue.addOperations(
             transferResolutionWrapper.allOperations,
             waitUntilFinished: true
         )
-        
+
         let transferParties = try transferResolutionWrapper.targetOperation.extractNoCancellableResultData()
-        
+
         let amount = Decimal(1).toSubstrateAmount(precision: originChainAsset.assetDisplayInfo.assetPrecision)!
-        
+
         let request = XcmUnweightedTransferRequest(
             origin: transferParties.origin,
             destination: transferParties.destination,
@@ -311,11 +311,11 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
             metadata: transferParties.metadata,
             amount: amount
         )
-        
+
         let feeWrapper = feeService.crossChainFeeWrapper(request: request)
-        
+
         operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
-        
+
         return try feeWrapper.targetOperation.extractNoCancellableResultData()
     }
 }

@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class DecimalTests: XCTestCase {
-
     func testDecimalFloor() {
         XCTAssertEqual(Decimal(0.1).floor(), 0.0)
         XCTAssertEqual(Decimal(0.5).floor(), 0.0)

@@ -43,10 +43,11 @@ extension Web3NameViewModelFactory: Web3NameViewModelFactoryProtocol {
         selectedAddress: String?
     ) -> Web3NameAddressListViewModel {
         let title = LocalizableResource<String> { locale in
-            R.string.localizable.transferSetupKiltAddressesTitle(
-                chain.name,
-                KiltW3n.fullName(for: name),
+            R.string(
                 preferredLanguages: locale.rLanguages
+            ).localizable.transferSetupKiltAddressesTitle(
+                chain.name,
+                KiltW3n.fullName(for: name)
             )
         }
 

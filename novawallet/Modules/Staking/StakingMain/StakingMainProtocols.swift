@@ -3,7 +3,7 @@ import Foundation_iOS
 
 import BigInt
 
-protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
+protocol StakingMainViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: StakingMainViewModel)
     func didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel)
     func didReceiveStakingState(viewModel: StakingViewState)

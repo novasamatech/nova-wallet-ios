@@ -1,3 +1,4 @@
+import Foundation
 import UIKit_iOS
 
 protocol WalletMigrateAcceptViewProtocol: ControllerBackedProtocol {}
@@ -40,7 +41,7 @@ extension WalletMigrateAcceptWireframeProtocol {
     func createSuccessfulMigrationAlertClosure(locale: Locale) -> FlowStatusPresentingClosure {
         {
             $0.presentSuccessNotification(
-                R.string.localizable.walletMigrationSuccessfulAlertTitle(preferredLanguages: locale.rLanguages),
+                R.string(preferredLanguages: locale.rLanguages).localizable.walletMigrationSuccessfulAlertTitle(),
                 from: $1
             )
         }

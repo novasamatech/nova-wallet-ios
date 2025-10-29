@@ -123,9 +123,15 @@ extension LedgerMigrationBannerView.ViewModel {
         action: @escaping () -> Void
     ) -> Self {
         .init(
-            title: R.string.localizable.legacyLedgerNotificationTitle(preferredLanguages: locale?.rLanguages),
-            subtitle: R.string.localizable.legacyLedgerNotificationMessage(preferredLanguages: locale?.rLanguages),
-            actionTitle: R.string.localizable.commonFindMore(preferredLanguages: locale?.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.legacyLedgerNotificationTitle(),
+            subtitle: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.legacyLedgerNotificationMessage(),
+            actionTitle: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonFindMore(),
             action: action
         )
     }
@@ -135,9 +141,11 @@ extension LedgerMigrationBannerView.ViewModel {
         action: @escaping () -> Void
     ) -> Self {
         .init(
-            title: R.string.localizable.legacyLedgerNotificationTitle(preferredLanguages: locale?.rLanguages),
-            subtitle: R.string.localizable.legacyLedgerMigrationMessage(preferredLanguages: locale?.rLanguages),
-            actionTitle: R.string.localizable.commonFindMore(preferredLanguages: locale?.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.legacyLedgerNotificationTitle(),
+            subtitle: R.string(preferredLanguages: locale.rLanguages).localizable.legacyLedgerMigrationMessage(),
+            actionTitle: R.string(preferredLanguages: locale.rLanguages).localizable.commonFindMore(),
             action: action
         )
     }

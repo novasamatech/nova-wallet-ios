@@ -203,13 +203,13 @@ private extension AccountManagementPresenter {
         }
 
         let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.accountCreateOptionTitle()
 
             return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
         }
 
         let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.accountImportOptionTitle(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.accountImportOptionTitle()
 
             return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
         }
@@ -236,9 +236,8 @@ private extension AccountManagementPresenter {
 
     func displaySecretsReplaceActions(for chain: ChainModel) {
         let title = LocalizableResource { locale in
-            R.string.localizable.accountActionsChangeSheetTitle(
-                chain.name,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountActionsChangeSheetTitle(
+                chain.name
             )
         }
 
@@ -247,9 +246,8 @@ private extension AccountManagementPresenter {
 
     func displaySecretsNoAddressActions(for chain: ChainModel) {
         let title = LocalizableResource { locale in
-            R.string.localizable.accountNotFoundActionsTitle(
-                chain.name,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountNotFoundActionsTitle(
+                chain.name
             )
         }
 
@@ -276,9 +274,7 @@ private extension AccountManagementPresenter {
 
         if let wallet = wallet {
             let exportAccountTitle = LocalizableResource { locale in
-                R.string.localizable.commonExport(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonExport()
             }
 
             let exportAction = ChainAddressDetailsAction(
@@ -423,9 +419,8 @@ private extension AccountManagementPresenter {
             }
 
             let title = LocalizableResource { locale in
-                R.string.localizable.commmonViewInFormat(
-                    explorer.name,
-                    preferredLanguages: locale.rLanguages
+                R.string(preferredLanguages: locale.rLanguages).localizable.commmonViewInFormat(
+                    explorer.name
                 )
             }
 
@@ -446,7 +441,7 @@ private extension AccountManagementPresenter {
         chain: ChainModel
     ) -> ChainAddressDetailsAction {
         let copyTitle = LocalizableResource { locale in
-            R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCopyAddress()
         }
 
         return ChainAddressDetailsAction(
@@ -463,7 +458,7 @@ private extension AccountManagementPresenter {
         walletType: MetaAccountModelType
     ) -> ChainAddressDetailsAction {
         let createAccountTitle = LocalizableResource { locale in
-            R.string.localizable.accountActionsChangeTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountActionsChangeTitle()
         }
 
         return ChainAddressDetailsAction(
@@ -503,7 +498,7 @@ private extension AccountManagementPresenter {
         }
 
         let addAccountTitle = LocalizableResource { locale in
-            R.string.localizable.accountsAddAccount(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.accountsAddAccount()
         }
 
         return ChainAddressDetailsAction(

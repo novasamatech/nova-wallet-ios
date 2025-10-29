@@ -18,22 +18,22 @@ extension SecretSource {
     func titleForLocale(_ locale: Locale?) -> String {
         switch self {
         case .keystore:
-            return R.string.localizable.secretTypeKeystoreTitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeKeystoreTitle()
         case .seed:
-            return R.string.localizable.secretTypeSeedTitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeSeedTitle()
         case .mnemonic:
-            return R.string.localizable.secretTypeMnemonicTitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeMnemonicTitle()
         }
     }
 
     func subtitleForLocale(_ locale: Locale?) -> String {
         switch self {
         case .keystore:
-            return R.string.localizable.secretTypeKeystoreSubtitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeKeystoreSubtitle()
         case .seed:
-            return R.string.localizable.secretTypeSeedSubtitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeSeedSubtitle()
         case .mnemonic:
-            return R.string.localizable.secretTypeMnemonicSubtitle(preferredLanguages: locale?.rLanguages)
+            return R.string(preferredLanguages: locale.rLanguages).localizable.secretTypeMnemonicSubtitle()
         }
     }
 
