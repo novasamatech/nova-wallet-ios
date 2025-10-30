@@ -24,7 +24,7 @@ extension GiftTransferBaseInteractor {
 
     func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
-        feeType: FeeType,
+        feeType: FeeType
     ) {
         let recepientAccountId = AccountId.zeroAccountId(of: chain.accountIdSize)
 
