@@ -2011,6 +2011,8 @@
 		2DA4D5AE2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */; };
 		2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */; };
 		2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */; };
+		2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */; };
+		2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8566,6 +8568,8 @@
 		2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateTransferCommandFactory.swift; sourceTree = "<group>"; };
 		2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferCommandFactory.swift; sourceTree = "<group>"; };
+		2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccumulatedFeeBuilder.swift; sourceTree = "<group>"; };
+		2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftFeeDescription.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17244,6 +17248,7 @@
 			children = (
 				2DA4D57E2EB267BD006FCCC0 /* Interactor */,
 				2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */,
+				2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -23610,6 +23615,7 @@
 				778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */,
 				0CE862352D65F3C100245992 /* AssetLock+Display.swift */,
 				2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */,
+				2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -33605,6 +33611,7 @@
 				2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */,
 				2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */,
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
+				2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */,
 				0CE933982C048E6B000F3EFE /* CloudBackupReviewChangesCell.swift in Sources */,
 				8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */,
 				0C3205EA2A8A0539002EB914 /* EvmValidationProviderFactory.swift in Sources */,
@@ -34625,6 +34632,7 @@
 				65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */,
 				84FBDBE328C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift in Sources */,
 				845B080A2918D381005785D3 /* Gov1ExtrinsicFactory.swift in Sources */,
+				2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */,
 				846A836128B8DB7700D92892 /* TxExpirationMessageSheetTimerLabel.swift in Sources */,
 				0C7104902C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift in Sources */,
 				84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */,

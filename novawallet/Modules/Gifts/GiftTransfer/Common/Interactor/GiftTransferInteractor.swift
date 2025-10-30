@@ -165,6 +165,36 @@ private extension GiftTransferInteractor {
             }
         }
     }
+
+    func processClaimFee(
+        transactionFeeId: String,
+        fee: ExtrinsicFeeProtocol,
+        giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
+    ) {
+        guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
+
+        let amount = giftTransactionFeeId.amount.map { $0 + fee.amount }
+        let newBuilder = giftFeeDescriptionBuilder.with(claimFee: fee)
+        estimateFee(for: amount, feeType: .createGift(newBuilder))
+    }
+
+    func processCreateFee(
+        fee: ExtrinsicFeeProtocol,
+        giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
+    ) {
+        guard let giftFeeDescription = giftFeeDescriptionBuilder
+            .with(createFee: fee)
+            .build()
+        else { return }
+
+        do {
+            let totalFee = try giftFeeDescription.createAccumulatedFee()
+            let feeModel = FeeOutputModel(value: totalFee, validationProvider: nil)
+            presenter?.didReceiveFee(result: .success(feeModel))
+        } catch {
+            logger.error("Error calculating accumulated fee: \(error)")
+        }
+    }
 }
 
 // MARK: - Internal
@@ -207,16 +237,16 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
 
         switch (result, feeType) {
         case let (.success(fee), .claimGift(builder)):
-            guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
-
-            let amount = giftTransactionFeeId.amount.map { $0 + fee.amount }
-            let newBuilder = builder.adding(fee: fee)
-            estimateFee(for: amount, feeType: .createGift(newBuilder))
+            processClaimFee(
+                transactionFeeId: transactionFeeId,
+                fee: fee,
+                giftFeeDescriptionBuilder: builder
+            )
         case let (.success(fee), .createGift(builder)):
-            guard let totalFee = builder.adding(fee: fee).build() else { return }
-
-            let feeModel = FeeOutputModel(value: totalFee, validationProvider: nil)
-            presenter?.didReceiveFee(result: .success(feeModel))
+            processCreateFee(
+                fee: fee,
+                giftFeeDescriptionBuilder: builder
+            )
         case let (.failure(error), _):
             presenter?.didReceiveFee(result: .failure(error))
         }

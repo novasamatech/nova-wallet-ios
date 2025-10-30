@@ -111,6 +111,52 @@ private extension EvmGiftTransferInteractor {
 
         presenter?.didCompleteSetup()
     }
+
+    func processClaimFee(
+        transactionFeeId: String,
+        feeModel: EvmFeeModel,
+        giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
+    ) {
+        guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
+
+        let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
+
+        let amount = giftTransactionFeeId.amount.map { $0 + feeValue.amount }
+        let newBuilder = giftFeeDescriptionBuilder.with(claimFee: feeValue)
+        estimateFee(for: amount, feeType: .createGift(newBuilder))
+    }
+
+    func processCreateFee(
+        feeModel: EvmFeeModel,
+        giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
+    ) {
+        let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
+
+        guard let giftFeeDescription = giftFeeDescriptionBuilder
+            .with(createFee: feeValue)
+            .build()
+        else { return }
+
+        do {
+            // We take buffer to account possible fee fluctuations
+            let totalFee = try giftFeeDescription.createAccumulatedFee(multiplier: 2)
+
+            let totamEvmFee = EvmFeeModel(
+                gasLimit: totalFee.amount / feeModel.gasPrice,
+                defaultGasPrice: feeModel.defaultGasPrice,
+                maxPriorityGasPrice: feeModel.maxPriorityGasPrice
+            )
+
+            lastFeeModel = totamEvmFee
+
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
+            let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
+
+            presenter?.didReceiveFee(result: .success(feeModel))
+        } catch {
+            logger.error("Error calculating accumulated fee: \(error)")
+        }
+    }
 }
 
 extension EvmGiftTransferInteractor {
@@ -140,35 +186,17 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
         pendingFees[transactionFeeId] = nil
 
         switch (result, feeType) {
-        case let (.success(model), .claimGift(builder)):
-            guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
-
-            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
-
-            let amount = giftTransactionFeeId.amount.map { $0 + feeValue.amount }
-            let newBuilder = builder.adding(fee: feeValue)
-            estimateFee(for: amount, feeType: .createGift(newBuilder))
-        case let (.success(model), .createGift(builder)):
-            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
-
-            guard let totalFee = builder
-                .adding(fee: feeValue)
-                .multiplied(by: 2) // We take buffer to account fee fluctuations
-                .build()
-            else { return }
-
-            let totamEvmFee = EvmFeeModel(
-                gasLimit: totalFee.amount / model.gasPrice,
-                defaultGasPrice: model.defaultGasPrice,
-                maxPriorityGasPrice: model.maxPriorityGasPrice
+        case let (.success(fee), .claimGift(builder)):
+            processClaimFee(
+                transactionFeeId: transactionFeeId,
+                feeModel: fee,
+                giftFeeDescriptionBuilder: builder
             )
-
-            lastFeeModel = totamEvmFee
-
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
-            let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
-
-            presenter?.didReceiveFee(result: .success(feeModel))
+        case let (.success(fee), .createGift(builder)):
+            processCreateFee(
+                feeModel: fee,
+                giftFeeDescriptionBuilder: builder
+            )
         case let (.failure(error), _):
             presenter?.didReceiveFee(result: .failure(error))
         }

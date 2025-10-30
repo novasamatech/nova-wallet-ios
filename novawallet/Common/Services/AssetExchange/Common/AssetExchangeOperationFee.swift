@@ -280,26 +280,4 @@ extension AssetExchangeOperationFee {
 
 extension AssetExchangeOperationFee.Submission: ExtrinsicFeeProtocol {
     var amount: Balance { amountWithAsset.amount }
-
-    func accumulatingAmount(with other: any ExtrinsicFeeProtocol) -> any ExtrinsicFeeProtocol {
-        AssetExchangeOperationFee.Submission(
-            amountWithAsset: .init(
-                amount: amountWithAsset.amount + other.amount,
-                asset: amountWithAsset.asset
-            ),
-            payer: payer,
-            weight: weight
-        )
-    }
-
-    func multipliedAmount(by multiplier: Int) -> any ExtrinsicFeeProtocol {
-        AssetExchangeOperationFee.Submission(
-            amountWithAsset: .init(
-                amount: amountWithAsset.amount * BigUInt(multiplier),
-                asset: amountWithAsset.asset
-            ),
-            payer: payer,
-            weight: weight
-        )
-    }
 }

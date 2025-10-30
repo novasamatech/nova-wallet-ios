@@ -1,8 +1,11 @@
 import Foundation
 import BigInt
+import Foundation_iOS
 
 class GiftTransferBaseInteractor: OnChainTransferBaseInteractor {
     var pendingFees: [TransactionFeeId: FeeType] = [:]
+
+    let logger = Logger.shared
 
     func estimateFee(
         for _: OnChainTransferAmount<BigUInt>,
@@ -15,7 +18,7 @@ class GiftTransferBaseInteractor: OnChainTransferBaseInteractor {
 
 extension GiftTransferBaseInteractor {
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>) {
-        let builder = CumulativeFeeBuilder()
+        let builder = GiftFeeDescriptionBuilder()
         estimateFee(for: amount, feeType: .claimGift(builder))
     }
 
@@ -42,32 +45,8 @@ extension GiftTransferBaseInteractor {
 
 extension GiftTransferBaseInteractor {
     enum FeeType {
-        case createGift(CumulativeFeeBuilder)
-        case claimGift(CumulativeFeeBuilder)
-    }
-
-    struct CumulativeFeeBuilder {
-        private let cumulatedFee: ExtrinsicFeeProtocol?
-
-        init(cumulatedFee: ExtrinsicFeeProtocol? = nil) {
-            self.cumulatedFee = cumulatedFee
-        }
-
-        func adding(fee: ExtrinsicFeeProtocol) -> Self {
-            guard let cumulatedFee else {
-                return .init(cumulatedFee: fee)
-            }
-
-            return CumulativeFeeBuilder(cumulatedFee: cumulatedFee.accumulatingAmount(with: fee))
-        }
-
-        func multiplied(by multiplier: Int) -> Self {
-            CumulativeFeeBuilder(cumulatedFee: cumulatedFee?.multipliedAmount(by: multiplier))
-        }
-
-        func build() -> ExtrinsicFeeProtocol? {
-            cumulatedFee
-        }
+        case createGift(GiftFeeDescriptionBuilder)
+        case claimGift(GiftFeeDescriptionBuilder)
     }
 
     struct GiftTransactionFeeId: Hashable, RawRepresentable {
