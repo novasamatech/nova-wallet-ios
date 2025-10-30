@@ -2013,6 +2013,9 @@
 		2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */; };
 		2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */; };
 		2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */; };
+		2DA4D60D2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */; };
+		2DA4D6142EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */; };
+		2DA4D64C2EB3B68F006FCCC0 /* GiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8570,6 +8573,10 @@
 		2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferCommandFactory.swift; sourceTree = "<group>"; };
 		2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccumulatedFeeBuilder.swift; sourceTree = "<group>"; };
 		2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftFeeDescription.swift; sourceTree = "<group>"; };
+		2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmInteractor.swift; sourceTree = "<group>"; };
+		2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmProtocols.swift; sourceTree = "<group>"; };
+		2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftModel.swift; sourceTree = "<group>"; };
+		2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel19.xcdatamodel; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17300,6 +17307,7 @@
 			children = (
 				2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */,
 				2D533C362EB0B3520005FF8A /* GiftTransferSetup */,
+				2DA4D6052EB37CE3006FCCC0 /* GiftTransferConfirm */,
 				2D533C322EB0B3430005FF8A /* Common */,
 			);
 			path = GiftTransfer;
@@ -17897,6 +17905,31 @@
 			path = TransferCommands;
 			sourceTree = "<group>";
 		};
+		2DA4D6052EB37CE3006FCCC0 /* GiftTransferConfirm */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
+				2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */,
+			);
+			path = GiftTransferConfirm;
+			sourceTree = "<group>";
+		};
+		2DA4D63F2EB3B670006FCCC0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DF3C2872EA2301D0099417C /* GiftsOnboardingHeaderView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		2DA4D6402EB3B677006FCCC0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		2DA85A692C7F366C00591900 /* CardTopUp */ = {
 			isa = PBXGroup;
 			children = (
@@ -18352,9 +18385,9 @@
 		2DE37C402EA0D824007C43A0 /* Gifts */ = {
 			isa = PBXGroup;
 			children = (
+				2DF3C2862EA22EC80099417C /* Common */,
 				2D54215D2EAB69A80020E64B /* GiftTransfer */,
 				2DE0CA7E2EA661A30027F279 /* GiftAssetsOperation */,
-				2DF3C2862EA22EC80099417C /* Common */,
 				D56A4C6DA047468658DE2D1B /* GiftsOnboarding */,
 			);
 			path = Gifts;
@@ -18517,7 +18550,8 @@
 		2DF3C2862EA22EC80099417C /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2DF3C2872EA2301D0099417C /* GiftsOnboardingHeaderView.swift */,
+				2DA4D6402EB3B677006FCCC0 /* Model */,
+				2DA4D63F2EB3B670006FCCC0 /* View */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -32920,6 +32954,7 @@
 				0C8FDBA52CADA8DD00775D7F /* SwipeGovSummary.swift in Sources */,
 				0C992C482B55303600ACC129 /* StakingLedgerUnclaimedRewardsFactory.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
+				2DA4D60D2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
 				8846F74029D757FE00B8B776 /* Data+base64.swift in Sources */,
 				773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */,
@@ -35165,6 +35200,7 @@
 				0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */,
 				0C1CF7242E53AB4000B1DA66 /* HydraAavePoolsService.swift in Sources */,
 				01F973625B78736D5EEA86F6 /* ParitySignerAddressesViewFactory.swift in Sources */,
+				2DA4D6142EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift in Sources */,
 				ECD4EB7314609007CE35461E /* ParitySignerAddConfirmProtocols.swift in Sources */,
 				6D622CD4A83EEC1F135B66A8 /* ParitySignerAddConfirmWireframe.swift in Sources */,
 				2D77488C2C90428E0059607B /* VotingBasketItemLocal.swift in Sources */,
@@ -35889,6 +35925,7 @@
 				845C068E2A0C9E6600DAF4DF /* WalletConnectSecret.swift in Sources */,
 				3C6C738F4AB7AC6FEA290D59 /* WalletsChoosePresenter.swift in Sources */,
 				DD3EB45488B37F390718F407 /* WalletsChooseViewController.swift in Sources */,
+				2DA4D64C2EB3B68F006FCCC0 /* GiftModel.swift in Sources */,
 				E6D68574A02FFF372F8D9BC3 /* StakingDashboardProtocols.swift in Sources */,
 				EA44FEB35901A8BD8B1A4B79 /* StakingDashboardWireframe.swift in Sources */,
 				16EDDDC4B234CAB0D6326B74 /* StakingDashboardPresenter.swift in Sources */,
@@ -38153,6 +38190,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */,
 				2D32AA252E6604CF0083233B /* MultiassetUserDataModel18.xcdatamodel */,
 				2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */,
 				2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */,
@@ -38173,7 +38211,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 2D32AA252E6604CF0083233B /* MultiassetUserDataModel18.xcdatamodel */;
+			currentVersion = 2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

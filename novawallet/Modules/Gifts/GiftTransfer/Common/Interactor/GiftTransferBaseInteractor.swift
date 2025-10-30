@@ -6,7 +6,7 @@ class GiftTransferBaseInteractor: OnChainTransferBaseInteractor {
     var pendingFees: [TransactionFeeId: FeeType] = [:]
 
     let logger = Logger.shared
-    
+
     override func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
