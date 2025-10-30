@@ -61,6 +61,10 @@ extension GiftTransferBaseInteractor {
             return CumulativeFeeBuilder(cumulatedFee: cumulatedFee.accumulatingAmount(with: fee))
         }
 
+        func multiplied(by multiplier: Int) -> Self {
+            CumulativeFeeBuilder(cumulatedFee: cumulatedFee?.multipliedAmount(by: multiplier))
+        }
+
         func build() -> ExtrinsicFeeProtocol? {
             cumulatedFee
         }

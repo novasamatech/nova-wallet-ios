@@ -291,4 +291,15 @@ extension AssetExchangeOperationFee.Submission: ExtrinsicFeeProtocol {
             weight: weight
         )
     }
+
+    func multipliedAmount(by multiplier: Int) -> any ExtrinsicFeeProtocol {
+        AssetExchangeOperationFee.Submission(
+            amountWithAsset: .init(
+                amount: amountWithAsset.amount * BigUInt(multiplier),
+                asset: amountWithAsset.asset
+            ),
+            payer: payer,
+            weight: weight
+        )
+    }
 }

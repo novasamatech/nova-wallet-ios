@@ -170,13 +170,23 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
             let newBuilder = builder.adding(fee: feeValue)
             estimateFee(for: amount, feeType: .createGift(newBuilder))
         case let (.success(model), .createGift(builder)):
-            lastFeeModel = model
-
             let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
 
-            guard let totalFee = builder.adding(fee: feeValue).build() else { return }
+            guard let totalFee = builder
+                .adding(fee: feeValue)
+                .multiplied(by: 2) // We take buffer to account fee fluctuations
+                .build()
+            else { return }
 
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+            let totamEvmFee = EvmFeeModel(
+                gasLimit: totalFee.amount / model.gasPrice,
+                defaultGasPrice: model.defaultGasPrice,
+                maxPriorityGasPrice: model.maxPriorityGasPrice
+            )
+
+            lastFeeModel = totamEvmFee
+
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
 
             presenter?.didReceiveFee(result: .success(feeModel))
@@ -189,17 +199,5 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
 // MARK: - Private types
 
 extension EvmGiftTransferInteractor {
-    enum TransferType {
-        case native
-        case erc20(AccountAddress)
-
-        var transactionSource: TransactionHistoryItemSource {
-            switch self {
-            case .native:
-                return .evmNative
-            case .erc20:
-                return .evmAsset
-            }
-        }
-    }
+    typealias TransferType = EvmOnChainTransferInteractor.TransferType
 }

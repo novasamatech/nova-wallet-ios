@@ -173,7 +173,6 @@ private extension GiftTransferViewFactory {
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId)
         else { return nil }
 
