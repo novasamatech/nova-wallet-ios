@@ -66,31 +66,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         self.currencyManager = currencyManager
     }
 
-    override func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(optBalance):
-            let balance = optBalance ??
-                AssetBalance.createZero(
-                    for: ChainAssetId(chainId: chainId, assetId: assetId),
-                    accountId: accountId
-                )
-
-            guard
-                accountId == selectedAccount.accountId,
-                asset.assetId == assetId
-            else { return }
-
-            presenter?.didReceiveSendingAssetSenderBalance(balance)
-        case .failure:
-            presenter?.didReceiveError(CommonError.databaseSubscription)
-        }
-    }
-
     override func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
         transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,
