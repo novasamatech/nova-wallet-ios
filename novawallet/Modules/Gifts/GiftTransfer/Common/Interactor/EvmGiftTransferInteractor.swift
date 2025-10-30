@@ -6,6 +6,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
     let feeProxy: EvmTransactionFeeProxyProtocol
     let transactionService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
+    let transferCommandFactory: EvmTransferCommandFactory
 
     private(set) var transferType: TransferType?
     private(set) var lastFeeModel: EvmFeeModel?
@@ -15,6 +16,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         chain: ChainModel,
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
+        transferCommandFactory: EvmTransferCommandFactory,
         transactionService: EvmTransactionServiceProtocol,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -23,6 +25,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.feeProxy = feeProxy
+        self.transferCommandFactory = transferCommandFactory
         self.transactionService = transactionService
         self.validationProviderFactory = validationProviderFactory
 
@@ -36,30 +39,6 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         )
 
         self.currencyManager = currencyManager
-    }
-
-    func addingTransferCommand(
-        to builder: EvmTransactionBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountAddress,
-        type: TransferType
-    ) throws -> (EvmTransactionBuilderProtocol, CallCodingPath?) {
-        let amountValue = amount.value
-
-        switch type {
-        case .native:
-            let newBuilder = try builder.nativeTransfer(to: recepient, amount: amountValue)
-
-            return (newBuilder, CallCodingPath.evmNativeTransfer)
-        case let .erc20(contract):
-            let newBuilder = try builder.erc20Transfer(
-                to: recepient,
-                contract: contract,
-                amount: amountValue
-            )
-
-            return (newBuilder, CallCodingPath.erc20Tranfer)
-        }
     }
 
     override func handleAssetBalance(
@@ -100,10 +79,10 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
                 using: transactionService,
                 reuseIdentifier: transactionId.rawValue
             ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
+                let (newBuilder, _) = try self?.transferCommandFactory.addingTransferCommand(
                     to: builder,
                     amount: amount,
-                    recepient: recepientAddress,
+                    recipient: recepientAddress,
                     type: transferType
                 ) ?? (builder, nil)
 
@@ -199,5 +178,5 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
 // MARK: - Private types
 
 extension EvmGiftTransferInteractor {
-    typealias TransferType = EvmOnChainTransferInteractor.TransferType
+    typealias TransferType = EvmTransferCommandFactory.TransferType
 }

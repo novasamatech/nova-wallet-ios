@@ -6,12 +6,12 @@ import BigInt
 class GiftTransferInteractor: GiftTransferBaseInteractor {
     let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
+    let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
 
-    private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
 
     private var setupCall: CancellableCall?
@@ -35,6 +35,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
+        transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -47,6 +48,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
         self.feeAsset = feeAsset
+        self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
         self.substrateStorageFacade = substrateStorageFacade
@@ -122,182 +124,12 @@ private extension GiftTransferInteractor {
             return (builder, nil)
         }
 
-        return switch sendingAssetInfo {
-        case let .orml(info), let .ormlHydrationEvm(info):
-            try addingOrmlTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                tokenStorageInfo: info
-            )
-        case let .statemine(info):
-            try addingAssetsTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .native(info):
-            try addingNativeTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .equilibrium(extras):
-            try addingEquilibriumTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                extras: extras
-            )
-        case .erc20, .evmNative:
-            // we have a separate flow for evm
-            (builder, nil)
-        }
-    }
-
-    func addingOrmlTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        switch amount {
-        case let .concrete(value):
-            return try addingOrmlTransferValueCommand(
-                to: builder,
-                recepient: recepient,
-                tokenStorageInfo: tokenStorageInfo,
-                value: value
-            )
-        case let .all(value):
-            if tokenStorageInfo.canTransferAll {
-                return try addingOrmlTransferAllCommand(
-                    to: builder,
-                    recepient: recepient,
-                    tokenStorageInfo: tokenStorageInfo
-                )
-            } else {
-                return try addingOrmlTransferValueCommand(
-                    to: builder,
-                    recepient: recepient,
-                    tokenStorageInfo: tokenStorageInfo,
-                    value: value
-                )
-            }
-        }
-    }
-
-    func addingOrmlTransferValueCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo,
-        value: BigUInt
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.ormlTransfer(
-            in: tokenStorageInfo.module,
-            currencyId: tokenStorageInfo.currencyId,
-            receiverId: recepient,
-            amount: value
+        return try transferCommandFactory.addingTransferCommand(
+            to: builder,
+            amount: amount,
+            recipient: recepient,
+            assetStorageInfo: sendingAssetInfo
         )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingOrmlTransferAllCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.ormlTransferAll(
-            in: tokenStorageInfo.module,
-            currencyId: tokenStorageInfo.currencyId,
-            receiverId: recepient
-        )
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingNativeTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        info: NativeTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        switch amount {
-        case let .concrete(value):
-            return try addingNativeTransferValueCommand(
-                to: builder,
-                recepient: recepient,
-                value: value,
-                callPath: info.transferCallPath
-            )
-        case let .all(value):
-            if info.canTransferAll {
-                return try addingNativeTransferAllCommand(to: builder, recepient: recepient)
-            } else {
-                return try addingNativeTransferValueCommand(
-                    to: builder,
-                    recepient: recepient,
-                    value: value,
-                    callPath: info.transferCallPath
-                )
-            }
-        }
-    }
-
-    func addingNativeTransferValueCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        value: BigUInt,
-        callPath: CallCodingPath
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.nativeTransfer(to: recepient, amount: value, callPath: callPath)
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingNativeTransferAllCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.nativeTransferAll(to: recepient)
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingAssetsTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        info: AssetsPalletStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.assetsTransfer(
-            to: recepient,
-            info: info,
-            amount: amount.value
-        )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingEquilibriumTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        extras: EquilibriumAssetExtras
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.equilibriumTransfer(
-            to: recepient,
-            extras: extras,
-            amount: amount.value
-        )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
     func continueSetup() {

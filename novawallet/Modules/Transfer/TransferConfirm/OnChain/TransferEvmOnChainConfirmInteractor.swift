@@ -17,6 +17,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         chain: ChainModel,
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
+        transferCommandFactory: EvmTransferCommandFactory,
         extrinsicService: EvmTransactionServiceProtocol,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -38,6 +39,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             chain: chain,
             asset: asset,
             feeProxy: feeProxy,
+            transferCommandFactory: transferCommandFactory,
             extrinsicService: extrinsicService,
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -83,14 +85,14 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
             var callCodingPath: CallCodingPath?
 
             let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
-                guard let self = self else {
+                guard let self else {
                     throw BaseOperationError.unexpectedDependentResult
                 }
 
-                let (newBuilder, codingPath) = try self.addingTransferCommand(
+                let (newBuilder, codingPath) = try transferCommandFactory.addingTransferCommand(
                     to: builder,
                     amount: amount,
-                    recepient: recepient,
+                    recipient: recepient,
                     type: transferType
                 )
 

@@ -2009,6 +2009,8 @@
 		2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */; };
 		2DA4D5942EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */; };
 		2DA4D5AE2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */; };
+		2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */; };
+		2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8562,6 +8564,8 @@
 		2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferBaseInteractor.swift; sourceTree = "<group>"; };
 		2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupWireframe.swift; sourceTree = "<group>"; };
 		2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
+		2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateTransferCommandFactory.swift; sourceTree = "<group>"; };
+		2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferCommandFactory.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17879,6 +17883,15 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
+		2DA4D5CB2EB368D4006FCCC0 /* TransferCommands */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */,
+				2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */,
+			);
+			path = TransferCommands;
+			sourceTree = "<group>";
+		};
 		2DA85A692C7F366C00591900 /* CardTopUp */ = {
 			isa = PBXGroup;
 			children = (
@@ -23372,6 +23385,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2DA4D5CB2EB368D4006FCCC0 /* TransferCommands */,
 				2DC002CB2E84116900D49A42 /* PrivacyMode */,
 				2DF95D1B2D771914001D8785 /* HapticPlayer */,
 				0C8C8F802D6C3E2D00441FB3 /* PriceProvider */,
@@ -31941,6 +31955,7 @@
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				77EF9A702B9ECAE00034D619 /* PushNotificationHandlingService.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
+				2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */,
 				0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */,
 				77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
@@ -33723,6 +33738,7 @@
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
 				0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
+				2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
 				844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */,
