@@ -4,7 +4,7 @@ import Operation_iOS
 
 class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
     let feeProxy: EvmTransactionFeeProxyProtocol
-    let extrinsicService: EvmTransactionServiceProtocol
+    let transactionService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
 
     private(set) var transferType: TransferType?
@@ -15,7 +15,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         chain: ChainModel,
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
-        extrinsicService: EvmTransactionServiceProtocol,
+        transactionService: EvmTransactionServiceProtocol,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -23,7 +23,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.feeProxy = feeProxy
-        self.extrinsicService = extrinsicService
+        self.transactionService = transactionService
         self.validationProviderFactory = validationProviderFactory
 
         super.init(
@@ -76,30 +76,28 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
                     accountId: accountId
                 )
 
-            if asset.assetId == assetId {
-                presenter?.didReceiveSendingAssetSenderBalance(balance)
-            } else if chain.utilityAssets().first?.assetId == assetId {
-                presenter?.didReceiveUtilityAssetSenderBalance(balance)
-            }
+            guard asset.assetId == assetId else { return }
+
+            presenter?.didReceiveSendingAssetSenderBalance(balance)
         case .failure:
             presenter?.didReceiveError(CommonError.databaseSubscription)
         }
     }
-    
+
     override func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
         transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,
         recepientAccountId: AccountId
     ) {
         guard let transferType else { return }
-        
+
         do {
             let recepientAddress = try recepientAccountId.toAddress(using: chain.chainFormat)
-            
+
             lastFeeModel = nil
-            
+
             feeProxy.estimateFee(
-                using: extrinsicService,
+                using: transactionService,
                 reuseIdentifier: transactionId.rawValue
             ) { [weak self] builder in
                 let (newBuilder, _) = try self?.addingTransferCommand(
@@ -121,11 +119,9 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
 
 private extension EvmGiftTransferInteractor {
     func provideMinBalance() {
-        // we don't have existential deposit for evm tokens
         presenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
-        presenter?.didReceiveUtilityAssetMinBalance(0)
     }
-    
+
     func continueSetup() {
         feeProxy.delegate = self
 
@@ -158,17 +154,33 @@ extension EvmGiftTransferInteractor {
 extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
         result: Result<EvmFeeModel, Error>,
-        for _: TransactionFeeId
+        for transactionFeeId: TransactionFeeId
     ) {
-        switch result {
-        case let .success(model):
+        guard let feeType = pendingFees[transactionFeeId] else { return }
+
+        pendingFees[transactionFeeId] = nil
+
+        switch (result, feeType) {
+        case let (.success(model), .claimGift(builder)):
+            guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
+
+            let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
+
+            let amount = giftTransactionFeeId.amount.map { $0 + feeValue.amount }
+            let newBuilder = builder.adding(fee: feeValue)
+            estimateFee(for: amount, feeType: .createGift(newBuilder))
+        case let (.success(model), .createGift(builder)):
             lastFeeModel = model
 
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
             let feeValue = ExtrinsicFee(amount: model.fee, payer: nil, weight: .zero)
-            let feeModel = FeeOutputModel(value: feeValue, validationProvider: validationProvider)
+
+            guard let totalFee = builder.adding(fee: feeValue).build() else { return }
+
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: model)
+            let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
+
             presenter?.didReceiveFee(result: .success(feeModel))
-        case let .failure(error):
+        case let (.failure(error), _):
             presenter?.didReceiveFee(result: .failure(error))
         }
     }

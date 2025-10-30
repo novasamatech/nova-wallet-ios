@@ -88,7 +88,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
             presenter?.didReceiveError(CommonError.databaseSubscription)
         }
     }
-    
+
     override func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
         transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,

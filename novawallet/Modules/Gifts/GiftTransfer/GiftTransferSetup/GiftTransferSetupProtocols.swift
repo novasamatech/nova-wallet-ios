@@ -28,6 +28,7 @@ protocol GiftTransferSetupPresenterProtocol: AnyObject {
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     TransferErrorPresentable,
+    EvmValidationErrorPresentable,
     PhishingErrorPresentable,
     RampPresentable,
     FeeRetryable {

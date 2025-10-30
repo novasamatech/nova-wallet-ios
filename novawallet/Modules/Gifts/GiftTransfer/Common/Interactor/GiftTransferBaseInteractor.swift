@@ -3,11 +3,11 @@ import BigInt
 
 class GiftTransferBaseInteractor: OnChainTransferBaseInteractor {
     var pendingFees: [TransactionFeeId: FeeType] = [:]
-    
+
     func estimateFee(
-        for amount: OnChainTransferAmount<BigUInt>,
-        transactionId: GiftTransactionFeeId,
-        recepientAccountId: AccountId
+        for _: OnChainTransferAmount<BigUInt>,
+        transactionId _: GiftTransactionFeeId,
+        recepientAccountId _: AccountId
     ) {
         fatalError("Method should be overridden")
     }
@@ -18,7 +18,7 @@ extension GiftTransferBaseInteractor {
         let builder = CumulativeFeeBuilder()
         estimateFee(for: amount, feeType: .claimGift(builder))
     }
-    
+
     func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
         feeType: FeeType,
@@ -31,7 +31,7 @@ extension GiftTransferBaseInteractor {
         )
 
         pendingFees[transactionId.rawValue] = feeType
-        
+
         estimateFee(
             for: amount,
             transactionId: transactionId,
