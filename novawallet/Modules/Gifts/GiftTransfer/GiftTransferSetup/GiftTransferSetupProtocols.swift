@@ -16,7 +16,9 @@ protocol GiftTransferSetupInteractorInputProtocol: AnyObject {
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>)
 }
 
-protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {}
+protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
+    func didReceiveFee(description: GiftFeeDescription)
+}
 
 protocol GiftTransferSetupPresenterProtocol: AnyObject {
     func setup()

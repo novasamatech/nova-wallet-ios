@@ -7,6 +7,10 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
     let transactionService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
+    
+    var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
+        presenter as? GiftTransferSetupInteractorOutputProtocol
+    }
 
     private(set) var transferType: TransferType?
     private(set) var lastFeeModel: EvmFeeModel?
@@ -67,7 +71,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
                 return newBuilder
             }
         } catch {
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }
@@ -76,7 +80,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
 
 private extension EvmGiftTransferInteractor {
     func provideMinBalance() {
-        presenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
+        setupPresenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
     }
 
     func continueSetup() {
@@ -87,7 +91,7 @@ private extension EvmGiftTransferInteractor {
 
         provideMinBalance()
 
-        presenter?.didCompleteSetup()
+        setupPresenter?.didCompleteSetup()
     }
 
     func processClaimFee(
@@ -130,12 +134,15 @@ private extension EvmGiftTransferInteractor {
             let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
 
-            presenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(description: giftFeeDescription)
         } catch {
             logger.error("Error calculating accumulated fee: \(error)")
         }
     }
 }
+
+// MAR: - Internal
 
 extension EvmGiftTransferInteractor {
     func setup() {
@@ -149,10 +156,12 @@ extension EvmGiftTransferInteractor {
             continueSetup()
         } else {
             transferType = nil
-            presenter?.didReceiveError(AccountAddressConversionError.invalidEthereumAddress)
+            setupPresenter?.didReceiveError(AccountAddressConversionError.invalidEthereumAddress)
         }
     }
 }
+
+// MARK: - EvmTransactionFeeProxyDelegate
 
 extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
@@ -176,7 +185,7 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
                 giftFeeDescriptionBuilder: builder
             )
         case let (.failure(error), _):
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }

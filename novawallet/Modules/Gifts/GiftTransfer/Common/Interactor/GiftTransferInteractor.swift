@@ -11,6 +11,10 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
+    
+    var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
+        presenter as? GiftTransferSetupInteractorOutputProtocol
+    }
 
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
 
@@ -115,7 +119,7 @@ private extension GiftTransferInteractor {
 
         provideMinBalance()
 
-        presenter?.didCompleteSetup()
+        setupPresenter?.didCompleteSetup()
     }
 
     func provideMinBalance() {
@@ -134,9 +138,9 @@ private extension GiftTransferInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(existence):
-                self?.presenter?.didReceiveSendingAssetExistence(existence)
+                self?.setupPresenter?.didReceiveSendingAssetExistence(existence)
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.setupPresenter?.didReceiveError(error)
             }
         }
     }
@@ -165,7 +169,8 @@ private extension GiftTransferInteractor {
         do {
             let totalFee = try giftFeeDescription.createAccumulatedFee()
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: nil)
-            presenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(description: giftFeeDescription)
         } catch {
             logger.error("Error calculating accumulated fee: \(error)")
         }
@@ -193,7 +198,7 @@ extension GiftTransferInteractor {
 
                 self?.continueSetup()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.setupPresenter?.didReceiveError(error)
             }
         }
     }
@@ -223,7 +228,7 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
                 giftFeeDescriptionBuilder: builder
             )
         case let (.failure(error), _):
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }

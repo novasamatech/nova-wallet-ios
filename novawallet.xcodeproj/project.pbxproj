@@ -2018,6 +2018,8 @@
 		2DA4D64C2EB3B68F006FCCC0 /* GiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */; };
 		2DA4D6602EB4917B006FCCC0 /* GiftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */; };
 		2DA4D6652EB4AC00006FCCC0 /* GiftLocalFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */; };
+		2DA4D6722EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */; };
+		2DA4D6772EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6762EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8581,6 +8583,8 @@
 		2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel19.xcdatamodel; sourceTree = "<group>"; };
 		2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationFactory.swift; sourceTree = "<group>"; };
 		2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftLocalFactory.swift; sourceTree = "<group>"; };
+		2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmPresenter.swift; sourceTree = "<group>"; };
+		2DA4D6762EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17913,7 +17917,9 @@
 			isa = PBXGroup;
 			children = (
 				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
+				2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */,
 				2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */,
+				2DA4D6762EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift */,
 			);
 			path = GiftTransferConfirm;
 			sourceTree = "<group>";
@@ -35426,6 +35432,7 @@
 				1269C0103216CDBDA25A5101 /* ReferendumFullDetailsWireframe.swift in Sources */,
 				2DC002C52E840DC700D49A42 /* ImageSecureView.swift in Sources */,
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
+				2DA4D6772EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
 				0C1CF7432E551EBD00B1DA66 /* HydraStableswap+Pegs.swift in Sources */,
@@ -36311,6 +36318,7 @@
 				B269B09611BE3B54070B9FFE /* NetworksListProtocols.swift in Sources */,
 				76A79A11227196CC5AF21D22 /* NetworksListWireframe.swift in Sources */,
 				94887C4C05AAA82550A75268 /* NetworksListPresenter.swift in Sources */,
+				2DA4D6722EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift in Sources */,
 				C25AA1549353E61CAED8E3D4 /* NetworksListInteractor.swift in Sources */,
 				B7AA65C6A2A013A46B99B9D2 /* NetworksListViewController.swift in Sources */,
 				A09631A9C63D7099075D3C8F /* NetworksListViewLayout.swift in Sources */,
