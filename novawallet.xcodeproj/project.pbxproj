@@ -2016,6 +2016,8 @@
 		2DA4D60D2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */; };
 		2DA4D6142EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */; };
 		2DA4D64C2EB3B68F006FCCC0 /* GiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */; };
+		2DA4D6602EB4917B006FCCC0 /* GiftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */; };
+		2DA4D6652EB4AC00006FCCC0 /* GiftLocalFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8577,6 +8579,8 @@
 		2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmProtocols.swift; sourceTree = "<group>"; };
 		2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftModel.swift; sourceTree = "<group>"; };
 		2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel19.xcdatamodel; sourceTree = "<group>"; };
+		2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationFactory.swift; sourceTree = "<group>"; };
+		2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftLocalFactory.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -18552,6 +18556,8 @@
 			children = (
 				2DA4D6402EB3B677006FCCC0 /* Model */,
 				2DA4D63F2EB3B670006FCCC0 /* View */,
+				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
+				2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -32782,6 +32788,7 @@
 				2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */,
 				779107682AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift in Sources */,
 				84E1CCF5260DCB91001E81B5 /* SwitchAccount+WalletManagementWireframe.swift in Sources */,
+				2DA4D6602EB4917B006FCCC0 /* GiftOperationFactory.swift in Sources */,
 				0C0F6D672D394AF800943A7C /* MythosMultistakingUpdateService.swift in Sources */,
 				0C0AE40B2DE5B39200D506F3 /* GenericLedgerAccountModel.swift in Sources */,
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
@@ -35393,6 +35400,7 @@
 				0C71D3FA2DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift in Sources */,
 				68BE7C4037E8A5C245CDFF0D /* ParaStkYieldBoostStopInteractor.swift in Sources */,
 				A2BE8967FC1609D61E4131BE /* ParaStkYieldBoostStopViewController.swift in Sources */,
+				2DA4D6652EB4AC00006FCCC0 /* GiftLocalFactory.swift in Sources */,
 				2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */,
 				84CA40752A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift in Sources */,
 				7584B6DC2C7F8B2B6671908F /* ParaStkYieldBoostStopViewLayout.swift in Sources */,

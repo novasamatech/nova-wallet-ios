@@ -85,11 +85,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
             return newBuilder
         }
     }
-}
 
-// MARK: - Private
-
-private extension GiftTransferInteractor {
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -106,7 +102,11 @@ private extension GiftTransferInteractor {
             assetStorageInfo: sendingAssetInfo
         )
     }
+}
 
+// MARK: - Private
+
+private extension GiftTransferInteractor {
     func continueSetup() {
         feeProxy.delegate = self
 

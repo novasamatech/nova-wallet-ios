@@ -7,3 +7,7 @@ protocol GiftTransferConfirmInteractorInputProtocol: GiftTransferSetupInteractor
         lastFee: BigUInt?
     )
 }
+
+protocol GiftTransferConfirmInteractorOutputProtocol: GiftTransferSetupInteractorOutputProtocol {
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution?)
+}

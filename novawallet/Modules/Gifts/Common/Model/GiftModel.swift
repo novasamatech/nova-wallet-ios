@@ -4,8 +4,7 @@ import BigInt
 
 struct GiftModel {
     let amount: BigUInt
-    let chainId: ChainModel.Id
-    let assetId: ChainAssetId
+    let chainAssetId: ChainAssetId
     let status: Status
     let giftAccountId: AccountId
 }
