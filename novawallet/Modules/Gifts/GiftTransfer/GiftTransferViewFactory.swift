@@ -1,122 +1,125 @@
 import Foundation
 import Foundation_iOS
 
-extension TransferSetupPresenterFactory {
-    // swiftlint:disable:next function_body_length
-    func createOnChainPresenter(
-        for chainAsset: ChainAsset,
-        initialState: TransferSetupInputState,
-        view: TransferSetupChildViewProtocol
-    ) -> TransferSetupChildPresenterProtocol? {
+final class GiftTransferViewFactory {
+    static func createTransferSetupView(
+        from chainAsset: ChainAsset,
+        assetListStateObservable: AssetListModelObservable,
+        transferCompletion: TransferCompletionClosure?,
+        buyTokenClosure: BuyTokensClosure?
+    ) -> GiftTransferSetupViewProtocol? {
         guard
+            let wallet = SelectedWalletSettings.shared.value,
             let selectedAccountAddress = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
-            let currencyManager = CurrencyManager.shared else {
-            return nil
+            let currencyManager = CurrencyManager.shared
+        else { return nil }
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let interactor: GiftTransferBaseInteractor?
+        let wireframe: GiftTransferSetupWireframeProtocol
+
+        if chainAsset.asset.isAnyEvm {
+            wireframe = EvmGiftTransferSetupWireframe(
+                assetListStateObservable: assetListStateObservable,
+                buyTokensClosure: buyTokenClosure,
+                transferCompletion: transferCompletion
+            )
+            let validationProviderFactory = EvmValidationProviderFactory(
+                presentable: wireframe,
+                balanceViewModelFactory: balanceViewModelFactory,
+                assetInfo: chainAsset.assetDisplayInfo
+            )
+            interactor = createEvmTransferSetupInteractor(
+                for: chainAsset,
+                wallet: wallet,
+                validationProviderFactory: validationProviderFactory,
+                currencyManager: currencyManager
+            )
+        } else {
+            wireframe = GiftTransferSetupWireframe(
+                assetListStateObservable: assetListStateObservable,
+                buyTokensClosure: buyTokenClosure,
+                transferCompletion: transferCompletion
+            )
+            interactor = createSubstrateTransferSetupInteractor(
+                for: chainAsset,
+                wallet: wallet,
+                currencyManager: currencyManager
+            )
         }
 
-        let optInteractor: (OnChainTransferBaseInteractor & OnChainTransferSetupInteractorInputProtocol)?
-        let wireframe: OnChainTransferSetupWireframeProtocol
+        guard let interactorInput = interactor as? GiftTransferSetupInteractorInputProtocol else { return nil }
+
+        let initPresenterState = TransferSetupInputState(recepient: nil, amount: nil)
 
         let localizationManager = LocalizationManager.shared
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let sendingBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
+
+        let issueViewModelFactory = GiftSetupIssueViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
-
-        let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
-
-        if
-            let utilityAsset = chainAsset.chain.utilityAssets().first,
-            utilityAsset.assetId != chainAsset.asset.assetId {
-            let utilityAssetInfo = utilityAsset.displayInfo(with: chainAsset.chain.icon)
-            utilityBalanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAssetInfo,
-                priceAssetInfoFactory: priceAssetInfoFactory
-            )
-        } else {
-            utilityBalanceViewModelFactory = nil
-        }
-
-        if chainAsset.asset.isAnyEvm {
-            let evmWireframe = EvmOnChainTransferSetupWireframe(transferCompletion: transferCompletion)
-            wireframe = evmWireframe
-
-            let assetInfo = chainAsset.chain.utilityAssetDisplayInfo() ?? chainAsset.assetDisplayInfo
-            let validationProviderFactory = EvmValidationProviderFactory(
-                presentable: evmWireframe,
-                balanceViewModelFactory: utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory,
-                assetInfo: assetInfo
-            )
-
-            optInteractor = createEvmInteractor(for: chainAsset, validationProviderFactory: validationProviderFactory)
-        } else {
-            wireframe = OnChainTransferSetupWireframe(transferCompletion: transferCompletion)
-            optInteractor = createSubstrateInteractor(for: chainAsset)
-        }
-
-        guard let interactor = optInteractor else {
-            return nil
-        }
-
-        guard let utilityChainAsset = chainAsset.chain.utilityChainAsset() else {
-            return nil
-        }
 
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: utilityChainAsset.assetDisplayInfo,
-            destUtilityAssetInfo: utilityChainAsset.assetDisplayInfo,
+            utilityAssetInfo: chainAsset.assetDisplayInfo,
+            destUtilityAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()
-        let phishingValidatingFactory = PhishingAddressValidatorFactory(
-            repository: phishingRepository,
-            presentable: wireframe,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
-        let presenter = OnChainTransferSetupPresenter(
-            interactor: interactor,
+        let presenter = GiftTransferSetupPresenter(
+            interactor: interactorInput,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            feeAsset: utilityChainAsset,
-            initialState: initialState,
+            feeAsset: chainAsset,
+            initialState: initPresenterState,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
-            sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
-            utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            issueViewModelFactory: issueViewModelFactory,
             senderAccountAddress: selectedAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            phishingValidatingFactory: phishingValidatingFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
+        let view = GiftTransferSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
         presenter.view = view
+        interactor?.presenter = presenter
         dataValidatingFactory.view = view
-        phishingValidatingFactory.view = view
-        interactor.presenter = presenter
 
-        return presenter
+        return view
     }
+}
 
-    private func createSubstrateInteractor(for chainAsset: ChainAsset) -> OnChainTransferSetupInteractor? {
+private extension GiftTransferViewFactory {
+    static func createSubstrateTransferSetupInteractor(
+        for chainAsset: ChainAsset,
+        wallet: MetaAccountModel,
+        currencyManager: CurrencyManagerProtocol
+    ) -> GiftTransferSetupInteractor? {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
+            let connection = chainRegistry.getConnection(for: chain.chainId)
+        else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -129,7 +132,7 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
@@ -139,11 +142,11 @@ extension TransferSetupPresenterFactory {
             operationQueue: operationQueue
         )
 
-        return OnChainTransferSetupInteractor(
+        return GiftTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeAsset: chain.utilityChainAsset(),
+            feeAsset: chainAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             transferCommandFactory: SubstrateTransferCommandFactory(),
@@ -154,23 +157,25 @@ extension TransferSetupPresenterFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
     }
 
-    private func createEvmInteractor(
+    static func createEvmTransferSetupInteractor(
         for chainAsset: ChainAsset,
-        validationProviderFactory: EvmValidationProviderFactoryProtocol
-    ) -> EvmOnChainTransferSetupInteractor? {
+        wallet: MetaAccountModel,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) -> EvmGiftTransferSetupInteractor? {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
-            let connection = chainRegistry.getOneShotConnection(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
+            let connection = chainRegistry.getConnection(for: chain.chainId)
+        else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -185,7 +190,7 @@ extension TransferSetupPresenterFactory {
 
         let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
 
-        let extrinsicService = EvmTransactionService(
+        let transactionService = EvmTransactionService(
             accountId: selectedAccount.accountId,
             operationFactory: operationFactory,
             maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
@@ -196,13 +201,18 @@ extension TransferSetupPresenterFactory {
             operationQueue: operationQueue
         )
 
-        return EvmOnChainTransferSetupInteractor(
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
+        return EvmGiftTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
             feeProxy: EvmTransactionFeeProxy(),
             transferCommandFactory: EvmTransferCommandFactory(),
-            extrinsicService: extrinsicService,
+            transactionService: transactionService,
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

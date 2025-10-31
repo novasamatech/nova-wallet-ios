@@ -128,7 +128,7 @@ final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProt
                 } else if chain.hasHydrationFees {
                     self?.createHydraCanPayFeeFilterWrapper(for: (chain, chainAssets))
                 } else {
-                    nil
+                    .createWithResult(chainAssets.filter { $0.isUtilityAsset })
                 }
             }
         }.longrunOperation()

@@ -1798,9 +1798,21 @@
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
 		2D51D68C2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */; };
+		2D533C3D2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */; };
+		2D533C4A2EB0B4000005FF8A /* GiftTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */; };
+		2D533C4F2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */; };
+		2D533C542EB0CAB80005FF8A /* GiftTransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */; };
+		2D533C6B2EB0E5D80005FF8A /* GiftSetupViewIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */; };
+		2D533C732EB0E74A0005FF8A /* GiftTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */; };
+		2D533C7C2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */; };
+		2D533C842EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */; };
+		2D533C8C2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */; };
+		2D533C932EB0F7F10005FF8A /* GiftTransferViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */; };
+		2D533C9E2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C9D2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* RampActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D5421322EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */; };
+		2D54215F2EAB69BC0020E64B /* GiftTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54215E2EAB69BC0020E64B /* GiftTransferInteractor.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -1991,6 +2003,16 @@
 		2DA3AE992E5DB34C00689F65 /* Xcm+LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */; };
 		2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */; };
 		2DA3AE9D2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */; };
+		2DA4D5372EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */; };
+		2DA4D5442EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */; };
+		2DA4D5732EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */; };
+		2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */; };
+		2DA4D5942EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */; };
+		2DA4D5AE2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */; };
+		2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */; };
+		2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */; };
+		2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */; };
+		2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA6FA4D2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */; };
 		2DA826D12E78145800C03B3C /* PrivacyModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */; };
@@ -8350,9 +8372,21 @@
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPromoService.swift; sourceTree = "<group>"; };
+		2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
+		2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupProtocols.swift; sourceTree = "<group>"; };
+		2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupPresenter.swift; sourceTree = "<group>"; };
+		2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferPresenter.swift; sourceTree = "<group>"; };
+		2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupViewIssue.swift; sourceTree = "<group>"; };
+		2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewController.swift; sourceTree = "<group>"; };
+		2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewLayout.swift; sourceTree = "<group>"; };
+		2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerView.swift; sourceTree = "<group>"; };
+		2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerViewModel.swift; sourceTree = "<group>"; };
+		2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferViewFactory.swift; sourceTree = "<group>"; };
+		2D533C9D2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupWireframe.swift; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
+		2D54215E2EAB69BC0020E64B /* GiftTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferInteractor.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -8526,6 +8560,16 @@
 		2D96D8682DF04FF700159E91 /* DelegatedAccountsUpdateWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsUpdateWireframe.swift; sourceTree = "<group>"; };
 		2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
+		2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssuesViewModelFactory.swift; sourceTree = "<group>"; };
+		2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssueCheckParams.swift; sourceTree = "<group>"; };
+		2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferInteractor.swift; sourceTree = "<group>"; };
+		2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferBaseInteractor.swift; sourceTree = "<group>"; };
+		2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupWireframe.swift; sourceTree = "<group>"; };
+		2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
+		2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateTransferCommandFactory.swift; sourceTree = "<group>"; };
+		2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferCommandFactory.swift; sourceTree = "<group>"; };
+		2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccumulatedFeeBuilder.swift; sourceTree = "<group>"; };
+		2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftFeeDescription.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryGenericParams.swift; sourceTree = "<group>"; };
 		2DA826D02E78145800C03B3C /* PrivacyModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeSettings.swift; sourceTree = "<group>"; };
@@ -17199,12 +17243,66 @@
 			path = MultisigNotificationsPromo;
 			sourceTree = "<group>";
 		};
+		2D533C322EB0B3430005FF8A /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D57E2EB267BD006FCCC0 /* Interactor */,
+				2D533C532EB0CAB80005FF8A /* GiftTransferPresenter.swift */,
+				2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		2D533C362EB0B3520005FF8A /* GiftTransferSetup */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5A22EB35781006FCCC0 /* Interactor */,
+				2DA4D58F2EB3525F006FCCC0 /* Wireframe */,
+				2DA4D5302EB21DB1006FCCC0 /* Factory */,
+				2D533C822EB0EAFE0005FF8A /* Views */,
+				2D533C692EB0E5CC0005FF8A /* Model */,
+				2D533C722EB0E74A0005FF8A /* GiftTransferSetupViewController.swift */,
+				2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */,
+				2D533C4E2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift */,
+				2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */,
+			);
+			path = GiftTransferSetup;
+			sourceTree = "<group>";
+		};
+		2D533C692EB0E5CC0005FF8A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C6A2EB0E5D80005FF8A /* GiftSetupViewIssue.swift */,
+				2DA4D5432EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift */,
+				2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2D533C822EB0EAFE0005FF8A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		2D54214F2EAA798F0020E64B /* Gift */ = {
 			isa = PBXGroup;
 			children = (
 				2D5421312EAA770B0020E64B /* GiftOperationNetworkListPresenter.swift */,
 			);
 			path = Gift;
+			sourceTree = "<group>";
+		};
+		2D54215D2EAB69A80020E64B /* GiftTransfer */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */,
+				2D533C362EB0B3520005FF8A /* GiftTransferSetup */,
+				2D533C322EB0B3430005FF8A /* Common */,
+			);
+			path = GiftTransfer;
 			sourceTree = "<group>";
 		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
@@ -17754,6 +17852,51 @@
 			path = DelegatedAccountsUpdate;
 			sourceTree = "<group>";
 		};
+		2DA4D5302EB21DB1006FCCC0 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DA4D57E2EB267BD006FCCC0 /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5792EB26755006FCCC0 /* GiftTransferBaseInteractor.swift */,
+				2D54215E2EAB69BC0020E64B /* GiftTransferInteractor.swift */,
+				2DA4D5722EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift */,
+			);
+			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2DA4D58F2EB3525F006FCCC0 /* Wireframe */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C9D2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift */,
+				2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */,
+			);
+			path = Wireframe;
+			sourceTree = "<group>";
+		};
+		2DA4D5A22EB35781006FCCC0 /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */,
+				2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */,
+			);
+			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2DA4D5CB2EB368D4006FCCC0 /* TransferCommands */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */,
+				2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */,
+			);
+			path = TransferCommands;
+			sourceTree = "<group>";
+		};
 		2DA85A692C7F366C00591900 /* CardTopUp */ = {
 			isa = PBXGroup;
 			children = (
@@ -18209,6 +18352,7 @@
 		2DE37C402EA0D824007C43A0 /* Gifts */ = {
 			isa = PBXGroup;
 			children = (
+				2D54215D2EAB69A80020E64B /* GiftTransfer */,
 				2DE0CA7E2EA661A30027F279 /* GiftAssetsOperation */,
 				2DF3C2862EA22EC80099417C /* Common */,
 				D56A4C6DA047468658DE2D1B /* GiftsOnboarding */,
@@ -23246,6 +23390,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2DA4D5CB2EB368D4006FCCC0 /* TransferCommands */,
 				2DC002CB2E84116900D49A42 /* PrivacyMode */,
 				2DF95D1B2D771914001D8785 /* HapticPlayer */,
 				0C8C8F802D6C3E2D00441FB3 /* PriceProvider */,
@@ -23470,6 +23615,7 @@
 				778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */,
 				0CE862352D65F3C100245992 /* AssetLock+Display.swift */,
 				2DA6FA4C2E7D4E6600173AC7 /* ViewModelFactoryGenericParams.swift */,
+				2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -30702,6 +30848,7 @@
 				8490145224A93FD1008F705E /* NovaLoadingViewPresenter.swift in Sources */,
 				2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */,
 				880855F828D09DA8004255E7 /* CrowdloanContributionDataMapper.swift in Sources */,
+				2D533C542EB0CAB80005FF8A /* GiftTransferPresenter.swift in Sources */,
 				882AA13028AE64DC0093BC63 /* CrowdloanYourContributionsTotalCell.swift in Sources */,
 				88D271EF298A6B14000AABF7 /* VotesTableViewCell.swift in Sources */,
 				8849AD6829C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift in Sources */,
@@ -30774,6 +30921,7 @@
 				2D06CC382E3BBC450093CA84 /* IntegrityCheckMessage.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				0CFF821B2D8AF98F00DB17A4 /* XcmDynamicCrosschainFeeCalculator.swift in Sources */,
+				2D533C7C2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
 				8434C9E425401EF3009E4191 /* TransactionHistoryItem.swift in Sources */,
 				88421062289BBD1900306F2C /* JsonFileRepository.swift in Sources */,
@@ -30969,6 +31117,7 @@
 				84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */,
 				2D1C5D182C24723700E2DBDD /* NetworkNodeEditInteractor.swift in Sources */,
 				84DC92292942092A003B1D9C /* TokensAddNetworkSelectionTableViewCell.swift in Sources */,
+				2DA4D5AE2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift in Sources */,
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
 				848B59C428BCD1BD0009543C /* MessageSheetContentLabel.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
@@ -31314,6 +31463,7 @@
 				844CB56E26F9CB1500396E13 /* CrowdloanLocalStorageSubscriber.swift in Sources */,
 				8401AEC32642A71D000B03E3 /* StakingRebondConfirmationViewController.swift in Sources */,
 				0CFF82512D9275C900DB17A4 /* AvailableBalanceMapping.swift in Sources */,
+				2D533C4A2EB0B4000005FF8A /* GiftTransferSetupProtocols.swift in Sources */,
 				841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */,
 				842EBB392890A8E400B952D8 /* WalletSelectionViewProtocols.swift in Sources */,
 				2DAF6AB72CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift in Sources */,
@@ -31473,6 +31623,7 @@
 				2D32BE1B2C6A49900047F520 /* ExtrinsicNativeFeeInstaller.swift in Sources */,
 				88F34FD928FFE68B00712BDE /* YourVoteRow.swift in Sources */,
 				84D8F15F24D8179000AF43E9 /* TitleWithSubtitleViewModel.swift in Sources */,
+				2D533C4F2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift in Sources */,
 				AEE5FB0126415E2A002B8FDC /* StakingRebondSetupInteractor.swift in Sources */,
 				2D039DE22BFBB08400A928E5 /* ExportNetworkView.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
@@ -31670,6 +31821,7 @@
 				8448F7A22882ABF50080CEA9 /* CustomSearchView.swift in Sources */,
 				2D3EA7DE2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift in Sources */,
 				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
+				2D533C3D2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift in Sources */,
 				849D3223291CC43D00D25839 /* MarkupAttributedText.swift in Sources */,
 				0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */,
 				84FFE45B2862076F002432BB /* XcmUnweightedTransferRequest.swift in Sources */,
@@ -31809,12 +31961,14 @@
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				77EF9A702B9ECAE00034D619 /* PushNotificationHandlingService.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
+				2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */,
 				0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */,
 				77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
 				77F033972A8142D1006BC67E /* StakingSetupAmountStyles.swift in Sources */,
 				AEF507F72625A3280098574D /* ValidatorState+Status.swift in Sources */,
 				8434B5FA298D284300FACF4C /* GovernanceBaseEditDelegationViewController.swift in Sources */,
+				2DA4D5372EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift in Sources */,
 				843910D9253F8DFB00E3C217 /* StatusPresentable.swift in Sources */,
 				847C963D255351BB002D288F /* ScrollableContainerView.swift in Sources */,
 				842A736B27DB7A2E006EE1EA /* OperationDetailsViewModel.swift in Sources */,
@@ -32262,6 +32416,7 @@
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
 				2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */,
 				0C2B18AE2BFE378B00206EDE /* CloudBackupSyncService+Create.swift in Sources */,
+				2DA4D5442EB21E1D006FCCC0 /* GiftSetupIssueCheckParams.swift in Sources */,
 				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
 				2D2B6AF22D6DCD77002F8C77 /* BrowserNavigationPresenter.swift in Sources */,
 				845B811F28F451A40040CE84 /* GovernanceActionOperationFactory.swift in Sources */,
@@ -32519,6 +32674,7 @@
 				778215BF2B91421C006C7D13 /* CurrencyManager+shared.swift in Sources */,
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
 				84E172D128BF383B00DC85B6 /* Array+Dictionary.swift in Sources */,
+				2D533C6B2EB0E5D80005FF8A /* GiftSetupViewIssue.swift in Sources */,
 				84D8754028EB1A59004065BD /* ReferendumsInteractorError.swift in Sources */,
 				883DB17C297A520300EFB7D8 /* GovernanceDelegatesFilter.swift in Sources */,
 				77ED167A2A0CF41700E1FC8C /* StakingRewardFiltersViewModel.swift in Sources */,
@@ -33272,6 +33428,7 @@
 				84981EE229D31A6900948306 /* TransactionHistorySyncService.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
 				84EBFCF6285E955A0006327E /* XcmTransferReserve.swift in Sources */,
+				2DA4D5942EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift in Sources */,
 				2D57029D2C9E08D300673CB7 /* CardsZStack+Constants.swift in Sources */,
 				843910CE253F7E8000E3C217 /* SubstrateDataStorageFacade.swift in Sources */,
 				84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */,
@@ -33454,6 +33611,7 @@
 				2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */,
 				2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */,
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
+				2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */,
 				0CE933982C048E6B000F3EFE /* CloudBackupReviewChangesCell.swift in Sources */,
 				8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */,
 				0C3205EA2A8A0539002EB914 /* EvmValidationProviderFactory.swift in Sources */,
@@ -33580,12 +33738,14 @@
 				0C37AFBF2B56852500009ECA /* PayoutStakersCall.swift in Sources */,
 				84333BD92856840E00C76A4F /* SelectionValidatorGroups.swift in Sources */,
 				0C0F6DE42D41982500943A7C /* MythosStakingServiceFactory.swift in Sources */,
+				2D533C9E2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift in Sources */,
 				0CAB7DA32C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift in Sources */,
 				84002A9E2992444300A80672 /* GovernanceNewDelegation.swift in Sources */,
 				0C0F6E4A2D47E80B00943A7C /* MythosStakingCommonData.swift in Sources */,
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
 				0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
+				2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
 				844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */,
@@ -34369,6 +34529,7 @@
 				0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */,
 				BE8CF97B6EA62C75277B78AA /* MoonbeamTermsProtocols.swift in Sources */,
 				2D8F0ECA2CEE4CC300A22074 /* UIView+StateRender.swift in Sources */,
+				2D533C842EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
 				0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */,
@@ -34471,6 +34632,7 @@
 				65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */,
 				84FBDBE328C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift in Sources */,
 				845B080A2918D381005785D3 /* Gov1ExtrinsicFactory.swift in Sources */,
+				2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */,
 				846A836128B8DB7700D92892 /* TxExpirationMessageSheetTimerLabel.swift in Sources */,
 				0C7104902C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift in Sources */,
 				84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */,
@@ -34747,6 +34909,7 @@
 				880059E128EF0A5C00E87B9B /* VotingProgressView.swift in Sources */,
 				84744955289284F50042FD80 /* StakingMainViewLayout.swift in Sources */,
 				88D02FF229431FC900E26390 /* AssetDetailsLocksViewModel.swift in Sources */,
+				2D54215F2EAB69BC0020E64B /* GiftTransferInteractor.swift in Sources */,
 				84ABB3382A16164200B5E95A /* HistoryRewardContext.swift in Sources */,
 				2BB0D54988107FA0C484C530 /* ParaStkSelectCollatorsWireframe.swift in Sources */,
 				DEF53463C2C780D702E9C2CA /* CollatorStakingSelectPresenter.swift in Sources */,
@@ -34847,6 +35010,7 @@
 				2DF95D2A2D785AF1001D8785 /* HapticEngine.swift in Sources */,
 				C729BF3E60E6825AEED11383 /* CollatorStakingRedeemViewController.swift in Sources */,
 				844C3E752A091B9800C4305F /* WalletsChooseViewModelFactory.swift in Sources */,
+				2D533C932EB0F7F10005FF8A /* GiftTransferViewFactory.swift in Sources */,
 				E477B09B47A3021EF1CE66F0 /* CollatorStakingRedeemViewLayout.swift in Sources */,
 				E0CBD1D747361D121555FD51 /* ParaStkRedeemViewFactory.swift in Sources */,
 				EDD5551608E7ACDDBBC054C4 /* ParaStkRebondProtocols.swift in Sources */,
@@ -35064,6 +35228,7 @@
 				843125D1299BBC5F0063745B /* GovernanceRevokeDelegationInteractorError.swift in Sources */,
 				30542C0BD486FD1583F36BA2 /* LedgerNetworkSelectionProtocols.swift in Sources */,
 				84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */,
+				2DA4D5732EB264F2006FCCC0 /* EvmGiftTransferInteractor.swift in Sources */,
 				0C7CF4D42BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift in Sources */,
 				2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */,
 				8490111429E68FCB005D688B /* WalletConnectService.swift in Sources */,
@@ -35528,6 +35693,7 @@
 				0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */,
 				C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */,
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,
+				2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */,
 				4883346B78B82D2037DEBA56 /* GovernanceRemoveVotesConfirmViewLayout.swift in Sources */,
 				893CA0DF4EAD03CC118A2733 /* GovernanceRemoveVotesConfirmViewFactory.swift in Sources */,
 				0C8C8F812D6C3E2D00441FB3 /* PriceProviderFactory.swift in Sources */,
@@ -35612,6 +35778,7 @@
 				1B3E22DE61BAC810106A7D1A /* GovernanceDelegateSearchProtocols.swift in Sources */,
 				8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */,
 				C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */,
+				2D533C8C2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift in Sources */,
 				0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */,
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,
 				2DD018D32D65E36F0063F9BB /* PriceChartViewModel.swift in Sources */,
@@ -35673,6 +35840,7 @@
 				51FB88BCF778805D142DD8A9 /* WalletConnectProtocols.swift in Sources */,
 				5619C10BFFAEAF89883227B4 /* WalletConnectPresenter.swift in Sources */,
 				2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */,
+				2D533C732EB0E74A0005FF8A /* GiftTransferSetupViewController.swift in Sources */,
 				EB11BF594D7E16A8885D47DD /* WalletConnectServiceFactory.swift in Sources */,
 				C8171AF2893A4723F4F63E23 /* WalletConnectSessionsProtocols.swift in Sources */,
 				0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */,

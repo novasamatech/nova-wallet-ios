@@ -1980,3 +1980,7 @@
 "common.gift" = "Gift";
 "asset.operation.gift.title" = "Select token to Gift";
 "gift.operation.network.list.title" = "Select network for %@ gift";
+"gift.transfer.setup.token.title" = "Send gift";
+"gift.validation.not.enough.tokens" = "Not enough tokens";
+"transfer.setup.enter.another.amount" = "Enter another amount";
+"gift.validation.minimal.gift.amount" = "The minimum gift is %@";
