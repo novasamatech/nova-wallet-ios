@@ -22,7 +22,7 @@ final class GiftTransferConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = TransferConfirmViewLayout()
+        view = GiftTransferConfirmViewLayout()
     }
 
     override func viewDidLoad() {
