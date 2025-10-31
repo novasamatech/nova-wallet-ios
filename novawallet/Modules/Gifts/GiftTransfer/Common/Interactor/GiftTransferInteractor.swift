@@ -11,7 +11,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
-    
+
     var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
         presenter as? GiftTransferSetupInteractorOutputProtocol
     }

@@ -24,7 +24,6 @@ class GiftTransferPresenter {
 
     private(set) var fee: FeeOutputModel?
     private(set) var feeDescription: GiftFeeDescription?
-    var feeAsset: ChainAsset
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -39,7 +38,6 @@ class GiftTransferPresenter {
 
     init(
         chainAsset: ChainAsset,
-        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         senderAccountAddress: AccountAddress,
@@ -47,7 +45,6 @@ class GiftTransferPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.chainAsset = chainAsset
-        self.feeAsset = feeAsset
         self.networkViewModelFactory = networkViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.senderAccountAddress = senderAccountAddress
@@ -130,7 +127,7 @@ class GiftTransferPresenter {
             askFeeRetry()
         }
     }
-    
+
     func didReceiveFee(description: GiftFeeDescription) {
         feeDescription = description
     }

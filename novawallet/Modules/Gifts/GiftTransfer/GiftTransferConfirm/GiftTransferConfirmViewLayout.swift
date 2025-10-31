@@ -1,33 +1,23 @@
 import Foundation
+import Foundation_iOS
 
 final class GiftTransferConfirmViewLayout: SCLoadableActionLayoutView {
     let amountView = MultilineBalanceView()
 
-    let senderTableView = StackTableView()
+    let stackTableView = StackTableView()
 
-    let originNetworkCell = StackNetworkCell()
-
-    private(set) var destinationNetworkCell: StackNetworkCell?
+    let networkCell = StackNetworkCell()
 
     let walletCell = StackTableCell()
-    let senderCell: StackInfoTableCell = {
-        let cell = StackInfoTableCell()
-        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        return cell
-    }()
 
-    let recepientTableView = StackTableView()
+    let senderCell: StackInfoTableCell = .create { view in
+        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    }
 
-    let recepientCell: StackInfoTableCell = {
-        let cell = StackInfoTableCell()
-        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        return cell
-    }()
+    let giftAmountCell = StackGiftAmountCell()
 
-    let originFeeCell = StackNetworkFeeCell()
-
-    private(set) var crossChainFeeCell: StackNetworkFeeCell?
-    private(set) var crossChainHintView: HintListView?
+    let networkFeeCell = StackNetworkFeeCell()
+    let claimFeeCell = StackNetworkFeeCell()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,65 +32,17 @@ final class GiftTransferConfirmViewLayout: SCLoadableActionLayoutView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func switchCrossChain() {
-        if destinationNetworkCell == nil {
-            let destinationNetworkCell = StackNetworkCell()
+    override func setupLayout() {
+        super.setupLayout()
 
-            recepientTableView.insertArrangedSubview(destinationNetworkCell, at: 0)
+        addArrangedSubview(amountView, spacingAfter: 20.0)
+        addArrangedSubview(stackTableView, spacingAfter: 12.0)
 
-            self.destinationNetworkCell = destinationNetworkCell
-        }
-
-        if crossChainFeeCell == nil {
-            let crossChainFeeCell = StackNetworkFeeCell()
-            crossChainFeeCell.rowContentView.title = LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChainFee()
-            }
-
-            senderTableView.addArrangedSubview(crossChainFeeCell)
-
-            self.crossChainFeeCell = crossChainFeeCell
-        }
-
-        if crossChainHintView == nil {
-            let crossChainHintView = HintListView()
-
-            containerView.stackView.insertArranged(view: crossChainHintView, after: senderTableView)
-
-            containerView.stackView.setCustomSpacing(12.0, after: crossChainHintView)
-
-            self.crossChainHintView = crossChainHintView
-        }
-
-        setNeedsLayout()
-    }
-
-    private func setupLayout() {
-        addSubview(actionLoadableView)
-        actionLoadableView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
-        }
-
-        containerView.stackView.addArrangedSubview(amountView)
-        containerView.stackView.setCustomSpacing(20.0, after: amountView)
-
-        containerView.stackView.addArrangedSubview(senderTableView)
-        containerView.stackView.setCustomSpacing(12.0, after: senderTableView)
-
-        senderTableView.addArrangedSubview(originNetworkCell)
-        senderTableView.addArrangedSubview(walletCell)
-        senderTableView.addArrangedSubview(senderCell)
-        senderTableView.addArrangedSubview(originFeeCell)
-
-        containerView.stackView.addArrangedSubview(recepientTableView)
-        recepientTableView.addArrangedSubview(recepientCell)
+        stackTableView.addArrangedSubview(networkCell)
+        stackTableView.addArrangedSubview(walletCell)
+        stackTableView.addArrangedSubview(senderCell)
+        stackTableView.addArrangedSubview(giftAmountCell)
+        stackTableView.addArrangedSubview(networkFeeCell)
+        stackTableView.addArrangedSubview(claimFeeCell)
     }
 }

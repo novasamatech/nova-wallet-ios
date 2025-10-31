@@ -79,7 +79,6 @@ final class GiftTransferViewFactory {
             interactor: interactorInput,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            feeAsset: chainAsset,
             initialState: initPresenterState,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,

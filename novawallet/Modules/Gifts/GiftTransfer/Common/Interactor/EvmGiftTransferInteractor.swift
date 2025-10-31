@@ -7,7 +7,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
     let transactionService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
-    
+
     var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
         presenter as? GiftTransferSetupInteractorOutputProtocol
     }

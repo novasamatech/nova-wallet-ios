@@ -16,7 +16,6 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
         interactor: GiftTransferSetupInteractorInputProtocol,
         wireframe: GiftTransferSetupWireframeProtocol,
         chainAsset: ChainAsset,
-        feeAsset: ChainAsset,
         initialState: TransferSetupInputState,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
@@ -35,7 +34,6 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
 
         super.init(
             chainAsset: chainAsset,
-            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
@@ -143,7 +141,7 @@ private extension GiftTransferSetupPresenter {
             return
         }
 
-        let assetInfo = feeAsset.asset.displayInfo
+        let assetInfo = chainAsset.asset.displayInfo
 
         let feeDecimal = Decimal.fromSubstrateAmount(
             fee.value.amount,
@@ -276,7 +274,7 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
-            feeAssetInfo: feeAsset.assetDisplayInfo,
+            feeAssetInfo: chainAsset.assetDisplayInfo,
             view: view,
             selectedLocale: selectedLocale
         )
