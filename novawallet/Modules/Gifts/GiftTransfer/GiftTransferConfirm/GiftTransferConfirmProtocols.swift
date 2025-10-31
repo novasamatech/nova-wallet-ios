@@ -20,7 +20,7 @@ protocol GiftTransferConfirmPresenterProtocol: AnyObject {
 protocol GiftTransferConfirmInteractorInputProtocol: GiftTransferSetupInteractorInputProtocol {
     func submit(
         amount: OnChainTransferAmount<BigUInt>,
-        lastFee: BigUInt?
+        lastFeeDescription: GiftFeeDescription?
     )
 }
 

@@ -66,22 +66,30 @@ final class GiftTransferConfirmInteractor: GiftTransferInteractor {
 private extension GiftTransferConfirmInteractor {
     func createWrapper(
         amount: OnChainTransferAmount<BigUInt>,
-        lastFee: BigUInt?
+        lastFeeDescription: GiftFeeDescription?
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolution> {
+        let totalFee = try? lastFeeDescription?.createAccumulatedFee().amount
+        let claimFee = lastFeeDescription?.claimFee.amount ?? 0
+
+        let amountWithClaimFee = amount.map { $0 + claimFee }
+
+        /* We use nominal gift value for local model */
         let giftOperation = giftFactory.createGiftOperation(
             amount: amount,
             chainAsset: ChainAsset(chain: chain, asset: asset)
         )
 
+        /* We send amount with claim fee to allow getting
+         nominal gift value for final recipient */
         let submitOperation = createSubmitOperation(
             dependingOn: giftOperation,
-            amount: amount
+            amount: amountWithClaimFee
         )
 
-        let processResultWrapper = creareProcessSubmissionResultWrapper(
+        let processResultWrapper = createProcessSubmissionResultWrapper(
             dependingOn: submitOperation,
             giftOperation: giftOperation,
-            lastFee: lastFee
+            lastFee: totalFee
         )
 
         submitOperation.addDependency(giftOperation)
@@ -136,7 +144,7 @@ private extension GiftTransferConfirmInteractor {
         }
     }
 
-    func creareProcessSubmissionResultWrapper(
+    func createProcessSubmissionResultWrapper(
         dependingOn submitOperation: BaseOperation<(ExtrinsicSubmittedModel, CallCodingPath?)>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
@@ -211,11 +219,11 @@ private extension GiftTransferConfirmInteractor {
 extension GiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputProtocol {
     func submit(
         amount: OnChainTransferAmount<BigUInt>,
-        lastFee: BigUInt?
+        lastFeeDescription: GiftFeeDescription?
     ) {
         let wrapper = createWrapper(
             amount: amount,
-            lastFee: lastFee
+            lastFeeDescription: lastFeeDescription
         )
 
         execute(

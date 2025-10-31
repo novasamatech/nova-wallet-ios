@@ -217,7 +217,7 @@ extension GiftTransferConfirmPresenter: GiftTransferConfirmPresenterProtocol {
 
             interactor.submit(
                 amount: amountInPlank,
-                lastFee: fee?.value.amount
+                lastFeeDescription: feeDescription
             )
         }
     }
