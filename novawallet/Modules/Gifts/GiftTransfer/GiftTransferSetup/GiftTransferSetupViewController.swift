@@ -230,16 +230,6 @@ extension GiftTransferSetupViewController: KeyboardAdoptable {
     }
 }
 
-// MARK: - AmountInputAccessoryViewDelegate
-
-extension GiftTransferSetupViewController: AmountInputAccessoryViewDelegate {
-    func didSelect(on _: AmountInputAccessoryView, percentage _: Float) {}
-
-    func didSelectDone(on _: AmountInputAccessoryView) {
-        rootView.amountInputView.textField.resignFirstResponder()
-    }
-}
-
 // MARK: - Localizable
 
 extension GiftTransferSetupViewController: Localizable {
