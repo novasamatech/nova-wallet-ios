@@ -98,8 +98,11 @@ extension GiftTransferConfirmViewController: GiftTransferConfirmViewProtocol {
         rootView.walletCell.bind(viewModel: viewModel)
     }
 
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
+    func didReceiveSpendingAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveGiftAmount(viewModel: BalanceViewModelProtocol) {
         rootView.giftAmountCell.rowContentView.bind(viewModel: viewModel)
     }
 

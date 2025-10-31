@@ -78,8 +78,8 @@ final class GiftTransferConfirmPresenter: GiftTransferPresenter {
         provideAmountViewModel()
     }
 
-    override func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
-        super.didReceiveUtilityAssetPrice(priceData)
+    override func didReceiveFee(description: GiftFeeDescription) {
+        super.didReceiveFee(description: description)
 
         provideFeeViewModel()
     }
@@ -131,6 +131,7 @@ private extension GiftTransferConfirmPresenter {
     func provideFeeViewModel() {
         guard let feeDescription else {
             view?.didReceiveNetworkFee(viewModel: nil)
+            view?.didReceiveClaimFee(viewModel: nil)
             return
         }
 
@@ -142,12 +143,18 @@ private extension GiftTransferConfirmPresenter {
     }
 
     func provideAmountViewModel() {
-        let viewModel = balanceViewModelFactory.spendingAmountFromPrice(
+        let spendingAmountViewModel = balanceViewModelFactory.spendingAmountFromPrice(
             amount.value,
             priceData: assetPrice
         ).value(for: selectedLocale)
 
-        view?.didReceiveAmount(viewModel: viewModel)
+        let giftAmountViewModel = balanceViewModelFactory.lockingAmountFromPrice(
+            amount.value,
+            priceData: assetPrice
+        ).value(for: selectedLocale)
+
+        view?.didReceiveSpendingAmount(viewModel: spendingAmountViewModel)
+        view?.didReceiveGiftAmount(viewModel: giftAmountViewModel)
     }
 
     func presentOptions(for address: AccountAddress) {

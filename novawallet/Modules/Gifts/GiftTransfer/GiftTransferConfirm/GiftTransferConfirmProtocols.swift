@@ -5,7 +5,8 @@ protocol GiftTransferConfirmViewProtocol: ControllerBackedProtocol, LoadableView
     func didReceiveNetwork(viewModel: NetworkViewModel)
     func didReceiveSender(viewModel: DisplayAddressViewModel)
     func didReceiveWallet(viewModel: StackCellViewModel)
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
+    func didReceiveSpendingAmount(viewModel: BalanceViewModelProtocol)
+    func didReceiveGiftAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveClaimFee(viewModel: BalanceViewModelProtocol?)
 }
