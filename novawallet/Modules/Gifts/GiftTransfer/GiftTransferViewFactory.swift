@@ -107,7 +107,7 @@ final class GiftTransferViewFactory {
     static func createTransferConfirmView(
         from chainAsset: ChainAsset,
         amount: OnChainTransferAmount<Decimal>,
-        transferCompletion: TransferCompletionClosure?,
+        transferCompletion: TransferCompletionClosure?
     ) -> GiftTransferConfirmViewProtocol? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
