@@ -1,5 +1,7 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
+import BigInt
 
 final class GiftTransferViewFactory {
     static func createTransferSetupView(
@@ -91,6 +93,86 @@ final class GiftTransferViewFactory {
         )
 
         let view = GiftTransferSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor?.presenter = presenter
+        dataValidatingFactory.view = view
+
+        return view
+    }
+
+    static func createTransferConfirmView(
+        from chainAsset: ChainAsset,
+        amount: OnChainTransferAmount<Decimal>,
+        transferCompletion: TransferCompletionClosure?,
+    ) -> GiftTransferConfirmViewProtocol? {
+        guard
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccountAddress = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
+            let currencyManager = CurrencyManager.shared
+        else { return nil }
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let interactor: GiftTransferBaseInteractor?
+        let wireframe: GiftTransferConfirmWireframeProtocol
+
+        if chainAsset.asset.isAnyEvm {
+            wireframe = GiftTransferConfirmWireframe()
+
+            interactor = createSubstrateTransferConfirmInteractor(
+                for: chainAsset,
+                wallet: wallet,
+                currencyManager: currencyManager
+            )
+        } else {
+            wireframe = GiftTransferConfirmWireframe()
+
+            interactor = createSubstrateTransferConfirmInteractor(
+                for: chainAsset,
+                wallet: wallet,
+                currencyManager: currencyManager
+            )
+        }
+
+        guard let interactorInput = interactor as? GiftTransferConfirmInteractorInputProtocol else { return nil }
+
+        let localizationManager = LocalizationManager.shared
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+
+        let dataValidatingFactory = TransferDataValidatorFactory(
+            presentable: wireframe,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            utilityAssetInfo: chainAsset.assetDisplayInfo,
+            destUtilityAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let presenter = GiftTransferConfirmPresenter(
+            interactor: interactorInput,
+            wireframe: wireframe,
+            wallet: wallet,
+            amount: amount,
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            chainAsset: chainAsset,
+            networkViewModelFactory: networkViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            senderAccountAddress: selectedAccountAddress,
+            dataValidatingFactory: dataValidatingFactory,
+            localizationManager: localizationManager,
+            transferCompletion: transferCompletion,
+            logger: Logger.shared
+        )
+
+        let view = GiftTransferConfirmViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -215,6 +297,88 @@ private extension GiftTransferViewFactory {
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+    }
+
+    static func createSubstrateTransferConfirmInteractor(
+        for chainAsset: ChainAsset,
+        wallet: MetaAccountModel,
+        currencyManager: CurrencyManagerProtocol
+    ) -> GiftTransferConfirmInteractor? {
+        let chain = chainAsset.chain
+        let asset = chainAsset.asset
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let accountRequest = chain.accountRequest()
+        let metaAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest)
+        let substrateStorageFacade = SubstrateDataStorageFacade.shared
+
+        guard
+            let selectedAccount = wallet.fetch(for: chain.accountRequest()),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let accountResponse = metaAccountResponse?.chainAccount
+        else { return nil }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
+
+        let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
+            remoteSubscriptionService: walletRemoteSubscriptionService
+        )
+
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
+        ).createService(account: selectedAccount, chain: chain)
+
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
+        let keystore = Keychain()
+        let localGiftFactory = GiftLocalFactory(keystore: keystore)
+        let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
+
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: wallet.metaId,
+            accountResponse: accountResponse
+        )
+
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
+        let transactionStorage = repositoryFactory.createTxRepository()
+        let persistentExtrinsicService = PersistentExtrinsicService(
+            repository: transactionStorage,
+            operationQueue: operationQueue
+        )
+
+        return GiftTransferConfirmInteractor(
+            giftFactory: giftFactory,
+            signingWrapper: signingWrapper,
+            persistExtrinsicService: persistentExtrinsicService,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
+            eventCenter: EventCenter.shared,
+            selectedAccount: selectedAccount,
+            chain: chain,
+            asset: asset,
+            feeAsset: chainAsset,
+            runtimeService: runtimeProvider,
+            feeProxy: ExtrinsicFeeProxy(),
+            transferCommandFactory: SubstrateTransferCommandFactory(),
+            extrinsicService: extrinsicService,
+            walletRemoteWrapper: walletRemoteSubscriptionWrapper,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            substrateStorageFacade: substrateStorageFacade,
+            transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

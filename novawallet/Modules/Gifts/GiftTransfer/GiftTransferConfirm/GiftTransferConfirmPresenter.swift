@@ -5,7 +5,7 @@ import BigInt
 
 final class GiftTransferConfirmPresenter: GiftTransferPresenter {
     weak var view: GiftTransferConfirmViewProtocol?
-    let wireframe: TransferConfirmWireframeProtocol
+    let wireframe: GiftTransferConfirmWireframeProtocol
     let interactor: GiftTransferConfirmInteractorInputProtocol
 
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
@@ -18,7 +18,7 @@ final class GiftTransferConfirmPresenter: GiftTransferPresenter {
 
     init(
         interactor: GiftTransferConfirmInteractorInputProtocol,
-        wireframe: TransferConfirmWireframeProtocol,
+        wireframe: GiftTransferConfirmWireframeProtocol,
         wallet: MetaAccountModel,
         amount: OnChainTransferAmount<Decimal>,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
@@ -230,7 +230,8 @@ extension GiftTransferConfirmPresenter: GiftTransferConfirmInteractorOutputProto
         wireframe.presentExtrinsicSubmission(
             from: view,
             sender: sender,
-            completionAction: .dismissWithPostNavigation { [transferCompletion, chainAsset] in
+            completionAction: .dismissWithPostNavigation { [weak self, transferCompletion, chainAsset] in
+                self?.wireframe.showGiftShare(from: self?.view)
                 transferCompletion?(chainAsset)
             },
             locale: selectedLocale

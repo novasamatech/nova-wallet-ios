@@ -26,3 +26,7 @@ protocol GiftTransferConfirmInteractorInputProtocol: GiftTransferSetupInteractor
 protocol GiftTransferConfirmInteractorOutputProtocol: GiftTransferSetupInteractorOutputProtocol {
     func didCompleteSubmition(by sender: ExtrinsicSenderResolution?)
 }
+
+protocol GiftTransferConfirmWireframeProtocol: TransferConfirmWireframeProtocol {
+    func showGiftShare(from view: ControllerBackedProtocol?)
+}

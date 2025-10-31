@@ -2181,6 +2181,7 @@
 		2DE8AED42EB520D20098C761 /* GiftTransferConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8AED32EB520D20098C761 /* GiftTransferConfirmViewController.swift */; };
 		2DE8AEEE2EB52B900098C761 /* MultilineAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8AEED2EB52B900098C761 /* MultilineAmountView.swift */; };
 		2DE8AEFB2EB52BB50098C761 /* GiftAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8AEFA2EB52BB50098C761 /* GiftAmountView.swift */; };
+		2DE8AF0E2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */; };
 		2DE8B08E2E53304200F8BD40 /* NewMultisigHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */; };
 		2DE8B0902E5336C100F8BD40 /* HexCodingWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF67629C7AC29002173E6 /* HexCodingWrapper.swift */; };
 		2DE8B0912E5336CC00F8BD40 /* BigInt+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACCD825F8C22A00F32ED4 /* BigInt+Hex.swift */; };
@@ -8738,6 +8739,7 @@
 		2DE8AED32EB520D20098C761 /* GiftTransferConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmViewController.swift; sourceTree = "<group>"; };
 		2DE8AEED2EB52B900098C761 /* MultilineAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineAmountView.swift; sourceTree = "<group>"; };
 		2DE8AEFA2EB52BB50098C761 /* GiftAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftAmountView.swift; sourceTree = "<group>"; };
+		2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DE8B08D2E53304200F8BD40 /* NewMultisigHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMultisigHandler.swift; sourceTree = "<group>"; };
 		2DE8B0A32E544A9C00F8BD40 /* CommonMultisigHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMultisigHandler.swift; sourceTree = "<group>"; };
 		2DE8B0A62E547DA100F8BD40 /* MultisigPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPayload.swift; sourceTree = "<group>"; };
@@ -17923,6 +17925,7 @@
 			isa = PBXGroup;
 			children = (
 				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
+				2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */,
 				2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */,
 				2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */,
 				2DE8AED32EB520D20098C761 /* GiftTransferConfirmViewController.swift */,
@@ -35767,6 +35770,7 @@
 				2DA4D57A2EB26755006FCCC0 /* GiftTransferBaseInteractor.swift in Sources */,
 				4883346B78B82D2037DEBA56 /* GovernanceRemoveVotesConfirmViewLayout.swift in Sources */,
 				893CA0DF4EAD03CC118A2733 /* GovernanceRemoveVotesConfirmViewFactory.swift in Sources */,
+				2DE8AF0E2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift in Sources */,
 				0C8C8F812D6C3E2D00441FB3 /* PriceProviderFactory.swift in Sources */,
 				0C8C8F822D6C3E2D00441FB3 /* PriceIdProvider.swift in Sources */,
 				0C8C8F832D6C3E2D00441FB3 /* PriceLocalSubscriptionHandler.swift in Sources */,
