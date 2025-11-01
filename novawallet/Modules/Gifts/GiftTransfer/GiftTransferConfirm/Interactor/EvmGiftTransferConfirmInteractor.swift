@@ -113,7 +113,7 @@ private extension EvmGiftTransferConfirmInteractor {
 
             let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
                 guard let self else { throw BaseOperationError.parentOperationCancelled }
-                
+
                 let giftAccountAddress = try gift.giftAccountId.toAddress(using: chain.chainFormat)
 
                 let (newBuilder, codingPath) = try transferCommandFactory.addingTransferCommand(
@@ -127,7 +127,7 @@ private extension EvmGiftTransferConfirmInteractor {
 
                 return newBuilder
             }
-            
+
             let price = EvmTransactionPrice(
                 gasLimit: lastFeeModel.gasLimit,
                 gasPrice: lastFeeModel.gasPrice
@@ -233,7 +233,7 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
             submissionPresenter?.didReceiveError(CommonError.dataCorruption)
             return
         }
-        
+
         let wrapper = createWrapper(
             amount: amount,
             lastFeeDescription: lastFeeDescription,

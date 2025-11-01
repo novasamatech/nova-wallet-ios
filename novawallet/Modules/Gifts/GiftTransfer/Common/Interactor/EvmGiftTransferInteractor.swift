@@ -114,7 +114,7 @@ private extension EvmGiftTransferInteractor {
         giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
     ) {
         lastFeeModel = feeModel
-        
+
         let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
 
         guard let giftFeeDescription = giftFeeDescriptionBuilder
