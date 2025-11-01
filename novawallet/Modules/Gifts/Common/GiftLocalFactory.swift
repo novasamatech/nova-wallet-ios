@@ -84,9 +84,9 @@ private extension GiftLocalFactory {
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
-        let tag = ethereumBased ?
-            KeystoreTagV2.ethereumSecretKeyTagForMetaId("", accountId: accountId) :
-            KeystoreTagV2.substrateSecretKeyTagForMetaId("", accountId: accountId)
+        let tag = ethereumBased
+            ? KeystoreTagV2.ethereumSecretKeyTagForMetaId("", accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForMetaId("", accountId: accountId)
 
         try keystore.saveKey(secretKey, with: tag)
     }
@@ -96,9 +96,9 @@ private extension GiftLocalFactory {
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
-        let tag = ethereumBased ?
-            KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId) :
-            KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+        let tag = ethereumBased
+            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
 
         try keystore.saveKey(seed, with: tag)
     }
