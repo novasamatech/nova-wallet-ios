@@ -1984,3 +1984,5 @@
 "gift.validation.not.enough.tokens" = "Not enough tokens";
 "transfer.setup.enter.another.amount" = "Enter another amount";
 "gift.validation.minimal.gift.amount" = "The minimum gift is %@";
+"gift.transfer.confirm.your.gift" = "Your gift";
+"gift.claim.fee" = "Claim fee";

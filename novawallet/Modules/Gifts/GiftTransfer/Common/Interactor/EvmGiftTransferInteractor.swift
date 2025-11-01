@@ -8,6 +8,10 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
 
+    var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
+        presenter as? GiftTransferSetupInteractorOutputProtocol
+    }
+
     private(set) var transferType: TransferType?
     private(set) var lastFeeModel: EvmFeeModel?
 
@@ -67,7 +71,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
                 return newBuilder
             }
         } catch {
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }
@@ -76,7 +80,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
 
 private extension EvmGiftTransferInteractor {
     func provideMinBalance() {
-        presenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
+        setupPresenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
     }
 
     func continueSetup() {
@@ -87,7 +91,7 @@ private extension EvmGiftTransferInteractor {
 
         provideMinBalance()
 
-        presenter?.didCompleteSetup()
+        setupPresenter?.didCompleteSetup()
     }
 
     func processClaimFee(
@@ -97,7 +101,8 @@ private extension EvmGiftTransferInteractor {
     ) {
         guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
 
-        let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
+        // We take buffer to account possible fee fluctuations
+        let feeValue = ExtrinsicFee(amount: feeModel.fee * 2, payer: nil, weight: .zero)
 
         let amount = giftTransactionFeeId.amount.map { $0 + feeValue.amount }
         let newBuilder = giftFeeDescriptionBuilder.with(claimFee: feeValue)
@@ -108,6 +113,8 @@ private extension EvmGiftTransferInteractor {
         feeModel: EvmFeeModel,
         giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
     ) {
+        lastFeeModel = feeModel
+
         let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
 
         guard let giftFeeDescription = giftFeeDescriptionBuilder
@@ -116,26 +123,26 @@ private extension EvmGiftTransferInteractor {
         else { return }
 
         do {
-            // We take buffer to account possible fee fluctuations
-            let totalFee = try giftFeeDescription.createAccumulatedFee(multiplier: 2)
+            let totalFee = try giftFeeDescription.createAccumulatedFee()
 
-            let totamEvmFee = EvmFeeModel(
+            let totalEvmFee = EvmFeeModel(
                 gasLimit: totalFee.amount / feeModel.gasPrice,
                 defaultGasPrice: feeModel.defaultGasPrice,
                 maxPriorityGasPrice: feeModel.maxPriorityGasPrice
             )
 
-            lastFeeModel = totamEvmFee
-
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totalEvmFee)
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
 
-            presenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(description: giftFeeDescription)
         } catch {
             logger.error("Error calculating accumulated fee: \(error)")
         }
     }
 }
+
+// MAR: - Internal
 
 extension EvmGiftTransferInteractor {
     func setup() {
@@ -149,10 +156,12 @@ extension EvmGiftTransferInteractor {
             continueSetup()
         } else {
             transferType = nil
-            presenter?.didReceiveError(AccountAddressConversionError.invalidEthereumAddress)
+            setupPresenter?.didReceiveError(AccountAddressConversionError.invalidEthereumAddress)
         }
     }
 }
+
+// MARK: - EvmTransactionFeeProxyDelegate
 
 extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
@@ -176,7 +185,7 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
                 giftFeeDescriptionBuilder: builder
             )
         case let (.failure(error), _):
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }
