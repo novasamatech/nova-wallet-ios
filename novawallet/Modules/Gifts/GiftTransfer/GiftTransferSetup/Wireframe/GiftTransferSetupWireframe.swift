@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class GiftTransferSetupWireframe {
+class GiftTransferSetupWireframe {
     let assetListObservable: AssetListModelObservable
     let buyTokensClosure: BuyTokensClosure?
     let transferCompletion: TransferCompletionClosure?
@@ -61,7 +61,7 @@ extension GiftTransferSetupWireframe: GiftTransferSetupWireframeProtocol {
         chainAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>
     ) {
-        guard let confirmView = GiftTransferViewFactory.createTransferConfirmView(
+        guard let confirmView = GiftTransferConfirmViewFactory.createView(
             from: chainAsset,
             amount: sendingAmount,
             transferCompletion: transferCompletion

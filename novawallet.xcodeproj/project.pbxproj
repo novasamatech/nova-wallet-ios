@@ -1807,7 +1807,7 @@
 		2D533C7C2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */; };
 		2D533C842EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */; };
 		2D533C8C2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */; };
-		2D533C932EB0F7F10005FF8A /* GiftTransferViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */; };
+		2D533C932EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C922EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift */; };
 		2D533C9E2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C9D2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* RampActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
@@ -2058,6 +2058,8 @@
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
 		2DB585D72EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */; };
+		2DB585EB2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */; };
+		2DB585F22EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
@@ -8393,7 +8395,7 @@
 		2D533C7B2EB0E86A0005FF8A /* GiftTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewLayout.swift; sourceTree = "<group>"; };
 		2D533C832EB0EB0B0005FF8A /* GiftSetupNetworkContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerView.swift; sourceTree = "<group>"; };
 		2D533C8B2EB0EBB70005FF8A /* GiftSetupNetworkContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupNetworkContainerViewModel.swift; sourceTree = "<group>"; };
-		2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferViewFactory.swift; sourceTree = "<group>"; };
+		2D533C922EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmViewFactory.swift; sourceTree = "<group>"; };
 		2D533C9D2EB0FD3F0005FF8A /* GiftTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupWireframe.swift; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* RampActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
@@ -8628,6 +8630,8 @@
 		2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel37.xcdatamodel; sourceTree = "<group>"; };
 		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
 		2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmInteractor.swift; sourceTree = "<group>"; };
+		2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmWireframe.swift; sourceTree = "<group>"; };
+		2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewFactory.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
@@ -17323,7 +17327,6 @@
 		2D54215D2EAB69A80020E64B /* GiftTransfer */ = {
 			isa = PBXGroup;
 			children = (
-				2D533C922EB0F7F10005FF8A /* GiftTransferViewFactory.swift */,
 				2D533C362EB0B3520005FF8A /* GiftTransferSetup */,
 				2DA4D6052EB37CE3006FCCC0 /* GiftTransferConfirm */,
 				2D533C322EB0B3430005FF8A /* Common */,
@@ -17882,6 +17885,7 @@
 			isa = PBXGroup;
 			children = (
 				2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */,
+				2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -17927,7 +17931,8 @@
 			isa = PBXGroup;
 			children = (
 				2DB585CD2EB6161000950F7D /* Interactor */,
-				2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */,
+				2DB585E12EB6B0FD00950F7D /* Wireframe */,
+				2DB585F92EB6B54500950F7D /* Factory */,
 				2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */,
 				2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */,
 				2DE8AED32EB520D20098C761 /* GiftTransferConfirmViewController.swift */,
@@ -18066,6 +18071,23 @@
 				2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */,
 			);
 			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2DB585E12EB6B0FD00950F7D /* Wireframe */ = {
+			isa = PBXGroup;
+			children = (
+				2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */,
+				2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */,
+			);
+			path = Wireframe;
+			sourceTree = "<group>";
+		};
+		2DB585F92EB6B54500950F7D /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2D533C922EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift */,
+			);
+			path = Factory;
 			sourceTree = "<group>";
 		};
 		2DB5B1132D3FEC9E0075EB3F /* BrowserNavigationTaskFactory */ = {
@@ -32426,6 +32448,7 @@
 				2DD018CF2D6591250063F9BB /* AssetPriceChartWidgetViewModel.swift in Sources */,
 				2D7C64542D84397300FD658E /* UnifiedAddressPopupAddressView.swift in Sources */,
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
+				2DB585EB2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
 				2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */,
 				8490148424AA27C1008F705E /* OperationManagerFacade.swift in Sources */,
@@ -33317,6 +33340,7 @@
 				778210862A6588D100256E78 /* DiffableDataStore.swift in Sources */,
 				0CCDB2DC2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift in Sources */,
 				849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */,
+				2DB585F22EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift in Sources */,
 				0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */,
 				8804AD8D295B7735001C4E09 /* DAppGlobalSettingsMapper.swift in Sources */,
 				94B0F0C84AF74B3CD7223C3A /* AccountConfirmPresenter.swift in Sources */,
@@ -35091,7 +35115,7 @@
 				2DF95D2A2D785AF1001D8785 /* HapticEngine.swift in Sources */,
 				C729BF3E60E6825AEED11383 /* CollatorStakingRedeemViewController.swift in Sources */,
 				844C3E752A091B9800C4305F /* WalletsChooseViewModelFactory.swift in Sources */,
-				2D533C932EB0F7F10005FF8A /* GiftTransferViewFactory.swift in Sources */,
+				2D533C932EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift in Sources */,
 				E477B09B47A3021EF1CE66F0 /* CollatorStakingRedeemViewLayout.swift in Sources */,
 				E0CBD1D747361D121555FD51 /* ParaStkRedeemViewFactory.swift in Sources */,
 				EDD5551608E7ACDDBBC054C4 /* ParaStkRebondProtocols.swift in Sources */,

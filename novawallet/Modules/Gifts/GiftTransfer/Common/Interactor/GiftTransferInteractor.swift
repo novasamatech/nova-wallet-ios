@@ -8,8 +8,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
-    let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
-    let substrateStorageFacade: StorageFacadeProtocol
     let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
 
     var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
@@ -24,12 +22,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
 
     private(set) var feeAsset: ChainAsset?
 
-    private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
-        let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            substrateStorageFacade.createRepository()
-        return AnyDataProviderRepository(storage)
-    }()
-
     private let assetStorageCallStore = CancellableCallStore()
 
     init(
@@ -41,10 +33,8 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         feeProxy: ExtrinsicFeeProxyProtocol,
         transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
-        walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol,
         transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -54,8 +44,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         self.feeAsset = feeAsset
         self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
-        self.walletRemoteWrapper = walletRemoteWrapper
-        self.substrateStorageFacade = substrateStorageFacade
         self.transferAggregationWrapperFactory = transferAggregationWrapperFactory
 
         super.init(

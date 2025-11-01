@@ -22,13 +22,13 @@ final class EvmGiftTransferConfirmInteractor: EvmGiftTransferInteractor {
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
-        feeProxy: any EvmTransactionFeeProxyProtocol,
+        feeProxy: EvmTransactionFeeProxyProtocol,
         transferCommandFactory: EvmTransferCommandFactory,
-        transactionService: any EvmTransactionServiceProtocol,
+        transactionService: EvmTransactionServiceProtocol,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
-        walletLocalSubscriptionFactory: any WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: any PriceProviderFactoryProtocol,
-        currencyManager: any CurrencyManagerProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.giftFactory = giftFactory
