@@ -135,7 +135,7 @@ private extension EvmGiftTransferConfirmInteractor {
 
             transactionService.submit(
                 extrinsicClosure,
-                price: EvmTransactionPrice(gasLimit: lastFeeModel.gasLimit, gasPrice: lastFeeModel.gasPrice),
+                price: price,
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { result in
