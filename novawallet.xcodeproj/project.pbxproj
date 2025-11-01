@@ -2057,6 +2057,7 @@
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
+		2DB585D72EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
@@ -8626,6 +8627,7 @@
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel37.xcdatamodel; sourceTree = "<group>"; };
 		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
+		2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmInteractor.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
@@ -17924,7 +17926,7 @@
 		2DA4D6052EB37CE3006FCCC0 /* GiftTransferConfirm */ = {
 			isa = PBXGroup;
 			children = (
-				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
+				2DB585CD2EB6161000950F7D /* Interactor */,
 				2DE8AF0D2EB5372A0098C761 /* GiftTransferConfirmWireframe.swift */,
 				2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */,
 				2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */,
@@ -18055,6 +18057,15 @@
 				2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2DB585CD2EB6161000950F7D /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
+				2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */,
+			);
+			path = Interactor;
 			sourceTree = "<group>";
 		};
 		2DB5B1132D3FEC9E0075EB3F /* BrowserNavigationTaskFactory */ = {
@@ -35264,6 +35275,7 @@
 				0C259EA42B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
 				84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */,
+				2DB585D72EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift in Sources */,
 				84B24FAC2A2F25FF00F9BF59 /* StakingDashboardActiveDetailsView.swift in Sources */,
 				0C3205E62A897BE3002EB914 /* EvmGasPriceValidation.swift in Sources */,
 				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
