@@ -25,6 +25,7 @@ final class EvmGiftTransferConfirmInteractor: EvmGiftTransferInteractor {
         feeProxy: any EvmTransactionFeeProxyProtocol,
         transferCommandFactory: EvmTransferCommandFactory,
         transactionService: any EvmTransactionServiceProtocol,
+        validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: any WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: any PriceProviderFactoryProtocol,
         currencyManager: any CurrencyManagerProtocol,
@@ -58,8 +59,9 @@ private extension EvmGiftTransferConfirmInteractor {
     func createWrapper(
         amount: OnChainTransferAmount<BigUInt>,
         lastFeeDescription: GiftFeeDescription?,
-        transferType: TransferType
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution> {
+        transferType: TransferType,
+        lastFeeModel: EvmFeeModel
+    ) -> CompoundOperationWrapper<Void> {
         let totalFee = try? lastFeeDescription?.createAccumulatedFee().amount
         let claimFee = lastFeeDescription?.claimFee.amount ?? 0
 
@@ -75,7 +77,9 @@ private extension EvmGiftTransferConfirmInteractor {
          nominal gift value for final recipient */
         let submitOperation = createSubmitOperation(
             dependingOn: giftOperation,
-            amount: amountWithClaimFee
+            amount: amountWithClaimFee,
+            transferType: transferType,
+            lastFeeModel: lastFeeModel
         )
 
         let processResultWrapper = createProcessSubmissionResultWrapper(
@@ -96,8 +100,10 @@ private extension EvmGiftTransferConfirmInteractor {
 
     func createSubmitOperation(
         dependingOn giftOperation: BaseOperation<GiftModel>,
-        amount: OnChainTransferAmount<BigUInt>
-    ) -> BaseOperation<(ExtrinsicSubmittedModel, CallCodingPath?)> {
+        amount: OnChainTransferAmount<BigUInt>,
+        transferType: TransferType,
+        lastFeeModel: EvmFeeModel
+    ) -> BaseOperation<(AccountAddress, CallCodingPath?)> {
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
@@ -105,29 +111,37 @@ private extension EvmGiftTransferConfirmInteractor {
 
             var callCodingPath: CallCodingPath?
 
-            let extrinsicClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
                 guard let self else { throw BaseOperationError.parentOperationCancelled }
+                
+                let giftAccountAddress = try gift.giftAccountId.toAddress(using: chain.chainFormat)
 
-                let (newBuilder, codingPath) = try self.addingTransferCommand(
+                let (newBuilder, codingPath) = try transferCommandFactory.addingTransferCommand(
                     to: builder,
                     amount: amount,
-                    recepient: gift.giftAccountId
+                    recipient: giftAccountAddress,
+                    type: transferType
                 )
 
                 callCodingPath = codingPath
 
                 return newBuilder
             }
+            
+            let price = EvmTransactionPrice(
+                gasLimit: lastFeeModel.gasLimit,
+                gasPrice: lastFeeModel.gasPrice
+            )
 
-            extrinsicService.submit(
+            transactionService.submit(
                 extrinsicClosure,
-                payingIn: feeAsset?.chainAssetId,
+                price: EvmTransactionPrice(gasLimit: lastFeeModel.gasLimit, gasPrice: lastFeeModel.gasPrice),
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { result in
                     switch result {
-                    case let .success(submitModel):
-                        completion(.success((submitModel, callCodingPath)))
+                    case let .success(txHash):
+                        completion(.success((txHash, callCodingPath)))
                     case let .failure(error):
                         completion(.failure(error))
                     }
@@ -137,10 +151,10 @@ private extension EvmGiftTransferConfirmInteractor {
     }
 
     func createProcessSubmissionResultWrapper(
-        dependingOn submitOperation: BaseOperation<(ExtrinsicSubmittedModel, CallCodingPath?)>,
+        dependingOn submitOperation: BaseOperation<(AccountAddress, CallCodingPath?)>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution> {
+    ) -> CompoundOperationWrapper<Void> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -148,14 +162,14 @@ private extension EvmGiftTransferConfirmInteractor {
 
             let gift = try giftOperation.extractNoCancellableResultData()
             let submissionResult = try submitOperation.extractNoCancellableResultData()
-            let submittedModel = submissionResult.0
+            let txHash = submissionResult.0
 
             guard
                 persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                 let callCodingPath = submissionResult.1,
-                let txHashData = try? Data(hexString: submittedModel.txHash)
+                let txHashData = try? Data(hexString: txHash)
             else {
-                return .createWithResult(submittedModel.sender)
+                return .createWithResult(())
             }
 
             let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
@@ -168,21 +182,19 @@ private extension EvmGiftTransferConfirmInteractor {
                 txHash: txHashData,
                 callPath: callCodingPath,
                 fee: lastFee,
-                feeAssetId: feeAsset?.asset.assetId
+                feeAssetId: asset.assetId
             )
 
             return persistExtrinsicWrapper(
-                details: details,
-                sender: submittedModel.sender
+                details: details
             )
         }
     }
 
     func persistExtrinsicWrapper(
-        details: PersistTransferDetails,
-        sender: ExtrinsicSenderResolution
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution> {
-        let operation = AsyncClosureOperation<ExtrinsicSenderResolution> { [weak self] completion in
+        details: PersistTransferDetails
+    ) -> CompoundOperationWrapper<Void> {
+        let operation = AsyncClosureOperation<Void> { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             persistExtrinsicService.saveTransfer(
@@ -194,7 +206,7 @@ private extension EvmGiftTransferConfirmInteractor {
                     switch result {
                     case .success:
                         self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        completion(.success(sender))
+                        completion(.success(()))
                     case let .failure(error):
                         completion(.failure(error))
                     }
@@ -215,7 +227,8 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
     ) {
         guard
             let transferType,
-            let lastFeeDescription
+            let lastFeeDescription,
+            let lastFeeModel
         else {
             submissionPresenter?.didReceiveError(CommonError.dataCorruption)
             return
@@ -224,7 +237,8 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
         let wrapper = createWrapper(
             amount: amount,
             lastFeeDescription: lastFeeDescription,
-            transferType: transferType
+            transferType: transferType,
+            lastFeeModel: lastFeeModel
         )
 
         execute(
@@ -234,8 +248,8 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
         ) { [weak self] result in
 
             switch result {
-            case let .success(sender):
-                self?.submissionPresenter?.didCompleteSubmition(by: sender)
+            case .success:
+                self?.submissionPresenter?.didCompleteSubmition(by: nil)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }

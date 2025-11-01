@@ -101,7 +101,8 @@ private extension EvmGiftTransferInteractor {
     ) {
         guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
 
-        let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
+        // We take buffer to account possible fee fluctuations
+        let feeValue = ExtrinsicFee(amount: feeModel.fee * 2, payer: nil, weight: .zero)
 
         let amount = giftTransactionFeeId.amount.map { $0 + feeValue.amount }
         let newBuilder = giftFeeDescriptionBuilder.with(claimFee: feeValue)
@@ -112,6 +113,8 @@ private extension EvmGiftTransferInteractor {
         feeModel: EvmFeeModel,
         giftFeeDescriptionBuilder: GiftFeeDescriptionBuilder
     ) {
+        lastFeeModel = feeModel
+        
         let feeValue = ExtrinsicFee(amount: feeModel.fee, payer: nil, weight: .zero)
 
         guard let giftFeeDescription = giftFeeDescriptionBuilder
@@ -120,18 +123,15 @@ private extension EvmGiftTransferInteractor {
         else { return }
 
         do {
-            // We take buffer to account possible fee fluctuations
-            let totalFee = try giftFeeDescription.createAccumulatedFee(multiplier: 2)
+            let totalFee = try giftFeeDescription.createAccumulatedFee()
 
-            let totamEvmFee = EvmFeeModel(
+            let totalEvmFee = EvmFeeModel(
                 gasLimit: totalFee.amount / feeModel.gasPrice,
                 defaultGasPrice: feeModel.defaultGasPrice,
                 maxPriorityGasPrice: feeModel.maxPriorityGasPrice
             )
 
-            lastFeeModel = totamEvmFee
-
-            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totamEvmFee)
+            let validationProvider = validationProviderFactory.createGasPriceValidation(for: totalEvmFee)
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: validationProvider)
 
             setupPresenter?.didReceiveFee(result: .success(feeModel))
