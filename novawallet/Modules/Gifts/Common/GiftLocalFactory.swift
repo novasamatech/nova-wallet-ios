@@ -23,19 +23,22 @@ final class GiftLocalFactory {
 // MARK: - Private
 
 private extension GiftLocalFactory {
-    func createSeed() throws -> Data {
-        try BIP32SeedFactory().createSeed(
-            from: "",
-            strength: .entropy128
-        )
-        .seed
-        .subdata(in: 0 ..< 10)
-        + Data(repeating: 0x20, count: 22)
+    func createSeed(ethereumBased: Bool) throws -> Data {
+        try createSeedFactory(ethereumBased: ethereumBased)
+            .createSeed(
+                from: "",
+                strength: .entropy128
+            )
+            .seed
+            .subdata(in: 0 ..< 10)
+            // pad the rest
+            + Data(repeating: 0x20, count: 22)
     }
 
     func createKeyPair(
         from seed: Data,
-        chain: ChainModel
+        chain: ChainModel,
+        chainCodes: [Chaincode]
     ) throws -> (publicKey: Data, secretKey: Data) {
         let cryptoType: MultiassetCryptoType = chain.isEthereumBased
             ? .ethereumEcdsa
@@ -44,7 +47,7 @@ private extension GiftLocalFactory {
 
         let keypair = try keypairFactory.createKeypairFromSeed(
             seed,
-            chaincodeList: []
+            chaincodeList: chainCodes
         )
 
         return (
@@ -64,6 +67,16 @@ private extension GiftLocalFactory {
         case .ethereumEcdsa:
             return BIP32Secp256KeypairFactory()
         }
+    }
+
+    func getJunctionResult(
+        ethereumBased: Bool
+    ) throws -> JunctionResult? {
+        guard ethereumBased else { return nil }
+
+        return try BIP32JunctionFactory().parse(
+            path: DerivationPathConstants.defaultEthereum
+        )
     }
 
     func saveSecretKey(
@@ -89,6 +102,11 @@ private extension GiftLocalFactory {
 
         try keystore.saveKey(seed, with: tag)
     }
+
+    func createSeedFactory(ethereumBased: Bool) -> SeedFactoryProtocol {
+        // Actually, there is no difference since we take only first 10 bytes
+        ethereumBased ? BIP32SeedFactory() : SeedFactory()
+    }
 }
 
 // MARK: - GiftLocalFactoryProtocol
@@ -101,20 +119,31 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
         ClosureOperation { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let seed = try createSeed()
-            let keypair = try createKeyPair(from: seed, chain: chainAsset.chain)
+            let ethereumBased = chainAsset.chain.isEthereumBased
 
-            let accountId = try keypair.publicKey.publicKeyToAccountId()
+            let junctionResult = try getJunctionResult(ethereumBased: ethereumBased)
+
+            let seed = try createSeed(ethereumBased: ethereumBased)
+
+            let keypair = try createKeyPair(
+                from: seed,
+                chain: chainAsset.chain,
+                chainCodes: junctionResult?.chaincodes ?? []
+            )
+
+            let accountId = ethereumBased
+                ? try keypair.publicKey.ethereumAddressFromPublicKey()
+                : try keypair.publicKey.publicKeyToAccountId()
 
             try saveSeed(
                 seed,
                 accountId: accountId,
-                ethereumBased: chainAsset.chain.isEthereumBased
+                ethereumBased: ethereumBased
             )
             try saveSecretKey(
                 keypair.secretKey,
                 accountId: accountId,
-                ethereumBased: chainAsset.chain.isEthereumBased
+                ethereumBased: ethereumBased
             )
 
             return GiftModel(
