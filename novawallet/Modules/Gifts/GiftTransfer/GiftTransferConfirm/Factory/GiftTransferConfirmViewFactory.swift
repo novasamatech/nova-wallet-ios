@@ -101,16 +101,15 @@ private extension GiftTransferConfirmViewFactory {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let substrateRepositoryFactory = SubstrateRepositoryFactory()
+        let userRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
-        let accountRequest = chain.accountRequest()
-        let metaAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest)
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let accountResponse = metaAccountResponse?.chainAccount
+            let connection = chainRegistry.getConnection(for: chain.chainId)
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -129,22 +128,27 @@ private extension GiftTransferConfirmViewFactory {
         )
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(keystore: keystore)
+        let localGiftFactory = GiftLocalFactory(
+            metaId: wallet.metaId,
+            keystore: keystore
+        )
         let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: wallet.metaId,
-            accountResponse: accountResponse
+            accountResponse: selectedAccount
         )
 
-        let repositoryFactory = SubstrateRepositoryFactory()
-        let transactionStorage = repositoryFactory.createTxRepository()
+        let transactionStorage = substrateRepositoryFactory.createTxRepository()
         let persistentExtrinsicService = PersistentExtrinsicService(
             repository: transactionStorage,
             operationQueue: operationQueue
         )
+        let giftsRepository = userRepositoryFactory.createGiftsRepository(for: nil)
+
         let submissionFactory = GiftTransferSubmissionFactory(
             giftFactory: giftFactory,
+            giftsRepository: giftsRepository,
             signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
@@ -183,30 +187,31 @@ private extension GiftTransferConfirmViewFactory {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let substrateRepositoryFactory = SubstrateRepositoryFactory()
+        let userRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
-        let accountRequest = chain.accountRequest()
-        let metaAccountResponse = wallet.fetchMetaChainAccount(for: accountRequest)
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let accountResponse = metaAccountResponse?.chainAccount
+            let connection = chainRegistry.getConnection(for: chain.chainId)
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(keystore: keystore)
+        let localGiftFactory = GiftLocalFactory(
+            metaId: wallet.metaId,
+            keystore: keystore
+        )
         let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: wallet.metaId,
-            accountResponse: accountResponse
+            accountResponse: selectedAccount
         )
 
-        let repositoryFactory = SubstrateRepositoryFactory()
-        let transactionStorage = repositoryFactory.createTxRepository()
+        let transactionStorage = substrateRepositoryFactory.createTxRepository()
         let persistentExtrinsicService = PersistentExtrinsicService(
             repository: transactionStorage,
             operationQueue: operationQueue
@@ -234,8 +239,11 @@ private extension GiftTransferConfirmViewFactory {
             operationQueue: operationQueue
         )
 
+        let giftsRepository = userRepositoryFactory.createGiftsRepository(for: nil)
+
         let submissionFactory = EvmGiftTransferSubmissionFactory(
             giftFactory: giftFactory,
+            giftsRepository: giftsRepository,
             signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),

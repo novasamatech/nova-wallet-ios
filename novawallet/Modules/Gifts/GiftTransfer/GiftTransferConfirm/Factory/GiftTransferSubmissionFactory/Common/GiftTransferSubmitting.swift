@@ -12,6 +12,8 @@ protocol GiftTransferSubmitting: AnyObject {
     var selectedAccount: ChainAccountResponse { get }
     var operationQueue: OperationQueue { get }
 
+    var giftsRepository: AnyDataProviderRepository<GiftModel> { get }
+
     func createSubmitOperation(
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
@@ -36,30 +38,10 @@ private extension GiftTransferSubmitting {
                 let gift = try giftOperation.extractNoCancellableResultData()
                 let submissionData = try submitOperation.extractNoCancellableResultData()
 
-                guard
-                    persistenceFilter.canPersistExtrinsic(for: selectedAccount),
-                    let callCodingPath = submissionData.callCodingPath,
-                    let txHashData = try? Data(hexString: submissionData.txHash)
-                else {
-                    return .createWithResult(submissionData.senderResolution)
-                }
-
-                let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
-                let recipient = try gift.giftAccountId.toAddress(using: chain.chainFormat)
-
-                let details = PersistTransferDetails(
-                    sender: sender,
-                    receiver: recipient,
-                    amount: gift.amount,
-                    txHash: txHashData,
-                    callPath: callCodingPath,
-                    fee: lastFee,
-                    feeAssetId: asset.assetId
-                )
-
-                return persistExtrinsicWrapper(
-                    details: details,
-                    sender: submissionData.senderResolution
+                return createPersistWrapper(
+                    gift: gift,
+                    submissionData: submissionData,
+                    lastFee: lastFee
                 )
             } catch {
                 guard
@@ -69,7 +51,7 @@ private extension GiftTransferSubmitting {
                     ) = error,
                     let underlyingError
                 else { throw error }
-                
+
                 throw underlyingError
             }
         }
@@ -103,12 +85,79 @@ private extension GiftTransferSubmitting {
         }
     }
 
-    func persistExtrinsicWrapper(
-        details: PersistTransferDetails,
-        sender: ExtrinsicSenderResolution?
+    func createPersistWrapper(
+        gift: GiftModel,
+        submissionData: SubmittedGiftTransactionMetadata,
+        lastFee: BigUInt?
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
-        let operation = AsyncClosureOperation<ExtrinsicSenderResolution?> { [weak self] completion in
+        let giftPersistWrapper = createPersistGiftWrapper(gift: gift)
+
+        let extrinsicPersistWrapper = createPersistExtrinsicWrapper(
+            submissionData: submissionData,
+            recipient: gift.giftAccountId,
+            amount: gift.amount,
+            lastFee: lastFee
+        )
+
+        let resultOperation = ClosureOperation<ExtrinsicSenderResolution?> {
+            try giftPersistWrapper.targetOperation.extractNoCancellableResultData()
+            try extrinsicPersistWrapper.targetOperation.extractNoCancellableResultData()
+
+            return submissionData.senderResolution
+        }
+
+        resultOperation.addDependency(giftPersistWrapper.targetOperation)
+        resultOperation.addDependency(extrinsicPersistWrapper.targetOperation)
+
+        let dependencies = giftPersistWrapper.allOperations + extrinsicPersistWrapper.allOperations
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: dependencies
+        )
+    }
+
+    func createPersistGiftWrapper(
+        gift: GiftModel
+    ) -> CompoundOperationWrapper<Void> {
+        let saveOperation = giftsRepository.saveOperation(
+            { [gift] },
+            { [] }
+        )
+
+        return CompoundOperationWrapper(targetOperation: saveOperation)
+    }
+
+    func createPersistExtrinsicWrapper(
+        submissionData: SubmittedGiftTransactionMetadata,
+        recipient: AccountId,
+        amount: BigUInt,
+        lastFee: BigUInt?
+    ) -> CompoundOperationWrapper<Void> {
+        let operation = AsyncClosureOperation<Void> { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            guard
+                persistenceFilter.canPersistExtrinsic(for: selectedAccount),
+                let callCodingPath = submissionData.callCodingPath,
+                let txHashData = try? Data(hexString: submissionData.txHash)
+            else {
+                completion(.success(()))
+                return
+            }
+
+            let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
+            let recipient = try recipient.toAddress(using: chain.chainFormat)
+
+            let details = PersistTransferDetails(
+                sender: sender,
+                receiver: recipient,
+                amount: amount,
+                txHash: txHashData,
+                callPath: callCodingPath,
+                fee: lastFee,
+                feeAssetId: asset.assetId
+            )
 
             persistExtrinsicService.saveTransfer(
                 source: .substrate,
@@ -119,7 +168,7 @@ private extension GiftTransferSubmitting {
                     switch result {
                     case .success:
                         self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        completion(.success(sender))
+                        completion(.success(()))
                     case let .failure(error):
                         completion(.failure(error))
                     }

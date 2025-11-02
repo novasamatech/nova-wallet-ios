@@ -7,6 +7,7 @@ struct GiftModel {
     let chainAssetId: ChainAssetId
     let status: Status
     let giftAccountId: AccountId
+    let metaId: MetaAccountModel.Id
 }
 
 extension GiftModel: Identifiable {

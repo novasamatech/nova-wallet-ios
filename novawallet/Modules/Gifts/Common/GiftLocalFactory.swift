@@ -18,10 +18,15 @@ protocol GiftLocalFactoryProtocol {
 }
 
 final class GiftLocalFactory {
+    private let metaId: MetaAccountModel.Id
     private let keystore: KeystoreProtocol
 
-    init(keystore: KeystoreProtocol) {
+    init(
+        metaId: MetaAccountModel.Id,
+        keystore: KeystoreProtocol
+    ) {
         self.keystore = keystore
+        self.metaId = metaId
     }
 }
 
@@ -183,7 +188,8 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
                 amount: amount,
                 chainAssetId: chainAsset.chainAssetId,
                 status: .pending,
-                giftAccountId: accountId
+                giftAccountId: accountId,
+                metaId: metaId
             )
         }
     }

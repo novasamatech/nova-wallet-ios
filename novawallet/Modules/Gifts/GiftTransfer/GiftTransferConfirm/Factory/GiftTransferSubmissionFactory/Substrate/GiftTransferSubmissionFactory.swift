@@ -5,6 +5,7 @@ import BigInt
 
 final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
     let giftFactory: GiftOperationFactoryProtocol
+    let giftsRepository: AnyDataProviderRepository<GiftModel>
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let persistenceFilter: ExtrinsicPersistenceFilterProtocol
@@ -18,6 +19,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
 
     init(
         giftFactory: GiftOperationFactoryProtocol,
+        giftsRepository: AnyDataProviderRepository<GiftModel>,
         signingWrapper: SigningWrapperProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
@@ -30,6 +32,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
         operationQueue: OperationQueue
     ) {
         self.giftFactory = giftFactory
+        self.giftsRepository = giftsRepository
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
         self.persistenceFilter = persistenceFilter

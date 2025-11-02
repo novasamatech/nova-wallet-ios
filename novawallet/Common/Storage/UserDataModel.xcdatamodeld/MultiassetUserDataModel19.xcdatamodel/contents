@@ -58,6 +58,7 @@
         <attribute name="chainId" optional="YES" attributeType="String"/>
         <attribute name="giftAccountId" optional="YES" attributeType="String"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="metaId" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="CDMetaAccount" representedClassName="CDMetaAccount" syncable="YES" codeGenerationType="class">
