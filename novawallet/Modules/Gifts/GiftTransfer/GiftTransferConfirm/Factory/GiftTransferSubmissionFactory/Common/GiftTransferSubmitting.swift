@@ -32,34 +32,46 @@ private extension GiftTransferSubmitting {
         ) { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let gift = try giftOperation.extractNoCancellableResultData()
-            let submissionData = try submitOperation.extractNoCancellableResultData()
+            do {
+                let gift = try giftOperation.extractNoCancellableResultData()
+                let submissionData = try submitOperation.extractNoCancellableResultData()
 
-            guard
-                persistenceFilter.canPersistExtrinsic(for: selectedAccount),
-                let callCodingPath = submissionData.callCodingPath,
-                let txHashData = try? Data(hexString: submissionData.txHash)
-            else {
-                return .createWithResult(submissionData.senderResolution)
+                guard
+                    persistenceFilter.canPersistExtrinsic(for: selectedAccount),
+                    let callCodingPath = submissionData.callCodingPath,
+                    let txHashData = try? Data(hexString: submissionData.txHash)
+                else {
+                    return .createWithResult(submissionData.senderResolution)
+                }
+
+                let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
+                let recipient = try gift.giftAccountId.toAddress(using: chain.chainFormat)
+
+                let details = PersistTransferDetails(
+                    sender: sender,
+                    receiver: recipient,
+                    amount: gift.amount,
+                    txHash: txHashData,
+                    callPath: callCodingPath,
+                    fee: lastFee,
+                    feeAssetId: asset.assetId
+                )
+
+                return persistExtrinsicWrapper(
+                    details: details,
+                    sender: submissionData.senderResolution
+                )
+            } catch {
+                guard
+                    case let GiftTransferConfirmError.giftSubmissionFailed(
+                        _,
+                        underlyingError
+                    ) = error,
+                    let underlyingError
+                else { throw error }
+                
+                throw underlyingError
             }
-
-            let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
-            let recipient = try gift.giftAccountId.toAddress(using: chain.chainFormat)
-
-            let details = PersistTransferDetails(
-                sender: sender,
-                receiver: recipient,
-                amount: gift.amount,
-                txHash: txHashData,
-                callPath: callCodingPath,
-                fee: lastFee,
-                feeAssetId: asset.assetId
-            )
-
-            return persistExtrinsicWrapper(
-                details: details,
-                sender: submissionData.senderResolution
-            )
         }
     }
 
@@ -77,7 +89,7 @@ private extension GiftTransferSubmitting {
                 guard
                     case let GiftTransferConfirmError.giftSubmissionFailed(
                         giftAccountId,
-                        underlyingError
+                        _
                     ) = error
                 else { throw error }
 
