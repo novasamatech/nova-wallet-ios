@@ -131,7 +131,7 @@ extension EvmGiftTransferSubmissionFactory: EvmGiftTransferSubmissionFactoryProt
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType,
+        transferType: EvmGiftTransferInteractor.TransferType
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
         mutex.lock()
         defer { mutex.unlock() }
