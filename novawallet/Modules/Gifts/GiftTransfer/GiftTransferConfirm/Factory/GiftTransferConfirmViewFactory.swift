@@ -143,17 +143,25 @@ private extension GiftTransferConfirmViewFactory {
             repository: transactionStorage,
             operationQueue: operationQueue
         )
-
-        return GiftTransferConfirmInteractor(
+        let submissionFactory = GiftTransferSubmissionFactory(
             giftFactory: giftFactory,
             signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
+            chain: chain,
+            asset: asset,
+            selectedAccount: selectedAccount,
+            extrinsicService: extrinsicService,
+            transferCommandFactory: SubstrateTransferCommandFactory(),
+            operationQueue: operationQueue
+        )
+
+        return GiftTransferConfirmInteractor(
+            giftTransferSubmissionFactory: submissionFactory,
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeAsset: chainAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             transferCommandFactory: SubstrateTransferCommandFactory(),
@@ -226,12 +234,21 @@ private extension GiftTransferConfirmViewFactory {
             operationQueue: operationQueue
         )
 
-        return EvmGiftTransferConfirmInteractor(
+        let submissionFactory = EvmGiftTransferSubmissionFactory(
             giftFactory: giftFactory,
             signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
+            chain: chain,
+            asset: asset, selectedAccount: selectedAccount,
+            transactionService: transactionService,
+            transferCommandFactory: EvmTransferCommandFactory(),
+            operationQueue: operationQueue
+        )
+
+        return EvmGiftTransferConfirmInteractor(
+            giftTransferSubmissionFactory: submissionFactory,
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,

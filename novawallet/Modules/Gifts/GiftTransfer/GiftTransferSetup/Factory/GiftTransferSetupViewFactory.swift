@@ -140,7 +140,6 @@ private extension GiftTransferSetupViewFactory {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeAsset: chainAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             transferCommandFactory: SubstrateTransferCommandFactory(),

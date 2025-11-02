@@ -14,13 +14,11 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         presenter as? GiftTransferSetupInteractorOutputProtocol
     }
 
+    var sendingAssetInfo: AssetStorageInfo?
+
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
 
     private var setupCall: CancellableCall?
-
-    private var sendingAssetInfo: AssetStorageInfo?
-
-    private(set) var feeAsset: ChainAsset?
 
     private let assetStorageCallStore = CancellableCallStore()
 
@@ -28,7 +26,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
-        feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         transferCommandFactory: SubstrateTransferCommandFactory,
@@ -41,7 +38,6 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
     ) {
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
-        self.feeAsset = feeAsset
         self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.transferAggregationWrapperFactory = transferAggregationWrapperFactory
@@ -66,7 +62,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: transactionId.rawValue,
-            payingIn: feeAsset?.chainAssetId
+            payingIn: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
         ) { [weak self] builder in
             let (newBuilder, _) = try self?.addingTransferCommand(
                 to: builder,

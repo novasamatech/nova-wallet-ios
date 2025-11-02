@@ -2061,6 +2061,12 @@
 		2DB585EB2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */; };
 		2DB585F22EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */; };
 		2DB5862A2EB74AB700950F7D /* GiftMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586292EB74AB700950F7D /* GiftMapper.swift */; };
+		2DB586332EB7556A00950F7D /* GiftTransferSubmitting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586322EB7556A00950F7D /* GiftTransferSubmitting.swift */; };
+		2DB5863F2EB7612600950F7D /* GiftTransferSubmissionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5863E2EB7612600950F7D /* GiftTransferSubmissionFactory.swift */; };
+		2DB586442EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586432EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift */; };
+		2DB586512EB761B600950F7D /* GiftTransferSubmissionFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586502EB761B600950F7D /* GiftTransferSubmissionFactoryProtocol.swift */; };
+		2DB586622EB7689B00950F7D /* EvmGiftTransferSubmissionFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586612EB7689B00950F7D /* EvmGiftTransferSubmissionFactoryProtocol.swift */; };
+		2DB586762EB76BE100950F7D /* GiftTransferConfirmError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
@@ -8634,6 +8640,12 @@
 		2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewFactory.swift; sourceTree = "<group>"; };
 		2DB586292EB74AB700950F7D /* GiftMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftMapper.swift; sourceTree = "<group>"; };
+		2DB586322EB7556A00950F7D /* GiftTransferSubmitting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSubmitting.swift; sourceTree = "<group>"; };
+		2DB5863E2EB7612600950F7D /* GiftTransferSubmissionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSubmissionFactory.swift; sourceTree = "<group>"; };
+		2DB586432EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSubmissionFactory.swift; sourceTree = "<group>"; };
+		2DB586502EB761B600950F7D /* GiftTransferSubmissionFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSubmissionFactoryProtocol.swift; sourceTree = "<group>"; };
+		2DB586612EB7689B00950F7D /* EvmGiftTransferSubmissionFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSubmissionFactoryProtocol.swift; sourceTree = "<group>"; };
+		2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmError.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
@@ -18071,6 +18083,7 @@
 			children = (
 				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
 				2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */,
+				2DB586322EB7556A00950F7D /* GiftTransferSubmitting.swift */,
 			);
 			path = Interactor;
 			sourceTree = "<group>";
@@ -18087,9 +18100,38 @@
 		2DB585F92EB6B54500950F7D /* Factory */ = {
 			isa = PBXGroup;
 			children = (
+				2DB5864A2EB761A400950F7D /* GiftTransferSubmissionFactory */,
 				2D533C922EB0F7F10005FF8A /* GiftTransferConfirmViewFactory.swift */,
 			);
 			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DB5864A2EB761A400950F7D /* GiftTransferSubmissionFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2DB586672EB768B200950F7D /* EVM */,
+				2DB586662EB768AD00950F7D /* Substrate */,
+				2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */,
+			);
+			path = GiftTransferSubmissionFactory;
+			sourceTree = "<group>";
+		};
+		2DB586662EB768AD00950F7D /* Substrate */ = {
+			isa = PBXGroup;
+			children = (
+				2DB586502EB761B600950F7D /* GiftTransferSubmissionFactoryProtocol.swift */,
+				2DB5863E2EB7612600950F7D /* GiftTransferSubmissionFactory.swift */,
+			);
+			path = Substrate;
+			sourceTree = "<group>";
+		};
+		2DB586672EB768B200950F7D /* EVM */ = {
+			isa = PBXGroup;
+			children = (
+				2DB586612EB7689B00950F7D /* EvmGiftTransferSubmissionFactoryProtocol.swift */,
+				2DB586432EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift */,
+			);
+			path = EVM;
 			sourceTree = "<group>";
 		};
 		2DB5B1132D3FEC9E0075EB3F /* BrowserNavigationTaskFactory */ = {
@@ -31438,6 +31480,7 @@
 				0C1BE19E2A46EDB40010933C /* String+ScientificInt.swift in Sources */,
 				84B71DE5260B90270003A100 /* SubstrateAlias.swift in Sources */,
 				841E5555282E504800C8438F /* ConstantCodingPath+ParachainStaking.swift in Sources */,
+				2DB586442EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift in Sources */,
 				8443FDB12554B7640092893D /* TitledMnemonicView.swift in Sources */,
 				AE2C84CA25EF986E00986716 /* ValidatorInfoProtocols.swift in Sources */,
 				844518D127CAB6FC00D0C52B /* NftImageViewModel.swift in Sources */,
@@ -31768,6 +31811,7 @@
 				84CA68D126BE99ED003B9453 /* RuntimeProviderFactory.swift in Sources */,
 				2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */,
 				848F8B1928635A5600204BC4 /* TransferSetupPresenter.swift in Sources */,
+				2DB586622EB7689B00950F7D /* EvmGiftTransferSubmissionFactoryProtocol.swift in Sources */,
 				841221A028F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift in Sources */,
 				0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift in Sources */,
 				0C0F6DCE2D41332700943A7C /* PreferredStakingCollatorFactory.swift in Sources */,
@@ -32289,6 +32333,7 @@
 				882808C829009CA500AE8089 /* DotsView.swift in Sources */,
 				84C355BD29892885005072CF /* SubqueryBaseOperationFactory.swift in Sources */,
 				8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */,
+				2DB5863F2EB7612600950F7D /* GiftTransferSubmissionFactory.swift in Sources */,
 				0CFF82492D91242100DB17A4 /* ExtrinsicStatusValidator.swift in Sources */,
 				0C3205C02A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift in Sources */,
 				8499FECF27BFA25100712589 /* NftType.swift in Sources */,
@@ -33001,6 +33046,7 @@
 				842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */,
 				DAB29F2A9C864D7FCF1AF934 /* UsernameSetupProtocols.swift in Sources */,
 				2D32BE162C6A49900047F520 /* ExtrinsicFeeEstimationRegistry.swift in Sources */,
+				2DB586332EB7556A00950F7D /* GiftTransferSubmitting.swift in Sources */,
 				2D32AA242E65DEF90083233B /* WalletNotificationsCleaner.swift in Sources */,
 				84D1111126B932480016D962 /* AssetModel.swift in Sources */,
 				779C8BE82AA1DD1B001A4A3C /* NominationPoolsBondMoreHintsFactory.swift in Sources */,
@@ -33716,6 +33762,7 @@
 				773A37562B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift in Sources */,
 				840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */,
 				845B8920295961AC00EE25B0 /* SecurityLayerProtocols.swift in Sources */,
+				2DB586762EB76BE100950F7D /* GiftTransferConfirmError.swift in Sources */,
 				2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */,
 				2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */,
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
@@ -35240,6 +35287,7 @@
 				0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */,
 				2DFF39EC2E184DE800529984 /* MultilineTextInputView.swift in Sources */,
 				0C85F5C32E140D90003789DC /* Multisig+Signatory.swift in Sources */,
+				2DB586512EB761B600950F7D /* GiftTransferSubmissionFactoryProtocol.swift in Sources */,
 				0C521C072E158D2400ABAC97 /* BlockTimestampEstimator.swift in Sources */,
 				884A7532299CB22F00FEFC30 /* TrackTableViewCell.swift in Sources */,
 				B310C3D126C304851A40CFA9 /* ChainAddressDetailsProtocols.swift in Sources */,
