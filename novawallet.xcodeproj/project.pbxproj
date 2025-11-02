@@ -18083,7 +18083,6 @@
 			children = (
 				2DA4D60C2EB37DE2006FCCC0 /* GiftTransferConfirmInteractor.swift */,
 				2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */,
-				2DB586322EB7556A00950F7D /* GiftTransferSubmitting.swift */,
 			);
 			path = Interactor;
 			sourceTree = "<group>";
@@ -18109,9 +18108,9 @@
 		2DB5864A2EB761A400950F7D /* GiftTransferSubmissionFactory */ = {
 			isa = PBXGroup;
 			children = (
+				2DB5867F2EB76F7500950F7D /* Common */,
 				2DB586672EB768B200950F7D /* EVM */,
 				2DB586662EB768AD00950F7D /* Substrate */,
-				2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */,
 			);
 			path = GiftTransferSubmissionFactory;
 			sourceTree = "<group>";
@@ -18132,6 +18131,15 @@
 				2DB586432EB7613F00950F7D /* EvmGiftTransferSubmissionFactory.swift */,
 			);
 			path = EVM;
+			sourceTree = "<group>";
+		};
+		2DB5867F2EB76F7500950F7D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2DB586322EB7556A00950F7D /* GiftTransferSubmitting.swift */,
+				2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		2DB5B1132D3FEC9E0075EB3F /* BrowserNavigationTaskFactory */ = {

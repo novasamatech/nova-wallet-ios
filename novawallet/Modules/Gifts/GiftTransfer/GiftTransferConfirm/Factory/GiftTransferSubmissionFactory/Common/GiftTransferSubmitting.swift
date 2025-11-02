@@ -16,14 +16,14 @@ protocol GiftTransferSubmitting: AnyObject {
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedTransactionMetadata>
+    ) -> BaseOperation<SubmittedGiftTransactionMetadata>
 }
 
 // MARK: - Private
 
 private extension GiftTransferSubmitting {
     func createProcessSubmissionResultWrapper(
-        dependingOn submitOperation: BaseOperation<SubmittedTransactionMetadata>,
+        dependingOn submitOperation: BaseOperation<SubmittedGiftTransactionMetadata>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
@@ -91,6 +91,8 @@ private extension GiftTransferSubmitting {
     }
 }
 
+// MARK: - Internal
+
 extension GiftTransferSubmitting {
     func createWrapper(
         amount: OnChainTransferAmount<BigUInt>,
@@ -133,7 +135,7 @@ extension GiftTransferSubmitting {
     }
 }
 
-struct SubmittedTransactionMetadata {
+struct SubmittedGiftTransactionMetadata {
     let txHash: String
     let senderResolution: ExtrinsicSenderResolution?
     let callCodingPath: CallCodingPath?
