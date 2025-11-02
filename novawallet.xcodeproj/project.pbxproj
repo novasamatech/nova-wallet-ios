@@ -2060,6 +2060,7 @@
 		2DB585D72EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */; };
 		2DB585EB2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */; };
 		2DB585F22EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */; };
+		2DB5862A2EB74AB700950F7D /* GiftMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586292EB74AB700950F7D /* GiftMapper.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
@@ -8632,6 +8633,7 @@
 		2DB585D62EB6162B00950F7D /* EvmGiftTransferConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmInteractor.swift; sourceTree = "<group>"; };
 		2DB585EA2EB6B12900950F7D /* EvmGiftTransferConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DB585F12EB6B4B900950F7D /* GiftTransferSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupViewFactory.swift; sourceTree = "<group>"; };
+		2DB586292EB74AB700950F7D /* GiftMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftMapper.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
@@ -22045,6 +22047,7 @@
 			isa = PBXGroup;
 			children = (
 				845B821826EF808D00D25C72 /* MetaAccountMapper.swift */,
+				2DB586292EB74AB700950F7D /* GiftMapper.swift */,
 				773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */,
 				84CA68DE26BEAA0F003B9453 /* ChainModelMapper.swift */,
 				845B822026EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift */,
@@ -35305,6 +35308,7 @@
 				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
 				821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */,
 				843ADAC32A3C30A1003AE2B5 /* Decimal+Fiat.swift in Sources */,
+				2DB5862A2EB74AB700950F7D /* GiftMapper.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				84D184E82A04D5DC0060C1BD /* ScrollableContainerLayoutView.swift in Sources */,
 				77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */,

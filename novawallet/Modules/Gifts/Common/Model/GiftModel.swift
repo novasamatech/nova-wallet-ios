@@ -16,7 +16,7 @@ extension GiftModel: Identifiable {
 }
 
 extension GiftModel {
-    enum Status: Int {
+    enum Status: Int16 {
         case pending
         case claimed
         case reclaimed
