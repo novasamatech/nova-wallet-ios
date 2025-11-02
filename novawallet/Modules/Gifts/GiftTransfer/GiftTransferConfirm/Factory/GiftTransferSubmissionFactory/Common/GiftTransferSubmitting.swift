@@ -63,6 +63,34 @@ private extension GiftTransferSubmitting {
         }
     }
 
+    func createProcessFailedSubmission(
+        submitOperation: BaseOperation<SubmittedGiftTransactionMetadata>,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<Void> {
+        OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            do {
+                _ = try submitOperation.extractNoCancellableResultData()
+                return .createWithResult(())
+            } catch {
+                guard
+                    case let GiftTransferConfirmError.giftSubmissionFailed(
+                        giftAccountId,
+                        underlyingError
+                    ) = error
+                else { throw error }
+
+                let cleanSecretsOperation = self.giftFactory.cleanSecrets(
+                    for: giftAccountId,
+                    chainAsset: chainAsset
+                )
+
+                return CompoundOperationWrapper(targetOperation: cleanSecretsOperation)
+            }
+        }
+    }
+
     func persistExtrinsicWrapper(
         details: PersistTransferDetails,
         sender: ExtrinsicSenderResolution?
@@ -104,10 +132,12 @@ extension GiftTransferSubmitting {
 
         let amountWithClaimFee = amount.map { $0 + claimFee }
 
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
         /* We use nominal gift value for local model */
         let giftOperation = giftFactory.createGiftOperation(
             amount: amount,
-            chainAsset: ChainAsset(chain: chain, asset: asset)
+            chainAsset: chainAsset
         )
 
         /* We send amount with claim fee to allow getting
@@ -117,7 +147,10 @@ extension GiftTransferSubmitting {
             amount: amountWithClaimFee,
             assetStorageInfo: assetStorageInfo
         )
-
+        let processPossibleFailureWrapper = createProcessFailedSubmission(
+            submitOperation: submitOperation,
+            chainAsset: chainAsset
+        )
         let processResultWrapper = createProcessSubmissionResultWrapper(
             dependingOn: submitOperation,
             giftOperation: giftOperation,
@@ -125,9 +158,11 @@ extension GiftTransferSubmitting {
         )
 
         submitOperation.addDependency(giftOperation)
-        processResultWrapper.addDependency(operations: [submitOperation])
+        processPossibleFailureWrapper.addDependency(operations: [submitOperation])
+        processResultWrapper.addDependency(wrapper: processPossibleFailureWrapper)
 
         let finalWrapper = processResultWrapper
+            .insertingHead(operations: processPossibleFailureWrapper.allOperations)
             .insertingHead(operations: [submitOperation])
             .insertingHead(operations: [giftOperation])
 

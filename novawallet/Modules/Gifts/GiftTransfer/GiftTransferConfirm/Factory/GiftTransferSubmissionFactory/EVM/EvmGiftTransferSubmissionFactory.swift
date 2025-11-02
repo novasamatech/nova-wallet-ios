@@ -51,7 +51,7 @@ final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo _: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedTransactionMetadata> {
+    ) -> BaseOperation<SubmittedGiftTransactionMetadata> {
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
@@ -99,7 +99,7 @@ final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
                 completion: { result in
                     switch result {
                     case let .success(txHash):
-                        let submittedExtrinsicModel = SubmittedTransactionMetadata(
+                        let submittedExtrinsicModel = SubmittedGiftTransactionMetadata(
                             txHash: txHash,
                             senderResolution: nil,
                             callCodingPath: callCodingPath

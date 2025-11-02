@@ -46,7 +46,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedTransactionMetadata> {
+    ) -> BaseOperation<SubmittedGiftTransactionMetadata> {
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
@@ -77,7 +77,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
                 completion: { result in
                     switch result {
                     case let .success(submitModel):
-                        let submittedExtrinsicModel = SubmittedTransactionMetadata(
+                        let submittedExtrinsicModel = SubmittedGiftTransactionMetadata(
                             txHash: submitModel.txHash,
                             senderResolution: submitModel.sender,
                             callCodingPath: callCodingPath

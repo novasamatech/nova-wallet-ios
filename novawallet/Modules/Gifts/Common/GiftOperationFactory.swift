@@ -12,6 +12,11 @@ protocol GiftOperationFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel>
+
+    func cleanSecrets(
+        for localGiftAccountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> BaseOperation<Void>
 }
 
 final class GiftOperationFactory {
@@ -32,6 +37,16 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
         localGiftFactory.createGiftOperation(
             amount: amount.value,
             chainAsset: chainAsset
+        )
+    }
+
+    func cleanSecrets(
+        for localGiftAccountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> BaseOperation<Void> {
+        localGiftFactory.cleanSecrets(
+            for: localGiftAccountId,
+            ethereumBased: chainAsset.chain.isEthereumBased
         )
     }
 }

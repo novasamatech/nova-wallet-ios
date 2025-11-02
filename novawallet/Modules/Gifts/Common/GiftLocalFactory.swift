@@ -10,6 +10,11 @@ protocol GiftLocalFactoryProtocol {
         amount: BigUInt,
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel>
+
+    func cleanSecrets(
+        for localGiftAccountId: AccountId,
+        ethereumBased: Bool
+    ) -> BaseOperation<Void>
 }
 
 final class GiftLocalFactory {
@@ -23,6 +28,8 @@ final class GiftLocalFactory {
 // MARK: - Private
 
 private extension GiftLocalFactory {
+    // MARK: - Create
+
     func createSeed(ethereumBased: Bool) throws -> Data {
         try createSeedFactory(ethereumBased: ethereumBased)
             .createSeed(
@@ -33,6 +40,11 @@ private extension GiftLocalFactory {
             .subdata(in: 0 ..< 10)
             // pad the rest
             + Data(repeating: 0x20, count: 22)
+    }
+
+    func createSeedFactory(ethereumBased: Bool) -> SeedFactoryProtocol {
+        // Actually, there is no difference since we take only first 10 bytes
+        ethereumBased ? BIP32SeedFactory() : SeedFactory()
     }
 
     func createKeyPair(
@@ -69,7 +81,7 @@ private extension GiftLocalFactory {
         }
     }
 
-    func getJunctionResult(
+    func createJunctionResult(
         ethereumBased: Bool
     ) throws -> JunctionResult? {
         guard ethereumBased else { return nil }
@@ -78,6 +90,8 @@ private extension GiftLocalFactory {
             path: DerivationPathConstants.defaultEthereum
         )
     }
+
+    // MARK: - Save
 
     func saveSecretKey(
         _ secretKey: Data,
@@ -103,9 +117,28 @@ private extension GiftLocalFactory {
         try keystore.saveKey(seed, with: tag)
     }
 
-    func createSeedFactory(ethereumBased: Bool) -> SeedFactoryProtocol {
-        // Actually, there is no difference since we take only first 10 bytes
-        ethereumBased ? BIP32SeedFactory() : SeedFactory()
+    // MARK: - Remove
+
+    func removeSeed(
+        accountId: AccountId,
+        ethereumBased: Bool
+    ) throws {
+        let tag = ethereumBased
+            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+
+        try keystore.deleteKeyIfExists(for: tag)
+    }
+
+    func removeSecretKey(
+        accountId: AccountId,
+        ethereumBased: Bool
+    ) throws {
+        let tag = ethereumBased
+            ? KeystoreTagV2.ethereumSecretKeyTagForMetaId("", accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForMetaId("", accountId: accountId)
+
+        try keystore.deleteKeyIfExists(for: tag)
     }
 }
 
@@ -121,7 +154,7 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
 
             let ethereumBased = chainAsset.chain.isEthereumBased
 
-            let junctionResult = try getJunctionResult(ethereumBased: ethereumBased)
+            let junctionResult = try createJunctionResult(ethereumBased: ethereumBased)
 
             let seed = try createSeed(ethereumBased: ethereumBased)
 
@@ -151,6 +184,22 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
                 chainAssetId: chainAsset.chainAssetId,
                 status: .pending,
                 giftAccountId: accountId
+            )
+        }
+    }
+
+    func cleanSecrets(
+        for localGiftAccountId: AccountId,
+        ethereumBased: Bool
+    ) -> BaseOperation<Void> {
+        ClosureOperation {
+            try self.removeSeed(
+                accountId: localGiftAccountId,
+                ethereumBased: ethereumBased
+            )
+            try self.removeSecretKey(
+                accountId: localGiftAccountId,
+                ethereumBased: ethereumBased
             )
         }
     }
