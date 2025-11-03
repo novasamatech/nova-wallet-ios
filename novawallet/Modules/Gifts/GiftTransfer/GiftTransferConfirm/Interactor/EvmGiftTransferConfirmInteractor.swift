@@ -68,8 +68,8 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
         ) { [weak self] result in
 
             switch result {
-            case .success:
-                self?.submissionPresenter?.didCompleteSubmition(by: nil)
+            case let .success(resultData):
+                self?.submissionPresenter?.didCompleteSubmition(with: resultData)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
