@@ -6,23 +6,23 @@ final class GiftPrepareSharePresenter {
     let wireframe: GiftPrepareShareWireframeProtocol
     let interactor: GiftPrepareShareInteractorInputProtocol
     let viewModelFactory: GiftPrepareShareViewModelFactoryProtocol
+    let universalLinkFactory: UniversalLinkFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
-    let chainAsset: ChainAsset
-
+    var chainAsset: ChainAsset?
     var gift: GiftModel?
 
     init(
         interactor: GiftPrepareShareInteractorInputProtocol,
         wireframe: GiftPrepareShareWireframeProtocol,
         viewModelFactory: GiftPrepareShareViewModelFactoryProtocol,
-        chainAsset: ChainAsset,
+        universalLinkFactory: UniversalLinkFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chainAsset = chainAsset
+        self.universalLinkFactory = universalLinkFactory
         self.localizationManager = localizationManager
     }
 }
@@ -33,6 +33,7 @@ private extension GiftPrepareSharePresenter {
     func provideViewModel() {
         guard
             let gift,
+            let chainAsset,
             let viewModel = viewModelFactory.createViewModel(
                 for: chainAsset,
                 gift: gift,
@@ -50,14 +51,39 @@ extension GiftPrepareSharePresenter: GiftPrepareSharePresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func actionShare() {
+        guard let gift, let chainAsset else { return }
+
+        interactor.share(gift: gift, chainAsset: chainAsset)
+    }
 }
 
 // MARK: - GiftPrepareShareInteractorOutputProtocol
 
 extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
-    func didReceive(_ gift: GiftModel) {
-        self.gift = gift
+    func didReceive(_ data: GiftPrepareShareInteractorOutputData) {
+        chainAsset = data.chainAsset
+        gift = data.gift
 
         provideViewModel()
+    }
+
+    func didReceive(_ sharingPayload: GiftSharingPayload) {
+        let url = universalLinkFactory.createUrlForGift(
+            seed: sharingPayload.seed,
+            chainId: sharingPayload.chainId,
+            symbol: sharingPayload.assetSymbol
+        )
+
+        let items: [Any] = [
+            url
+        ]
+
+        wireframe.share(
+            items: items,
+            from: view,
+            with: nil
+        )
     }
 }

@@ -11,6 +11,11 @@ protocol GiftLocalFactoryProtocol {
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel>
 
+    func getSecrets(
+        for localGiftAccountId: AccountId,
+        ethereumBased: Bool
+    ) -> BaseOperation<GiftSecrets?>
+
     func cleanSecrets(
         for localGiftAccountId: AccountId,
         ethereumBased: Bool
@@ -122,6 +127,19 @@ private extension GiftLocalFactory {
         try keystore.saveKey(seed, with: tag)
     }
 
+    // MARK: - Load
+
+    func loadSeed(
+        accountId: AccountId,
+        ethereumBased: Bool
+    ) throws -> Data? {
+        let tag = ethereumBased
+            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+
+        return try keystore.loadIfKeyExists(tag)
+    }
+
     // MARK: - Remove
 
     func removeSeed(
@@ -194,6 +212,20 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
         }
     }
 
+    func getSecrets(
+        for localGiftAccountId: AccountId,
+        ethereumBased: Bool
+    ) -> BaseOperation<GiftSecrets?> {
+        ClosureOperation { [weak self] in
+            guard let seed = try self?.loadSeed(
+                accountId: localGiftAccountId,
+                ethereumBased: ethereumBased
+            ) else { return nil }
+
+            return GiftSecrets(seed: seed)
+        }
+    }
+
     func cleanSecrets(
         for localGiftAccountId: AccountId,
         ethereumBased: Bool
@@ -209,4 +241,8 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
             )
         }
     }
+}
+
+struct GiftSecrets {
+    let seed: Data
 }

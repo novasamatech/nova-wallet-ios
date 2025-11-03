@@ -28,7 +28,24 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupActions()
         presenter.setup()
+    }
+}
+
+// MARK: - Private
+
+private extension GiftPrepareShareViewController {
+    func setupActions() {
+        rootView.shareActionButton.addTarget(
+            self,
+            action: #selector(actionShare),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionShare() {
+        presenter.actionShare()
     }
 }
 

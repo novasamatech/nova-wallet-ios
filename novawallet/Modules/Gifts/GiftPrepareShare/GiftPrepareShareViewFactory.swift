@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import Operation_iOS
+import Keystore_iOS
 
 struct GiftPrepareShareViewFactory {
     static func createView(
@@ -8,15 +9,25 @@ struct GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         style: GiftPrepareShareViewStyle
     ) -> GiftPrepareShareViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else { return nil }
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let selectedWallet = SelectedWalletSettings.shared.value
+        else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let storageFacade = UserDataStorageFacade.shared
         let repositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let giftRepository = repositoryFactory.createGiftsRepository(for: nil)
 
+        let giftFactory = GiftLocalFactory(
+            metaId: selectedWallet.metaId,
+            keystore: Keychain()
+        )
+
         let interactor = GiftPrepareShareInteractor(
             giftRepository: giftRepository,
+            localGiftFactory: giftFactory,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             giftId: giftId,
             operationQueue: operationQueue,
             logger: Logger.shared
@@ -38,7 +49,7 @@ struct GiftPrepareShareViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chainAsset: chainAsset,
+            universalLinkFactory: ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL),
             localizationManager: LocalizationManager.shared
         )
 

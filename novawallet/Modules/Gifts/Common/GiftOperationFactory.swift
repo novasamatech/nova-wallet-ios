@@ -14,7 +14,7 @@ protocol GiftOperationFactoryProtocol {
     ) -> BaseOperation<GiftModel>
 
     func cleanSecrets(
-        for localGiftAccountId: AccountId,
+        for giftAccountId: AccountId,
         chainAsset: ChainAsset
     ) -> BaseOperation<Void>
 }
@@ -41,11 +41,11 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
     }
 
     func cleanSecrets(
-        for localGiftAccountId: AccountId,
+        for giftAccountId: AccountId,
         chainAsset: ChainAsset
     ) -> BaseOperation<Void> {
         localGiftFactory.cleanSecrets(
-            for: localGiftAccountId,
+            for: giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
     }

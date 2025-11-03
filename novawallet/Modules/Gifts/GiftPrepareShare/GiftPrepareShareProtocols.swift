@@ -4,14 +4,20 @@ protocol GiftPrepareShareViewProtocol: ControllerBackedProtocol {
 
 protocol GiftPrepareSharePresenterProtocol: AnyObject {
     func setup()
+    func actionShare()
 }
 
 protocol GiftPrepareShareInteractorInputProtocol: AnyObject {
     func setup()
+    func share(
+        gift: GiftModel,
+        chainAsset: ChainAsset
+    )
 }
 
 protocol GiftPrepareShareInteractorOutputProtocol: AnyObject {
-    func didReceive(_ gift: GiftModel)
+    func didReceive(_ data: GiftPrepareShareInteractorOutputData)
+    func didReceive(_ sharingPayload: GiftSharingPayload)
 }
 
-protocol GiftPrepareShareWireframeProtocol: AnyObject {}
+protocol GiftPrepareShareWireframeProtocol: AnyObject, SharingPresentable {}
