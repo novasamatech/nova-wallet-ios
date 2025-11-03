@@ -14,15 +14,14 @@ protocol GiftOperationFactoryProtocol {
     ) -> BaseOperation<GiftModel>
 
     func cleanSecrets(
-        for giftAccountId: AccountId,
-        chainAsset: ChainAsset
+        for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void>
 }
 
 final class GiftOperationFactory {
-    private let localGiftFactory: GiftLocalFactoryProtocol
+    private let localGiftFactory: LocalGiftFactoryProtocol
 
-    init(localGiftFactory: GiftLocalFactoryProtocol) {
+    init(localGiftFactory: LocalGiftFactoryProtocol) {
         self.localGiftFactory = localGiftFactory
     }
 }
@@ -41,12 +40,8 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
     }
 
     func cleanSecrets(
-        for giftAccountId: AccountId,
-        chainAsset: ChainAsset
+        for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void> {
-        localGiftFactory.cleanSecrets(
-            for: giftAccountId,
-            ethereumBased: chainAsset.chain.isEthereumBased
-        )
+        localGiftFactory.cleanSecrets(for: info)
     }
 }

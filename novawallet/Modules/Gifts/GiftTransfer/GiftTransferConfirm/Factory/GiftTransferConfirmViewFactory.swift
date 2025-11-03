@@ -122,13 +122,21 @@ private extension GiftTransferConfirmViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
 
+        let extrinsicMonitorFactory = ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            connection: connection,
+            runtimeService: runtimeProvider,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
         let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(
+        let localGiftFactory = LocalGiftFactory(
             metaId: wallet.metaId,
             keystore: keystore
         )
@@ -156,7 +164,7 @@ private extension GiftTransferConfirmViewFactory {
             chain: chain,
             asset: asset,
             selectedAccount: selectedAccount,
-            extrinsicService: extrinsicService,
+            extrinsicMonitorFactory: extrinsicMonitorFactory,
             transferCommandFactory: SubstrateTransferCommandFactory(),
             operationQueue: operationQueue
         )
@@ -200,7 +208,7 @@ private extension GiftTransferConfirmViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(
+        let localGiftFactory = LocalGiftFactory(
             metaId: wallet.metaId,
             keystore: keystore
         )

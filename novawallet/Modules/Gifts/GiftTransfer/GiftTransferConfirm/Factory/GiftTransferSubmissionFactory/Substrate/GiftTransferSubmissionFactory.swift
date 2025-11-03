@@ -13,7 +13,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
     let chain: ChainModel
     let asset: AssetModel
     let selectedAccount: ChainAccountResponse
-    let extrinsicService: ExtrinsicServiceProtocol
+    let extrinsicMonitorFactory: ExtrinsicSubmissionMonitorFactory
     let transferCommandFactory: SubstrateTransferCommandFactory
     let operationQueue: OperationQueue
 
@@ -27,7 +27,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
         chain: ChainModel,
         asset: AssetModel,
         selectedAccount: ChainAccountResponse,
-        extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicMonitorFactory: ExtrinsicSubmissionMonitorFactory,
         transferCommandFactory: SubstrateTransferCommandFactory,
         operationQueue: OperationQueue
     ) {
@@ -40,65 +40,68 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
         self.chain = chain
         self.asset = asset
         self.selectedAccount = selectedAccount
-        self.extrinsicService = extrinsicService
+        self.extrinsicMonitorFactory = extrinsicMonitorFactory
         self.transferCommandFactory = transferCommandFactory
         self.operationQueue = operationQueue
     }
 
-    func createSubmitOperation(
+    func createSubmitWrapper(
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedGiftTransactionMetadata> {
-        AsyncClosureOperation { [weak self] completion in
+    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
+        var callCodingPath: CallCodingPath?
+
+        let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let gift = try giftOperation.extractNoCancellableResultData()
 
-            var callCodingPath: CallCodingPath?
-
-            let extrinsicClosure: ExtrinsicBuilderClosure = { [weak self] builder in
-                guard let self else { throw BaseOperationError.parentOperationCancelled }
-
-                let (newBuilder, codingPath) = try self.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recepient: gift.giftAccountId,
-                    assetStorageInfo: assetStorageInfo
-                )
-
-                callCodingPath = codingPath
-
-                return newBuilder
-            }
-
-            extrinsicService.submit(
-                extrinsicClosure,
-                payingIn: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                signer: signingWrapper,
-                runningIn: .main,
-                completion: { result in
-                    switch result {
-                    case let .success(submitModel):
-                        let submittedExtrinsicModel = SubmittedGiftTransactionMetadata(
-                            txHash: submitModel.txHash,
-                            senderResolution: submitModel.sender,
-                            callCodingPath: callCodingPath
-                        )
-                        completion(.success(submittedExtrinsicModel))
-                    case let .failure(error):
-                        completion(
-                            .failure(
-                                GiftTransferConfirmError.giftSubmissionFailed(
-                                    giftAccountId: gift.giftAccountId,
-                                    underlyingError: error
-                                )
-                            )
-                        )
-                    }
-                }
+            let (newBuilder, codingPath) = try self.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: gift.giftAccountId,
+                assetStorageInfo: assetStorageInfo
             )
+
+            callCodingPath = codingPath
+
+            return newBuilder
         }
+
+        let submitAndMonitorWrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: extrinsicBuilderClosre,
+            payingIn: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            signer: signingWrapper
+        )
+
+        let mapOperation = ClosureOperation<SubmittedGiftTransactionMetadata> {
+            let result = submitAndMonitorWrapper.targetOperation.result
+            let gift = try giftOperation.extractNoCancellableResultData()
+
+            switch result {
+            case let .success(submission):
+                return SubmittedGiftTransactionMetadata(
+                    txHash: submission.extrinsicSubmittedModel.txHash,
+                    senderResolution: submission.extrinsicSubmittedModel.sender,
+                    callCodingPath: callCodingPath
+                )
+            case let .failure(error):
+                throw GiftTransferConfirmError.giftSubmissionFailed(
+                    giftAccountId: gift.giftAccountId,
+                    underlyingError: error
+                )
+            case .none:
+                throw GiftTransferConfirmError.giftSubmissionFailed(
+                    giftAccountId: gift.giftAccountId,
+                    underlyingError: nil
+                )
+            }
+        }
+
+        mapOperation.addDependency(submitAndMonitorWrapper.targetOperation)
+
+        return submitAndMonitorWrapper.insertingTail(operation: mapOperation)
     }
 }
 

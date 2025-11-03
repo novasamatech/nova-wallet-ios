@@ -4,8 +4,9 @@ import BigInt
 import NovaCrypto
 import Keystore_iOS
 import Operation_iOS
+import Scrypt
 
-protocol GiftLocalFactoryProtocol {
+protocol LocalGiftFactoryProtocol {
     func createGiftOperation(
         amount: BigUInt,
         chainAsset: ChainAsset
@@ -17,12 +18,11 @@ protocol GiftLocalFactoryProtocol {
     ) -> BaseOperation<GiftSecrets?>
 
     func cleanSecrets(
-        for localGiftAccountId: AccountId,
-        ethereumBased: Bool
+        for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void>
 }
 
-final class GiftLocalFactory {
+final class LocalGiftFactory {
     private let metaId: MetaAccountModel.Id
     private let keystore: KeystoreProtocol
 
@@ -37,24 +37,15 @@ final class GiftLocalFactory {
 
 // MARK: - Private
 
-private extension GiftLocalFactory {
+private extension LocalGiftFactory {
     // MARK: - Create
 
-    func createSeed(ethereumBased: Bool) throws -> Data {
-        try createSeedFactory(ethereumBased: ethereumBased)
-            .createSeed(
-                from: "",
-                strength: .entropy128
-            )
-            .seed
-            .subdata(in: 0 ..< 10)
-            // pad the rest
-            + Data(repeating: 0x20, count: 22)
-    }
+    func createSeed() throws -> Data {
+        guard let randomData = Data.random(of: 10) else {
+            throw GiftFactoryError.seedCreationFailed
+        }
 
-    func createSeedFactory(ethereumBased: Bool) -> SeedFactoryProtocol {
-        // Actually, there is no difference since we take only first 10 bytes
-        ethereumBased ? BIP32SeedFactory() : SeedFactory()
+        return randomData
     }
 
     func createKeyPair(
@@ -62,13 +53,23 @@ private extension GiftLocalFactory {
         chain: ChainModel,
         chainCodes: [Chaincode]
     ) throws -> (publicKey: Data, secretKey: Data) {
+        guard let saltBytes = Constants.salt.data(using: .utf8)?.byteArray else {
+            throw GiftFactoryError.keyDerivationFailed
+        }
+
+        let seedHash = try scrypt(
+            password: seed.byteArray,
+            salt: saltBytes,
+            length: 32
+        )
+
         let cryptoType: MultiassetCryptoType = chain.isEthereumBased
             ? .ethereumEcdsa
             : .sr25519
         let keypairFactory = createKeypairFactory(cryptoType)
 
         let keypair = try keypairFactory.createKeypairFromSeed(
-            seed,
+            Data(seedHash),
             chaincodeList: chainCodes
         )
 
@@ -109,8 +110,8 @@ private extension GiftLocalFactory {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSecretKeyTagForMetaId("", accountId: accountId)
-            : KeystoreTagV2.substrateSecretKeyTagForMetaId("", accountId: accountId)
+            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
 
         try keystore.saveKey(secretKey, with: tag)
     }
@@ -121,8 +122,8 @@ private extension GiftLocalFactory {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
 
         try keystore.saveKey(seed, with: tag)
     }
@@ -147,8 +148,8 @@ private extension GiftLocalFactory {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
 
         try keystore.deleteKeyIfExists(for: tag)
     }
@@ -158,16 +159,16 @@ private extension GiftLocalFactory {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSecretKeyTagForMetaId("", accountId: accountId)
-            : KeystoreTagV2.substrateSecretKeyTagForMetaId("", accountId: accountId)
+            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
 
         try keystore.deleteKeyIfExists(for: tag)
     }
 }
 
-// MARK: - GiftLocalFactoryProtocol
+// MARK: - LocalGiftFactoryProtocol
 
-extension GiftLocalFactory: GiftLocalFactoryProtocol {
+extension LocalGiftFactory: LocalGiftFactoryProtocol {
     func createGiftOperation(
         amount: BigUInt,
         chainAsset: ChainAsset
@@ -179,7 +180,7 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
 
             let junctionResult = try createJunctionResult(ethereumBased: ethereumBased)
 
-            let seed = try createSeed(ethereumBased: ethereumBased)
+            let seed = try createSeed()
 
             let keypair = try createKeyPair(
                 from: seed,
@@ -227,20 +228,30 @@ extension GiftLocalFactory: GiftLocalFactoryProtocol {
     }
 
     func cleanSecrets(
-        for localGiftAccountId: AccountId,
-        ethereumBased: Bool
+        for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void> {
         ClosureOperation {
             try self.removeSeed(
-                accountId: localGiftAccountId,
-                ethereumBased: ethereumBased
+                accountId: info.accountId,
+                ethereumBased: info.ethereumBased
             )
             try self.removeSecretKey(
-                accountId: localGiftAccountId,
-                ethereumBased: ethereumBased
+                accountId: info.accountId,
+                ethereumBased: info.ethereumBased
             )
         }
     }
+}
+
+private extension LocalGiftFactory {
+    enum Constants {
+        static let salt: String = "Gift"
+    }
+}
+
+enum GiftFactoryError: Error {
+    case seedCreationFailed
+    case keyDerivationFailed
 }
 
 struct GiftSecrets {
