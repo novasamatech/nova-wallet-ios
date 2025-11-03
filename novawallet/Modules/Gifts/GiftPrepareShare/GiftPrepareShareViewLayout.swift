@@ -34,6 +34,12 @@ final class GiftPrepareShareViewLayout: UIView {
         options: [.curveEaseInOut]
     )
 
+    let shareActionButton: TriangularedButton = .create { view in
+        view.imageWithTitleView?.iconImage = R.image.iconShare()
+        view.imageWithTitleView?.titleFont = .semiBoldSubheadline
+        view.applyEnabledStyle()
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -59,6 +65,7 @@ private extension GiftPrepareShareViewLayout {
         addSubview(titleLabel)
         addSubview(animationView)
         addSubview(amountView)
+        addSubview(shareActionButton)
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(24)
@@ -73,11 +80,17 @@ private extension GiftPrepareShareViewLayout {
             make.top.equalTo(animationView.snp.bottom).inset(-8)
             make.centerX.equalToSuperview()
         }
+        shareActionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(UIConstants.actionHeight)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(UIConstants.actionBottomInset)
+        }
     }
 
     func applyConfiguration() {
         titleLabel.alpha = configuration.titleInitialAlpha
         amountView.alpha = configuration.amountInitialViewAlpha
+        shareActionButton.alpha = configuration.actionInitialAlpha
     }
 
     func didCompletePlayingGiftAnimation() {
@@ -89,7 +102,8 @@ private extension GiftPrepareShareViewLayout {
     func animateContentAppearance() {
         [
             titleLabel,
-            amountView
+            amountView,
+            shareActionButton
         ].forEach {
             appearanceAnimator.animate(
                 view: $0,
@@ -106,6 +120,7 @@ extension GiftPrepareShareViewLayout {
         titleLabel.text = viewModel.title
         animationView.animation = viewModel.animation
         amountLabel.text = viewModel.amount
+        shareActionButton.imageWithTitleView?.title = viewModel.actionTitle
 
         viewModel.assetIcon.loadImage(
             on: assetImageView,
