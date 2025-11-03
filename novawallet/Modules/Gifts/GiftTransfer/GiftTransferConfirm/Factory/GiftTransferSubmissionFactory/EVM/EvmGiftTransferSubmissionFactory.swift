@@ -50,12 +50,12 @@ final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
         self.operationQueue = operationQueue
     }
 
-    func createSubmitOperation(
+    func createSubmitWrapper(
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo _: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedGiftTransactionMetadata> {
-        AsyncClosureOperation { [weak self] completion in
+    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
+        let operation = AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let gift = try giftOperation.extractNoCancellableResultData()
@@ -121,6 +121,8 @@ final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
                 }
             )
         }
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }
 

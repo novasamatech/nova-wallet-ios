@@ -55,7 +55,7 @@ extension KeystoreTagV2 {
     }
 }
 
-fileprivate extension KeystoreTagV2 {
+private extension KeystoreTagV2 {
     static func createTagForGift(
         accountId: AccountId?,
         suffix: String

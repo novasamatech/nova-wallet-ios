@@ -7,35 +7,35 @@ extension KeystoreTagV2 {
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.substrateSecretKey)
     }
-    
+
     static func ethereumSecretKeyTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.ethereumSecretKey)
     }
-    
+
     static func entropyTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.entropy)
     }
-    
+
     static func substrateDerivationTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.substrateDerivation)
     }
-    
+
     static func ethereumDerivationTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.ethereumDerivation)
     }
-    
+
     static func derivationTagForMetaId(
         _ metaId: String,
         accountId: AccountId,
@@ -47,14 +47,14 @@ extension KeystoreTagV2 {
             return substrateDerivationTagForMetaId(metaId, accountId: accountId)
         }
     }
-    
+
     static func substrateSeedTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
     ) -> String {
         createTagForMetaId(metaId, accountId: accountId, suffix: Suffix.substrateSeed)
     }
-    
+
     static func ethereumSeedTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil
@@ -63,7 +63,7 @@ extension KeystoreTagV2 {
     }
 }
 
-fileprivate extension KeystoreTagV2 {
+private extension KeystoreTagV2 {
     static func createTagForMetaId(
         _ metaId: String,
         accountId: AccountId?,

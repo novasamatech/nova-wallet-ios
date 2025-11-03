@@ -11,7 +11,7 @@ protocol LocalGiftFactoryProtocol {
         amount: BigUInt,
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel>
-    
+
     func cleanSecrets(
         for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void>
@@ -20,7 +20,7 @@ protocol LocalGiftFactoryProtocol {
 final class LocalGiftFactory {
     private let metaId: MetaAccountModel.Id
     private let keystore: KeystoreProtocol
-    
+
     init(
         metaId: MetaAccountModel.Id,
         keystore: KeystoreProtocol
@@ -34,15 +34,15 @@ final class LocalGiftFactory {
 
 private extension LocalGiftFactory {
     // MARK: - Create
-    
+
     func createSeed() throws -> Data {
         guard let randomData = Data.random(of: 10) else {
             throw GiftFactoryError.seedCreationFailed
         }
-        
+
         return randomData
     }
-    
+
     func createKeyPair(
         from seed: Data,
         chain: ChainModel,
@@ -51,29 +51,29 @@ private extension LocalGiftFactory {
         guard let saltBytes = Constants.salt.data(using: .utf8)?.byteArray else {
             throw GiftFactoryError.keyDerivationFailed
         }
-        
+
         let seedHash = try scrypt(
             password: seed.byteArray,
             salt: saltBytes,
             length: 32
         )
-        
+
         let cryptoType: MultiassetCryptoType = chain.isEthereumBased
-        ? .ethereumEcdsa
-        : .sr25519
+            ? .ethereumEcdsa
+            : .sr25519
         let keypairFactory = createKeypairFactory(cryptoType)
-        
+
         let keypair = try keypairFactory.createKeypairFromSeed(
             Data(seedHash),
             chaincodeList: chainCodes
         )
-        
+
         return (
             publicKey: keypair.publicKey().rawData(),
             secretKey: keypair.privateKey().rawData()
         )
     }
-    
+
     func createKeypairFactory(_ cryptoType: MultiassetCryptoType) -> KeypairFactoryProtocol {
         switch cryptoType {
         case .sr25519:
@@ -86,64 +86,64 @@ private extension LocalGiftFactory {
             return BIP32Secp256KeypairFactory()
         }
     }
-    
+
     func createJunctionResult(
         ethereumBased: Bool
     ) throws -> JunctionResult? {
         guard ethereumBased else { return nil }
-        
+
         return try BIP32JunctionFactory().parse(
             path: DerivationPathConstants.defaultEthereum
         )
     }
-    
+
     // MARK: - Save
-    
+
     func saveSecretKey(
         _ secretKey: Data,
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-        ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
-        : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
-        
+            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
+
         try keystore.saveKey(secretKey, with: tag)
     }
-    
+
     func saveSeed(
         _ seed: Data,
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-        ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
-        : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
-        
+            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
+
         try keystore.saveKey(seed, with: tag)
     }
-    
+
     // MARK: - Remove
-    
+
     func removeSeed(
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-        ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
-        : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
-        
+            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
+
         try keystore.deleteKeyIfExists(for: tag)
     }
-    
+
     func removeSecretKey(
         accountId: AccountId,
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-        ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
-        : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
-        
+            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
+
         try keystore.deleteKeyIfExists(for: tag)
     }
 }
@@ -157,23 +157,23 @@ extension LocalGiftFactory: LocalGiftFactoryProtocol {
     ) -> BaseOperation<GiftModel> {
         ClosureOperation { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
-            
+
             let ethereumBased = chainAsset.chain.isEthereumBased
-            
+
             let junctionResult = try createJunctionResult(ethereumBased: ethereumBased)
-            
+
             let seed = try createSeed()
-            
+
             let keypair = try createKeyPair(
                 from: seed,
                 chain: chainAsset.chain,
                 chainCodes: junctionResult?.chaincodes ?? []
             )
-            
+
             let accountId = ethereumBased
-            ? try keypair.publicKey.ethereumAddressFromPublicKey()
-            : try keypair.publicKey.publicKeyToAccountId()
-            
+                ? try keypair.publicKey.ethereumAddressFromPublicKey()
+                : try keypair.publicKey.publicKeyToAccountId()
+
             try saveSeed(
                 seed,
                 accountId: accountId,
@@ -184,7 +184,7 @@ extension LocalGiftFactory: LocalGiftFactoryProtocol {
                 accountId: accountId,
                 ethereumBased: ethereumBased
             )
-            
+
             return GiftModel(
                 amount: amount,
                 chainAssetId: chainAsset.chainAssetId,
@@ -194,7 +194,7 @@ extension LocalGiftFactory: LocalGiftFactoryProtocol {
             )
         }
     }
-    
+
     func cleanSecrets(
         for info: GiftSecretKeyInfo
     ) -> BaseOperation<Void> {

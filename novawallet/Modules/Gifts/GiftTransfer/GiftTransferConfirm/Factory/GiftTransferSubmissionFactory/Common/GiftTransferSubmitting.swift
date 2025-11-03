@@ -14,18 +14,18 @@ protocol GiftTransferSubmitting: AnyObject {
 
     var giftsRepository: AnyDataProviderRepository<GiftModel> { get }
 
-    func createSubmitOperation(
+    func createSubmitWrapper(
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?
-    ) -> BaseOperation<SubmittedGiftTransactionMetadata>
+    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata>
 }
 
 // MARK: - Private
 
 private extension GiftTransferSubmitting {
     func createProcessSubmissionResultWrapper(
-        dependingOn submitOperation: BaseOperation<SubmittedGiftTransactionMetadata>,
+        dependingOn submitWrapper: CompoundOperationWrapper<SubmittedGiftTransactionMetadata>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
@@ -35,12 +35,13 @@ private extension GiftTransferSubmitting {
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             do {
+                let submissionData = try submitWrapper.targetOperation.extractNoCancellableResultData()
                 let gift = try giftOperation.extractNoCancellableResultData()
-                let submissionData = try submitOperation.extractNoCancellableResultData()
 
-                return createPersistWrapper(
-                    gift: gift,
+                return createPersistExtrinsicWrapper(
                     submissionData: submissionData,
+                    recipient: gift.giftAccountId,
+                    amount: gift.amount,
                     lastFee: lastFee
                 )
             } catch {
@@ -58,14 +59,14 @@ private extension GiftTransferSubmitting {
     }
 
     func createProcessFailedSubmission(
-        submitOperation: BaseOperation<SubmittedGiftTransactionMetadata>,
+        submitWrapper: CompoundOperationWrapper<SubmittedGiftTransactionMetadata>,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<Void> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             do {
-                _ = try submitOperation.extractNoCancellableResultData()
+                _ = try submitWrapper.targetOperation.extractNoCancellableResultData()
                 return .createWithResult(())
             } catch {
                 guard
@@ -75,55 +76,47 @@ private extension GiftTransferSubmitting {
                     ) = error
                 else { throw error }
 
-                let secretInfo = GiftSecretKeyInfo(
-                    accountId: giftAccountId,
-                    ethereumBased: chainAsset.chain.isEthereumBased
+                return self.createCleanGiftWrapper(
+                    for: giftAccountId,
+                    chainAsset: chainAsset
                 )
-
-                let cleanSecretsOperation = self.giftFactory.cleanSecrets(for: secretInfo)
-
-                return CompoundOperationWrapper(targetOperation: cleanSecretsOperation)
             }
         }
     }
 
-    func createPersistWrapper(
-        gift: GiftModel,
-        submissionData: SubmittedGiftTransactionMetadata,
-        lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
-        let giftPersistWrapper = createPersistGiftWrapper(gift: gift)
-
-        let extrinsicPersistWrapper = createPersistExtrinsicWrapper(
-            submissionData: submissionData,
-            recipient: gift.giftAccountId,
-            amount: gift.amount,
-            lastFee: lastFee
+    func createCleanGiftWrapper(
+        for giftAccountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<Void> {
+        let secretInfo = GiftSecretKeyInfo(
+            accountId: giftAccountId,
+            ethereumBased: chainAsset.chain.isEthereumBased
         )
 
-        let resultOperation = ClosureOperation<ExtrinsicSenderResolution?> {
-            try giftPersistWrapper.targetOperation.extractNoCancellableResultData()
-            try extrinsicPersistWrapper.targetOperation.extractNoCancellableResultData()
-
-            return submissionData.senderResolution
+        let cleanSecretsOperation = giftFactory.cleanSecrets(for: secretInfo)
+        let cleanLocalGiftOperation = giftsRepository.saveOperation(
+            { [] },
+            { [giftAccountId.toHex()] }
+        )
+        let resultOperation = ClosureOperation {
+            try cleanSecretsOperation.extractNoCancellableResultData()
+            try cleanLocalGiftOperation.extractNoCancellableResultData()
         }
 
-        resultOperation.addDependency(giftPersistWrapper.targetOperation)
-        resultOperation.addDependency(extrinsicPersistWrapper.targetOperation)
-
-        let dependencies = giftPersistWrapper.allOperations + extrinsicPersistWrapper.allOperations
+        resultOperation.addDependency(cleanSecretsOperation)
+        resultOperation.addDependency(cleanLocalGiftOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: dependencies
+            dependencies: [cleanSecretsOperation, cleanLocalGiftOperation]
         )
     }
 
     func createPersistGiftWrapper(
-        gift: GiftModel
+        dependingOn giftOperation: BaseOperation<GiftModel>
     ) -> CompoundOperationWrapper<Void> {
         let saveOperation = giftsRepository.saveOperation(
-            { [gift] },
+            { [try giftOperation.extractNoCancellableResultData()] },
             { [] }
         )
 
@@ -135,8 +128,8 @@ private extension GiftTransferSubmitting {
         recipient: AccountId,
         amount: BigUInt,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<Void> {
-        let operation = AsyncClosureOperation<Void> { [weak self] completion in
+    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+        let operation = AsyncClosureOperation<ExtrinsicSenderResolution?> { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             guard
@@ -144,7 +137,7 @@ private extension GiftTransferSubmitting {
                 let callCodingPath = submissionData.callCodingPath,
                 let txHashData = try? Data(hexString: submissionData.txHash)
             else {
-                completion(.success(()))
+                completion(.success(submissionData.senderResolution))
                 return
             }
 
@@ -170,7 +163,7 @@ private extension GiftTransferSubmitting {
                     switch result {
                     case .success:
                         self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        completion(.success(()))
+                        completion(.success(submissionData.senderResolution))
                     case let .failure(error):
                         completion(.failure(error))
                     }
@@ -202,31 +195,34 @@ extension GiftTransferSubmitting {
             amount: amount,
             chainAsset: chainAsset
         )
+        let persistGiftWrapper = createPersistGiftWrapper(dependingOn: giftOperation)
 
         /* We send amount with claim fee to allow getting
          nominal gift value for final recipient */
-        let submitOperation = createSubmitOperation(
+        let submitWrapper = createSubmitWrapper(
             dependingOn: giftOperation,
             amount: amountWithClaimFee,
             assetStorageInfo: assetStorageInfo
         )
         let processPossibleFailureWrapper = createProcessFailedSubmission(
-            submitOperation: submitOperation,
+            submitWrapper: submitWrapper,
             chainAsset: chainAsset
         )
         let processResultWrapper = createProcessSubmissionResultWrapper(
-            dependingOn: submitOperation,
+            dependingOn: submitWrapper,
             giftOperation: giftOperation,
             lastFee: totalFee
         )
 
-        submitOperation.addDependency(giftOperation)
-        processPossibleFailureWrapper.addDependency(operations: [submitOperation])
+        persistGiftWrapper.addDependency(operations: [giftOperation])
+        submitWrapper.addDependency(wrapper: persistGiftWrapper)
+        processPossibleFailureWrapper.addDependency(wrapper: submitWrapper)
         processResultWrapper.addDependency(wrapper: processPossibleFailureWrapper)
 
         let finalWrapper = processResultWrapper
             .insertingHead(operations: processPossibleFailureWrapper.allOperations)
-            .insertingHead(operations: [submitOperation])
+            .insertingHead(operations: submitWrapper.allOperations)
+            .insertingHead(operations: persistGiftWrapper.allOperations)
             .insertingHead(operations: [giftOperation])
 
         return finalWrapper
