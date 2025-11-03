@@ -3,14 +3,14 @@ import BigInt
 import Operation_iOS
 
 final class EvmGiftTransferConfirmInteractor: EvmGiftTransferInteractor {
-    let giftTransferSubmissionFactory: EvmGiftTransferSubmissionFactoryProtocol
+    let giftSubmissionFactory: EvmGiftSubmissionFactoryProtocol
 
     var submissionPresenter: GiftTransferConfirmInteractorOutputProtocol? {
         presenter as? GiftTransferConfirmInteractorOutputProtocol
     }
 
     init(
-        giftTransferSubmissionFactory: EvmGiftTransferSubmissionFactoryProtocol,
+        giftSubmissionFactory: EvmGiftSubmissionFactoryProtocol,
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
@@ -23,7 +23,7 @@ final class EvmGiftTransferConfirmInteractor: EvmGiftTransferInteractor {
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.giftTransferSubmissionFactory = giftTransferSubmissionFactory
+        self.giftSubmissionFactory = giftSubmissionFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -54,7 +54,7 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
             let transferType
         else { return }
 
-        let wrapper = giftTransferSubmissionFactory.createSubmissionWrapper(
+        let wrapper = giftSubmissionFactory.createSubmissionWrapper(
             amount: amount,
             feeDescription: lastFeeDescription,
             evmFee: lastFeeModel,

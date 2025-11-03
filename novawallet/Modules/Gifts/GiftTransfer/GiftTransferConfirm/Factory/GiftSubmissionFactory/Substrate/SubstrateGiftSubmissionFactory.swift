@@ -3,46 +3,25 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
-    let giftFactory: GiftOperationFactoryProtocol
-    let giftsRepository: AnyDataProviderRepository<GiftModel>
+final class SubstrateGiftSubmissionFactory {
+    let submissionFactory: GiftSubmissionFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
-    let persistExtrinsicService: PersistentExtrinsicServiceProtocol
-    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
-    let eventCenter: EventCenterProtocol
-    let chain: ChainModel
-    let asset: AssetModel
-    let selectedAccount: ChainAccountResponse
-    let extrinsicMonitorFactory: ExtrinsicSubmissionMonitorFactory
+    let chainAsset: ChainAsset
+    let extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let transferCommandFactory: SubstrateTransferCommandFactory
-    let operationQueue: OperationQueue
 
     init(
-        giftFactory: GiftOperationFactoryProtocol,
-        giftsRepository: AnyDataProviderRepository<GiftModel>,
+        submissionFactory: GiftSubmissionFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
-        persistExtrinsicService: PersistentExtrinsicServiceProtocol,
-        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
-        eventCenter: EventCenterProtocol,
-        chain: ChainModel,
-        asset: AssetModel,
-        selectedAccount: ChainAccountResponse,
-        extrinsicMonitorFactory: ExtrinsicSubmissionMonitorFactory,
-        transferCommandFactory: SubstrateTransferCommandFactory,
-        operationQueue: OperationQueue
+        chainAsset: ChainAsset,
+        extrinsicMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
+        transferCommandFactory: SubstrateTransferCommandFactory
     ) {
-        self.giftFactory = giftFactory
-        self.giftsRepository = giftsRepository
+        self.submissionFactory = submissionFactory
         self.signingWrapper = signingWrapper
-        self.persistExtrinsicService = persistExtrinsicService
-        self.persistenceFilter = persistenceFilter
-        self.eventCenter = eventCenter
-        self.chain = chain
-        self.asset = asset
-        self.selectedAccount = selectedAccount
+        self.chainAsset = chainAsset
         self.extrinsicMonitorFactory = extrinsicMonitorFactory
         self.transferCommandFactory = transferCommandFactory
-        self.operationQueue = operationQueue
     }
 
     func createSubmitWrapper(
@@ -71,7 +50,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
 
         let submitAndMonitorWrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
             extrinsicBuilderClosure: extrinsicBuilderClosre,
-            payingIn: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            payingIn: chainAsset.chainAssetId,
             signer: signingWrapper
         )
 
@@ -107,7 +86,7 @@ final class GiftTransferSubmissionFactory: GiftTransferSubmitting {
 
 // MARK: - Private
 
-private extension GiftTransferSubmissionFactory {
+private extension SubstrateGiftSubmissionFactory {
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -127,17 +106,25 @@ private extension GiftTransferSubmissionFactory {
     }
 }
 
-// MARK: - GiftTransferSubmissionFactoryProtocol
+// MARK: - SubstrateGiftSubmissionFactoryProtocol
 
-extension GiftTransferSubmissionFactory: GiftTransferSubmissionFactoryProtocol {
+extension SubstrateGiftSubmissionFactory: SubstrateGiftSubmissionFactoryProtocol {
     func createSubmissionWrapper(
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
-        createWrapper(
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
+        let submitWrapperProvider: GiftSubmissionWrapperProvider = { giftOperation, amount in
+            self.createSubmitWrapper(
+                dependingOn: giftOperation,
+                amount: amount,
+                assetStorageInfo: assetStorageInfo
+            )
+        }
+
+        return submissionFactory.createWrapper(
+            submissionWrapperProvider: submitWrapperProvider,
             amount: amount,
-            assetStorageInfo: assetStorageInfo,
             feeDescription: feeDescription
         )
     }

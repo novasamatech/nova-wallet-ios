@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-protocol EvmGiftTransferSubmissionFactoryProtocol {
+protocol EvmGiftSubmissionFactoryProtocol {
     func createSubmissionWrapper(
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?,

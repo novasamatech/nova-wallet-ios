@@ -101,9 +101,6 @@ private extension GiftTransferConfirmViewFactory {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let substrateRepositoryFactory = SubstrateRepositoryFactory()
-        let userRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
@@ -130,47 +127,19 @@ private extension GiftTransferConfirmViewFactory {
             logger: Logger.shared
         )
 
+        let submissionFactory = GiftSubmissionFactoryFacade(
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            operationQueue: operationQueue
+        ).createSubstrateFactory(extrinsicMonitorFactory: extrinsicMonitorFactory)
+
         let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
-        let keystore = Keychain()
-        let localGiftFactory = LocalGiftFactory(
-            metaId: wallet.metaId,
-            keystore: keystore
-        )
-        let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
-
-        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
-            for: wallet.metaId,
-            accountResponse: selectedAccount
-        )
-
-        let transactionStorage = substrateRepositoryFactory.createTxRepository()
-        let persistentExtrinsicService = PersistentExtrinsicService(
-            repository: transactionStorage,
-            operationQueue: operationQueue
-        )
-        let giftsRepository = userRepositoryFactory.createGiftsRepository(for: nil)
-
-        let submissionFactory = GiftTransferSubmissionFactory(
-            giftFactory: giftFactory,
-            giftsRepository: giftsRepository,
-            signingWrapper: signingWrapper,
-            persistExtrinsicService: persistentExtrinsicService,
-            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
-            eventCenter: EventCenter.shared,
-            chain: chain,
-            asset: asset,
-            selectedAccount: selectedAccount,
-            extrinsicMonitorFactory: extrinsicMonitorFactory,
-            transferCommandFactory: SubstrateTransferCommandFactory(),
-            operationQueue: operationQueue
-        )
-
         return GiftTransferConfirmInteractor(
-            giftTransferSubmissionFactory: submissionFactory,
+            giftSubmissionFactory: submissionFactory,
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
@@ -195,9 +164,6 @@ private extension GiftTransferConfirmViewFactory {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let substrateRepositoryFactory = SubstrateRepositoryFactory()
-        let userRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
@@ -206,24 +172,6 @@ private extension GiftTransferConfirmViewFactory {
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        let keystore = Keychain()
-        let localGiftFactory = LocalGiftFactory(
-            metaId: wallet.metaId,
-            keystore: keystore
-        )
-        let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
-
-        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
-            for: wallet.metaId,
-            accountResponse: selectedAccount
-        )
-
-        let transactionStorage = substrateRepositoryFactory.createTxRepository()
-        let persistentExtrinsicService = PersistentExtrinsicService(
-            repository: transactionStorage,
-            operationQueue: operationQueue
-        )
 
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
 
@@ -247,24 +195,14 @@ private extension GiftTransferConfirmViewFactory {
             operationQueue: operationQueue
         )
 
-        let giftsRepository = userRepositoryFactory.createGiftsRepository(for: nil)
-
-        let submissionFactory = EvmGiftTransferSubmissionFactory(
-            giftFactory: giftFactory,
-            giftsRepository: giftsRepository,
-            signingWrapper: signingWrapper,
-            persistExtrinsicService: persistentExtrinsicService,
-            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
-            eventCenter: EventCenter.shared,
-            chain: chain,
-            asset: asset, selectedAccount: selectedAccount,
-            transactionService: transactionService,
-            transferCommandFactory: EvmTransferCommandFactory(),
+        let submissionFactory = GiftSubmissionFactoryFacade(
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
             operationQueue: operationQueue
-        )
+        ).createEvmFactory(transactionService: transactionService)
 
         return EvmGiftTransferConfirmInteractor(
-            giftTransferSubmissionFactory: submissionFactory,
+            giftSubmissionFactory: submissionFactory,
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,

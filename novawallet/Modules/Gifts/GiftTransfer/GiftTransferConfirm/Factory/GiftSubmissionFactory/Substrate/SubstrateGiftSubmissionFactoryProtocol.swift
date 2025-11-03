@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-protocol GiftTransferSubmissionFactoryProtocol {
+protocol SubstrateGiftSubmissionFactoryProtocol {
     func createSubmissionWrapper(
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?,
