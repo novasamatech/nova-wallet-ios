@@ -6,8 +6,12 @@ protocol GiftPrepareSharePresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol GiftPrepareShareInteractorInputProtocol: AnyObject {}
+protocol GiftPrepareShareInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol GiftPrepareShareInteractorOutputProtocol: AnyObject {}
+protocol GiftPrepareShareInteractorOutputProtocol: AnyObject {
+    func didReceive(_ gift: GiftModel)
+}
 
 protocol GiftPrepareShareWireframeProtocol: AnyObject {}

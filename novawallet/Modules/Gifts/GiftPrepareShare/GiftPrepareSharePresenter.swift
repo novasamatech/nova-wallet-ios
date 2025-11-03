@@ -1,13 +1,14 @@
 import Foundation
+import Foundation_iOS
 
 final class GiftPrepareSharePresenter {
     weak var view: GiftPrepareShareViewProtocol?
     let wireframe: GiftPrepareShareWireframeProtocol
     let interactor: GiftPrepareShareInteractorInputProtocol
+    let viewModelFactory: GiftPrepareShareViewModelFactoryProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     let chainAsset: ChainAsset
-
-    let viewModelFactory: GiftPrepareShareViewModelFactoryProtocol
 
     var gift: GiftModel?
 
@@ -15,12 +16,14 @@ final class GiftPrepareSharePresenter {
         interactor: GiftPrepareShareInteractorInputProtocol,
         wireframe: GiftPrepareShareWireframeProtocol,
         viewModelFactory: GiftPrepareShareViewModelFactoryProtocol,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.chainAsset = chainAsset
+        self.localizationManager = localizationManager
     }
 }
 
@@ -28,16 +31,33 @@ final class GiftPrepareSharePresenter {
 
 private extension GiftPrepareSharePresenter {
     func provideViewModel() {
-        guard let viewModel = viewModelFactory.createViewModel(for: chainAsset.asset) else { return }
+        guard
+            let gift,
+            let viewModel = viewModelFactory.createViewModel(
+                for: chainAsset,
+                gift: gift,
+                locale: localizationManager.selectedLocale
+            )
+        else { return }
 
         view?.didReceive(viewModel: viewModel)
     }
 }
 
+// MARK: - GiftPrepareSharePresenterProtocol
+
 extension GiftPrepareSharePresenter: GiftPrepareSharePresenterProtocol {
     func setup() {
-        provideViewModel()
+        interactor.setup()
     }
 }
 
-extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {}
+// MARK: - GiftPrepareShareInteractorOutputProtocol
+
+extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
+    func didReceive(_ gift: GiftModel) {
+        self.gift = gift
+
+        provideViewModel()
+    }
+}

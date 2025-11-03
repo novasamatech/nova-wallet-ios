@@ -9,7 +9,8 @@ class GiftTransferConfirmWireframe: GiftTransferConfirmWireframeProtocol {
     ) {
         guard let giftPrepareView = GiftPrepareShareViewFactory.createView(
             giftId: giftId,
-            chainAsset: chainAsset
+            chainAsset: chainAsset,
+            style: .prepareShare
         ) else { return }
 
         let transition = CATransition()

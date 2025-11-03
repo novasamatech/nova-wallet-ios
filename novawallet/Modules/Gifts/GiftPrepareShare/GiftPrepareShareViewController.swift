@@ -5,8 +5,14 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
 
     let presenter: GiftPrepareSharePresenterProtocol
 
-    init(presenter: GiftPrepareSharePresenterProtocol) {
+    let viewStyle: GiftPrepareShareViewStyle
+
+    init(
+        presenter: GiftPrepareSharePresenterProtocol,
+        viewStyle: GiftPrepareShareViewStyle
+    ) {
         self.presenter = presenter
+        self.viewStyle = viewStyle
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -16,7 +22,7 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = GiftPrepareShareViewLayout()
+        view = GiftPrepareShareViewLayout(configuration: viewStyle.congifuration)
     }
 
     override func viewDidLoad() {
@@ -25,6 +31,8 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 }
+
+// MARK: - GiftPrepareShareViewProtocol
 
 extension GiftPrepareShareViewController: GiftPrepareShareViewProtocol {
     func didReceive(viewModel: GiftPrepareViewModel) {
