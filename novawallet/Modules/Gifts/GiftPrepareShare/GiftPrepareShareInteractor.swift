@@ -62,6 +62,7 @@ private extension GiftPrepareShareInteractor {
 
                 presenter?.didReceive(outputModel)
             case let .failure(error):
+                presenter?.didReceive(error)
                 logger.error("Failed on fetch local gift: \(error)")
             }
         }
@@ -107,6 +108,7 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
                 let payload = createSharingPayload(with: secrets, chainAsset: chainAsset)
                 presenter?.didReceive(payload)
             case let .failure(error):
+                presenter?.didReceive(error)
                 logger.error("Failed on fetch secrets for gift: \(error)")
             }
         }

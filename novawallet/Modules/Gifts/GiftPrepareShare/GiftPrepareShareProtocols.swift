@@ -18,6 +18,7 @@ protocol GiftPrepareShareInteractorInputProtocol: AnyObject {
 protocol GiftPrepareShareInteractorOutputProtocol: AnyObject {
     func didReceive(_ data: GiftPrepareShareInteractorOutputData)
     func didReceive(_ sharingPayload: GiftSharingPayload)
+    func didReceive(_ error: Error)
 }
 
-protocol GiftPrepareShareWireframeProtocol: AnyObject, SharingPresentable {}
+protocol GiftPrepareShareWireframeProtocol: AlertPresentable, SharingPresentable, ErrorPresentable {}

@@ -48,10 +48,9 @@ extension GiftPrepareShareViewModelFactory: GiftPrepareShareViewModelFactoryProt
 
         let title = localizedStrings.giftPreparedTitle()
 
-        let amount = balanceViewModelFactory.lockingAmountFromPrice(
-            gift.amount.decimal(assetInfo: assetDisplayInfo),
-            priceData: nil
-        ).value(for: locale).amount
+        let amount = balanceViewModelFactory.amountFromValue(
+            gift.amount.decimal(assetInfo: assetDisplayInfo)
+        ).value(for: locale)
 
         let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(from: assetDisplayInfo)
 

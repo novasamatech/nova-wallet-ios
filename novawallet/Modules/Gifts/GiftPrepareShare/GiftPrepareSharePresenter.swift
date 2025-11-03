@@ -86,4 +86,12 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
             with: nil
         )
     }
+
+    func didReceive(_ error: Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: localizationManager.selectedLocale
+        )
+    }
 }
