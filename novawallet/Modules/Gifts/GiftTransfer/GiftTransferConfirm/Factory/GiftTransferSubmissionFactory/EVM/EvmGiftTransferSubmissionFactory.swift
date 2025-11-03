@@ -132,7 +132,7 @@ extension EvmGiftTransferSubmissionFactory: EvmGiftTransferSubmissionFactoryProt
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
         transferType: EvmGiftTransferInteractor.TransferType
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         mutex.lock()
         defer { mutex.unlock() }
 

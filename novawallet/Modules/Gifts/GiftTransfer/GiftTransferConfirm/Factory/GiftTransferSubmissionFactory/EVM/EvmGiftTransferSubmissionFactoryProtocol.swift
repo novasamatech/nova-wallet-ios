@@ -8,5 +8,5 @@ protocol EvmGiftTransferSubmissionFactoryProtocol {
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
         transferType: EvmGiftTransferInteractor.TransferType
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?>
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult>
 }

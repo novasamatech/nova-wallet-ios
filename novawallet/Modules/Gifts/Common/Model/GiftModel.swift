@@ -10,8 +10,12 @@ struct GiftModel {
     let metaId: MetaAccountModel.Id
 }
 
+extension GiftModel {
+    typealias Id = String
+}
+
 extension GiftModel: Identifiable {
-    var identifier: String {
+    var identifier: Id {
         giftAccountId.toHex()
     }
 }

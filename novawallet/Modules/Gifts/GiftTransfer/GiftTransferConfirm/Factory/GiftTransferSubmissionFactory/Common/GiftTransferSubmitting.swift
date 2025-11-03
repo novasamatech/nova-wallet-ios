@@ -28,7 +28,7 @@ private extension GiftTransferSubmitting {
         dependingOn submitOperation: BaseOperation<SubmittedGiftTransactionMetadata>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -89,7 +89,7 @@ private extension GiftTransferSubmitting {
         gift: GiftModel,
         submissionData: SubmittedGiftTransactionMetadata,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         let giftPersistWrapper = createPersistGiftWrapper(gift: gift)
 
         let extrinsicPersistWrapper = createPersistExtrinsicWrapper(
@@ -99,11 +99,14 @@ private extension GiftTransferSubmitting {
             lastFee: lastFee
         )
 
-        let resultOperation = ClosureOperation<ExtrinsicSenderResolution?> {
+        let resultOperation = ClosureOperation<GiftTransferSubmissionResult> {
             try giftPersistWrapper.targetOperation.extractNoCancellableResultData()
             try extrinsicPersistWrapper.targetOperation.extractNoCancellableResultData()
 
-            return submissionData.senderResolution
+            return GiftTransferSubmissionResult(
+                giftId: gift.identifier,
+                sender: submissionData.senderResolution
+            )
         }
 
         resultOperation.addDependency(giftPersistWrapper.targetOperation)
@@ -187,7 +190,7 @@ extension GiftTransferSubmitting {
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         let totalFee = try? feeDescription?.createAccumulatedFee().amount
         let claimFee = feeDescription?.claimFee.amount ?? 0
 

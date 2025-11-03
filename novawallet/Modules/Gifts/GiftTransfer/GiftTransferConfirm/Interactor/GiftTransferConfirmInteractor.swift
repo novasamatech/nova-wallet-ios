@@ -63,8 +63,8 @@ extension GiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputProto
         ) { [weak self] result in
 
             switch result {
-            case let .success(sender):
-                self?.submissionPresenter?.didCompleteSubmition(by: sender)
+            case let .success(resultData):
+                self?.submissionPresenter?.didCompleteSubmission(with: resultData)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }

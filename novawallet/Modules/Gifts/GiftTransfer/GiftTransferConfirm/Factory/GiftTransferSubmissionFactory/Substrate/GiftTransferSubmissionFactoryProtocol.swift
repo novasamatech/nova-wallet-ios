@@ -7,5 +7,5 @@ protocol GiftTransferSubmissionFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?>
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult>
 }

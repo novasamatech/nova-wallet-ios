@@ -230,16 +230,20 @@ extension GiftTransferConfirmPresenter: GiftTransferConfirmPresenterProtocol {
 // MARK: - GiftTransferConfirmInteractorOutputProtocol
 
 extension GiftTransferConfirmPresenter: GiftTransferConfirmInteractorOutputProtocol {
-    func didCompleteSubmition(by sender: ExtrinsicSenderResolution?) {
+    func didCompleteSubmission(with resultData: GiftTransferSubmissionResult) {
         view?.didStopLoading()
 
-        // Note: that transferCompletion is not called for delayed transfers
         wireframe.presentExtrinsicSubmission(
             from: view,
-            sender: sender,
-            completionAction: .dismissWithPostNavigation { [weak self, transferCompletion, chainAsset] in
-                self?.wireframe.showGiftShare(from: self?.view)
-                transferCompletion?(chainAsset)
+            sender: resultData.sender,
+            completionAction: .postNavigation { [weak self] in
+                guard let self else { return }
+
+                wireframe.showGiftShare(
+                    from: view,
+                    giftId: resultData.giftId,
+                    chainAsset: chainAsset
+                )
             },
             locale: selectedLocale
         )

@@ -131,7 +131,7 @@ extension GiftTransferSubmissionFactory: GiftTransferSubmissionFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         createWrapper(
             amount: amount,
             assetStorageInfo: assetStorageInfo,
