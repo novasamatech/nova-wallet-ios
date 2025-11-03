@@ -72,7 +72,7 @@ private extension GiftPrepareShareInteractor {
         chainAsset: ChainAsset
     ) -> GiftSharingPayload {
         GiftSharingPayload(
-            seed: secrets.seed.toHexWithPrefix().trimmingCharacters(in: .whitespaces),
+            seed: secrets.seed.subdata(in: 0 ..< 10).toHex(),
             chainId: chainAsset.chainAssetId.chainId,
             assetSymbol: chainAsset.asset.symbol
         )
