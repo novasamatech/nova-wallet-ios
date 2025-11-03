@@ -5,7 +5,7 @@ final class GiftPrepareShareInteractor {
     weak var presenter: GiftPrepareShareInteractorOutputProtocol?
 
     let giftId: GiftModel.Id
-    let localGiftFactory: GiftLocalFactoryProtocol
+    let localGiftFactory: LocalGiftFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -16,7 +16,7 @@ final class GiftPrepareShareInteractor {
 
     init(
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        localGiftFactory: GiftLocalFactoryProtocol,
+        localGiftFactory: LocalGiftFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftId: GiftModel.Id,
         operationQueue: OperationQueue,
@@ -36,7 +36,7 @@ final class GiftPrepareShareInteractor {
 private extension GiftPrepareShareInteractor {
     func provideData(for giftId: GiftModel.Id) {
         let fetchOperation = giftRepository.fetchOperation(
-            by: { giftId },
+            by: { giftId.toHex() },
             options: .init()
         )
 

@@ -11,11 +11,11 @@ struct GiftModel {
 }
 
 extension GiftModel {
-    typealias Id = String
+    typealias Id = AccountId
 }
 
 extension GiftModel: Identifiable {
-    var identifier: Id {
+    var identifier: String {
         giftAccountId.toHex()
     }
 }

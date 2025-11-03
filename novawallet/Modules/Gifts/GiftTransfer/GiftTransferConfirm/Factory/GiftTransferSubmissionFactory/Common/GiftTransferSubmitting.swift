@@ -92,9 +92,6 @@ private extension GiftTransferSubmitting {
             accountId: giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
-
-        resultOperation.addDependency(giftPersistWrapper.targetOperation)
-        resultOperation.addDependency(extrinsicPersistWrapper.targetOperation)
         let cleanSecretsOperation = giftFactory.cleanSecrets(for: secretInfo)
         let cleanLocalGiftOperation = giftsRepository.saveOperation(
             { [] },
@@ -130,16 +127,21 @@ private extension GiftTransferSubmitting {
         recipient: AccountId,
         amount: BigUInt,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
-        let operation = AsyncClosureOperation<ExtrinsicSenderResolution?> { [weak self] completion in
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
+        let operation = AsyncClosureOperation<GiftTransferSubmissionResult> { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let submissionResult = GiftTransferSubmissionResult(
+                giftId: recipient,
+                sender: submissionData.senderResolution
+            )
 
             guard
                 persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                 let callCodingPath = submissionData.callCodingPath,
                 let txHashData = try? Data(hexString: submissionData.txHash)
             else {
-                completion(.success(submissionData.senderResolution))
+                completion(.success(submissionResult))
                 return
             }
 
@@ -165,7 +167,7 @@ private extension GiftTransferSubmitting {
                     switch result {
                     case .success:
                         self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        completion(.success(submissionData.senderResolution))
+                        completion(.success(submissionResult))
                     case let .failure(error):
                         completion(.failure(error))
                     }
