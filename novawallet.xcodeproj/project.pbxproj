@@ -1690,6 +1690,7 @@
 		2D2B6AF62D6DCFB6002F8C77 /* BrowserNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
+		2D322DCF2EB959500092006D /* GiftTransferSubmissionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D322DCE2EB959500092006D /* GiftTransferSubmissionResult.swift */; };
 		2D3286EE2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */; };
 		2D3286F02E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */; };
 		2D3286F22E006667004D5D24 /* MultisigEventsSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286F12E006667004D5D24 /* MultisigEventsSubscription.swift */; };
@@ -8312,6 +8313,7 @@
 		2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
+		2D322DCE2EB959500092006D /* GiftTransferSubmissionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSubmissionResult.swift; sourceTree = "<group>"; };
 		2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncService.swift; sourceTree = "<group>"; };
 		2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncServiceFactory.swift; sourceTree = "<group>"; };
 		2D3286F12E006667004D5D24 /* MultisigEventsSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEventsSubscription.swift; sourceTree = "<group>"; };
@@ -18206,6 +18208,7 @@
 			isa = PBXGroup;
 			children = (
 				2DB586322EB7556A00950F7D /* GiftSubmissionFactory.swift */,
+				2D322DCE2EB959500092006D /* GiftTransferSubmissionResult.swift */,
 				2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */,
 				2DB586F72EB8849100950F7D /* GiftTransferSubmissionResult.swift */,
 			);
@@ -33334,6 +33337,7 @@
 				2D6287422C91F20400060814 /* ReferendumVoteSetupViewController.swift in Sources */,
 				0CE862192D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift in Sources */,
 				0CA72A822D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift in Sources */,
+				2D322DCF2EB959500092006D /* GiftTransferSubmissionResult.swift in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
 				0C0F6DE22D41968000943A7C /* MythosRewardCalculatorEngine.swift in Sources */,
 				770898612BA23A7400FACD2B /* PushNotificationNamespace.swift in Sources */,
