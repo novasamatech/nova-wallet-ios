@@ -3,14 +3,14 @@ import BigInt
 import Operation_iOS
 
 final class GiftTransferConfirmInteractor: GiftTransferInteractor {
-    let giftTransferSubmissionFactory: GiftTransferSubmissionFactoryProtocol
+    let giftSubmissionFactory: SubstrateGiftSubmissionFactoryProtocol
 
     var submissionPresenter: GiftTransferConfirmInteractorOutputProtocol? {
         presenter as? GiftTransferConfirmInteractorOutputProtocol
     }
 
     init(
-        giftTransferSubmissionFactory: GiftTransferSubmissionFactoryProtocol,
+        giftSubmissionFactory: SubstrateGiftSubmissionFactoryProtocol,
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
@@ -24,7 +24,7 @@ final class GiftTransferConfirmInteractor: GiftTransferInteractor {
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.giftTransferSubmissionFactory = giftTransferSubmissionFactory
+        self.giftSubmissionFactory = giftSubmissionFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -50,7 +50,7 @@ extension GiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputProto
         amount: OnChainTransferAmount<BigUInt>,
         lastFeeDescription: GiftFeeDescription?
     ) {
-        let wrapper = giftTransferSubmissionFactory.createSubmissionWrapper(
+        let wrapper = giftSubmissionFactory.createSubmissionWrapper(
             amount: amount,
             assetStorageInfo: sendingAssetInfo,
             feeDescription: lastFeeDescription

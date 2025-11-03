@@ -2,28 +2,53 @@ import Foundation
 import BigInt
 import Operation_iOS
 
-protocol GiftTransferSubmitting: AnyObject {
-    var giftFactory: GiftOperationFactoryProtocol { get }
-    var persistExtrinsicService: PersistentExtrinsicServiceProtocol { get }
-    var persistenceFilter: ExtrinsicPersistenceFilterProtocol { get }
-    var eventCenter: EventCenterProtocol { get }
-    var chain: ChainModel { get }
-    var asset: AssetModel { get }
-    var selectedAccount: ChainAccountResponse { get }
-    var operationQueue: OperationQueue { get }
+typealias GiftSubmissionWrapperProvider = (
+    _ giftOperation: BaseOperation<GiftModel>,
+    _ amount: OnChainTransferAmount<BigUInt>
+) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata>
 
-    var giftsRepository: AnyDataProviderRepository<GiftModel> { get }
-
-    func createSubmitWrapper(
-        dependingOn giftOperation: BaseOperation<GiftModel>,
+protocol GiftSubmissionFactoryProtocol {
+    func createWrapper(
+        submissionWrapperProvider: GiftSubmissionWrapperProvider,
         amount: OnChainTransferAmount<BigUInt>,
-        assetStorageInfo: AssetStorageInfo?
-    ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata>
+        feeDescription: GiftFeeDescription?
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult>
+}
+
+final class GiftSubmissionFactory {
+    let giftsRepository: AnyDataProviderRepository<GiftModel>
+    let giftFactory: GiftOperationFactoryProtocol
+    let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
+    let eventCenter: EventCenterProtocol
+    let chainAsset: ChainAsset
+    let selectedAccount: ChainAccountResponse
+    let operationQueue: OperationQueue
+
+    init(
+        giftsRepository: AnyDataProviderRepository<GiftModel>,
+        giftFactory: GiftOperationFactoryProtocol,
+        persistExtrinsicService: PersistentExtrinsicServiceProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
+        eventCenter: EventCenterProtocol,
+        chainAsset: ChainAsset,
+        selectedAccount: ChainAccountResponse,
+        operationQueue: OperationQueue
+    ) {
+        self.giftsRepository = giftsRepository
+        self.giftFactory = giftFactory
+        self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
+        self.eventCenter = eventCenter
+        self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
+        self.operationQueue = operationQueue
+    }
 }
 
 // MARK: - Private
 
-private extension GiftTransferSubmitting {
+private extension GiftSubmissionFactory {
     func createProcessSubmissionResultWrapper(
         dependingOn submitWrapper: CompoundOperationWrapper<SubmittedGiftTransactionMetadata>,
         giftOperation: BaseOperation<GiftModel>,
@@ -145,8 +170,8 @@ private extension GiftTransferSubmitting {
                 return
             }
 
-            let sender = try selectedAccount.accountId.toAddress(using: chain.chainFormat)
-            let recipient = try recipient.toAddress(using: chain.chainFormat)
+            let sender = try selectedAccount.accountId.toAddress(using: chainAsset.chain.chainFormat)
+            let recipient = try recipient.toAddress(using: chainAsset.chain.chainFormat)
 
             let details = PersistTransferDetails(
                 sender: sender,
@@ -155,12 +180,12 @@ private extension GiftTransferSubmitting {
                 txHash: txHashData,
                 callPath: callCodingPath,
                 fee: lastFee,
-                feeAssetId: asset.assetId
+                feeAssetId: chainAsset.asset.assetId
             )
 
             persistExtrinsicService.saveTransfer(
                 source: .substrate,
-                chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                chainAssetId: chainAsset.chainAssetId,
                 details: details,
                 runningIn: .main,
                 completion: { result in
@@ -179,20 +204,18 @@ private extension GiftTransferSubmitting {
     }
 }
 
-// MARK: - Internal
+// MARK: - GiftSubmissionFactoryProtocol
 
-extension GiftTransferSubmitting {
+extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
     func createWrapper(
+        submissionWrapperProvider: GiftSubmissionWrapperProvider,
         amount: OnChainTransferAmount<BigUInt>,
-        assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         let totalFee = try? feeDescription?.createAccumulatedFee().amount
         let claimFee = feeDescription?.claimFee.amount ?? 0
 
         let amountWithClaimFee = amount.map { $0 + claimFee }
-
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         /* We use nominal gift value for local model */
         let giftOperation = giftFactory.createGiftOperation(
@@ -203,10 +226,9 @@ extension GiftTransferSubmitting {
 
         /* We send amount with claim fee to allow getting
          nominal gift value for final recipient */
-        let submitWrapper = createSubmitWrapper(
-            dependingOn: giftOperation,
-            amount: amountWithClaimFee,
-            assetStorageInfo: assetStorageInfo
+        let submitWrapper = submissionWrapperProvider(
+            giftOperation,
+            amountWithClaimFee
         )
         let processPossibleFailureWrapper = createProcessFailedSubmission(
             submitWrapper: submitWrapper,

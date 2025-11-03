@@ -3,72 +3,37 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
-    let giftFactory: GiftOperationFactoryProtocol
-    let giftsRepository: AnyDataProviderRepository<GiftModel>
+final class EvmGiftSubmissionFactory {
+    let submissionFactory: GiftSubmissionFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
-    let persistExtrinsicService: PersistentExtrinsicServiceProtocol
-    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
-    let eventCenter: EventCenterProtocol
     let chain: ChainModel
-    let asset: AssetModel
-    let selectedAccount: ChainAccountResponse
     let transactionService: EvmTransactionServiceProtocol
     let transferCommandFactory: EvmTransferCommandFactory
-    let operationQueue: OperationQueue
-
-    private let mutex = NSLock()
-
-    private var transferType: EvmGiftTransferInteractor.TransferType?
-    private var evmFee: EvmFeeModel?
 
     init(
-        giftFactory: GiftOperationFactoryProtocol,
-        giftsRepository: AnyDataProviderRepository<GiftModel>,
+        submissionFactory: GiftSubmissionFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
-        persistExtrinsicService: PersistentExtrinsicServiceProtocol,
-        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
-        eventCenter: EventCenterProtocol,
         chain: ChainModel,
-        asset: AssetModel,
-        selectedAccount: ChainAccountResponse,
         transactionService: EvmTransactionServiceProtocol,
-        transferCommandFactory: EvmTransferCommandFactory,
-        operationQueue: OperationQueue
+        transferCommandFactory: EvmTransferCommandFactory
     ) {
-        self.giftFactory = giftFactory
-        self.giftsRepository = giftsRepository
+        self.submissionFactory = submissionFactory
         self.signingWrapper = signingWrapper
-        self.persistExtrinsicService = persistExtrinsicService
-        self.persistenceFilter = persistenceFilter
-        self.eventCenter = eventCenter
         self.chain = chain
-        self.asset = asset
-        self.selectedAccount = selectedAccount
         self.transactionService = transactionService
         self.transferCommandFactory = transferCommandFactory
-        self.operationQueue = operationQueue
     }
 
     func createSubmitWrapper(
         dependingOn giftOperation: BaseOperation<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
-        assetStorageInfo _: AssetStorageInfo?
+        evmFee: EvmFeeModel,
+        transferType: EvmGiftTransferInteractor.TransferType
     ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
         let operation = AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let gift = try giftOperation.extractNoCancellableResultData()
-
-            guard
-                let transferType,
-                let evmFee
-            else {
-                throw GiftTransferConfirmError.giftSubmissionFailed(
-                    giftAccountId: gift.giftAccountId,
-                    underlyingError: nil
-                )
-            }
 
             var callCodingPath: CallCodingPath?
 
@@ -126,24 +91,27 @@ final class EvmGiftTransferSubmissionFactory: GiftTransferSubmitting {
     }
 }
 
-// MARK: - EvmGiftTransferSubmissionFactoryProtocol
+// MARK: - EvmGiftSubmissionFactoryProtocol
 
-extension EvmGiftTransferSubmissionFactory: EvmGiftTransferSubmissionFactoryProtocol {
+extension EvmGiftSubmissionFactory: EvmGiftSubmissionFactoryProtocol {
     func createSubmissionWrapper(
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
         transferType: EvmGiftTransferInteractor.TransferType
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
-        mutex.lock()
-        defer { mutex.unlock() }
+        let submissionWrapperProvider: GiftSubmissionWrapperProvider = { giftOperation, amount in
+            self.createSubmitWrapper(
+                dependingOn: giftOperation,
+                amount: amount,
+                evmFee: evmFee,
+                transferType: transferType
+            )
+        }
 
-        self.evmFee = evmFee
-        self.transferType = transferType
-
-        return createWrapper(
+        return submissionFactory.createWrapper(
+            submissionWrapperProvider: submissionWrapperProvider,
             amount: amount,
-            assetStorageInfo: nil,
             feeDescription: feeDescription
         )
     }
