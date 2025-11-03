@@ -53,7 +53,7 @@ private extension GiftSubmissionFactory {
         dependingOn submitWrapper: CompoundOperationWrapper<SubmittedGiftTransactionMetadata>,
         giftOperation: BaseOperation<GiftModel>,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -117,7 +117,6 @@ private extension GiftSubmissionFactory {
             accountId: giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
-
         let cleanSecretsOperation = giftFactory.cleanSecrets(for: secretInfo)
         let cleanLocalGiftOperation = giftsRepository.saveOperation(
             { [] },
@@ -153,16 +152,21 @@ private extension GiftSubmissionFactory {
         recipient: AccountId,
         amount: BigUInt,
         lastFee: BigUInt?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
-        let operation = AsyncClosureOperation<ExtrinsicSenderResolution?> { [weak self] completion in
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
+        let operation = AsyncClosureOperation<GiftTransferSubmissionResult> { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let submissionResult = GiftTransferSubmissionResult(
+                giftId: recipient,
+                sender: submissionData.senderResolution
+            )
 
             guard
                 persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                 let callCodingPath = submissionData.callCodingPath,
                 let txHashData = try? Data(hexString: submissionData.txHash)
             else {
-                completion(.success(submissionData.senderResolution))
+                completion(.success(submissionResult))
                 return
             }
 
@@ -188,7 +192,7 @@ private extension GiftSubmissionFactory {
                     switch result {
                     case .success:
                         self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        completion(.success(submissionData.senderResolution))
+                        completion(.success(submissionResult))
                     case let .failure(error):
                         completion(.failure(error))
                     }
@@ -207,7 +211,7 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
         submissionWrapperProvider: GiftSubmissionWrapperProvider,
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?
-    ) -> CompoundOperationWrapper<ExtrinsicSenderResolution?> {
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         let totalFee = try? feeDescription?.createAccumulatedFee().amount
         let claimFee = feeDescription?.claimFee.amount ?? 0
 
