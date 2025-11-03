@@ -1797,6 +1797,9 @@
 		2D4F55362CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
+		2D50CC662EB8DCC80059F682 /* GiftSecretKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */; };
+		2D50CC792EB91CFA0059F682 /* KeystoreTag+MetaId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */; };
+		2D50CC802EB9204E0059F682 /* KeystoreTag+Gift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC7F2EB9204E0059F682 /* KeystoreTag+Gift.swift */; };
 		2D51D68C2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */; };
 		2D533C3D2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */; };
 		2D533C4A2EB0B4000005FF8A /* GiftTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */; };
@@ -8392,6 +8395,9 @@
 		2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
+		2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretKeyInfo.swift; sourceTree = "<group>"; };
+		2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeystoreTag+MetaId.swift"; sourceTree = "<group>"; };
+		2D50CC7F2EB9204E0059F682 /* KeystoreTag+Gift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeystoreTag+Gift.swift"; sourceTree = "<group>"; };
 		2D51D68B2E5D9F58008AB208 /* MultisigNotificationsPromoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsPromoService.swift; sourceTree = "<group>"; };
 		2D533C3C2EB0B3650005FF8A /* GiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		2D533C492EB0B4000005FF8A /* GiftTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferSetupProtocols.swift; sourceTree = "<group>"; };
@@ -17278,6 +17284,16 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
+		2D50CC6C2EB91CCC0059F682 /* KeystoreTag */ = {
+			isa = PBXGroup;
+			children = (
+				84CEAAF226D6ED870021B881 /* KeystoreTag.swift */,
+				2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */,
+				2D50CC7F2EB9204E0059F682 /* KeystoreTag+Gift.swift */,
+			);
+			path = KeystoreTag;
+			sourceTree = "<group>";
+		};
 		2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */ = {
 			isa = PBXGroup;
 			children = (
@@ -18669,6 +18685,7 @@
 				2DA4D63F2EB3B670006FCCC0 /* View */,
 				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
 				2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */,
+				2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -23696,6 +23713,7 @@
 				8411706E285B0B1B006F4DFB /* Xcm */,
 				84D1110F26B932300016D962 /* ChainRegistry */,
 				2DEDF0552E4D1B4A008F07B2 /* CommonError */,
+				2D50CC6C2EB91CCC0059F682 /* KeystoreTag */,
 				84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */,
 				2DFF39B72E15353C00529984 /* UnsupportedFeatureType.swift */,
 				842876B024AE059700D91AD8 /* AboutData.swift */,
@@ -23731,7 +23749,6 @@
 				844DB61E262D9C070025A8F0 /* ChainHistoryRange.swift */,
 				844DB623262D9C710025A8F0 /* ErasRewardDistribution.swift */,
 				84DBEA46265E98C300FDF73C /* AmountInputResult.swift */,
-				84CEAAF226D6ED870021B881 /* KeystoreTag.swift */,
 				84F13F0926F14122006725FF /* ChainAsset.swift */,
 				841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */,
 				2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */,
@@ -32084,6 +32101,7 @@
 				84CFF1E726526FBC00DB7CF7 /* StakingBondMoreViewLayout.swift in Sources */,
 				84CA68DB26BEA33F003B9453 /* ChainRegistryFactory.swift in Sources */,
 				0C2285E02E23E0140093FD44 /* DelegationResolutionPathResult+Search.swift in Sources */,
+				2D50CC792EB91CFA0059F682 /* KeystoreTag+MetaId.swift in Sources */,
 				0CB433482CC0F9EF00F2CB59 /* AssetsHubExchange.swift in Sources */,
 				0CA8AD5A2CE0789100ED9746 /* WalletRemoteSubscription.swift in Sources */,
 				AE39839A272BFC2300BC8A85 /* ImportChainAccount.swift in Sources */,
@@ -34162,6 +34180,7 @@
 				0CD54E4F2BCE6C11007B58E7 /* CloudBackupValidating.swift in Sources */,
 				849F144B29444C3E00D9F9BA /* AssetModel+Id.swift in Sources */,
 				88FA446629CB100500E9CF57 /* SelectableAddressTableViewCell.swift in Sources */,
+				2D50CC662EB8DCC80059F682 /* GiftSecretKeyInfo.swift in Sources */,
 				0C3976A32C32E27C00998DD6 /* HydraXYKSwapApi.swift in Sources */,
 				F4B39C4927326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift in Sources */,
 				845B821926EF808D00D25C72 /* MetaAccountMapper.swift in Sources */,
@@ -36282,6 +36301,7 @@
 				640EC907607A3D5F633D26A7 /* NotificationsManagementInteractor.swift in Sources */,
 				FF90D0EE563E63611644B95B /* NotificationsManagementViewController.swift in Sources */,
 				2DE8B0F32E56526000F8BD40 /* WalletSelectingNotificationHandling.swift in Sources */,
+				2D50CC802EB9204E0059F682 /* KeystoreTag+Gift.swift in Sources */,
 				D0A73CEDB6B3CF2DD4511963 /* NotificationsManagementViewLayout.swift in Sources */,
 				4793F9845673EBD3F0A38F78 /* NotificationsManagementViewFactory.swift in Sources */,
 				E508D9B26418B220FBD157B9 /* GovernanceNotificationsProtocols.swift in Sources */,

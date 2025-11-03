@@ -75,10 +75,12 @@ private extension GiftTransferSubmitting {
                     ) = error
                 else { throw error }
 
-                let cleanSecretsOperation = self.giftFactory.cleanSecrets(
-                    for: giftAccountId,
-                    chainAsset: chainAsset
+                let secretInfo = GiftSecretKeyInfo(
+                    accountId: giftAccountId,
+                    ethereumBased: chainAsset.chain.isEthereumBased
                 )
+
+                let cleanSecretsOperation = self.giftFactory.cleanSecrets(for: secretInfo)
 
                 return CompoundOperationWrapper(targetOperation: cleanSecretsOperation)
             }

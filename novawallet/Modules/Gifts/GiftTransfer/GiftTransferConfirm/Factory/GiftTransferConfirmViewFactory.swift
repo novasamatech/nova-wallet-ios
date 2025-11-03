@@ -128,7 +128,7 @@ private extension GiftTransferConfirmViewFactory {
         )
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(
+        let localGiftFactory = LocalGiftFactory(
             metaId: wallet.metaId,
             keystore: keystore
         )
@@ -200,7 +200,7 @@ private extension GiftTransferConfirmViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let keystore = Keychain()
-        let localGiftFactory = GiftLocalFactory(
+        let localGiftFactory = LocalGiftFactory(
             metaId: wallet.metaId,
             keystore: keystore
         )
