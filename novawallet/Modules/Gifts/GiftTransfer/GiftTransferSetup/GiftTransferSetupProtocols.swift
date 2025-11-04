@@ -25,6 +25,7 @@ protocol GiftTransferSetupPresenterProtocol: AnyObject {
     func updateAmount(_ newValue: Decimal?)
     func proceed()
     func getTokens()
+    func selectAmountPercentage(_ percentage: Float)
 }
 
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,

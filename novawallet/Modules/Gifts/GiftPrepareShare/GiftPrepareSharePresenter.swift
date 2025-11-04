@@ -6,7 +6,7 @@ final class GiftPrepareSharePresenter {
     let wireframe: GiftPrepareShareWireframeProtocol
     let interactor: GiftPrepareShareInteractorInputProtocol
     let viewModelFactory: GiftPrepareShareViewModelFactoryProtocol
-    let universalLinkFactory: UniversalLinkFactoryProtocol
+
     let localizationManager: LocalizationManagerProtocol
 
     var chainAsset: ChainAsset?
@@ -16,13 +16,11 @@ final class GiftPrepareSharePresenter {
         interactor: GiftPrepareShareInteractorInputProtocol,
         wireframe: GiftPrepareShareWireframeProtocol,
         viewModelFactory: GiftPrepareShareViewModelFactoryProtocol,
-        universalLinkFactory: UniversalLinkFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.universalLinkFactory = universalLinkFactory
         self.localizationManager = localizationManager
     }
 }
@@ -70,15 +68,14 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
     }
 
     func didReceive(_ sharingPayload: GiftSharingPayload) {
-        let url = universalLinkFactory.createUrlForGift(
-            seed: sharingPayload.seed,
-            chainId: sharingPayload.chainId,
-            symbol: sharingPayload.assetSymbol
-        )
+        guard let gift, let chainAsset else { return }
 
-        let items: [Any] = [
-            url
-        ]
+        let items = viewModelFactory.createShareItems(
+            from: sharingPayload,
+            gift: gift,
+            chainAsset: chainAsset,
+            locale: localizationManager.selectedLocale
+        )
 
         wireframe.share(
             items: items,

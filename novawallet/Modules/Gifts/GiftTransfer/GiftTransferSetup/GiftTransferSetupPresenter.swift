@@ -321,6 +321,15 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
             locale: selectedLocale
         )
     }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+
+        refreshFee()
+        updateAmountPriceView()
+    }
 }
 
 // MARK: - RampFlowManaging, RampDelegate

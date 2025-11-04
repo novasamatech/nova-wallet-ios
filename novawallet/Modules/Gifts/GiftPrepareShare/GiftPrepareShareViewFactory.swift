@@ -40,16 +40,20 @@ struct GiftPrepareShareViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let universalLinkFactory = ExternalLinkFactory(
+            baseUrl: ApplicationConfig.shared.externalUniversalLinkURL
+        )
+
         let viewModelFactory = GiftPrepareShareViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            assetIconViewModelFactory: AssetIconViewModelFactory()
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
+            universalLinkFactory: universalLinkFactory
         )
 
         let presenter = GiftPrepareSharePresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            universalLinkFactory: ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL),
             localizationManager: LocalizationManager.shared
         )
 

@@ -7,18 +7,28 @@ protocol GiftPrepareShareViewModelFactoryProtocol {
         gift: GiftModel,
         locale: Locale
     ) -> GiftPrepareViewModel?
+
+    func createShareItems(
+        from sharingPayload: GiftSharingPayload,
+        gift: GiftModel,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> [Any]
 }
 
 final class GiftPrepareShareViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+    let universalLinkFactory: UniversalLinkFactoryProtocol
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
+        universalLinkFactory: UniversalLinkFactoryProtocol
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
+        self.universalLinkFactory = universalLinkFactory
     }
 }
 
@@ -63,5 +73,39 @@ extension GiftPrepareShareViewModelFactory: GiftPrepareShareViewModelFactoryProt
             assetIcon: assetIcon,
             actionTitle: actionTitle
         )
+    }
+
+    func createShareItems(
+        from sharingPayload: GiftSharingPayload,
+        gift: GiftModel,
+        chainAsset: ChainAsset,
+        locale: Locale
+    ) -> [Any] {
+        let url = universalLinkFactory.createUrlForGift(
+            seed: sharingPayload.seed,
+            chainId: sharingPayload.chainId,
+            symbol: sharingPayload.assetSymbol
+        )
+
+        guard let urlString = url?.absoluteString else { return [] }
+
+        let amount = balanceViewModelFactory.amountFromValue(
+            gift.amount.decimal(assetInfo: chainAsset.asset.displayInfo)
+        ).value(for: locale)
+
+        let image = R.image.imageShareNovaGift()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.giftShareMessage(
+            amount,
+            urlString
+        )
+
+        let items: [Any] = [
+            image,
+            message
+        ]
+
+        return items
     }
 }

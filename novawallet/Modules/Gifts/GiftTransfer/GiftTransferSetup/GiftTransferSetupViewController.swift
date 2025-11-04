@@ -90,11 +90,22 @@ private extension GiftTransferSetupViewController {
 
         updateActionButtonState()
 
+        setupAmountInputAccessoryView(for: selectedLocale)
+
         guard let chainAsset else { return }
 
         rootView.getTokenButton.imageWithTitleView?.title = localizedStrings.swapsSetupDepositButtonTitle(
             chainAsset.assetViewModel.symbol
         )
+    }
+
+    func setupAmountInputAccessoryView(for locale: Locale) {
+        let accessoryView = UIFactory.default.createAmountAccessoryView(
+            for: self,
+            locale: locale
+        )
+
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
     func updateActionButtonState() {
@@ -193,6 +204,23 @@ extension GiftTransferSetupViewController: GiftTransferSetupViewProtocol {
 
     func didReceive(title: GiftSetupNetworkContainerViewModel) {
         rootView.networkContainerView.bind(viewModel: title)
+    }
+}
+
+// MARK: - AmountInputAccessoryViewDelegate
+
+extension GiftTransferSetupViewController: AmountInputAccessoryViewDelegate {
+    func didSelect(
+        on _: AmountInputAccessoryView,
+        percentage: Float
+    ) {
+        rootView.amountInputView.textField.resignFirstResponder()
+
+        presenter.selectAmountPercentage(percentage)
+    }
+
+    func didSelectDone(on _: AmountInputAccessoryView) {
+        rootView.amountInputView.textField.resignFirstResponder()
     }
 }
 
