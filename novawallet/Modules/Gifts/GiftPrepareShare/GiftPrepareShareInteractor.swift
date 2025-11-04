@@ -72,9 +72,11 @@ private extension GiftPrepareShareInteractor {
         with secrets: GiftSecrets,
         chainAsset: ChainAsset
     ) -> GiftSharingPayload {
-        GiftSharingPayload(
+        let chainId = chainAsset.chainAssetId.chainId.split(by: .colon).last ?? ""
+
+        return GiftSharingPayload(
             seed: secrets.seed.toHex(),
-            chainId: chainAsset.chainAssetId.chainId,
+            chainId: chainId,
             assetSymbol: chainAsset.asset.symbol
         )
     }

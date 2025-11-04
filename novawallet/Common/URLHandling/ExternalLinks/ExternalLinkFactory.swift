@@ -86,7 +86,13 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
             UniversalLink.Screen.gift.rawValue
         ].joined(with: .slash)
 
-        let shortChainId = chainId[0 ..< 6]
+        let shortChainIdLength = 6
+
+        let endIndex: String.Index = chainId.count < shortChainIdLength
+            ? chainId.endIndex
+            : chainId.index(chainId.startIndex, offsetBy: shortChainIdLength)
+
+        let shortChainId = chainId[chainId.startIndex ..< endIndex]
 
         let data = "\(seed)_\(shortChainId)_\(symbol)"
 
