@@ -31,6 +31,12 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
         setupActions()
         presenter.setup()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // TODO: Remove after fix NovaNavigationController's actions insertion logic on setViewControllers()
+        navigationController?.viewWillAppear(animated)
+    }
 }
 
 // MARK: - Private
