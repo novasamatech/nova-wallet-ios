@@ -8,6 +8,7 @@ import Scrypt
 
 protocol LocalGiftFactoryProtocol {
     func createGiftOperation(
+        from seed: Data?,
         amount: BigUInt,
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel>
@@ -22,12 +23,26 @@ protocol LocalGiftFactoryProtocol {
     ) -> BaseOperation<Void>
 }
 
+extension LocalGiftFactoryProtocol {
+    func createGiftOperation(
+        from seed: Data? = nil,
+        amount: BigUInt,
+        chainAsset: ChainAsset
+    ) -> BaseOperation<GiftModel> {
+        createGiftOperation(
+            from: seed,
+            amount: amount,
+            chainAsset: chainAsset
+        )
+    }
+}
+
 final class LocalGiftFactory {
-    private let metaId: MetaAccountModel.Id
+    private let metaId: MetaAccountModel.Id?
     private let keystore: KeystoreProtocol
 
     init(
-        metaId: MetaAccountModel.Id,
+        metaId: MetaAccountModel.Id? = nil,
         keystore: KeystoreProtocol
     ) {
         self.keystore = keystore
@@ -170,17 +185,18 @@ private extension LocalGiftFactory {
 
 extension LocalGiftFactory: LocalGiftFactoryProtocol {
     func createGiftOperation(
+        from seed: Data?,
         amount: BigUInt,
         chainAsset: ChainAsset
     ) -> BaseOperation<GiftModel> {
         ClosureOperation { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
+            let seed: Data = try (seed ?? createSeed())
+
             let ethereumBased = chainAsset.chain.isEthereumBased
 
             let junctionResult = try createJunctionResult(ethereumBased: ethereumBased)
-
-            let seed = try createSeed()
 
             let keypair = try createKeyPair(
                 from: seed,
@@ -208,7 +224,7 @@ extension LocalGiftFactory: LocalGiftFactoryProtocol {
                 chainAssetId: chainAsset.chainAssetId,
                 status: .pending,
                 giftAccountId: accountId,
-                metaId: metaId
+                senderMetaId: metaId
             )
         }
     }

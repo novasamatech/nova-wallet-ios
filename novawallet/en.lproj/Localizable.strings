@@ -1989,3 +1989,5 @@
 "gift.prepared.title" = "Gift Has Been Prepared. Share It Now!";
 "gift.prepared.share.action.title" = "Share Gift Link";
 "gift.share.message" = "Hello! You’ve got a %@ gift waiting for you!\n\nInstall Nova Wallet app, set up your wallet, and claim it via this special link:\n%@";
+"gift.error.already.claimed.title" = "The gift cannot be received";
+"gift.error.already.claimed.message" = "Oops, the gift has already been claimed";

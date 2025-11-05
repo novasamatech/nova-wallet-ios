@@ -113,7 +113,7 @@ private extension GiftPrepareShareViewLayout {
     }
 }
 
-// MARK: - GiftPrepareShareViewLayout
+// MARK: - Internal
 
 extension GiftPrepareShareViewLayout {
     func bind(viewModel: GiftPrepareViewModel) {
