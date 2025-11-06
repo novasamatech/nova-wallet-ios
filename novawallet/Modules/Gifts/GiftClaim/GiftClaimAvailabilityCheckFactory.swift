@@ -144,9 +144,13 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
         resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
         resultOperation.addDependency(balanceExistenceWrapper.targetOperation)
 
+        let dependencies = claimCheckInfoWrapper.allOperations
+            + transferableBalanceWrapper.allOperations
+            + balanceExistenceWrapper.allOperations
+
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: transferableBalanceWrapper.allOperations + balanceExistenceWrapper.allOperations
+            dependencies: dependencies
         )
     }
 }

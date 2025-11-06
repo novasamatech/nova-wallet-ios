@@ -1,7 +1,11 @@
 import Foundation
+import BigInt
 
 struct GiftClaimViewFactory {
-    static func createView() -> GiftClaimViewProtocol? {
+    static func createView(
+        info: ClaimableGiftInfo,
+        totalAmount: BigUInt
+    ) -> GiftClaimViewProtocol? {
         let interactor = GiftClaimInteractor()
         let wireframe = GiftClaimWireframe()
 

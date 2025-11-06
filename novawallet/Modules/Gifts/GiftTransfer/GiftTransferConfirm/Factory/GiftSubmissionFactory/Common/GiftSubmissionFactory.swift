@@ -221,7 +221,7 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
         let amountWithClaimFee = amount.map { $0 + claimFee }
 
         /* We use nominal gift value for local model */
-        let giftWrapper = giftFactory.createGiftOperation(
+        let giftWrapper = giftFactory.createGiftWrapper(
             amount: amount.value,
             chainAsset: chainAsset
         )
@@ -243,7 +243,7 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
             lastFee: totalFee
         )
 
-        persistGiftWrapper.addDependency(operations: giftWrapper.allOperations)
+        persistGiftWrapper.addDependency(wrapper: giftWrapper)
         submitWrapper.addDependency(wrapper: persistGiftWrapper)
         processPossibleFailureWrapper.addDependency(wrapper: submitWrapper)
         processResultWrapper.addDependency(wrapper: processPossibleFailureWrapper)

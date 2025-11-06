@@ -6,7 +6,7 @@ import NovaCrypto
 import Keystore_iOS
 
 protocol GiftOperationFactoryProtocol {
-    func createGiftOperation(
+    func createGiftWrapper(
         from seed: Data?,
         amount: BigUInt,
         chainAsset: ChainAsset
@@ -14,12 +14,12 @@ protocol GiftOperationFactoryProtocol {
 }
 
 extension GiftOperationFactoryProtocol {
-    func createGiftOperation(
+    func createGiftWrapper(
         from seed: Data? = nil,
         amount: BigUInt,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<GiftModel> {
-        createGiftOperation(
+        createGiftWrapper(
             from: seed,
             amount: amount,
             chainAsset: chainAsset
@@ -43,7 +43,7 @@ final class GiftOperationFactory {
 // MARK: - GiftOperationFactoryProtocol
 
 extension GiftOperationFactory: GiftOperationFactoryProtocol {
-    func createGiftOperation(
+    func createGiftWrapper(
         from seed: Data?,
         amount: BigUInt,
         chainAsset: ChainAsset
@@ -73,7 +73,7 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [mapOperation]
+            dependencies: [secretsOperation]
         )
     }
 }

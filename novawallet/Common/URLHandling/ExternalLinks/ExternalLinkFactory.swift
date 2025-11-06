@@ -81,11 +81,6 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
     ) -> URL? {
         var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
 
-        let path: String = [
-            UniversalLink.Action.open.rawValue,
-            UniversalLink.Screen.gift.rawValue
-        ].joined(with: .slash)
-
         let shortChainIdLength = 6
 
         let endIndex: String.Index = chainId.count < shortChainIdLength
@@ -94,16 +89,23 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
 
         let shortChainId = chainId[chainId.startIndex ..< endIndex]
 
-        let data = "\(seed)_\(shortChainId)_\(symbol)"
+        let payload = "\(seed)_\(shortChainId)_\(symbol)"
 
         let queryItems: [URLQueryItem] = [
             URLQueryItem(
-                name: ExternalUniversalLinkKey.data.rawValue,
-                value: data
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.gift.rawValue
+            ),
+            URLQueryItem(
+                name: UniversalLink.Gift.QueryKey.payload,
+                value: payload
             )
         ]
 
-        urlComponents?.path = "/\(path)"
         urlComponents?.queryItems = queryItems
 
         return urlComponents?.url

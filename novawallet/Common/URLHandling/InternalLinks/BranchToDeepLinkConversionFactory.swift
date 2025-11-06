@@ -10,8 +10,8 @@ private extension BranchToDeepLinkConversionFactory {
     }
 
     func getActionObject(from externalParams: ExternalUniversalLinkParams) -> String? {
-        (externalParams[ExternalUniversalLinkKey.screen.rawValue] as? String) ??
-            (externalParams[ExternalUniversalLinkKey.entity.rawValue] as? String)
+        (externalParams[ExternalUniversalLinkKey.screen.rawValue] as? String)
+            ?? (externalParams[ExternalUniversalLinkKey.entity.rawValue] as? String)
     }
 
     func queryItems(externalParams: ExternalUniversalLinkParams) -> [URLQueryItem] {

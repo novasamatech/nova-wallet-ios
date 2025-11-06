@@ -22,9 +22,9 @@ final class ClaimGiftUrlParsingService {
 // MARK: - Private
 
 private extension ClaimGiftUrlParsingService {
-    func createInfoWrapper(
+    func createWrapper(
         from payloadString: String
-    ) -> CompoundOperationWrapper<ClaimableGiftInfo> {
+    ) -> CompoundOperationWrapper<GiftClaimNavigation> {
         let infoWrapper = createParsePayloadWrapper(string: payloadString)
         let checkWrapper = createGiftClaimCheckWrapper(dependingOn: infoWrapper)
 
@@ -32,8 +32,11 @@ private extension ClaimGiftUrlParsingService {
             let checkResult = try checkWrapper.targetOperation.extractNoCancellableResultData()
 
             switch checkResult.availability {
-            case .claimable:
-                return checkResult.claimableGiftInfo
+            case let .claimable(totalAmount):
+                return GiftClaimNavigation(
+                    info: checkResult.claimableGiftInfo,
+                    totalAmount: totalAmount
+                )
             case .claimed:
                 throw OpenScreenUrlParsingError.openGiftClaimScreen(.alreadyClaimed)
             }
@@ -107,11 +110,8 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         url: URL,
         completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     ) {
-        let pathComponents = url.pathComponents
-
         guard
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            pathComponents.count == 2,
             let queryItems = urlComponents.queryItems
         else {
             completion(.failure(.openGiftClaimScreen(.invalidURL)))
@@ -129,16 +129,15 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
             return
         }
 
-        let infoWrapper = createInfoWrapper(from: payloadString)
+        let wrapper = createWrapper(from: payloadString)
 
         execute(
-            wrapper: infoWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in
             switch result {
-            case let .success(info):
-                let navigation = GiftClaimNavigation(info: info)
+            case let .success(navigation):
                 completion(.success(.giftClaim(navigation)))
             case let .failure(error):
                 guard case let OpenScreenUrlParsingError.openGiftClaimScreen(serviceError) = error else {

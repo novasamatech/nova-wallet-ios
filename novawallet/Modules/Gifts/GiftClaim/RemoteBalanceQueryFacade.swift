@@ -85,11 +85,11 @@ extension RemoteBalanceQueryFacade: RemoteBalanceQueryFacadeProtocol {
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<BigUInt> {
         chainAsset.chain.isEthereumBased
-            ? querySubstrateTransferrableBalance(
+            ? queryEthereumBalance(
                 for: accountId,
                 chainAsset: chainAsset
             )
-            : queryEthereumBalance(
+            : querySubstrateTransferrableBalance(
                 for: accountId,
                 chainAsset: chainAsset
             )
