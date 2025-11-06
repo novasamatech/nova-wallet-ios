@@ -8,6 +8,7 @@ final class GiftSubmissionFactoryFacade {
     private let signingWrapper: SigningWrapperProtocol
     private let giftsRepository: AnyDataProviderRepository<GiftModel>
     private let giftFactory: GiftOperationFactoryProtocol
+    private let giftSecretsCleaningFactory: GiftSecretsCleaningProtocol
     private let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     private let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     private let eventCenter: EventCenterProtocol
@@ -19,6 +20,7 @@ final class GiftSubmissionFactoryFacade {
         signingWrapper: SigningWrapperProtocol,
         giftsRepository: AnyDataProviderRepository<GiftModel>,
         giftFactory: GiftOperationFactoryProtocol,
+        giftSecretsCleaningFactory: GiftSecretsCleaningProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
@@ -29,6 +31,7 @@ final class GiftSubmissionFactoryFacade {
         self.signingWrapper = signingWrapper
         self.giftsRepository = giftsRepository
         self.giftFactory = giftFactory
+        self.giftSecretsCleaningFactory = giftSecretsCleaningFactory
         self.persistExtrinsicService = persistExtrinsicService
         self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
@@ -40,12 +43,11 @@ final class GiftSubmissionFactoryFacade {
         chainAsset: ChainAsset,
         operationQueue: OperationQueue
     ) {
-        let keystore = Keychain()
-        let localGiftFactory = LocalGiftFactory(
+        let giftSecretsManager = GiftSecretsManager(keystore: Keychain())
+        let giftFactory = GiftOperationFactory(
             metaId: selectedAccount.metaId,
-            keystore: keystore
+            secretsManager: giftSecretsManager
         )
-        let giftFactory = GiftOperationFactory(localGiftFactory: localGiftFactory)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: selectedAccount.metaId,
@@ -68,6 +70,7 @@ final class GiftSubmissionFactoryFacade {
             signingWrapper: signingWrapper,
             giftsRepository: giftsRepository,
             giftFactory: giftFactory,
+            giftSecretsCleaningFactory: giftSecretsManager,
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
@@ -81,6 +84,7 @@ private extension GiftSubmissionFactoryFacade {
         GiftSubmissionFactory(
             giftsRepository: giftsRepository,
             giftFactory: giftFactory,
+            giftSecretsCleaningFactory: giftSecretsCleaningFactory,
             persistExtrinsicService: persistExtrinsicService,
             persistenceFilter: persistenceFilter,
             eventCenter: eventCenter,

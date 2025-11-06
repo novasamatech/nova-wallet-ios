@@ -5,7 +5,7 @@ final class GiftPrepareShareInteractor {
     weak var presenter: GiftPrepareShareInteractorOutputProtocol?
 
     let giftId: GiftModel.Id
-    let localGiftFactory: LocalGiftFactoryProtocol
+    let giftSecretsManager: GiftSecretsProvidingProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -16,14 +16,14 @@ final class GiftPrepareShareInteractor {
 
     init(
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        localGiftFactory: LocalGiftFactoryProtocol,
+        giftSecretsManager: GiftSecretsManagerProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftId: GiftModel.Id,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.giftRepository = giftRepository
-        self.localGiftFactory = localGiftFactory
+        self.giftSecretsManager = giftSecretsManager
         self.chainRegistry = chainRegistry
         self.giftId = giftId
         self.operationQueue = operationQueue
@@ -91,10 +91,11 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
         gift: GiftModel,
         chainAsset: ChainAsset
     ) {
-        let secretsOperation = localGiftFactory.getSecrets(
-            for: gift.giftAccountId,
+        let secretInfo = GiftSecretKeyInfo(
+            accountId: gift.giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
+        let secretsOperation = giftSecretsManager.getSecrets(for: secretInfo)
 
         execute(
             operation: secretsOperation,

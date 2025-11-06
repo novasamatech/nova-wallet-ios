@@ -19,14 +19,11 @@ struct GiftPrepareShareViewFactory {
         let repositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let giftRepository = repositoryFactory.createGiftsRepository(for: nil)
 
-        let giftFactory = LocalGiftFactory(
-            metaId: selectedWallet.metaId,
-            keystore: Keychain()
-        )
+        let giftSecretsManager = GiftSecretsManager(keystore: Keychain())
 
         let interactor = GiftPrepareShareInteractor(
             giftRepository: giftRepository,
-            localGiftFactory: giftFactory,
+            giftSecretsManager: giftSecretsManager,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             giftId: giftId,
             operationQueue: operationQueue,

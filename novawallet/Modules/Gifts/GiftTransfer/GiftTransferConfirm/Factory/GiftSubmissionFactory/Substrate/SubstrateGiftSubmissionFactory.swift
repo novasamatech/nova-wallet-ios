@@ -25,7 +25,7 @@ final class SubstrateGiftSubmissionFactory {
     }
 
     func createSubmitWrapper(
-        dependingOn giftOperation: BaseOperation<GiftModel>,
+        dependingOn giftWrapper: CompoundOperationWrapper<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         assetStorageInfo: AssetStorageInfo?
     ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
@@ -34,7 +34,7 @@ final class SubstrateGiftSubmissionFactory {
         let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let gift = try giftOperation.extractNoCancellableResultData()
+            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
 
             let (newBuilder, codingPath) = try self.addingTransferCommand(
                 to: builder,
@@ -56,7 +56,7 @@ final class SubstrateGiftSubmissionFactory {
 
         let mapOperation = ClosureOperation<SubmittedGiftTransactionMetadata> {
             let result = submitAndMonitorWrapper.targetOperation.result
-            let gift = try giftOperation.extractNoCancellableResultData()
+            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
 
             switch result {
             case let .success(submission):
@@ -114,9 +114,9 @@ extension SubstrateGiftSubmissionFactory: SubstrateGiftSubmissionFactoryProtocol
         assetStorageInfo: AssetStorageInfo?,
         feeDescription: GiftFeeDescription?
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
-        let submitWrapperProvider: GiftSubmissionWrapperProvider = { giftOperation, amount in
+        let submitWrapperProvider: GiftSubmissionWrapperProvider = { giftWrapper, amount in
             self.createSubmitWrapper(
-                dependingOn: giftOperation,
+                dependingOn: giftWrapper,
                 amount: amount,
                 assetStorageInfo: assetStorageInfo
             )

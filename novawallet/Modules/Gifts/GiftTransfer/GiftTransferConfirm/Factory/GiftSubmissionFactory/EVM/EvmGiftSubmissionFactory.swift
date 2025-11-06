@@ -25,7 +25,7 @@ final class EvmGiftSubmissionFactory {
     }
 
     func createSubmitWrapper(
-        dependingOn giftOperation: BaseOperation<GiftModel>,
+        dependingOn giftWrapper: CompoundOperationWrapper<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         evmFee: EvmFeeModel,
         transferType: EvmGiftTransferInteractor.TransferType
@@ -33,7 +33,7 @@ final class EvmGiftSubmissionFactory {
         let operation = AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let gift = try giftOperation.extractNoCancellableResultData()
+            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
 
             var callCodingPath: CallCodingPath?
 
@@ -100,9 +100,9 @@ extension EvmGiftSubmissionFactory: EvmGiftSubmissionFactoryProtocol {
         evmFee: EvmFeeModel,
         transferType: EvmGiftTransferInteractor.TransferType
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
-        let submissionWrapperProvider: GiftSubmissionWrapperProvider = { giftOperation, amount in
+        let submissionWrapperProvider: GiftSubmissionWrapperProvider = { giftWrapper, amount in
             self.createSubmitWrapper(
-                dependingOn: giftOperation,
+                dependingOn: giftWrapper,
                 amount: amount,
                 evmFee: evmFee,
                 transferType: transferType

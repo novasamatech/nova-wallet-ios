@@ -1955,6 +1955,13 @@
 		2D86C88F2EBA6B04003325FC /* GiftSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */; };
 		2D86C8962EBA7837003325FC /* ClaimGiftUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */; };
 		2D86C89B2EBA7A82003325FC /* GiftClaimNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */; };
+		2D86C8A42EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */; };
+		2D86C8A92EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */; };
+		2D86C8AE2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */; };
+		2D86C8B82EBCD0F4003325FC /* GiftSecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8B72EBCD0F4003325FC /* GiftSecretsManager.swift */; };
+		2D86C8BD2EBCE53C003325FC /* GiftSecretCreationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8BC2EBCE53C003325FC /* GiftSecretCreationRequest.swift */; };
+		2D86C8C22EBCE7B5003325FC /* GiftPublicKeyFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8C12EBCE7B5003325FC /* GiftPublicKeyFetchRequest.swift */; };
+		2D86C8CE2EBCF320003325FC /* GiftSecretsManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8CD2EBCF320003325FC /* GiftSecretsManagerProtocol.swift */; };
 		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2D87C1A02E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */; };
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
@@ -2027,7 +2034,6 @@
 		2DA4D6142EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6132EB37E3A006FCCC0 /* GiftTransferConfirmProtocols.swift */; };
 		2DA4D64C2EB3B68F006FCCC0 /* GiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */; };
 		2DA4D6602EB4917B006FCCC0 /* GiftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */; };
-		2DA4D6652EB4AC00006FCCC0 /* GiftLocalFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */; };
 		2DA4D6722EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */; };
 		2DA4D6772EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D6762EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
@@ -8587,6 +8593,13 @@
 		2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSigningWrapper.swift; sourceTree = "<group>"; };
 		2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimGiftUrlParsingService.swift; sourceTree = "<group>"; };
 		2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimNavigation.swift; sourceTree = "<group>"; };
+		2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteBalanceQueryFacade.swift; sourceTree = "<group>"; };
+		2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmRemoteBalanceQueryFactory.swift; sourceTree = "<group>"; };
+		2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimAvailabilityCheckFactory.swift; sourceTree = "<group>"; };
+		2D86C8B72EBCD0F4003325FC /* GiftSecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretsManager.swift; sourceTree = "<group>"; };
+		2D86C8BC2EBCE53C003325FC /* GiftSecretCreationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretCreationRequest.swift; sourceTree = "<group>"; };
+		2D86C8C12EBCE7B5003325FC /* GiftPublicKeyFetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftPublicKeyFetchRequest.swift; sourceTree = "<group>"; };
+		2D86C8CD2EBCF320003325FC /* GiftSecretsManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretsManagerProtocol.swift; sourceTree = "<group>"; };
 		2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel15.xcdatamodel; sourceTree = "<group>"; };
 		2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManageWalletTypeViewModel.swift; sourceTree = "<group>"; };
 		2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManagementViewModelFactory.swift; sourceTree = "<group>"; };
@@ -8648,7 +8661,6 @@
 		2DA4D64B2EB3B68F006FCCC0 /* GiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftModel.swift; sourceTree = "<group>"; };
 		2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel19.xcdatamodel; sourceTree = "<group>"; };
 		2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftOperationFactory.swift; sourceTree = "<group>"; };
-		2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftLocalFactory.swift; sourceTree = "<group>"; };
 		2DA4D6712EB4CEF0006FCCC0 /* GiftTransferConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmPresenter.swift; sourceTree = "<group>"; };
 		2DA4D6762EB4D49D006FCCC0 /* GiftTransferConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
@@ -17875,6 +17887,18 @@
 			path = Factory;
 			sourceTree = "<group>";
 		};
+		2D86C8CC2EBCF318003325FC /* GiftSecretsManager */ = {
+			isa = PBXGroup;
+			children = (
+				2D86C8CD2EBCF320003325FC /* GiftSecretsManagerProtocol.swift */,
+				2D86C8B72EBCD0F4003325FC /* GiftSecretsManager.swift */,
+				2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */,
+				2D86C8BC2EBCE53C003325FC /* GiftSecretCreationRequest.swift */,
+				2D86C8C12EBCE7B5003325FC /* GiftPublicKeyFetchRequest.swift */,
+			);
+			path = GiftSecretsManager;
+			sourceTree = "<group>";
+		};
 		2D8851DA2D0888690099B078 /* ModalCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -18828,11 +18852,10 @@
 		2DF3C2862EA22EC80099417C /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2D86C8CC2EBCF318003325FC /* GiftSecretsManager */,
 				2DA4D6402EB3B677006FCCC0 /* Model */,
 				2DA4D63F2EB3B670006FCCC0 /* View */,
 				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
-				2DA4D6642EB4AC00006FCCC0 /* GiftLocalFactory.swift */,
-				2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -29636,6 +29659,9 @@
 				EF4F448C77878443102B9D90 /* GiftClaimInteractor.swift */,
 				B44A5CE2B4700FE36919B523 /* GiftClaimViewController.swift */,
 				944BA53226A3DA9538D87403 /* GiftClaimViewLayout.swift */,
+				2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */,
+				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
+				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 			);
 			path = GiftClaim;
 			sourceTree = "<group>";
@@ -31328,6 +31354,7 @@
 				2DFF39D72E17B14400529984 /* MultisigConfirmationResult.swift in Sources */,
 				7728E5912A1324A2007901E0 /* ReferendumsSearchManager.swift in Sources */,
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
+				2D86C8CE2EBCF320003325FC /* GiftSecretsManagerProtocol.swift in Sources */,
 				7730904F2B557F46002577AE /* StakingProxyBasePresenter.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				88FB7DC829505DC300784E08 /* AssetDetailsContainerViewFactory.swift in Sources */,
@@ -32672,6 +32699,7 @@
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
 				2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */,
 				845B823429C8FF0700D187CB /* EtherscanNativeOperationFactory.swift in Sources */,
+				2D86C8C22EBCE7B5003325FC /* GiftPublicKeyFetchRequest.swift in Sources */,
 				0C423ABD2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift in Sources */,
 				88D997B028ABC8C0006135A5 /* YourContributionsTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
@@ -33508,6 +33536,7 @@
 				840D55972A0513CF0025D91C /* DAppNetworksViewModelFactory.swift in Sources */,
 				0C0AE4102DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift in Sources */,
 				0CD8463F2BE20CF20026B5CA /* AvailSignedExtension.swift in Sources */,
+				2D86C8B82EBCD0F4003325FC /* GiftSecretsManager.swift in Sources */,
 				84CA68D326BE9A35003B9453 /* RuntimeProvider.swift in Sources */,
 				8401620625E130D60087A5F3 /* ViewAction.swift in Sources */,
 				84A2C90424E07F400020D3B7 /* AccountOperationFactoryError.swift in Sources */,
@@ -33721,6 +33750,7 @@
 				0C59E8DC2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift in Sources */,
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
 				77D7BB8E2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift in Sources */,
+				2D86C8AE2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift in Sources */,
 				8499FE7B27BE58A000712589 /* IdentityMapper.swift in Sources */,
 				845B89262959627A00EE25B0 /* SecurityLayerWireframe.swift in Sources */,
 				777AE2AB2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift in Sources */,
@@ -34899,6 +34929,7 @@
 				0C0AE40E2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift in Sources */,
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
 				8487583C27F06AF300495306 /* QRCaptureService.swift in Sources */,
+				2D86C8A42EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* AssetListViewController.swift in Sources */,
 				75E689BC8D16786DF2674171 /* AssetListViewLayout.swift in Sources */,
 				88FAE78828FCF8E200130B47 /* ReferendumDetailsTitleView.swift in Sources */,
@@ -35746,7 +35777,6 @@
 				0C71D3FA2DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift in Sources */,
 				68BE7C4037E8A5C245CDFF0D /* ParaStkYieldBoostStopInteractor.swift in Sources */,
 				A2BE8967FC1609D61E4131BE /* ParaStkYieldBoostStopViewController.swift in Sources */,
-				2DA4D6652EB4AC00006FCCC0 /* GiftLocalFactory.swift in Sources */,
 				2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */,
 				84CA40752A035DA1004BB71E /* WalletConnectSessionsInteractorError.swift in Sources */,
 				7584B6DC2C7F8B2B6671908F /* ParaStkYieldBoostStopViewLayout.swift in Sources */,
@@ -36083,6 +36113,7 @@
 				590717389ECBA34FA08F247B /* GovernanceRemoveVotesConfirmWireframe.swift in Sources */,
 				0C6353472CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift in Sources */,
 				544C8EB3D71227FAF2FD4658 /* GovernanceRemoveVotesConfirmPresenter.swift in Sources */,
+				2D86C8BD2EBCE53C003325FC /* GiftSecretCreationRequest.swift in Sources */,
 				0C1CF7092E50943A00B1DA66 /* OrmlHydrationEvmWalletQueryFactory.swift in Sources */,
 				C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */,
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,
@@ -36206,6 +36237,7 @@
 				77DF40422B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift in Sources */,
 				32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */,
 				165FD10F3329A67373DA78C6 /* ReferendumsFiltersViewController.swift in Sources */,
+				2D86C8A92EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift in Sources */,
 				5951458470EB3BEBC07FFE90 /* ReferendumsFiltersViewLayout.swift in Sources */,
 				14DD3CD30D9D658961078037 /* ReferendumsFiltersViewFactory.swift in Sources */,
 				2D2B6AEF2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift in Sources */,

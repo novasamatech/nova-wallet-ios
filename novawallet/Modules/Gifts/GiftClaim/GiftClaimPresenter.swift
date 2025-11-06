@@ -15,6 +15,10 @@ final class GiftClaimPresenter {
 }
 
 extension GiftClaimPresenter: GiftClaimPresenterProtocol {
+    func actionClaim() {}
+
+    func actionSelectWallet() {}
+
     func setup() {}
 }
 

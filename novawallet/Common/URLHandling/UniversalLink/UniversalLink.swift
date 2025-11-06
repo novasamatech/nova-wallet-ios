@@ -85,6 +85,12 @@ enum UniversalLink {
             static let provider = "provider"
         }
     }
+
+    enum Gift {
+        enum QueryKey {
+            static let payload = "payload"
+        }
+    }
 }
 
 protocol UniversalLinkFactoryProtocol {

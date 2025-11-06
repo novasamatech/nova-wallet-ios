@@ -5,24 +5,38 @@ import BigInt
 import NovaCrypto
 import Keystore_iOS
 
-// Facade factory that will be extended with remote gift factory later
-
 protocol GiftOperationFactoryProtocol {
     func createGiftOperation(
-        amount: OnChainTransferAmount<BigUInt>,
+        from seed: Data?,
+        amount: BigUInt,
         chainAsset: ChainAsset
-    ) -> BaseOperation<GiftModel>
+    ) -> CompoundOperationWrapper<GiftModel>
+}
 
-    func cleanSecrets(
-        for info: GiftSecretKeyInfo
-    ) -> BaseOperation<Void>
+extension GiftOperationFactoryProtocol {
+    func createGiftOperation(
+        from seed: Data? = nil,
+        amount: BigUInt,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<GiftModel> {
+        createGiftOperation(
+            from: seed,
+            amount: amount,
+            chainAsset: chainAsset
+        )
+    }
 }
 
 final class GiftOperationFactory {
-    private let localGiftFactory: LocalGiftFactoryProtocol
+    private let metaId: MetaAccountModel.Id?
+    private let secretsManager: GiftSecretsManagerProtocol
 
-    init(localGiftFactory: LocalGiftFactoryProtocol) {
-        self.localGiftFactory = localGiftFactory
+    init(
+        metaId: MetaAccountModel.Id? = nil,
+        secretsManager: GiftSecretsManagerProtocol
+    ) {
+        self.secretsManager = secretsManager
+        self.metaId = metaId
     }
 }
 
@@ -30,18 +44,36 @@ final class GiftOperationFactory {
 
 extension GiftOperationFactory: GiftOperationFactoryProtocol {
     func createGiftOperation(
-        amount: OnChainTransferAmount<BigUInt>,
+        from seed: Data?,
+        amount: BigUInt,
         chainAsset: ChainAsset
-    ) -> BaseOperation<GiftModel> {
-        localGiftFactory.createGiftOperation(
-            amount: amount.value,
-            chainAsset: chainAsset
+    ) -> CompoundOperationWrapper<GiftModel> {
+        let secretCreationRequest = GiftSecretCreationRequest(
+            seed: seed,
+            ethereumBased: chainAsset.chain.isEthereumBased
         )
-    }
 
-    func cleanSecrets(
-        for info: GiftSecretKeyInfo
-    ) -> BaseOperation<Void> {
-        localGiftFactory.cleanSecrets(for: info)
+        let secretsOperation = secretsManager.createSecrets(request: secretCreationRequest)
+
+        let mapOperation = ClosureOperation { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            let accountId = try secretsOperation.extractNoCancellableResultData()
+
+            return GiftModel(
+                amount: amount,
+                chainAssetId: chainAsset.chainAssetId,
+                status: .pending,
+                giftAccountId: accountId,
+                senderMetaId: metaId
+            )
+        }
+
+        mapOperation.addDependency(secretsOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [mapOperation]
+        )
     }
 }
