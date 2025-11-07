@@ -8,8 +8,12 @@ protocol GiftClaimPresenterProtocol: AnyObject {
     func actionSelectWallet()
 }
 
-protocol GiftClaimInteractorInputProtocol: AnyObject {}
+protocol GiftClaimInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol GiftClaimInteractorOutputProtocol: AnyObject {}
+protocol GiftClaimInteractorOutputProtocol: AnyObject {
+    func didReceive(_ error: Error)
+}
 
 protocol GiftClaimWireframeProtocol: AnyObject {}
