@@ -1,8 +1,8 @@
 import Foundation
 import Foundation_iOS
 
-final class GiftTransferViewFactory {
-    static func createTransferSetupView(
+final class GiftTransferSetupViewFactory {
+    static func createView(
         from chainAsset: ChainAsset,
         assetListStateObservable: AssetListModelObservable,
         transferCompletion: TransferCompletionClosure?,
@@ -25,13 +25,14 @@ final class GiftTransferViewFactory {
         let wireframe: GiftTransferSetupWireframeProtocol
 
         if chainAsset.asset.isAnyEvm {
-            wireframe = EvmGiftTransferSetupWireframe(
+            let evmWireframe = EvmGiftTransferSetupWireframe(
                 assetListStateObservable: assetListStateObservable,
                 buyTokensClosure: buyTokenClosure,
                 transferCompletion: transferCompletion
             )
+            wireframe = evmWireframe
             let validationProviderFactory = EvmValidationProviderFactory(
-                presentable: wireframe,
+                presentable: evmWireframe,
                 balanceViewModelFactory: balanceViewModelFactory,
                 assetInfo: chainAsset.assetDisplayInfo
             )
@@ -79,7 +80,6 @@ final class GiftTransferViewFactory {
             interactor: interactorInput,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            feeAsset: chainAsset,
             initialState: initPresenterState,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
@@ -104,7 +104,7 @@ final class GiftTransferViewFactory {
     }
 }
 
-private extension GiftTransferViewFactory {
+private extension GiftTransferSetupViewFactory {
     static func createSubstrateTransferSetupInteractor(
         for chainAsset: ChainAsset,
         wallet: MetaAccountModel,
@@ -123,12 +123,6 @@ private extension GiftTransferViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
-
-        let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
-            remoteSubscriptionService: walletRemoteSubscriptionService
-        )
-
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
@@ -146,15 +140,12 @@ private extension GiftTransferViewFactory {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeAsset: chainAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             transferCommandFactory: SubstrateTransferCommandFactory(),
             extrinsicService: extrinsicService,
-            walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: operationQueue
@@ -198,11 +189,6 @@ private extension GiftTransferViewFactory {
             gasLimitProvider: gasLimitProvider,
             nonceProvider: nonceProvider,
             chain: chain,
-            operationQueue: operationQueue
-        )
-
-        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
-            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 

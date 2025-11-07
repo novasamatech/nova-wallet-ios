@@ -73,4 +73,39 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
 
         return urlComponents?.url
     }
+
+    func createUrlForGift(
+        seed: String,
+        chainId: ChainModel.Id,
+        symbol: AssetModel.Symbol
+    ) -> URL? {
+        var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+
+        let path: String = [
+            UniversalLink.Action.open.rawValue,
+            UniversalLink.Screen.gift.rawValue
+        ].joined(with: .slash)
+
+        let shortChainIdLength = 6
+
+        let endIndex: String.Index = chainId.count < shortChainIdLength
+            ? chainId.endIndex
+            : chainId.index(chainId.startIndex, offsetBy: shortChainIdLength)
+
+        let shortChainId = chainId[chainId.startIndex ..< endIndex]
+
+        let data = "\(seed)_\(shortChainId)_\(symbol)"
+
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.data.rawValue,
+                value: data
+            )
+        ]
+
+        urlComponents?.path = "/\(path)"
+        urlComponents?.queryItems = queryItems
+
+        return urlComponents?.url
+    }
 }

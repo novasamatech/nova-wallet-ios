@@ -23,7 +23,7 @@ class GiftTransferPresenter {
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: FeeOutputModel?
-    var feeAsset: ChainAsset
+    private(set) var feeDescription: GiftFeeDescription?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -38,7 +38,6 @@ class GiftTransferPresenter {
 
     init(
         chainAsset: ChainAsset,
-        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         senderAccountAddress: AccountAddress,
@@ -46,7 +45,6 @@ class GiftTransferPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.chainAsset = chainAsset
-        self.feeAsset = feeAsset
         self.networkViewModelFactory = networkViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.senderAccountAddress = senderAccountAddress
@@ -128,6 +126,10 @@ class GiftTransferPresenter {
         case .failure:
             askFeeRetry()
         }
+    }
+
+    func didReceiveFee(description: GiftFeeDescription) {
+        feeDescription = description
     }
 
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {

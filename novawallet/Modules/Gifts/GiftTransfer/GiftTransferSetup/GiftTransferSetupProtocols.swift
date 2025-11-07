@@ -16,19 +16,21 @@ protocol GiftTransferSetupInteractorInputProtocol: AnyObject {
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>)
 }
 
-protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {}
+protocol GiftTransferSetupInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
+    func didReceiveFee(description: GiftFeeDescription)
+}
 
 protocol GiftTransferSetupPresenterProtocol: AnyObject {
     func setup()
     func updateAmount(_ newValue: Decimal?)
     func proceed()
     func getTokens()
+    func selectAmountPercentage(_ percentage: Float)
 }
 
 protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     TransferErrorPresentable,
-    EvmValidationErrorPresentable,
     PhishingErrorPresentable,
     RampPresentable,
     FeeRetryable {

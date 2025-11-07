@@ -88,6 +88,9 @@ extension ExtrinsicSigningErrorHandling where Self: MessageSheetPresentable {
             presenter?.pushViewController(viewController, animated: true)
 
             completionClosure?(true)
+        case let .postNavigation(closure):
+            closure()
+            completionClosure?(true)
         }
     }
 

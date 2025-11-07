@@ -8,23 +8,17 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
-    let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
-    let substrateStorageFacade: StorageFacadeProtocol
     let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
+
+    var setupPresenter: GiftTransferSetupInteractorOutputProtocol? {
+        presenter as? GiftTransferSetupInteractorOutputProtocol
+    }
+
+    var sendingAssetInfo: AssetStorageInfo?
 
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
 
     private var setupCall: CancellableCall?
-
-    private var sendingAssetInfo: AssetStorageInfo?
-
-    private(set) var feeAsset: ChainAsset?
-
-    private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
-        let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            substrateStorageFacade.createRepository()
-        return AnyDataProviderRepository(storage)
-    }()
 
     private let assetStorageCallStore = CancellableCallStore()
 
@@ -32,26 +26,20 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
-        feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
-        walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol,
         transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
-        self.feeAsset = feeAsset
         self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
-        self.walletRemoteWrapper = walletRemoteWrapper
-        self.substrateStorageFacade = substrateStorageFacade
         self.transferAggregationWrapperFactory = transferAggregationWrapperFactory
 
         super.init(
@@ -74,7 +62,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: transactionId.rawValue,
-            payingIn: feeAsset?.chainAssetId
+            payingIn: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
         ) { [weak self] builder in
             let (newBuilder, _) = try self?.addingTransferCommand(
                 to: builder,
@@ -85,11 +73,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
             return newBuilder
         }
     }
-}
 
-// MARK: - Private
-
-private extension GiftTransferInteractor {
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -106,7 +90,11 @@ private extension GiftTransferInteractor {
             assetStorageInfo: sendingAssetInfo
         )
     }
+}
 
+// MARK: - Private
+
+private extension GiftTransferInteractor {
     func continueSetup() {
         feeProxy.delegate = self
 
@@ -115,7 +103,7 @@ private extension GiftTransferInteractor {
 
         provideMinBalance()
 
-        presenter?.didCompleteSetup()
+        setupPresenter?.didCompleteSetup()
     }
 
     func provideMinBalance() {
@@ -134,9 +122,9 @@ private extension GiftTransferInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(existence):
-                self?.presenter?.didReceiveSendingAssetExistence(existence)
+                self?.setupPresenter?.didReceiveSendingAssetExistence(existence)
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.setupPresenter?.didReceiveError(error)
             }
         }
     }
@@ -165,7 +153,8 @@ private extension GiftTransferInteractor {
         do {
             let totalFee = try giftFeeDescription.createAccumulatedFee()
             let feeModel = FeeOutputModel(value: totalFee, validationProvider: nil)
-            presenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(result: .success(feeModel))
+            setupPresenter?.didReceiveFee(description: giftFeeDescription)
         } catch {
             logger.error("Error calculating accumulated fee: \(error)")
         }
@@ -193,7 +182,7 @@ extension GiftTransferInteractor {
 
                 self?.continueSetup()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.setupPresenter?.didReceiveError(error)
             }
         }
     }
@@ -223,7 +212,7 @@ extension GiftTransferInteractor: ExtrinsicFeeProxyDelegate {
                 giftFeeDescriptionBuilder: builder
             )
         case let (.failure(error), _):
-            presenter?.didReceiveFee(result: .failure(error))
+            setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
 }

@@ -562,4 +562,12 @@ extension NSPredicate {
             identifier
         )
     }
+
+    static func gifts(for metaId: MetaAccountModel.Id) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDGift.metaId),
+            metaId
+        )
+    }
 }
