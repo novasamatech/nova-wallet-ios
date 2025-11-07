@@ -65,6 +65,8 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
             presenter?.popToViewController(viewController, animated: true)
 
             alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
+        case let .postNavigation(closure):
+            closure()
         }
 
         return true

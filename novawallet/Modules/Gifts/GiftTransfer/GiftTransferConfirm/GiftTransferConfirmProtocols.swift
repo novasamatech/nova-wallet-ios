@@ -25,9 +25,13 @@ protocol GiftTransferConfirmInteractorInputProtocol: GiftTransferSetupInteractor
 }
 
 protocol GiftTransferConfirmInteractorOutputProtocol: GiftTransferSetupInteractorOutputProtocol {
-    func didCompleteSubmition(with resultData: GiftTransferSubmissionResult)
+    func didCompleteSubmission(with submissionData: GiftTransferSubmissionResult)
 }
 
 protocol GiftTransferConfirmWireframeProtocol: TransferConfirmWireframeProtocol {
-    func showGiftShare(from view: ControllerBackedProtocol?)
+    func showGiftShare(
+        from view: ControllerBackedProtocol?,
+        giftId: GiftModel.Id,
+        chainAsset: ChainAsset
+    )
 }

@@ -32,5 +32,6 @@ extension GiftMapper: CoreDataMapperProtocol {
         entity.status = model.status.rawValue
         entity.giftAccountId = model.giftAccountId.toHex()
         entity.metaId = model.metaId
+        entity.identifier = model.identifier
     }
 }

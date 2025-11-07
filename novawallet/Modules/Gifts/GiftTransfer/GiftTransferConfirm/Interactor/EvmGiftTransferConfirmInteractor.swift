@@ -69,7 +69,7 @@ extension EvmGiftTransferConfirmInteractor: GiftTransferConfirmInteractorInputPr
 
             switch result {
             case let .success(resultData):
-                self?.submissionPresenter?.didCompleteSubmition(with: resultData)
+                self?.submissionPresenter?.didCompleteSubmission(with: resultData)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }

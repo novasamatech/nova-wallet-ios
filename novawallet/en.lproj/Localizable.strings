@@ -1986,3 +1986,6 @@
 "gift.validation.minimal.gift.amount" = "The minimum gift is %@";
 "gift.transfer.confirm.your.gift" = "Your gift";
 "gift.claim.fee" = "Claim fee";
+"gift.prepared.title" = "Gift Has Been Prepared. Share It Now!";
+"gift.prepared.share.action.title" = "Share Gift Link";
+"gift.share.message" = "Hello! You’ve got a %@ gift waiting for you!\n\nInstall Nova Wallet app, set up your wallet, and claim it via this special link:\n%@";
