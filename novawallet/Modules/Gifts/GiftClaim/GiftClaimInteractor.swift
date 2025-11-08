@@ -18,7 +18,6 @@ final class GiftClaimInteractor {
     
     var assetStorageInfo: AssetStorageInfo?
     var walletToGift: MetaAccountModel?
-    var lastFee: ExtrinsicFeeProtocol?
 }
 
 // MARK: - Private
@@ -209,4 +208,10 @@ extension GiftedWalletType {
             }
         }
     }
+}
+
+struct ClaimableGiftDescription {
+    let amount: BigUInt
+    let chainAsset: ChainAsset
+    let claimingAccountId: AccountId
 }
