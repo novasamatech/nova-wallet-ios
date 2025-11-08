@@ -18856,6 +18856,9 @@
 				2DA4D6402EB3B677006FCCC0 /* Model */,
 				2DA4D63F2EB3B670006FCCC0 /* View */,
 				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
+				2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */,
+				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
+				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -29659,9 +29662,6 @@
 				EF4F448C77878443102B9D90 /* GiftClaimInteractor.swift */,
 				B44A5CE2B4700FE36919B523 /* GiftClaimViewController.swift */,
 				944BA53226A3DA9538D87403 /* GiftClaimViewLayout.swift */,
-				2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */,
-				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
-				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 			);
 			path = GiftClaim;
 			sourceTree = "<group>";
