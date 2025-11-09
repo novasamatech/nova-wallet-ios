@@ -1646,6 +1646,7 @@
 		2D1006122EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */; };
 		2D1006212EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */; };
 		2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */; };
+		2D1006382EC0D2650017F48D /* GiftClaimOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006372EC0D2650017F48D /* GiftClaimOperationFactory.swift */; };
 		2D1210002E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */; };
 		2D1210022E6ECA3B00330920 /* TimepointThreshold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1210012E6ECA3B00330920 /* TimepointThreshold.swift */; };
 		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
@@ -8291,6 +8292,7 @@
 		2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimableGiftDescriptionFactory.swift; sourceTree = "<group>"; };
 		2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimWalletOperationFactory.swift; sourceTree = "<group>"; };
 		2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimViewModelFactory.swift; sourceTree = "<group>"; };
+		2D1006372EC0D2650017F48D /* GiftClaimOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimOperationFactory.swift; sourceTree = "<group>"; };
 		2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryRewardAggregatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D1210012E6ECA3B00330920 /* TimepointThreshold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimepointThreshold.swift; sourceTree = "<group>"; };
 		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
@@ -16778,6 +16780,38 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D10063E2EC0DAFD0017F48D /* GiftClaimFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2D1006552EC0DB490017F48D /* Common */,
+				2D1006612EC0DB630017F48D /* Substrate */,
+				2D10065D2EC0DB5B0017F48D /* EVM */,
+			);
+			path = GiftClaimFactory;
+			sourceTree = "<group>";
+		};
+		2D1006552EC0DB490017F48D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2D1006372EC0D2650017F48D /* GiftClaimOperationFactory.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		2D10065D2EC0DB5B0017F48D /* EVM */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EVM;
+			sourceTree = "<group>";
+		};
+		2D1006612EC0DB630017F48D /* Substrate */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Substrate;
+			sourceTree = "<group>";
+		};
 		2D1585052D3AA43800E86DA8 /* RemovedWallet */ = {
 			isa = PBXGroup;
 			children = (
@@ -17888,6 +17922,7 @@
 		2D86C87E2EBA118D003325FC /* Factory */ = {
 			isa = PBXGroup;
 			children = (
+				2D10063E2EC0DAFD0017F48D /* GiftClaimFactory */,
 				3576FB0B05C782F78C39600C /* GiftClaimViewFactory.swift */,
 				2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */,
 				2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */,
@@ -31416,6 +31451,7 @@
 				778D979F2A24D248002BA681 /* SearchViewProtocol.swift in Sources */,
 				0C9A7F992AFC9A2B00938CD0 /* SwapPriceDifferenceConfig.swift in Sources */,
 				8460E713284ABE22002896E9 /* UnstakeCallWrapper.swift in Sources */,
+				2D1006382EC0D2650017F48D /* GiftClaimOperationFactory.swift in Sources */,
 				843612C3278FF0C700DC739E /* FeeRetryable.swift in Sources */,
 				8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */,
 				0C66E9522E1DD70700FEDD57 /* MultisigFeeValidationPresenter.swift in Sources */,
