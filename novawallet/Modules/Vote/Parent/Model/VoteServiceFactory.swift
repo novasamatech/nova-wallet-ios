@@ -1,11 +1,11 @@
 import Foundation
 import Operation_iOS
 
-protocol GovernanceServiceFactoryProtocol {
+protocol VoteServiceFactoryProtocol {
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
 }
 
-final class GovernanceServiceFactory: GovernanceServiceFactoryProtocol {
+final class VoteServiceFactory: VoteServiceFactoryProtocol {
     let blockTimeServiceFactory: BlockTimeEstimationServiceFactoryProtocol
 
     init(

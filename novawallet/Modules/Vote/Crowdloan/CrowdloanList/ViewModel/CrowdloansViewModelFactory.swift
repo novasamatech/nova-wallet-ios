@@ -6,21 +6,12 @@ import BigInt
 
 protocol CrowdloansViewModelFactoryProtocol {
     func createViewModel(
-        from crowdloans: [Crowdloan],
+        from contributions: [CrowdloanContribution],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        externalContributionsCount: Int,
-        amount: Decimal?,
         priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel
-
-    func createErrorViewModel(
-        chainAsset: ChainAssetDisplayInfo?,
-        locale: Locale
-    ) -> CrowdloansViewModel
-
-    func createLoadingViewModel() -> CrowdloansViewModel
 }
 
 final class CrowdloansViewModelFactory {
@@ -299,29 +290,14 @@ final class CrowdloansViewModelFactory {
 }
 
 extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
-    func createErrorViewModel(
-        chainAsset: ChainAssetDisplayInfo?,
-        locale: Locale
-    ) -> CrowdloansViewModel {
-        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorNoDataRetrieved_v3_9_1()
-        let errorSection = CrowdloansSection.error(message: message)
-        let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
-        return .init(sections: [
-            aboutSection,
-            errorSection
-        ])
-    }
-
     func createViewModel(
-        from crowdloans: [Crowdloan],
+        from contributions: [CrowdloanContribution],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        externalContributionsCount: Int,
-        amount: Decimal?,
         priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel {
-        guard !crowdloans.isEmpty else {
+        guard !contributions.isEmpty else {
             let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
             let activeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanActiveSection()
             let emptySection = CrowdloansSection.empty(title: activeTitle)
@@ -375,13 +351,6 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         ) : createAboutSection(chainAsset: chainAsset, locale: locale)
 
         return .init(sections: [contributionSection] + crowdloansSections)
-    }
-
-    func createLoadingViewModel() -> CrowdloansViewModel {
-        CrowdloansViewModel(sections: [
-            CrowdloansSection.yourContributions(.loading),
-            CrowdloansSection.active(.loading, Array(repeating: .loading, count: 10))
-        ])
     }
 
     private func createAboutSection(chainAsset: ChainAssetDisplayInfo?, locale: Locale) -> CrowdloansSection {

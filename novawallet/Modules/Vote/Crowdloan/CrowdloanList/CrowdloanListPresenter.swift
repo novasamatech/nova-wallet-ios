@@ -8,22 +8,17 @@ final class CrowdloanListPresenter {
     let wireframe: CrowdloanListWireframeProtocol
     let interactor: CrowdloanListInteractorInputProtocol
     let viewModelFactory: CrowdloansViewModelFactoryProtocol
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
     let wallet: MetaAccountModel
 
-    private var selectedChainResult: Result<ChainModel, Error>?
-    private var accountBalanceResult: Result<AssetBalance?, Error>?
-    private var crowdloansResult: Result<[Crowdloan], Error>?
-    private var displayInfoResult: Result<CrowdloanDisplayInfoDict, Error>?
+    private var selectedChain: ChainModel?
+    private var accountBalance: AssetBalance?
+    private var contributions: [CrowdloanContribution]?
+    private var displayInfo: CrowdloanDisplayInfoDict?
     private var blockNumber: BlockNumber?
-    private var blockDurationResult: Result<BlockTime, Error>?
-    private var leasingPeriodResult: Result<LeasingPeriod, Error>?
-    private var leasingOffsetResult: Result<LeasingOffset, Error>?
-    private var priceDataResult: Result<PriceData?, Error>?
-    private var contributionsResult: Result<CrowdloanContributionDict, Error>?
-    private var externalContributions: [ExternalContribution]?
-    private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
+    private var blockDuration: BlockTime?
+    private var priceData: PriceData?
 
     private let crowdloansCalculator: CrowdloansCalculatorProtocol
 
@@ -39,7 +34,7 @@ final class CrowdloanListPresenter {
         accountManagementFilter: AccountManagementFilterProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -54,24 +49,11 @@ final class CrowdloanListPresenter {
     }
 
     private func updateChainView() {
-        guard let chainResult = selectedChainResult else {
+        guard let asset = selectedChain.utilityAsset() else {
             return
         }
 
-        guard
-            case let .success(chain) = chainResult,
-            let asset = chain.utilityAssets().first else {
-            provideViewError(chainAsset: nil)
-            return
-        }
-
-        let balance: BigUInt?
-
-        if let accountBalanceResult = accountBalanceResult {
-            balance = (try? accountBalanceResult.get()?.transferable) ?? 0
-        } else {
-            balance = nil
-        }
+        let balance = accountBalance?.transferable
 
         let viewModel = chainBalanceFactory.createViewModel(
             from: ChainAsset(chain: chain, asset: asset),
@@ -82,132 +64,57 @@ final class CrowdloanListPresenter {
         view?.didReceive(chainInfo: .wrapped(viewModel, with: privacyModeEnabled))
     }
 
-    private func createMetadataResult() -> Result<CrowdloanMetadata, Error>? {
-        guard
-            let blockDurationResult = blockDurationResult,
-            let leasingPeriodResult = leasingPeriodResult,
-            let leasingOffsetResult = leasingOffsetResult,
-            let blockNumber = blockNumber else {
+    private func createMetadata() -> CrowdloanMetadata? {
+        guard let blockDuration, let blockNumber else {
             return nil
         }
 
-        do {
-            let blockDuration = try blockDurationResult.get()
-            let leasingPeriod = try leasingPeriodResult.get()
-            let leasingOffset = try leasingOffsetResult.get()
-
-            let metadata = CrowdloanMetadata(
-                blockNumber: blockNumber,
-                blockDuration: blockDuration,
-                leasingPeriod: leasingPeriod,
-                leasingOffset: leasingOffset
-            )
-
-            return .success(metadata)
-        } catch {
-            return .failure(error)
-        }
+        return CrowdloanMetadata(blockNumber: blockNumber, blockDuration: blockDuration)
     }
 
-    private func createViewInfoResult() -> Result<CrowdloansViewInfo, Error>? {
+    private func createViewInfo() -> CrowdloansViewInfo? {
         guard
-            let displayInfoResult = displayInfoResult,
-            let metadataResult = createMetadataResult(),
-            let contributionsResult = contributionsResult,
-            let leaseInfoResult = leaseInfoResult else {
+            let displayInfo,
+            let metadata = createMetadata(),
+            let contributions else {
             return nil
         }
 
-        do {
-            let contributions = try contributionsResult.get()
-            let leaseInfo = try leaseInfoResult.get()
-            let metadata = try metadataResult.get()
-            let displayInfo = try? displayInfoResult.get()
-
-            let viewInfo = CrowdloansViewInfo(
-                contributions: contributions,
-                leaseInfo: leaseInfo,
-                displayInfo: displayInfo,
-                metadata: metadata
-            )
-
-            return .success(viewInfo)
-        } catch {
-            return .failure(error)
-        }
+        return CrowdloansViewInfo(
+            contributions: contributions,
+            displayInfo: displayInfo,
+            metadata: metadata
+        )
     }
 
     private func updateListView() {
-        guard let chainResult = selectedChainResult else {
-            return
-        }
-
-        guard case let .success(chain) = chainResult, let asset = chain.utilityAssets().first else {
-            provideViewError(chainAsset: nil)
-            return
-        }
-
         guard
-            let crowdloansResult = crowdloansResult,
-            let viewInfoResult = createViewInfoResult() else {
+            let chain = selectedChain,
+            let asset = chain.utilityAsset() else {
+            return
+        }
+
+        guard let viewInfo = createViewInfo() else {
             return
         }
 
         let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
-        do {
-            let crowdloans = try crowdloansResult.get()
-            let priceData = try? priceDataResult?.get() ?? nil
-            let viewInfo = try viewInfoResult.get()
-            let externalContributionsCount = externalContributions?.count ?? 0
-
-            let amount: Decimal?
-            if let contributionsResult = try contributionsResult?.get() {
-                amount = crowdloansCalculator.calculateTotal(
-                    precision: chain.utilityAsset().map { Int16($0.precision) },
-                    contributions: contributionsResult,
-                    externalContributions: externalContributions ?? []
-                )
-            } else {
-                amount = nil
-            }
-
-            let viewModel = viewModelFactory.createViewModel(
-                from: crowdloans,
-                viewInfo: viewInfo,
-                chainAsset: chainAsset,
-                externalContributionsCount: externalContributionsCount,
-                amount: amount,
-                priceData: priceData,
-                locale: selectedLocale
-            )
-
-            view?.didReceive(listState: viewModel)
-        } catch {
-            provideViewError(chainAsset: chainAsset)
-        }
-    }
-
-    private func openCrowdloan(for paraId: ParaId) {
-        let displayInfoDict = try? displayInfoResult?.get()
-        let displayInfo = displayInfoDict?[paraId]
-
-        guard
-            let crowdloans = try? crowdloansResult?.get(),
-            let selectedCrowdloan = crowdloans.first(where: { $0.paraId == paraId })
-        else { return }
-
-        wireframe.presentContributionSetup(
-            from: view,
-            crowdloan: selectedCrowdloan,
-            displayInfo: displayInfo
+        
+        let amount = crowdloansCalculator.calculateTotal(
+            contributions: contributions,
+            assetInfo: chainAsset.asset
         )
-    }
 
-    private func provideViewError(chainAsset: ChainAssetDisplayInfo?) {
-        let viewModel = viewModelFactory.createErrorViewModel(
+        let viewModel = viewModelFactory.createViewModel(
+            from: crowdloans,
+            viewInfo: viewInfo,
             chainAsset: chainAsset,
+            externalContributionsCount: externalContributionsCount,
+            amount: amount,
+            priceData: priceData,
             locale: selectedLocale
         )
+
         view?.didReceive(listState: viewModel)
     }
 }
@@ -228,13 +135,9 @@ extension CrowdloanListPresenter: VoteChildPresenterProtocol {
     }
 
     func selectChain() {
-        guard
-            let chain = try? selectedChainResult?.get(),
-            let asset = chain.utilityAsset() else {
+        guard let chainAssetId = selectedChain?.utilityChainAssetId() else {
             return
         }
-
-        let chainAssetId = ChainAsset(chain: chain, asset: asset).chainAssetId
 
         wireframe.selectChain(
             from: view,
@@ -245,38 +148,25 @@ extension CrowdloanListPresenter: VoteChildPresenterProtocol {
 }
 
 extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
-    func refresh(shouldReset: Bool) {
-        crowdloansResult = nil
-
-        if shouldReset {
-            view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
-        }
-
-        if case .success = selectedChainResult {
-            interactor.refresh()
-        } else {
-            interactor.setup()
-        }
-    }
-
     func selectCrowdloan(_ paraId: ParaId) {
-        guard let chain = try? selectedChainResult?.get() else {
+        guard let selectedChain else {
             return
         }
 
-        if wallet.fetch(for: chain.accountRequest()) != nil {
+        if wallet.fetch(for: selectedChain.accountRequest()) != nil {
             openCrowdloan(for: paraId)
-        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: selectedChain) {
             guard let view = view else {
                 return
             }
 
-            let message = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonChainCrowdloanAccountMissingMessage(chain.name)
+            let message = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonChainCrowdloanAccountMissingMessage(selectedChain.name)
 
             wireframe.presentAddAccount(
                 from: view,
-                chainName: chain.name,
+                chainName: selectedChain.name,
                 message: message,
                 locale: selectedLocale
             ) { [weak self] in
@@ -294,7 +184,7 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
             wireframe.presentNoAccountSupport(
                 from: view,
                 walletType: wallet.type,
-                chainName: chain.name,
+                chainName: selectedChain.name,
                 locale: selectedLocale
             )
         }
@@ -302,11 +192,11 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
 
     func handleYourContributions() {
         guard
-            let chainResult = selectedChainResult,
-            let crowdloansResult = crowdloansResult,
+            let selectedChain,
+            let contributions,
             let viewInfoResult = createViewInfoResult(),
             case let .success(chain) = chainResult,
-            let asset = chain.utilityAssets().first
+            let asset = selectedChain.utilityAssets().first
         else { return }
 
         do {
@@ -327,113 +217,69 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
 }
 
 extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
-    func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfoDict, Error>) {
-        logger?.info("Did receive display info: \(result)")
+    func didReceiveContributions(_ contributions: [CrowdloanContribution]) {
+        logger.debug("Contributions: \(contributions.count)")
+        
+        self.contributions = contributions
+        updateListView()
+    }
+    
+    func didReceiveDisplayInfo(_ info: CrowdloanDisplayInfoDict) {
+        logger.info("Did receive display info: \(info)")
 
-        displayInfoResult = result
+        displayInfo = info
+        updateListView()
+    }
+    
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
+        self.blockNumber = blockNumber
+
+        updateListView()
+    }
+    
+    func didReceiveBlockDuration(_ blockTime: BlockTime) {
+        blockDuration = blockTime
         updateListView()
     }
 
-    func didReceiveCrowdloans(result: Result<[Crowdloan], Error>) {
-        logger?.info("Did receive crowdloans: \(result)")
-
-        crowdloansResult = result
-        updateListView()
-    }
-
-    func didReceiveBlockNumber(result: Result<BlockNumber?, Error>) {
-        switch result {
-        case let .success(blockNumber):
-            self.blockNumber = blockNumber
-
-            updateListView()
-        case let .failure(error):
-            logger?.error("Did receivee block number error: \(error)")
-        }
-    }
-
-    func didReceiveBlockDuration(result: Result<BlockTime, Error>) {
-        blockDurationResult = result
-        updateListView()
-    }
-
-    func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>) {
-        leasingPeriodResult = result
-        updateListView()
-    }
-
-    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>) {
-        leasingOffsetResult = result
-        updateListView()
-    }
-
-    func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>) {
-        if case let .failure(error) = result {
-            logger?.error("Did receive contributions error: \(error)")
-        }
-
-        contributionsResult = result
-        updateListView()
-    }
-
-    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>) {
-        switch result {
-        case let .success(contributions):
-            let positiveContributions = contributions.filter { $0.amount > 0 }
-            externalContributions = positiveContributions
-            if !positiveContributions.isEmpty {
-                updateListView()
-            }
-        case let .failure(error):
-            logger?.error("Did receive external contributions error: \(error)")
-        }
-    }
-
-    func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>) {
-        if case let .failure(error) = result {
-            logger?.error("Did receive lease info error: \(error)")
-        }
-
-        leaseInfoResult = result
-        updateListView()
-    }
-
-    func didReceiveSelectedChain(result: Result<ChainModel, Error>) {
-        selectedChainResult = result
+    func didReceiveSelectedChain(_ chain: ChainModel) {
+        selectedChain = chain
         updateChainView()
         updateListView()
     }
-
-    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
-        accountBalanceResult = result
+    
+    func didReceiveAccountBalance(_ balance: AssetBalance?) {
+        accountBalance = balance
         updateChainView()
     }
 
-    func didReceivePriceData(result: Result<PriceData?, Error>?) {
-        priceDataResult = result
+    func didReceivePriceData(_ price: PriceData?) {
+        priceData = price
         updateListView()
+    }
+    
+    func didReceiveError(_ error: Error) {
+        logger.error("Unexpected error: \(error)")
+        
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }
 
 extension CrowdloanListPresenter: ChainAssetSelectionDelegate {
     func assetSelection(view _: ChainAssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
-        if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chainAsset.chain.chainId {
+        if let currentChain = selectedChain, currentChain.chainId == chainAsset.chain.chainId {
             return
         }
 
-        selectedChainResult = .success(chainAsset.chain)
-        accountBalanceResult = nil
-        crowdloansResult = nil
-        displayInfoResult = nil
+        selectedChain = chainAsset.chain
+        accountBalance = nil
+        contributions = nil
+        displayInfo = nil
         blockNumber = nil
-        blockDurationResult = nil
-        leasingPeriodResult = nil
-        contributionsResult = nil
-        leaseInfoResult = nil
+        blockDuration = nil
 
         updateChainView()
-
-        view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
+        updateListView()
 
         interactor.saveSelected(chainModel: chainAsset.chain)
     }
