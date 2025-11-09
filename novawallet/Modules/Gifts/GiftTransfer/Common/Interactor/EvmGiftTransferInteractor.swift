@@ -47,7 +47,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
 
     override func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
-        transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,
+        transactionId: GiftTransactionFeeId,
         recepientAccountId: AccountId
     ) {
         guard let transferType else { return }

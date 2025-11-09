@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 import Keystore_iOS
 
 enum URLHandlingPendingLink: Codable {
@@ -7,7 +8,7 @@ enum URLHandlingPendingLink: Codable {
     case dApp(URL)
     case card(String?)
     case assetHubMigration(config: AHMRemoteData)
-    case giftClaim(info: ClaimableGiftInfo)
+    case giftClaim(info: ClaimableGiftInfo, amount: BigUInt)
 }
 
 protocol URLHandlingStoreProtocol {

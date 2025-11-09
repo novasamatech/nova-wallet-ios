@@ -1643,6 +1643,9 @@
 		2D0A82F12CB573BB0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
+		2D1006122EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */; };
+		2D1006212EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */; };
+		2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */; };
 		2D1210002E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */; };
 		2D1210022E6ECA3B00330920 /* TimepointThreshold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1210012E6ECA3B00330920 /* TimepointThreshold.swift */; };
 		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
@@ -8285,6 +8288,9 @@
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
+		2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimableGiftDescriptionFactory.swift; sourceTree = "<group>"; };
+		2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimWalletOperationFactory.swift; sourceTree = "<group>"; };
+		2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimViewModelFactory.swift; sourceTree = "<group>"; };
 		2D120FFF2E6EB54C00330920 /* SubqueryRewardAggregatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryRewardAggregatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D1210012E6ECA3B00330920 /* TimepointThreshold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimepointThreshold.swift; sourceTree = "<group>"; };
 		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
@@ -17883,6 +17889,9 @@
 			isa = PBXGroup;
 			children = (
 				3576FB0B05C782F78C39600C /* GiftClaimViewFactory.swift */,
+				2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */,
+				2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */,
+				2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -33347,6 +33356,7 @@
 				8425D0EC28FE9ACB003B782A /* Gov2ExtrinsicFactory.swift in Sources */,
 				0CCE3AAF2BF5BE4300D55F03 /* IdentityProxyFactory.swift in Sources */,
 				84E1CCFA260DCBF9001E81B5 /* SwitchAccount+UsernameSetupWireframe.swift in Sources */,
+				2D1006122EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift in Sources */,
 				2D7C8A8F2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift in Sources */,
 				84757E19299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift in Sources */,
 				8473F4BA282C012B007CC55A /* StakingRelaychainInteractor+InputProtocol.swift in Sources */,
@@ -33592,6 +33602,7 @@
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
 				0C9C64342A8D67AF004DC078 /* StakingNPoolsWireframe.swift in Sources */,
 				0CC0F8222BB52C7E002C49F6 /* CloudBackup.swift in Sources */,
+				2D1006212EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift in Sources */,
 				779F1F8B2B4D807200EF1EE9 /* ProxyDepositView.swift in Sources */,
 				84C4C2F9255DB9510045B582 /* PinChangeInteractor.swift in Sources */,
 				840874D82978284B00ACFA55 /* GovernanceDelegateMetadataRemote.swift in Sources */,
@@ -36752,6 +36763,7 @@
 				2DEA41632E8CF2810099796B /* HistoryAHMViewModel.swift in Sources */,
 				F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */,
 				0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */,
+				2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */,
 				0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */,
 				877A27A443F9C4048B7FF99A /* PayCardInteractor.swift in Sources */,
 				CCF725BDBEE08A08C5450BC0 /* PayCardViewController.swift in Sources */,

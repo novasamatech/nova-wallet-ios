@@ -9,10 +9,7 @@ struct GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         style: GiftPrepareShareViewStyle
     ) -> GiftPrepareShareViewProtocol? {
-        guard
-            let currencyManager = CurrencyManager.shared,
-            let selectedWallet = SelectedWalletSettings.shared.value
-        else { return nil }
+        guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let storageFacade = UserDataStorageFacade.shared

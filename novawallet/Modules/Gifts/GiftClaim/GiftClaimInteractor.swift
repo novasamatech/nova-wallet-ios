@@ -4,121 +4,52 @@ import BigInt
 
 final class GiftClaimInteractor {
     weak var presenter: GiftClaimInteractorOutputProtocol?
-    
+
+    let claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let giftInfo: ClaimableGiftInfo
-    let totalAmount: BigUInt
-    let feeProxy: ExtrinsicFeeProxyProtocol
-    let transferCommandFactory: SubstrateTransferCommandFactory
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
-    let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let walletOperationFactory: GiftClaimWalletOperationFactoryProtocol
     let logger: LoggerProtocol
     let operationQueue: OperationQueue
-    
+
+    let giftInfo: ClaimableGiftInfo
+    let totalAmount: BigUInt
+
+    let assetStorageCallStore = CancellableCallStore()
+
     var assetStorageInfo: AssetStorageInfo?
-    var walletToGift: MetaAccountModel?
+
+    init(
+        claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        giftInfo: ClaimableGiftInfo,
+        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
+        walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
+        logger: LoggerProtocol,
+        operationQueue: OperationQueue,
+        totalAmount: BigUInt
+    ) {
+        self.claimDescriptionFactory = claimDescriptionFactory
+        self.chainRegistry = chainRegistry
+        self.assetStorageInfoFactory = assetStorageInfoFactory
+        self.walletOperationFactory = walletOperationFactory
+        self.logger = logger
+        self.operationQueue = operationQueue
+        self.totalAmount = totalAmount
+        self.giftInfo = giftInfo
+    }
 }
 
 // MARK: - Private
 
 private extension GiftClaimInteractor {
-    func getChainAsset() -> ChainAsset? {
-        guard let chain = chainRegistry.getChain(for: giftInfo.chainId) else {
-            return nil
-        }
-        
-        return chain.chainAssetForSymbol(giftInfo.assetSymbol)
-    }
-    
-    func calculateFee() {
-        guard let chainAsset = getChainAsset() else { return }
-        
-        let accountId = chainAsset.chain.emptyAccountId()
-        
-        let amount = .all(value: totalAmount)
-        
-        let transactionId = GiftTransactionFeeId(
-            recepientAccountId: accountId,
-            amount: amount
-        )
-        
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: transactionId,
-            payingIn: chainAsset.chainAssetId
-        ) { [weak self] builder in
-            let (newBuilder, _) = try self?.addingTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: accountId
-            ) ?? (builder, nil)
-
-            return newBuilder
-        }
-    }
-    
-    func determineRecipientWallet(in wallets: [ManagedMetaAccountModel]) -> GiftedWalletType? {
-        let eligibleWallletTypes: Set<MetaAccountModelType> = [
-            .secrets,
-            .ledger,
-            .genericLedger
-        ]
-        
-        let eligibleWallets = wallets
-            .filter { eligibleWallletTypes.contains($0.info.type) }
-        
-        let selectedWallet = wallets.first { $0.isSelected }?.info
-        
-        guard let selectedWallet else { return nil }
-        
-        if eligibleWallletTypes.contains(selectedWallet.type) {
-            let giftedWalletType: GiftedWalletType = eligibleWallets.count > 1
-                ? .available(.oneInSet(selectedWallet))
-                : .available(.single(selectedWallet))
-            
-            return giftedWalletType
-        } else {
-            guard let giftedWallet = eligibleWallets.first?.info else {
-                return .unavailable(.single(selectedWallet))
-            }
-            
-            let giftedWalletType: GiftedWalletType = eligibleWallets.count > 1
-                ? .available(.oneInSet(giftedWallet))
-                : .available(.single(giftedWallet))
-            
-            return giftedWalletType
-        }
-    }
-    
-    func setupWalletToGift() {
-        let walletsOperation = walletRepository.fetchAllOperation(with: .init())
-        
-        execute(
-            operation: walletsOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            guard let self else { return }
-            
-            switch result {
-            case let .success(wallets):
-                guard let recepientWalletType = determineRecipientWallet(in: wallets) else { return }
-                
-                walletToGift = recepientWalletType.wallet
-            case let .failure(error):
-                presenter?.didReceive(error)
-                logger.error("Failed fetching local wallets: \(error)")
-            }
-        }
-    }
-    
     func setupAssetInfo() {
         guard
-            let chainAsset = getChainAsset(),
+            let chain = chainRegistry.getChain(for: giftInfo.chainId),
+            let chainAsset = chain.chainAssetForSymbol(giftInfo.assetSymbol),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
         else { return }
-        
+
         let assetStorageWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
             from: chainAsset.asset,
             runtimeProvider: runtimeService
@@ -136,30 +67,41 @@ private extension GiftClaimInteractor {
 
                 self?.continueSetup()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self?.presenter?.didReceive(error)
+                self?.logger.error("Failed on fetch asset storage info: \(error)")
             }
         }
     }
-    
-    func addingTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        guard let assetStorageInfo else {
-            return (builder, nil)
-        }
 
-        return try transferCommandFactory.addingTransferCommand(
-            to: builder,
-            amount: amount,
-            recipient: recepient,
-            assetStorageInfo: assetStorageInfo
+    func continueSetup() {
+        guard let assetStorageInfo else { return }
+
+        let walletWrapper = walletOperationFactory.createWrapper()
+
+        let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
+            for: giftInfo,
+            giftAmountWithFee: totalAmount,
+            claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
+            assetStorageInfo: { assetStorageInfo }
         )
-    }
-    
-    func continuSetup() {
-        
+
+        claimGiftDescriptionOperation.addDependency(walletWrapper.targetOperation)
+
+        let resultWrapper = walletWrapper.insertingTail(operation: claimGiftDescriptionOperation)
+
+        execute(
+            wrapper: resultWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(giftDescription):
+                self?.presenter?.didReceive(giftDescription)
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
+                self?.logger.error("Failed on setup: \(error)")
+            }
+        }
     }
 }
 
@@ -167,51 +109,6 @@ private extension GiftClaimInteractor {
 
 extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
     func setup() {
-        feeProxy.delegate = self
-        
         setupAssetInfo()
     }
-}
-
-// MARK: - ExtrinsicFeeProxyDelegate
-
-extension GiftClaimInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(
-        result: Result<any ExtrinsicFeeProtocol, any Error>,
-        for identifier: TransactionFeeId
-    ) {
-        <#code#>
-    }
-}
-
-enum GiftedWalletType {
-    case available(SubType)
-    case unavailable(SubType)
-    
-    var wallet: MetaAccountModel {
-        switch self {
-        case let .available(type), let .unavailable(type):
-            return type.wallet
-        }
-    }
-}
-
-extension GiftedWalletType {
-    enum SubType {
-        case single(MetaAccountModel)
-        case oneInSet(MetaAccountModel)
-        
-        var wallet: MetaAccountModel {
-            switch self {
-            case let .single(wallet), let .oneInSet(wallet):
-                return wallet
-            }
-        }
-    }
-}
-
-struct ClaimableGiftDescription {
-    let amount: BigUInt
-    let chainAsset: ChainAsset
-    let claimingAccountId: AccountId
 }

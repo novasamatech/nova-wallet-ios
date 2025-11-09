@@ -13,7 +13,8 @@ protocol GiftClaimInteractorInputProtocol: AnyObject {
 }
 
 protocol GiftClaimInteractorOutputProtocol: AnyObject {
+    func didReceive(_ giftDescription: ClaimableGiftDescription)
     func didReceive(_ error: Error)
 }
 
-protocol GiftClaimWireframeProtocol: AnyObject {}
+protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable {}

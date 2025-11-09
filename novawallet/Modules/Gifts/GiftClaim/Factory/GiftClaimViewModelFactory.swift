@@ -1,0 +1,87 @@
+import Foundation
+import Lottie
+
+protocol GiftClaimViewModelFactoryProtocol {
+    func createViewModel(
+        from giftDescription: ClaimableGiftDescription,
+        locale: Locale
+    ) -> GiftClaimViewModel?
+}
+
+final class GiftClaimViewModelFactory {
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+
+    init(
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+    ) {
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
+    }
+}
+
+// MARK: - Private
+
+private extension GiftClaimViewModelFactory {
+    func createAnimation(for asset: AssetModel) -> LottieAnimation? {
+        let tokenAnimationName = "\(asset.symbol)_unpacking"
+        let fallbackAnimationName = Constants.defaultAnimationName
+
+        let animation = LottieAnimation.named(tokenAnimationName, bundle: .main)
+            ?? LottieAnimation.named(fallbackAnimationName, bundle: .main)
+
+        return animation
+    }
+}
+
+// MARK: - GiftClaimViewModelFactoryProtocol
+
+extension GiftClaimViewModelFactory: GiftClaimViewModelFactoryProtocol {
+    func createViewModel(
+        from giftDescription: ClaimableGiftDescription,
+        locale: Locale
+    ) -> GiftClaimViewModel? {
+        guard let animation = createAnimation(for: giftDescription.chainAsset.asset) else {
+            return nil
+        }
+
+        let animationRange = LottieAnimationFrameRange(
+            startFrame: Constants.animationInitialFrame,
+            endFrame: Constants.animationGiftUnpackingFrame
+        )
+
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let assetDisplayInfo = giftDescription.chainAsset.assetDisplayInfo
+
+        let title = localizedStrings.giftClaimTitle()
+
+        let amount = balanceViewModelFactory.amountFromValue(
+            giftDescription.amount.value.decimal(assetInfo: assetDisplayInfo)
+        ).value(for: locale)
+
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(from: assetDisplayInfo)
+
+        let actionTitle = localizedStrings.giftClaimActionTitle()
+
+        return GiftClaimViewModel(
+            title: title,
+            animation: animation,
+            animationFrameRange: animationRange,
+            amount: amount,
+            assetIcon: assetIcon,
+            actionTitle: actionTitle
+        )
+    }
+}
+
+// MARK: - Constants
+
+private extension GiftClaimViewModelFactory {
+    enum Constants {
+        static let animationInitialFrame: CGFloat = 0
+        static let animationGiftUnpackingFrame: CGFloat = 180
+        static let defaultAnimationName: String = "Default_unpacking"
+    }
+}

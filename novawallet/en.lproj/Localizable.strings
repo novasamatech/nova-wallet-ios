@@ -1991,3 +1991,6 @@
 "gift.share.message" = "Hello! You’ve got a %@ gift waiting for you!\n\nInstall Nova Wallet app, set up your wallet, and claim it via this special link:\n%@";
 "gift.error.already.claimed.title" = "The gift cannot be received";
 "gift.error.already.claimed.message" = "Oops, the gift has already been claimed";
+"gift.claim.title" = "You’ve got a crypto gift!";
+"gift.claim.action.title" = "Claim the gift";
+"gift.claim.wallet.hint" = "Your wallet to receive the gift";

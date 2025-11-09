@@ -213,7 +213,7 @@ private extension MainTabBarWireframe {
 
         view?.controller.present(navigationController, animated: true)
     }
-    
+
     func openClaimGiftScreen(
         in view: MainTabBarViewProtocol?,
         with navigation: GiftClaimNavigation
@@ -221,9 +221,7 @@ private extension MainTabBarWireframe {
         guard let claimView = GiftClaimViewFactory.createView(
             info: navigation.info,
             totalAmount: navigation.totalAmount
-        ) else {
-            return
-        }
+        ) else { return }
 
         let navigationController = NovaNavigationController(rootViewController: claimView.controller)
 

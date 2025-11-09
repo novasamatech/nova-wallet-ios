@@ -107,7 +107,9 @@ extension GiftClaimViewLayout {
             animated: true
         )
 
-        animationView.play { [weak self] _ in
-        }
+        animationView.play(
+            fromFrame: viewModel.animationFrameRange.startFrame,
+            toFrame: viewModel.animationFrameRange.endFrame
+        )
     }
 }
