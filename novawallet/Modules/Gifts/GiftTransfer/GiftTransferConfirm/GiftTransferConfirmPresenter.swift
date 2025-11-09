@@ -55,11 +55,11 @@ final class GiftTransferConfirmPresenter: GiftTransferPresenter {
     override func refreshFee() {
         let assetInfo = chainAsset.assetDisplayInfo
 
-        guard let amountInPlank = amount.flatMap(
-            { $0.toSubstrateAmount(precision: assetInfo.assetPrecision) }
+        guard let amountInPlank = amount.value.toSubstrateAmount(
+            precision: assetInfo.assetPrecision
         ) else { return }
 
-        interactor.estimateFee(for: amountInPlank)
+        interactor.estimateFee(for: .all(value: amountInPlank))
     }
 
     override func askFeeRetry() {
