@@ -2,18 +2,20 @@ import UIKit
 import Operation_iOS
 import BigInt
 
-final class EvmGiftClaimInteractor: GiftClaimInteractor {
-    let claimDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol
-    let claimOperationFactory: EvmGiftClaimFactoryProtocol
+final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
+    let claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol
+    let claimOperationFactory: SubstrateGiftClaimFactoryProtocol
+    let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
 
-    var lastFee: EvmFeeModel?
-    var transferType: EvmTransferType?
+    let assetStorageCallStore = CancellableCallStore()
+    var assetStorageInfo: AssetStorageInfo?
 
     init(
-        claimDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol,
-        claimOperationFactory: EvmGiftClaimFactoryProtocol,
+        claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol,
+        claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftInfo: ClaimableGiftInfo,
+        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
@@ -21,6 +23,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
     ) {
         self.claimDescriptionFactory = claimDescriptionFactory
         self.claimOperationFactory = claimOperationFactory
+        self.assetStorageInfoFactory = assetStorageInfoFactory
 
         super.init(
             chainRegistry: chainRegistry,
@@ -35,17 +38,15 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
     // MARK: - Override
 
     override func performSetup() {
-        setupTransferType()
-        setupGift()
+        setupAssetInfo()
     }
 
     override func claimGift(giftDescription: ClaimableGiftDescription) {
-        guard let lastFee, let transferType else { return }
+        guard let assetStorageInfo else { return }
 
         let wrapper = claimOperationFactory.createClaimWrapper(
             giftDescription: giftDescription,
-            evmFee: lastFee,
-            transferType: transferType
+            assetStorageInfo: assetStorageInfo
         )
 
         execute(
@@ -65,15 +66,46 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
 
 // MARK: - Private
 
-private extension EvmGiftClaimInteractor {
-    func setupGift() {
+private extension SubstrateGiftClaimInteractor {
+    func setupAssetInfo() {
+        guard
+            let chain = chainRegistry.getChain(for: giftInfo.chainId),
+            let chainAsset = chain.chainAssetForSymbol(giftInfo.assetSymbol),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
+        else { return }
+
+        let assetStorageWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: chainAsset.asset,
+            runtimeProvider: runtimeService
+        )
+
+        executeCancellable(
+            wrapper: assetStorageWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: assetStorageCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                self?.assetStorageInfo = info
+                self?.continueSetup()
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
+                self?.logger.error("Failed on fetch asset storage info: \(error)")
+            }
+        }
+    }
+
+    func continueSetup() {
+        guard let assetStorageInfo else { return }
+
         let walletWrapper = walletOperationFactory.createWrapper()
 
         let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
             for: giftInfo,
             giftAmountWithFee: totalAmount,
             claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
-            transferType: .native
+            assetStorageInfo: { assetStorageInfo }
         )
 
         claimGiftDescriptionOperation.addDependency(walletWrapper.targetOperation)
@@ -86,30 +118,12 @@ private extension EvmGiftClaimInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success((giftDescription, fee)):
+            case let .success(giftDescription):
                 self?.presenter?.didReceive(giftDescription)
-                self?.lastFee = fee
             case let .failure(error):
                 self?.presenter?.didReceive(error)
                 self?.logger.error("Failed on setup: \(error)")
             }
-        }
-    }
-
-    func setupTransferType() {
-        guard
-            let chain = chainRegistry.getChain(for: giftInfo.chainId),
-            let asset = chain.chainAssetForSymbol(giftInfo.assetSymbol)?.asset
-        else {
-            return
-        }
-
-        if asset.isEvmNative {
-            transferType = .native
-        } else if let address = asset.evmContractAddress, (try? address.toEthereumAccountId()) != nil {
-            transferType = .erc20(address)
-        } else {
-            presenter?.didReceive(AccountAddressConversionError.invalidEthereumAddress)
         }
     }
 }

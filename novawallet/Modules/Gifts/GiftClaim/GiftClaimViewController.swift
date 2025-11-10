@@ -31,7 +31,7 @@ final class GiftClaimViewController: UIViewController, ViewHolder {
 
 private extension GiftClaimViewController {
     func setupActions() {
-        rootView.claimActionButton.addTarget(
+        rootView.claimActionButton.actionButton.addTarget(
             self,
             action: #selector(actionClaim),
             for: .touchUpInside
@@ -48,5 +48,17 @@ private extension GiftClaimViewController {
 extension GiftClaimViewController: GiftClaimViewProtocol {
     func didReceive(viewModel: GiftClaimViewModel) {
         rootView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveUnpacking(viewModel: LottieAnimationFrameRange) {
+        rootView.bind(animationFrameRange: viewModel)
+    }
+
+    func didStartLoading() {
+        rootView.claimActionButton.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.claimActionButton.stopLoading()
     }
 }

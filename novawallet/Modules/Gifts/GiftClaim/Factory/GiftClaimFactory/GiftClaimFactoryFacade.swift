@@ -23,8 +23,7 @@ final class GiftClaimFactoryFacade {
         self.operationQueue = operationQueue
     }
 
-    convenience init() {
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+    convenience init(operationQueue: OperationQueue) {
         let keyStore = Keychain()
         let giftSecretsManager = GiftSecretsManager(keystore: keyStore)
         let giftFactory = GiftOperationFactory(

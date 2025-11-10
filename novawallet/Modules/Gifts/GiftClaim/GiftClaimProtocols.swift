@@ -1,5 +1,8 @@
 protocol GiftClaimViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: GiftClaimViewModel)
+    func didReceiveUnpacking(viewModel: LottieAnimationFrameRange)
+    func didStartLoading()
+    func didStopLoading()
 }
 
 protocol GiftClaimPresenterProtocol: AnyObject {

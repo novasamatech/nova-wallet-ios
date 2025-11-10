@@ -32,9 +32,9 @@ final class GiftClaimViewLayout: UIView {
         options: [.curveEaseInOut]
     )
 
-    let claimActionButton: TriangularedButton = .create { view in
-        view.imageWithTitleView?.titleFont = .semiBoldSubheadline
-        view.applyEnabledStyle()
+    let claimActionButton: LoadableActionView = .create { view in
+        view.actionButton.imageWithTitleView?.titleFont = .semiBoldSubheadline
+        view.actionButton.applyEnabledStyle()
     }
 
     override init(frame: CGRect) {
@@ -99,7 +99,7 @@ extension GiftClaimViewLayout {
         titleLabel.text = viewModel.title
         animationView.animation = viewModel.animation
         amountLabel.text = viewModel.amount
-        claimActionButton.imageWithTitleView?.title = viewModel.actionTitle
+        claimActionButton.actionButton.imageWithTitleView?.title = viewModel.actionTitle
 
         viewModel.assetIcon.loadImage(
             on: assetImageView,
@@ -110,6 +110,13 @@ extension GiftClaimViewLayout {
         animationView.play(
             fromFrame: viewModel.animationFrameRange.startFrame,
             toFrame: viewModel.animationFrameRange.endFrame
+        )
+    }
+
+    func bind(animationFrameRange: LottieAnimationFrameRange) {
+        animationView.play(
+            fromFrame: animationFrameRange.startFrame,
+            toFrame: animationFrameRange.endFrame
         )
     }
 }

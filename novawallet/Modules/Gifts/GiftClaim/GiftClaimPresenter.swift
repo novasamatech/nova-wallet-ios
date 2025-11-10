@@ -37,12 +37,26 @@ private extension GiftClaimPresenter {
 
         view?.didReceive(viewModel: viewModel)
     }
+
+    func provideUnpackingViewModel() {
+        guard
+            let chainAsset = giftDescription?.chainAsset,
+            let viewModel = viewModelFactory.createGiftUnpackingViewModel(for: chainAsset)
+        else { return }
+
+        view?.didReceiveUnpacking(viewModel: viewModel)
+    }
 }
 
 // MARK: - GiftClaimPresenterProtocol
 
 extension GiftClaimPresenter: GiftClaimPresenterProtocol {
-    func actionClaim() {}
+    func actionClaim() {
+        guard let giftDescription else { return }
+
+        view?.didStartLoading()
+        interactor.claimGift(with: giftDescription)
+    }
 
     func actionSelectWallet() {}
 
@@ -54,6 +68,11 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
 // MARK: - GiftClaimInteractorOutputProtocol
 
 extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
+    func didClaimSuccessfully() {
+        view?.didStopLoading()
+        provideUnpackingViewModel()
+    }
+
     func didReceive(_ giftDescription: ClaimableGiftDescription) {
         guard self.giftDescription == nil else { return }
 
@@ -63,6 +82,8 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
     }
 
     func didReceive(_ error: any Error) {
+        view?.didStopLoading()
+
         wireframe.present(
             error: error,
             from: view,

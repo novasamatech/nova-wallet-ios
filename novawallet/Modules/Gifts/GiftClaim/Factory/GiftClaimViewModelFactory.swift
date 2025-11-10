@@ -6,6 +6,10 @@ protocol GiftClaimViewModelFactoryProtocol {
         from giftDescription: ClaimableGiftDescription,
         locale: Locale
     ) -> GiftClaimViewModel?
+
+    func createGiftUnpackingViewModel(
+        for chainAsset: ChainAsset
+    ) -> LottieAnimationFrameRange?
 }
 
 final class GiftClaimViewModelFactory {
@@ -72,6 +76,19 @@ extension GiftClaimViewModelFactory: GiftClaimViewModelFactoryProtocol {
             amount: amount,
             assetIcon: assetIcon,
             actionTitle: actionTitle
+        )
+    }
+
+    func createGiftUnpackingViewModel(
+        for chainAsset: ChainAsset
+    ) -> LottieAnimationFrameRange? {
+        guard let animation = createAnimation(for: chainAsset.asset) else {
+            return nil
+        }
+
+        return LottieAnimationFrameRange(
+            startFrame: Constants.animationGiftUnpackingFrame,
+            endFrame: animation.endFrame
         )
     }
 }
