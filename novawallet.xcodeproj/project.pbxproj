@@ -1796,6 +1796,7 @@
 		2D45241A2EC1DD0E00CBDD0D /* EvmTransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */; };
 		2D45241F2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */; };
 		2D45242C2EC1E42000CBDD0D /* SubstrateGiftClaimInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D45242B2EC1E42000CBDD0D /* SubstrateGiftClaimInteractor.swift */; };
+		2D45245B2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D45245A2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift */; };
 		2D4F55012CCA60E900B65B76 /* AssetsSearchCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */; };
 		2D4F55032CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */; };
 		2D4F55052CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */; };
@@ -8456,6 +8457,7 @@
 		2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferType.swift; sourceTree = "<group>"; };
 		2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimableGiftDescription.swift; sourceTree = "<group>"; };
 		2D45242B2EC1E42000CBDD0D /* SubstrateGiftClaimInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateGiftClaimInteractor.swift; sourceTree = "<group>"; };
+		2D45245A2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimSelectedWalletView.swift; sourceTree = "<group>"; };
 		2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionManager.swift; sourceTree = "<group>"; };
 		2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -17370,6 +17372,14 @@
 				2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */,
 			);
 			path = ClaimableGiftDescriptionFactory;
+			sourceTree = "<group>";
+		};
+		2D4524562EC2353900CBDD0D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D45245A2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2D4F54FF2CCA60C500B65B76 /* AssetsSearchCollectionManager */ = {
@@ -29750,6 +29760,7 @@
 		E54612C24E34FFBBF5A97BF9 /* GiftClaim */ = {
 			isa = PBXGroup;
 			children = (
+				2D4524562EC2353900CBDD0D /* View */,
 				2D4523F12EC1D6D300CBDD0D /* Interactor */,
 				2D86C86E2EBA114C003325FC /* Model */,
 				2D86C87E2EBA118D003325FC /* Factory */,
@@ -35785,6 +35796,7 @@
 				845B823229C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift in Sources */,
 				2DFF39B82E15353C00529984 /* UnsupportedFeatureType.swift in Sources */,
 				CDAB179209D12B81430E377C /* LedgerAccountConfirmationViewLayout.swift in Sources */,
+				2D45245B2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift in Sources */,
 				0C1998E82C49B5B9000EBFB8 /* BalancesPallet+StoragePath.swift in Sources */,
 				FA894DFA8EEBB0B4562CD788 /* LedgerAccountConfirmationViewFactory.swift in Sources */,
 				99A045F3C6403FB48B39971D /* LedgerWalletConfirmProtocols.swift in Sources */,

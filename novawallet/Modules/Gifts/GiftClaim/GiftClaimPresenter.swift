@@ -9,6 +9,7 @@ final class GiftClaimPresenter {
     let localizationManager: LocalizationManagerProtocol
 
     var giftDescription: ClaimableGiftDescription?
+    var giftedWallet: GiftedWalletType?
 
     init(
         interactor: GiftClaimInteractorInputProtocol,
@@ -29,8 +30,10 @@ private extension GiftClaimPresenter {
     func provideViewModel() {
         guard
             let giftDescription,
+            let giftedWallet,
             let viewModel = viewModelFactory.createViewModel(
                 from: giftDescription,
+                giftedWallet: giftedWallet,
                 locale: localizationManager.selectedLocale
             )
         else { return }
@@ -77,6 +80,12 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
         guard self.giftDescription == nil else { return }
 
         self.giftDescription = giftDescription
+
+        provideViewModel()
+    }
+
+    func didReceive(_ giftedWallet: GiftedWalletType) {
+        self.giftedWallet = giftedWallet
 
         provideViewModel()
     }

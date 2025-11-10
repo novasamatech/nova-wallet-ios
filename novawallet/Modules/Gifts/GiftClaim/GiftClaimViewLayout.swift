@@ -32,6 +32,28 @@ final class GiftClaimViewLayout: UIView {
         options: [.curveEaseInOut]
     )
 
+    lazy var controlStack = UIStackView.vStack(
+        spacing: Constants.interButtonSpacing,
+        [
+            selectedWalletView,
+            claimActionButton
+        ]
+    )
+
+    let selectedWalletView: GenericMultiValueView<GiftClaimSelectedWalletView> = .create { view in
+        view.spacing = 8
+        view.valueTop.apply(style: .footnoteSecondary)
+        view.valueTop.textAlignment = .left
+    }
+
+    var walletViewHintLabel: UILabel {
+        selectedWalletView.valueTop
+    }
+
+    var selectedWalletControl: GiftClaimSelectedWalletView {
+        selectedWalletView.valueBottom
+    }
+
     let claimActionButton: LoadableActionView = .create { view in
         view.actionButton.imageWithTitleView?.titleFont = .semiBoldSubheadline
         view.actionButton.applyEnabledStyle()
@@ -56,7 +78,7 @@ private extension GiftClaimViewLayout {
         addSubview(titleLabel)
         addSubview(animationView)
         addSubview(amountView)
-        addSubview(claimActionButton)
+        addSubview(controlStack)
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(24)
@@ -71,10 +93,15 @@ private extension GiftClaimViewLayout {
             make.top.equalTo(animationView.snp.bottom).inset(-8)
             make.centerX.equalToSuperview()
         }
-        claimActionButton.snp.makeConstraints { make in
+        controlStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.height.equalTo(UIConstants.actionHeight)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(UIConstants.actionBottomInset)
+        }
+        claimActionButton.snp.makeConstraints { make in
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+        selectedWalletControl.snp.makeConstraints { make in
+            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 
@@ -111,6 +138,8 @@ extension GiftClaimViewLayout {
             fromFrame: viewModel.animationFrameRange.startFrame,
             toFrame: viewModel.animationFrameRange.endFrame
         )
+
+        selectedWalletControl.bind(viewModel: viewModel.)
     }
 
     func bind(animationFrameRange: LottieAnimationFrameRange) {
@@ -118,5 +147,13 @@ extension GiftClaimViewLayout {
             fromFrame: animationFrameRange.startFrame,
             toFrame: animationFrameRange.endFrame
         )
+    }
+}
+
+// MARK: - Constants
+
+private extension GiftClaimViewLayout {
+    enum Constants {
+        static let interButtonSpacing: CGFloat = 24
     }
 }

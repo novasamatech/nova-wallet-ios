@@ -73,6 +73,7 @@ extension WalletView {
             case regular(BalanceInfo)
             case proxy(DelegatedAccountInfo)
             case multisig(DelegatedAccountInfo)
+            case account(ChainAccountAddressInfo)
             case noInfo
         }
 
@@ -126,13 +127,61 @@ extension WalletView {
             }
         }
 
+        enum ChainAccountAddressInfo: Hashable, Equatable {
+            case address(DisplayAddressViewModel)
+            case warning(WarningViewModel)
+
+            var image: ImageViewModelProtocol? {
+                switch self {
+                case let .address(addressViewModel):
+                    addressViewModel.imageViewModel
+                case let .warning(warningViewModel):
+                    warningViewModel.imageViewModel
+                }
+            }
+
+            var text: String {
+                switch self {
+                case let .address(addressViewModel):
+                    addressViewModel.address
+                case let .warning(warningViewModel):
+                    warningViewModel.text
+                }
+            }
+
+            var lineBreakMode: NSLineBreakMode {
+                switch self {
+                case let .address(addressViewModel):
+                    addressViewModel.lineBreakMode
+                case let .warning(warningViewModel):
+                    .byTruncatingTail
+                }
+            }
+        }
+
+        struct WarningViewModel: Equatable, Hashable {
+            let imageViewModel: ImageViewModelProtocol
+            let text: String
+
+            static func == (
+                lhs: WarningViewModel,
+                rhs: WarningViewModel
+            ) -> Bool {
+                lhs.text == rhs.text
+            }
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(text)
+            }
+        }
+
         typealias BalanceInfo = String
 
         var delegatedAccountInfo: DelegatedAccountInfo? {
             switch type {
             case let .proxy(info), let .multisig(info):
                 return info
-            case .regular, .noInfo:
+            case .regular, .noInfo, .account:
                 return nil
             }
         }
@@ -161,6 +210,21 @@ extension WalletView {
         subtitleDetailsLabel.text = nil
         networkImageView.isHidden = true
         subtitleDetailsImage.isHidden = true
+        indicatorImageView.isHidden = true
+    }
+
+    func bind(chainAccount viewModel: ViewModel.ChainAccountAddressInfo) {
+        viewModel.image?.loadImage(
+            on: subtitleDetailsImage,
+            targetSize: .init(width: 16, height: 16),
+            animated: true
+        )
+
+        subtitleDetailsLabel.text = viewModel.text
+        subtitleDetailsLabel.lineBreakMode = viewModel.lineBreakMode
+
+        subtitleLabel.text = nil
+        networkImageView.isHidden = true
         indicatorImageView.isHidden = true
     }
 

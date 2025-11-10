@@ -6,7 +6,7 @@ struct ClaimableGiftDescription {
     let accountId: AccountId
     let amount: OnChainTransferAmount<BigUInt>
     let chainAsset: ChainAsset
-    let claimingAccountId: AccountId
+    let claimingAccountId: AccountId?
 
     func info() -> ClaimableGiftInfo {
         .init(

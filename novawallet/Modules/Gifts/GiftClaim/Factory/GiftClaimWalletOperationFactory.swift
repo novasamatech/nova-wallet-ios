@@ -5,10 +5,10 @@ enum GiftedWalletType {
     case available(SubType)
     case unavailable(SubType)
 
-    var wallet: MetaAccountModel {
+    var wallet: MetaAccountModel? {
         switch self {
         case let .available(type), let .unavailable(type):
-            return type.wallet
+            type.wallet
         }
     }
 }
@@ -46,7 +46,9 @@ private extension GiftClaimWalletOperationFactory {
         let eligibleWallletTypes: Set<MetaAccountModelType> = [
             .secrets,
             .ledger,
-            .genericLedger
+            .genericLedger,
+            .paritySigner,
+            .polkadotVault
         ]
 
         let eligibleWallets = wallets
