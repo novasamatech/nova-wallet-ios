@@ -45,10 +45,13 @@ private extension GiftClaimAvailabilityCheckFactory {
                 ethereumBased: chain.isEthereumBased
             )
 
-            let accountIdOperation = giftSecretsManager.getPublicKey(request: request)
+            let publicKeyOperation: BaseOperation<Data> = giftSecretsManager.getPublicKey(request: request)
 
             let mapOperation = ClosureOperation<ClaimCheckInfo> {
-                let accountId = try accountIdOperation.extractNoCancellableResultData()
+                let publicKey = try publicKeyOperation.extractNoCancellableResultData()
+                let accountId = try chain.isEthereumBased
+                    ? publicKey.ethereumAddressFromPublicKey()
+                    : publicKey.publicKeyToAccountId()
 
                 return ClaimCheckInfo(
                     accountId: accountId,
@@ -56,11 +59,11 @@ private extension GiftClaimAvailabilityCheckFactory {
                 )
             }
 
-            mapOperation.addDependency(accountIdOperation)
+            mapOperation.addDependency(publicKeyOperation)
 
             return CompoundOperationWrapper(
                 targetOperation: mapOperation,
-                dependencies: [accountIdOperation]
+                dependencies: [publicKeyOperation]
             )
         } catch {
             return .createWithError(error)

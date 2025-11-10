@@ -179,33 +179,44 @@ extension GiftSecretsManager: GiftSecretsManagerProtocol {
         }
     }
 
-    func getSecrets(for info: GiftSecretKeyInfo) -> BaseOperation<GiftSecrets?> {
-        ClosureOperation { [weak self] in
-            guard let seed = try self?.loadSeed(
-                accountId: info.accountId,
-                ethereumBased: info.ethereumBased
-            ) else { return nil }
-
-            return GiftSecrets(seed: seed)
-        }
+    func getSecrets(for info: GiftSecretKeyInfo) -> BaseOperation<GiftSecrets> {
+        ClosureOperation { try self.getSecrets(for: info) }
     }
 
-    func getPublicKey(request: GiftPublicKeyFetchRequest) -> BaseOperation<AccountId> {
-        ClosureOperation {
-            let junctionResult = try self.createJunctionResult(ethereumBased: request.ethereumBased)
+    func getSecrets(for info: GiftSecretKeyInfo) throws -> GiftSecrets {
+        guard let seed = try loadSeed(
+            accountId: info.accountId,
+            ethereumBased: info.ethereumBased
+        ) else { throw GiftSecretsManagerError.seedNotFound }
 
-            let keypair = try self.createKeyPair(
-                seed: request.seed,
-                ethereumBased: request.ethereumBased,
-                chainCodes: junctionResult?.chaincodes ?? []
-            )
+        let junctionResult = try createJunctionResult(ethereumBased: info.ethereumBased)
 
-            let accountId = request.ethereumBased
-                ? try keypair.publicKey.ethereumAddressFromPublicKey()
-                : try keypair.publicKey.publicKeyToAccountId()
+        let keypair = try createKeyPair(
+            seed: seed,
+            ethereumBased: info.ethereumBased,
+            chainCodes: junctionResult?.chaincodes ?? []
+        )
 
-            return accountId
-        }
+        return GiftSecrets(
+            seed: seed,
+            secretKey: keypair.secretKey
+        )
+    }
+
+    func getPublicKey(request: GiftPublicKeyFetchRequest) -> BaseOperation<Data> {
+        ClosureOperation { try self.getPublicKey(request: request) }
+    }
+
+    func getPublicKey(request: GiftPublicKeyFetchRequest) throws -> Data {
+        let junctionResult = try createJunctionResult(ethereumBased: request.ethereumBased)
+
+        let keypair = try createKeyPair(
+            seed: request.seed,
+            ethereumBased: request.ethereumBased,
+            chainCodes: junctionResult?.chaincodes ?? []
+        )
+
+        return keypair.publicKey
     }
 
     func cleanSecrets(for info: GiftSecretKeyInfo) -> BaseOperation<Void> {
@@ -231,8 +242,10 @@ private extension GiftSecretsManager {
 enum GiftSecretsManagerError: Error {
     case seedCreationFailed
     case keyDerivationFailed
+    case seedNotFound
 }
 
 struct GiftSecrets {
     let seed: Data
+    let secretKey: Data
 }

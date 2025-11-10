@@ -95,7 +95,7 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
             accountId: gift.giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
-        let secretsOperation = giftSecretsManager.getSecrets(for: secretInfo)
+        let secretsOperation: BaseOperation<GiftSecrets> = giftSecretsManager.getSecrets(for: secretInfo)
 
         execute(
             operation: secretsOperation,
@@ -106,8 +106,6 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
 
             switch result {
             case let .success(secrets):
-                guard let secrets else { return }
-
                 let payload = createSharingPayload(with: secrets, chainAsset: chainAsset)
                 presenter?.didReceive(payload)
             case let .failure(error):

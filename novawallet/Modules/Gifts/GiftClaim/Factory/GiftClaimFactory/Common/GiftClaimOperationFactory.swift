@@ -4,21 +4,20 @@ import Operation_iOS
 
 typealias GiftClaimWrapperProvider = (
     _ giftWrapper: CompoundOperationWrapper<GiftModel>,
-    _ amount: OnChainTransferAmount<BigUInt>
 ) -> CompoundOperationWrapper<Void>
 
-protocol GiftClaimOperationFactoryProtocol {
+protocol GiftClaimFactoryProtocol {
     func claimGift(
         using description: ClaimableGiftDescription,
         claimWrapperProvider: GiftClaimWrapperProvider
     ) -> CompoundOperationWrapper<Void>
 }
 
-final class GiftClaimOperationFactory {
+final class GiftClaimFactory {
     let giftFactory: GiftOperationFactoryProtocol
     let giftSecretsCleaningFactory: GiftSecretsCleaningProtocol
     let operationQueue: OperationQueue
-    
+
     init(
         giftFactory: GiftOperationFactoryProtocol,
         giftSecretsCleaningFactory: GiftSecretsCleaningProtocol,
@@ -32,19 +31,17 @@ final class GiftClaimOperationFactory {
 
 // MARK: - Private
 
-private extension GiftClaimOperationFactory {
+private extension GiftClaimFactory {
     func createCleanGiftWrapper(
-        dependingOn giftOperation: CompoundOperationWrapper<GiftModel>,
+        for giftAccountId: @escaping () throws -> AccountId,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<Void> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let gift = try giftOperation.targetOperation.extractNoCancellableResultData()
-            
             let secretInfo = GiftSecretKeyInfo(
-                accountId: gift.giftAccountId,
+                accountId: try giftAccountId(),
                 ethereumBased: chainAsset.chain.isEthereumBased
             )
-            
+
             return CompoundOperationWrapper(
                 targetOperation: self.giftSecretsCleaningFactory.cleanSecrets(for: secretInfo)
             )
@@ -52,9 +49,9 @@ private extension GiftClaimOperationFactory {
     }
 }
 
-// MARK: - GiftClaimOperationFactoryProtocol
+// MARK: - GiftClaimFactoryProtocol
 
-extension GiftClaimOperationFactory: GiftClaimOperationFactoryProtocol {
+extension GiftClaimFactory: GiftClaimFactoryProtocol {
     func claimGift(
         using description: ClaimableGiftDescription,
         claimWrapperProvider: GiftClaimWrapperProvider
@@ -65,17 +62,16 @@ extension GiftClaimOperationFactory: GiftClaimOperationFactoryProtocol {
             chainAsset: description.chainAsset
         )
         let claimWrapper = claimWrapperProvider(
-            giftWrapper,
-            description.amount
+            giftWrapper
         )
         let cleaningWrapper = createCleanGiftWrapper(
-            dependingOn: giftWrapper,
+            for: { try giftWrapper.targetOperation.extractNoCancellableResultData().giftAccountId },
             chainAsset: description.chainAsset
         )
-        
+
         claimWrapper.addDependency(wrapper: giftWrapper)
         cleaningWrapper.addDependency(wrapper: claimWrapper)
-        
+
         return cleaningWrapper
             .insertingHead(operations: claimWrapper.allOperations)
             .insertingHead(operations: giftWrapper.allOperations)
