@@ -51,7 +51,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
 
     private func persistExtrinsicAndComplete(
         details: PersistTransferDetails,
-        type: TransferType
+        type: EvmTransferType
     ) {
         persistExtrinsicService.saveTransfer(
             source: type.transactionSource,

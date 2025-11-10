@@ -12,7 +12,7 @@ class EvmGiftTransferInteractor: GiftTransferBaseInteractor {
         presenter as? GiftTransferSetupInteractorOutputProtocol
     }
 
-    private(set) var transferType: TransferType?
+    private(set) var transferType: EvmTransferType?
     private(set) var lastFeeModel: EvmFeeModel?
 
     init(
@@ -188,10 +188,4 @@ extension EvmGiftTransferInteractor: EvmTransactionFeeProxyDelegate {
             setupPresenter?.didReceiveFee(result: .failure(error))
         }
     }
-}
-
-// MARK: - Private types
-
-extension EvmGiftTransferInteractor {
-    typealias TransferType = EvmTransferCommandFactory.TransferType
 }

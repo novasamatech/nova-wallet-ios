@@ -28,7 +28,7 @@ final class EvmGiftSubmissionFactory {
         dependingOn giftWrapper: CompoundOperationWrapper<GiftModel>,
         amount: OnChainTransferAmount<BigUInt>,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType
+        transferType: EvmTransferType
     ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
         let operation = AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
@@ -98,7 +98,7 @@ extension EvmGiftSubmissionFactory: EvmGiftSubmissionFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType
+        transferType: EvmTransferType
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         let submissionWrapperProvider: GiftSubmissionWrapperProvider = { giftWrapper, amount in
             self.createSubmitWrapper(

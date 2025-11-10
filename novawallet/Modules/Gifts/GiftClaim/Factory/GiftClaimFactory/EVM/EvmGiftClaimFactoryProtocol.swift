@@ -5,6 +5,6 @@ protocol EvmGiftClaimFactoryProtocol {
     func createClaimWrapper(
         giftDescription: ClaimableGiftDescription,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType
+        transferType: EvmTransferType
     ) -> CompoundOperationWrapper<Void>
 }

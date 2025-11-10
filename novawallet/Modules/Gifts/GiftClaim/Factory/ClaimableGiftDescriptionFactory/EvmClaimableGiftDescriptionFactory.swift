@@ -2,35 +2,20 @@ import Foundation
 import BigInt
 import Operation_iOS
 
-struct ClaimableGiftDescription {
-    let seed: Data
-    let amount: OnChainTransferAmount<BigUInt>
-    let chainAsset: ChainAsset
-    let claimingAccountId: AccountId
-
-    func info() -> ClaimableGiftInfo {
-        .init(
-            seed: seed,
-            chainId: chainAsset.chain.chainId,
-            assetSymbol: chainAsset.asset.symbol
-        )
-    }
-}
-
-protocol ClaimableGiftDescriptionFactoryProtocol {
+protocol EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
         for claimableGift: ClaimableGiftInfo,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
-        assetStorageInfo: @escaping () throws -> AssetStorageInfo
-    ) -> BaseOperation<ClaimableGiftDescription>
+        transferType: EvmTransferType
+    ) -> BaseOperation<(ClaimableGiftDescription, EvmFeeModel)>
 }
 
-final class ClaimableGiftDescriptionFactory {
+final class EvmClaimableGiftDescriptionFactory {
     let chainRegistry: ChainRegistryProtocol
-    let transferCommandFactory: SubstrateTransferCommandFactory
-    let extrinsicService: ExtrinsicServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
+    let transferCommandFactory: EvmTransferCommandFactory
+    let transactionService: EvmTransactionServiceProtocol
+    let feeProxy: EvmTransactionFeeProxyProtocol
 
     var completions: [GiftTransactionFeeId: (PartialDescription, Completion)] = [:]
 
@@ -38,13 +23,13 @@ final class ClaimableGiftDescriptionFactory {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        transferCommandFactory: SubstrateTransferCommandFactory,
-        extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol
+        transferCommandFactory: EvmTransferCommandFactory,
+        transactionService: EvmTransactionServiceProtocol,
+        feeProxy: EvmTransactionFeeProxyProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.transferCommandFactory = transferCommandFactory
-        self.extrinsicService = extrinsicService
+        self.transactionService = transactionService
         self.feeProxy = feeProxy
 
         self.feeProxy.delegate = self
@@ -53,7 +38,7 @@ final class ClaimableGiftDescriptionFactory {
 
 // MARK: - Private
 
-private extension ClaimableGiftDescriptionFactory {
+private extension EvmClaimableGiftDescriptionFactory {
     func getChainAsset(
         for chainId: ChainModel.Id,
         assetSymbol: AssetModel.Symbol
@@ -66,20 +51,23 @@ private extension ClaimableGiftDescriptionFactory {
     func calculateFee(
         partialDescription: PartialDescription,
         transactionId: GiftTransactionFeeId,
-        assetStorageInfo: AssetStorageInfo
+        transferType: EvmTransferType
     ) {
         feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: transactionId.rawValue,
-            payingIn: partialDescription.chainAsset.chainAssetId
+            using: transactionService,
+            reuseIdentifier: transactionId.rawValue
         ) { [weak self] builder in
             guard let self else { return builder }
+
+            let recipientAccountAddress = try partialDescription.claimingAccountId.toAddress(
+                using: partialDescription.chainAsset.chain.chainFormat
+            )
 
             let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
                 to: builder,
                 amount: partialDescription.giftAmountWithFee,
-                recipient: partialDescription.claimingAccountId,
-                assetStorageInfo: assetStorageInfo
+                recipient: recipientAccountAddress,
+                type: transferType
             )
 
             return newBuilder
@@ -87,15 +75,15 @@ private extension ClaimableGiftDescriptionFactory {
     }
 }
 
-// MARK: - ClaimableGiftDescriptionFactoryProtocol
+// MARK: - EvmClaimableGiftDescriptionFactoryProtocol
 
-extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol {
+extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
         for claimableGift: ClaimableGiftInfo,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
-        assetStorageInfo: @escaping () throws -> AssetStorageInfo
-    ) -> BaseOperation<ClaimableGiftDescription> {
+        transferType: EvmTransferType
+    ) -> BaseOperation<(ClaimableGiftDescription, EvmFeeModel)> {
         AsyncClosureOperation { [weak self] completion in
             guard let self else {
                 completion(.failure(BaseOperationError.parentOperationCancelled))
@@ -132,7 +120,7 @@ extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtoc
             calculateFee(
                 partialDescription: partialDescription,
                 transactionId: transactionId,
-                assetStorageInfo: try assetStorageInfo()
+                transferType: transferType
             )
         }
     }
@@ -140,9 +128,9 @@ extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtoc
 
 // MARK: - ExtrinsicFeeProxyDelegate
 
-extension ClaimableGiftDescriptionFactory: ExtrinsicFeeProxyDelegate {
+extension EvmClaimableGiftDescriptionFactory: EvmTransactionFeeProxyDelegate {
     func didReceiveFee(
-        result: Result<any ExtrinsicFeeProtocol, any Error>,
+        result: Result<EvmFeeModel, any Error>,
         for identifier: TransactionFeeId
     ) {
         mutex.lock()
@@ -155,7 +143,7 @@ extension ClaimableGiftDescriptionFactory: ExtrinsicFeeProxyDelegate {
 
         switch result {
         case let .success(fee):
-            let giftAmount = partialData.giftAmountWithFee.map { $0 - fee.amount }
+            let giftAmount = partialData.giftAmountWithFee.map { $0 - fee.fee }
 
             let description = ClaimableGiftDescription(
                 seed: partialData.seed,
@@ -164,7 +152,7 @@ extension ClaimableGiftDescriptionFactory: ExtrinsicFeeProxyDelegate {
                 claimingAccountId: partialData.claimingAccountId
             )
 
-            completion(.success(description))
+            completion(.success((description, fee)))
         case let .failure(error):
             completion(.failure(error))
         }
@@ -173,8 +161,8 @@ extension ClaimableGiftDescriptionFactory: ExtrinsicFeeProxyDelegate {
 
 // MARK: - Private types
 
-extension ClaimableGiftDescriptionFactory {
-    typealias Completion = (Result<ClaimableGiftDescription, Error>) -> Void
+extension EvmClaimableGiftDescriptionFactory {
+    typealias Completion = (Result<(ClaimableGiftDescription, EvmFeeModel), Error>) -> Void
 
     struct PartialDescription {
         let seed: Data

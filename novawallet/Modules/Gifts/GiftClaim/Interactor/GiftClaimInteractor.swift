@@ -6,6 +6,7 @@ final class GiftClaimInteractor {
     weak var presenter: GiftClaimInteractorOutputProtocol?
 
     let claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol
+    let claimOperationFactory: SubstrateGiftClaimFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
     let walletOperationFactory: GiftClaimWalletOperationFactoryProtocol
@@ -21,6 +22,7 @@ final class GiftClaimInteractor {
 
     init(
         claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol,
+        claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftInfo: ClaimableGiftInfo,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
@@ -30,6 +32,7 @@ final class GiftClaimInteractor {
         totalAmount: BigUInt
     ) {
         self.claimDescriptionFactory = claimDescriptionFactory
+        self.claimOperationFactory = claimOperationFactory
         self.chainRegistry = chainRegistry
         self.assetStorageInfoFactory = assetStorageInfoFactory
         self.walletOperationFactory = walletOperationFactory
@@ -110,5 +113,27 @@ private extension GiftClaimInteractor {
 extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
     func setup() {
         setupAssetInfo()
+    }
+
+    func claimGift(with giftDescription: ClaimableGiftDescription) {
+        guard let assetStorageInfo else { return }
+
+        let wrapper = claimOperationFactory.createClaimWrapper(
+            giftDescription: giftDescription,
+            assetStorageInfo: assetStorageInfo
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didClaimSuccessfully()
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
+            }
+        }
     }
 }

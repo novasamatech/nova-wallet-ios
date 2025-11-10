@@ -30,7 +30,7 @@ private extension EvmGiftClaimFactory {
         amount: OnChainTransferAmount<BigUInt>,
         claimingAccountId: AccountId,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType,
+        transferType: EvmTransferType,
         chain: ChainModel
     ) -> CompoundOperationWrapper<Void> {
         let operation = AsyncClosureOperation { [weak self] completion in
@@ -98,7 +98,7 @@ extension EvmGiftClaimFactory: EvmGiftClaimFactoryProtocol {
     func createClaimWrapper(
         giftDescription: ClaimableGiftDescription,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType
+        transferType: EvmTransferType
     ) -> CompoundOperationWrapper<Void> {
         let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper in
             self.createClaimWrapper(

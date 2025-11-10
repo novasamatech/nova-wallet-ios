@@ -10,9 +10,11 @@ protocol GiftClaimPresenterProtocol: AnyObject {
 
 protocol GiftClaimInteractorInputProtocol: AnyObject {
     func setup()
+    func claimGift(with giftDescription: ClaimableGiftDescription)
 }
 
 protocol GiftClaimInteractorOutputProtocol: AnyObject {
+    func didClaimSuccessfully()
     func didReceive(_ giftDescription: ClaimableGiftDescription)
     func didReceive(_ error: Error)
 }

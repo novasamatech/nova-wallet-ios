@@ -7,6 +7,6 @@ protocol EvmGiftSubmissionFactoryProtocol {
         amount: OnChainTransferAmount<BigUInt>,
         feeDescription: GiftFeeDescription?,
         evmFee: EvmFeeModel,
-        transferType: EvmGiftTransferInteractor.TransferType
+        transferType: EvmTransferType
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult>
 }

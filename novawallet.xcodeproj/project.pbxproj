@@ -1791,6 +1791,10 @@
 		2D4431E52D02F9CE00017951 /* DAppFavoriteItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E42D02F9CE00017951 /* DAppFavoriteItemView.swift */; };
 		2D4431E72D03015F00017951 /* DAppFavoriteItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E62D03015F00017951 /* DAppFavoriteItemTableViewCell.swift */; };
 		2D4431E92D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */; };
+		2D4523FD2EC1D6FE00CBDD0D /* EvmGiftClaimInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4523FC2EC1D6FE00CBDD0D /* EvmGiftClaimInteractor.swift */; };
+		2D4524092EC1D79800CBDD0D /* EvmClaimableGiftDescriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4524082EC1D79800CBDD0D /* EvmClaimableGiftDescriptionFactory.swift */; };
+		2D45241A2EC1DD0E00CBDD0D /* EvmTransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */; };
+		2D45241F2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */; };
 		2D4F55012CCA60E900B65B76 /* AssetsSearchCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */; };
 		2D4F55032CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */; };
 		2D4F55052CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */; };
@@ -8446,6 +8450,10 @@
 		2D4431E42D02F9CE00017951 /* DAppFavoriteItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteItemView.swift; sourceTree = "<group>"; };
 		2D4431E62D03015F00017951 /* DAppFavoriteItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteItemTableViewCell.swift; sourceTree = "<group>"; };
 		2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
+		2D4523FC2EC1D6FE00CBDD0D /* EvmGiftClaimInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftClaimInteractor.swift; sourceTree = "<group>"; };
+		2D4524082EC1D79800CBDD0D /* EvmClaimableGiftDescriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmClaimableGiftDescriptionFactory.swift; sourceTree = "<group>"; };
+		2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferType.swift; sourceTree = "<group>"; };
+		2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimableGiftDescription.swift; sourceTree = "<group>"; };
 		2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionManager.swift; sourceTree = "<group>"; };
 		2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -17342,6 +17350,25 @@
 			path = DAppListViewModelFactory;
 			sourceTree = "<group>";
 		};
+		2D4523F12EC1D6D300CBDD0D /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				EF4F448C77878443102B9D90 /* GiftClaimInteractor.swift */,
+				2D4523FC2EC1D6FE00CBDD0D /* EvmGiftClaimInteractor.swift */,
+			);
+			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2D4524072EC1D78400CBDD0D /* ClaimableGiftDescriptionFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */,
+				2D4524082EC1D79800CBDD0D /* EvmClaimableGiftDescriptionFactory.swift */,
+				2D45241E2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift */,
+			);
+			path = ClaimableGiftDescriptionFactory;
+			sourceTree = "<group>";
+		};
 		2D4F54FF2CCA60C500B65B76 /* AssetsSearchCollectionManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -17943,11 +17970,11 @@
 		2D86C87E2EBA118D003325FC /* Factory */ = {
 			isa = PBXGroup;
 			children = (
+				2D4524072EC1D78400CBDD0D /* ClaimableGiftDescriptionFactory */,
 				2D10063E2EC0DAFD0017F48D /* GiftClaimFactory */,
-				3576FB0B05C782F78C39600C /* GiftClaimViewFactory.swift */,
-				2D1006112EC093C50017F48D /* ClaimableGiftDescriptionFactory.swift */,
 				2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */,
 				2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */,
+				3576FB0B05C782F78C39600C /* GiftClaimViewFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -18923,6 +18950,7 @@
 				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
 				2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */,
 				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
+				2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */,
 				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 			);
 			path = Common;
@@ -29719,12 +29747,12 @@
 		E54612C24E34FFBBF5A97BF9 /* GiftClaim */ = {
 			isa = PBXGroup;
 			children = (
+				2D4523F12EC1D6D300CBDD0D /* Interactor */,
 				2D86C86E2EBA114C003325FC /* Model */,
 				2D86C87E2EBA118D003325FC /* Factory */,
 				944260A040F3EB593B9EB892 /* GiftClaimProtocols.swift */,
 				37513C1D98A2D9583348BD66 /* GiftClaimWireframe.swift */,
 				6624AEEBE83F22E33A359F8E /* GiftClaimPresenter.swift */,
-				EF4F448C77878443102B9D90 /* GiftClaimInteractor.swift */,
 				B44A5CE2B4700FE36919B523 /* GiftClaimViewController.swift */,
 				944BA53226A3DA9538D87403 /* GiftClaimViewLayout.swift */,
 			);
@@ -32639,6 +32667,7 @@
 				84E83AA2286328660000B418 /* XTokensTransfer.swift in Sources */,
 				84CEAAEF26D6DF160021B881 /* SingleToMultiassetMigrationPolicy.swift in Sources */,
 				842BDB23278C229D00AB4B5A /* DAppBrowserStateDataSource.swift in Sources */,
+				2D4523FD2EC1D6FE00CBDD0D /* EvmGiftClaimInteractor.swift in Sources */,
 				2DEDEF552E4CF31B008F07B2 /* RuntimeChainTypesSnapshotFactory.swift in Sources */,
 				2D8F0ECE2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift in Sources */,
 				AE3983A0272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift in Sources */,
@@ -33054,6 +33083,7 @@
 				0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */,
 				841E554B282DA66700C8438F /* StakingParachainProtocols.swift in Sources */,
 				AEE5FB0326415E40002B8FDC /* StakingRebondSetupWireframe.swift in Sources */,
+				2D45241F2EC1DEC900CBDD0D /* ClaimableGiftDescription.swift in Sources */,
 				0C3205D22A895E85002EB914 /* EvmDefaultGasLimitProvider.swift in Sources */,
 				84D8F15D24D8178000AF43E9 /* IconWithTitleViewModel.swift in Sources */,
 				844DB61F262D9C070025A8F0 /* ChainHistoryRange.swift in Sources */,
@@ -33422,6 +33452,7 @@
 				0CEB4ED92AF371EF0048FD84 /* AssetConversionTxPayment.swift in Sources */,
 				848DAEFE282293DB00D56F55 /* ParachainStaking+Types.swift in Sources */,
 				8489A6E227FEFC730040C066 /* StakingRebondOption.swift in Sources */,
+				2D4524092EC1D79800CBDD0D /* EvmClaimableGiftDescriptionFactory.swift in Sources */,
 				84CFF1E626526FBC00DB7CF7 /* StakingBondMoreInteractor.swift in Sources */,
 				844D2A44281B28FB0049CF5E /* StackTitleMultiValueCell.swift in Sources */,
 				0CE9338C2C0096AA000F3EFE /* CloudBackupSyncMediator.swift in Sources */,
@@ -36925,6 +36956,7 @@
 				5D78BE84F4F606898AF9228F /* NovaMainAppContainerViewLayout.swift in Sources */,
 				3E1B06134DC99824B38A558A /* NovaMainAppContainerViewFactory.swift in Sources */,
 				E68590AFBEF0BDF5919B73F1 /* DAppFavoritesProtocols.swift in Sources */,
+				2D45241A2EC1DD0E00CBDD0D /* EvmTransferType.swift in Sources */,
 				2D6CC2642DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift in Sources */,
 				916E7A1B6B0CADBD5AB56353 /* DAppFavoritesWireframe.swift in Sources */,
 				8F961B0DC4CE7648D50F81D3 /* DAppFavoritesPresenter.swift in Sources */,
