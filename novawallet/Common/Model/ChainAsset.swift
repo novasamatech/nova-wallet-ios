@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-struct ChainAsset: Equatable, Hashable {
+struct ChainAsset: Equatable, Hashable, Codable {
     let chain: ChainModel
     let asset: AssetModel
 }

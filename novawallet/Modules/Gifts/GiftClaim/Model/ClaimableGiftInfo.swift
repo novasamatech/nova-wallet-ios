@@ -3,6 +3,6 @@ import BigInt
 
 struct ClaimableGiftInfo: Codable {
     let seed: Data
-    let chainId: ChainModel.Id
-    let assetSymbol: AssetModel.Symbol
+    let accountId: AccountId
+    let chainAsset: ChainAsset
 }

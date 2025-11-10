@@ -2,6 +2,6 @@ import Foundation
 import BigInt
 
 struct GiftClaimNavigation {
-    let info: ClaimableGiftInfo
+    let claimableGift: ClaimableGiftInfo
     let totalAmount: BigUInt
 }

@@ -219,7 +219,7 @@ private extension MainTabBarWireframe {
         with navigation: GiftClaimNavigation
     ) {
         guard let claimView = GiftClaimViewFactory.createView(
-            info: navigation.info,
+            claimableGift: navigation.claimableGift,
             totalAmount: navigation.totalAmount
         ) else { return }
 

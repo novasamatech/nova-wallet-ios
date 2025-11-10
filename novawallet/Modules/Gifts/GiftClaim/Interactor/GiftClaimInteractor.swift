@@ -9,14 +9,14 @@ class GiftClaimInteractor {
     let walletOperationFactory: GiftClaimWalletOperationFactoryProtocol
     let logger: LoggerProtocol
 
-    let giftInfo: ClaimableGiftInfo
+    let claimableGift: ClaimableGiftInfo
     let totalAmount: BigUInt
 
     let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        giftInfo: ClaimableGiftInfo,
+        claimableGift: ClaimableGiftInfo,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
@@ -25,7 +25,7 @@ class GiftClaimInteractor {
         self.chainRegistry = chainRegistry
         self.walletOperationFactory = walletOperationFactory
         self.logger = logger
-        self.giftInfo = giftInfo
+        self.claimableGift = claimableGift
         self.totalAmount = totalAmount
         self.operationQueue = operationQueue
     }

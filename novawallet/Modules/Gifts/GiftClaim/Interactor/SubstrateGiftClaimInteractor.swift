@@ -14,7 +14,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol,
         claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        giftInfo: ClaimableGiftInfo,
+        claimableGift: ClaimableGiftInfo,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         logger: LoggerProtocol,
@@ -27,7 +27,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
 
         super.init(
             chainRegistry: chainRegistry,
-            giftInfo: giftInfo,
+            claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
             logger: logger,
             totalAmount: totalAmount,
@@ -68,14 +68,12 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
 
 private extension SubstrateGiftClaimInteractor {
     func setupAssetInfo() {
-        guard
-            let chain = chainRegistry.getChain(for: giftInfo.chainId),
-            let chainAsset = chain.chainAssetForSymbol(giftInfo.assetSymbol),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
-        else { return }
+        guard let runtimeService = chainRegistry.getRuntimeProvider(
+            for: claimableGift.chainAsset.chain.chainId
+        ) else { return }
 
         let assetStorageWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: chainAsset.asset,
+            from: claimableGift.chainAsset.asset,
             runtimeProvider: runtimeService
         )
 
@@ -102,7 +100,7 @@ private extension SubstrateGiftClaimInteractor {
         let walletWrapper = walletOperationFactory.createWrapper()
 
         let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
-            for: giftInfo,
+            for: claimableGift,
             giftAmountWithFee: totalAmount,
             claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
             assetStorageInfo: { assetStorageInfo }

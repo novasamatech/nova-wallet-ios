@@ -38,7 +38,7 @@ private extension SubstrateGiftClaimFactory {
         let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let (newBuilder, codingPath) = try addingTransferCommand(
+            let (newBuilder, _) = try addingTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: claimingAccountId,
@@ -56,11 +56,8 @@ private extension SubstrateGiftClaimFactory {
 
         let mapOperation = ClosureOperation<Void> {
             let result = submitAndMonitorWrapper.targetOperation.result
-            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
 
             switch result {
-            case let .success(submission):
-                return
             case let .failure(error):
                 throw GiftClaimError.giftClaimFailed(
                     claimingAccountId: claimingAccountId,
@@ -71,6 +68,8 @@ private extension SubstrateGiftClaimFactory {
                     claimingAccountId: claimingAccountId,
                     underlyingError: nil
                 )
+            case .success:
+                return
             }
         }
 

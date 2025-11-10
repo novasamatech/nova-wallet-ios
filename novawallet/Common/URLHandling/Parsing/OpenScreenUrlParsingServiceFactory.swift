@@ -28,6 +28,8 @@ final class OpenScreenUrlParsingServiceFactory {
 
 private extension OpenScreenUrlParsingServiceFactory {
     func creategiftUrlParsingService() -> OpenScreenUrlParsingServiceProtocol {
+        let secretManager = GiftSecretsManager(keystore: Keychain())
+
         let chainRegistry = chainRegistryClosure()
         let balanceQueryFacade = RemoteBalanceQueryFacade(
             chainRegistry: chainRegistry,
@@ -39,7 +41,7 @@ private extension OpenScreenUrlParsingServiceFactory {
         )
         let claimAvailabilityChecker = GiftClaimAvailabilityCheckFactory(
             chainRegistry: chainRegistry,
-            giftSecretsManager: GiftSecretsManager(keystore: Keychain()),
+            giftSecretsManager: secretManager,
             balanceQueryFacade: balanceQueryFacade,
             assetInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue
@@ -48,6 +50,7 @@ private extension OpenScreenUrlParsingServiceFactory {
         return ClaimGiftUrlParsingService(
             chainRegistry: chainRegistry,
             claimAvailabilityChecker: claimAvailabilityChecker,
+            giftPublicKeyProvider: secretManager,
             operationQueue: operationQueue
         )
     }

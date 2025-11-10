@@ -12,7 +12,6 @@ protocol ClaimableGiftDescriptionFactoryProtocol {
 }
 
 final class ClaimableGiftDescriptionFactory {
-    let chainRegistry: ChainRegistryProtocol
     let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
@@ -22,12 +21,10 @@ final class ClaimableGiftDescriptionFactory {
     let mutex = NSLock()
 
     init(
-        chainRegistry: ChainRegistryProtocol,
         transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol
     ) {
-        self.chainRegistry = chainRegistry
         self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
@@ -39,15 +36,6 @@ final class ClaimableGiftDescriptionFactory {
 // MARK: - Private
 
 private extension ClaimableGiftDescriptionFactory {
-    func getChainAsset(
-        for chainId: ChainModel.Id,
-        assetSymbol: AssetModel.Symbol
-    ) throws -> ChainAsset {
-        let chain = try chainRegistry.getChainOrError(for: chainId)
-
-        return try chain.chainAssetForSymbolOrError(assetSymbol)
-    }
-
     func calculateFee(
         partialDescription: PartialDescription,
         transactionId: GiftTransactionFeeId,
@@ -90,16 +78,14 @@ extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtoc
             mutex.lock()
             defer { mutex.unlock() }
 
-            let chainAsset = try getChainAsset(
-                for: claimableGift.chainId,
-                assetSymbol: claimableGift.assetSymbol
-            )
+            let chainAsset = claimableGift.chainAsset
 
             let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
-            let claimingAccountId = try claimingWallet().fetchChainAccountId(
+            let claimingWallet = try claimingWallet()
+            let claimingAccountId = try claimingWallet.fetch(
                 for: chainAsset.chain.accountRequest()
-            ) ?? chainAsset.chain.emptyAccountId()
+            )?.accountId ?? chainAsset.chain.emptyAccountId()
 
             let transactionId = GiftTransactionFeeId(
                 recepientAccountId: claimingAccountId,
@@ -107,6 +93,7 @@ extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtoc
             )
             let partialDescription = PartialDescription(
                 seed: claimableGift.seed,
+                accountId: claimableGift.accountId,
                 chainAsset: chainAsset,
                 giftAmountWithFee: onChainAmountWithFee,
                 claimingAccountId: claimingAccountId
@@ -144,6 +131,7 @@ extension ClaimableGiftDescriptionFactory: ExtrinsicFeeProxyDelegate {
 
             let description = ClaimableGiftDescription(
                 seed: partialData.seed,
+                accountId: partialData.accountId,
                 amount: giftAmount,
                 chainAsset: partialData.chainAsset,
                 claimingAccountId: partialData.claimingAccountId
@@ -163,6 +151,7 @@ extension ClaimableGiftDescriptionFactory {
 
     struct PartialDescription {
         let seed: Data
+        let accountId: AccountId
         let chainAsset: ChainAsset
         let giftAmountWithFee: OnChainTransferAmount<BigUInt>
         let claimingAccountId: AccountId

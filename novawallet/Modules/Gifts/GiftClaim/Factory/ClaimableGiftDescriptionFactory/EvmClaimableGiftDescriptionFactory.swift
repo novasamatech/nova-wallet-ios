@@ -12,7 +12,6 @@ protocol EvmClaimableGiftDescriptionFactoryProtocol {
 }
 
 final class EvmClaimableGiftDescriptionFactory {
-    let chainRegistry: ChainRegistryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
     let transactionService: EvmTransactionServiceProtocol
     let feeProxy: EvmTransactionFeeProxyProtocol
@@ -22,12 +21,10 @@ final class EvmClaimableGiftDescriptionFactory {
     let mutex = NSLock()
 
     init(
-        chainRegistry: ChainRegistryProtocol,
         transferCommandFactory: EvmTransferCommandFactory,
         transactionService: EvmTransactionServiceProtocol,
         feeProxy: EvmTransactionFeeProxyProtocol
     ) {
-        self.chainRegistry = chainRegistry
         self.transferCommandFactory = transferCommandFactory
         self.transactionService = transactionService
         self.feeProxy = feeProxy
@@ -39,15 +36,6 @@ final class EvmClaimableGiftDescriptionFactory {
 // MARK: - Private
 
 private extension EvmClaimableGiftDescriptionFactory {
-    func getChainAsset(
-        for chainId: ChainModel.Id,
-        assetSymbol: AssetModel.Symbol
-    ) throws -> ChainAsset {
-        let chain = try chainRegistry.getChainOrError(for: chainId)
-
-        return try chain.chainAssetForSymbolOrError(assetSymbol)
-    }
-
     func calculateFee(
         partialDescription: PartialDescription,
         transactionId: GiftTransactionFeeId,
@@ -93,10 +81,7 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
             mutex.lock()
             defer { mutex.unlock() }
 
-            let chainAsset = try getChainAsset(
-                for: claimableGift.chainId,
-                assetSymbol: claimableGift.assetSymbol
-            )
+            let chainAsset = claimableGift.chainAsset
 
             let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
@@ -110,6 +95,7 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
             )
             let partialDescription = PartialDescription(
                 seed: claimableGift.seed,
+                accountId: claimableGift.accountId,
                 chainAsset: chainAsset,
                 giftAmountWithFee: onChainAmountWithFee,
                 claimingAccountId: claimingAccountId
@@ -147,6 +133,7 @@ extension EvmClaimableGiftDescriptionFactory: EvmTransactionFeeProxyDelegate {
 
             let description = ClaimableGiftDescription(
                 seed: partialData.seed,
+                accountId: partialData.accountId,
                 amount: giftAmount,
                 chainAsset: partialData.chainAsset,
                 claimingAccountId: partialData.claimingAccountId
@@ -166,6 +153,7 @@ extension EvmClaimableGiftDescriptionFactory {
 
     struct PartialDescription {
         let seed: Data
+        let accountId: AccountId
         let chainAsset: ChainAsset
         let giftAmountWithFee: OnChainTransferAmount<BigUInt>
         let claimingAccountId: AccountId

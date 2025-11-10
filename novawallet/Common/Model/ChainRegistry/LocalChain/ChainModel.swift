@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-struct ChainModel: Equatable, Hashable {
+struct ChainModel: Equatable, Hashable, Codable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
@@ -42,7 +42,7 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
-    enum ConnectionMode: Hashable, Equatable {
+    enum ConnectionMode: Hashable, Equatable, Codable {
         case manual(ChainNodeModel)
         case autoBalanced
 

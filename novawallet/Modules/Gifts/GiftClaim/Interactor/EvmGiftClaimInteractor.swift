@@ -13,7 +13,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol,
         claimOperationFactory: EvmGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        giftInfo: ClaimableGiftInfo,
+        claimableGift: ClaimableGiftInfo,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
@@ -24,7 +24,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
 
         super.init(
             chainRegistry: chainRegistry,
-            giftInfo: giftInfo,
+            claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
             logger: logger,
             totalAmount: totalAmount,
@@ -70,7 +70,7 @@ private extension EvmGiftClaimInteractor {
         let walletWrapper = walletOperationFactory.createWrapper()
 
         let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
-            for: giftInfo,
+            for: claimableGift,
             giftAmountWithFee: totalAmount,
             claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
             transferType: .native
@@ -97,12 +97,7 @@ private extension EvmGiftClaimInteractor {
     }
 
     func setupTransferType() {
-        guard
-            let chain = chainRegistry.getChain(for: giftInfo.chainId),
-            let asset = chain.chainAssetForSymbol(giftInfo.assetSymbol)?.asset
-        else {
-            return
-        }
+        let asset = claimableGift.chainAsset.asset
 
         if asset.isEvmNative {
             transferType = .native

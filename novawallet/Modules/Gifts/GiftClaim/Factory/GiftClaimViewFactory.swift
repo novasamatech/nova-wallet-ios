@@ -4,30 +4,24 @@ import BigInt
 
 struct GiftClaimViewFactory {
     static func createView(
-        info: ClaimableGiftInfo,
+        claimableGift: ClaimableGiftInfo,
         totalAmount: BigUInt
     ) -> GiftClaimViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        guard
-            let chain = chainRegistry.getChain(for: info.chainId),
-            let chainAsset = chain.chainAssetForSymbol(info.assetSymbol),
-            let currencyManager = CurrencyManager.shared
-        else { return nil }
+        guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let interactor: GiftClaimInteractor?
 
-        if chainAsset.asset.isAnyEvm {
+        if claimableGift.chainAsset.asset.isAnyEvm {
             interactor = createEvmInteractor(
-                info: info,
-                chainAsset: chainAsset,
+                claimableGift: claimableGift,
                 chainRegistry: chainRegistry,
                 totalAmount: totalAmount
             )
         } else {
             interactor = createSubstrateInteractor(
-                info: info,
-                chainAsset: chainAsset,
+                claimableGift: claimableGift,
                 chainRegistry: chainRegistry,
                 totalAmount: totalAmount
             )
@@ -39,7 +33,7 @@ struct GiftClaimViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+            targetAssetInfo: claimableGift.chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
         let viewModelFactory = GiftClaimViewModelFactory(
@@ -67,16 +61,15 @@ struct GiftClaimViewFactory {
 
 private extension GiftClaimViewFactory {
     static func createSubstrateInteractor(
-        info: ClaimableGiftInfo,
-        chainAsset: ChainAsset,
+        claimableGift: ClaimableGiftInfo,
         chainRegistry: ChainRegistryProtocol,
         totalAmount: BigUInt
     ) -> GiftClaimInteractor? {
+        let chain = claimableGift.chainAsset.chain
+
         guard
-            let selectedWallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: info.chainId),
-            let connection = chainRegistry.getConnection(for: info.chainId)
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let connection = chainRegistry.getConnection(for: chain.chainId)
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -88,10 +81,9 @@ private extension GiftClaimViewFactory {
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedAccount, chain: chainAsset.chain)
+        ).createServiceForGiftClaim(accountId: claimableGift.accountId, chain: chain)
 
         let claimDescriptionFactory = ClaimableGiftDescriptionFactory(
-            chainRegistry: chainRegistry,
             transferCommandFactory: SubstrateTransferCommandFactory(),
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy()
@@ -121,7 +113,7 @@ private extension GiftClaimViewFactory {
             claimDescriptionFactory: claimDescriptionFactory,
             claimOperationFactory: claimOperationFactory,
             chainRegistry: chainRegistry,
-            giftInfo: info,
+            claimableGift: claimableGift,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             walletOperationFactory: walletOperationFactory,
             logger: logger,
@@ -131,17 +123,13 @@ private extension GiftClaimViewFactory {
     }
 
     static func createEvmInteractor(
-        info: ClaimableGiftInfo,
-        chainAsset: ChainAsset,
+        claimableGift: ClaimableGiftInfo,
         chainRegistry: ChainRegistryProtocol,
         totalAmount: BigUInt
     ) -> EvmGiftClaimInteractor? {
-        guard
-            let selectedWallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: info.chainId),
-            let connection = chainRegistry.getConnection(for: info.chainId)
-        else { return nil }
+        let chain = claimableGift.chainAsset.chain
+
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let logger = Logger.shared
@@ -157,7 +145,7 @@ private extension GiftClaimViewFactory {
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
 
         let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
-            for: chainAsset.asset,
+            for: claimableGift.chainAsset.asset,
             operationFactory: operationFactory,
             operationQueue: operationQueue,
             logger: logger
@@ -166,18 +154,17 @@ private extension GiftClaimViewFactory {
         let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
 
         let transactionService = EvmTransactionService(
-            accountId: selectedAccount.accountId,
+            accountId: claimableGift.accountId,
             operationFactory: operationFactory,
             maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
             defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),
             gasLimitProvider: gasLimitProvider,
             nonceProvider: nonceProvider,
-            chain: chainAsset.chain,
+            chain: chain,
             operationQueue: operationQueue
         )
 
         let claimDescriptionFactory = EvmClaimableGiftDescriptionFactory(
-            chainRegistry: chainRegistry,
             transferCommandFactory: EvmTransferCommandFactory(),
             transactionService: transactionService,
             feeProxy: EvmTransactionFeeProxy()
@@ -191,7 +178,7 @@ private extension GiftClaimViewFactory {
             claimDescriptionFactory: claimDescriptionFactory,
             claimOperationFactory: claimOperationFactory,
             chainRegistry: chainRegistry,
-            giftInfo: info,
+            claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
             logger: logger,
             totalAmount: totalAmount,

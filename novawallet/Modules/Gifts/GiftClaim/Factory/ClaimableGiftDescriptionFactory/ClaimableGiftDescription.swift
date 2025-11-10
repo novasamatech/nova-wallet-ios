@@ -3,6 +3,7 @@ import BigInt
 
 struct ClaimableGiftDescription {
     let seed: Data
+    let accountId: AccountId
     let amount: OnChainTransferAmount<BigUInt>
     let chainAsset: ChainAsset
     let claimingAccountId: AccountId
@@ -10,8 +11,8 @@ struct ClaimableGiftDescription {
     func info() -> ClaimableGiftInfo {
         .init(
             seed: seed,
-            chainId: chainAsset.chain.chainId,
-            assetSymbol: chainAsset.asset.symbol
+            accountId: accountId,
+            chainAsset: chainAsset
         )
     }
 }

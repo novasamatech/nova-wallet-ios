@@ -8,7 +8,7 @@ enum URLHandlingPendingLink: Codable {
     case dApp(URL)
     case card(String?)
     case assetHubMigration(config: AHMRemoteData)
-    case giftClaim(info: ClaimableGiftInfo, amount: BigUInt)
+    case giftClaim(claimableGift: ClaimableGiftInfo, amount: BigUInt)
 }
 
 protocol URLHandlingStoreProtocol {

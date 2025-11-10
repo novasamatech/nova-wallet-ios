@@ -6,15 +6,18 @@ import Foundation_iOS
 final class ClaimGiftUrlParsingService {
     private let chainRegistry: ChainRegistryProtocol
     private let claimAvailabilityChecker: GiftClaimAvailabilityCheckFactoryProtocol
+    private let giftPublicKeyProvider: GiftPublicKeyProvidingProtocol
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         claimAvailabilityChecker: GiftClaimAvailabilityCheckFactoryProtocol,
+        giftPublicKeyProvider: GiftPublicKeyProvidingProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.claimAvailabilityChecker = claimAvailabilityChecker
+        self.giftPublicKeyProvider = giftPublicKeyProvider
         self.operationQueue = operationQueue
     }
 }
@@ -25,8 +28,8 @@ private extension ClaimGiftUrlParsingService {
     func createWrapper(
         from payloadString: String
     ) -> CompoundOperationWrapper<GiftClaimNavigation> {
-        let infoWrapper = createParsePayloadWrapper(string: payloadString)
-        let checkWrapper = createGiftClaimCheckWrapper(dependingOn: infoWrapper)
+        let claimableGiftWrapper = createParsePayloadWrapper(string: payloadString)
+        let checkWrapper = createGiftClaimCheckWrapper(dependingOn: claimableGiftWrapper)
 
         let resultOperation = ClosureOperation {
             let checkResult = try checkWrapper.targetOperation.extractNoCancellableResultData()
@@ -34,7 +37,7 @@ private extension ClaimGiftUrlParsingService {
             switch checkResult.availability {
             case let .claimable(totalAmount):
                 return GiftClaimNavigation(
-                    info: checkResult.claimableGiftInfo,
+                    claimableGift: checkResult.claimableGiftInfo,
                     totalAmount: totalAmount
                 )
             case .claimed:
@@ -42,12 +45,12 @@ private extension ClaimGiftUrlParsingService {
             }
         }
 
-        checkWrapper.addDependency(wrapper: infoWrapper)
+        checkWrapper.addDependency(wrapper: claimableGiftWrapper)
         resultOperation.addDependency(checkWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: infoWrapper.allOperations + checkWrapper.allOperations
+            dependencies: claimableGiftWrapper.allOperations + checkWrapper.allOperations
         )
     }
 
@@ -74,16 +77,28 @@ private extension ClaimGiftUrlParsingService {
         }
 
         let mapOperation = ClosureOperation {
-            let chainId = try chainWrapper.targetOperation.extractNoCancellableResultData()?.chainId
+            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
+            let seed = try Data(hexString: seed)
 
-            guard let chainId else {
+            guard let chain, let chainAsset = chain.chainAssetForSymbol(assetSymbol) else {
                 throw OpenScreenUrlParsingError.openGiftClaimScreen(.chainNotFound)
             }
 
+            let publicKeyFetchRequest = GiftPublicKeyFetchRequest(
+                seed: seed,
+                ethereumBased: chain.isEthereumBased
+            )
+            let publicKey: Data = try self.giftPublicKeyProvider.getPublicKey(
+                request: publicKeyFetchRequest
+            )
+            let accountId = try chain.isEthereumBased
+                ? publicKey.ethereumAddressFromPublicKey()
+                : publicKey.publicKeyToAccountId()
+
             return ClaimableGiftInfo(
-                seed: try Data(hexString: seed),
-                chainId: chainId,
-                assetSymbol: assetSymbol
+                seed: seed,
+                accountId: accountId,
+                chainAsset: chainAsset
             )
         }
 
@@ -93,12 +108,12 @@ private extension ClaimGiftUrlParsingService {
     }
 
     func createGiftClaimCheckWrapper(
-        dependingOn infoWrapper: CompoundOperationWrapper<ClaimableGiftInfo>
+        dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimableGiftInfo>
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let info = try infoWrapper.targetOperation.extractNoCancellableResultData()
+            let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.claimAvailabilityChecker.createAvailabilityWrapper(for: info)
+            return self.claimAvailabilityChecker.createAvailabilityWrapper(for: claimableGift)
         }
     }
 }
@@ -151,4 +166,10 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     }
 
     func cancel() {}
+}
+
+struct ClaimGiftPayload {
+    let seed: Data
+    let chainId: ChainModel.Id
+    let assetSymbol: AssetModel.Symbol
 }
