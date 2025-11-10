@@ -235,7 +235,7 @@ extension GiftSecretsManager: GiftSecretsManagerProtocol {
 
 private extension GiftSecretsManager {
     enum Constants {
-        static let salt: String = "Gift"
+        static let salt: String = "gift"
     }
 }
 
