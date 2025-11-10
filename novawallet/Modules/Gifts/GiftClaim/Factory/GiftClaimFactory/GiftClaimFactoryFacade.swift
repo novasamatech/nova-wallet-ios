@@ -6,17 +6,20 @@ final class GiftClaimFactoryFacade {
     private let signingWrapperFactory: SigningWrapperFactoryProtocol
     private let giftFactory: GiftOperationFactoryProtocol
     private let giftSecretManager: GiftSecretsManagerProtocol
+    private let claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol
     private let operationQueue: OperationQueue
 
     init(
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         giftFactory: GiftOperationFactoryProtocol,
         giftSecretManager: GiftSecretsManagerProtocol,
+        claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapperFactory = signingWrapperFactory
         self.giftFactory = giftFactory
         self.giftSecretManager = giftSecretManager
+        self.claimAvailabilityCheckFactory = claimAvailabilityCheckFactory
         self.operationQueue = operationQueue
     }
 
@@ -31,10 +34,30 @@ final class GiftClaimFactoryFacade {
 
         let signingWrapperFactory = SigningWrapperFactory()
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let balanceQueryFacade = RemoteBalanceQueryFacade(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+        let assetStorageInfoFactory = AssetStorageInfoOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
+        let claimAvailabilityCheckFactory = GiftClaimAvailabilityCheckFactory(
+            chainRegistry: chainRegistry,
+            giftSecretsManager: giftSecretsManager,
+            balanceQueryFacade: balanceQueryFacade,
+            assetInfoFactory: assetStorageInfoFactory,
+            operationQueue: operationQueue
+        )
+
         self.init(
             signingWrapperFactory: signingWrapperFactory,
             giftFactory: giftFactory,
             giftSecretManager: giftSecretsManager,
+            claimAvailabilityCheckFactory: claimAvailabilityCheckFactory,
             operationQueue: operationQueue
         )
     }
@@ -45,6 +68,7 @@ private extension GiftClaimFactoryFacade {
         GiftClaimFactory(
             giftFactory: giftFactory,
             giftSecretsCleaningFactory: giftSecretManager,
+            claimAvailabilityCheckFactory: claimAvailabilityCheckFactory,
             operationQueue: operationQueue
         )
     }
