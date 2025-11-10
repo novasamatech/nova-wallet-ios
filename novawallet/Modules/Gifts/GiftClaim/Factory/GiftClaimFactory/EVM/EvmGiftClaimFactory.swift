@@ -43,7 +43,7 @@ private extension EvmGiftClaimFactory {
 
                 let claimingAccountAddress = try claimingAccountId.toAddress(using: chain.chainFormat)
 
-                let (newBuilder, codingPath) = try transferCommandFactory.addingTransferCommand(
+                let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
                     to: builder,
                     amount: amount,
                     recipient: claimingAccountAddress,

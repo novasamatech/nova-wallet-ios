@@ -39,16 +39,25 @@ private extension GiftClaimAvailabilityCheckFactory {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(
-                for: claimableGift.chainAsset.chainAssetId.chainId
-            )
+            if claimableGift.chainAsset.asset.isAnyEvm {
+                let existence = AssetBalanceExistence(
+                    minBalance: 0,
+                    isSelfSufficient: true
+                )
 
-            return self.assetInfoFactory.createAssetBalanceExistenceOperation(
-                chainId: claimableGift.chainAsset.chainAssetId.chainId,
-                asset: claimableGift.chainAsset.asset,
-                runtimeProvider: runtimeProvider,
-                operationQueue: self.operationQueue
-            )
+                return .createWithResult(existence)
+            } else {
+                let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(
+                    for: claimableGift.chainAsset.chainAssetId.chainId
+                )
+
+                return self.assetInfoFactory.createAssetBalanceExistenceOperation(
+                    chainId: claimableGift.chainAsset.chainAssetId.chainId,
+                    asset: claimableGift.chainAsset.asset,
+                    runtimeProvider: runtimeProvider,
+                    operationQueue: self.operationQueue
+                )
+            }
         }
     }
 }

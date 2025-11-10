@@ -85,9 +85,10 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
 
             let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
-            let claimingAccountId = try claimingWallet().fetchChainAccountId(
+            let claimingWallet = try claimingWallet()
+            let claimingAccountId = try claimingWallet.fetch(
                 for: chainAsset.chain.accountRequest()
-            ) ?? chainAsset.chain.emptyAccountId()
+            )?.accountId ?? chainAsset.chain.emptyAccountId()
 
             let transactionId = GiftTransactionFeeId(
                 recepientAccountId: claimingAccountId,
