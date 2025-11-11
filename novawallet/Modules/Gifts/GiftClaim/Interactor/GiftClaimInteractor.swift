@@ -25,7 +25,7 @@ class GiftClaimInteractor {
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
-        operationQueue: OperationQueue,
+        operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.walletOperationFactory = walletOperationFactory
