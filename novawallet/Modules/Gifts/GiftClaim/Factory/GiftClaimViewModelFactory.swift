@@ -167,8 +167,7 @@ private extension GiftClaimViewModelFactory {
             let claimingAccountId = giftDescription.claimingAccountId,
             let address = try? claimingAccountId.toAddress(
                 using: giftDescription.chainAsset.chain.chainFormat
-            )
-        {
+            ) {
             let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
             let imageViewModel = addressDrawableIcon.map {
                 DrawableIconViewModel(icon: $0)
