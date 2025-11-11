@@ -2,29 +2,29 @@ import Foundation
 import BigInt
 import Operation_iOS
 
-protocol SubstrateGiftDescriptionFactoryProtocol {
+protocol EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
         for claimableGift: ClaimableGiftInfo,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
-        assetStorageInfo: @escaping () throws -> AssetStorageInfo
-    ) -> BaseOperation<ClaimableGiftDescription>
+        transferType: EvmTransferType
+    ) -> BaseOperation<(ClaimableGiftDescription, EvmFeeModel)>
 }
 
-final class SubstrateGiftDescriptionFactory {
-    let transferCommandFactory: SubstrateTransferCommandFactory
-    let extrinsicService: ExtrinsicServiceProtocol
+final class EvmClaimableGiftDescriptionFactory {
+    let transferCommandFactory: EvmTransferCommandFactory
+    let transactionService: EvmTransactionServiceProtocol
     let callbackQueue: DispatchQueue
     let helper: ClaimableGiftDescriptionHelper
 
     init(
-        transferCommandFactory: SubstrateTransferCommandFactory,
-        extrinsicService: ExtrinsicServiceProtocol,
+        transferCommandFactory: EvmTransferCommandFactory,
+        transactionService: EvmTransactionServiceProtocol,
         callbackQueue: DispatchQueue,
         helper: ClaimableGiftDescriptionHelper = ClaimableGiftDescriptionHelper()
     ) {
         self.transferCommandFactory = transferCommandFactory
-        self.extrinsicService = extrinsicService
+        self.transactionService = transactionService
         self.callbackQueue = callbackQueue
         self.helper = helper
     }
@@ -32,21 +32,25 @@ final class SubstrateGiftDescriptionFactory {
 
 // MARK: - Private
 
-private extension SubstrateGiftDescriptionFactory {
+private extension EvmClaimableGiftDescriptionFactory {
     func createBuilderClosure(
         using giftData: ClaimableGiftBaseData,
-        assetStorageInfo: AssetStorageInfo
-    ) -> ExtrinsicBuilderClosure {
+        transferType: EvmTransferType,
+        chainAsset: ChainAsset
+    ) -> EvmTransactionBuilderClosure {
         { [weak self] builder in
             guard let self else { return builder }
 
             let recipientAccountId = giftData.claimingAccountId ?? giftData.transactionId.recepientAccountId
+            let recipientAccountAddress = try recipientAccountId.toAddress(
+                using: chainAsset.chain.chainFormat
+            )
 
             let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
                 to: builder,
                 amount: giftData.onChainAmountWithFee,
-                recipient: recipientAccountId,
-                assetStorageInfo: assetStorageInfo
+                recipient: recipientAccountAddress,
+                type: transferType
             )
 
             return newBuilder
@@ -54,15 +58,15 @@ private extension SubstrateGiftDescriptionFactory {
     }
 }
 
-// MARK: - SubstrateGiftDescriptionFactoryProtocol
+// MARK: - EvmClaimableGiftDescriptionFactoryProtocol
 
-extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol {
+extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
         for claimableGift: ClaimableGiftInfo,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
-        assetStorageInfo: @escaping () throws -> AssetStorageInfo
-    ) -> BaseOperation<ClaimableGiftDescription> {
+        transferType: EvmTransferType
+    ) -> BaseOperation<(ClaimableGiftDescription, EvmFeeModel)> {
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
@@ -76,12 +80,12 @@ extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtoc
 
             let builderClosure = createBuilderClosure(
                 using: baseData,
-                assetStorageInfo: try assetStorageInfo()
+                transferType: transferType,
+                chainAsset: chainAsset
             )
 
-            extrinsicService.estimateFee(
+            transactionService.estimateFee(
                 builderClosure,
-                payingIn: chainAsset.chainAssetId,
                 runningIn: callbackQueue
             ) { [weak self] result in
                 guard let self else { return }
@@ -91,11 +95,11 @@ extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtoc
                     let description = helper.createFinalDescription(
                         claimableGift: claimableGift,
                         onChainAmountWithFee: baseData.onChainAmountWithFee,
-                        feeAmount: fee.amount,
+                        feeAmount: fee.fee,
                         claimingAccountId: baseData.claimingAccountId
                     )
 
-                    completion(.success(description))
+                    completion(.success((description, fee)))
                 case let .failure(error):
                     completion(.failure(error))
                 }

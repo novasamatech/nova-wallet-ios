@@ -83,10 +83,10 @@ private extension GiftClaimViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createServiceForGiftClaim(accountId: claimableGift.accountId, chain: chain)
 
-        let claimDescriptionFactory = ClaimableGiftDescriptionFactory(
+        let claimDescriptionFactory = SubstrateGiftDescriptionFactory(
             transferCommandFactory: SubstrateTransferCommandFactory(),
             extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy()
+            callbackQueue: .main
         )
 
         let walletRepository = AccountRepositoryFactory(
@@ -168,7 +168,7 @@ private extension GiftClaimViewFactory {
         let claimDescriptionFactory = EvmClaimableGiftDescriptionFactory(
             transferCommandFactory: EvmTransferCommandFactory(),
             transactionService: transactionService,
-            feeProxy: EvmTransactionFeeProxy()
+            callbackQueue: .main
         )
 
         let claimOperationFactory = GiftClaimFactoryFacade(

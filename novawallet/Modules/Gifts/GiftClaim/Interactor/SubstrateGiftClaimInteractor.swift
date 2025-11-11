@@ -3,7 +3,7 @@ import Operation_iOS
 import BigInt
 
 final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
-    let claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol
+    let claimDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol
     let claimOperationFactory: SubstrateGiftClaimFactoryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
 
@@ -11,7 +11,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
     var assetStorageInfo: AssetStorageInfo?
 
     init(
-        claimDescriptionFactory: ClaimableGiftDescriptionFactoryProtocol,
+        claimDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol,
         claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         claimableGift: ClaimableGiftInfo,
