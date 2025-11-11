@@ -1975,7 +1975,7 @@
 "gifts.onboarding.step3.template" = "%@ and you can return unclaimed gifts anytime from this device";
 "gifts.onboarding.step3.highlighted" = "The gift is available instantly,";
 "gifts.onboarding.title" = "Share Crypto Gifts with Anyone, Anywhere";
-"gifts.onboarding.subtitle" = "Send gifts fast, easy, and securely in Nova";
+"gifts.onboarding.subtitle" = "Send gifts fast, easily, and securely using Nova";
 "gifts.action.create.gift" = "Create Gift";
 "common.gift" = "Gift";
 "asset.operation.gift.title" = "Select a token to Gift";
