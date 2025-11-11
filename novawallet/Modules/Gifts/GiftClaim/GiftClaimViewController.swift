@@ -41,6 +41,11 @@ private extension GiftClaimViewController {
             action: #selector(actionSelectWallet),
             for: .touchUpInside
         )
+        rootView.warningView.learnMoreButton.addTarget(
+            self,
+            action: #selector(actionManageWallets),
+            for: .touchUpInside
+        )
     }
 
     @objc func actionClaim() {
@@ -49,6 +54,10 @@ private extension GiftClaimViewController {
 
     @objc func actionSelectWallet() {
         presenter.actionSelectWallet()
+    }
+
+    @objc func actionManageWallets() {
+        presenter.actionManageWallets()
     }
 }
 

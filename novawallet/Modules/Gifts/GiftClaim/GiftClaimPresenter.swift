@@ -73,6 +73,10 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
         )
     }
 
+    func actionManageWallets() {
+        wireframe.showManageWallets(from: view)
+    }
+
     func setup() {
         interactor.setup()
     }
