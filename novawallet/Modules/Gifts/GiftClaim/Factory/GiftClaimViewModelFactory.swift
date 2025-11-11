@@ -48,178 +48,32 @@ private extension GiftClaimViewModelFactory {
         giftedWallet: GiftedWalletType,
         locale: Locale
     ) -> GiftClaimViewModel.ControlsViewModel? {
-        switch giftedWallet {
-        case .available:
-            createAvailableControlsViewModel(
-                for: giftedWallet,
-                giftDescription: giftDescription,
-                locale: locale
-            )
-        case .unavailable:
-            createUnavailableControlsViewModel(
-                for: giftedWallet,
-                giftDescription: giftDescription,
-                locale: locale
-            )
-        }
-    }
-
-    func createAvailableControlsViewModel(
-        for giftedWalletType: GiftedWalletType,
-        giftDescription: ClaimableGiftDescription,
-        locale: Locale
-    ) -> GiftClaimViewModel.ControlsViewModel? {
-        let walletAvailabilityType = giftedWalletType.subtype
-
-        guard
-            let claimingAccountId = giftDescription.claimingAccountId,
-            let address = try? claimingAccountId.toAddress(
-                using: giftDescription.chainAsset.chain.chainFormat
-            )
-        else { return nil }
-
-        let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
-
-        let addressImageViewModel = addressDrawableIcon.map {
-            DrawableIconViewModel(icon: $0)
-        }
-
-        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let walletAvailabilityType = giftedWallet.subtype
 
         let showAccessory = switch walletAvailabilityType {
         case .oneInSet: true
         case .single: false
         }
 
-        let claimAction: GiftClaimViewModel.ClaimActionViewModel = .enabled(
-            title: localizedStrings.giftClaimActionTitle()
-        )
-
-        let wallet = walletAvailabilityType.wallet
-
-        let optIcon = wallet.walletIdenticonData().flatMap {
-            try? walletIconGenerator.generateFromAccountId($0)
-        }
-
-        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
-            .init(icon: $0),
-            identifier: wallet.metaId
-        ) }
-
-        let walletInfoViewModel = WalletView.ViewModel.WalletInfo(
-            icon: iconViewModel,
-            name: wallet.name
-        )
-
-        let addressViewModel = DisplayAddressViewModel(
-            address: address,
-            name: nil,
-            imageViewModel: addressImageViewModel
-        )
-
-        let chainAccountModel: WalletView.ViewModel.ChainAccountAddressInfo = .address(addressViewModel)
-
-        let walletviewModel = WalletView.ViewModel(
-            wallet: walletInfoViewModel,
-            type: .account(chainAccountModel)
-        )
-
-        let walletControl = GiftClaimViewModel.WalletViewModel(
-            walletViewModel: walletviewModel,
-            showAccessory: showAccessory
-        )
-
-        let warningViewModel = createWarningViewModel(
-            for: giftedWalletType,
+        let claimAction = createClaimActionViewModel(
+            for: giftedWallet,
             chain: giftDescription.chainAsset.chain,
             locale: locale
         )
 
-        return GiftClaimViewModel.ControlsViewModel(
-            claimActionViewModel: claimAction,
-            selectedWalletViewModel: walletControl,
-            warningViewModel: nil
-        )
-    }
-
-    func createUnavailableControlsViewModel(
-        for giftedWalletType: GiftedWalletType,
-        giftDescription: ClaimableGiftDescription,
-        locale: Locale
-    ) -> GiftClaimViewModel.ControlsViewModel? {
-        let walletAvailabilityType = giftedWalletType.subtype
-
-        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let showAccessory: Bool
-        var claimAction: GiftClaimViewModel.ClaimActionViewModel?
-
-        switch walletAvailabilityType {
-        case .oneInSet:
-            showAccessory = true
-            claimAction = .disabled(
-                title: localizedStrings.commonSelectWallet()
-            )
-        case .single:
-            showAccessory = false
-            claimAction = nil
-        }
-
-        let wallet = walletAvailabilityType.wallet
-
-        let optIcon = wallet.walletIdenticonData().flatMap {
-            try? walletIconGenerator.generateFromAccountId($0)
-        }
-
-        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
-            .init(icon: $0),
-            identifier: wallet.metaId
-        ) }
-
-        let walletInfoViewModel = WalletView.ViewModel.WalletInfo(
-            icon: iconViewModel,
-            name: wallet.name
+        let infoViewModel = createChainAccountAddressInfo(
+            from: giftDescription,
+            locale: locale
         )
 
-        let infoViewModel: WalletView.ViewModel.ChainAccountAddressInfo
-
-        if
-            let claimingAccountId = giftDescription.claimingAccountId,
-            let address = try? claimingAccountId.toAddress(
-                using: giftDescription.chainAsset.chain.chainFormat
-            ) {
-            let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
-            let imageViewModel = addressDrawableIcon.map {
-                DrawableIconViewModel(icon: $0)
-            }
-            infoViewModel = .address(
-                DisplayAddressViewModel(
-                    address: address,
-                    name: nil,
-                    imageViewModel: imageViewModel
-                )
-            )
-        } else {
-            infoViewModel = .warning(
-                WalletView.ViewModel.WarningViewModel(
-                    imageViewModel: StaticImageViewModel(image: R.image.iconWarning()!),
-                    text: localizedStrings.accountNotFoundCaption()
-                )
-            )
-        }
-
-        let walletviewModel = WalletView.ViewModel(
-            wallet: walletInfoViewModel,
-            type: .account(infoViewModel)
-        )
-
-        let walletControl = GiftClaimViewModel.WalletViewModel(
-            walletViewModel: walletviewModel,
+        let walletControl = createWalletViewModel(
+            from: giftedWallet,
+            chainAccountInfo: infoViewModel,
             showAccessory: showAccessory
         )
 
         let warningViewModel = createWarningViewModel(
-            for: giftedWalletType,
+            for: giftedWallet,
             chain: giftDescription.chainAsset.chain,
             locale: locale
         )
@@ -229,6 +83,111 @@ private extension GiftClaimViewModelFactory {
             selectedWalletViewModel: walletControl,
             warningViewModel: warningViewModel
         )
+    }
+
+    func createClaimActionViewModel(
+        for giftedWallet: GiftedWalletType,
+        chain: ChainModel,
+        locale: Locale
+    ) -> GiftClaimViewModel.ClaimActionViewModel? {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let wallet = giftedWallet.wallet
+
+        return switch giftedWallet {
+        case let .available(availabilityType):
+            switch availabilityType {
+            case .oneInSet where wallet.fetch(for: chain.accountRequest()) == nil:
+                .disabled(
+                    title: localizedStrings.commonSelectWallet()
+                )
+            case .single where wallet.fetch(for: chain.accountRequest()) == nil:
+                nil
+            case .oneInSet, .single:
+                .enabled(
+                    title: localizedStrings.giftClaimActionTitle()
+                )
+            }
+        case let .unavailable(availabilityType):
+            switch availabilityType {
+            case .oneInSet:
+                .disabled(
+                    title: localizedStrings.commonSelectWallet()
+                )
+            case .single:
+                nil
+            }
+        }
+    }
+
+    func createWalletViewModel(
+        from giftedWalletType: GiftedWalletType,
+        chainAccountInfo: WalletView.ViewModel.ChainAccountAddressInfo,
+        showAccessory: Bool
+    ) -> GiftClaimViewModel.WalletViewModel {
+        let walletInfoViewModel = createWalletInfoViewModel(from: giftedWalletType)
+
+        let walletviewModel = WalletView.ViewModel(
+            wallet: walletInfoViewModel,
+            type: .account(chainAccountInfo)
+        )
+
+        return GiftClaimViewModel.WalletViewModel(
+            walletViewModel: walletviewModel,
+            showAccessory: showAccessory
+        )
+    }
+
+    func createWalletInfoViewModel(
+        from giftedWalletType: GiftedWalletType
+    ) -> WalletView.ViewModel.WalletInfo {
+        let wallet = giftedWalletType.subtype.wallet
+
+        let optIcon = wallet.walletIdenticonData().flatMap {
+            try? walletIconGenerator.generateFromAccountId($0)
+        }
+
+        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
+            .init(icon: $0),
+            identifier: wallet.metaId
+        ) }
+
+        return WalletView.ViewModel.WalletInfo(
+            icon: iconViewModel,
+            name: wallet.name
+        )
+    }
+
+    func createChainAccountAddressInfo(
+        from giftDescription: ClaimableGiftDescription,
+        locale: Locale
+    ) -> WalletView.ViewModel.ChainAccountAddressInfo {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if
+            let claimingAccountId = giftDescription.claimingAccountId,
+            let address = try? claimingAccountId.toAddress(
+                using: giftDescription.chainAsset.chain.chainFormat
+            )
+        {
+            let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
+            let imageViewModel = addressDrawableIcon.map {
+                DrawableIconViewModel(icon: $0)
+            }
+            return .address(
+                DisplayAddressViewModel(
+                    address: address,
+                    name: nil,
+                    imageViewModel: imageViewModel
+                )
+            )
+        } else {
+            return .warning(
+                WalletView.ViewModel.WarningViewModel(
+                    imageViewModel: StaticImageViewModel(image: R.image.iconWarning()!),
+                    text: localizedStrings.accountNotFoundCaption()
+                )
+            )
+        }
     }
 
     func createWarningViewModel(
