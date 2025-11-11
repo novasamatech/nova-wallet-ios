@@ -1976,7 +1976,6 @@
 		2D86C88F2EBA6B04003325FC /* GiftSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */; };
 		2D86C8962EBA7837003325FC /* ClaimGiftUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */; };
 		2D86C89B2EBA7A82003325FC /* GiftClaimNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */; };
-		2D86C8A42EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */; };
 		2D86C8A92EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */; };
 		2D86C8AE2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */; };
 		2D86C8B82EBCD0F4003325FC /* GiftSecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8B72EBCD0F4003325FC /* GiftSecretsManager.swift */; };
@@ -8635,7 +8634,6 @@
 		2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSigningWrapper.swift; sourceTree = "<group>"; };
 		2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimGiftUrlParsingService.swift; sourceTree = "<group>"; };
 		2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimNavigation.swift; sourceTree = "<group>"; };
-		2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteBalanceQueryFacade.swift; sourceTree = "<group>"; };
 		2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmRemoteBalanceQueryFactory.swift; sourceTree = "<group>"; };
 		2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimAvailabilityCheckFactory.swift; sourceTree = "<group>"; };
 		2D86C8B72EBCD0F4003325FC /* GiftSecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretsManager.swift; sourceTree = "<group>"; };
@@ -18980,7 +18978,6 @@
 				2DA4D63F2EB3B670006FCCC0 /* View */,
 				2DA4D65F2EB4917B006FCCC0 /* GiftOperationFactory.swift */,
 				2D86C8AD2EBCBDBB003325FC /* GiftClaimAvailabilityCheckFactory.swift */,
-				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
 				2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */,
 				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 				2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */,
@@ -35067,7 +35064,6 @@
 				0C0AE40E2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift in Sources */,
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
 				8487583C27F06AF300495306 /* QRCaptureService.swift in Sources */,
-				2D86C8A42EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* AssetListViewController.swift in Sources */,
 				75E689BC8D16786DF2674171 /* AssetListViewLayout.swift in Sources */,
 				2D73AD382EC32587002DE18F /* WalletListFilter.swift in Sources */,

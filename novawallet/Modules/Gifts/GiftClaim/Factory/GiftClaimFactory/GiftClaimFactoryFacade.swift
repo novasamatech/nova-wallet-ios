@@ -35,7 +35,7 @@ final class GiftClaimFactoryFacade {
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let balanceQueryFacade = RemoteBalanceQueryFacade(
+        let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
@@ -47,7 +47,7 @@ final class GiftClaimFactoryFacade {
         let claimAvailabilityCheckFactory = GiftClaimAvailabilityCheckFactory(
             chainRegistry: chainRegistry,
             giftSecretsManager: giftSecretsManager,
-            balanceQueryFacade: balanceQueryFacade,
+            balanceQueryFactory: balanceQueryFactory,
             assetInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue
         )

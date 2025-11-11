@@ -1,9 +1,13 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 protocol WalletRemoteQueryWrapperFactoryProtocol {
-    func queryBalance(for accountId: AccountId, chainAsset: ChainAsset) -> CompoundOperationWrapper<AssetBalance>
+    func queryBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance>
 }
 
 enum WalletRemoteQueryWrapperFactoryError: Error {
@@ -333,10 +337,50 @@ final class WalletRemoteQueryWrapperFactory {
             return .createWithError(error)
         }
     }
+
+    func queryEvmBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance> {
+        let operation = AsyncClosureOperation<AssetBalance> { completion in
+            let connection = try self.chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let address = try accountId.toAddress(using: chainAsset.chain.chainFormat)
+
+            let params = EvmBalanceMessage.Params(holder: address, block: .latest)
+
+            _ = try connection.callMethod(
+                EvmBalanceMessage.method,
+                params: params,
+                options: .init(resendOnReconnect: true)
+            ) { (result: Result<String, Error>) in
+                switch result {
+                case let .success(balanceString):
+                    guard let balanceValue = BigUInt.fromHexString(balanceString) else {
+                        completion(.failure(EvmRemoteBalanceQueryError.unexpectedBalanceValue))
+                        return
+                    }
+                    let balance = AssetBalance(
+                        evmBalance: balanceValue,
+                        accountId: accountId,
+                        chainAssetId: chainAsset.chainAssetId
+                    )
+
+                    completion(.success(balance))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
 }
 
 extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtocol {
-    func queryBalance(for accountId: AccountId, chainAsset: ChainAsset) -> CompoundOperationWrapper<AssetBalance> {
+    func queryBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance> {
         do {
             return try CustomAssetMapper(
                 type: chainAsset.asset.type,
@@ -364,10 +408,10 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
                         )
                     },
                     evmHandler: { _ in
-                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                        self.queryEvmBalance(for: accountId, chainAsset: chainAsset)
                     },
                     evmNativeHandler: {
-                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                        self.queryEvmBalance(for: accountId, chainAsset: chainAsset)
                     },
                     equilibriumHandler: { extras in
                         self.queryEquilibriumBalance(for: accountId, chainAsset: chainAsset, eqAssetId: extras.assetId)

@@ -11,20 +11,20 @@ protocol GiftClaimAvailabilityCheckFactoryProtocol {
 final class GiftClaimAvailabilityCheckFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let giftSecretsManager: GiftSecretsManagerProtocol
-    private let balanceQueryFacade: RemoteBalanceQueryFacadeProtocol
+    private let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
     private let assetInfoFactory: AssetStorageInfoOperationFactoryProtocol
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         giftSecretsManager: GiftSecretsManagerProtocol,
-        balanceQueryFacade: RemoteBalanceQueryFacadeProtocol,
+        balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
         assetInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.giftSecretsManager = giftSecretsManager
-        self.balanceQueryFacade = balanceQueryFacade
+        self.balanceQueryFactory = balanceQueryFactory
         self.assetInfoFactory = assetInfoFactory
         self.operationQueue = operationQueue
     }
@@ -68,7 +68,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
     func createAvailabilityWrapper(
         for claimableGift: ClaimableGiftInfo
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
-        let transferableBalanceWrapper = balanceQueryFacade.createTransferrableWrapper(
+        let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
             for: claimableGift.accountId,
             chainAsset: claimableGift.chainAsset
         )
@@ -80,6 +80,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
             let transferableBalance = try transferableBalanceWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
+                .transferable
 
             let existence = try balanceExistenceWrapper
                 .targetOperation
