@@ -1930,6 +1930,8 @@
 		2D6F51B12CE11EB100564C00 /* SpendAssetOperationNetworkBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51B02CE11EB100564C00 /* SpendAssetOperationNetworkBuilder.swift */; };
 		2D6F51B32CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51B22CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift */; };
 		2D73AD382EC32587002DE18F /* WalletListFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD372EC32587002DE18F /* WalletListFilter.swift */; };
+		2D73AD4A2EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD492EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift */; };
+		2D73AD4F2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */; };
 		2D74CA3F2CF7262E004EAD8C /* BrowserOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */; };
 		2D74CA412CF74752004EAD8C /* DAppBrowserWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */; };
 		2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */; };
@@ -8586,6 +8588,8 @@
 		2D6F51B02CE11EB100564C00 /* SpendAssetOperationNetworkBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendAssetOperationNetworkBuilder.swift; sourceTree = "<group>"; };
 		2D6F51B22CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendAssetOperationNetworkListInteractor.swift; sourceTree = "<group>"; };
 		2D73AD372EC32587002DE18F /* WalletListFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListFilter.swift; sourceTree = "<group>"; };
+		2D73AD492EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsAccountsChooseViewModelFactory.swift; sourceTree = "<group>"; };
+		2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWalletChoosePresentable.swift; sourceTree = "<group>"; };
 		2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserOpening.swift; sourceTree = "<group>"; };
 		2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetView.swift; sourceTree = "<group>"; };
 		2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetModel.swift; sourceTree = "<group>"; };
@@ -17856,6 +17860,15 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
+		2D73AD422EC32CA2002DE18F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				844C3E742A091B9800C4305F /* WalletsChooseViewModelFactory.swift */,
+				2D73AD492EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		2D74CA462CF74898004EAD8C /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -18968,6 +18981,7 @@
 				2D86C8A32EBCB1F1003325FC /* RemoteBalanceQueryFacade.swift */,
 				2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */,
 				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
+				2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -19116,11 +19130,11 @@
 		34CB1A3176E8B08DEFB58800 /* Choose */ = {
 			isa = PBXGroup;
 			children = (
+				2D73AD422EC32CA2002DE18F /* Model */,
 				22EEDCFFB7BB31BC71F651DE /* WalletsChooseProtocols.swift */,
 				525813EB768E636A397C00BB /* WalletsChoosePresenter.swift */,
 				8D3C7EFCD6663C736563688A /* WalletsChooseViewController.swift */,
 				844C3E702A09126F00C4305F /* WalletsChooseViewFactory.swift */,
-				844C3E742A091B9800C4305F /* WalletsChooseViewModelFactory.swift */,
 			);
 			path = Choose;
 			sourceTree = "<group>";
@@ -33935,6 +33949,7 @@
 				849F14492944443500D9F9BA /* CoingeckoUrlParser.swift in Sources */,
 				84E25BE427E5F71900290BF1 /* AccountFieldStateViewModel.swift in Sources */,
 				84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */,
+				2D73AD4F2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift in Sources */,
 				773A375C2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift in Sources */,
 				84BC703F289DBE6C008A9758 /* QRWithLogoCreationOperation.swift in Sources */,
 				2DC002D22E867C1600D49A42 /* AHMInfoViewModelFactory.swift in Sources */,
@@ -35917,6 +35932,7 @@
 				488E4467895040EA85FDCC79 /* ReferendumDetailsViewController.swift in Sources */,
 				0C2DA8A22CC21E5F001F79C8 /* AssetHubExchangeEdge.swift in Sources */,
 				0C992C4A2B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift in Sources */,
+				2D73AD4A2EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift in Sources */,
 				845B811D28F44A700040CE84 /* ReferendumActionLocal.swift in Sources */,
 				0C1CF70F2E51957A00B1DA66 /* OrmlHydrationEvmSubscriptionService.swift in Sources */,
 				77E255692A16148000B644C3 /* StakingRewardsFilter.swift in Sources */,

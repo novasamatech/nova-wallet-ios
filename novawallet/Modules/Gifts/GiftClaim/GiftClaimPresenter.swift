@@ -62,11 +62,12 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
     }
 
     func actionSelectWallet() {
-        guard let giftedWallet else { return }
+        guard let giftedWallet, let giftDescription else { return }
 
-        wireframe.showWalletChoose(
+        wireframe.showGiftWalletChoose(
             from: view,
             selectedWalletId: giftedWallet.wallet.metaId,
+            chain: giftDescription.chainAsset.chain,
             delegate: self,
             filter: GiftWalletListFilter()
         )

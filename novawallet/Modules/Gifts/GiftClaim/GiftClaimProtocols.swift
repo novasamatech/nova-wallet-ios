@@ -23,4 +23,4 @@ protocol GiftClaimInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable, WalletChoosePresentable {}
+protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable, GiftWalletChoosePresentable {}

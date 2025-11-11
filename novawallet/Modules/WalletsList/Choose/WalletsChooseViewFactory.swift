@@ -7,15 +7,9 @@ final class WalletsChooseViewFactory {
         delegate: WalletsChooseDelegate,
         using filter: WalletListFilterProtocol?
     ) -> WalletsChooseViewController? {
-        guard
-            let interactor = createInteractor(with: filter),
-            let currencyManager = CurrencyManager.shared else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-
-        let wireframe = WalletsListWireframe()
-
-        let localizationManager = LocalizationManager.shared
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = WalletsChooseViewModelFactory(
@@ -24,6 +18,55 @@ final class WalletsChooseViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             currencyManager: currencyManager
         )
+
+        return createView(
+            with: viewModelFactory,
+            for: selectedWalletId,
+            delegate: delegate,
+            using: filter
+        )
+    }
+
+    static func createViewWithChainAccounts(
+        for chain: ChainModel,
+        selectedWalletId: String,
+        delegate: WalletsChooseDelegate,
+        using filter: WalletListFilterProtocol?
+    ) -> WalletsChooseViewController? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let viewModelFactory = WalletsAccountsChooseViewModelFactory(
+            selectedId: selectedWalletId,
+            chain: chain,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            currencyManager: currencyManager
+        )
+
+        return createView(
+            with: viewModelFactory,
+            for: selectedWalletId,
+            delegate: delegate,
+            using: filter
+        )
+    }
+
+    private static func createView(
+        with viewModelFactory: WalletsListViewModelFactoryProtocol,
+        for _: String,
+        delegate: WalletsChooseDelegate,
+        using filter: WalletListFilterProtocol?
+    ) -> WalletsChooseViewController? {
+        guard let interactor = createInteractor(with: filter) else {
+            return nil
+        }
+
+        let wireframe = WalletsListWireframe()
+
+        let localizationManager = LocalizationManager.shared
 
         let presenter = WalletsChoosePresenter(
             delegate: delegate,
