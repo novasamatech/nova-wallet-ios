@@ -18,29 +18,37 @@ final class GiftClaimSelectedWalletView: RowView<
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        setupStyle()
         setupLayout()
+        setupStyle()
     }
 }
 
 private extension GiftClaimSelectedWalletView {
     func setupStyle() {
-        roundedBackgroundView.cornerRadius = Constants.cornerRadius
+        roundedBackgroundView.applyFilledBackgroundStyle()
         roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
-        roundedBackgroundView.strokeColor = .clear
+        roundedBackgroundView.roundingCorners = .allCorners
+        roundedBackgroundView.cornerRadius = Constants.cornerRadius
+        borderView.borderType = []
+
         accessoryView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
+        accessoryView.contentMode = .scaleAspectFit
     }
 
     func setupLayout() {
         contentInsets = Constants.contentInsets
+        preferredHeight = UIConstants.actionHeight
         rowContentView.makeHorizontal()
+
+        accessoryView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.accessorySize)
+        }
     }
 }
 
 extension GiftClaimSelectedWalletView {
     func bind(viewModel: GiftClaimViewModel.WalletViewModel) {
         walletView.bind(viewModel: viewModel.walletViewModel)
-        walletView.bind(chainAccount: viewModel.addressViewModel)
     }
 }
 
@@ -54,5 +62,6 @@ private extension GiftClaimSelectedWalletView {
         )
 
         static let cornerRadius: CGFloat = 12.0
+        static let accessorySize: CGFloat = 24.0
     }
 }

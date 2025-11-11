@@ -120,6 +120,11 @@ private extension GiftClaimViewModelFactory {
             walletViewModel: walletviewModel,
             showAccessory: showAccessory
         )
+
+        return GiftClaimViewModel.ControlsViewModel(
+            claimActionViewModel: claimAction,
+            selectedWalletViewModel: walletControl
+        )
     }
 
     func createUnavailableControlsViewModel(
@@ -186,6 +191,11 @@ private extension GiftClaimViewModelFactory {
         let walletControl = GiftClaimViewModel.WalletViewModel(
             walletViewModel: walletviewModel,
             showAccessory: showAccessory
+        )
+
+        return GiftClaimViewModel.ControlsViewModel(
+            claimActionViewModel: claimAction,
+            selectedWalletViewModel: walletControl
         )
     }
 }

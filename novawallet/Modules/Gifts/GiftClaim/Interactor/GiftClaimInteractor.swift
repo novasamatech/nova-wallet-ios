@@ -48,3 +48,10 @@ extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
         claimGift(giftDescription: giftDescription)
     }
 }
+
+extension GiftClaimInteractor {
+    struct ClaimSetupResult {
+        let giftedWallet: GiftedWalletType
+        let giftDescription: ClaimableGiftDescription
+    }
+}

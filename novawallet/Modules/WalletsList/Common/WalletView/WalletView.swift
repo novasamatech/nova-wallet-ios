@@ -24,9 +24,12 @@ final class WalletView: GenericTitleValueView<
 
     var titleLabel: UILabel { valueView.fView.detailsLabel }
     var indicatorImageView: UIImageView { valueView.fView.imageView }
-    var subtitleLabel: UILabel { valueView.sView.fView }
-    var subtitleDetailsImage: UIImageView { valueView.sView.sView.imageView }
-    var subtitleDetailsLabel: UILabel { valueView.sView.sView.detailsLabel }
+
+    var subtitleContainer: GenericPairValueView<UILabel, IconDetailsView> { valueView.sView }
+
+    var subtitleLabel: UILabel { subtitleContainer.fView }
+    var subtitleDetailsImage: UIImageView { subtitleContainer.sView.imageView }
+    var subtitleDetailsLabel: UILabel { subtitleContainer.sView.detailsLabel }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -52,8 +55,8 @@ final class WalletView: GenericTitleValueView<
         subtitleDetailsLabel.apply(style: .footnotePrimary)
         subtitleDetailsLabel.lineBreakMode = .byTruncatingMiddle
         valueView.fView.mode = .detailsIcon
-        valueView.sView.makeHorizontal()
-        valueView.sView.spacing = 4
+        subtitleContainer.makeHorizontal()
+        subtitleContainer.spacing = 4
         valueView.spacing = 4
 
         titleView.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -153,7 +156,7 @@ extension WalletView {
                 switch self {
                 case let .address(addressViewModel):
                     addressViewModel.lineBreakMode
-                case let .warning(warningViewModel):
+                case .warning:
                     .byTruncatingTail
                 }
             }
@@ -226,6 +229,7 @@ extension WalletView {
         subtitleLabel.text = nil
         networkImageView.isHidden = true
         indicatorImageView.isHidden = true
+        subtitleContainer.spacing = .zero
     }
 
     func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo) {

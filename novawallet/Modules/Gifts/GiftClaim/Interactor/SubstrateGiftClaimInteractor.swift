@@ -95,9 +95,37 @@ private extension SubstrateGiftClaimInteractor {
     }
 
     func continueSetup() {
+        setupGift(selectedWallet: nil)
+    }
+
+    func setupGift(selectedWallet: MetaAccountModel?) {
         guard let assetStorageInfo else { return }
 
-        let walletWrapper = walletOperationFactory.createWrapper()
+        let wrapper = createSetupWrapper(
+            for: assetStorageInfo,
+            selectedWallet: selectedWallet
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(setupResult):
+                self?.presenter?.didReceive(setupResult)
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
+                self?.logger.error("Failed on setup: \(error)")
+            }
+        }
+    }
+
+    func createSetupWrapper(
+        for assetStorageInfo: AssetStorageInfo,
+        selectedWallet: MetaAccountModel?
+    ) -> CompoundOperationWrapper<GiftClaimInteractor.ClaimSetupResult> {
+        let walletWrapper = walletOperationFactory.createWrapper(selectedWallet: selectedWallet)
 
         let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
             for: claimableGift,
@@ -108,20 +136,21 @@ private extension SubstrateGiftClaimInteractor {
 
         claimGiftDescriptionOperation.addDependency(walletWrapper.targetOperation)
 
-        let resultWrapper = walletWrapper.insertingTail(operation: claimGiftDescriptionOperation)
+        let resultOperation = ClosureOperation {
+            let giftedWallet = try walletWrapper.targetOperation.extractNoCancellableResultData()
+            let giftDescription = try claimGiftDescriptionOperation.extractNoCancellableResultData()
 
-        execute(
-            wrapper: resultWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(giftDescription):
-                self?.presenter?.didReceive(giftDescription)
-            case let .failure(error):
-                self?.presenter?.didReceive(error)
-                self?.logger.error("Failed on setup: \(error)")
-            }
+            return GiftClaimInteractor.ClaimSetupResult(
+                giftedWallet: giftedWallet,
+                giftDescription: giftDescription
+            )
         }
+
+        resultOperation.addDependency(claimGiftDescriptionOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [claimGiftDescriptionOperation] + walletWrapper.allOperations
+        )
     }
 }

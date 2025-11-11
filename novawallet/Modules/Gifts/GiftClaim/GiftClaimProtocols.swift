@@ -18,8 +18,7 @@ protocol GiftClaimInteractorInputProtocol: AnyObject {
 
 protocol GiftClaimInteractorOutputProtocol: AnyObject {
     func didClaimSuccessfully()
-    func didReceive(_ giftDescription: ClaimableGiftDescription)
-    func didReceive(_ giftedWallet: GiftedWalletType)
+    func didReceive(_ claimSetupResult: GiftClaimInteractor.ClaimSetupResult)
     func didReceive(_ error: Error)
 }
 

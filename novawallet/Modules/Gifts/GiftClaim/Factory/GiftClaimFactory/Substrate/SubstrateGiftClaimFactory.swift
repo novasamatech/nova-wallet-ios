@@ -125,12 +125,16 @@ extension SubstrateGiftClaimFactory: SubstrateGiftClaimFactoryProtocol {
         giftDescription: ClaimableGiftDescription,
         assetStorageInfo: AssetStorageInfo?
     ) -> CompoundOperationWrapper<Void> {
+        guard let claimingAccountId = giftDescription.claimingAccountId else {
+            return .createWithError(GiftClaimError.claimingAccountNotFound)
+        }
+
         let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper in
             self.createClaimWrapper(
                 dependingOn: giftWrapper,
                 chainAsset: giftDescription.chainAsset,
                 amount: giftDescription.amount,
-                claimingAccountId: giftDescription.claimingAccountId,
+                claimingAccountId: claimingAccountId,
                 assetStorageInfo: assetStorageInfo
             )
         }

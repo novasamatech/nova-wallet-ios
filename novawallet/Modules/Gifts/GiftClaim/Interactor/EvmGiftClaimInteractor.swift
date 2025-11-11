@@ -36,7 +36,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
 
     override func performSetup() {
         setupTransferType()
-        setupGift()
+        setupGift(selectedWallet: nil)
     }
 
     override func claimGift(giftDescription: ClaimableGiftDescription) {
@@ -66,34 +66,64 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
 // MARK: - Private
 
 private extension EvmGiftClaimInteractor {
-    func setupGift() {
-        let walletWrapper = walletOperationFactory.createWrapper()
+    func setupGift(selectedWallet: MetaAccountModel?) {
+        guard let transferType else { return }
 
-        let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
-            for: claimableGift,
-            giftAmountWithFee: totalAmount,
-            claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
-            transferType: .native
+        let wrapper = createSetupWrapper(
+            for: transferType,
+            selectedWallet: selectedWallet
         )
 
-        claimGiftDescriptionOperation.addDependency(walletWrapper.targetOperation)
-
-        let resultWrapper = walletWrapper.insertingTail(operation: claimGiftDescriptionOperation)
-
         execute(
-            wrapper: resultWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success((giftDescription, fee)):
-                self?.presenter?.didReceive(giftDescription)
-                self?.lastFee = fee
+            case let .success(setupResult):
+                self?.presenter?.didReceive(setupResult.claimSetupResult)
+                self?.lastFee = setupResult.fee
             case let .failure(error):
                 self?.presenter?.didReceive(error)
                 self?.logger.error("Failed on setup: \(error)")
             }
         }
+    }
+
+    func createSetupWrapper(
+        for transferType: EvmTransferType,
+        selectedWallet: MetaAccountModel?
+    ) -> CompoundOperationWrapper<GiftClaimSetupResult> {
+        let walletWrapper = walletOperationFactory.createWrapper(selectedWallet: selectedWallet)
+
+        let claimGiftDescriptionOperation = claimDescriptionFactory.createDescription(
+            for: claimableGift,
+            giftAmountWithFee: totalAmount,
+            claimingWallet: { try walletWrapper.targetOperation.extractNoCancellableResultData().wallet },
+            transferType: transferType
+        )
+
+        claimGiftDescriptionOperation.addDependency(walletWrapper.targetOperation)
+
+        let resultOperation = ClosureOperation {
+            let giftedWallet = try walletWrapper.targetOperation.extractNoCancellableResultData()
+            let giftDescriptionAndFee = try claimGiftDescriptionOperation.extractNoCancellableResultData()
+
+            return GiftClaimSetupResult(
+                claimSetupResult: .init(
+                    giftedWallet: giftedWallet,
+                    giftDescription: giftDescriptionAndFee.0
+                ),
+                fee: giftDescriptionAndFee.1
+            )
+        }
+
+        resultOperation.addDependency(claimGiftDescriptionOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [claimGiftDescriptionOperation] + walletWrapper.allOperations
+        )
     }
 
     func setupTransferType() {
@@ -106,5 +136,12 @@ private extension EvmGiftClaimInteractor {
         } else {
             presenter?.didReceive(AccountAddressConversionError.invalidEthereumAddress)
         }
+    }
+}
+
+private extension EvmGiftClaimInteractor {
+    struct GiftClaimSetupResult {
+        let claimSetupResult: GiftClaimInteractor.ClaimSetupResult
+        let fee: EvmFeeModel
     }
 }

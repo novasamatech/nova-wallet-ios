@@ -47,7 +47,8 @@ private extension EvmClaimableGiftDescriptionFactory {
         ) { [weak self] builder in
             guard let self else { return builder }
 
-            let recipientAccountAddress = try partialDescription.claimingAccountId.toAddress(
+            let recipientAccountId = partialDescription.claimingAccountId ?? transactionId.recepientAccountId
+            let recipientAccountAddress = try recipientAccountId.toAddress(
                 using: partialDescription.chainAsset.chain.chainFormat
             )
 
@@ -86,12 +87,12 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
             let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
             let claimingWallet = try claimingWallet()
-            let claimingAccountId = try claimingWallet.fetch(
+            let claimingAccountId = claimingWallet.fetch(
                 for: chainAsset.chain.accountRequest()
-            )?.accountId ?? chainAsset.chain.emptyAccountId()
+            )?.accountId
 
             let transactionId = GiftTransactionFeeId(
-                recepientAccountId: claimingAccountId,
+                recepientAccountId: try claimingAccountId ?? chainAsset.chain.emptyAccountId(),
                 amount: onChainAmountWithFee
             )
             let partialDescription = PartialDescription(
@@ -157,6 +158,6 @@ extension EvmClaimableGiftDescriptionFactory {
         let accountId: AccountId
         let chainAsset: ChainAsset
         let giftAmountWithFee: OnChainTransferAmount<BigUInt>
-        let claimingAccountId: AccountId
+        let claimingAccountId: AccountId?
     }
 }

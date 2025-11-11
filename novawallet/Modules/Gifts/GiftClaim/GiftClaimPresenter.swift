@@ -76,16 +76,9 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
         provideUnpackingViewModel()
     }
 
-    func didReceive(_ giftDescription: ClaimableGiftDescription) {
-        guard self.giftDescription == nil else { return }
-
-        self.giftDescription = giftDescription
-
-        provideViewModel()
-    }
-
-    func didReceive(_ giftedWallet: GiftedWalletType) {
-        self.giftedWallet = giftedWallet
+    func didReceive(_ claimSetupResult: GiftClaimInteractor.ClaimSetupResult) {
+        giftDescription = claimSetupResult.giftDescription
+        giftedWallet = claimSetupResult.giftedWallet
 
         provideViewModel()
     }

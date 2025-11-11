@@ -12,9 +12,9 @@ final class GiftClaimViewLayout: UIView {
     let animationView = LottieAnimationView()
 
     let amountView: IconDetailsView = .create { view in
-        view.spacing = 8.0
+        view.spacing = Constants.amountViewSpacing
         view.detailsLabel.apply(style: .boldLargePrimary)
-        view.iconWidth = 44.0
+        view.iconWidth = Constants.assetIconSize
     }
 
     var assetImageView: UIImageView {
@@ -26,9 +26,9 @@ final class GiftClaimViewLayout: UIView {
     }
 
     let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
-        from: 1.0,
-        to: 0.0,
-        duration: 0.5,
+        from: Constants.fadeAnimatorFromAlpha,
+        to: Constants.fadeAnimatorToAlpha,
+        duration: Constants.fadeAnimatorDuration,
         options: [.curveEaseInOut]
     )
 
@@ -41,7 +41,7 @@ final class GiftClaimViewLayout: UIView {
     )
 
     let selectedWalletView: GenericMultiValueView<GiftClaimSelectedWalletView> = .create { view in
-        view.spacing = 8
+        view.spacing = Constants.selectedWalletViewSpacing
         view.valueTop.apply(style: .footnoteSecondary)
         view.valueTop.textAlignment = .left
     }
@@ -81,16 +81,16 @@ private extension GiftClaimViewLayout {
         addSubview(controlStack)
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(24)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(Constants.titleTopInset)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
         animationView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).inset(-16)
-            make.leading.trailing.equalToSuperview().inset(47.5)
+            make.top.equalTo(titleLabel.snp.bottom).inset(-Constants.animationViewTopOffset)
+            make.leading.trailing.equalToSuperview().inset(Constants.animationViewHorizontalInset)
             make.height.equalTo(animationView.snp.width)
         }
         amountView.snp.makeConstraints { make in
-            make.top.equalTo(animationView.snp.bottom).inset(-8)
+            make.top.equalTo(animationView.snp.bottom).inset(-Constants.amountViewTopOffset)
             make.centerX.equalToSuperview()
         }
         controlStack.snp.makeConstraints { make in
@@ -117,6 +117,39 @@ private extension GiftClaimViewLayout {
             )
         }
     }
+
+    func bind(_ controlsViewModel: GiftClaimViewModel.ControlsViewModel) {
+        selectedWalletControl.bind(viewModel: controlsViewModel.selectedWalletViewModel)
+
+        switch controlsViewModel.claimActionViewModel {
+        case let .enabled(title):
+            claimActionButton.actionButton.imageWithTitleView?.title = title
+            claimActionButton.actionButton.applyDefaultStyle()
+            claimActionButton.isUserInteractionEnabled = true
+        case let .disabled(title):
+            claimActionButton.actionButton.imageWithTitleView?.title = title
+            claimActionButton.actionButton.applyDisabledStyle()
+            claimActionButton.isUserInteractionEnabled = false
+        case .none:
+            claimActionButton.isHidden = true
+        }
+    }
+
+    func bind(
+        _ animationViewModel: LottieAnimation,
+        animationFrameRange: LottieAnimationFrameRange
+    ) {
+        guard animationView.currentFrame <= animationFrameRange.startFrame else {
+            return
+        }
+
+        animationView.animation = animationViewModel
+
+        animationView.play(
+            fromFrame: animationFrameRange.startFrame,
+            toFrame: animationFrameRange.endFrame
+        )
+    }
 }
 
 // MARK: - Internal
@@ -124,22 +157,23 @@ private extension GiftClaimViewLayout {
 extension GiftClaimViewLayout {
     func bind(viewModel: GiftClaimViewModel) {
         titleLabel.text = viewModel.title
-        animationView.animation = viewModel.animation
         amountLabel.text = viewModel.amount
-        claimActionButton.actionButton.imageWithTitleView?.title = viewModel.actionTitle
 
         viewModel.assetIcon.loadImage(
             on: assetImageView,
-            targetSize: CGSize(width: 44.0, height: 44.0),
+            targetSize: CGSize(
+                width: Constants.assetIconSize,
+                height: Constants.assetIconSize
+            ),
             animated: true
         )
 
-        animationView.play(
-            fromFrame: viewModel.animationFrameRange.startFrame,
-            toFrame: viewModel.animationFrameRange.endFrame
+        bind(
+            viewModel.animation,
+            animationFrameRange: viewModel.animationFrameRange
         )
 
-        selectedWalletControl.bind(viewModel: viewModel.)
+        bind(viewModel.controlsViewModel)
     }
 
     func bind(animationFrameRange: LottieAnimationFrameRange) {
@@ -155,5 +189,15 @@ extension GiftClaimViewLayout {
 private extension GiftClaimViewLayout {
     enum Constants {
         static let interButtonSpacing: CGFloat = 24
+        static let amountViewSpacing: CGFloat = 8.0
+        static let assetIconSize: CGFloat = 44.0
+        static let fadeAnimatorFromAlpha: CGFloat = 1.0
+        static let fadeAnimatorToAlpha: CGFloat = 0.0
+        static let fadeAnimatorDuration: TimeInterval = 0.5
+        static let selectedWalletViewSpacing: CGFloat = 8
+        static let titleTopInset: CGFloat = 24
+        static let animationViewTopOffset: CGFloat = 16
+        static let animationViewHorizontalInset: CGFloat = 47.5
+        static let amountViewTopOffset: CGFloat = 8
     }
 }

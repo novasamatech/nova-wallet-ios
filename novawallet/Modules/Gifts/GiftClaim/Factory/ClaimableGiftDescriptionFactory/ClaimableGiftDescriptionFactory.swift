@@ -51,7 +51,7 @@ private extension ClaimableGiftDescriptionFactory {
             let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
                 to: builder,
                 amount: partialDescription.giftAmountWithFee,
-                recipient: partialDescription.claimingAccountId,
+                recipient: partialDescription.claimingAccountId ?? transactionId.recepientAccountId,
                 assetStorageInfo: assetStorageInfo
             )
 
@@ -83,12 +83,12 @@ extension ClaimableGiftDescriptionFactory: ClaimableGiftDescriptionFactoryProtoc
             let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
             let claimingWallet = try claimingWallet()
-            let claimingAccountId = try claimingWallet.fetch(
+            let claimingAccountId = claimingWallet.fetch(
                 for: chainAsset.chain.accountRequest()
-            )?.accountId ?? chainAsset.chain.emptyAccountId()
+            )?.accountId
 
             let transactionId = GiftTransactionFeeId(
-                recepientAccountId: claimingAccountId,
+                recepientAccountId: try claimingAccountId ?? chainAsset.chain.emptyAccountId(),
                 amount: onChainAmountWithFee
             )
             let partialDescription = PartialDescription(
@@ -154,6 +154,6 @@ extension ClaimableGiftDescriptionFactory {
         let accountId: AccountId
         let chainAsset: ChainAsset
         let giftAmountWithFee: OnChainTransferAmount<BigUInt>
-        let claimingAccountId: AccountId
+        let claimingAccountId: AccountId?
     }
 }

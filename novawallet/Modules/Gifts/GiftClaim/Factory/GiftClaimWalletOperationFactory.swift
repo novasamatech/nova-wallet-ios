@@ -5,7 +5,7 @@ enum GiftedWalletType {
     case available(SubType)
     case unavailable(SubType)
 
-    var wallet: MetaAccountModel? {
+    var wallet: MetaAccountModel {
         switch self {
         case let .available(type), let .unavailable(type):
             type.wallet
@@ -28,7 +28,7 @@ extension GiftedWalletType {
 }
 
 protocol GiftClaimWalletOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<GiftedWalletType>
+    func createWrapper(selectedWallet: MetaAccountModel?) -> CompoundOperationWrapper<GiftedWalletType>
 }
 
 final class GiftClaimWalletOperationFactory {
@@ -42,7 +42,10 @@ final class GiftClaimWalletOperationFactory {
 // MARK: - Private
 
 private extension GiftClaimWalletOperationFactory {
-    func determineRecipientWallet(in wallets: [ManagedMetaAccountModel]) throws -> GiftedWalletType {
+    func determineRecipientWallet(
+        in wallets: [ManagedMetaAccountModel],
+        selectedWallet: MetaAccountModel?
+    ) throws -> GiftedWalletType {
         let eligibleWallletTypes: Set<MetaAccountModelType> = [
             .secrets,
             .ledger,
@@ -54,7 +57,7 @@ private extension GiftClaimWalletOperationFactory {
         let eligibleWallets = wallets
             .filter { eligibleWallletTypes.contains($0.info.type) }
 
-        let selectedWallet = wallets.first { $0.isSelected }?.info
+        let selectedWallet = selectedWallet ?? wallets.first { $0.isSelected }?.info
 
         guard let selectedWallet else { throw GiftClaimWalletOperationFactoryError.selectedWalletNotFound }
 
@@ -81,7 +84,7 @@ private extension GiftClaimWalletOperationFactory {
 // MARK: - GiftClaimWalletOperationFactoryProtocol
 
 extension GiftClaimWalletOperationFactory: GiftClaimWalletOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<GiftedWalletType> {
+    func createWrapper(selectedWallet: MetaAccountModel?) -> CompoundOperationWrapper<GiftedWalletType> {
         let walletsFetchOperation = walletRepository.fetchAllOperation(with: .init())
 
         let resultOperation = ClosureOperation<GiftedWalletType> { [weak self] in
@@ -89,7 +92,10 @@ extension GiftClaimWalletOperationFactory: GiftClaimWalletOperationFactoryProtoc
 
             let wallets = try walletsFetchOperation.extractNoCancellableResultData()
 
-            return try determineRecipientWallet(in: wallets)
+            return try determineRecipientWallet(
+                in: wallets,
+                selectedWallet: selectedWallet
+            )
         }
 
         resultOperation.addDependency(walletsFetchOperation)

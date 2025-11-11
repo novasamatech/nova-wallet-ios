@@ -100,11 +100,15 @@ extension EvmGiftClaimFactory: EvmGiftClaimFactoryProtocol {
         evmFee: EvmFeeModel,
         transferType: EvmTransferType
     ) -> CompoundOperationWrapper<Void> {
+        guard let claimingAccountId = giftDescription.claimingAccountId else {
+            return .createWithError(GiftClaimError.claimingAccountNotFound)
+        }
+
         let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper in
             self.createClaimWrapper(
                 dependingOn: giftWrapper,
                 amount: giftDescription.amount,
-                claimingAccountId: giftDescription.claimingAccountId,
+                claimingAccountId: claimingAccountId,
                 evmFee: evmFee,
                 transferType: transferType,
                 chain: giftDescription.chainAsset.chain
