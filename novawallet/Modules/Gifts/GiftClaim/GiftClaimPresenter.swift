@@ -67,7 +67,8 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
         wireframe.showWalletChoose(
             from: view,
             selectedWalletId: giftedWallet.wallet.metaId,
-            delegate: self
+            delegate: self,
+            filter: GiftWalletListFilter()
         )
     }
 

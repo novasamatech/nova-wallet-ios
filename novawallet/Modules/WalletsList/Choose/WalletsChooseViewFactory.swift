@@ -4,10 +4,11 @@ import Foundation_iOS
 final class WalletsChooseViewFactory {
     static func createView(
         for selectedWalletId: String,
-        delegate: WalletsChooseDelegate
+        delegate: WalletsChooseDelegate,
+        using filter: WalletListFilterProtocol?
     ) -> WalletsChooseViewController? {
         guard
-            let interactor = createInteractor(),
+            let interactor = createInteractor(with: filter),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -41,7 +42,7 @@ final class WalletsChooseViewFactory {
         return view
     }
 
-    private static func createInteractor() -> WalletsListInteractor? {
+    private static func createInteractor(with filter: WalletListFilterProtocol?) -> WalletsListInteractor? {
         guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
@@ -49,7 +50,8 @@ final class WalletsChooseViewFactory {
         return WalletsListInteractor(
             balancesStore: balancesStore,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            walletFilter: filter
         )
     }
 }

@@ -7,17 +7,20 @@ class WalletsListInteractor: WalletsListInteractorInputProtocol {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let balancesStore: BalancesStoreProtocol
     let chainRegistry: ChainRegistryProtocol
+    let walletFilter: WalletListFilterProtocol?
 
     private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
 
     init(
         balancesStore: BalancesStoreProtocol,
         chainRegistry: ChainRegistryProtocol,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
+        walletFilter: WalletListFilterProtocol? = nil
     ) {
         self.balancesStore = balancesStore
         self.chainRegistry = chainRegistry
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
+        self.walletFilter = walletFilter
     }
 
     private func subscribeWallets() {
@@ -48,13 +51,21 @@ class WalletsListInteractor: WalletsListInteractorInputProtocol {
         subscribeWallets()
         setupBalancesStore()
     }
+
+    func filter(
+        _ changes: [DataProviderChange<ManagedMetaAccountModel>]
+    ) -> [DataProviderChange<ManagedMetaAccountModel>] {
+        guard let walletFilter else { return changes }
+
+        return walletFilter.apply(for: changes)
+    }
 }
 
 extension WalletsListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
         switch result {
         case let .success(changes):
-            applyWallets(changes: changes)
+            applyWallets(changes: filter(changes))
         case let .failure(error):
             basePresenter?.didReceiveError(error)
         }
