@@ -7,10 +7,14 @@ class GiftClaimInteractor {
 
     let chainRegistry: ChainRegistryProtocol
     let walletOperationFactory: GiftClaimWalletOperationFactoryProtocol
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
 
     let claimableGift: ClaimableGiftInfo
     let totalAmount: BigUInt
+
+    var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
+    var giftedWallet: GiftedWalletType?
 
     let operationQueue: OperationQueue
 
@@ -18,12 +22,14 @@ class GiftClaimInteractor {
         chainRegistry: ChainRegistryProtocol,
         claimableGift: ClaimableGiftInfo,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
         operationQueue: OperationQueue,
     ) {
         self.chainRegistry = chainRegistry
         self.walletOperationFactory = walletOperationFactory
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.logger = logger
         self.claimableGift = claimableGift
         self.totalAmount = totalAmount
@@ -39,8 +45,15 @@ class GiftClaimInteractor {
     }
 }
 
+extension GiftClaimInteractor {
+    func setupSelectedWalletSubscription() {
+        walletListSubscription = subscribeSelectedWalletProvider()
+    }
+}
+
 extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
     func setup() {
+        setupSelectedWalletSubscription()
         performSetup(with: nil)
     }
 
@@ -50,6 +63,19 @@ extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
 
     func changeWallet(to wallet: MetaAccountModel) {
         performSetup(with: wallet)
+    }
+}
+
+extension GiftClaimInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleSelectedWallet(result: Result<ManagedMetaAccountModel?, any Error>) {
+        switch result {
+        case let .success(managedMetaAccount):
+            guard giftedWallet != nil else { return }
+
+            performSetup(with: managedMetaAccount?.info)
+        case let .failure(error):
+            logger.error("Failed on wallet subscription: \(error)")
+        }
     }
 }
 

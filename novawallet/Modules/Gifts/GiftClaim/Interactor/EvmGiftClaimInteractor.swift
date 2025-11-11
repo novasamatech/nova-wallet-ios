@@ -15,6 +15,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
         chainRegistry: ChainRegistryProtocol,
         claimableGift: ClaimableGiftInfo,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
         operationQueue: OperationQueue
@@ -26,6 +27,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
             chainRegistry: chainRegistry,
             claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
+            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             logger: logger,
             totalAmount: totalAmount,
             operationQueue: operationQueue
@@ -81,8 +83,9 @@ private extension EvmGiftClaimInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(setupResult):
-                self?.presenter?.didReceive(setupResult.claimSetupResult)
+                self?.giftedWallet = setupResult.claimSetupResult.giftedWallet
                 self?.lastFee = setupResult.fee
+                self?.presenter?.didReceive(setupResult.claimSetupResult)
             case let .failure(error):
                 self?.presenter?.didReceive(error)
                 self?.logger.error("Failed on setup: \(error)")

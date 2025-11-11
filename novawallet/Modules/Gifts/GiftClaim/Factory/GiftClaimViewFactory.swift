@@ -116,6 +116,7 @@ private extension GiftClaimViewFactory {
             claimableGift: claimableGift,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             walletOperationFactory: walletOperationFactory,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             logger: logger,
             totalAmount: totalAmount,
             operationQueue: operationQueue
@@ -180,6 +181,7 @@ private extension GiftClaimViewFactory {
             chainRegistry: chainRegistry,
             claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             logger: logger,
             totalAmount: totalAmount,
             operationQueue: operationQueue

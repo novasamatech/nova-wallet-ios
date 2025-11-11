@@ -17,6 +17,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
         claimableGift: ClaimableGiftInfo,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
         totalAmount: BigUInt,
         operationQueue: OperationQueue
@@ -29,6 +30,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
             chainRegistry: chainRegistry,
             claimableGift: claimableGift,
             walletOperationFactory: walletOperationFactory,
+            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             logger: logger,
             totalAmount: totalAmount,
             operationQueue: operationQueue
@@ -118,6 +120,7 @@ private extension SubstrateGiftClaimInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(setupResult):
+                self?.giftedWallet = setupResult.giftedWallet
                 self?.presenter?.didReceive(setupResult)
             case let .failure(error):
                 self?.presenter?.didReceive(error)
