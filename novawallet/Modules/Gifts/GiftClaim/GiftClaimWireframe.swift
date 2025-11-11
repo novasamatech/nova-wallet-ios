@@ -5,7 +5,7 @@ final class GiftClaimWireframe: GiftClaimWireframeProtocol {
         guard let manageWalletsView = WalletManageViewFactory.createViewForAdding() else {
             return
         }
-        
+
         let navigationController = NovaNavigationController(
             rootViewController: manageWalletsView.controller
         )
