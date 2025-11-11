@@ -35,7 +35,7 @@ private extension SubstrateGiftClaimFactory {
         claimingAccountId: AccountId,
         assetStorageInfo: AssetStorageInfo?
     ) -> CompoundOperationWrapper<Void> {
-        let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
+        let extrinsicBuilderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let (newBuilder, _) = try addingTransferCommand(
@@ -50,7 +50,7 @@ private extension SubstrateGiftClaimFactory {
 
         let submitAndMonitorWrapper = createSubmitAndMonitorWrapper(
             gift: { try giftWrapper.targetOperation.extractNoCancellableResultData() },
-            extrinsicBuilderClosure: extrinsicBuilderClosre,
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
             chainAssetId: chainAsset.chainAssetId
         )
 

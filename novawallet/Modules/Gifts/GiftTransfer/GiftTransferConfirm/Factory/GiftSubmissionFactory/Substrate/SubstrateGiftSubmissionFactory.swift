@@ -31,7 +31,7 @@ final class SubstrateGiftSubmissionFactory {
     ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata> {
         var callCodingPath: CallCodingPath?
 
-        let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
+        let extrinsicBuilderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
@@ -49,7 +49,7 @@ final class SubstrateGiftSubmissionFactory {
         }
 
         let submitAndMonitorWrapper = extrinsicMonitorFactory.submitAndMonitorWrapper(
-            extrinsicBuilderClosure: extrinsicBuilderClosre,
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
             payingIn: chainAsset.chainAssetId,
             signer: signingWrapper
         )
