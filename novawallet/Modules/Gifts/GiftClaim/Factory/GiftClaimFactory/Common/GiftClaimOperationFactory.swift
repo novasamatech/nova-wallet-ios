@@ -35,22 +35,6 @@ final class GiftClaimFactory {
 // MARK: - Private
 
 private extension GiftClaimFactory {
-    func createCleanGiftWrapper(
-        for giftAccountId: @escaping () throws -> AccountId,
-        chainAsset: ChainAsset
-    ) -> CompoundOperationWrapper<Void> {
-        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-            let secretInfo = GiftSecretKeyInfo(
-                accountId: try giftAccountId(),
-                ethereumBased: chainAsset.chain.isEthereumBased
-            )
-
-            return CompoundOperationWrapper(
-                targetOperation: self.giftSecretsCleaningFactory.cleanSecrets(for: secretInfo)
-            )
-        }
-    }
-
     func createGiftWrapperOrError(
         basedOn claimAvailabilityWrapper: CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>,
         seed: Data,
@@ -95,17 +79,11 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
         let claimWrapper = claimWrapperProvider(
             giftWrapper
         )
-        let cleaningWrapper = createCleanGiftWrapper(
-            for: { try giftWrapper.targetOperation.extractNoCancellableResultData().giftAccountId },
-            chainAsset: description.chainAsset
-        )
 
         giftWrapper.addDependency(wrapper: claimAvailabilityWrapper)
         claimWrapper.addDependency(wrapper: giftWrapper)
-        cleaningWrapper.addDependency(wrapper: claimWrapper)
 
-        return cleaningWrapper
-            .insertingHead(operations: claimWrapper.allOperations)
+        return claimWrapper
             .insertingHead(operations: giftWrapper.allOperations)
             .insertingHead(operations: claimAvailabilityWrapper.allOperations)
     }

@@ -23,15 +23,17 @@ final class GiftClaimFactoryFacade {
         self.operationQueue = operationQueue
     }
 
-    convenience init(operationQueue: OperationQueue) {
-        let keyStore = Keychain()
-        let giftSecretsManager = GiftSecretsManager(keystore: keyStore)
+    convenience init(
+        operationQueue: OperationQueue,
+        keystore: KeystoreProtocol
+    ) {
+        let giftSecretsManager = GiftSecretsManager(keystore: keystore)
         let giftFactory = GiftOperationFactory(
             metaId: nil,
             secretsManager: giftSecretsManager
         )
 
-        let signingWrapperFactory = SigningWrapperFactory()
+        let signingWrapperFactory = SigningWrapperFactory(keystore: keystore)
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
 import BigInt
 
 struct GiftClaimViewFactory {
@@ -106,7 +107,8 @@ private extension GiftClaimViewFactory {
         )
 
         let claimOperationFactory = GiftClaimFactoryFacade(
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            keystore: InMemoryKeychain(),
         ).createSubstrateFactory(extrinsicMonitorFactory: extrinsicMonitorFactory)
 
         return SubstrateGiftClaimInteractor(
@@ -172,7 +174,8 @@ private extension GiftClaimViewFactory {
         )
 
         let claimOperationFactory = GiftClaimFactoryFacade(
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            keystore: InMemoryKeychain()
         ).createEvmFactory(transactionService: transactionService)
 
         return EvmGiftClaimInteractor(

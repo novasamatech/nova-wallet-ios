@@ -9,6 +9,8 @@ final class ClaimGiftUrlParsingService {
     private let giftPublicKeyProvider: GiftPublicKeyProvidingProtocol
     private let operationQueue: OperationQueue
 
+    let callStore = CancellableCallStore()
+
     init(
         chainRegistry: ChainRegistryProtocol,
         claimAvailabilityChecker: GiftClaimAvailabilityCheckFactoryProtocol,
@@ -146,9 +148,10 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
 
         let wrapper = createWrapper(from: payloadString)
 
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: callStore,
             runningCallbackIn: .main
         ) { result in
             switch result {
@@ -165,7 +168,9 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         }
     }
 
-    func cancel() {}
+    func cancel() {
+        callStore.cancel()
+    }
 }
 
 struct ClaimGiftPayload {
