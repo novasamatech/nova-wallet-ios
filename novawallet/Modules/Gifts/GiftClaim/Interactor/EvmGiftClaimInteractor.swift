@@ -34,9 +34,9 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
 
     // MARK: - Override
 
-    override func performSetup() {
+    override func performSetup(with wallet: MetaAccountModel?) {
         setupTransferType()
-        setupGift(selectedWallet: nil)
+        setupGift(selectedWallet: wallet)
     }
 
     override func claimGift(giftDescription: ClaimableGiftDescription) {

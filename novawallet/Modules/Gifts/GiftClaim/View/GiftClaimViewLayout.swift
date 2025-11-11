@@ -58,6 +58,11 @@ final class GiftClaimViewLayout: UIView {
         controlStack
     ]
 
+    lazy var disAppearingViews: [UIView] = [
+        titleLabel,
+        controlStack
+    ]
+
     let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: Constants.appearanceAnimatorFromAlpha,
         to: Constants.appearanceAnimatorToAlpha,
@@ -133,7 +138,7 @@ private extension GiftClaimViewLayout {
     }
 
     func animateContentDisappearance() {
-        appearingViews.forEach {
+        disAppearingViews.forEach {
             disappearanceAnimator.animate(
                 view: $0,
                 completionBlock: nil
@@ -202,12 +207,23 @@ extension GiftClaimViewLayout {
     }
 
     func bind(animationFrameRange: LottieAnimationFrameRange) {
+        animateContentDisappearance()
+
         animationView.play(
             fromFrame: animationFrameRange.startFrame,
             toFrame: animationFrameRange.endFrame
-        ) { [weak self] _ in
-            self?.animateContentDisappearance()
+        )
+    }
+
+    func bind(loading: Bool) {
+        selectedWalletView.isUserInteractionEnabled = !loading
+
+        guard loading else {
+            claimActionButton.stopLoading()
+            return
         }
+
+        claimActionButton.startLoading()
     }
 }
 

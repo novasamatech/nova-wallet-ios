@@ -30,7 +30,7 @@ class GiftClaimInteractor {
         self.operationQueue = operationQueue
     }
 
-    func performSetup() {
+    func performSetup(with _: MetaAccountModel?) {
         fatalError("Must be overriden by a subclass")
     }
 
@@ -41,11 +41,15 @@ class GiftClaimInteractor {
 
 extension GiftClaimInteractor: GiftClaimInteractorInputProtocol {
     func setup() {
-        performSetup()
+        performSetup(with: nil)
     }
 
     func claimGift(with giftDescription: ClaimableGiftDescription) {
         claimGift(giftDescription: giftDescription)
+    }
+
+    func changeWallet(to wallet: MetaAccountModel) {
+        performSetup(with: wallet)
     }
 }
 

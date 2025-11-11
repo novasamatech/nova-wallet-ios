@@ -13,6 +13,7 @@ protocol GiftClaimPresenterProtocol: AnyObject {
 
 protocol GiftClaimInteractorInputProtocol: AnyObject {
     func setup()
+    func changeWallet(to wallet: MetaAccountModel)
     func claimGift(with giftDescription: ClaimableGiftDescription)
 }
 
@@ -22,4 +23,4 @@ protocol GiftClaimInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable, WalletChoosePresentable {}

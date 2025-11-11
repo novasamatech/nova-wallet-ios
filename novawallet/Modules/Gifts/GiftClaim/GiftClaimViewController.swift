@@ -36,10 +36,19 @@ private extension GiftClaimViewController {
             action: #selector(actionClaim),
             for: .touchUpInside
         )
+        rootView.selectedWalletControl.addTarget(
+            self,
+            action: #selector(actionSelectWallet),
+            for: .touchUpInside
+        )
     }
 
     @objc func actionClaim() {
         presenter.actionClaim()
+    }
+
+    @objc func actionSelectWallet() {
+        presenter.actionSelectWallet()
     }
 }
 
@@ -55,10 +64,10 @@ extension GiftClaimViewController: GiftClaimViewProtocol {
     }
 
     func didStartLoading() {
-        rootView.claimActionButton.startLoading()
+        rootView.bind(loading: true)
     }
 
     func didStopLoading() {
-        rootView.claimActionButton.stopLoading()
+        rootView.bind(loading: false)
     }
 }

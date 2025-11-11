@@ -37,8 +37,8 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
 
     // MARK: - Override
 
-    override func performSetup() {
-        setupAssetInfo()
+    override func performSetup(with wallet: MetaAccountModel?) {
+        setupAssetInfo(with: wallet)
     }
 
     override func claimGift(giftDescription: ClaimableGiftDescription) {
@@ -67,7 +67,12 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
 // MARK: - Private
 
 private extension SubstrateGiftClaimInteractor {
-    func setupAssetInfo() {
+    func setupAssetInfo(with wallet: MetaAccountModel?) {
+        guard assetStorageInfo == nil else {
+            continueSetup(with: wallet)
+            return
+        }
+
         guard let runtimeService = chainRegistry.getRuntimeProvider(
             for: claimableGift.chainAsset.chain.chainId
         ) else { return }
@@ -86,7 +91,7 @@ private extension SubstrateGiftClaimInteractor {
             switch result {
             case let .success(info):
                 self?.assetStorageInfo = info
-                self?.continueSetup()
+                self?.continueSetup(with: wallet)
             case let .failure(error):
                 self?.presenter?.didReceive(error)
                 self?.logger.error("Failed on fetch asset storage info: \(error)")
@@ -94,8 +99,8 @@ private extension SubstrateGiftClaimInteractor {
         }
     }
 
-    func continueSetup() {
-        setupGift(selectedWallet: nil)
+    func continueSetup(with wallet: MetaAccountModel?) {
+        setupGift(selectedWallet: wallet)
     }
 
     func setupGift(selectedWallet: MetaAccountModel?) {

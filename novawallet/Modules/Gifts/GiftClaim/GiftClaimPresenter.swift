@@ -61,7 +61,15 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
         interactor.claimGift(with: giftDescription)
     }
 
-    func actionSelectWallet() {}
+    func actionSelectWallet() {
+        guard let giftedWallet else { return }
+
+        wireframe.showWalletChoose(
+            from: view,
+            selectedWalletId: giftedWallet.wallet.metaId,
+            delegate: self
+        )
+    }
 
     func setup() {
         interactor.setup()
@@ -91,5 +99,15 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
             from: view,
             locale: localizationManager.selectedLocale
         )
+    }
+}
+
+// MARK: - WalletsChooseDelegate
+
+extension GiftClaimPresenter: WalletsChooseDelegate {
+    func walletChooseDidSelect(item: ManagedMetaAccountModel) {
+        wireframe.closeWalletChoose(on: view) { [weak self] in
+            self?.interactor.changeWallet(to: item.info)
+        }
     }
 }
