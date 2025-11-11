@@ -33,6 +33,7 @@ private extension GiftClaimSelectedWalletView {
 
         accessoryView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
         accessoryView.contentMode = .scaleAspectFit
+        accessoryView.isHidden = true
     }
 
     func setupLayout() {
@@ -49,6 +50,7 @@ private extension GiftClaimSelectedWalletView {
 extension GiftClaimSelectedWalletView {
     func bind(viewModel: GiftClaimViewModel.WalletViewModel) {
         walletView.bind(viewModel: viewModel.walletViewModel)
+        accessoryView.isHidden = !viewModel.showAccessory
     }
 }
 

@@ -17377,6 +17377,7 @@
 		2D4524562EC2353900CBDD0D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				944BA53226A3DA9538D87403 /* GiftClaimViewLayout.swift */,
 				2D45245A2EC2356200CBDD0D /* GiftClaimSelectedWalletView.swift */,
 			);
 			path = View;
@@ -29768,7 +29769,6 @@
 				37513C1D98A2D9583348BD66 /* GiftClaimWireframe.swift */,
 				6624AEEBE83F22E33A359F8E /* GiftClaimPresenter.swift */,
 				B44A5CE2B4700FE36919B523 /* GiftClaimViewController.swift */,
-				944BA53226A3DA9538D87403 /* GiftClaimViewLayout.swift */,
 			);
 			path = GiftClaim;
 			sourceTree = "<group>";

@@ -25,13 +25,6 @@ final class GiftClaimViewLayout: UIView {
         amountView.detailsLabel
     }
 
-    let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
-        from: Constants.fadeAnimatorFromAlpha,
-        to: Constants.fadeAnimatorToAlpha,
-        duration: Constants.fadeAnimatorDuration,
-        options: [.curveEaseInOut]
-    )
-
     lazy var controlStack = UIStackView.vStack(
         spacing: Constants.interButtonSpacing,
         [
@@ -59,10 +52,31 @@ final class GiftClaimViewLayout: UIView {
         view.actionButton.applyEnabledStyle()
     }
 
+    lazy var appearingViews: [UIView] = [
+        titleLabel,
+        amountView,
+        controlStack
+    ]
+
+    let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: Constants.appearanceAnimatorFromAlpha,
+        to: Constants.appearanceAnimatorToAlpha,
+        duration: Constants.fadeAnimatorDuration,
+        options: [.curveEaseInOut]
+    )
+
+    let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: Constants.disappearanceAnimatorFromAlpha,
+        to: Constants.disappearanceAnimatorToAlpha,
+        duration: Constants.fadeAnimatorDuration,
+        options: [.curveEaseInOut]
+    )
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        setupStyle()
     }
 
     @available(*, unavailable)
@@ -105,12 +119,21 @@ private extension GiftClaimViewLayout {
         }
     }
 
+    func setupStyle() {
+        appearingViews.forEach { $0.alpha = 0 }
+    }
+
+    func animateContentAppearance() {
+        appearingViews.forEach {
+            appearanceAnimator.animate(
+                view: $0,
+                completionBlock: nil
+            )
+        }
+    }
+
     func animateContentDisappearance() {
-        [
-            titleLabel,
-            amountView,
-            claimActionButton
-        ].forEach {
+        appearingViews.forEach {
             disappearanceAnimator.animate(
                 view: $0,
                 completionBlock: nil
@@ -148,7 +171,9 @@ private extension GiftClaimViewLayout {
         animationView.play(
             fromFrame: animationFrameRange.startFrame,
             toFrame: animationFrameRange.endFrame
-        )
+        ) { [weak self] _ in
+            self?.animateContentAppearance()
+        }
     }
 }
 
@@ -180,7 +205,9 @@ extension GiftClaimViewLayout {
         animationView.play(
             fromFrame: animationFrameRange.startFrame,
             toFrame: animationFrameRange.endFrame
-        )
+        ) { [weak self] _ in
+            self?.animateContentDisappearance()
+        }
     }
 }
 
@@ -191,8 +218,10 @@ private extension GiftClaimViewLayout {
         static let interButtonSpacing: CGFloat = 24
         static let amountViewSpacing: CGFloat = 8.0
         static let assetIconSize: CGFloat = 44.0
-        static let fadeAnimatorFromAlpha: CGFloat = 1.0
-        static let fadeAnimatorToAlpha: CGFloat = 0.0
+        static let disappearanceAnimatorFromAlpha: CGFloat = 1.0
+        static let disappearanceAnimatorToAlpha: CGFloat = 0.0
+        static let appearanceAnimatorFromAlpha: CGFloat = 0.0
+        static let appearanceAnimatorToAlpha: CGFloat = 1.0
         static let fadeAnimatorDuration: TimeInterval = 0.5
         static let selectedWalletViewSpacing: CGFloat = 8
         static let titleTopInset: CGFloat = 24
