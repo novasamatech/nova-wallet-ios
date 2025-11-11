@@ -238,7 +238,7 @@ private extension GiftClaimViewModelFactory {
     ) -> WarningView.Model? {
         let wallet = giftedWallet.wallet
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
-        
+
         switch giftedWallet {
         case .available:
             guard wallet.fetch(for: chain.accountRequest()) == nil else {
