@@ -15,18 +15,15 @@ protocol GiftClaimFactoryProtocol {
 
 final class GiftClaimFactory {
     let giftFactory: GiftOperationFactoryProtocol
-    let giftSecretsCleaningFactory: GiftSecretsCleaningProtocol
     let claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol
     let operationQueue: OperationQueue
 
     init(
         giftFactory: GiftOperationFactoryProtocol,
-        giftSecretsCleaningFactory: GiftSecretsCleaningProtocol,
         claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.giftFactory = giftFactory
-        self.giftSecretsCleaningFactory = giftSecretsCleaningFactory
         self.claimAvailabilityCheckFactory = claimAvailabilityCheckFactory
         self.operationQueue = operationQueue
     }

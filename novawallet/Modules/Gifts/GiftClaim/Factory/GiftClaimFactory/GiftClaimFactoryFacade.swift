@@ -68,7 +68,6 @@ private extension GiftClaimFactoryFacade {
     func createClaimFactory() -> GiftClaimFactoryProtocol {
         GiftClaimFactory(
             giftFactory: giftFactory,
-            giftSecretsCleaningFactory: giftSecretManager,
             claimAvailabilityCheckFactory: claimAvailabilityCheckFactory,
             operationQueue: operationQueue
         )
