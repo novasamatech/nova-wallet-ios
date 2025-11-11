@@ -51,6 +51,7 @@ extension GiftClaimSelectedWalletView {
     func bind(viewModel: GiftClaimViewModel.WalletViewModel) {
         walletView.bind(viewModel: viewModel.walletViewModel)
         accessoryView.isHidden = !viewModel.showAccessory
+        isUserInteractionEnabled = viewModel.showAccessory
     }
 }
 

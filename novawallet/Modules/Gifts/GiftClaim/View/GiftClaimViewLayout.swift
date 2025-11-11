@@ -158,10 +158,12 @@ private extension GiftClaimViewLayout {
             claimActionButton.actionButton.imageWithTitleView?.title = title
             claimActionButton.actionButton.applyDefaultStyle()
             claimActionButton.isUserInteractionEnabled = true
+            claimActionButton.isHidden = false
         case let .disabled(title):
             claimActionButton.actionButton.imageWithTitleView?.title = title
             claimActionButton.actionButton.applyDisabledStyle()
             claimActionButton.isUserInteractionEnabled = false
+            claimActionButton.isHidden = false
         case .none:
             claimActionButton.isHidden = true
         }
