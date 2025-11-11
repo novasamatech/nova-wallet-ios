@@ -6,9 +6,13 @@ enum GiftedWalletType {
     case unavailable(SubType)
 
     var wallet: MetaAccountModel {
+        subtype.wallet
+    }
+
+    var subtype: GiftedWalletType.SubType {
         switch self {
         case let .available(type), let .unavailable(type):
-            type.wallet
+            type
         }
     }
 }

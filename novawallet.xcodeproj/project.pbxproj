@@ -1932,6 +1932,7 @@
 		2D73AD382EC32587002DE18F /* WalletListFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD372EC32587002DE18F /* WalletListFilter.swift */; };
 		2D73AD4A2EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD492EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift */; };
 		2D73AD4F2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */; };
+		2D73AD562EC332B3002DE18F /* WarningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D73AD552EC332B3002DE18F /* WarningView.swift */; };
 		2D74CA3F2CF7262E004EAD8C /* BrowserOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */; };
 		2D74CA412CF74752004EAD8C /* DAppBrowserWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */; };
 		2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */; };
@@ -8590,6 +8591,7 @@
 		2D73AD372EC32587002DE18F /* WalletListFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListFilter.swift; sourceTree = "<group>"; };
 		2D73AD492EC32CDD002DE18F /* WalletsAccountsChooseViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsAccountsChooseViewModelFactory.swift; sourceTree = "<group>"; };
 		2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWalletChoosePresentable.swift; sourceTree = "<group>"; };
+		2D73AD552EC332B3002DE18F /* WarningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningView.swift; sourceTree = "<group>"; };
 		2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserOpening.swift; sourceTree = "<group>"; };
 		2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetView.swift; sourceTree = "<group>"; };
 		2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetModel.swift; sourceTree = "<group>"; };
@@ -18982,6 +18984,7 @@
 				2D4524192EC1DD0E00CBDD0D /* EvmTransferType.swift */,
 				2D86C8A82EBCB52E003325FC /* EvmRemoteBalanceQueryFactory.swift */,
 				2D73AD4E2EC32EE8002DE18F /* GiftWalletChoosePresentable.swift */,
+				2D73AD552EC332B3002DE18F /* WarningView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -36725,6 +36728,7 @@
 				C802F43E2481C2A091F86CFF /* NotificationWalletListViewFactory.swift in Sources */,
 				A8B288AA4F50470D691C72CE /* OnboardingWalletReadyProtocols.swift in Sources */,
 				DCF2CE30778120734F4FEE7C /* OnboardingWalletReadyWireframe.swift in Sources */,
+				2D73AD562EC332B3002DE18F /* WarningView.swift in Sources */,
 				D153449DFFDC31C7CBB7E7EA /* OnboardingWalletReadyPresenter.swift in Sources */,
 				97FC0EC2B587AAB299FC75A1 /* OnboardingWalletReadyInteractor.swift in Sources */,
 				770B26D96689F1A253B1348D /* OnboardingWalletReadyViewController.swift in Sources */,

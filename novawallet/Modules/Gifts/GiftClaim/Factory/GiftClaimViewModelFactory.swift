@@ -49,15 +49,15 @@ private extension GiftClaimViewModelFactory {
         locale: Locale
     ) -> GiftClaimViewModel.ControlsViewModel? {
         switch giftedWallet {
-        case let .available(subType):
+        case .available:
             createAvailableControlsViewModel(
-                for: subType,
+                for: giftedWallet,
                 giftDescription: giftDescription,
                 locale: locale
             )
-        case let .unavailable(subType):
+        case .unavailable:
             createUnavailableControlsViewModel(
-                for: subType,
+                for: giftedWallet,
                 giftDescription: giftDescription,
                 locale: locale
             )
@@ -65,10 +65,12 @@ private extension GiftClaimViewModelFactory {
     }
 
     func createAvailableControlsViewModel(
-        for walletAvailabilityType: GiftedWalletType.SubType,
+        for giftedWalletType: GiftedWalletType,
         giftDescription: ClaimableGiftDescription,
         locale: Locale
     ) -> GiftClaimViewModel.ControlsViewModel? {
+        let walletAvailabilityType = giftedWalletType.subtype
+
         guard
             let claimingAccountId = giftDescription.claimingAccountId,
             let address = try? claimingAccountId.toAddress(
@@ -127,17 +129,26 @@ private extension GiftClaimViewModelFactory {
             showAccessory: showAccessory
         )
 
+        let warningViewModel = createWarningViewModel(
+            for: giftedWalletType,
+            chain: giftDescription.chainAsset.chain,
+            locale: locale
+        )
+
         return GiftClaimViewModel.ControlsViewModel(
             claimActionViewModel: claimAction,
-            selectedWalletViewModel: walletControl
+            selectedWalletViewModel: walletControl,
+            warningViewModel: nil
         )
     }
 
     func createUnavailableControlsViewModel(
-        for walletAvailabilityType: GiftedWalletType.SubType,
+        for giftedWalletType: GiftedWalletType,
         giftDescription: ClaimableGiftDescription,
         locale: Locale
     ) -> GiftClaimViewModel.ControlsViewModel? {
+        let walletAvailabilityType = giftedWalletType.subtype
+
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let showAccessory: Bool
@@ -207,10 +218,76 @@ private extension GiftClaimViewModelFactory {
             showAccessory: showAccessory
         )
 
+        let warningViewModel = createWarningViewModel(
+            for: giftedWalletType,
+            chain: giftDescription.chainAsset.chain,
+            locale: locale
+        )
+
         return GiftClaimViewModel.ControlsViewModel(
             claimActionViewModel: claimAction,
-            selectedWalletViewModel: walletControl
+            selectedWalletViewModel: walletControl,
+            warningViewModel: warningViewModel
         )
+    }
+
+    func createWarningViewModel(
+        for giftedWallet: GiftedWalletType,
+        chain: ChainModel,
+        locale: Locale
+    ) -> WarningView.Model? {
+        let wallet = giftedWallet.wallet
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+        
+        switch giftedWallet {
+        case .available:
+            guard wallet.fetch(for: chain.accountRequest()) == nil else {
+                return nil
+            }
+
+            return WarningView.Model(
+                title: localizedStrings.giftClaimWarningAccount(chain.name),
+                message: nil,
+                learnMore: nil
+            )
+        case .unavailable:
+            let walletTypeString = description(for: wallet.type, locale: locale)
+
+            let learnMoreViewModel = LearnMoreViewModel(
+                iconViewModel: nil,
+                title: localizedStrings.giftClaimWarningWalletManageAction()
+            )
+
+            return WarningView.Model(
+                title: localizedStrings.giftClaimWarningWalletTitle(walletTypeString),
+                message: localizedStrings.giftClaimWarningWalletMessage(),
+                learnMore: learnMoreViewModel
+            )
+        }
+    }
+
+    func description(
+        for walletType: MetaAccountModelType,
+        locale: Locale
+    ) -> String {
+        let languages = locale.rLanguages
+
+        return switch walletType {
+        case .secrets:
+            R.string(preferredLanguages: languages).localizable.commonAccount()
+        case .watchOnly:
+            R.string(preferredLanguages: languages).localizable.commonWatchOnly()
+        case .paritySigner:
+            R.string(preferredLanguages: languages).localizable.commonParitySigner()
+        case .ledger, .genericLedger:
+            R.string(preferredLanguages: languages).localizable.commonLedger()
+        case .polkadotVault:
+            R.string(preferredLanguages: languages).localizable.commonPolkadotVault()
+        case .proxied:
+            R.string(preferredLanguages: languages).localizable.commonProxied()
+        case .multisig:
+            R.string(preferredLanguages: languages).localizable.commonMultisig()
+        }
     }
 }
 

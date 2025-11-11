@@ -131,6 +131,11 @@ extension UILabel.Style {
         font: .caption1
     )
 
+    static let caption1Accent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .caption1
+    )
+
     static let caption1Positive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .caption1

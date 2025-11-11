@@ -1994,3 +1994,7 @@
 "gift.claim.title" = "You’ve got a crypto gift!";
 "gift.claim.action.title" = "Claim the gift";
 "gift.claim.wallet.hint" = "Your wallet to receive the gift";
+"gift.claim.warning.account" = "Use another wallet, create a new one, or add a %@ account to this wallet in Settings.";
+"gift.claim.warning.wallet.title" = "You can’t receive a gift with a %@ wallet";
+"gift.claim.warning.wallet.message" = "Create a new wallet or import an existing one to claim the gift";
+"gift.claim.warning.wallet.manage.action" = "Manage Wallets";

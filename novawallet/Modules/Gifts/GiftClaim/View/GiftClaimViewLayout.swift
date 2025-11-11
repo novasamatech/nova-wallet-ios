@@ -29,6 +29,7 @@ final class GiftClaimViewLayout: UIView {
         spacing: Constants.interButtonSpacing,
         [
             selectedWalletView,
+            warningView,
             claimActionButton
         ]
     )
@@ -51,6 +52,8 @@ final class GiftClaimViewLayout: UIView {
         view.actionButton.imageWithTitleView?.titleFont = .semiBoldSubheadline
         view.actionButton.applyEnabledStyle()
     }
+
+    let warningView = WarningView()
 
     lazy var appearingViews: [UIView] = [
         titleLabel,
@@ -116,6 +119,7 @@ private extension GiftClaimViewLayout {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(UIConstants.actionBottomInset)
         }
+
         claimActionButton.snp.makeConstraints { make in
             make.height.equalTo(UIConstants.actionHeight)
         }
@@ -160,6 +164,13 @@ private extension GiftClaimViewLayout {
             claimActionButton.isUserInteractionEnabled = false
         case .none:
             claimActionButton.isHidden = true
+        }
+
+        if let warningViewModel = controlsViewModel.warningViewModel {
+            warningView.isHidden = false
+            warningView.bind(warningViewModel)
+        } else {
+            warningView.isHidden = true
         }
     }
 

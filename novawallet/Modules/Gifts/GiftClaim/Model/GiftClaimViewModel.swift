@@ -14,6 +14,7 @@ extension GiftClaimViewModel {
     struct ControlsViewModel {
         let claimActionViewModel: ClaimActionViewModel?
         let selectedWalletViewModel: WalletViewModel
+        let warningViewModel: WarningView.Model?
     }
 
     enum ClaimActionViewModel {
