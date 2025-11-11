@@ -73,9 +73,14 @@ private extension GiftClaimViewModelFactory {
             let claimingAccountId = giftDescription.claimingAccountId,
             let address = try? claimingAccountId.toAddress(
                 using: giftDescription.chainAsset.chain.chainFormat
-            ),
-            let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
+            )
         else { return nil }
+
+        let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
+
+        let addressImageViewModel = addressDrawableIcon.map {
+            DrawableIconViewModel(icon: $0)
+        }
 
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -104,13 +109,14 @@ private extension GiftClaimViewModelFactory {
             name: wallet.name
         )
 
-        let chainAccountModel: WalletView.ViewModel.ChainAccountAddressInfo = .address(
-            DisplayAddressViewModel(
-                address: address,
-                name: nil,
-                imageViewModel: DrawableIconViewModel(icon: addressDrawableIcon)
-            )
+        let addressViewModel = DisplayAddressViewModel(
+            address: address,
+            name: nil,
+            imageViewModel: addressImageViewModel
         )
+
+        let chainAccountModel: WalletView.ViewModel.ChainAccountAddressInfo = .address(addressViewModel)
+
         let walletviewModel = WalletView.ViewModel(
             wallet: walletInfoViewModel,
             type: .account(chainAccountModel)
@@ -134,16 +140,21 @@ private extension GiftClaimViewModelFactory {
     ) -> GiftClaimViewModel.ControlsViewModel? {
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let showAccessory = switch walletAvailabilityType {
-        case .oneInSet: true
-        case .single: false
+        let showAccessory: Bool
+        var claimAction: GiftClaimViewModel.ClaimActionViewModel?
+
+        switch walletAvailabilityType {
+        case .oneInSet:
+            showAccessory = true
+            claimAction = .disabled(
+                title: localizedStrings.commonSelectWallet()
+            )
+        case .single:
+            showAccessory = false
+            claimAction = nil
         }
 
         let wallet = walletAvailabilityType.wallet
-
-        let claimAction: GiftClaimViewModel.ClaimActionViewModel = .disabled(
-            title: localizedStrings.giftClaimActionTitle()
-        )
 
         let optIcon = wallet.walletIdenticonData().flatMap {
             try? walletIconGenerator.generateFromAccountId($0)
@@ -165,13 +176,16 @@ private extension GiftClaimViewModelFactory {
             let claimingAccountId = giftDescription.claimingAccountId,
             let address = try? claimingAccountId.toAddress(
                 using: giftDescription.chainAsset.chain.chainFormat
-            ),
-            let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address) {
+            ) {
+            let addressDrawableIcon = try? addressIconGenerator.generateFromAddress(address)
+            let imageViewModel = addressDrawableIcon.map {
+                DrawableIconViewModel(icon: $0)
+            }
             infoViewModel = .address(
                 DisplayAddressViewModel(
                     address: address,
                     name: nil,
-                    imageViewModel: DrawableIconViewModel(icon: addressDrawableIcon)
+                    imageViewModel: imageViewModel
                 )
             )
         } else {
@@ -233,8 +247,6 @@ extension GiftClaimViewModelFactory: GiftClaimViewModelFactoryProtocol {
         ).value(for: locale)
 
         let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(from: assetDisplayInfo)
-
-        let actionTitle = localizedStrings.giftClaimActionTitle()
 
         return GiftClaimViewModel(
             title: title,

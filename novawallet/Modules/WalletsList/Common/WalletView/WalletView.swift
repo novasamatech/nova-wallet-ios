@@ -57,6 +57,7 @@ final class WalletView: GenericTitleValueView<
         valueView.fView.mode = .detailsIcon
         subtitleContainer.makeHorizontal()
         subtitleContainer.spacing = 4
+        subtitleContainer.sView.spacing = 4
         valueView.spacing = 4
 
         titleView.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -217,11 +218,18 @@ extension WalletView {
     }
 
     func bind(chainAccount viewModel: ViewModel.ChainAccountAddressInfo) {
-        viewModel.image?.loadImage(
-            on: subtitleDetailsImage,
-            targetSize: .init(width: 16, height: 16),
-            animated: true
-        )
+        if let imageViewModel = viewModel.image {
+            imageViewModel.loadImage(
+                on: subtitleDetailsImage,
+                targetSize: .init(width: 16, height: 16),
+                animated: true
+            )
+            subtitleContainer.sView.iconWidth = 16
+            subtitleContainer.sView.spacing = .zero
+        } else {
+            subtitleContainer.sView.iconWidth = .zero
+            subtitleContainer.sView.spacing = 4
+        }
 
         subtitleDetailsLabel.text = viewModel.text
         subtitleDetailsLabel.lineBreakMode = viewModel.lineBreakMode
