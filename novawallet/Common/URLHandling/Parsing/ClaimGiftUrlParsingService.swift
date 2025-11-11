@@ -34,12 +34,13 @@ private extension ClaimGiftUrlParsingService {
         let checkWrapper = createGiftClaimCheckWrapper(dependingOn: claimableGiftWrapper)
 
         let resultOperation = ClosureOperation {
+            let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
             let checkResult = try checkWrapper.targetOperation.extractNoCancellableResultData()
 
             switch checkResult.availability {
             case let .claimable(totalAmount):
                 return GiftClaimNavigation(
-                    claimableGift: checkResult.claimableGiftInfo,
+                    claimableGiftPayload: claimableGift.info(),
                     totalAmount: totalAmount
                 )
             case .claimed:
@@ -56,7 +57,7 @@ private extension ClaimGiftUrlParsingService {
         )
     }
 
-    func createParsePayloadWrapper(string: String) -> CompoundOperationWrapper<ClaimableGiftInfo> {
+    func createParsePayloadWrapper(string: String) -> CompoundOperationWrapper<ClaimableGift> {
         let rawPayloadComponents = string.split(by: .underscore)
 
         guard rawPayloadComponents.count == 3 else {
@@ -97,7 +98,7 @@ private extension ClaimGiftUrlParsingService {
                 ? publicKey.ethereumAddressFromPublicKey()
                 : publicKey.publicKeyToAccountId()
 
-            return ClaimableGiftInfo(
+            return ClaimableGift(
                 seed: seed,
                 accountId: accountId,
                 chainAsset: chainAsset
@@ -110,7 +111,7 @@ private extension ClaimGiftUrlParsingService {
     }
 
     func createGiftClaimCheckWrapper(
-        dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimableGiftInfo>
+        dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimableGift>
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
@@ -173,8 +174,8 @@ extension ClaimGiftUrlParsingService: OpenScreenUrlParsingServiceProtocol {
     }
 }
 
-struct ClaimGiftPayload {
+struct ClaimGiftPayload: Codable {
     let seed: Data
-    let chainId: ChainModel.Id
-    let assetSymbol: AssetModel.Symbol
+    let accountId: AccountId
+    let chainAssetId: ChainAssetId
 }

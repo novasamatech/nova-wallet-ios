@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol SubstrateGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGiftInfo,
+        for claimableGift: ClaimableGift,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         assetStorageInfo: @escaping () throws -> AssetStorageInfo
@@ -58,7 +58,7 @@ private extension SubstrateGiftDescriptionFactory {
 
 extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGiftInfo,
+        for claimableGift: ClaimableGift,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         assetStorageInfo: @escaping () throws -> AssetStorageInfo

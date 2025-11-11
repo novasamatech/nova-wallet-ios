@@ -65,7 +65,7 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
         claimWrapperProvider: GiftClaimWrapperProvider
     ) -> CompoundOperationWrapper<Void> {
         let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
-            for: description.info()
+            for: description
         )
         let giftWrapper = createGiftWrapperOrError(
             basedOn: claimAvailabilityWrapper,

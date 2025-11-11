@@ -14,7 +14,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol,
         claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        claimableGift: ClaimableGiftInfo,
+        claimableGift: ClaimableGift,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,

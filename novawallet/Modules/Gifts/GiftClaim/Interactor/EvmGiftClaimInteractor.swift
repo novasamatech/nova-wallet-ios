@@ -13,7 +13,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol,
         claimOperationFactory: EvmGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        claimableGift: ClaimableGiftInfo,
+        claimableGift: ClaimableGift,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,

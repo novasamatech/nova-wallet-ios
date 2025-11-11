@@ -9,7 +9,7 @@ struct ClaimableGiftBaseData {
 
 final class ClaimableGiftDescriptionHelper {
     func createBaseData(
-        for claimableGift: ClaimableGiftInfo,
+        for claimableGift: ClaimableGift,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel
     ) throws -> ClaimableGiftBaseData {
@@ -33,7 +33,7 @@ final class ClaimableGiftDescriptionHelper {
     }
 
     func createFinalDescription(
-        claimableGift: ClaimableGiftInfo,
+        claimableGift: ClaimableGift,
         onChainAmountWithFee: OnChainTransferAmount<BigUInt>,
         feeAmount: BigUInt,
         claimingAccountId: AccountId?

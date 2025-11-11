@@ -5,12 +5,24 @@ import BigInt
 
 struct GiftClaimViewFactory {
     static func createView(
-        claimableGift: ClaimableGiftInfo,
+        giftPayload: ClaimGiftPayload,
         totalAmount: BigUInt
     ) -> GiftClaimViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainId = giftPayload.chainAssetId.chainId
+        let assetId = giftPayload.chainAssetId.assetId
 
-        guard let currencyManager = CurrencyManager.shared else { return nil }
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let chain = chainRegistry.getChain(for: chainId),
+            let chainAsset = chain.chainAsset(for: assetId)
+        else { return nil }
+
+        let claimableGift = ClaimableGift(
+            seed: giftPayload.seed,
+            accountId: giftPayload.accountId,
+            chainAsset: chainAsset
+        )
 
         let interactor: GiftClaimInteractor?
 
@@ -62,7 +74,7 @@ struct GiftClaimViewFactory {
 
 private extension GiftClaimViewFactory {
     static func createSubstrateInteractor(
-        claimableGift: ClaimableGiftInfo,
+        claimableGift: ClaimableGift,
         chainRegistry: ChainRegistryProtocol,
         totalAmount: BigUInt
     ) -> GiftClaimInteractor? {
@@ -126,7 +138,7 @@ private extension GiftClaimViewFactory {
     }
 
     static func createEvmInteractor(
-        claimableGift: ClaimableGiftInfo,
+        claimableGift: ClaimableGift,
         chainRegistry: ChainRegistryProtocol,
         totalAmount: BigUInt
     ) -> EvmGiftClaimInteractor? {

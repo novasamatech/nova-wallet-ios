@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGiftInfo,
+        for claimableGift: ClaimableGift,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         transferType: EvmTransferType
@@ -62,7 +62,7 @@ private extension EvmClaimableGiftDescriptionFactory {
 
 extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGiftInfo,
+        for claimableGift: ClaimableGift,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         transferType: EvmTransferType

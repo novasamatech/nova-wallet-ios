@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-struct ChainModel: Equatable, Hashable, Codable {
+struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 

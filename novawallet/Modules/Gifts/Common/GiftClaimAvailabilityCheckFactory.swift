@@ -4,7 +4,7 @@ import BigInt
 
 protocol GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftInfo
+        for claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>
 }
 
@@ -34,7 +34,7 @@ final class GiftClaimAvailabilityCheckFactory {
 
 private extension GiftClaimAvailabilityCheckFactory {
     func createBalanceExisteceWrapper(
-        claimableGift: ClaimableGiftInfo
+        claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -66,7 +66,7 @@ private extension GiftClaimAvailabilityCheckFactory {
 
 extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftInfo
+        for claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
         let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
             for: claimableGift.accountId,
@@ -91,7 +91,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
                 : .claimed
 
             return GiftClaimAvailabilityCheckResult(
-                claimableGiftInfo: claimableGift,
+                claimableGift: claimableGift,
                 availability: availability
             )
         }
@@ -109,7 +109,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
 }
 
 struct GiftClaimAvailabilityCheckResult {
-    let claimableGiftInfo: ClaimableGiftInfo
+    let claimableGift: ClaimableGiftProtocol
     let availability: GiftClaimAvailabilty
 }
 
