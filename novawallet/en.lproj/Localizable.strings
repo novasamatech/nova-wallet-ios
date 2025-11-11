@@ -1987,7 +1987,7 @@
 "gift.transfer.confirm.your.gift" = "Your gift";
 "gift.transfer.confirm.tooltip" = "Confirming will transfer tokens from your account";
 "gift.claim.fee" = "Network fee on claim";
-"gift.prepared.title" = "Gift Has Been Prepared. Share It Now!";
+"gift.prepared.title" = "Gift Has Been Prepared.\nShare It Now!";
 "gift.prepared.share.action.title" = "Share Gift Link";
 "gift.share.message" = "Hello! You’ve got a %@ gift waiting for you!\n\nInstall Nova Wallet app, set up your wallet, and claim it via this special link:\n%@";
 "gift.error.already.claimed.title" = "The gift cannot be received";
