@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 
 typealias GiftClaimWrapperProvider = (
-    _ giftWrapper: CompoundOperationWrapper<GiftModel>,
+    _ giftWrapper: CompoundOperationWrapper<GiftModel>
 ) -> CompoundOperationWrapper<Void>
 
 protocol GiftClaimFactoryProtocol {
