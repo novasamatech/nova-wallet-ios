@@ -12,6 +12,7 @@ protocol WalletRemoteQueryWrapperFactoryProtocol {
 
 enum WalletRemoteQueryWrapperFactoryError: Error {
     case unsupported
+    case unexpectedBalanceValue
 }
 
 final class WalletRemoteQueryWrapperFactory {
@@ -356,7 +357,7 @@ final class WalletRemoteQueryWrapperFactory {
                 switch result {
                 case let .success(balanceString):
                     guard let balanceValue = BigUInt.fromHexString(balanceString) else {
-                        completion(.failure(EvmRemoteBalanceQueryError.unexpectedBalanceValue))
+                        completion(.failure(WalletRemoteQueryWrapperFactoryError.unexpectedBalanceValue))
                         return
                     }
                     let balance = AssetBalance(
