@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Recompensas estimadas (%% APR)";
 "gift.claim.warning.wallet.message" = "Crie uma nova carteira ou importe uma existente para reivindicar o presente";
 "gift.claim.warning.wallet.manage.action" = "Gerenciar Carteiras";
+"gift.claim.success.status" = "Você reivindicou um presente com sucesso. Os tokens aparecerão em seu saldo em breve.";
 "gift.error.already.claimed.title" = "O presente não pode ser recebido";
 "gift.error.already.claimed.message" = "Ops, o presente já foi reivindicado";
 "gift.claim.action.title" = "Reivindicar o presente";

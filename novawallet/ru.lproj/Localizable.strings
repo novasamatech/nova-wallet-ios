@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Примерная награда (%% APR)";
 "gift.claim.warning.wallet.message" = "Создайте новый кошелек или импортируйте существующий, чтобы забрать подарок";
 "gift.claim.warning.wallet.manage.action" = "Управление кошельками";
+"gift.claim.success.status" = "Вы успешно забрали подарок. Токены скоро появятся на вашем балансе.";
 "gift.error.already.claimed.title" = "Подарок не может быть получен";
 "gift.error.already.claimed.message" = "Упс, подарок уже был востребован";
 "gift.claim.action.title" = "Забрать подарок";

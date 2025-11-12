@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "预计奖励（%% APR）";
 "gift.claim.warning.wallet.message" = "创建一个新钱包或导入现有钱包以领取礼物";
 "gift.claim.warning.wallet.manage.action" = "管理钱包";
+"gift.claim.success.status" = "您已成功领取礼物。代币很快会出现在您的余额中。";
 "gift.error.already.claimed.title" = "礼物无法领取";
 "gift.error.already.claimed.message" = "哦哦，礼物已经被领取了";
 "gift.claim.action.title" = "领取礼物";

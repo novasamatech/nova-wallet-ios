@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Szacowane nagrody (%% APR)";
 "gift.claim.warning.wallet.message" = "Stwórz nowy portfel lub zaimportuj istniejący, aby odebrać prezent";
 "gift.claim.warning.wallet.manage.action" = "Zarządzaj portfelami";
+"gift.claim.success.status" = "Pomyślnie odebrano prezent. Tokeny pojawią się wkrótce na twoim saldzie.";
 "gift.error.already.claimed.title" = "Prezent nie może zostać odebrany";
 "gift.error.already.claimed.message" = "Ups, ten prezent został już odebrany";
 "gift.claim.action.title" = "Odbierz prezent";

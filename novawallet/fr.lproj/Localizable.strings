@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Récompenses estimées (%% APR)";
 "gift.claim.warning.wallet.message" = "Créez un nouveau portefeuille ou importez-en un existant pour réclamer le cadeau";
 "gift.claim.warning.wallet.manage.action" = "Gérer les portefeuilles";
+"gift.claim.success.status" = "Vous avez bien réclamé un cadeau. Les tokens apparaîtront dans votre solde sous peu.";
 "gift.error.already.claimed.title" = "Le cadeau ne peut pas être reçu";
 "gift.error.already.claimed.message" = "Oups, le cadeau a déjà été réclamé";
 "gift.claim.action.title" = "Réclamer le cadeau";

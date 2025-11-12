@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "예상 보상 (%% APR)";
 "gift.claim.warning.wallet.message" = "새 지갑을 만들거나 기존 지갑을 가져와 선물을 받으세요";
 "gift.claim.warning.wallet.manage.action" = "지갑 관리";
+"gift.claim.success.status" = "성공적으로 선물을 수령했습니다. 곧 잔액에 반영될 것입니다.";
 "gift.error.already.claimed.title" = "선물을 받을 수 없습니다";
 "gift.error.already.claimed.message" = "이미 선물이 수령되었습니다";
 "gift.claim.action.title" = "선물 받기";

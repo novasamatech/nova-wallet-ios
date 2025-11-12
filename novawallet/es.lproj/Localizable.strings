@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Recompensas estimadas (%% APR)";
 "gift.claim.warning.wallet.message" = "Crea una nueva billetera o importa una existente para reclamar el regalo";
 "gift.claim.warning.wallet.manage.action" = "Administrar Billeteras";
+"gift.claim.success.status" = "Has reclamado exitosamente un regalo. Los tokens aparecerán en tu balance en breve.";
 "gift.error.already.claimed.title" = "El regalo no puede ser recibido";
 "gift.error.already.claimed.message" = "Vaya, el regalo ya ha sido reclamado";
 "gift.claim.action.title" = "Reclama el regalo";

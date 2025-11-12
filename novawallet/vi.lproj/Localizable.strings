@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Phần thưởng ước tính (%% APR)";
 "gift.claim.warning.wallet.message" = "Tạo ví mới hoặc nhập một ví hiện có để nhận món quà";
 "gift.claim.warning.wallet.manage.action" = "Quản lý Ví";
+"gift.claim.success.status" = "Bạn đã nhận thành công một món quà. Token sẽ sớm xuất hiện trong số dư của bạn.";
 "gift.error.already.claimed.title" = "Món quà không thể được nhận";
 "gift.error.already.claimed.message" = "Rất tiếc, món quà đã được nhận";
 "gift.claim.action.title" = "Nhận món quà";

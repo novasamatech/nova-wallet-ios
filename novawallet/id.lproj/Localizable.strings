@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Perkiraan hadiah (%% APR)";
 "gift.claim.warning.wallet.message" = "Buat dompet baru atau impor yang sudah ada untuk mengklaim hadiah";
 "gift.claim.warning.wallet.manage.action" = "Kelola Dompet";
+"gift.claim.success.status" = "Anda berhasil mengklaim hadiah. Token akan segera muncul di saldo Anda.";
 "gift.error.already.claimed.title" = "Hadiah tidak dapat diterima";
 "gift.error.already.claimed.message" = "Ups, hadiah tersebut sudah diklaim";
 "gift.claim.action.title" = "Klaim hadiah";

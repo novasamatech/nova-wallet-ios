@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Tahmini ödüller (%% APR)";
 "gift.claim.warning.wallet.message" = "Hediyeyi talep etmek için yeni bir cüzdan oluşturun veya mevcut bir cüzdanı içe aktarın";
 "gift.claim.warning.wallet.manage.action" = "Cüzdanları Yönet";
+"gift.claim.success.status" = "Hediye başarıyla talep edildi. Token'ler kısa sürede bakiyenizde görünecek.";
 "gift.error.already.claimed.title" = "Hediye alınamaz";
 "gift.error.already.claimed.message" = "Oops, hediye zaten talep edilmiş";
 "gift.claim.action.title" = "Hediyeyi talep et";

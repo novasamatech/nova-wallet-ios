@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Ricompense stimate (%% APR)";
 "gift.claim.warning.wallet.message" = "Crea un nuovo wallet o importa uno esistente per rivendicare il regalo";
 "gift.claim.warning.wallet.manage.action" = "Gestisci Wallet";
+"gift.claim.success.status" = "Hai rivendicato con successo un regalo. I token appariranno presto nel tuo saldo.";
 "gift.error.already.claimed.title" = "Il regalo non può essere ricevuto";
 "gift.error.already.claimed.message" = "Ops, il regalo è già stato riscattato";
 "gift.claim.action.title" = "Richiedi il regalo";

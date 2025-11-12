@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "推定報酬 (%% APR)";
 "gift.claim.warning.wallet.message" = "贈り物を受け取るために、新しいウォレットを作成するか既存のウォレットをインポートしてください";
 "gift.claim.warning.wallet.manage.action" = "ウォレットを管理";
+"gift.claim.success.status" = "贈り物を正常に受け取りました。トークンは間もなくあなたの残高に表示されます。";
 "gift.error.already.claimed.title" = "贈り物を受け取れません";
 "gift.error.already.claimed.message" = "おっと、贈り物はすでに受け取られています";
 "gift.claim.action.title" = "贈り物を受け取る";

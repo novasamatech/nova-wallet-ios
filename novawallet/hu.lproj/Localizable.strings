@@ -1970,6 +1970,7 @@
 "parastk.collators.filter.rewards" = "Becsült jutalmak (%% APR)";
 "gift.claim.warning.wallet.message" = "Hozz létre egy új pénztárcát, vagy importálj egy meglévőt az ajándék igényléséhez";
 "gift.claim.warning.wallet.manage.action" = "Pénztárcák kezelése";
+"gift.claim.success.status" = "Sikeresen igényeltél egy ajándékot. A tokenek hamarosan megjelennek az egyenlegeden.";
 "gift.error.already.claimed.title" = "Az ajándék nem fogadható el";
 "gift.error.already.claimed.message" = "Hoppá, az ajándék már be lett igényelve";
 "gift.claim.action.title" = "Igényeld az ajándékot";
