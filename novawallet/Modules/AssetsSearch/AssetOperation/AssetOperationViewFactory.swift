@@ -232,6 +232,7 @@ private extension AssetOperationViewFactory {
             filter: filter,
             settingsManager: SettingsManager.shared,
             assetTransferAggregationFactory: assetTransferAggregationFactory,
+            assetSufficiencyProvider: AssetExchangeSufficiencyProvider(),
             logger: Logger.shared
         )
 

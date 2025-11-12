@@ -4,9 +4,11 @@ import Operation_iOS
 
 final class GiftAssetSearchBuilder: AssetSearchBuilder {
     private let assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol
+    private let sufficiencyProvider: AssetExchangeSufficiencyProviding
 
     init(
         assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol,
+        sufficiencyProvider: AssetExchangeSufficiencyProviding,
         filter: ChainAssetsFilter?,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
@@ -15,6 +17,7 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
         logger: LoggerProtocol
     ) {
         self.assetTransferAggregationFactory = assetTransferAggregationFactory
+        self.sufficiencyProvider = sufficiencyProvider
 
         super.init(
             filter: filter,
@@ -70,8 +73,8 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
 
         mapOperation.addDependency(chainAssetsWrapper.targetOperation)
 
-        let resultWrapper: CompoundOperationWrapper<[ChainAsset]>
-        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+        let canPayFeeFilterWrapper: CompoundOperationWrapper<[ChainAsset]>
+        canPayFeeFilterWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
             guard let self else { return .createWithResult([]) }
@@ -81,10 +84,23 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
             return assetTransferAggregationFactory.createCanPayFeeFilterWrapper(for: chainAssets)
         }
 
-        resultWrapper.addDependency(operations: [mapOperation])
+        canPayFeeFilterWrapper.addDependency(operations: [mapOperation])
 
-        return resultWrapper
-            .insertingHead(operations: [mapOperation])
-            .insertingHead(operations: chainAssetsWrapper.allOperations)
+        let resultOperation = ClosureOperation {
+            let canPayFeeAssets = try canPayFeeFilterWrapper.targetOperation.extractNoCancellableResultData()
+
+            return canPayFeeAssets.filter { self.sufficiencyProvider.isSufficient(asset: $0.asset) }
+        }
+
+        resultOperation.addDependency(canPayFeeFilterWrapper.targetOperation)
+
+        let dependencies = canPayFeeFilterWrapper.allOperations
+            + [mapOperation]
+            + chainAssetsWrapper.allOperations
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: dependencies
+        )
     }
 }

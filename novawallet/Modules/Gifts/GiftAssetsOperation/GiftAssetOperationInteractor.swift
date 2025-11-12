@@ -9,6 +9,7 @@ final class GiftAssetsOperationInteractor {
     let filter: ChainAssetsFilter
     let settingsManager: SettingsManagerProtocol
     let assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol
+    let assetSufficiencyProvider: AssetExchangeSufficiencyProviding
     let logger: LoggerProtocol
 
     private var builder: GiftAssetSearchBuilder?
@@ -18,12 +19,14 @@ final class GiftAssetsOperationInteractor {
         filter: @escaping ChainAssetsFilter,
         settingsManager: SettingsManagerProtocol,
         assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol,
+        assetSufficiencyProvider: AssetExchangeSufficiencyProviding,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.filter = filter
         self.settingsManager = settingsManager
         self.assetTransferAggregationFactory = assetTransferAggregationFactory
+        self.assetSufficiencyProvider = assetSufficiencyProvider
         self.logger = logger
     }
 
@@ -42,6 +45,7 @@ extension GiftAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             assetTransferAggregationFactory: assetTransferAggregationFactory,
+            sufficiencyProvider: assetSufficiencyProvider,
             filter: filter,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,

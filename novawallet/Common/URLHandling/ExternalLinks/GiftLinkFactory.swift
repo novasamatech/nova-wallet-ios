@@ -37,7 +37,7 @@ private extension GiftLinkFactory {
         chainId: ChainModel.Id
     ) -> String? {
         let defaultChainAssetGift = symbol == Constants.defaultAsset && chainId == Constants.defaultChainId
-        
+
         guard !defaultChainAssetGift else { return nil }
 
         return symbol
@@ -58,7 +58,7 @@ extension GiftLinkFactory: GiftLinkFactoryProtocol {
             from: symbol,
             chainId: chainId
         )
-        
+
         let payloadChainId = createPayloadChainId(from: chainId)
 
         let payload = [
