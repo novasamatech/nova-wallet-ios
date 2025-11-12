@@ -22,9 +22,7 @@ final class GiftLinkFactory {
 
 private extension GiftLinkFactory {
     func createPayloadChainId(from chainId: ChainModel.Id) -> String? {
-        guard chainId != Constants.defaultChainId else {
-            return nil
-        }
+        guard chainId != Constants.defaultChainId else { return nil }
 
         let shortChainIdLength = 6
         let endIndex: String.Index = chainId.count < shortChainIdLength
@@ -34,10 +32,13 @@ private extension GiftLinkFactory {
         return String(chainId[chainId.startIndex ..< endIndex])
     }
 
-    func createPayloadAssetSymbol(from symbol: AssetModel.Symbol) -> String? {
-        guard symbol != Constants.defaultAsset else {
-            return nil
-        }
+    func createPayloadAssetSymbol(
+        from symbol: AssetModel.Symbol,
+        chainId: ChainModel.Id
+    ) -> String? {
+        let defaultChainAssetGift = symbol == Constants.defaultAsset && chainId == Constants.defaultChainId
+        
+        guard !defaultChainAssetGift else { return nil }
 
         return symbol
     }
@@ -53,7 +54,11 @@ extension GiftLinkFactory: GiftLinkFactoryProtocol {
     ) -> URL? {
         var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
 
-        let payloadSymbol = createPayloadAssetSymbol(from: symbol)
+        let payloadSymbol = createPayloadAssetSymbol(
+            from: symbol,
+            chainId: chainId
+        )
+        
         let payloadChainId = createPayloadChainId(from: chainId)
 
         let payload = [

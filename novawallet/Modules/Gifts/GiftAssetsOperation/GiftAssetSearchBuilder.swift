@@ -70,7 +70,8 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
 
         mapOperation.addDependency(chainAssetsWrapper.targetOperation)
 
-        let resultWrapper: CompoundOperationWrapper<[ChainAsset]> = OperationCombiningService.compoundNonOptionalWrapper(
+        let resultWrapper: CompoundOperationWrapper<[ChainAsset]>
+        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
             guard let self else { return .createWithResult([]) }
