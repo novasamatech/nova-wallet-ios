@@ -293,7 +293,7 @@ extension AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
