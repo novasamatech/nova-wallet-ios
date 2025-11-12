@@ -1773,6 +1773,8 @@
 		2D3C71E42E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E32E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift */; };
 		2D3C71E62E1271B600DF9E49 /* MultisigOperationsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */; };
 		2D3C71E92E12757400DF9E49 /* MultisigOperationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */; };
+		2D3DCA842EC4E10000D57275 /* ASTR_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D3DCA832EC4E10000D57275 /* ASTR_packing.json */; };
+		2D3DCA8D2EC4E11600D57275 /* USDT_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D3DCA8C2EC4E11600D57275 /* USDT_packing.json */; };
 		2D3E40082E570BA700CDA28F /* MultisigEndedMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */; };
 		2D3E400A2E57732E00CDA28F /* ChainAcquiring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */; };
 		2D3E40112E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */; };
@@ -2108,7 +2110,6 @@
 		2DB586762EB76BE100950F7D /* GiftTransferConfirmError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */; };
 		2DB5869A2EB8753800950F7D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 2DB586992EB8753800950F7D /* Lottie */; };
 		2DB586C82EB877E800950F7D /* DOT_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C12EB877E800950F7D /* DOT_unpacking.json */; };
-		2DB586C92EB877E800950F7D /* USDT_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C62EB877E800950F7D /* USDT_packing.json */; };
 		2DB586CA2EB877E800950F7D /* ASTR_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BB2EB877E800950F7D /* ASTR_unpacking.json */; };
 		2DB586CB2EB877E800950F7D /* KSM_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C52EB877E800950F7D /* KSM_unpacking.json */; };
 		2DB586CC2EB877E800950F7D /* AZERO_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BD2EB877E800950F7D /* AZERO_unpacking.json */; };
@@ -2116,7 +2117,6 @@
 		2DB586CE2EB877E800950F7D /* Default_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BF2EB877E800950F7D /* Default_unpacking.json */; };
 		2DB586CF2EB877E800950F7D /* USDT_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C72EB877E800950F7D /* USDT_unpacking.json */; };
 		2DB586D02EB877E800950F7D /* AZERO_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BC2EB877E800950F7D /* AZERO_packing.json */; };
-		2DB586D12EB877E800950F7D /* ASTR_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BA2EB877E800950F7D /* ASTR_packing.json */; };
 		2DB586D22EB877E800950F7D /* HDX_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C22EB877E800950F7D /* HDX_packing.json */; };
 		2DB586D32EB877E800950F7D /* DOT_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C02EB877E800950F7D /* DOT_packing.json */; };
 		2DB586D42EB877E800950F7D /* Default_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BE2EB877E800950F7D /* Default_packing.json */; };
@@ -8440,6 +8440,8 @@
 		2D3C71E32E126E7C00DF9E49 /* MultisigOperationsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewModelFactory.swift; sourceTree = "<group>"; };
 		2D3C71E52E1271B600DF9E49 /* MultisigOperationsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewLayout.swift; sourceTree = "<group>"; };
 		2D3C71E82E12757400DF9E49 /* MultisigOperationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationCell.swift; sourceTree = "<group>"; };
+		2D3DCA832EC4E10000D57275 /* ASTR_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ASTR_packing.json; sourceTree = "<group>"; };
+		2D3DCA8C2EC4E11600D57275 /* USDT_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = USDT_packing.json; sourceTree = "<group>"; };
 		2D3E40072E570BA700CDA28F /* MultisigEndedMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEndedMessageFactory.swift; sourceTree = "<group>"; };
 		2D3E40092E57732E00CDA28F /* ChainAcquiring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAcquiring.swift; sourceTree = "<group>"; };
 		2D3E40102E58531C00CDA28F /* MultisigNotificationsSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsSheetFactory.swift; sourceTree = "<group>"; };
@@ -8756,7 +8758,6 @@
 		2DB586502EB761B600950F7D /* SubstrateGiftSubmissionFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateGiftSubmissionFactoryProtocol.swift; sourceTree = "<group>"; };
 		2DB586612EB7689B00950F7D /* EvmGiftSubmissionFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftSubmissionFactoryProtocol.swift; sourceTree = "<group>"; };
 		2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftTransferConfirmError.swift; sourceTree = "<group>"; };
-		2DB586BA2EB877E800950F7D /* ASTR_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ASTR_packing.json; sourceTree = "<group>"; };
 		2DB586BB2EB877E800950F7D /* ASTR_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ASTR_unpacking.json; sourceTree = "<group>"; };
 		2DB586BC2EB877E800950F7D /* AZERO_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AZERO_packing.json; sourceTree = "<group>"; };
 		2DB586BD2EB877E800950F7D /* AZERO_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AZERO_unpacking.json; sourceTree = "<group>"; };
@@ -8768,7 +8769,6 @@
 		2DB586C32EB877E800950F7D /* HDX_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = HDX_unpacking.json; sourceTree = "<group>"; };
 		2DB586C42EB877E800950F7D /* KSM_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = KSM_packing.json; sourceTree = "<group>"; };
 		2DB586C52EB877E800950F7D /* KSM_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = KSM_unpacking.json; sourceTree = "<group>"; };
-		2DB586C62EB877E800950F7D /* USDT_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = USDT_packing.json; sourceTree = "<group>"; };
 		2DB586C72EB877E800950F7D /* USDT_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = USDT_unpacking.json; sourceTree = "<group>"; };
 		2DB586DF2EB87BA400950F7D /* GiftPrepareShareViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftPrepareShareViewModelFactory.swift; sourceTree = "<group>"; };
 		2DB586ED2EB87DC500950F7D /* GiftPrepareViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftPrepareViewModel.swift; sourceTree = "<group>"; };
@@ -18447,7 +18447,7 @@
 		2DB586B32EB877CF00950F7D /* Gift */ = {
 			isa = PBXGroup;
 			children = (
-				2DB586BA2EB877E800950F7D /* ASTR_packing.json */,
+				2D3DCA832EC4E10000D57275 /* ASTR_packing.json */,
 				2DB586BB2EB877E800950F7D /* ASTR_unpacking.json */,
 				2DB586BC2EB877E800950F7D /* AZERO_packing.json */,
 				2DB586BD2EB877E800950F7D /* AZERO_unpacking.json */,
@@ -18459,7 +18459,7 @@
 				2DB586C32EB877E800950F7D /* HDX_unpacking.json */,
 				2DB586C42EB877E800950F7D /* KSM_packing.json */,
 				2DB586C52EB877E800950F7D /* KSM_unpacking.json */,
-				2DB586C62EB877E800950F7D /* USDT_packing.json */,
+				2D3DCA8C2EC4E11600D57275 /* USDT_packing.json */,
 				2DB586C72EB877E800950F7D /* USDT_unpacking.json */,
 			);
 			path = Gift;
@@ -30654,6 +30654,7 @@
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
 				0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
+				2D3DCA8D2EC4E11600D57275 /* USDT_packing.json in Resources */,
 				8490145E24A94373008F705E /* Localizable.strings in Resources */,
 				8477DAA32888329800129B45 /* watchOnlyPreset.json in Resources */,
 				AE74EC1525FCF09000C494E7 /* Localizable.stringsdict in Resources */,
@@ -30675,15 +30676,14 @@
 				84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */,
 				84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */,
 				2DB586C82EB877E800950F7D /* DOT_unpacking.json in Resources */,
-				2DB586C92EB877E800950F7D /* USDT_packing.json in Resources */,
 				2DB586CA2EB877E800950F7D /* ASTR_unpacking.json in Resources */,
 				2DB586CB2EB877E800950F7D /* KSM_unpacking.json in Resources */,
 				2DB586CC2EB877E800950F7D /* AZERO_unpacking.json in Resources */,
+				2D3DCA842EC4E10000D57275 /* ASTR_packing.json in Resources */,
 				2DB586CD2EB877E800950F7D /* HDX_unpacking.json in Resources */,
 				2DB586CE2EB877E800950F7D /* Default_unpacking.json in Resources */,
 				2DB586CF2EB877E800950F7D /* USDT_unpacking.json in Resources */,
 				2DB586D02EB877E800950F7D /* AZERO_packing.json in Resources */,
-				2DB586D12EB877E800950F7D /* ASTR_packing.json in Resources */,
 				2DB586D22EB877E800950F7D /* HDX_packing.json in Resources */,
 				2DB586D32EB877E800950F7D /* DOT_packing.json in Resources */,
 				2DB586D42EB877E800950F7D /* Default_packing.json in Resources */,
