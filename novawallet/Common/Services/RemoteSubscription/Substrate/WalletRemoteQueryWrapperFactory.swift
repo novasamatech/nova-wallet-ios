@@ -1,25 +1,33 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 protocol WalletRemoteQueryWrapperFactoryProtocol {
-    func queryBalance(for accountId: AccountId, chainAsset: ChainAsset) -> CompoundOperationWrapper<AssetBalance>
+    func queryBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance>
 }
 
 enum WalletRemoteQueryWrapperFactoryError: Error {
     case unsupported
+    case unexpectedBalanceValue
 }
 
 final class WalletRemoteQueryWrapperFactory {
     let requestFactory: StorageRequestFactoryProtocol
+    let erc20QueryMessageFactory: EvmQueryContractMessageFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        erc20QueryMessageFactory: EvmQueryContractMessageFactoryProtocol = EvmQueryContractMessageFactory(),
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
+        self.erc20QueryMessageFactory = erc20QueryMessageFactory
         self.operationQueue = operationQueue
 
         requestFactory = StorageRequestFactory(
@@ -27,7 +35,11 @@ final class WalletRemoteQueryWrapperFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
+}
 
+// MARK: - Private
+
+private extension WalletRemoteQueryWrapperFactory {
     func queryNativeBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset
@@ -333,10 +345,90 @@ final class WalletRemoteQueryWrapperFactory {
             return .createWithError(error)
         }
     }
+
+    func queryEvmBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance> {
+        let operation = AsyncClosureOperation<AssetBalance> { completion in
+            let params = EvmBalanceMessage.Params(
+                holder: try accountId.toAddress(using: chainAsset.chain.chainFormat),
+                block: .latest
+            )
+
+            try self.queryEvmBalance(
+                for: accountId,
+                chainAsset: chainAsset,
+                with: params,
+                completion: completion
+            )
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func queryERC20Balance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset,
+        contractId: AccountId
+    ) -> CompoundOperationWrapper<AssetBalance> {
+        let operation = AsyncClosureOperation<AssetBalance> { completion in
+            let params = try self.erc20QueryMessageFactory.erc20Balance(
+                of: try accountId.toAddress(using: chainAsset.chain.chainFormat),
+                contractAddress: try contractId.toAddress(using: chainAsset.chain.chainFormat)
+            )
+
+            try self.queryEvmBalance(
+                for: accountId,
+                chainAsset: chainAsset,
+                with: params,
+                completion: completion
+            )
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func queryEvmBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset,
+        with params: Encodable,
+        completion: @escaping (Result<AssetBalance, Error>) -> Void
+    ) throws {
+        let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+
+        _ = try connection.callMethod(
+            EvmBalanceMessage.method,
+            params: params,
+            options: .init(resendOnReconnect: true)
+        ) { (result: Result<String, Error>) in
+            switch result {
+            case let .success(balanceString):
+                guard let balanceValue = BigUInt.fromHexString(balanceString) else {
+                    completion(.failure(WalletRemoteQueryWrapperFactoryError.unexpectedBalanceValue))
+                    return
+                }
+                let balance = AssetBalance(
+                    evmBalance: balanceValue,
+                    accountId: accountId,
+                    chainAssetId: chainAsset.chainAssetId
+                )
+
+                completion(.success(balance))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 }
 
+// MARK: - WalletRemoteQueryWrapperFactoryProtocol
+
 extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtocol {
-    func queryBalance(for accountId: AccountId, chainAsset: ChainAsset) -> CompoundOperationWrapper<AssetBalance> {
+    func queryBalance(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<AssetBalance> {
         do {
             return try CustomAssetMapper(
                 type: chainAsset.asset.type,
@@ -344,10 +436,17 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
             ).mapAssetWithExtras(
                 .init(
                     nativeHandler: {
-                        self.queryNativeBalance(for: accountId, chainAsset: chainAsset)
+                        self.queryNativeBalance(
+                            for: accountId,
+                            chainAsset: chainAsset
+                        )
                     },
                     statemineHandler: { extras in
-                        self.queryAssetsBalance(for: accountId, chainAsset: chainAsset, extras: extras)
+                        self.queryAssetsBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            extras: extras
+                        )
                     },
                     ormlHandler: { extras in
                         do {
@@ -363,14 +462,25 @@ extension WalletRemoteQueryWrapperFactory: WalletRemoteQueryWrapperFactoryProtoc
                             chainAsset: chainAsset
                         )
                     },
-                    evmHandler: { _ in
-                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                    evmHandler: { contractId in
+                        self.queryERC20Balance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            contractId: contractId
+                        )
                     },
                     evmNativeHandler: {
-                        CompoundOperationWrapper.createWithError(WalletRemoteQueryWrapperFactoryError.unsupported)
+                        self.queryEvmBalance(
+                            for: accountId,
+                            chainAsset: chainAsset
+                        )
                     },
                     equilibriumHandler: { extras in
-                        self.queryEquilibriumBalance(for: accountId, chainAsset: chainAsset, eqAssetId: extras.assetId)
+                        self.queryEquilibriumBalance(
+                            for: accountId,
+                            chainAsset: chainAsset,
+                            eqAssetId: extras.assetId
+                        )
                     }
                 )
             )

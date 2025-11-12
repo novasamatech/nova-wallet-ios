@@ -4,27 +4,27 @@ import BigInt
 
 protocol GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftInfo
+        for claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>
 }
 
 final class GiftClaimAvailabilityCheckFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let giftSecretsManager: GiftSecretsManagerProtocol
-    private let balanceQueryFacade: RemoteBalanceQueryFacadeProtocol
+    private let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
     private let assetInfoFactory: AssetStorageInfoOperationFactoryProtocol
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         giftSecretsManager: GiftSecretsManagerProtocol,
-        balanceQueryFacade: RemoteBalanceQueryFacadeProtocol,
+        balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
         assetInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.giftSecretsManager = giftSecretsManager
-        self.balanceQueryFacade = balanceQueryFacade
+        self.balanceQueryFactory = balanceQueryFactory
         self.assetInfoFactory = assetInfoFactory
         self.operationQueue = operationQueue
     }
@@ -34,7 +34,7 @@ final class GiftClaimAvailabilityCheckFactory {
 
 private extension GiftClaimAvailabilityCheckFactory {
     func createBalanceExisteceWrapper(
-        claimableGift: ClaimableGiftInfo
+        claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -66,9 +66,9 @@ private extension GiftClaimAvailabilityCheckFactory {
 
 extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftInfo
+        for claimableGift: ClaimableGiftProtocol
     ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
-        let transferableBalanceWrapper = balanceQueryFacade.createTransferrableWrapper(
+        let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
             for: claimableGift.accountId,
             chainAsset: claimableGift.chainAsset
         )
@@ -80,6 +80,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
             let transferableBalance = try transferableBalanceWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
+                .transferable
 
             let existence = try balanceExistenceWrapper
                 .targetOperation
@@ -90,7 +91,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
                 : .claimed
 
             return GiftClaimAvailabilityCheckResult(
-                claimableGiftInfo: claimableGift,
+                claimableGift: claimableGift,
                 availability: availability
             )
         }
@@ -108,7 +109,7 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
 }
 
 struct GiftClaimAvailabilityCheckResult {
-    let claimableGiftInfo: ClaimableGiftInfo
+    let claimableGift: ClaimableGiftProtocol
     let availability: GiftClaimAvailabilty
 }
 

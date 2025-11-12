@@ -338,7 +338,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var giftsWikiURL: URL {
-        URL(string: "https://docs.novawallet.io/nova-wallet-wiki")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/gifting-tokens")!
     }
 
     var externalUniversalLinkURL: URL {

@@ -86,7 +86,7 @@ private extension GiftTransferSetupViewController {
 
         rootView.amountView.titleView.text = localizedStrings.walletSendAmountTitle()
 
-        rootView.feeView.titleButton.imageWithTitleView?.title = localizedStrings.commonNetworkFee()
+        rootView.feeView.titleButton.imageWithTitleView?.title = localizedStrings.commonTotalFee()
 
         updateActionButtonState()
 

@@ -35,7 +35,7 @@ private extension SubstrateGiftClaimFactory {
         claimingAccountId: AccountId,
         assetStorageInfo: AssetStorageInfo?
     ) -> CompoundOperationWrapper<Void> {
-        let extrinsicBuilderClosre: ExtrinsicBuilderClosure = { [weak self] builder in
+        let extrinsicBuilderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let (newBuilder, _) = try addingTransferCommand(
@@ -50,14 +50,16 @@ private extension SubstrateGiftClaimFactory {
 
         let submitAndMonitorWrapper = createSubmitAndMonitorWrapper(
             gift: { try giftWrapper.targetOperation.extractNoCancellableResultData() },
-            extrinsicBuilderClosure: extrinsicBuilderClosre,
-            chainAssetId: chainAsset.chainAssetId
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
+            chainAsset: chainAsset
         )
 
         let mapOperation = ClosureOperation<Void> {
             let result = submitAndMonitorWrapper.targetOperation.result
 
             switch result {
+            case let .failure(error) where error is GiftClaimError:
+                throw error
             case let .failure(error):
                 throw GiftClaimError.giftClaimFailed(
                     claimingAccountId: claimingAccountId,
@@ -81,19 +83,24 @@ private extension SubstrateGiftClaimFactory {
     func createSubmitAndMonitorWrapper(
         gift: @escaping () throws -> GiftModel,
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
-        chainAssetId: ChainAssetId
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+            let ethereumBased = chainAsset.chain.isEthereumBased
+            let cryptoType: MultiassetCryptoType = ethereumBased
+                ? .ethereumEcdsa
+                : .sr25519
+
             let signingData = GiftSigningData(
                 gift: try gift(),
-                ethereumBased: false,
-                cryptoType: .sr25519
+                ethereumBased: ethereumBased,
+                cryptoType: cryptoType
             )
             let signingWrapper = self.signingWrapperFactory.createSigningWrapper(giftSigningData: signingData)
 
             return self.extrinsicMonitorFactory.submitAndMonitorWrapper(
                 extrinsicBuilderClosure: extrinsicBuilderClosure,
-                payingIn: chainAssetId,
+                payingIn: chainAsset.chainAssetId,
                 signer: signingWrapper
             )
         }

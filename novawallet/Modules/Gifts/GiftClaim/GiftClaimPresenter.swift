@@ -80,6 +80,15 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func endUnpacking() {
+        wireframe.complete(
+            from: view,
+            with: R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.giftClaimSuccessStatus()
+        )
+    }
 }
 
 // MARK: - GiftClaimInteractorOutputProtocol
@@ -100,10 +109,42 @@ extension GiftClaimPresenter: GiftClaimInteractorOutputProtocol {
     func didReceive(_ error: any Error) {
         view?.didStopLoading()
 
-        wireframe.present(
-            error: error,
+        guard let giftClaimError = error as? GiftClaimError else {
+            presentRetryableError()
+
+            return
+        }
+
+        switch giftClaimError {
+        case .claimingAccountNotFound:
+            wireframe.present(
+                error: giftClaimError,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        case .alreadyClaimed:
+            let localizedStrings = R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable
+
+            wireframe.showError(
+                from: view,
+                title: localizedStrings.giftErrorAlreadyClaimedTitle(),
+                message: localizedStrings.giftErrorAlreadyClaimedMessage(),
+                actionTitle: localizedStrings.commonGotIt()
+            )
+        default:
+            presentRetryableError()
+        }
+    }
+
+    func presentRetryableError() {
+        wireframe.showRetryableError(
             from: view,
-            locale: localizationManager.selectedLocale
+            locale: localizationManager.selectedLocale,
+            retryAction: { [weak self] in
+                self?.actionClaim()
+            }
         )
     }
 }

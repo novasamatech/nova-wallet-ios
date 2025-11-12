@@ -28,8 +28,8 @@ extension UrlHandlingScreen {
             self = .card(.init(rawValue: provider ?? ""))
         case let .assetHubMigration(config):
             self = .assetHubMigration(.init(config: config))
-        case let .giftClaim(claimableGift, amount):
-            self = .giftClaim(.init(claimableGift: claimableGift, totalAmount: amount))
+        case let .giftClaim(payload, amount):
+            self = .giftClaim(.init(claimableGiftPayload: payload, totalAmount: amount))
         }
     }
 
@@ -46,7 +46,10 @@ extension UrlHandlingScreen {
         case let .assetHubMigration(navigation):
             .assetHubMigration(config: navigation.config)
         case let .giftClaim(navigation):
-            .giftClaim(claimableGift: navigation.claimableGift, amount: navigation.totalAmount)
+            .giftClaim(
+                giftPayload: navigation.claimableGiftPayload,
+                amount: navigation.totalAmount
+            )
         case .error:
             nil
         }

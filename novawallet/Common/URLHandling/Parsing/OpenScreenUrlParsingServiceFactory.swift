@@ -31,7 +31,7 @@ private extension OpenScreenUrlParsingServiceFactory {
         let secretManager = GiftSecretsManager(keystore: Keychain())
 
         let chainRegistry = chainRegistryClosure()
-        let balanceQueryFacade = RemoteBalanceQueryFacade(
+        let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
@@ -42,7 +42,7 @@ private extension OpenScreenUrlParsingServiceFactory {
         let claimAvailabilityChecker = GiftClaimAvailabilityCheckFactory(
             chainRegistry: chainRegistry,
             giftSecretsManager: secretManager,
-            balanceQueryFacade: balanceQueryFacade,
+            balanceQueryFactory: balanceQueryFactory,
             assetInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue
         )

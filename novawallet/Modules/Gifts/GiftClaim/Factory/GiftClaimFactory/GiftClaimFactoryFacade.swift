@@ -23,19 +23,21 @@ final class GiftClaimFactoryFacade {
         self.operationQueue = operationQueue
     }
 
-    convenience init(operationQueue: OperationQueue) {
-        let keyStore = Keychain()
-        let giftSecretsManager = GiftSecretsManager(keystore: keyStore)
+    convenience init(
+        operationQueue: OperationQueue,
+        keystore: KeystoreProtocol
+    ) {
+        let giftSecretsManager = GiftSecretsManager(keystore: keystore)
         let giftFactory = GiftOperationFactory(
             metaId: nil,
             secretsManager: giftSecretsManager
         )
 
-        let signingWrapperFactory = SigningWrapperFactory()
+        let signingWrapperFactory = SigningWrapperFactory(keystore: keystore)
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let balanceQueryFacade = RemoteBalanceQueryFacade(
+        let balanceQueryFactory = WalletRemoteQueryWrapperFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
@@ -47,7 +49,7 @@ final class GiftClaimFactoryFacade {
         let claimAvailabilityCheckFactory = GiftClaimAvailabilityCheckFactory(
             chainRegistry: chainRegistry,
             giftSecretsManager: giftSecretsManager,
-            balanceQueryFacade: balanceQueryFacade,
+            balanceQueryFactory: balanceQueryFactory,
             assetInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue
         )
@@ -66,7 +68,6 @@ private extension GiftClaimFactoryFacade {
     func createClaimFactory() -> GiftClaimFactoryProtocol {
         GiftClaimFactory(
             giftFactory: giftFactory,
-            giftSecretsCleaningFactory: giftSecretManager,
             claimAvailabilityCheckFactory: claimAvailabilityCheckFactory,
             operationQueue: operationQueue
         )
