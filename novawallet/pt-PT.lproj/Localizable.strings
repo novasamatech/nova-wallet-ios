@@ -1817,7 +1817,7 @@
 "common.period.1d" = "1d";
 "polkadot.vault.qr.type.legacy" = "Legado";
 "polkadot.vault.qr.type.v7" = "Novo (Vault v7+)";
-"wallet.asset.buySell" = "Comprar/Vender";
+"wallet.asset.buySell" = "Comp./Vend.";
 "token.actions.picker.buy" = "Comprar tokens";
 "token.actions.picker.sell" = "Vender tokens";
 "wallet.asset.sell" = "Vender";

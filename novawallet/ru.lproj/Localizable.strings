@@ -1817,7 +1817,7 @@
 "common.period.1d" = "1д";
 "polkadot.vault.qr.type.legacy" = "Устаревший";
 "polkadot.vault.qr.type.v7" = "Новый (Vault v7+)";
-"wallet.asset.buySell" = "Купить/Продать";
+"wallet.asset.buySell" = "Куп./Прод.";
 "token.actions.picker.buy" = "Купить токены";
 "token.actions.picker.sell" = "Продать токены";
 "wallet.asset.sell" = "Продать";
@@ -1986,7 +1986,7 @@
 "gifts.onboarding.step1.highlighted" = "Введите сумму вашего подарка";
 "gifts.onboarding.step2.highlighted" = "Поделитесь подарком напрямую";
 "gifts.onboarding.title" = "Делитесь крипто-подарками с кем угодно, где угодно";
-"common.gift" = "Подарок";
+"common.gift" = "Подарить";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ в виде ссылки и пригласите кого-нибудь в Nova";
 "gifts.onboarding.step3.template" = "%@, и вы можете вернуть невостребованные подарки в любое время с этого устройства";

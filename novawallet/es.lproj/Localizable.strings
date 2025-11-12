@@ -1410,7 +1410,7 @@
 "swaps.setup.asset.select.receive.title" = "Usted recibe";
 "swaps.setup.details.title" = "Detalles del intercambio";
 "swaps.setup.asset.action.select.receive" = "Selecciona un token para recibir";
-"common.swap.action" = "Intercambiar";
+"common.swap.action" = "Cambiar";
 "swaps.setup.asset.action.enter.amount" = "Ingresar monto";
 "common.swap.title" = "Intercambiar";
 "common.action.repeat.operation" = "Repetir la operación";
@@ -1817,7 +1817,7 @@
 "common.period.1d" = "1d";
 "polkadot.vault.qr.type.legacy" = "Legado";
 "polkadot.vault.qr.type.v7" = "Nuevo (Vault v7+)";
-"wallet.asset.buySell" = "Comprar/Vender";
+"wallet.asset.buySell" = "Comp./Vend.";
 "token.actions.picker.buy" = "Comprar tokens";
 "token.actions.picker.sell" = "Vender tokens";
 "wallet.asset.sell" = "Vender";
