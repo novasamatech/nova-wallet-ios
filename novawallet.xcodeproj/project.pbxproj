@@ -2107,7 +2107,7 @@
 		2DB586622EB7689B00950F7D /* EvmGiftSubmissionFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586612EB7689B00950F7D /* EvmGiftSubmissionFactoryProtocol.swift */; };
 		2DB586762EB76BE100950F7D /* GiftTransferConfirmError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB586752EB76BE100950F7D /* GiftTransferConfirmError.swift */; };
 		2DB5869A2EB8753800950F7D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 2DB586992EB8753800950F7D /* Lottie */; };
-		2DB586C82EB877E800950F7D /* DOT_upacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C12EB877E800950F7D /* DOT_upacking.json */; };
+		2DB586C82EB877E800950F7D /* DOT_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C12EB877E800950F7D /* DOT_unpacking.json */; };
 		2DB586C92EB877E800950F7D /* USDT_packing.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C62EB877E800950F7D /* USDT_packing.json */; };
 		2DB586CA2EB877E800950F7D /* ASTR_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586BB2EB877E800950F7D /* ASTR_unpacking.json */; };
 		2DB586CB2EB877E800950F7D /* KSM_unpacking.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DB586C52EB877E800950F7D /* KSM_unpacking.json */; };
@@ -8763,7 +8763,7 @@
 		2DB586BE2EB877E800950F7D /* Default_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Default_packing.json; sourceTree = "<group>"; };
 		2DB586BF2EB877E800950F7D /* Default_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Default_unpacking.json; sourceTree = "<group>"; };
 		2DB586C02EB877E800950F7D /* DOT_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DOT_packing.json; sourceTree = "<group>"; };
-		2DB586C12EB877E800950F7D /* DOT_upacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DOT_upacking.json; sourceTree = "<group>"; };
+		2DB586C12EB877E800950F7D /* DOT_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DOT_unpacking.json; sourceTree = "<group>"; };
 		2DB586C22EB877E800950F7D /* HDX_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = HDX_packing.json; sourceTree = "<group>"; };
 		2DB586C32EB877E800950F7D /* HDX_unpacking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = HDX_unpacking.json; sourceTree = "<group>"; };
 		2DB586C42EB877E800950F7D /* KSM_packing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = KSM_packing.json; sourceTree = "<group>"; };
@@ -18454,7 +18454,7 @@
 				2DB586BE2EB877E800950F7D /* Default_packing.json */,
 				2DB586BF2EB877E800950F7D /* Default_unpacking.json */,
 				2DB586C02EB877E800950F7D /* DOT_packing.json */,
-				2DB586C12EB877E800950F7D /* DOT_upacking.json */,
+				2DB586C12EB877E800950F7D /* DOT_unpacking.json */,
 				2DB586C22EB877E800950F7D /* HDX_packing.json */,
 				2DB586C32EB877E800950F7D /* HDX_unpacking.json */,
 				2DB586C42EB877E800950F7D /* KSM_packing.json */,
@@ -30674,7 +30674,7 @@
 				848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */,
 				84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */,
 				84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */,
-				2DB586C82EB877E800950F7D /* DOT_upacking.json in Resources */,
+				2DB586C82EB877E800950F7D /* DOT_unpacking.json in Resources */,
 				2DB586C92EB877E800950F7D /* USDT_packing.json in Resources */,
 				2DB586CA2EB877E800950F7D /* ASTR_unpacking.json in Resources */,
 				2DB586CB2EB877E800950F7D /* KSM_unpacking.json in Resources */,
