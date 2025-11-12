@@ -51,7 +51,7 @@ private extension SubstrateGiftClaimFactory {
         let submitAndMonitorWrapper = createSubmitAndMonitorWrapper(
             gift: { try giftWrapper.targetOperation.extractNoCancellableResultData() },
             extrinsicBuilderClosure: extrinsicBuilderClosure,
-            chainAssetId: chainAsset.chainAssetId
+            chainAsset: chainAsset
         )
 
         let mapOperation = ClosureOperation<Void> {
@@ -81,19 +81,19 @@ private extension SubstrateGiftClaimFactory {
     func createSubmitAndMonitorWrapper(
         gift: @escaping () throws -> GiftModel,
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
-        chainAssetId: ChainAssetId
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let signingData = GiftSigningData(
                 gift: try gift(),
-                ethereumBased: false,
+                ethereumBased: chainAsset.chain.isEthereumBased,
                 cryptoType: .sr25519
             )
             let signingWrapper = self.signingWrapperFactory.createSigningWrapper(giftSigningData: signingData)
 
             return self.extrinsicMonitorFactory.submitAndMonitorWrapper(
                 extrinsicBuilderClosure: extrinsicBuilderClosure,
-                payingIn: chainAssetId,
+                payingIn: chainAsset.chainAssetId,
                 signer: signingWrapper
             )
         }
