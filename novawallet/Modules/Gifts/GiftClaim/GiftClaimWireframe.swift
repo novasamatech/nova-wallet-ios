@@ -36,13 +36,11 @@ final class GiftClaimWireframe: GiftClaimWireframeProtocol {
         message: String,
         actionTitle: String
     ) {
-        let presenter = view?.controller.navigationController?.presentingViewController
-
         present(
             message: message,
             title: title,
             closeAction: actionTitle,
-            from: presenter as? ControllerBackedProtocol
+            from: view
         )
     }
 
@@ -51,10 +49,8 @@ final class GiftClaimWireframe: GiftClaimWireframeProtocol {
         locale: Locale,
         retryAction: @escaping () -> Void
     ) {
-        let presenter = view?.controller.navigationController?.presentingViewController
-
         presentRequestStatus(
-            on: presenter as? ControllerBackedProtocol,
+            on: view,
             locale: locale,
             retryAction: retryAction
         )
