@@ -15,4 +15,18 @@ final class GiftClaimWireframe: GiftClaimWireframeProtocol {
             animated: true
         )
     }
+
+    func complete(
+        from view: ControllerBackedProtocol?,
+        with successText: String
+    ) {
+        let presenter = view?.controller.navigationController?.presentingViewController
+
+        view?.controller.dismiss(animated: true) { [weak self] in
+            self?.presentMultilineSuccessNotification(
+                successText,
+                from: presenter as? ControllerBackedProtocol
+            )
+        }
+    }
 }

@@ -80,6 +80,15 @@ extension GiftClaimPresenter: GiftClaimPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func endUnpacking() {
+        wireframe.complete(
+            from: view,
+            with: R.string(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).localizable.giftClaimSuccessStatus()
+        )
+    }
 }
 
 // MARK: - GiftClaimInteractorOutputProtocol

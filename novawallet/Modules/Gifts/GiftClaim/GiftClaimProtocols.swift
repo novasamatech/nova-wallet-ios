@@ -10,6 +10,7 @@ protocol GiftClaimPresenterProtocol: AnyObject {
     func actionClaim()
     func actionSelectWallet()
     func actionManageWallets()
+    func endUnpacking()
 }
 
 protocol GiftClaimInteractorInputProtocol: AnyObject {
@@ -24,6 +25,14 @@ protocol GiftClaimInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol GiftClaimWireframeProtocol: AlertPresentable, ErrorPresentable, GiftWalletChoosePresentable {
+protocol GiftClaimWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    GiftWalletChoosePresentable,
+    ModalAlertPresenting {
     func showManageWallets(from view: ControllerBackedProtocol?)
+
+    func complete(
+        from view: ControllerBackedProtocol?,
+        with successText: String
+    )
 }

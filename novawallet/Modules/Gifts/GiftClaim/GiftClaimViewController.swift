@@ -31,6 +31,8 @@ final class GiftClaimViewController: UIViewController, ViewHolder {
 
 private extension GiftClaimViewController {
     func setupActions() {
+        rootView.delegate = self
+
         rootView.claimActionButton.actionButton.addTarget(
             self,
             action: #selector(actionClaim),
@@ -78,5 +80,13 @@ extension GiftClaimViewController: GiftClaimViewProtocol {
 
     func didStopLoading() {
         rootView.bind(loading: false)
+    }
+}
+
+// MARK: - GiftClaimViewLayoutDelegate
+
+extension GiftClaimViewController: GiftClaimViewLayoutDelegate {
+    func didEndUnpackingAnimation() {
+        presenter.endUnpacking()
     }
 }

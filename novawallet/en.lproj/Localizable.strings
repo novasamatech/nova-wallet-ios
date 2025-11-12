@@ -2002,3 +2002,4 @@
 "common.total.fee" = "Total fee";
 "gift.unsupported.token.alert.title" = "This token is not supported by the gift feature";
 "gift.unsupported.token.alert.message" = "Gifting for this token is currently not supported. Please select different token, a different network, or check back later.";
+"gift.claim.success.status" = "You’ve successfully claimed a gift. Tokens will appear in your balance shortly.";

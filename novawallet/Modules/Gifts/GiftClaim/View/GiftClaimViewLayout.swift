@@ -2,7 +2,13 @@ import UIKit
 import UIKit_iOS
 import Lottie
 
+protocol GiftClaimViewLayoutDelegate: AnyObject {
+    func didEndUnpackingAnimation()
+}
+
 final class GiftClaimViewLayout: UIView {
+    weak var delegate: GiftClaimViewLayoutDelegate?
+
     let titleLabel: UILabel = .create { view in
         view.apply(style: .boldTitle1Primary)
         view.numberOfLines = 0
@@ -225,7 +231,9 @@ extension GiftClaimViewLayout {
         animationView.play(
             fromFrame: animationFrameRange.startFrame,
             toFrame: animationFrameRange.endFrame
-        )
+        ) { [weak self] _ in
+            self?.delegate?.didEndUnpackingAnimation()
+        }
     }
 
     func bind(loading: Bool) {
