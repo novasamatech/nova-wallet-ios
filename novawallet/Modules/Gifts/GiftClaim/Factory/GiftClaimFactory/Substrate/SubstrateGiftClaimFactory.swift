@@ -84,10 +84,15 @@ private extension SubstrateGiftClaimFactory {
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+            let ethereumBased = chainAsset.chain.isEthereumBased
+            let cryptoType: MultiassetCryptoType = ethereumBased
+                ? .ethereumEcdsa
+                : .sr25519
+
             let signingData = GiftSigningData(
                 gift: try gift(),
-                ethereumBased: chainAsset.chain.isEthereumBased,
-                cryptoType: .sr25519
+                ethereumBased: ethereumBased,
+                cryptoType: cryptoType
             )
             let signingWrapper = self.signingWrapperFactory.createSigningWrapper(giftSigningData: signingData)
 
