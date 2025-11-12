@@ -4,7 +4,6 @@ import BigInt
 struct ClaimableGiftBaseData {
     let onChainAmountWithFee: OnChainTransferAmount<BigUInt>
     let claimingAccountId: AccountId?
-    let transactionId: GiftTransactionFeeId
 }
 
 final class ClaimableGiftDescriptionHelper {
@@ -20,15 +19,9 @@ final class ClaimableGiftDescriptionHelper {
             for: chainAsset.chain.accountRequest()
         )?.accountId
 
-        let transactionId = GiftTransactionFeeId(
-            recepientAccountId: try claimingAccountId ?? chainAsset.chain.emptyAccountId(),
-            amount: onChainAmountWithFee
-        )
-
         return ClaimableGiftBaseData(
             onChainAmountWithFee: onChainAmountWithFee,
-            claimingAccountId: claimingAccountId,
-            transactionId: transactionId
+            claimingAccountId: claimingAccountId
         )
     }
 

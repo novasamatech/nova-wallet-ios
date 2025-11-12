@@ -41,7 +41,8 @@ private extension EvmClaimableGiftDescriptionFactory {
         { [weak self] builder in
             guard let self else { return builder }
 
-            let recipientAccountId = giftData.claimingAccountId ?? giftData.transactionId.recepientAccountId
+            let recipientAccountId = try giftData.claimingAccountId
+                ?? chainAsset.chain.emptyAccountId()
             let recipientAccountAddress = try recipientAccountId.toAddress(
                 using: chainAsset.chain.chainFormat
             )

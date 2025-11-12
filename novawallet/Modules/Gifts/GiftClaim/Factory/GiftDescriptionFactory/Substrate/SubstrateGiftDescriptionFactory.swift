@@ -35,12 +35,13 @@ final class SubstrateGiftDescriptionFactory {
 private extension SubstrateGiftDescriptionFactory {
     func createBuilderClosure(
         using giftData: ClaimableGiftBaseData,
+        chain: ChainModel,
         assetStorageInfo: AssetStorageInfo
     ) -> ExtrinsicBuilderClosure {
         { [weak self] builder in
             guard let self else { return builder }
 
-            let recipientAccountId = giftData.claimingAccountId ?? giftData.transactionId.recepientAccountId
+            let recipientAccountId = try giftData.claimingAccountId ?? chain.emptyAccountId()
 
             let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
                 to: builder,
@@ -76,6 +77,7 @@ extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtoc
 
             let builderClosure = createBuilderClosure(
                 using: baseData,
+                chain: chainAsset.chain,
                 assetStorageInfo: try assetStorageInfo()
             )
 
