@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@をリンクとして共有し、誰でもNovaに招待";
 "gifts.onboarding.step3.template" = "%@、そして、このデバイスからいつでも請求されていないギフトを回収できます";
 "gifts.onboarding.step3.highlighted" = "贈り物は瞬時に利用可能,";
-"gifts.onboarding.subtitle_copy" = "Novaで迅速、簡単、安全に贈り物を送る";
+"gifts.onboarding.subtitle" = "Novaで迅速、簡単、安全に贈り物を送る";
 "gift.operation.network.list.title" = "%@の贈り物のネットワークを選択";
 "gift.transfer.setup.token.title" = "ギフトを送る";
 "gift.validation.not.enough.tokens" = "トークンが足りません";

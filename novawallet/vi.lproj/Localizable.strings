@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@ như một liên kết và mời bất kỳ ai đến với Nova";
 "gifts.onboarding.step3.template" = "%@ và bạn có thể trả lại các món quà chưa nhận bất cứ lúc nào từ thiết bị này";
 "gifts.onboarding.step3.highlighted" = "Món quà có sẵn ngay lập tức,";
-"gifts.onboarding.subtitle_copy" = "Gửi quà nhanh chóng, dễ dàng và an toàn trong Nova";
+"gifts.onboarding.subtitle" = "Gửi quà nhanh chóng, dễ dàng và an toàn trong Nova";
 "gift.operation.network.list.title" = "Chọn mạng cho quà %@";
 "gift.transfer.setup.token.title" = "Gửi quà";
 "gift.validation.not.enough.tokens" = "Không đủ token";

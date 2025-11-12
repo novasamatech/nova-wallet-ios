@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@ в виде ссылки и пригласите кого-нибудь в Nova";
 "gifts.onboarding.step3.template" = "%@, и вы можете вернуть невостребованные подарки в любое время с этого устройства";
 "gifts.onboarding.step3.highlighted" = "Подарок доступен мгновенно,";
-"gifts.onboarding.subtitle_copy" = "Отправляйте подарки быстро, легко и безопасно в Nova";
+"gifts.onboarding.subtitle" = "Отправляйте подарки быстро, легко и безопасно в Nova";
 "gift.operation.network.list.title" = "Выберите сеть для подарка %@";
 "gift.transfer.setup.token.title" = "Отправить подарок";
 "gift.validation.not.enough.tokens" = "Недостаточно токенов";

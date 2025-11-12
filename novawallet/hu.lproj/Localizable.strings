@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@ linkként és hívd meg bárkit a Novához";
 "gifts.onboarding.step3.template" = "%@, és bármikor visszakérheted a fel nem használt ajándékokat erről az eszközről";
 "gifts.onboarding.step3.highlighted" = "Az ajándék azonnal elérhető,";
-"gifts.onboarding.subtitle_copy" = "Küldj ajándékokat gyorsan, egyszerűen és biztonságosan a Nova segítségével";
+"gifts.onboarding.subtitle" = "Küldj ajándékokat gyorsan, egyszerűen és biztonságosan a Nova segítségével";
 "gift.operation.network.list.title" = "Válassz hálózatot a(z) %@ ajándékhoz";
 "gift.transfer.setup.token.title" = "Ajándék küldése";
 "gift.validation.not.enough.tokens" = "Nincs elegendő token";

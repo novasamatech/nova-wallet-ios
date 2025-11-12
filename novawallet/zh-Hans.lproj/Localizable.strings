@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@作为链接并邀请任何人到Nova";
 "gifts.onboarding.step3.template" = "%@，您可以随时从此设备返回未领取的礼物";
 "gifts.onboarding.step3.highlighted" = "礼物可立即使用,";
-"gifts.onboarding.subtitle_copy" = "在Nova中快速、安全、轻松地发送礼物";
+"gifts.onboarding.subtitle" = "在Nova中快速、安全、轻松地发送礼物";
 "gift.operation.network.list.title" = "选择%@礼物的网络";
 "gift.transfer.setup.token.title" = "发送礼物";
 "gift.validation.not.enough.tokens" = "代币不足";

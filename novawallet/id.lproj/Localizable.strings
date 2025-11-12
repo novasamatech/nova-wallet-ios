@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@ sebagai link dan undang siapa saja ke Nova";
 "gifts.onboarding.step3.template" = "%@, dan Anda dapat mengembalikan hadiah yang tidak diklaim kapan saja dari perangkat ini";
 "gifts.onboarding.step3.highlighted" = "Hadiah tersedia seketika,";
-"gifts.onboarding.subtitle_copy" = "Kirim hadiah dengan cepat, mudah, dan aman di Nova";
+"gifts.onboarding.subtitle" = "Kirim hadiah dengan cepat, mudah, dan aman di Nova";
 "gift.operation.network.list.title" = "Pilih jaringan untuk hadiah %@";
 "gift.transfer.setup.token.title" = "Kirim hadiah";
 "gift.validation.not.enough.tokens" = "Token tidak mencukupi";

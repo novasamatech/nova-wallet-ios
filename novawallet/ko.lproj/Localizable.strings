@@ -1991,7 +1991,7 @@
 "gifts.onboarding.step2.template" = "%@를 링크로 공유하고 Nova로 초대하세요";
 "gifts.onboarding.step3.template" = "%@, 그리고 이 디바이스에서 언제든지 회수 가능";
 "gifts.onboarding.step3.highlighted" = "선물이 즉시 사용 가능합니다,";
-"gifts.onboarding.subtitle_copy" = "Nova에서 빠르고 쉽게 안전하게 선물을 보내세요";
+"gifts.onboarding.subtitle" = "Nova에서 빠르고 쉽게 안전하게 선물을 보내세요";
 "gift.operation.network.list.title" = "%@ 선물에 대한 네트워크 선택";
 "gift.transfer.setup.token.title" = "선물 보내기";
 "gift.validation.not.enough.tokens" = "토큰이 부족합니다";
