@@ -76,7 +76,7 @@ extension GiftsOnboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtoc
 
         return GiftsOnboardingViewModel(
             steps: steps,
-            actionTitle: R.string(preferredLanguages: languages).localizable.commonContinue(),
+            actionTitle: R.string(preferredLanguages: languages).localizable.giftsActionCreateGift(),
             locale: locale
         )
     }
