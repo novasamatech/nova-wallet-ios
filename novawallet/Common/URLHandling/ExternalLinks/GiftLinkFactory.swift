@@ -24,7 +24,7 @@ private extension GiftLinkFactory {
     func createPayloadChainId(from chainId: ChainModel.Id) -> String? {
         guard chainId != Constants.defaultChainId else { return nil }
 
-        let shortChainIdLength = 6
+        let shortChainIdLength = Constants.shortChainIdMaxLength
         let endIndex: String.Index = chainId.count < shortChainIdLength
             ? chainId.endIndex
             : chainId.index(chainId.startIndex, offsetBy: shortChainIdLength)
@@ -109,7 +109,7 @@ final class GiftLinkPayloadParser: GiftLinkPayloadParserProtocol {
         guard rawPayloadComponents.count > 1 else {
             return GiftSharingPayload(
                 seed: rawPayloadComponents[0],
-                chainId: Constants.defaultChainId,
+                chainId: Constants.defaultChainId[0 ..< Constants.shortChainIdMaxLength],
                 assetSymbol: Constants.defaultAsset
             )
         }
@@ -117,7 +117,7 @@ final class GiftLinkPayloadParser: GiftLinkPayloadParserProtocol {
         guard rawPayloadComponents.count > 2 else {
             return GiftSharingPayload(
                 seed: rawPayloadComponents[0],
-                chainId: Constants.defaultChainId,
+                chainId: Constants.defaultChainId[0 ..< Constants.shortChainIdMaxLength],
                 assetSymbol: rawPayloadComponents[1]
             )
         }
@@ -135,4 +135,5 @@ final class GiftLinkPayloadParser: GiftLinkPayloadParserProtocol {
 private enum Constants {
     static let defaultChainId = KnowChainId.polkadotAssetHub
     static let defaultAsset = "DOT"
+    static let shortChainIdMaxLength = 6
 }
