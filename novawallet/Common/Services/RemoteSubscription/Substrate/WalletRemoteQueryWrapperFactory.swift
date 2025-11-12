@@ -360,6 +360,7 @@ private extension WalletRemoteQueryWrapperFactory {
                 for: accountId,
                 chainAsset: chainAsset,
                 with: params,
+                method: EvmBalanceMessage.method,
                 completion: completion
             )
         }
@@ -382,6 +383,7 @@ private extension WalletRemoteQueryWrapperFactory {
                 for: accountId,
                 chainAsset: chainAsset,
                 with: params,
+                method: EvmQueryMessage.method,
                 completion: completion
             )
         }
@@ -393,12 +395,13 @@ private extension WalletRemoteQueryWrapperFactory {
         for accountId: AccountId,
         chainAsset: ChainAsset,
         with params: Encodable,
+        method: String,
         completion: @escaping (Result<AssetBalance, Error>) -> Void
     ) throws {
         let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
 
         _ = try connection.callMethod(
-            EvmBalanceMessage.method,
+            method,
             params: params,
             options: .init(resendOnReconnect: true)
         ) { (result: Result<String, Error>) in
