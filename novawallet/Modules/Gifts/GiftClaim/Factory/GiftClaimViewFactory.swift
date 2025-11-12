@@ -120,7 +120,7 @@ private extension GiftClaimViewFactory {
 
         let claimOperationFactory = GiftClaimFactoryFacade(
             operationQueue: operationQueue,
-            keystore: InMemoryKeychain(),
+            keystore: InMemoryKeychain()
         ).createSubstrateFactory(extrinsicMonitorFactory: extrinsicMonitorFactory)
 
         return SubstrateGiftClaimInteractor(
