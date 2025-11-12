@@ -17,7 +17,7 @@ extension GiftMapper: CoreDataMapperProtocol {
             chainAssetId: ChainAssetId(chainId: entity.chainId!, assetId: UInt32(bitPattern: entity.assetId)),
             status: GiftModel.Status(rawValue: entity.status)!,
             giftAccountId: try Data(hexString: entity.giftAccountId!),
-            metaId: entity.metaId!
+            senderMetaId: entity.metaId
         )
     }
 
@@ -31,7 +31,7 @@ extension GiftMapper: CoreDataMapperProtocol {
         entity.assetId = Int32(bitPattern: model.chainAssetId.assetId)
         entity.status = model.status.rawValue
         entity.giftAccountId = model.giftAccountId.toHex()
-        entity.metaId = model.metaId
+        entity.metaId = model.senderMetaId
         entity.identifier = model.identifier
     }
 }

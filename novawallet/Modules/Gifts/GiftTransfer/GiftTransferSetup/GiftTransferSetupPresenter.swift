@@ -56,18 +56,10 @@ final class GiftTransferSetupPresenter: GiftTransferPresenter, GiftTransferSetup
             return
         }
 
-        let amount: OnChainTransferAmount<BigUInt>
-
-        if let inputResult = inputResult, inputResult.isMax {
-            amount = .all(value: amountValue)
-        } else {
-            amount = .concrete(value: amountValue)
-        }
-
         updateFee(nil)
         updateFeeView()
 
-        interactor.estimateFee(for: amount)
+        interactor.estimateFee(for: .all(value: amountValue))
     }
 
     override func askFeeRetry() {

@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 
 typealias GiftSubmissionWrapperProvider = (
-    _ giftOperation: BaseOperation<GiftModel>,
+    _ giftWrapper: CompoundOperationWrapper<GiftModel>,
     _ amount: OnChainTransferAmount<BigUInt>
 ) -> CompoundOperationWrapper<SubmittedGiftTransactionMetadata>
 
@@ -18,6 +18,7 @@ protocol GiftSubmissionFactoryProtocol {
 final class GiftSubmissionFactory {
     let giftsRepository: AnyDataProviderRepository<GiftModel>
     let giftFactory: GiftOperationFactoryProtocol
+    let giftSecretsCleaningFactory: GiftSecretsCleaningProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
@@ -28,6 +29,7 @@ final class GiftSubmissionFactory {
     init(
         giftsRepository: AnyDataProviderRepository<GiftModel>,
         giftFactory: GiftOperationFactoryProtocol,
+        giftSecretsCleaningFactory: GiftSecretsCleaningProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
@@ -37,6 +39,7 @@ final class GiftSubmissionFactory {
     ) {
         self.giftsRepository = giftsRepository
         self.giftFactory = giftFactory
+        self.giftSecretsCleaningFactory = giftSecretsCleaningFactory
         self.persistExtrinsicService = persistExtrinsicService
         self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
@@ -51,7 +54,7 @@ final class GiftSubmissionFactory {
 private extension GiftSubmissionFactory {
     func createProcessSubmissionResultWrapper(
         dependingOn submitWrapper: CompoundOperationWrapper<SubmittedGiftTransactionMetadata>,
-        giftOperation: BaseOperation<GiftModel>,
+        giftOperation: CompoundOperationWrapper<GiftModel>,
         lastFee: BigUInt?
     ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
@@ -61,7 +64,7 @@ private extension GiftSubmissionFactory {
 
             do {
                 let submissionData = try submitWrapper.targetOperation.extractNoCancellableResultData()
-                let gift = try giftOperation.extractNoCancellableResultData()
+                let gift = try giftOperation.targetOperation.extractNoCancellableResultData()
 
                 return createPersistExtrinsicWrapper(
                     submissionData: submissionData,
@@ -117,7 +120,7 @@ private extension GiftSubmissionFactory {
             accountId: giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
-        let cleanSecretsOperation = giftFactory.cleanSecrets(for: secretInfo)
+        let cleanSecretsOperation = giftSecretsCleaningFactory.cleanSecrets(for: secretInfo)
         let cleanLocalGiftOperation = giftsRepository.saveOperation(
             { [] },
             { [giftAccountId.toHex()] }
@@ -137,10 +140,10 @@ private extension GiftSubmissionFactory {
     }
 
     func createPersistGiftWrapper(
-        dependingOn giftOperation: BaseOperation<GiftModel>
+        dependingOn giftOperation: CompoundOperationWrapper<GiftModel>
     ) -> CompoundOperationWrapper<Void> {
         let saveOperation = giftsRepository.saveOperation(
-            { [try giftOperation.extractNoCancellableResultData()] },
+            { [try giftOperation.targetOperation.extractNoCancellableResultData()] },
             { [] }
         )
 
@@ -218,16 +221,16 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
         let amountWithClaimFee = amount.map { $0 + claimFee }
 
         /* We use nominal gift value for local model */
-        let giftOperation = giftFactory.createGiftOperation(
-            amount: amount,
+        let giftWrapper = giftFactory.createGiftWrapper(
+            amount: amount.value,
             chainAsset: chainAsset
         )
-        let persistGiftWrapper = createPersistGiftWrapper(dependingOn: giftOperation)
+        let persistGiftWrapper = createPersistGiftWrapper(dependingOn: giftWrapper)
 
         /* We send amount with claim fee to allow getting
          nominal gift value for final recipient */
         let submitWrapper = submissionWrapperProvider(
-            giftOperation,
+            giftWrapper,
             amountWithClaimFee
         )
         let processPossibleFailureWrapper = createProcessFailedSubmission(
@@ -236,11 +239,11 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
         )
         let processResultWrapper = createProcessSubmissionResultWrapper(
             dependingOn: submitWrapper,
-            giftOperation: giftOperation,
+            giftOperation: giftWrapper,
             lastFee: totalFee
         )
 
-        persistGiftWrapper.addDependency(operations: [giftOperation])
+        persistGiftWrapper.addDependency(wrapper: giftWrapper)
         submitWrapper.addDependency(wrapper: persistGiftWrapper)
         processPossibleFailureWrapper.addDependency(wrapper: submitWrapper)
         processResultWrapper.addDependency(wrapper: processPossibleFailureWrapper)
@@ -249,7 +252,7 @@ extension GiftSubmissionFactory: GiftSubmissionFactoryProtocol {
             .insertingHead(operations: processPossibleFailureWrapper.allOperations)
             .insertingHead(operations: submitWrapper.allOperations)
             .insertingHead(operations: persistGiftWrapper.allOperations)
-            .insertingHead(operations: [giftOperation])
+            .insertingHead(operations: giftWrapper.allOperations)
 
         return finalWrapper
     }

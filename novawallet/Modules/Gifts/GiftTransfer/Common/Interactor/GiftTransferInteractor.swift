@@ -56,7 +56,7 @@ class GiftTransferInteractor: GiftTransferBaseInteractor {
 
     override func estimateFee(
         for amount: OnChainTransferAmount<BigUInt>,
-        transactionId: GiftTransferBaseInteractor.GiftTransactionFeeId,
+        transactionId: GiftTransactionFeeId,
         recepientAccountId: AccountId
     ) {
         feeProxy.estimateFee(
@@ -136,9 +136,9 @@ private extension GiftTransferInteractor {
     ) {
         guard let giftTransactionFeeId = GiftTransactionFeeId(rawValue: transactionFeeId) else { return }
 
-        let amount = giftTransactionFeeId.amount.map { $0 + fee.amount }
+        let amount = giftTransactionFeeId.amount.value + fee.amount
         let newBuilder = giftFeeDescriptionBuilder.with(claimFee: fee)
-        estimateFee(for: amount, feeType: .createGift(newBuilder))
+        estimateFee(for: .concrete(value: amount), feeType: .createGift(newBuilder))
     }
 
     func processCreateFee(

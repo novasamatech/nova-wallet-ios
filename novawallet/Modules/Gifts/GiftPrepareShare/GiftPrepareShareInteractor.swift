@@ -5,7 +5,7 @@ final class GiftPrepareShareInteractor {
     weak var presenter: GiftPrepareShareInteractorOutputProtocol?
 
     let giftId: GiftModel.Id
-    let localGiftFactory: LocalGiftFactoryProtocol
+    let giftSecretsManager: GiftSecretsProvidingProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -16,14 +16,14 @@ final class GiftPrepareShareInteractor {
 
     init(
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        localGiftFactory: LocalGiftFactoryProtocol,
+        giftSecretsManager: GiftSecretsManagerProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftId: GiftModel.Id,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.giftRepository = giftRepository
-        self.localGiftFactory = localGiftFactory
+        self.giftSecretsManager = giftSecretsManager
         self.chainRegistry = chainRegistry
         self.giftId = giftId
         self.operationQueue = operationQueue
@@ -75,7 +75,7 @@ private extension GiftPrepareShareInteractor {
         let chainId = chainAsset.chainAssetId.chainId.split(by: .colon).last ?? ""
 
         return GiftSharingPayload(
-            seed: secrets.seed.toHex(),
+            seed: secrets.seed.toHexString(),
             chainId: chainId,
             assetSymbol: chainAsset.asset.symbol
         )
@@ -91,10 +91,11 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
         gift: GiftModel,
         chainAsset: ChainAsset
     ) {
-        let secretsOperation = localGiftFactory.getSecrets(
-            for: gift.giftAccountId,
+        let secretInfo = GiftSecretKeyInfo(
+            accountId: gift.giftAccountId,
             ethereumBased: chainAsset.chain.isEthereumBased
         )
+        let secretsOperation: BaseOperation<GiftSecrets> = giftSecretsManager.getSecrets(for: secretInfo)
 
         execute(
             operation: secretsOperation,
@@ -105,8 +106,6 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
 
             switch result {
             case let .success(secrets):
-                guard let secrets else { return }
-
                 let payload = createSharingPayload(with: secrets, chainAsset: chainAsset)
                 presenter?.didReceive(payload)
             case let .failure(error):

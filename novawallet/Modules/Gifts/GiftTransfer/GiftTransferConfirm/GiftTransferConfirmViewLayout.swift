@@ -1,3 +1,4 @@
+import UIKit
 import Foundation
 import Foundation_iOS
 
@@ -18,6 +19,12 @@ final class GiftTransferConfirmViewLayout: SCLoadableActionLayoutView {
 
     let networkFeeCell = StackNetworkFeeCell()
     let claimFeeCell = StackNetworkFeeCell()
+
+    let tooltipLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+        view.textAlignment = .center
+        view.numberOfLines = 0
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,5 +51,12 @@ final class GiftTransferConfirmViewLayout: SCLoadableActionLayoutView {
         stackTableView.addArrangedSubview(giftAmountCell)
         stackTableView.addArrangedSubview(networkFeeCell)
         stackTableView.addArrangedSubview(claimFeeCell)
+
+        addSubview(tooltipLabel)
+
+        tooltipLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(genericActionView.snp.top).offset(-16)
+        }
     }
 }

@@ -6,55 +6,34 @@ import Keystore_iOS
 import Operation_iOS
 import Scrypt
 
-protocol LocalGiftFactoryProtocol {
-    func createGiftOperation(
-        amount: BigUInt,
-        chainAsset: ChainAsset
-    ) -> BaseOperation<GiftModel>
-
-    func getSecrets(
-        for localGiftAccountId: AccountId,
-        ethereumBased: Bool
-    ) -> BaseOperation<GiftSecrets?>
-
-    func cleanSecrets(
-        for info: GiftSecretKeyInfo
-    ) -> BaseOperation<Void>
-}
-
-final class LocalGiftFactory {
-    private let metaId: MetaAccountModel.Id
+final class GiftSecretsManager {
     private let keystore: KeystoreProtocol
 
-    init(
-        metaId: MetaAccountModel.Id,
-        keystore: KeystoreProtocol
-    ) {
+    init(keystore: KeystoreProtocol) {
         self.keystore = keystore
-        self.metaId = metaId
     }
 }
 
 // MARK: - Private
 
-private extension LocalGiftFactory {
+private extension GiftSecretsManager {
     // MARK: - Create
 
     func createSeed() throws -> Data {
         guard let randomData = Data.random(of: 10) else {
-            throw GiftFactoryError.seedCreationFailed
+            throw GiftSecretsManagerError.seedCreationFailed
         }
 
         return randomData
     }
 
     func createKeyPair(
-        from seed: Data,
-        chain: ChainModel,
+        seed: Data,
+        ethereumBased: Bool,
         chainCodes: [Chaincode]
     ) throws -> (publicKey: Data, secretKey: Data) {
         guard let saltBytes = Constants.salt.data(using: .utf8)?.byteArray else {
-            throw GiftFactoryError.keyDerivationFailed
+            throw GiftSecretsManagerError.keyDerivationFailed
         }
 
         let seedHash = try scrypt(
@@ -63,7 +42,7 @@ private extension LocalGiftFactory {
             length: 32
         )
 
-        let cryptoType: MultiassetCryptoType = chain.isEthereumBased
+        let cryptoType: MultiassetCryptoType = ethereumBased
             ? .ethereumEcdsa
             : .sr25519
         let keypairFactory = createKeypairFactory(cryptoType)
@@ -135,8 +114,8 @@ private extension LocalGiftFactory {
         ethereumBased: Bool
     ) throws -> Data? {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForMetaId("", accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForMetaId("", accountId: accountId)
+            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
+            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
 
         return try keystore.loadIfKeyExists(tag)
     }
@@ -166,70 +145,81 @@ private extension LocalGiftFactory {
     }
 }
 
-// MARK: - LocalGiftFactoryProtocol
+// MARK: - GiftSecretsManagerProtocol
 
-extension LocalGiftFactory: LocalGiftFactoryProtocol {
-    func createGiftOperation(
-        amount: BigUInt,
-        chainAsset: ChainAsset
-    ) -> BaseOperation<GiftModel> {
-        ClosureOperation { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
+extension GiftSecretsManager: GiftSecretsManagerProtocol {
+    func createSecrets(request: GiftSecretCreationRequest) -> BaseOperation<AccountId> {
+        ClosureOperation {
+            let junctionResult = try self.createJunctionResult(ethereumBased: request.ethereumBased)
 
-            let ethereumBased = chainAsset.chain.isEthereumBased
+            let seed = try (request.seed ?? self.createSeed())
 
-            let junctionResult = try createJunctionResult(ethereumBased: ethereumBased)
-
-            let seed = try createSeed()
-
-            let keypair = try createKeyPair(
-                from: seed,
-                chain: chainAsset.chain,
+            let keypair = try self.createKeyPair(
+                seed: seed,
+                ethereumBased: request.ethereumBased,
                 chainCodes: junctionResult?.chaincodes ?? []
             )
 
-            let accountId = ethereumBased
+            let accountId = request.ethereumBased
                 ? try keypair.publicKey.ethereumAddressFromPublicKey()
                 : try keypair.publicKey.publicKeyToAccountId()
 
-            try saveSeed(
+            try self.saveSeed(
                 seed,
                 accountId: accountId,
-                ethereumBased: ethereumBased
+                ethereumBased: request.ethereumBased
             )
-            try saveSecretKey(
+            try self.saveSecretKey(
                 keypair.secretKey,
                 accountId: accountId,
-                ethereumBased: ethereumBased
+                ethereumBased: request.ethereumBased
             )
 
-            return GiftModel(
-                amount: amount,
-                chainAssetId: chainAsset.chainAssetId,
-                status: .pending,
-                giftAccountId: accountId,
-                metaId: metaId
-            )
+            return accountId
         }
     }
 
-    func getSecrets(
-        for localGiftAccountId: AccountId,
-        ethereumBased: Bool
-    ) -> BaseOperation<GiftSecrets?> {
-        ClosureOperation { [weak self] in
-            guard let seed = try self?.loadSeed(
-                accountId: localGiftAccountId,
-                ethereumBased: ethereumBased
-            ) else { return nil }
-
-            return GiftSecrets(seed: seed)
-        }
+    func getSecrets(for info: GiftSecretKeyInfo) -> BaseOperation<GiftSecrets> {
+        ClosureOperation { try self.getSecrets(for: info) }
     }
 
-    func cleanSecrets(
-        for info: GiftSecretKeyInfo
-    ) -> BaseOperation<Void> {
+    func getSecrets(for info: GiftSecretKeyInfo) throws -> GiftSecrets {
+        guard let seed = try loadSeed(
+            accountId: info.accountId,
+            ethereumBased: info.ethereumBased
+        ) else { throw GiftSecretsManagerError.seedNotFound }
+
+        let junctionResult = try createJunctionResult(ethereumBased: info.ethereumBased)
+
+        let keypair = try createKeyPair(
+            seed: seed,
+            ethereumBased: info.ethereumBased,
+            chainCodes: junctionResult?.chaincodes ?? []
+        )
+
+        return GiftSecrets(
+            seed: seed,
+            secretKey: keypair.secretKey
+        )
+    }
+
+    func getPublicKey(request: GiftPublicKeyFetchRequest) -> BaseOperation<Data> {
+        ClosureOperation { try self.getPublicKey(request: request) }
+    }
+
+    func getPublicKey(request: GiftPublicKeyFetchRequest) throws -> Data {
+        let junctionResult = try createJunctionResult(ethereumBased: request.ethereumBased)
+
+        let keypair = try createKeyPair(
+            seed: request.seed,
+            ethereumBased: request.ethereumBased,
+            chainCodes: junctionResult?.chaincodes ?? []
+        )
+
+        return keypair.publicKey
+    }
+
+    func cleanSecrets(for info: GiftSecretKeyInfo) -> BaseOperation<Void> {
         ClosureOperation {
             try self.removeSeed(
                 accountId: info.accountId,
@@ -243,17 +233,19 @@ extension LocalGiftFactory: LocalGiftFactoryProtocol {
     }
 }
 
-private extension LocalGiftFactory {
+private extension GiftSecretsManager {
     enum Constants {
-        static let salt: String = "Gift"
+        static let salt: String = "gift"
     }
 }
 
-enum GiftFactoryError: Error {
+enum GiftSecretsManagerError: Error {
     case seedCreationFailed
     case keyDerivationFailed
+    case seedNotFound
 }
 
 struct GiftSecrets {
     let seed: Data
+    let secretKey: Data
 }

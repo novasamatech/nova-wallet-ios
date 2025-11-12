@@ -72,6 +72,8 @@ private extension GiftTransferConfirmViewController {
         rootView.claimFeeCell.rowContentView.title = LocalizableResource { locale in
             R.string(preferredLanguages: locale.rLanguages).localizable.giftClaimFee()
         }
+
+        rootView.tooltipLabel.text = localizedStrings.giftTransferConfirmTooltip()
     }
 
     @objc func actionSubmit() {

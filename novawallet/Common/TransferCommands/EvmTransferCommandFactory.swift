@@ -14,7 +14,7 @@ final class EvmTransferCommandFactory {
         to builder: EvmTransactionBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recipient: AccountAddress,
-        type: TransferType
+        type: EvmTransferType
     ) throws -> (EvmTransactionBuilderProtocol, CallCodingPath?) {
         let amountValue = amount.value
 
@@ -30,24 +30,6 @@ final class EvmTransferCommandFactory {
                 amount: amountValue
             )
             return (newBuilder, CallCodingPath.erc20Tranfer)
-        }
-    }
-}
-
-// MARK: - Transfer Type
-
-extension EvmTransferCommandFactory {
-    enum TransferType {
-        case native
-        case erc20(AccountAddress)
-
-        var transactionSource: TransactionHistoryItemSource {
-            switch self {
-            case .native:
-                return .evmNative
-            case .erc20:
-                return .evmAsset
-            }
         }
     }
 }

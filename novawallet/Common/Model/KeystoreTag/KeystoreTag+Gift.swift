@@ -2,31 +2,31 @@ import Foundation
 
 extension KeystoreTagV2 {
     static func substrateSecretKeyTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.substrateSecretKey)
     }
 
     static func ethereumSecretKeyTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.ethereumSecretKey)
     }
 
     static func entropyTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.entropy)
     }
 
     static func substrateDerivationTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.substrateDerivation)
     }
 
     static func ethereumDerivationTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.ethereumDerivation)
     }
@@ -43,13 +43,13 @@ extension KeystoreTagV2 {
     }
 
     static func substrateSeedTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.substrateSeed)
     }
 
     static func ethereumSeedTagForGift(
-        accountId: AccountId? = nil
+        accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.ethereumSeed)
     }
@@ -57,9 +57,9 @@ extension KeystoreTagV2 {
 
 private extension KeystoreTagV2 {
     static func createTagForGift(
-        accountId: AccountId?,
+        accountId: AccountId,
         suffix: String
     ) -> String {
-        accountId.map { $0.toHex() + suffix } ?? suffix
+        accountId.toHex() + suffix
     }
 }

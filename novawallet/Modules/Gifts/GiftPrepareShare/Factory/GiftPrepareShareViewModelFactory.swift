@@ -93,7 +93,6 @@ extension GiftPrepareShareViewModelFactory: GiftPrepareShareViewModelFactoryProt
             gift.amount.decimal(assetInfo: chainAsset.asset.displayInfo)
         ).value(for: locale)
 
-        let image = R.image.imageShareNovaGift()
         let message = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.giftShareMessage(
@@ -102,7 +101,6 @@ extension GiftPrepareShareViewModelFactory: GiftPrepareShareViewModelFactoryProt
         )
 
         let items: [Any] = [
-            image,
             message
         ]
 

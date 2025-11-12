@@ -3,14 +3,12 @@ import BigInt
 import Operation_iOS
 
 class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
-    typealias TransferType = EvmTransferCommandFactory.TransferType
-
     let feeProxy: EvmTransactionFeeProxyProtocol
     let transferCommandFactory: EvmTransferCommandFactory
     let extrinsicService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
 
-    private(set) var transferType: TransferType?
+    private(set) var transferType: EvmTransferType?
     private(set) var lastFeeModel: EvmFeeModel?
 
     init(

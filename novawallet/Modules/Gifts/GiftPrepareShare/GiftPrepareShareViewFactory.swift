@@ -9,24 +9,18 @@ struct GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         style: GiftPrepareShareViewStyle
     ) -> GiftPrepareShareViewProtocol? {
-        guard
-            let currencyManager = CurrencyManager.shared,
-            let selectedWallet = SelectedWalletSettings.shared.value
-        else { return nil }
+        guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let storageFacade = UserDataStorageFacade.shared
         let repositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let giftRepository = repositoryFactory.createGiftsRepository(for: nil)
 
-        let giftFactory = LocalGiftFactory(
-            metaId: selectedWallet.metaId,
-            keystore: Keychain()
-        )
+        let giftSecretsManager = GiftSecretsManager(keystore: Keychain())
 
         let interactor = GiftPrepareShareInteractor(
             giftRepository: giftRepository,
-            localGiftFactory: giftFactory,
+            giftSecretsManager: giftSecretsManager,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             giftId: giftId,
             operationQueue: operationQueue,
