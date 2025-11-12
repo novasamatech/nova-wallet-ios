@@ -109,7 +109,7 @@ final class GiftLinkPayloadParser: GiftLinkPayloadParserProtocol {
         guard rawPayloadComponents.count > 1 else {
             return GiftSharingPayload(
                 seed: rawPayloadComponents[0],
-                chainId: Constants.defaultChainId,
+                chainId: Constants.defaultChainId[0 ..< 6],
                 assetSymbol: Constants.defaultAsset
             )
         }
@@ -117,7 +117,7 @@ final class GiftLinkPayloadParser: GiftLinkPayloadParserProtocol {
         guard rawPayloadComponents.count > 2 else {
             return GiftSharingPayload(
                 seed: rawPayloadComponents[0],
-                chainId: Constants.defaultChainId,
+                chainId: Constants.defaultChainId[0 ..< 6],
                 assetSymbol: rawPayloadComponents[1]
             )
         }
