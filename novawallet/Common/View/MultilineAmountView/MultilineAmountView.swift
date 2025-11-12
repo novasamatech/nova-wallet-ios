@@ -2,10 +2,8 @@ import UIKit
 import UIKit_iOS
 import Foundation_iOS
 
-class NetworkFeeView: TitleAmountView {
-    var title: LocalizableResource<String> = LocalizableResource { locale in
-        R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee()
-    } {
+class MultilineAmountView: TitleAmountView {
+    var title: LocalizableResource<String>? {
         didSet {
             applyLocalization()
         }
@@ -22,6 +20,7 @@ class NetworkFeeView: TitleAmountView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupLocalization()
         applyLocalization()
         setupStyle()
     }
@@ -31,8 +30,12 @@ class NetworkFeeView: TitleAmountView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setupLocalization() {
+        title = LocalizableResource<String> { _ in "" }
+    }
+
     private func applyLocalization() {
-        titleLabel.text = title.value(for: locale)
+        titleLabel.text = title?.value(for: locale)
     }
 
     private func setupStyle() {

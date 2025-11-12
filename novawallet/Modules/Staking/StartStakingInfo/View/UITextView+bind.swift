@@ -191,6 +191,11 @@ extension UITextView.Style {
         font: .caption1
     )
 
+    static let caption1Accent = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .caption1
+    )
+
     static let caption1Positive = UITextView.Style(
         textColor: R.color.colorTextPositive(),
         font: .caption1
