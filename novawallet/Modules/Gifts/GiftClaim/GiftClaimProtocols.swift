@@ -1,3 +1,5 @@
+import Foundation
+
 protocol GiftClaimViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: GiftClaimViewModel)
     func didReceiveUnpacking(viewModel: LottieAnimationFrameRange)
@@ -28,11 +30,26 @@ protocol GiftClaimInteractorOutputProtocol: AnyObject {
 protocol GiftClaimWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     GiftWalletChoosePresentable,
-    ModalAlertPresenting {
+    ModalAlertPresenting,
+    CommonRetryable
+{
     func showManageWallets(from view: ControllerBackedProtocol?)
 
     func complete(
         from view: ControllerBackedProtocol?,
         with successText: String
+    )
+
+    func showError(
+        from view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        actionTitle: String
+    )
+
+    func showRetryableError(
+        from view: ControllerBackedProtocol?,
+        locale: Locale,
+        retryAction: @escaping () -> Void
     )
 }

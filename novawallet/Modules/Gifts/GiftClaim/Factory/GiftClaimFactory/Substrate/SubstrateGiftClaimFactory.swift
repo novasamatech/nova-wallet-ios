@@ -58,6 +58,8 @@ private extension SubstrateGiftClaimFactory {
             let result = submitAndMonitorWrapper.targetOperation.result
 
             switch result {
+            case let .failure(error) where error is GiftClaimError:
+                throw error
             case let .failure(error):
                 throw GiftClaimError.giftClaimFailed(
                     claimingAccountId: claimingAccountId,
