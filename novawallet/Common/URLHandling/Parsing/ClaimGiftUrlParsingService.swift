@@ -7,6 +7,7 @@ final class ClaimGiftUrlParsingService {
     private let chainRegistry: ChainRegistryProtocol
     private let claimAvailabilityChecker: GiftClaimAvailabilityCheckFactoryProtocol
     private let giftPublicKeyProvider: GiftPublicKeyProvidingProtocol
+    private let payloadParser: GiftLinkPayloadParserProtocol
     private let operationQueue: OperationQueue
 
     let callStore = CancellableCallStore()
@@ -15,11 +16,13 @@ final class ClaimGiftUrlParsingService {
         chainRegistry: ChainRegistryProtocol,
         claimAvailabilityChecker: GiftClaimAvailabilityCheckFactoryProtocol,
         giftPublicKeyProvider: GiftPublicKeyProvidingProtocol,
+        payloadParser: GiftLinkPayloadParserProtocol = GiftLinkPayloadParser(),
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.claimAvailabilityChecker = claimAvailabilityChecker
         self.giftPublicKeyProvider = giftPublicKeyProvider
+        self.payloadParser = payloadParser
         self.operationQueue = operationQueue
     }
 }
@@ -58,15 +61,9 @@ private extension ClaimGiftUrlParsingService {
     }
 
     func createParsePayloadWrapper(string: String) -> CompoundOperationWrapper<ClaimableGift> {
-        let rawPayloadComponents = string.split(by: .underscore)
-
-        guard rawPayloadComponents.count == 3 else {
+        guard let payload = payloadParser.parseLinkPayload(payloadString: string) else {
             return .createWithError(OpenScreenUrlParsingError.openGiftClaimScreen(.invalidURL))
         }
-
-        let seed = rawPayloadComponents[0]
-        let shortChainId = rawPayloadComponents[1]
-        let assetSymbol = rawPayloadComponents[2]
 
         let chainWrapper = chainRegistry.asyncWaitChainForeverWrapper { chainModel in
             let shortChainIdMaxLength = 6
@@ -76,14 +73,14 @@ private extension ClaimGiftUrlParsingService {
                 ? chainId.endIndex
                 : chainId.index(chainId.startIndex, offsetBy: shortChainIdMaxLength)
 
-            return chainId[chainId.startIndex ..< endIndex] == shortChainId
+            return chainId[chainId.startIndex ..< endIndex] == payload.chainId
         }
 
         let mapOperation = ClosureOperation {
             let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
-            let seed = try Data(hexString: seed)
+            let seed = try Data(hexString: payload.seed)
 
-            guard let chain, let chainAsset = chain.chainAssetForSymbol(assetSymbol) else {
+            guard let chain, let chainAsset = chain.chainAssetForSymbol(payload.assetSymbol) else {
                 throw OpenScreenUrlParsingError.openGiftClaimScreen(.chainNotFound)
             }
 
