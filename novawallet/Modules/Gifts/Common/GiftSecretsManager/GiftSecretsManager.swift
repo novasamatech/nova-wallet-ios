@@ -89,8 +89,8 @@ private extension GiftSecretsManager {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
-            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
+            ? GiftKeystoreTag.ethereumSecretKeyTagForGift(accountId: accountId)
+            : GiftKeystoreTag.substrateSecretKeyTagForGift(accountId: accountId)
 
         try keystore.saveKey(secretKey, with: tag)
     }
@@ -101,8 +101,8 @@ private extension GiftSecretsManager {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
+            ? GiftKeystoreTag.ethereumSeedTagForGift(accountId: accountId)
+            : GiftKeystoreTag.substrateSeedTagForGift(accountId: accountId)
 
         try keystore.saveKey(seed, with: tag)
     }
@@ -114,8 +114,8 @@ private extension GiftSecretsManager {
         ethereumBased: Bool
     ) throws -> Data? {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
+            ? GiftKeystoreTag.ethereumSeedTagForGift(accountId: accountId)
+            : GiftKeystoreTag.substrateSeedTagForGift(accountId: accountId)
 
         return try keystore.loadIfKeyExists(tag)
     }
@@ -127,8 +127,8 @@ private extension GiftSecretsManager {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSeedTagForGift(accountId: accountId)
-            : KeystoreTagV2.substrateSeedTagForGift(accountId: accountId)
+            ? GiftKeystoreTag.ethereumSeedTagForGift(accountId: accountId)
+            : GiftKeystoreTag.substrateSeedTagForGift(accountId: accountId)
 
         try keystore.deleteKeyIfExists(for: tag)
     }
@@ -138,8 +138,8 @@ private extension GiftSecretsManager {
         ethereumBased: Bool
     ) throws {
         let tag = ethereumBased
-            ? KeystoreTagV2.ethereumSecretKeyTagForGift(accountId: accountId)
-            : KeystoreTagV2.substrateSecretKeyTagForGift(accountId: accountId)
+            ? GiftKeystoreTag.ethereumSecretKeyTagForGift(accountId: accountId)
+            : GiftKeystoreTag.substrateSecretKeyTagForGift(accountId: accountId)
 
         try keystore.deleteKeyIfExists(for: tag)
     }

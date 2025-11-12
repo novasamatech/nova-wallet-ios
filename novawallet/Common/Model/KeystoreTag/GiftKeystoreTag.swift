@@ -1,6 +1,19 @@
 import Foundation
 
-extension KeystoreTagV2 {
+enum GiftKeystoreTag {
+    enum Suffix {
+        static let substrateSecretKey = "substrateSecretKey"
+        static let ethereumSecretKey = "ethereumSecretKey"
+        static let substrateDerivation = "substrateDeriv"
+        static let ethereumDerivation = "ethereumDeriv"
+        static let substrateSeed = "substrateSeed"
+        static let ethereumSeed = "ethereumSeed"
+    }
+
+    static let prefix: String = "gift"
+}
+
+extension GiftKeystoreTag {
     static func substrateSecretKeyTagForGift(
         accountId: AccountId
     ) -> String {
@@ -13,12 +26,6 @@ extension KeystoreTagV2 {
         createTagForGift(accountId: accountId, suffix: Suffix.ethereumSecretKey)
     }
 
-    static func entropyTagForGift(
-        accountId: AccountId
-    ) -> String {
-        createTagForGift(accountId: accountId, suffix: Suffix.entropy)
-    }
-
     static func substrateDerivationTagForGift(
         accountId: AccountId
     ) -> String {
@@ -29,17 +36,6 @@ extension KeystoreTagV2 {
         accountId: AccountId
     ) -> String {
         createTagForGift(accountId: accountId, suffix: Suffix.ethereumDerivation)
-    }
-
-    static func derivationTagForGift(
-        accountId: AccountId,
-        isEthereumBased: Bool
-    ) -> String {
-        if isEthereumBased {
-            return ethereumDerivationTagForGift(accountId: accountId)
-        } else {
-            return substrateDerivationTagForGift(accountId: accountId)
-        }
     }
 
     static func substrateSeedTagForGift(
@@ -55,11 +51,15 @@ extension KeystoreTagV2 {
     }
 }
 
-private extension KeystoreTagV2 {
+private extension GiftKeystoreTag {
     static func createTagForGift(
         accountId: AccountId,
         suffix: String
     ) -> String {
-        accountId.toHex() + suffix
+        [
+            prefix,
+            accountId.toHex(),
+            suffix
+        ].joined(with: .dash)
     }
 }
