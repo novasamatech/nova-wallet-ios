@@ -38,6 +38,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionReceive()
     func actionBuySell()
     func actionSwap()
+    func actionGift()
     func actionChangeAssetListStyle()
     func actionCardOpen()
     func actionTogglePrivacy()
@@ -90,6 +91,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func receive()
     func buySell()
     func swap()
+    func gift()
     func presentWalletConnect()
     func toggleAssetListStyle()
     func togglePrivacyMode()
@@ -161,6 +163,12 @@ protocol AssetListWireframeProtocol: AnyObject,
     )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
+
+    func showGift(
+        from view: AssetListViewProtocol?,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    )
 
     func showStaking(from view: AssetListViewProtocol?)
 

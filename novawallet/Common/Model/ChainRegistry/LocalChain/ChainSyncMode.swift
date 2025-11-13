@@ -1,6 +1,6 @@
 import Foundation
 
-enum ChainSyncMode: Equatable {
+enum ChainSyncMode: Equatable, Codable {
     case disabled
     case light
     case full

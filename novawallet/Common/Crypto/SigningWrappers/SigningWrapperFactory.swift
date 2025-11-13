@@ -11,6 +11,10 @@ protocol SigningWrapperFactoryProtocol {
         for ethereumAccountResponse: MetaEthereumAccountResponse
     ) -> SigningWrapperProtocol
 
+    func createSigningWrapper(
+        giftSigningData: GiftSigningData
+    ) -> SigningWrapperProtocol
+
     func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol
 }
 
@@ -100,6 +104,18 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .multisig:
             NoSigningSupportWrapper(type: .multisig)
         }
+    }
+
+    func createSigningWrapper(
+        giftSigningData: GiftSigningData
+    ) -> SigningWrapperProtocol {
+        GiftSigningWrapper(
+            keystore: keystore,
+            accountId: giftSigningData.gift.giftAccountId,
+            isEthereumBased: giftSigningData.ethereumBased,
+            cryptoType: giftSigningData.cryptoType,
+            settingsManager: settingsManager
+        )
     }
 
     func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol {

@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 typealias TransactionFeeId = String
 

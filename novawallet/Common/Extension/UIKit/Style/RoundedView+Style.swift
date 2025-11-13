@@ -235,7 +235,7 @@ extension RoundedView.Style {
 
     static let strokeOnError = RoundedView.Style(
         shadowOpacity: 0,
-        strokeWidth: 0,
+        strokeWidth: 1,
         strokeColor: R.color.colorBorderError(),
         highlightedStrokeColor: R.color.colorBorderError(),
         fillColor: R.color.colorInputBackground()!,

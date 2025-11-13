@@ -13,6 +13,7 @@ enum OpenScreenUrlParsingError: Error {
     case openDAppScreen(DAppError)
     case openAHMScreen(AHMError)
     case cardScreen(CardError)
+    case openGiftClaimScreen(GiftClaimError)
 
     enum GovScreenError: Error {
         case govTypeIsNotSpecified
@@ -37,6 +38,12 @@ enum OpenScreenUrlParsingError: Error {
         case migrationDataNotFound
     }
 
+    enum GiftClaimError: Error {
+        case invalidURL
+        case chainNotFound
+        case alreadyClaimed
+    }
+
     func message(locale: Locale) -> String? {
         switch self {
         case let .openGovScreen(govScreenError):
@@ -45,6 +52,8 @@ enum OpenScreenUrlParsingError: Error {
             dAppError.message(locale: locale)
         case let .openAHMScreen(ahmError):
             ahmError.message(locale: locale)
+        case let .openGiftClaimScreen(giftError):
+            giftError.message(locale: locale)
         case .cardScreen:
             nil
         }
@@ -92,6 +101,21 @@ extension OpenScreenUrlParsingError.AHMError {
             R.string(
                 preferredLanguages: languages
             ).localizable.ahmInfoNotFoundError()
+        }
+    }
+}
+
+extension OpenScreenUrlParsingError.GiftClaimError {
+    func message(locale: Locale) -> String? {
+        let languages = locale.rLanguages
+
+        return switch self {
+        case .invalidURL:
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidDappUrlMessage()
+        case .chainNotFound:
+            R.string(preferredLanguages: languages).localizable.deeplinkErrorInvalidDappUrlMessage()
+        case .alreadyClaimed:
+            R.string(preferredLanguages: languages).localizable.giftErrorAlreadyClaimedMessage()
         }
     }
 }

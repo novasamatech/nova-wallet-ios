@@ -214,6 +214,27 @@ private extension MainTabBarWireframe {
         view?.controller.present(navigationController, animated: true)
     }
 
+    func openClaimGiftScreen(
+        in view: MainTabBarViewProtocol?,
+        with navigation: GiftClaimNavigation
+    ) {
+        guard let claimView = GiftClaimViewFactory.createView(
+            giftPayload: navigation.claimableGiftPayload,
+            totalAmount: navigation.totalAmount
+        ) else { return }
+
+        let navigationController = NovaNavigationController(rootViewController: claimView.controller)
+
+        navigationController.barSettings = .init(
+            style: .defaultStyle,
+            shouldSetCloseButton: true
+        )
+
+        navigationController.isModalInPresentation = true
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
     func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
         guard let tabBarController = view.topModalViewController as? UITabBarController else {
             // some flow is currently presented modally
@@ -385,6 +406,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                 openCardScreen(in: view, cardNavigation: cardNavigation)
             case let .assetHubMigration(ahmNavigation):
                 openAssetHubMigrationInfoScreen(in: view, with: ahmNavigation.config)
+            case let .giftClaim(giftNavigation):
+                openClaimGiftScreen(in: view, with: giftNavigation)
             default:
                 break
             }

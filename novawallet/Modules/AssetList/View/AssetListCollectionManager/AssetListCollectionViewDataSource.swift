@@ -104,6 +104,11 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionSwap),
             for: .touchUpInside
         )
+        totalBalanceView.giftButton.addTarget(
+            self,
+            action: #selector(actionGift),
+            for: .touchUpInside
+        )
 
         let cardView = totalBalanceCell.cardView
 
@@ -401,6 +406,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwap() {
         actionsDelegate?.actionSwap()
+    }
+
+    @objc func actionGift() {
+        actionsDelegate?.actionGift()
     }
 
     @objc func actionSwitchStyle() {

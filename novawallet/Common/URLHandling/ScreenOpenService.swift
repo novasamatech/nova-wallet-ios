@@ -11,6 +11,7 @@ enum UrlHandlingScreen {
     case dApp(DAppNavigation)
     case card(PayCardNavigation?)
     case assetHubMigration(AHMNavigation)
+    case giftClaim(GiftClaimNavigation)
     case error(UrlHandlingScreenError)
 }
 
@@ -27,6 +28,8 @@ extension UrlHandlingScreen {
             self = .card(.init(rawValue: provider ?? ""))
         case let .assetHubMigration(config):
             self = .assetHubMigration(.init(config: config))
+        case let .giftClaim(payload, amount):
+            self = .giftClaim(.init(claimableGiftPayload: payload, totalAmount: amount))
         }
     }
 
@@ -42,6 +45,11 @@ extension UrlHandlingScreen {
             .card(navigation?.rawValue)
         case let .assetHubMigration(navigation):
             .assetHubMigration(config: navigation.config)
+        case let .giftClaim(navigation):
+            .giftClaim(
+                giftPayload: navigation.claimableGiftPayload,
+                amount: navigation.totalAmount
+            )
         case .error:
             nil
         }

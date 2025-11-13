@@ -619,6 +619,30 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showSwapTokens(from: view)
     }
 
+    func gift() {
+        let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
+            self?.wireframe.showAssetDetails(
+                from: self?.view,
+                chainAsset: chainAsset
+            )
+        }
+        let buyTokensClosure: BuyTokensClosure = { [weak self] in
+            guard let self, wallet != nil else { return }
+
+            wireframe.showRamp(
+                from: view,
+                action: .onRamp,
+                delegate: self
+            )
+        }
+
+        wireframe.showGift(
+            from: view,
+            transferCompletion: transferCompletionClosure,
+            buyTokensClosure: buyTokensClosure
+        )
+    }
+
     func presentWalletConnect() {
         if walletConnectSessionsCount > 0 {
             wireframe.showWalletConnect(from: view)

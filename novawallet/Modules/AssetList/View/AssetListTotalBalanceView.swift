@@ -66,6 +66,10 @@ final class AssetListTotalBalanceView: UIView {
         title: R.string(preferredLanguages: locale.rLanguages).localizable.walletAssetBuySell(),
         icon: R.image.iconBuy()
     )
+    lazy var giftButton = createActionButton(
+        title: R.string(preferredLanguages: locale.rLanguages).localizable.commonGift(),
+        icon: R.image.iconGift()
+    )
 
     lazy var actionsView = UIView.hStack(
         distribution: .fillEqually,
@@ -73,7 +77,8 @@ final class AssetListTotalBalanceView: UIView {
             sendButton,
             receiveButton,
             swapButton,
-            buySellButton
+            buySellButton,
+            giftButton
         ]
     )
 
@@ -200,6 +205,9 @@ final class AssetListTotalBalanceView: UIView {
         swapButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.commonSwapAction()
+        giftButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonGift()
     }
 
     private func setupLayout() {

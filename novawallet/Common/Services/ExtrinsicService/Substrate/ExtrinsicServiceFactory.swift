@@ -58,6 +58,26 @@ extension ExtrinsicServiceFactoryProtocol {
         return createOperationFactory(account: account, chain: chain)
     }
 
+    func createServiceForGiftClaim(
+        accountId: AccountId,
+        chain: ChainModel
+    ) -> ExtrinsicServiceProtocol {
+        let account = ChainAccountResponse(
+            metaId: UUID().uuidString,
+            chainId: chain.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            name: "",
+            cryptoType: chain.isEthereumBased ? .ethereumEcdsa : .sr25519,
+            addressPrefix: chain.addressPrefix,
+            isEthereumBased: chain.isEthereumBased,
+            isChainAccount: false,
+            type: .secrets
+        )
+
+        return createService(account: account, chain: chain)
+    }
+
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel

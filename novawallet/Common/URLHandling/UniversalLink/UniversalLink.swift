@@ -16,6 +16,7 @@ enum UniversalLink {
         case dApp = "dapp"
         case card
         case assetHubMigration = "ahm"
+        case gift
     }
 
     enum GovScreen {
@@ -84,6 +85,12 @@ enum UniversalLink {
             static let provider = "provider"
         }
     }
+
+    enum Gift {
+        enum QueryKey {
+            static let payload = "payload"
+        }
+    }
 }
 
 protocol UniversalLinkFactoryProtocol {
@@ -94,4 +101,10 @@ protocol UniversalLinkFactoryProtocol {
     ) -> URL?
 
     func createUrlForStaking() -> URL?
+
+    func createUrlForGift(
+        seed: String,
+        chainId: ChainModel.Id,
+        symbol: AssetModel.Symbol
+    ) -> URL?
 }

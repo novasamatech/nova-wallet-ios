@@ -113,6 +113,10 @@ extension WalletCheckmarkView: WalletViewProtocol {
         walletView.bind(regular: viewModel)
     }
 
+    func bind(chainAccount viewModel: ViewModel.ChainAccountAddressInfo) {
+        walletView.bind(chainAccount: viewModel)
+    }
+
     func cancelIconsLoading(info: ViewModel.DelegatedAccountInfo?) {
         walletView.cancelIconsLoading(info: info)
     }
