@@ -83,7 +83,7 @@ struct ChainModel: Equatable, Hashable {
     let syncMode: ChainSyncMode
     let source: Source
     let connectionMode: ConnectionMode
-    let displayPriority: UInt16?
+    let displayPriority: UInt8?
 
     init(
         chainId: Id,
@@ -104,7 +104,7 @@ struct ChainModel: Equatable, Hashable {
         syncMode: ChainSyncMode,
         source: Source,
         connectionMode: ConnectionMode,
-        displayPriority: UInt16?
+        displayPriority: UInt8?
     ) {
         self.chainId = chainId
         self.parentId = parentId

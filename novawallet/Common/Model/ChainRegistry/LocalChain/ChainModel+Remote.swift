@@ -8,7 +8,7 @@ extension ChainModel {
         syncMode: ChainSyncMode,
         order: Int64,
         connectionMode: ConnectionMode,
-        displayPriority: UInt16?
+        displayPriority: UInt8?
     ) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId

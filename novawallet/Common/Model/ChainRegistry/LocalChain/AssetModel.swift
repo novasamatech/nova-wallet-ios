@@ -25,7 +25,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     let typeExtras: AssetTypeExtras?
     let buyProviders: JSON?
     let sellProviders: JSON?
-    let displayPriority: UInt16?
+    let displayPriority: UInt8?
 
     // local properties
     let enabled: Bool
@@ -45,7 +45,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         typeExtras: AssetTypeExtras?,
         buyProviders: JSON?,
         sellProviders: JSON?,
-        displayPriority: UInt16?,
+        displayPriority: UInt8?,
         enabled: Bool,
         source: Source
     ) {
@@ -96,7 +96,7 @@ extension AssetModel {
         )
     }
 
-    func byChanging(displayPriority: UInt16?) -> AssetModel {
+    func byChanging(displayPriority: UInt8?) -> AssetModel {
         .init(
             assetId: assetId,
             icon: icon,

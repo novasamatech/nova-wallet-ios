@@ -82,7 +82,7 @@ final class ChainModelMapper {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
-            displayPriority: entity.displayPriority?.uint16Value,
+            displayPriority: entity.displayPriority?.uint8Value,
             enabled: entity.enabled,
             source: source
         )
@@ -427,12 +427,6 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             selectedNode: selectedNode
         )
 
-        var optDisplayPriority: UInt16?
-
-        if let displayPriority = entity.displayPriority {
-            optDisplayPriority = displayPriority.uint16Value
-        }
-
         return ChainModel(
             chainId: entity.chainId!,
             parentId: entity.parentId,
@@ -452,7 +446,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             syncMode: syncMode,
             source: source,
             connectionMode: connectionMode ?? .autoBalanced,
-            displayPriority: optDisplayPriority
+            displayPriority: entity.displayPriority?.uint8Value
         )
     }
 

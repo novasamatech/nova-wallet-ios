@@ -2,8 +2,8 @@ import Foundation
 
 enum ChainModelCompator {
     static func priorityAndTestnetComparator(chain1: ChainModel, chain2: ChainModel) -> ComparisonResult {
-        let priority1 = chainPriority(for: chain1.chainId)
-        let priority2 = chainPriority(for: chain2.chainId)
+        let priority1 = chainPriority(for: chain1)
+        let priority2 = chainPriority(for: chain2)
 
         if priority1 != priority2 {
             return priority1 < priority2 ? .orderedAscending : .orderedDescending
@@ -24,15 +24,8 @@ enum ChainModelCompator {
         }
     }
 
-    static func chainPriority(for chainId: ChainModel.Id) -> UInt8 {
-        switch chainId {
-        case KnowChainId.polkadotAssetHub:
-            return 0
-        case KnowChainId.kusamaAssetHub:
-            return 1
-        default:
-            return 2
-        }
+    static func chainPriority(for chain: ChainModel) -> UInt8 {
+        chain.displayPriority ?? .max
     }
 }
 

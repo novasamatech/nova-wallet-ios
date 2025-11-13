@@ -9,14 +9,14 @@ protocol ChainModelConversionProtocol {
 }
 
 struct ChainModelConversionAdditionals {
-    let assetDisplayPriorities: [AssetModel.Symbol: UInt16]
-    let chainDisplayPriorities: [ChainModel.Id: UInt16]
+    let assetDisplayPriorities: [AssetModel.Symbol: UInt8]
+    let chainDisplayPriorities: [ChainModel.Id: UInt8]
     let additionalAssets: [RemoteAssetModel]
     let order: Int64
 
     init(
-        assetDisplayPriorities: [AssetModel.Symbol: UInt16] = [:],
-        chainDisplayPriorities: [ChainModel.Id: UInt16] = [:],
+        assetDisplayPriorities: [AssetModel.Symbol: UInt8] = [:],
+        chainDisplayPriorities: [ChainModel.Id: UInt8] = [:],
         additionalAssets: [RemoteAssetModel],
         order: Int64
     ) {
