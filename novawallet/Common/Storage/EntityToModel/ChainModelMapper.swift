@@ -445,7 +445,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode ?? .autoBalanced
+            connectionMode: connectionMode ?? .autoBalanced,
+            displayPriority: UInt16(bitPattern: entity.displayPriority)
         )
     }
 
@@ -466,6 +467,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             NSNumber(value: legacyAddressPrefix)
         } else {
             nil
+        }
+
+        if let displayPriority = model.displayPriority {
+            entity.displayPriority = Int16(bitPattern: displayPriority)
         }
 
         entity.icon = model.icon

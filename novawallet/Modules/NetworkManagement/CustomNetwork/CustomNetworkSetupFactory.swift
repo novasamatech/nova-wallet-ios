@@ -80,7 +80,8 @@ extension CustomNetworkSetupFactory: CustomNetworkSetupFactoryProtocol {
                 additional: nil,
                 syncMode: .full,
                 source: .user,
-                connectionMode: filledPartialChain.connectionMode
+                connectionMode: filledPartialChain.connectionMode,
+                displayPriority: nil
             )
 
             return finalChainModel

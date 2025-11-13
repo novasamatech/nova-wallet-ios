@@ -79,12 +79,14 @@ final class ChainSyncService {
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
             let decoder = JSONDecoder()
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
-            let remoteItems = try decoder.decode([RemoteChainModel].self, from: remoteData)
+            let remoteItems = try decoder.decode(RemoteChainsModel.self, from: remoteData)
             let evmRemoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
             let evmRemoteItems = try decoder.decode([RemoteEvmToken].self, from: evmRemoteData)
             let remoteEvmTokens = evmRemoteItems.chainAssets()
 
-            let remoteMapping = remoteItems.reduce(into: [ChainModel.Id: RemoteChainModel]()) { mapping, item in
+            let remoteMapping = remoteItems.chains.reduce(
+                into: [ChainModel.Id: RemoteChainModel]()
+            ) { mapping, item in
                 mapping[item.chainId] = item
             }
 
@@ -93,7 +95,7 @@ final class ChainSyncService {
                 mapping[item.chainId] = item
             }
 
-            let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
+            let newOrUpdated: [ChainModel] = remoteItems.chains.enumerated().compactMap { index, remoteItem in
                 let localItem = localMapping[remoteItem.chainId]
 
                 if let localItem, localItem.source == .user {

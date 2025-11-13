@@ -91,7 +91,8 @@ enum ChainModelGenerator {
                 additional: nil,
                 syncMode: .full,
                 source: .remote,
-                connectionMode: .autoBalanced
+                connectionMode: .autoBalanced,
+                displayPriority: nil
             )
         }
     }
@@ -297,7 +298,8 @@ enum ChainModelGenerator {
             additional: nil,
             syncMode: enabled ? .full : .disabled,
             source: .remote,
-            connectionMode: .autoBalanced
+            connectionMode: .autoBalanced,
+            displayPriority: nil
         )
     }
 

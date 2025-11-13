@@ -83,6 +83,7 @@ struct ChainModel: Equatable, Hashable {
     let syncMode: ChainSyncMode
     let source: Source
     let connectionMode: ConnectionMode
+    let displayPriority: UInt16?
 
     init(
         chainId: Id,
@@ -102,7 +103,8 @@ struct ChainModel: Equatable, Hashable {
         additional: JSON?,
         syncMode: ChainSyncMode,
         source: Source,
-        connectionMode: ConnectionMode
+        connectionMode: ConnectionMode,
+        displayPriority: UInt16?
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -122,6 +124,7 @@ struct ChainModel: Equatable, Hashable {
         self.syncMode = syncMode
         self.source = source
         self.connectionMode = connectionMode
+        self.displayPriority = displayPriority
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -431,7 +434,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -457,7 +461,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -484,7 +489,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -507,7 +513,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -534,7 +541,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -565,7 +573,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -595,7 +604,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source ?? self.source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -618,7 +628,8 @@ extension ChainModel {
             additional: additional,
             syncMode: newMode,
             source: source,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            displayPriority: displayPriority
         )
     }
 
@@ -641,7 +652,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: newMode
+            connectionMode: newMode,
+            displayPriority: displayPriority
         )
     }
 }

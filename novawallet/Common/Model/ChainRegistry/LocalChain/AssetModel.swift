@@ -95,4 +95,23 @@ extension AssetModel {
             source: source
         )
     }
+    
+    func byChanging(displayPriority: UInt16?) -> AssetModel {
+        .init(
+            assetId: assetId,
+            icon: icon,
+            name: name,
+            symbol: symbol,
+            precision: precision,
+            priceId: priceId,
+            stakings: stakings,
+            type: type,
+            typeExtras: typeExtras,
+            buyProviders: buyProviders,
+            sellProviders: sellProviders,
+            displayPriority: displayPriority,
+            enabled: enabled,
+            source: source
+        )
+    }
 }

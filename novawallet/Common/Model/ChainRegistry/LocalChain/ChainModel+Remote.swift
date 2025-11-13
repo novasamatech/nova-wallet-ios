@@ -7,7 +7,8 @@ extension ChainModel {
         nodes: Set<ChainNodeModel>,
         syncMode: ChainSyncMode,
         order: Int64,
-        connectionMode: ConnectionMode
+        connectionMode: ConnectionMode,
+        displayPriority: UInt16?
     ) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
@@ -33,5 +34,6 @@ extension ChainModel {
         self.order = order
         source = .remote
         self.connectionMode = connectionMode
+        self.displayPriority = displayPriority
     }
 }
