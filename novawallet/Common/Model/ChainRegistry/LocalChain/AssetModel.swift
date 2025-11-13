@@ -95,7 +95,7 @@ extension AssetModel {
             source: source
         )
     }
-    
+
     func byChanging(displayPriority: UInt16?) -> AssetModel {
         .init(
             assetId: assetId,

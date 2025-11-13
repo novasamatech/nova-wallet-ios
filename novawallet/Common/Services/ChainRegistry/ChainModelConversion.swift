@@ -13,6 +13,18 @@ struct ChainModelConversionAdditionals {
     let chainDisplayPriorities: [ChainModel.Id: UInt16]
     let additionalAssets: [RemoteAssetModel]
     let order: Int64
+
+    init(
+        assetDisplayPriorities: [AssetModel.Symbol: UInt16] = [:],
+        chainDisplayPriorities: [ChainModel.Id: UInt16] = [:],
+        additionalAssets: [RemoteAssetModel],
+        order: Int64
+    ) {
+        self.assetDisplayPriorities = assetDisplayPriorities
+        self.chainDisplayPriorities = chainDisplayPriorities
+        self.additionalAssets = additionalAssets
+        self.order = order
+    }
 }
 
 final class ChainModelConverter: ChainModelConversionProtocol {
@@ -23,7 +35,7 @@ final class ChainModelConverter: ChainModelConversionProtocol {
     ) -> ChainModel? {
         let assetPriorities = additionals.assetDisplayPriorities
         let chainPriorities = additionals.chainDisplayPriorities
-        
+
         let localUserAssets = localModel?.assets.filter { $0.source == .user } ?? []
 
         let localAssets = localModel?.assets.reduce(into: [AssetModel.Id: AssetModel]()) { accum, asset in

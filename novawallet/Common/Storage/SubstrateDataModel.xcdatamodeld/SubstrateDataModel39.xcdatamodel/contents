@@ -3,7 +3,7 @@
     <entity name="CDAsset" representedClassName="CDAsset" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="buyProviders" optional="YES" attributeType="Binary"/>
-        <attribute name="displayPriority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="displayPriority" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
         <attribute name="enabled" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="iconPath" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -54,7 +54,7 @@
         <attribute name="chainId" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="connectionMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
-        <attribute name="displayPriority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="displayPriority" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>
         <attribute name="hasAssetHubTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>

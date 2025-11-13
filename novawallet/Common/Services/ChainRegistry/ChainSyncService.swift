@@ -102,11 +102,17 @@ final class ChainSyncService {
                     return nil
                 }
 
+                let additionals = ChainModelConversionAdditionals(
+                    assetDisplayPriorities: remoteItems.assetDisplayPriorities,
+                    chainDisplayPriorities: remoteItems.chainDisplayPriorities,
+                    additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
+                    order: Int64(index)
+                )
+
                 return chainConverter.update(
                     localModel: localItem,
                     remoteModel: remoteItem,
-                    additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
-                    order: Int64(index)
+                    additionals: additionals
                 )
             }
 

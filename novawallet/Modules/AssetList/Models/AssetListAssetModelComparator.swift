@@ -45,25 +45,17 @@ enum AssetListAssetModelComparator {
         }
     }
 
-    private static func priority(for chainAsset: ChainAsset) -> UInt8 {
+    private static func priority(for chainAsset: ChainAsset) -> UInt16 {
         guard !chainAsset.chain.isTestnet else {
             return .max
         }
-
-        let matchesChain: (ChainModel.Id) -> Bool = { knownChainId in
-            chainAsset.chainAssetId.chainId == knownChainId
+        guard chainAsset.isUtilityAsset else {
+            return .max - 1
+        }
+        guard let displayPriority = chainAsset.chain.displayPriority else {
+            return .max - 2
         }
 
-        return if chainAsset.isUtilityAsset {
-            if matchesChain(KnowChainId.polkadotAssetHub) {
-                0
-            } else if matchesChain(KnowChainId.kusamaAssetHub) {
-                1
-            } else {
-                2
-            }
-        } else {
-            3
-        }
+        return displayPriority
     }
 }

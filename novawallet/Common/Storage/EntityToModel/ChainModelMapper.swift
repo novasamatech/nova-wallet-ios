@@ -82,7 +82,7 @@ final class ChainModelMapper {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
-            displayPriority: UInt16(bitPattern: entity.displayPriority),
+            displayPriority: entity.displayPriority?.uint16Value,
             enabled: entity.enabled,
             source: source
         )
@@ -130,7 +130,7 @@ final class ChainModelMapper {
             assetEntity.source = asset.source.rawValue
 
             if let displayPriority = asset.displayPriority {
-                assetEntity.displayPriority = Int16(bitPattern: displayPriority)
+                assetEntity.displayPriority = NSNumber(value: displayPriority)
             }
 
             try updateStakings(on: assetEntity, newStakings: asset.stakings)
@@ -427,6 +427,12 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             selectedNode: selectedNode
         )
 
+        var optDisplayPriority: UInt16?
+
+        if let displayPriority = entity.displayPriority {
+            optDisplayPriority = displayPriority.uint16Value
+        }
+
         return ChainModel(
             chainId: entity.chainId!,
             parentId: entity.parentId,
@@ -446,7 +452,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             syncMode: syncMode,
             source: source,
             connectionMode: connectionMode ?? .autoBalanced,
-            displayPriority: UInt16(bitPattern: entity.displayPriority)
+            displayPriority: optDisplayPriority
         )
     }
 
@@ -470,7 +476,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         }
 
         if let displayPriority = model.displayPriority {
-            entity.displayPriority = Int16(bitPattern: displayPriority)
+            entity.displayPriority = NSNumber(value: displayPriority)
         }
 
         entity.icon = model.icon

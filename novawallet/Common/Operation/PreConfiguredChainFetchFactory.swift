@@ -27,11 +27,15 @@ extension PreConfiguredChainFetchFactory: PreConfiguredChainFetchFactoryProtocol
                 from: remoteData
             )
 
+            let additionals = ChainModelConversionAdditionals(
+                additionalAssets: [],
+                order: 0
+            )
+
             guard let chainModel = ChainModelConverter().update(
                 localModel: nil,
                 remoteModel: remoteModel,
-                additionalAssets: [],
-                order: 0
+                additionals: additionals
             ) else {
                 throw CommonError.noDataRetrieved
             }
