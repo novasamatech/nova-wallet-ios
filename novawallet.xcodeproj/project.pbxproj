@@ -8818,6 +8818,7 @@
 		2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsSubscription.swift; sourceTree = "<group>"; };
 		2DC694542DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsSyncService.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
+		2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
 		2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTotalVotesFactory.swift; sourceTree = "<group>"; };
 		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
 		2DCC87612C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreatePasswordPresenter.swift; sourceTree = "<group>"; };
@@ -38743,6 +38744,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */,
 				2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */,
 				2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */,
 				2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */,
@@ -38782,7 +38784,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */;
+			currentVersion = 2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

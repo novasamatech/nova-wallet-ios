@@ -18,7 +18,8 @@ extension RemoteAssetModel {
             type: AssetType.evmAsset.rawValue,
             typeExtras: AssetTypeExtras.createFrom(evmContractAddress: evmInstance.contractAddress),
             buyProviders: evmInstance.buyProviders,
-            sellProviders: evmInstance.sellProviders
+            sellProviders: evmInstance.sellProviders,
+            displayPriority: evmToken.displayPriority
         )
     }
 }

@@ -25,6 +25,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     let typeExtras: AssetTypeExtras?
     let buyProviders: JSON?
     let sellProviders: JSON?
+    let displayPriority: UInt16?
 
     // local properties
     let enabled: Bool
@@ -44,6 +45,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         typeExtras: AssetTypeExtras?,
         buyProviders: JSON?,
         sellProviders: JSON?,
+        displayPriority: UInt16?,
         enabled: Bool,
         source: Source
     ) {
@@ -58,6 +60,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.typeExtras = typeExtras
         self.buyProviders = buyProviders
         self.sellProviders = sellProviders
+        self.displayPriority = displayPriority
         self.enabled = enabled
         self.source = source
     }
@@ -87,6 +90,7 @@ extension AssetModel {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
+            displayPriority: displayPriority,
             enabled: enabled,
             source: source
         )

@@ -13,6 +13,7 @@ extension AssetModel {
         typeExtras = remoteModel.typeExtras
         buyProviders = remoteModel.buyProviders
         sellProviders = remoteModel.sellProviders
+        displayPriority = remoteModel.displayPriority
         self.enabled = enabled
         source = .remote
     }

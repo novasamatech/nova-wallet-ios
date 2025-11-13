@@ -82,6 +82,7 @@ final class ChainModelMapper {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
+            displayPriority: UInt16(bitPattern: entity.displayPriority),
             enabled: entity.enabled,
             source: source
         )
@@ -127,6 +128,10 @@ final class ChainModelMapper {
             assetEntity.type = asset.type
             assetEntity.enabled = asset.enabled
             assetEntity.source = asset.source.rawValue
+
+            if let displayPriority = asset.displayPriority {
+                assetEntity.displayPriority = Int16(bitPattern: displayPriority)
+            }
 
             try updateStakings(on: assetEntity, newStakings: asset.stakings)
 

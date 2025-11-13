@@ -17,4 +17,5 @@ struct RemoteAssetModel: Equatable, Codable, Hashable {
     let typeExtras: JSON?
     let buyProviders: JSON?
     let sellProviders: JSON?
+    let displayPriority: UInt16?
 }
