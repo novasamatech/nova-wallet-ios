@@ -6749,8 +6749,6 @@
 		0C19CC9E2CC6EBBC007F8ED8 /* CrosschainAssetsExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainAssetsExchange.swift; sourceTree = "<group>"; };
 		0C19CCA12CC6EC75007F8ED8 /* AssetsHubExchangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHubExchangeProvider.swift; sourceTree = "<group>"; };
 		0C19CCA42CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeBaseProvider.swift; sourceTree = "<group>"; };
-		0C1A0FE92E6A380400254E20 /* TestJSONRPCEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestJSONRPCEngine.swift; sourceTree = "<group>"; };
-		0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSecretStoreManager.swift; sourceTree = "<group>"; };
 		0C1A104D2E6AE97300254E20 /* runtime-default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-default.json"; sourceTree = "<group>"; };
 		0C1A104E2E6AE97300254E20 /* runtime-westend.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-westend.json"; sourceTree = "<group>"; };
 		0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-kusama.json"; sourceTree = "<group>"; };
@@ -16442,15 +16440,6 @@
 			path = Factory;
 			sourceTree = "<group>";
 		};
-		2D19BDDE2E97C11200B120FE /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				0C1A0FE92E6A380400254E20 /* TestJSONRPCEngine.swift */,
-				0C1A10332E6AD64600254E20 /* TestSecretStoreManager.swift */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		2D1A5F582C35A8840073773D /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -22857,7 +22846,6 @@
 				849013C124A80986008F705E /* novawalletTests */,
 				8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */,
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
-				2D19BDDE2E97C11200B120FE /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
