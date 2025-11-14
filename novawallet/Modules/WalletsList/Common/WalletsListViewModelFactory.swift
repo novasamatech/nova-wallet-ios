@@ -32,7 +32,7 @@ class WalletsListViewModelFactory {
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
 
-    private lazy var iconGenerator = NovaIconGenerator()
+    lazy var iconGenerator = NovaIconGenerator()
 
     init(
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -47,9 +47,187 @@ class WalletsListViewModelFactory {
     func isSelected(wallet: ManagedMetaAccountModel) -> Bool {
         wallet.isSelected
     }
+
+    func createItemViewModel(
+        wallet: ManagedMetaAccountModel,
+        balancesCalculator: BalancesCalculating,
+        locale: Locale
+    ) -> WalletsListViewModel {
+        let totalValueDecimal = balancesCalculator.calculateTotalValue(for: wallet.info)
+
+        let totalValue = formatPrice(amount: totalValueDecimal, locale: locale)
+
+        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
+        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
+            .init(icon: $0),
+            identifier: wallet.info.metaId
+        ) }
+
+        let walletViewModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .regular(totalValue)
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: walletViewModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
+
+    func createItemViewModel(
+        wallet: ManagedMetaAccountModel
+    ) -> WalletsListViewModel {
+        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
+        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
+            .init(icon: $0),
+            identifier: wallet.info.metaId
+        ) }
+
+        let walletViewModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .regular("")
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: walletViewModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
 }
 
-// MARK: Private
+// MARK: - Internal
+
+extension WalletsListViewModelFactory {
+    func createItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        balancesCalculator: BalancesCalculating,
+        locale: Locale
+    ) -> WalletsListViewModel {
+        createItemViewModel(
+            wallet: wallet,
+            balancesCalculator: balancesCalculator,
+            locale: locale
+        )
+    }
+
+    func createItemViewModel(
+        for wallet: ManagedMetaAccountModel
+    ) -> WalletsListViewModel {
+        createItemViewModel(wallet: wallet)
+    }
+
+    func createMultisigItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListViewModel? {
+        guard
+            let multisigAccountType = wallet.info.multisigAccount,
+            let multisig = multisigAccountType.anyChainMultisig,
+            let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisigAccountType) })
+        else { return nil }
+
+        var chainIcon: IdentifiableImageViewModelProtocol?
+
+        if case let .singleChain(chainAccount) = multisigAccountType {
+            let chainModel = chains[chainAccount.chainId]
+            chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
+        }
+
+        let optIcon = try? iconGenerator.generateFromAccountId(multisig.accountId)
+
+        let iconViewModel = optIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
+        }
+        let optSubtitleDetailsIcon = signatoryWallet.info.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: signatoryWallet.info.metaId)
+        }
+
+        let info = WalletView.ViewModel.DelegatedAccountInfo(
+            networkIcon: chainIcon,
+            type: R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory(),
+            pairedAccountIcon: subtitleDetailsIconViewModel,
+            pairedAccountName: signatoryWallet.info.name,
+            isNew: multisig.status == .new
+        )
+
+        let viewModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .multisig(info)
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: viewModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
+
+    func createProxyItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListViewModel? {
+        guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
+              let proxy = chainAccount.proxy,
+              let proxyWallet = wallets.first(where: { $0.info.has(
+                  accountId: proxy.accountId,
+                  chainId: chainAccount.chainId
+              ) })
+        else {
+            return nil
+        }
+
+        let optIcon = wallet.info.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let iconViewModel = optIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
+        }
+        let optSubtitleDetailsIcon = proxyWallet.info.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
+        let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
+            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
+        }
+        let chainModel = chains[chainAccount.chainId]
+        let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
+        let proxyInfo = WalletView.ViewModel.DelegatedAccountInfo(
+            networkIcon: chainIcon,
+            type: proxy.type.subtitle(locale: locale),
+            pairedAccountIcon: subtitleDetailsIconViewModel,
+            pairedAccountName: proxyWallet.info.name,
+            isNew: proxy.status == .new
+        )
+
+        let proxyModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .proxy(proxyInfo)
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: proxyModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
+
+    func formatPrice(amount: Decimal, locale: Locale) -> String {
+        let currencyId = currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
+}
+
+// MARK: - Private
 
 private extension WalletsListViewModelFactory {
     func createSection(
@@ -68,7 +246,7 @@ private extension WalletsListViewModelFactory {
                     locale: locale
                 )
             } else {
-                return createItemViewModel(for: wallet, locale: locale)
+                return createItemViewModel(for: wallet)
             }
         }
 
@@ -208,159 +386,9 @@ private extension WalletsListViewModelFactory {
     }
 }
 
-// MARK: WalletsListViewModelFactoryProtocol
+// MARK: - WalletsListViewModelFactoryProtocol
 
 extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
-    func createItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        balancesCalculator: BalancesCalculating,
-        locale: Locale
-    ) -> WalletsListViewModel {
-        let totalValueDecimal = balancesCalculator.calculateTotalValue(for: wallet.info)
-
-        let totalValue = formatPrice(amount: totalValueDecimal, locale: locale)
-
-        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
-            .init(icon: $0),
-            identifier: wallet.info.metaId
-        ) }
-
-        let walletViewModel = WalletView.ViewModel(
-            wallet: .init(icon: iconViewModel, name: wallet.info.name),
-            type: .regular(totalValue)
-        )
-
-        return WalletsListViewModel(
-            identifier: wallet.identifier,
-            walletViewModel: walletViewModel,
-            isSelected: isSelected(wallet: wallet)
-        )
-    }
-
-    func createItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        locale _: Locale
-    ) -> WalletsListViewModel {
-        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
-            .init(icon: $0),
-            identifier: wallet.info.metaId
-        ) }
-
-        let walletViewModel = WalletView.ViewModel(
-            wallet: .init(icon: iconViewModel, name: wallet.info.name),
-            type: .regular("")
-        )
-
-        return WalletsListViewModel(
-            identifier: wallet.identifier,
-            walletViewModel: walletViewModel,
-            isSelected: isSelected(wallet: wallet)
-        )
-    }
-
-    func createMultisigItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        wallets: [ManagedMetaAccountModel],
-        chains: [ChainModel.Id: ChainModel],
-        locale: Locale
-    ) -> WalletsListViewModel? {
-        guard
-            let multisigAccountType = wallet.info.multisigAccount,
-            let multisig = multisigAccountType.anyChainMultisig,
-            let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisigAccountType) })
-        else { return nil }
-
-        var chainIcon: IdentifiableImageViewModelProtocol?
-
-        if case let .singleChain(chainAccount) = multisigAccountType {
-            let chainModel = chains[chainAccount.chainId]
-            chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
-        }
-
-        let optIcon = try? iconGenerator.generateFromAccountId(multisig.accountId)
-
-        let iconViewModel = optIcon.map {
-            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
-        }
-        let optSubtitleDetailsIcon = signatoryWallet.info.walletIdenticonData().flatMap {
-            try? iconGenerator.generateFromAccountId($0)
-        }
-        let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
-            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: signatoryWallet.info.metaId)
-        }
-
-        let info = WalletView.ViewModel.DelegatedAccountInfo(
-            networkIcon: chainIcon,
-            type: R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory(),
-            pairedAccountIcon: subtitleDetailsIconViewModel,
-            pairedAccountName: signatoryWallet.info.name,
-            isNew: multisig.status == .new
-        )
-
-        let viewModel = WalletView.ViewModel(
-            wallet: .init(icon: iconViewModel, name: wallet.info.name),
-            type: .multisig(info)
-        )
-
-        return WalletsListViewModel(
-            identifier: wallet.identifier,
-            walletViewModel: viewModel,
-            isSelected: isSelected(wallet: wallet)
-        )
-    }
-
-    func createProxyItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        wallets: [ManagedMetaAccountModel],
-        chains: [ChainModel.Id: ChainModel],
-        locale: Locale
-    ) -> WalletsListViewModel? {
-        guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.proxy != nil }),
-              let proxy = chainAccount.proxy,
-              let proxyWallet = wallets.first(where: { $0.info.has(
-                  accountId: proxy.accountId,
-                  chainId: chainAccount.chainId
-              ) })
-        else {
-            return nil
-        }
-
-        let optIcon = wallet.info.walletIdenticonData().flatMap {
-            try? iconGenerator.generateFromAccountId($0)
-        }
-        let iconViewModel = optIcon.map {
-            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: wallet.info.metaId)
-        }
-        let optSubtitleDetailsIcon = proxyWallet.info.walletIdenticonData().flatMap {
-            try? iconGenerator.generateFromAccountId($0)
-        }
-        let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
-            IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
-        }
-        let chainModel = chains[chainAccount.chainId]
-        let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
-        let proxyInfo = WalletView.ViewModel.DelegatedAccountInfo(
-            networkIcon: chainIcon,
-            type: proxy.type.subtitle(locale: locale),
-            pairedAccountIcon: subtitleDetailsIconViewModel,
-            pairedAccountName: proxyWallet.info.name,
-            isNew: proxy.status == .new
-        )
-
-        let proxyModel = WalletView.ViewModel(
-            wallet: .init(icon: iconViewModel, name: wallet.info.name),
-            type: .proxy(proxyInfo)
-        )
-
-        return WalletsListViewModel(
-            identifier: wallet.identifier,
-            walletViewModel: proxyModel,
-            isSelected: isSelected(wallet: wallet)
-        )
-    }
-
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         balancesCalculator: BalancesCalculating?,
@@ -373,12 +401,5 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             chains: chains,
             locale: locale
         )
-    }
-
-    func formatPrice(amount: Decimal, locale: Locale) -> String {
-        let currencyId = currencyManager.selectedCurrency.id
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
-        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 }

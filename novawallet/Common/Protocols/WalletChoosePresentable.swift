@@ -4,7 +4,8 @@ protocol WalletChoosePresentable: AnyObject {
     func showWalletChoose(
         from view: ControllerBackedProtocol?,
         selectedWalletId: String,
-        delegate: WalletsChooseDelegate
+        delegate: WalletsChooseDelegate,
+        filter: WalletListFilterProtocol?
     )
 
     func closeWalletChoose(on view: ControllerBackedProtocol?, completion: @escaping () -> Void)
@@ -14,12 +15,14 @@ extension WalletChoosePresentable {
     func showWalletChoose(
         from view: ControllerBackedProtocol?,
         selectedWalletId: String,
-        delegate: WalletsChooseDelegate
+        delegate: WalletsChooseDelegate,
+        filter: WalletListFilterProtocol? = nil
     ) {
         guard
             let chooseView = WalletsChooseViewFactory.createView(
                 for: selectedWalletId,
-                delegate: delegate
+                delegate: delegate,
+                using: filter
             ) else {
             return
         }

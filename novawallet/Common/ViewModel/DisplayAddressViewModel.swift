@@ -7,6 +7,20 @@ struct DisplayAddressViewModel {
     let imageViewModel: ImageViewModelProtocol?
 }
 
+extension DisplayAddressViewModel: Equatable, Hashable {
+    static func == (
+        lhs: DisplayAddressViewModel,
+        rhs: DisplayAddressViewModel
+    ) -> Bool {
+        lhs.address == rhs.address && lhs.name == rhs.name
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(address)
+    }
+}
+
 extension DisplayAddressViewModel {
     var lineBreakMode: NSLineBreakMode {
         name != nil ? .byTruncatingTail : .byTruncatingMiddle

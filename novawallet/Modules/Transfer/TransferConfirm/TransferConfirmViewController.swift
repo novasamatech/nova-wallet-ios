@@ -6,7 +6,10 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
 
     let presenter: TransferConfirmPresenterProtocol
 
-    init(presenter: TransferConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: TransferConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
