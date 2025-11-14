@@ -34,7 +34,11 @@ class ChainSyncServiceTests: XCTestCase {
 
         let remoteItems = ChainModelGenerator.generateRemote(count: 16)
         let localMappedItems = remoteItems.enumerated().compactMap { index, item in
-            converter.update(localModel: nil, remoteModel: item, additionalAssets: [], order: Int64(index))
+            converter.update(
+                localModel: nil,
+                remoteModel: item,
+                additionals: .init(additionalAssets: [], order: Int64(index))
+            )
         }
 
         let newItems = Array(localMappedItems[0 ..< 8])
@@ -189,8 +193,10 @@ class ChainSyncServiceTests: XCTestCase {
             converter.update(
                 localModel: nil,
                 remoteModel: remoteItem,
-                additionalAssets: usdChainAssets[remoteItem.chainId] ?? [],
-                order: Int64(index)
+                additionals: .init(
+                    additionalAssets: usdChainAssets[remoteItem.chainId] ?? [],
+                    order: Int64(index)
+                )
             )
         }
 
@@ -259,8 +265,10 @@ class ChainSyncServiceTests: XCTestCase {
             let localChain = converter.update(
                 localModel: nil,
                 remoteModel: item,
-                additionalAssets: [],
-                order: Int64(index)
+                additionals: .init(
+                    additionalAssets: [],
+                    order: Int64(index)
+                )
             )
 
             let userAssetId = (localChain?.assets ?? []).count + 1
@@ -343,8 +351,10 @@ class ChainSyncServiceTests: XCTestCase {
             let localChain = converter.update(
                 localModel: nil,
                 remoteModel: item,
-                additionalAssets: [],
-                order: Int64(index)
+                additionals: .init(
+                    additionalAssets: [],
+                    order: Int64(index)
+                )
             )!
 
             var assets = Array(localChain.assets)
@@ -477,8 +487,10 @@ class ChainSyncServiceTests: XCTestCase {
             let localChain = converter.update(
                 localModel: nil,
                 remoteModel: item,
-                additionalAssets: [],
-                order: Int64(index)
+                additionals: .init(
+                    additionalAssets: [],
+                    order: Int64(index)
+                )
             )!
 
             var assets = Array(localChain.assets)

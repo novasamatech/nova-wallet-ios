@@ -119,8 +119,7 @@ enum ChainModelGenerator {
                 type: nil,
                 typeExtras: nil,
                 buyProviders: nil,
-                sellProviders: nil,
-                displayPriority: nil
+                sellProviders: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -429,8 +428,7 @@ enum ChainModelGenerator {
                     buyProviders: nil,
                     sellProviders: nil
                 )
-            ],
-            displayPriority: nil
+            ]
         )
     }
 }
