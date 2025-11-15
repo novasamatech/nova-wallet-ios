@@ -3,14 +3,7 @@ import SnapKit
 import UIKit_iOS
 
 final class SwipeGovViewLayout: UIView {
-    let gradientBackgroundView: MultigradientView = .create { view in
-        let gradient = GradientModel.swipeGovBackgroundGradient
-
-        view.colors = gradient.colors
-        view.locations = gradient.locations
-        view.startPoint = gradient.startPoint
-        view.endPoint = gradient.endPoint
-    }
+    let backgroundView = UIImageView.background
 
     let votingListWidget: VotingListWidget = .create { view in
         view.alpha = 0
@@ -131,8 +124,8 @@ final class SwipeGovViewLayout: UIView {
 
 private extension SwipeGovViewLayout {
     func setupLayout() {
-        addSubview(gradientBackgroundView)
-        gradientBackgroundView.snp.makeConstraints { make in
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
