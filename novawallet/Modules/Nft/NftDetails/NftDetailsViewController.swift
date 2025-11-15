@@ -25,7 +25,6 @@ final class NftDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNavigationBarStyle()
         setupHandlers()
         setupLocalization()
 
@@ -41,15 +40,6 @@ final class NftDetailsViewController: UIViewController, ViewHolder {
         rootView.refreshControl?.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
 
         rootView.mediaView.delegate = self
-    }
-
-    private func setupNavigationBarStyle() {
-        guard let navigationBar = navigationController?.navigationBar else { return }
-
-        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
-        let navBarHeight = navigationBar.bounds.height
-        let blurHeight = statusBarHeight + navBarHeight
-        rootView.navBarBlurViewHeightConstraint.update(offset: blurHeight)
     }
 
     private func createStackViewModel(

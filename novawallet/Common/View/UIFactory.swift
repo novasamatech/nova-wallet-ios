@@ -357,6 +357,7 @@ final class UIFactory: UIFactoryProtocol {
             )
             barItem.setTitleTextAttributes(actionAttributes, for: .normal)
             barItem.setTitleTextAttributes(actionAttributes, for: .highlighted)
+            barItem.applyNoLiquidGlassStyle()
 
             if result.isEmpty {
                 return [barItem]
@@ -384,6 +385,8 @@ final class UIFactory: UIFactoryProtocol {
             target: target,
             action: doneAction.selector
         )
+
+        doneItem.applyNoLiquidGlassStyle()
 
         let doneAttributes = style.doneAttributes
 

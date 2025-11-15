@@ -15,8 +15,6 @@ final class NftDetailsViewLayout: UIView {
         return blurView
     }()
 
-    var navBarBlurViewHeightConstraint: Constraint!
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: false)
         view.stackView.alignment = .center
@@ -253,8 +251,7 @@ final class NftDetailsViewLayout: UIView {
         addSubview(navBarBlurView)
         navBarBlurView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
-            self.navBarBlurViewHeightConstraint = make.height.equalTo(0).constraint
-            self.navBarBlurViewHeightConstraint.activate()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top)
         }
     }
 }
