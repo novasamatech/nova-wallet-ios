@@ -68,7 +68,9 @@ private extension MainTabBarViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let settingsManager = SettingsManager.shared
         let securedLayer = SecurityLayerService.shared
-        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
+
+        // TODO: - Bring back with updated config url
+        // let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
         let notificationsSettingsRepository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
             UserDataStorageFacade.shared.createRepository(
@@ -98,7 +100,8 @@ private extension MainTabBarViewFactory {
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,
-            inAppUpdatesService: inAppUpdatesService,
+            // TODO: - Bring back with updated config url
+//            inAppUpdatesService: inAppUpdatesService,
             settingsManager: settingsManager,
             operationQueue: operationQueue,
             logger: logger

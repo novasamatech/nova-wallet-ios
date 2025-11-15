@@ -5,7 +5,9 @@ import Foundation_iOS
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
         let presenter = RootPresenter()
-        let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
+        // TODO: - Bring back with updated config URL
+//        let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
+        let wireframe = RootWireframe()
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
