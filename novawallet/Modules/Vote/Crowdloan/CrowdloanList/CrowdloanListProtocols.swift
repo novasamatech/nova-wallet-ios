@@ -8,7 +8,6 @@ protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, Loa
 }
 
 protocol CrowdloanListPresenterProtocol: AnyObject {
-    func selectCrowdloan(_ paraId: ParaId)
     func handleYourContributions()
 }
 
@@ -32,7 +31,6 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
 
 protocol CrowdloanListWireframeProtocol: AlertPresentable, NoAccountSupportPresentable, ErrorPresentable {
     func showYourContributions(
-        crowdloans: [CrowdloanContribution],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         from view: ControllerBackedProtocol?

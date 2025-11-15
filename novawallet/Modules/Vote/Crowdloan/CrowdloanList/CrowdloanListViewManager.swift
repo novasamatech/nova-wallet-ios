@@ -43,7 +43,7 @@ extension CrowdloanListViewManager: UITableViewDataSource {
             return cellViewModels.count
         case let .completed(_, cellViewModels):
             return cellViewModels.count
-        case .yourContributions, .about, .error, .empty:
+        case .yourContributions, .about, .empty:
             return 1
         }
     }
@@ -83,11 +83,6 @@ extension CrowdloanListViewManager: UITableViewDelegate {
 
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
-        case let .active(_, cellViewModels):
-            guard let crowdloan = cellViewModels[indexPath.row].value else {
-                return
-            }
-            presenter?.selectCrowdloan(crowdloan.paraId)
         case let .yourContributions(viewModel):
             guard viewModel.value != nil else {
                 return

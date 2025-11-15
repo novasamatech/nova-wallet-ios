@@ -4,7 +4,7 @@ import Operation_iOS
 final class CrowdloanExternalServiceFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
-    let operationFactory: CrowdloanOperationFactoryProtocol
+    let operationFactory: AhOpsOperationFactoryProtocol
     let paraIdOperationFactory: ParaIdOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -12,7 +12,7 @@ final class CrowdloanExternalServiceFactory {
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
-        operationFactory: CrowdloanOperationFactoryProtocol,
+        operationFactory: AhOpsOperationFactoryProtocol,
         paraIdOperationFactory: ParaIdOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -24,8 +24,10 @@ final class CrowdloanExternalServiceFactory {
         self.operationQueue = operationQueue
         self.logger = logger
     }
+}
 
-    private func createOnChainSyncService(chainId: ChainModel.Id, accountId: AccountId) -> SyncServiceProtocol {
+private extension CrowdloanExternalServiceFactory {
+    func createOnChainSyncService(chainId: ChainModel.Id, accountId: AccountId) -> SyncServiceProtocol {
         let mapper = CrowdloanContributionDataMapper()
 
         let onChainFilter = NSPredicate.crowdloanContribution(
@@ -46,40 +48,9 @@ final class CrowdloanExternalServiceFactory {
             repository: AnyDataProviderRepository(onChainCrowdloansRepository),
             accountId: accountId,
             chainId: chainId,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationQueue: operationQueue,
             logger: logger
         )
-    }
-
-    private func createOffChainSyncServices(
-        from sources: [ExternalContributionSourceProtocol],
-        chain: ChainModel,
-        accountId: AccountId
-    ) -> [SyncServiceProtocol] {
-        let mapper = CrowdloanContributionDataMapper()
-
-        return sources.map { source in
-            let chainFilter = NSPredicate.crowdloanContribution(
-                for: chain.chainId,
-                accountId: accountId,
-                source: source.sourceName
-            )
-
-            let serviceRepository = storageFacade.createRepository(
-                filter: chainFilter,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(mapper)
-            )
-
-            return CrowdloanOffChainSyncService(
-                source: source,
-                chain: chain,
-                accountId: accountId,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                repository: AnyDataProviderRepository(serviceRepository),
-                logger: logger
-            )
-        }
     }
 }
 
@@ -97,17 +68,6 @@ extension CrowdloanExternalServiceFactory: ExternalAssetBalanceServiceFactoryPro
 
         let onchainSyncService = createOnChainSyncService(chainId: chainId, accountId: accountId)
 
-        let offchainSources = ExternalContributionSourcesFactory.createExternalSources(
-            for: chainId,
-            paraIdOperationFactory: paraIdOperationFactory
-        )
-
-        let offChainSyncServices = createOffChainSyncServices(
-            from: offchainSources,
-            chain: chainAsset.chain,
-            accountId: accountId
-        )
-
-        return [onchainSyncService] + offChainSyncServices
+        return [onchainSyncService]
     }
 }

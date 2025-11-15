@@ -4,8 +4,7 @@ import Keystore_iOS
 import Operation_iOS
 
 struct CrowdloanYourContributionsViewInput {
-    let crowdloans: [Crowdloan]
-    let contributions: CrowdloanContributionDict
+    let contributions: [CrowdloanContribution]
     let displayInfo: CrowdloanDisplayInfoDict?
     let chainAsset: ChainAssetDisplayInfo
 }
@@ -27,22 +26,14 @@ enum CrowdloanYourContributionsViewFactory {
             return nil
         }
 
-        let crowdloanLocalSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
-
         let interactor = CrowdloanYourContributionsInteractor(
             chain: chain,
             selectedMetaAccount: selectedMetaAccount,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            crowdloanState: sharedState,
             runtimeService: runtimeService,
-            crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionFactory,
-            crowdloanOffchainProviderFactory: sharedState.crowdloanOffchainProviderFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
         )
 
         let wireframe = CrowdloanYourContributionsWireframe()

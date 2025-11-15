@@ -9,8 +9,6 @@ final class CrowdloanListPresenter {
     let interactor: CrowdloanListInteractorInputProtocol
     let viewModelFactory: CrowdloansViewModelFactoryProtocol
     let logger: LoggerProtocol
-    let accountManagementFilter: AccountManagementFilterProtocol
-    let wallet: MetaAccountModel
 
     private var selectedChain: ChainModel?
     private var accountBalance: AssetBalance?
@@ -20,36 +18,30 @@ final class CrowdloanListPresenter {
     private var blockDuration: BlockTime?
     private var priceData: PriceData?
 
-    private let crowdloansCalculator: CrowdloansCalculatorProtocol
-
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     init(
         interactor: CrowdloanListInteractorInputProtocol,
         wireframe: CrowdloanListWireframeProtocol,
-        wallet: MetaAccountModel,
         viewModelFactory: CrowdloansViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        crowdloansCalculator: CrowdloansCalculatorProtocol,
-        accountManagementFilter: AccountManagementFilterProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.wallet = wallet
         self.viewModelFactory = viewModelFactory
         self.logger = logger
-        self.crowdloansCalculator = crowdloansCalculator
-        self.accountManagementFilter = accountManagementFilter
         self.appearanceFacade = appearanceFacade
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
     }
 
     private func updateChainView() {
-        guard let asset = selectedChain.utilityAsset() else {
+        guard
+            let chain = selectedChain,
+            let asset = chain.utilityAsset() else {
             return
         }
 
@@ -99,18 +91,10 @@ final class CrowdloanListPresenter {
         }
 
         let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
-        
-        let amount = crowdloansCalculator.calculateTotal(
-            contributions: contributions,
-            assetInfo: chainAsset.asset
-        )
 
         let viewModel = viewModelFactory.createViewModel(
-            from: crowdloans,
-            viewInfo: viewInfo,
+            from: viewInfo,
             chainAsset: chainAsset,
-            externalContributionsCount: externalContributionsCount,
-            amount: amount,
             priceData: priceData,
             locale: selectedLocale
         )
@@ -148,95 +132,43 @@ extension CrowdloanListPresenter: VoteChildPresenterProtocol {
 }
 
 extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
-    func selectCrowdloan(_ paraId: ParaId) {
-        guard let selectedChain else {
+    func handleYourContributions() {
+        guard
+            let viewInfo = createViewInfo(),
+            let chainAsset = selectedChain?.utilityChainAsset()?.chainAssetInfo
+        else {
             return
         }
 
-        if wallet.fetch(for: selectedChain.accountRequest()) != nil {
-            openCrowdloan(for: paraId)
-        } else if accountManagementFilter.canAddAccount(to: wallet, chain: selectedChain) {
-            guard let view = view else {
-                return
-            }
-
-            let message = R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.commonChainCrowdloanAccountMissingMessage(selectedChain.name)
-
-            wireframe.presentAddAccount(
-                from: view,
-                chainName: selectedChain.name,
-                message: message,
-                locale: selectedLocale
-            ) { [weak self] in
-                guard let wallet = self?.wallet else {
-                    return
-                }
-
-                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
-            }
-        } else {
-            guard let view = view else {
-                return
-            }
-
-            wireframe.presentNoAccountSupport(
-                from: view,
-                walletType: wallet.type,
-                chainName: selectedChain.name,
-                locale: selectedLocale
-            )
-        }
-    }
-
-    func handleYourContributions() {
-        guard
-            let selectedChain,
-            let contributions,
-            let viewInfoResult = createViewInfoResult(),
-            case let .success(chain) = chainResult,
-            let asset = selectedChain.utilityAssets().first
-        else { return }
-
-        do {
-            let crowdloans = try crowdloansResult.get()
-            let viewInfo = try viewInfoResult.get()
-            let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
-
-            wireframe.showYourContributions(
-                crowdloans: crowdloans,
-                viewInfo: viewInfo,
-                chainAsset: chainAsset,
-                from: view
-            )
-        } catch {
-            logger?.error(error.localizedDescription)
-        }
+        wireframe.showYourContributions(
+            viewInfo: viewInfo,
+            chainAsset: chainAsset,
+            from: view
+        )
     }
 }
 
 extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     func didReceiveContributions(_ contributions: [CrowdloanContribution]) {
         logger.debug("Contributions: \(contributions.count)")
-        
+
         self.contributions = contributions
         updateListView()
     }
-    
+
     func didReceiveDisplayInfo(_ info: CrowdloanDisplayInfoDict) {
         logger.info("Did receive display info: \(info)")
 
         displayInfo = info
         updateListView()
     }
-    
+
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
         self.blockNumber = blockNumber
 
         updateListView()
     }
-    
+
     func didReceiveBlockDuration(_ blockTime: BlockTime) {
         blockDuration = blockTime
         updateListView()
@@ -247,7 +179,7 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         updateChainView()
         updateListView()
     }
-    
+
     func didReceiveAccountBalance(_ balance: AssetBalance?) {
         accountBalance = balance
         updateChainView()
@@ -257,10 +189,10 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         priceData = price
         updateListView()
     }
-    
+
     func didReceiveError(_ error: Error) {
         logger.error("Unexpected error: \(error)")
-        
+
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }

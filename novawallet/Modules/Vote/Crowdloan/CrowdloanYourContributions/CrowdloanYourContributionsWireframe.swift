@@ -1,3 +1,3 @@
 import Foundation
 
-final class CrowdloanYourContributionsWireframe: CrowdloanYourContributionsWireframeProtocol {}
+final class CrowdloanYourContributionsWireframe: CrowdloanContributionsWireframeProtocol {}

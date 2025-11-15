@@ -26,7 +26,7 @@ enum CrowdloansSection {
 
                 return isLoading
             }
-        case .about, .error, .empty:
+        case .about, .empty:
             return false
         }
     }

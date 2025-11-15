@@ -1,12 +1,14 @@
 import Foundation
+import Operation_iOS
 import Keystore_iOS
 
-struct CrowdloanSharedState {
+final class CrowdloanSharedState {
     let settings: CrowdloanChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    
+    let chainRegistry: ChainRegistryProtocol
+
     private var blockTimeService: BlockTimeEstimationServiceProtocol?
-    
+
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         internalSettings: SettingsManagerProtocol = SettingsManager.shared,
@@ -14,11 +16,13 @@ struct CrowdloanSharedState {
         operationQueue: OperationQueue = OperationQueue(),
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.chainRegistry = chainRegistry
+
         settings = CrowdloanChainSettings(
             chainRegistry: chainRegistry,
             settings: internalSettings
         )
-        
+
         generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
@@ -30,6 +34,19 @@ struct CrowdloanSharedState {
 
 extension CrowdloanSharedState {
     func replaceBlockTimeService(_ newService: BlockTimeEstimationServiceProtocol?) {
+        blockTimeService?.throttle()
         blockTimeService = newService
+    }
+
+    func createChainTimelineFacade() -> ChainTimelineFacadeProtocol? {
+        guard let chain = settings.value, let blockTimeService else {
+            return nil
+        }
+
+        return ChainTimelineFacade(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry,
+            estimationService: blockTimeService
+        )
     }
 }

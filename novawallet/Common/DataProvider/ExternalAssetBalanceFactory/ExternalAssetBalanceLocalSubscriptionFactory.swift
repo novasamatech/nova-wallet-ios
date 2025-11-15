@@ -62,12 +62,9 @@ enum ExternalBalanceLocalSubscriptionFacade {
         let crowdloanServiceFactory = CrowdloanExternalServiceFactory(
             storageFacade: storageFacade,
             chainRegistry: chainRegistry,
-            operationFactory: CrowdloanOperationFactory(
-                requestOperationFactory: StorageRequestFactory(
-                    remoteFactory: StorageKeyFactory(),
-                    operationManager: operationManager
-                ),
-                operationManager: operationManager
+            operationFactory: AhOpsOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
             ),
             paraIdOperationFactory: ParaIdOperationFactory.shared,
             operationQueue: operationQueue,

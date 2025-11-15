@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import Foundation_iOS
 
-final class CrowdloanListInteractor: RuntimeConstantFetching {
+final class CrowdloanListInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning {
     weak var presenter: CrowdloanListInteractorOutputProtocol?
 
     let eventCenter: EventCenterProtocol
@@ -10,10 +10,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let crowdloanState: CrowdloanSharedState
     let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let voteServiceFactory: VoteServiceFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-    
+
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         crowdloanState.generalLocalSubscriptionFactory
     }
@@ -24,6 +26,8 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var priceProvider: StreamableProvider<PriceData>?
 
+    private var blockTimeCancellable = CancellableCallStore()
+
     deinit {
         clearBlockTimeService()
     }
@@ -32,20 +36,27 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         selectedMetaAccount: MetaAccountModel,
         crowdloanState: CrowdloanSharedState,
         chainRegistry: ChainRegistryProtocol,
+        voteServiceFactory: VoteServiceFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.eventCenter = eventCenter
         self.selectedMetaAccount = selectedMetaAccount
         self.crowdloanState = crowdloanState
         self.chainRegistry = chainRegistry
+        self.voteServiceFactory = voteServiceFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.jsonDataProviderFactory = jsonDataProviderFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
+
+        self.currencyManager = currencyManager
     }
 }
 
@@ -58,15 +69,15 @@ private extension CrowdloanListInteractor {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter?.didReceivePriceData(result: nil)
+            presenter?.didReceivePriceData(nil)
         }
     }
-    
+
     func subscribeToDisplayInfo(for chain: ChainModel) {
         displayInfoProvider = nil
 
         guard let crowdloanUrl = chain.externalApis?.crowdloans()?.first?.url else {
-            presenter?.didReceiveDisplayInfo(result: .success([:]))
+            presenter?.didReceiveDisplayInfo([:])
             return
         }
 
@@ -74,12 +85,12 @@ private extension CrowdloanListInteractor {
 
         let updateClosure: ([DataProviderChange<CrowdloanDisplayInfoList>]) -> Void = { [weak self] changes in
             if let result = changes.reduceToLastChange() {
-                self?.presenter?.didReceiveDisplayInfo(result: .success(result.toMap()))
+                self?.presenter?.didReceiveDisplayInfo(result.toMap())
             }
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter?.didReceiveDisplayInfo(result: .failure(error))
+            self?.presenter?.didReceiveError(error)
         }
 
         let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true, waitsInProgressSyncOnAdd: false)
@@ -92,22 +103,21 @@ private extension CrowdloanListInteractor {
             options: options
         )
     }
-    
+
     func setupBlockTimeService(for chain: ChainModel) {
         do {
             let timelineChain = try chainRegistry.getTimelineChainOrError(for: chain.chainId)
-            let blockTimeService = try serviceFactory.createBlockTimeService(for: timelineChain.chainId)
+            let blockTimeService = try voteServiceFactory.createBlockTimeService(for: timelineChain.chainId)
 
             crowdloanState.replaceBlockTimeService(blockTimeService)
 
             blockTimeService.setup()
         } catch {
-            presenter?.didReceiveError(.blockTimeServiceFailed(error))
+            presenter?.didReceiveError(error)
         }
     }
-    
+
     func clearBlockTimeService() {
-        crowdloanState.blockTimeService?.throttle()
         crowdloanState.replaceBlockTimeService(nil)
     }
 }
@@ -124,24 +134,25 @@ extension CrowdloanListInteractor {
             assetId: chainAssetId.assetId
         )
     }
-    
-    func setup(with accountId: AccountId?, chain: ChainModel) {
-        presenter?.didReceiveSelectedChain(result: .success(chain))
 
-        if let accountId = accountId {
+    func setup(with accountId: AccountId?, chain: ChainModel) {
+        presenter?.didReceiveSelectedChain(chain)
+
+        if let accountId {
             subscribeToAccountBalance(for: accountId, chain: chain)
         } else {
-            presenter?.didReceiveAccountBalance(result: .success(nil))
+            presenter?.didReceiveAccountBalance(nil)
         }
 
         subscribePrice()
 
+        setupBlockTimeService(for: chain)
+
         subscribeToDisplayInfo(for: chain)
     }
 
-    func refresh(with chain: ChainModel) {
+    func refresh(with _: ChainModel) {
         displayInfoProvider?.refresh()
-        externalContributionsProvider?.refresh()
     }
 
     func clear() {
@@ -164,9 +175,11 @@ extension CrowdloanListInteractor {
         if blockNumberProvider == nil {
             blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
         }
+
+        provideBlockTime()
     }
 
-    func putOffline(with chain: ChainModel) {
+    func putOffline(with _: ChainModel) {
         clear(dataProvider: &blockNumberProvider)
     }
 
@@ -177,42 +190,44 @@ extension CrowdloanListInteractor {
                 case let .success(chain):
                     onSuccess(chain)
                 case let .failure(error):
-                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
+                    self?.presenter?.didReceiveError(error)
                 }
+            }
+        }
+    }
+
+    func provideBlockTime() {
+        guard let timelineService = crowdloanState.createChainTimelineFacade() else {
+            return
+        }
+
+        blockTimeCancellable.cancel()
+
+        let blockTimeWrapper = timelineService.createBlockTimeOperation()
+
+        executeCancellable(
+            wrapper: blockTimeWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: blockTimeCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(blockTime):
+                self?.presenter?.didReceiveBlockDuration(blockTime)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
             }
         }
     }
 }
 
-extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter?.didReceivePriceData(result: result)
-    }
-}
-
 extension CrowdloanListInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil,
-           let chain = crowdloanState.settings.value,
-           let priceId = chain.utilityAsset()?.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        }
-    }
-}
-
-extension CrowdloanListInteractor: EventVisitorProtocol {
-    func processNetworkEnableChanged(event: NetworkEnabledChanged) {
-        guard
+        if
+            presenter != nil,
             let chain = crowdloanState.settings.value,
-            chain.chainId == event.chainId
-        else {
-            return
-        }
-
-        setupState { [weak self] chain in
-            guard let chain else { return }
-
-            self?.refresh(with: chain)
+            let priceId = chain.utilityAsset()?.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }
