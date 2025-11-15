@@ -3,9 +3,9 @@ import Foundation
 enum SharedContainerGroup {
     static var name: String {
         #if F_RELEASE
-            return "group.novafoundation.novawallet"
+            return "group.novasamatech.novawallet"
         #else
-            return "group.novafoundation.novawallet.dev"
+            return "group.novasamatech.novawallet.dev"
         #endif
     }
 }

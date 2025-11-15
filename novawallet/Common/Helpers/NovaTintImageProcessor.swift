@@ -15,7 +15,7 @@ final class NovaTintImageProcessor: ImageProcessor {
     }
 
     init(tintColor: UIColor) {
-        identifier = "io.novafoundation.novawallet.kf.tint(\(tintColor.hexRGBA))"
+        identifier = "io.novasamatech.novawallet.kf.tint(\(tintColor.hexRGBA))"
         self.tintColor = tintColor
     }
 }

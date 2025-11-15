@@ -33,8 +33,8 @@ protocol KeyboardViewAdoptable: KeyboardAdoptable {
 }
 
 private enum KeyboardViewAdoptableConstants {
-    static var keyboardHandlerKey: String = "io.novafoundation.novawallet.keyboard.handler"
-    static var keyboardFrameKey: String = "io.novafoundation.novawallet.keyboard.frame"
+    static var keyboardHandlerKey: String = "io.novasamatech.novawallet.keyboard.handler"
+    static var keyboardFrameKey: String = "io.novasamatech.novawallet.keyboard.frame"
 }
 
 extension KeyboardViewAdoptable where Self: UIViewController {

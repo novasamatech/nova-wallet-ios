@@ -5,9 +5,9 @@ enum CloudBackup {
 
     static var containerId: String {
         #if F_RELEASE
-            "iCloud.io.novafoundation.novawallet.Documents"
+            "iCloud.io.novasamatech.novawallet.Documents"
         #else
-            "iCloud.io.novafoundation.novawallet.dev.Documents"
+            "iCloud.io.novasamatech.novawallet.dev.Documents"
         #endif
     }
 }

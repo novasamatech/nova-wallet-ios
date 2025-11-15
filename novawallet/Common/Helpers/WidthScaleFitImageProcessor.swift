@@ -36,7 +36,7 @@ final class WidthScaleFitProcessor: ImageProcessor {
         self.preferredWidth = preferredWidth
         self.maxHeight = maxHeight
 
-        let baseIdentifier = "io.novafoundation.novawallet.kf.width.resize.processor"
+        let baseIdentifier = "io.novasamatech.novawallet.kf.width.resize.processor"
 
         if let maxHeight = maxHeight {
             identifier = baseIdentifier + "(\(preferredWidth), \(maxHeight))"

@@ -13,7 +13,7 @@ final class EventCenter {
     private var wrappers: [ObserverWrapper] = []
 
     init(syncQueue: DispatchQueue? = nil) {
-        self.syncQueue = syncQueue ?? DispatchQueue(label: "io.novafoundation.novawallet.event.center")
+        self.syncQueue = syncQueue ?? DispatchQueue(label: "io.novasamatech.novawallet.event.center")
     }
 }
 

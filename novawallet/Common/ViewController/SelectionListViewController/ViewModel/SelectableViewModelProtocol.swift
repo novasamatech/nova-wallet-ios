@@ -12,8 +12,8 @@ protocol SelectableViewModelProtocol: AnyObject {
 }
 
 private enum Constants {
-    static var isSelectedKey = "io.novafoundation.novawallet.selectable.selected"
-    static var observersKey = "io.novafoundation.novawallet.observers"
+    static var isSelectedKey = "io.novasamatech.novawallet.selectable.selected"
+    static var observersKey = "io.novasamatech.novawallet.observers"
 }
 
 private struct Observation {
