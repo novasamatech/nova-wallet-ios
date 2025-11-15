@@ -1644,6 +1644,7 @@
 		2D0A82F12CB573BB0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
+		2D0C94CF2EC8E59A00FCCCED /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 2D0C94CE2EC8E59A00FCCCED /* AppIcon.icon */; };
 		2D1006122EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006112EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift */; };
 		2D1006212EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */; };
 		2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */; };
@@ -8310,6 +8311,7 @@
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
+		2D0C94CE2EC8E59A00FCCCED /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		2D1006112EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateGiftDescriptionFactory.swift; sourceTree = "<group>"; };
 		2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimWalletOperationFactory.swift; sourceTree = "<group>"; };
 		2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimViewModelFactory.swift; sourceTree = "<group>"; };
@@ -23887,6 +23889,7 @@
 				8490146024A94373008F705E /* Localizable.strings */,
 				AE74EC1725FCF09000C494E7 /* Localizable.stringsdict */,
 				0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */,
+				2D0C94CE2EC8E59A00FCCCED /* AppIcon.icon */,
 			);
 			path = novawallet;
 			sourceTree = "<group>";
@@ -30671,6 +30674,7 @@
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
+				2D0C94CF2EC8E59A00FCCCED /* AppIcon.icon in Resources */,
 				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
 				0C1A10552E6AEA2300254E20 /* runtime-default.json in Resources */,
 				0C1A10562E6AEA2B00254E20 /* runtime-westend.json in Resources */,
@@ -37497,7 +37501,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -37513,7 +37517,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -37537,7 +37541,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -37553,7 +37557,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev-extension";
@@ -37575,9 +37579,9 @@
 				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 78T8FJAKUV;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -37591,11 +37595,11 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 10.5.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.notificationServiceExtension;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.notificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-extension-adhoc-ruslan";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-next-extension-appstore-levan";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -37611,7 +37615,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -37627,7 +37631,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.notificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -37823,13 +37827,14 @@
 			baseConfigurationReference = 849013FA24A92A05008F705E /* novawallet.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -37841,7 +37846,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -37858,12 +37863,13 @@
 			baseConfigurationReference = 849013F924A92A05008F705E /* novawallet.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 78T8FJAKUV;
 				ENABLE_BITCODE = NO;
@@ -37875,7 +37881,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -38002,13 +38008,14 @@
 			baseConfigurationReference = 849013F824A92A05008F705E /* novawallet.dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -38020,7 +38027,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -38115,12 +38122,13 @@
 			baseConfigurationReference = 84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletStaging.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 109;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
@@ -38132,7 +38140,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 10.5.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-staging";

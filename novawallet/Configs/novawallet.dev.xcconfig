@@ -1,4 +1,4 @@
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_DEV"
 
-APP_NAME = Nova Dev
+APP_NAME = Nova Next Dev
 ICON_SUFFIX = Dev
