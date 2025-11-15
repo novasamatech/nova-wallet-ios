@@ -37843,7 +37843,7 @@
 				);
 				MARKETING_VERSION = 10.5.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ruslan't M2 Dev";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev-levan";
@@ -37865,7 +37865,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 78T8FJAKUV;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -37877,10 +37877,10 @@
 				);
 				MARKETING_VERSION = 10.5.0;
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-appstore";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-adhoc-ruslan";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-next-appstore-levan";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -38022,7 +38022,7 @@
 				);
 				MARKETING_VERSION = 10.5.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev";
@@ -38133,7 +38133,7 @@
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				MARKETING_VERSION = 10.5.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.staging;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novasamatech.novawallet.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-staging";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-staging";
