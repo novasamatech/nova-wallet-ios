@@ -7,13 +7,21 @@ struct CrowdloanYourContributionsViewInput {
     let contributions: [CrowdloanContribution]
     let displayInfo: CrowdloanDisplayInfoDict?
     let chainAsset: ChainAssetDisplayInfo
+
+    func replacing(newContributions: [CrowdloanContribution]) -> Self {
+        .init(
+            contributions: newContributions,
+            displayInfo: displayInfo,
+            chainAsset: chainAsset
+        )
+    }
 }
 
 enum CrowdloanYourContributionsViewFactory {
     static func createView(
         input: CrowdloanYourContributionsViewInput,
         sharedState: CrowdloanSharedState
-    ) -> CrowdloanYourContributionsViewProtocol? {
+    ) -> CrowdloanContributionsViewProtocol? {
         guard
             let chain = sharedState.settings.value,
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
@@ -22,15 +30,10 @@ enum CrowdloanYourContributionsViewFactory {
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return nil
-        }
-
         let interactor = CrowdloanYourContributionsInteractor(
             chain: chain,
             selectedMetaAccount: selectedMetaAccount,
             crowdloanState: sharedState,
-            runtimeService: runtimeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -40,8 +43,6 @@ enum CrowdloanYourContributionsViewFactory {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
-            chainDateCalculator: ChainDateCalculator(),
-            calendar: Calendar.current,
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
@@ -52,7 +53,6 @@ enum CrowdloanYourContributionsViewFactory {
             wireframe: wireframe,
             timeFormatter: TotalTimeFormatter(),
             localizationManager: LocalizationManager.shared,
-            crowdloansCalculator: CrowdloansCalculator(),
             logger: Logger.shared
         )
 

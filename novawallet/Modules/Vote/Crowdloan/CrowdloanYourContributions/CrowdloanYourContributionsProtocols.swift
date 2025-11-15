@@ -13,15 +13,12 @@ protocol CrowdloanContributionsPresenterProtocol: AnyObject {
 protocol CrowdloanContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
         input: CrowdloanYourContributionsViewInput,
-        externalContributions: [ExternalContribution]?,
-        amount: Decimal,
         price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel
 
     func createReturnInIntervals(
         input: CrowdloanYourContributionsViewInput,
-        externalContributions: [ExternalContribution]?,
         metadata: CrowdloanMetadata
     ) -> [ReturnInIntervalsViewModel]
 }

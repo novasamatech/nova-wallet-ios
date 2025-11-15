@@ -5,16 +5,16 @@ final class CrowdloanYourContributionsPresenter {
     weak var view: CrowdloanContributionsViewProtocol?
     let wireframe: CrowdloanContributionsWireframeProtocol
     let interactor: CrowdloanContributionsInteractorInputProtocol
-    let input: CrowdloanYourContributionsViewInput
     let viewModelFactory: CrowdloanContributionsVMFactoryProtocol
     let timeFormatter: TimeFormatterProtocol
     let logger: LoggerProtocol?
+
+    private var input: CrowdloanYourContributionsViewInput
 
     private var returnInIntervals: [ReturnInIntervalsViewModel]?
     private var maxReturnInInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
 
-    private var contributions: [CrowdloanContribution]?
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
     private var price: PriceData?
@@ -46,7 +46,6 @@ final class CrowdloanYourContributionsPresenter {
         logger: LoggerProtocol
     ) {
         self.input = input
-        self.contributions = input.contributions
         self.viewModelFactory = viewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
@@ -56,15 +55,8 @@ final class CrowdloanYourContributionsPresenter {
     }
 
     private func updateCrowdloans() {
-        let amount = crowdloansCalculator.calculateTotal(
-            precision: input.chainAsset.asset.assetPrecision,
-            contributions: input.contributions,
-            externalContributions: externalContributions
-        )
         let viewModel = viewModelFactory.createViewModel(
             input: input,
-            externalContributions: externalContributions,
-            amount: amount ?? 0,
             price: price,
             locale: selectedLocale
         )
@@ -79,7 +71,6 @@ final class CrowdloanYourContributionsPresenter {
 
         returnInIntervals = viewModelFactory.createReturnInIntervals(
             input: input,
-            externalContributions: externalContributions,
             metadata: crowloanMetadata
         )
 
@@ -135,16 +126,17 @@ final class CrowdloanYourContributionsPresenter {
     }
 }
 
-extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsPresenterProtocol {
+extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterProtocol {
     func setup() {
         updateCrowdloans()
         interactor.setup()
     }
 }
 
-extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInteractorOutputProtocol {
+extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorOutputProtocol {
     func didReceiveContributions(_ contributions: [CrowdloanContribution]) {
-        self.contributions = contributions
+        input = input.replacing(newContributions: contributions)
+
         updateCrowdloans()
         updateReturnInTimeIntervals()
     }
@@ -157,18 +149,6 @@ extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInterac
 
     func didReceiveBlockDuration(_ blockDuration: BlockTime) {
         self.blockDuration = blockDuration
-
-        updateReturnInTimeIntervals()
-    }
-
-    func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod) {
-        self.leasingPeriod = leasingPeriod
-
-        updateReturnInTimeIntervals()
-    }
-
-    func didReceiveLeasingOffset(_ leasingOffset: LeasingOffset) {
-        self.leasingOffset = leasingOffset
 
         updateReturnInTimeIntervals()
     }

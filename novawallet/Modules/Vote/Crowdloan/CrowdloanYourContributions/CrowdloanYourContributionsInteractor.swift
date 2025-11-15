@@ -9,7 +9,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
     let selectedMetaAccount: MetaAccountModel
     let operationQueue: OperationQueue
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    
+
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         crowdloanState.generalLocalSubscriptionFactory
     }
@@ -17,7 +17,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var priceProvider: StreamableProvider<PriceData>?
     private let blockTimeCancellable = CancellableCallStore()
-    
+
     init(
         chain: ChainModel,
         selectedMetaAccount: MetaAccountModel,
@@ -76,7 +76,7 @@ private extension CrowdloanYourContributionsInteractor {
 extension CrowdloanYourContributionsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(
         result: Result<BlockNumber?, Error>,
-        chainId: ChainModel.Id
+        chainId _: ChainModel.Id
     ) {
         switch result {
         case let .success(blockNumber):

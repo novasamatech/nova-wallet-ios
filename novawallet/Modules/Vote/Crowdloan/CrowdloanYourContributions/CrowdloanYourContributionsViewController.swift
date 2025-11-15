@@ -4,13 +4,13 @@ import Foundation_iOS
 final class CrowdloanYourContributionsViewController: UIViewController, ViewHolder {
     typealias RootViewType = CrowdloanYourContributionsViewLayout
 
-    let presenter: CrowdloanYourContributionsPresenterProtocol
+    let presenter: CrowdloanContributionsPresenterProtocol
 
     private var viewModel: CrowdloanYourContributionsViewModel?
     private var returnInTimeIntervals: [FormattedReturnInIntervalsViewModel]?
 
     init(
-        presenter: CrowdloanYourContributionsPresenterProtocol,
+        presenter: CrowdloanContributionsPresenterProtocol,
         localizationManager: LocalizationManagerProtocol?
     ) {
         self.presenter = presenter
@@ -66,7 +66,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
 // MARK: - CrowdloanYourContributionsViewProtocol
 
-extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsViewProtocol {
+extension CrowdloanYourContributionsViewController: CrowdloanContributionsViewProtocol {
     func reload(model: CrowdloanYourContributionsViewModel) {
         viewModel = model
         rootView.tableView.reloadData()

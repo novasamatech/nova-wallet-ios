@@ -61,7 +61,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         let crowdloansSections: [CrowdloansSection] = [.active(.loaded(value: active), [])]
 
         let allContributionsCount = viewInfo.contributions.count
-        let totalAmount = viewInfo.contributions.reduce(Balance(0)) { $0 + $1.amount }
+        let totalAmount = viewInfo.contributions.totalAmountLocked()
 
         guard totalAmount > 0 else {
             return .init(sections: crowdloansSections)
