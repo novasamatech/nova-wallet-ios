@@ -5,7 +5,7 @@ protocol DAppListViewLayoutDelegate: AnyObject {
 }
 
 final class DAppListViewLayout: UIView {
-    private let backgroundView = MultigradientView.background
+    private let backgroundView = UIImageView.background
 
     weak var delegate: DAppListViewLayoutDelegate?
 

@@ -3,7 +3,7 @@ import SnapKit
 
 final class ReferendumSearchViewLayout: BaseTableSearchViewLayout {
     override func setupLayout() {
-        let backgroundView = MultigradientView.background
+        let backgroundView = UIImageView.background
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

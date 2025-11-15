@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
-    private let backgroundView = MultigradientView.background
+    private let backgroundView = UIImageView.background
 
     let headerView = VoteTableHeaderView()
 

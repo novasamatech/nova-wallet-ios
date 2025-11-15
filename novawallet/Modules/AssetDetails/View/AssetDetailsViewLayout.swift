@@ -40,7 +40,7 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         view.layer.cornerRadius = 12.0
     }
 
-    let backgroundView = MultigradientView.background
+    let backgroundView = UIImageView.background
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14

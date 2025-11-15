@@ -1898,6 +1898,7 @@
 		2D62ED382D5E1EEE001EF17D /* BannersViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */; };
 		2D62ED3A2D5E645C001EF17D /* ClosedBanners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED392D5E645C001EF17D /* ClosedBanners.swift */; };
 		2D62ED3B2D5E660E001EF17D /* ClosedBanners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED392D5E645C001EF17D /* ClosedBanners.swift */; };
+		2D6307B02EC718F100905668 /* EllipseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6307AF2EC718F100905668 /* EllipseView.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -8562,6 +8563,7 @@
 		2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+reload.swift"; sourceTree = "<group>"; };
 		2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersViewDataSource.swift; sourceTree = "<group>"; };
 		2D62ED392D5E645C001EF17D /* ClosedBanners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedBanners.swift; sourceTree = "<group>"; };
+		2D6307AF2EC718F100905668 /* EllipseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EllipseView.swift; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
@@ -17754,6 +17756,14 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		2D6307AE2EC718C700905668 /* DefaultGradientBackground */ = {
+			isa = PBXGroup;
+			children = (
+				2D6307AF2EC718F100905668 /* EllipseView.swift */,
+			);
+			path = DefaultGradientBackground;
+			sourceTree = "<group>";
+		};
 		2D65F6C72CCED75C00CC6F72 /* Swap */ = {
 			isa = PBXGroup;
 			children = (
@@ -24546,6 +24556,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2D6307AE2EC718C700905668 /* DefaultGradientBackground */,
 				2DC002F02E8B9F7000D49A42 /* AHMAlertView */,
 				2DEA7B832E7415C9001F3DF5 /* SecureView */,
 				0CF6928A2C231C89000FC395 /* SharedStatusView */,
@@ -33690,6 +33701,7 @@
 				84F0D9FC299D87A700F82CBC /* GovernanceBalanceConviction.swift in Sources */,
 				84BAD211293A2FB100C55C49 /* TokensManageViewModel.swift in Sources */,
 				0CED71D12D9EDB7800F79C02 /* XcmUni+Version.swift in Sources */,
+				2D6307B02EC718F100905668 /* EllipseView.swift in Sources */,
 				0C0F6E2F2D46471D00943A7C /* MythosStakingValidationFactory.swift in Sources */,
 				84EBC55224F660A700459D15 /* EventProtocols.swift in Sources */,
 				AE6F7FE02685E812002BBC3E /* ValidatorListFilterProtocols.swift in Sources */,

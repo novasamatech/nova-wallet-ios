@@ -1,7 +1,7 @@
 import UIKit
 
 final class AssetListViewLayout: UIView {
-    let backgroundView = MultigradientView.background
+    let backgroundView = UIImageView.background
 
     let collectionViewLayout: AssetListFlowLayout = {
         let layout = AssetListFlowLayout()

@@ -2,7 +2,7 @@ import UIKit
 import UIKit_iOS
 
 final class MultisigOperationsViewLayout: UIView {
-    let backgroundView = MultigradientView.background
+    let backgroundView = UIImageView.background
 
     let navBarBlurView: BlurBackgroundView = .create {
         $0.cornerCut = []

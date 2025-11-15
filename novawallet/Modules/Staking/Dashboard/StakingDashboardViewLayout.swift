@@ -1,7 +1,7 @@
 import UIKit
 
 final class StakingDashboardViewLayout: UIView {
-    let backgroundView = MultigradientView.background
+    let backgroundView = UIImageView.background
 
     lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()

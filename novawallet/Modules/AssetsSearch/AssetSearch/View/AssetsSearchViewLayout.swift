@@ -2,7 +2,7 @@ import UIKit
 import UIKit_iOS
 
 final class AssetsSearchViewLayout: BaseAssetsSearchViewLayout {
-    let backgroundView = MultigradientView.background
+    let backgroundView = UIImageView.background
 
     override func createSearchView() -> SearchViewProtocol {
         let view = CustomSearchView()
