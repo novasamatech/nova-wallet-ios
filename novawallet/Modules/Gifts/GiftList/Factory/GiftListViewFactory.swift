@@ -2,12 +2,12 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-struct GiftHistoryCheckViewFactory {
+struct GiftListViewFactory {
     static func createView(
         stateObservable: AssetListModelObservable,
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
-    ) -> GiftHistoryCheckViewProtocol? {
+    ) -> GiftListViewProtocol? {
         guard let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -16,12 +16,12 @@ struct GiftHistoryCheckViewFactory {
             storageFacade: UserDataStorageFacade.shared
         ).createGiftsRepository(for: selectedWallet.metaId)
 
-        let interactor = GiftHistoryCheckInteractor(
+        let interactor = GiftListInteractor(
             repository: AnyDataProviderRepository(repository),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let wireframe = GiftHistoryCheckWireframe(
+        let wireframe = GiftListWireframe(
             stateObservable: stateObservable,
             transferCompletion: transferCompletion,
             buyTokensClosure: buyTokensClosure
@@ -29,13 +29,15 @@ struct GiftHistoryCheckViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let presenter = GiftHistoryCheckPresenter(
+        let presenter = GiftListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            onboardingViewModelFactory: GiftsOnboardingViewModelFactory(),
+            learnMoreUrl: ApplicationConfig.shared.giftsWikiURL,
             localizationManager: localizationManager
         )
 
-        let view = GiftHistoryCheckViewController(
+        let view = GiftListViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

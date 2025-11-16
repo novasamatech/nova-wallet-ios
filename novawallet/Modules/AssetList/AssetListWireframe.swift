@@ -184,7 +184,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     ) {
-        guard let giftFlowView = GiftHistoryCheckViewFactory.createView(
+        guard let giftFlowView = GiftListViewFactory.createView(
             stateObservable: assetListModelObservable,
             transferCompletion: transferCompletion,
             buyTokensClosure: buyTokensClosure

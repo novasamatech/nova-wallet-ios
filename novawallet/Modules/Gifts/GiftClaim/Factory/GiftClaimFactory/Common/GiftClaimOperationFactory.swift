@@ -33,7 +33,7 @@ final class GiftClaimFactory {
 
 private extension GiftClaimFactory {
     func createGiftWrapperOrError(
-        basedOn claimAvailabilityWrapper: CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>,
+        basedOn claimAvailabilityWrapper: CompoundOperationWrapper<GiftClaimAvailabilty>,
         seed: Data,
         amount: BigUInt,
         chainAsset: ChainAsset
@@ -43,7 +43,7 @@ private extension GiftClaimFactory {
 
             let claimCheckResult = try claimAvailabilityWrapper.targetOperation.extractNoCancellableResultData()
 
-            switch claimCheckResult.availability {
+            switch claimCheckResult {
             case .claimable:
                 return giftFactory.createGiftWrapper(
                     from: seed,
@@ -65,7 +65,8 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
         claimWrapperProvider: GiftClaimWrapperProvider
     ) -> CompoundOperationWrapper<Void> {
         let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
-            for: description
+            for: description.accountId,
+            chainAsset: description.chainAsset
         )
         let giftWrapper = createGiftWrapperOrError(
             basedOn: claimAvailabilityWrapper,

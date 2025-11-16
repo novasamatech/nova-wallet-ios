@@ -36,7 +36,7 @@ final class GiftPrepareShareInteractor {
 private extension GiftPrepareShareInteractor {
     func provideData(for giftId: GiftModel.Id) {
         let fetchOperation = giftRepository.fetchOperation(
-            by: { giftId.toHex() },
+            by: { giftId },
             options: .init()
         )
 

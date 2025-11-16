@@ -160,7 +160,7 @@ private extension GiftSubmissionFactory {
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let submissionResult = GiftTransferSubmissionResult(
-                giftId: recipient,
+                giftId: recipient.toHex(),
                 sender: submissionData.senderResolution
             )
 

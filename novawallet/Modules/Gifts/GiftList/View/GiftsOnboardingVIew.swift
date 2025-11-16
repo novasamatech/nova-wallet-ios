@@ -1,7 +1,7 @@
 import UIKit
 import UIKit_iOS
 
-final class GiftsOnboardingViewLayout: SCSingleActionLayoutView {
+final class GiftsOnboardingView: SCSingleActionLayoutView {
     let headerView = GiftsOnboardingHeaderView()
 
     let imageView: UIImageView = .create { view in

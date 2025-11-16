@@ -4,8 +4,9 @@ import BigInt
 
 protocol GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftProtocol
-    ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>
+        for giftAccountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<GiftClaimAvailabilty>
 }
 
 final class GiftClaimAvailabilityCheckFactory {
@@ -34,12 +35,12 @@ final class GiftClaimAvailabilityCheckFactory {
 
 private extension GiftClaimAvailabilityCheckFactory {
     func createBalanceExisteceWrapper(
-        claimableGift: ClaimableGiftProtocol
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            if claimableGift.chainAsset.asset.isAnyEvm {
+            if chainAsset.asset.isAnyEvm {
                 let existence = AssetBalanceExistence(
                     minBalance: 0,
                     isSelfSufficient: true
@@ -48,12 +49,12 @@ private extension GiftClaimAvailabilityCheckFactory {
                 return .createWithResult(existence)
             } else {
                 let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(
-                    for: claimableGift.chainAsset.chainAssetId.chainId
+                    for: chainAsset.chainAssetId.chainId
                 )
 
                 return self.assetInfoFactory.createAssetBalanceExistenceOperation(
-                    chainId: claimableGift.chainAsset.chainAssetId.chainId,
-                    asset: claimableGift.chainAsset.asset,
+                    chainId: chainAsset.chainAssetId.chainId,
+                    asset: chainAsset.asset,
                     runtimeProvider: runtimeProvider,
                     operationQueue: self.operationQueue
                 )
@@ -66,17 +67,18 @@ private extension GiftClaimAvailabilityCheckFactory {
 
 extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftProtocol
-    ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
+        for giftAccountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<GiftClaimAvailabilty> {
         let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
-            for: claimableGift.accountId,
-            chainAsset: claimableGift.chainAsset
+            for: giftAccountId,
+            chainAsset: chainAsset
         )
         let balanceExistenceWrapper = createBalanceExisteceWrapper(
-            claimableGift: claimableGift
+            chainAsset: chainAsset
         )
 
-        let resultOperation = ClosureOperation<GiftClaimAvailabilityCheckResult> {
+        let resultOperation = ClosureOperation<GiftClaimAvailabilty> {
             let transferableBalance = try transferableBalanceWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
@@ -86,14 +88,9 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            let availability: GiftClaimAvailabilty = transferableBalance > existence.minBalance
+            return transferableBalance > existence.minBalance
                 ? .claimable(transferableBalance)
                 : .claimed
-
-            return GiftClaimAvailabilityCheckResult(
-                claimableGift: claimableGift,
-                availability: availability
-            )
         }
 
         resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
@@ -106,11 +103,6 @@ extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryPr
             dependencies: dependencies
         )
     }
-}
-
-struct GiftClaimAvailabilityCheckResult {
-    let claimableGift: ClaimableGiftProtocol
-    let availability: GiftClaimAvailabilty
 }
 
 enum GiftClaimAvailabilty {

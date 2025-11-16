@@ -40,7 +40,7 @@ private extension ClaimGiftUrlParsingService {
             let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
             let checkResult = try checkWrapper.targetOperation.extractNoCancellableResultData()
 
-            switch checkResult.availability {
+            switch checkResult {
             case let .claimable(totalAmount):
                 return GiftClaimNavigation(
                     claimableGiftPayload: claimableGift.info(),
@@ -109,11 +109,14 @@ private extension ClaimGiftUrlParsingService {
 
     func createGiftClaimCheckWrapper(
         dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimableGift>
-    ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
+    ) -> CompoundOperationWrapper<GiftClaimAvailabilty> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.claimAvailabilityChecker.createAvailabilityWrapper(for: claimableGift)
+            return self.claimAvailabilityChecker.createAvailabilityWrapper(
+                for: claimableGift.accountId,
+                chainAsset: claimableGift.chainAsset
+            )
         }
     }
 }

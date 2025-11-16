@@ -1,11 +1,23 @@
-protocol GiftListViewProtocol: AnyObject {}
+protocol GiftListViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: GiftsOnboardingViewModel)
+    func didReceive(loading: Bool)
+}
 
 protocol GiftListPresenterProtocol: AnyObject {
     func setup()
+    func activateLearnMore()
+    func actionCreateGift()
 }
 
-protocol GiftListInteractorInputProtocol: AnyObject {}
+protocol GiftListInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol GiftListInteractorOutputProtocol: AnyObject {}
+protocol GiftListInteractorOutputProtocol: AnyObject {
+    func didReceive(_ gifts: [GiftModel])
+    func didReceive(_ error: Error)
+}
 
-protocol GiftListWireframeProtocol: AnyObject {}
+protocol GiftListWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, CommonRetryable {
+    func showCreateGift(from view: ControllerBackedProtocol?)
+}
