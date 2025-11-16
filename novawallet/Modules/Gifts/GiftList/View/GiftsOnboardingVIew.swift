@@ -59,7 +59,7 @@ final class GiftsOnboardingView: SCSingleActionLayoutView {
 
 // MARK: - Constants
 
-private extension GiftsOnboardingViewLayout {
+private extension GiftsOnboardingView {
     enum Constants {
         static let headerToStepsSpacing: CGFloat = 16
         static let stepsToImageSpacing: CGFloat = 35.5
