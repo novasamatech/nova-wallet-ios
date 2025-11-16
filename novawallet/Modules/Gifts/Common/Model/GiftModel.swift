@@ -7,6 +7,7 @@ struct GiftModel: Hashable, Equatable {
     let chainAssetId: ChainAssetId
     let status: Status
     let giftAccountId: AccountId
+    let creationDate: Date?
     let senderMetaId: MetaAccountModel.Id?
 
     static func == (lhs: GiftModel, rhs: GiftModel) -> Bool {

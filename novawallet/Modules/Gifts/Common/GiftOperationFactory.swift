@@ -65,6 +65,7 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
                 chainAssetId: chainAsset.chainAssetId,
                 status: .pending,
                 giftAccountId: accountId,
+                creationDate: Date(),
                 senderMetaId: metaId
             )
         }

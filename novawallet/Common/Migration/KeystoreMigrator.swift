@@ -38,7 +38,7 @@ class KeystoreMigrator {
 
 extension KeystoreMigrator: KeystoreMigrating {
     func switchVersion() throws {
-        guard let nextVersion = currentVersion.nextVersion() else {
+        guard let nextVersion = currentVersion.nextVersion else {
             throw KeystoreMigratingError.nextVersionMissing
         }
 
@@ -46,7 +46,7 @@ extension KeystoreMigrator: KeystoreMigrating {
     }
 
     func fetchKey(for identifier: String) -> Data? {
-        if sourceVersion.nextVersion() == currentVersion {
+        if sourceVersion.nextVersion == currentVersion {
             return try? keystore.fetchKey(for: identifier)
         } else {
             return tempKeystore[identifier]
