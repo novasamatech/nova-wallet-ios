@@ -155,13 +155,13 @@ extension CrowdloanYourContributionsVMFactory: CrowdloanContributionsVMFactoryPr
         input.contributions
             .enumerated()
             .compactMap { index, contribution in
-                let remainedSeconds = BlockTimestampEstimator.estimateTimestamp(
-                    for: contribution.unlocksAt,
+                let remainedSeconds = BlockTimestampEstimator.remainedTimeInterval(
+                    till: contribution.unlocksAt,
                     currentBlock: metadata.blockNumber,
                     blockTimeInMillis: metadata.blockDuration
                 )
 
-                return ReturnInIntervalsViewModel(index: index, interval: TimeInterval(remainedSeconds))
+                return ReturnInIntervalsViewModel(index: index, interval: remainedSeconds)
             }
     }
 }

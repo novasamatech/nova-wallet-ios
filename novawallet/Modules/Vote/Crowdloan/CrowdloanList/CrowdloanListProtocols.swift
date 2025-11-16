@@ -1,4 +1,6 @@
+import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, LoadableViewProtocol {
     var presenter: CrowdloanListPresenterProtocol? { get set }
@@ -19,7 +21,7 @@ protocol CrowdloanListInteractorInputProtocol: AnyObject {
 }
 
 protocol CrowdloanListInteractorOutputProtocol: AnyObject {
-    func didReceiveContributions(_ contributions: [CrowdloanContribution])
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>])
     func didReceiveDisplayInfo(_ info: CrowdloanDisplayInfoDict)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveBlockDuration(_ blockTime: BlockTime)

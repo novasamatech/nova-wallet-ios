@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 import BigInt
 import SubstrateSdk
 
@@ -12,7 +13,7 @@ final class CrowdloanListPresenter {
 
     private var selectedChain: ChainModel?
     private var accountBalance: AssetBalance?
-    private var contributions: [CrowdloanContribution]?
+    private var contributions: [CrowdloanContribution] = []
     private var displayInfo: CrowdloanDisplayInfoDict?
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
@@ -67,8 +68,7 @@ final class CrowdloanListPresenter {
     private func createViewInfo() -> CrowdloansViewInfo? {
         guard
             let displayInfo,
-            let metadata = createMetadata(),
-            let contributions else {
+            let metadata = createMetadata() else {
             return nil
         }
 
@@ -149,38 +149,48 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
 }
 
 extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
-    func didReceiveContributions(_ contributions: [CrowdloanContribution]) {
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>]) {
+        let dict = contributions.reduceToDict()
+        contributions = Array(changes.mergeToDict(dict).values).sortedByUnlockTime()
+
         logger.debug("Contributions: \(contributions.count)")
 
-        self.contributions = contributions
         updateListView()
     }
 
     func didReceiveDisplayInfo(_ info: CrowdloanDisplayInfoDict) {
-        logger.info("Did receive display info: \(info)")
+        logger.debug("Did receive display info: \(info.count)")
 
         displayInfo = info
         updateListView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
+        logger.debug("Block number: \(String(describing: blockNumber))")
+
         self.blockNumber = blockNumber
 
         updateListView()
     }
 
     func didReceiveBlockDuration(_ blockTime: BlockTime) {
+        logger.debug("Block duration: \(blockTime)")
+
         blockDuration = blockTime
         updateListView()
     }
 
     func didReceiveSelectedChain(_ chain: ChainModel) {
+        logger.debug("Chain: \(chain.name)")
+
         selectedChain = chain
         updateChainView()
         updateListView()
     }
 
     func didReceiveAccountBalance(_ balance: AssetBalance?) {
+        logger.debug("Balance: \(String(describing: balance?.transferable))")
+
         accountBalance = balance
         updateChainView()
     }
@@ -205,7 +215,7 @@ extension CrowdloanListPresenter: ChainAssetSelectionDelegate {
 
         selectedChain = chainAsset.chain
         accountBalance = nil
-        contributions = nil
+        contributions = []
         displayInfo = nil
         blockNumber = nil
         blockDuration = nil

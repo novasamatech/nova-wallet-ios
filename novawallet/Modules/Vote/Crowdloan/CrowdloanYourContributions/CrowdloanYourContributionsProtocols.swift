@@ -1,5 +1,6 @@
 import Foundation_iOS
 import Foundation
+import Operation_iOS
 
 protocol CrowdloanContributionsViewProtocol: ControllerBackedProtocol {
     func reload(model: CrowdloanYourContributionsViewModel)
@@ -28,7 +29,7 @@ protocol CrowdloanContributionsInteractorInputProtocol: AnyObject {
 }
 
 protocol CrowdloanContributionsInteractorOutputProtocol: AnyObject {
-    func didReceiveContributions(_ contributions: [CrowdloanContribution])
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>])
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveBlockDuration(_ blockDuration: BlockTime)
     func didReceivePrice(_ priceData: PriceData?)

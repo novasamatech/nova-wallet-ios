@@ -5,6 +5,7 @@ import Keystore_iOS
 final class CrowdloanSharedState {
     let settings: CrowdloanChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let crowdloanSubscriptionFactory: CrowdloanLocalSubscriptionMaking
     let chainRegistry: ChainRegistryProtocol
 
     private var blockTimeService: BlockTimeEstimationServiceProtocol?
@@ -23,10 +24,19 @@ final class CrowdloanSharedState {
             settings: internalSettings
         )
 
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
         generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationManager: operationManager,
+            logger: logger
+        )
+
+        crowdloanSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: operationManager,
             logger: logger
         )
     }

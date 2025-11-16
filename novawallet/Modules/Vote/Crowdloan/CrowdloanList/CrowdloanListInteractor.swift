@@ -20,10 +20,15 @@ final class CrowdloanListInteractor: RuntimeConstantFetching, AnyProviderAutoCle
         crowdloanState.generalLocalSubscriptionFactory
     }
 
+    var crowdloanSubscriptionFactory: CrowdloanLocalSubscriptionMaking {
+        crowdloanState.crowdloanSubscriptionFactory
+    }
+
     private var blockNumberSubscriptionId: UUID?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
+    private var crowdloanProvider: StreamableProvider<CrowdloanContribution>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     private var blockTimeCancellable = CancellableCallStore()
@@ -135,13 +140,28 @@ extension CrowdloanListInteractor {
         )
     }
 
+    func subscribeToCrowdloanContributions(for accountId: AccountId, chain: ChainModel) {
+        clear(streamableProvider: &crowdloanProvider)
+
+        guard let chainAssetId = chain.utilityChainAssetId() else {
+            return
+        }
+
+        crowdloanProvider = subscribeCrowdloansProvider(
+            for: accountId,
+            chainAssetId: chainAssetId
+        )
+    }
+
     func setup(with accountId: AccountId?, chain: ChainModel) {
         presenter?.didReceiveSelectedChain(chain)
 
         if let accountId {
             subscribeToAccountBalance(for: accountId, chain: chain)
+            subscribeToCrowdloanContributions(for: accountId, chain: chain)
         } else {
             presenter?.didReceiveAccountBalance(nil)
+            presenter?.didReceiveContributions([])
         }
 
         subscribePrice()
@@ -173,7 +193,8 @@ extension CrowdloanListInteractor {
 
     func becomeOnline(with chain: ChainModel) {
         if blockNumberProvider == nil {
-            blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+            let timelineChain = chain.timelineChain ?? chain.chainId
+            blockNumberProvider = subscribeToBlockNumber(for: timelineChain)
         }
 
         provideBlockTime()

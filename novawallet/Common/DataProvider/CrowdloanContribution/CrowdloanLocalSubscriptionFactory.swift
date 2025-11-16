@@ -1,24 +1,24 @@
 import Foundation
 import Operation_iOS
 
-protocol CrowdloanContributionSubscriptionMaking {
+protocol CrowdloanLocalSubscriptionMaking {
     func getContributionProvider(
         for accountId: AccountId,
-        chainAsset: ChainAsset
-    ) -> StreamableProvider<CrowdloanContribution>
+        chainAssetId: ChainAssetId
+    ) -> StreamableProvider<CrowdloanContribution>?
 }
 
-final class CrowdloanContributionSubscription: SubstrateLocalSubscriptionFactory {}
+final class CrowdloanLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory {}
 
-extension CrowdloanContributionSubscription: CrowdloanContributionSubscriptionMaking {
+extension CrowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionMaking {
     func getContributionProvider(
         for accountId: AccountId,
-        chainAsset: ChainAsset
-    ) -> StreamableProvider<CrowdloanContribution> {
+        chainAssetId: ChainAssetId
+    ) -> StreamableProvider<CrowdloanContribution>? {
         let cacheKey = [
             "crowdloan",
             accountId.toHex(),
-            chainAsset.chainAssetId.stringValue
+            chainAssetId.stringValue
         ].joined(with: .dash)
 
         if let provider = getProvider(for: cacheKey) as? StreamableProvider<CrowdloanContribution> {
@@ -26,7 +26,7 @@ extension CrowdloanContributionSubscription: CrowdloanContributionSubscriptionMa
         }
 
         let filter = NSPredicate.crowdloanContribution(
-            for: chainAsset.chain.chainId,
+            for: chainAssetId.chainId,
             accountId: accountId
         )
 
@@ -42,8 +42,8 @@ extension CrowdloanContributionSubscription: CrowdloanContributionSubscriptionMa
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 accountId.toHex() == entity.chainAccountId &&
-                    chainAsset.chain.chainId == entity.chainId &&
-                    chainAsset.asset.assetId == entity.assetId &&
+                    chainAssetId.chainId == entity.chainId &&
+                    chainAssetId.assetId == entity.assetId &&
                     entity.type == ExternalAssetBalance.BalanceType.crowdloan.rawValue
             }
         )

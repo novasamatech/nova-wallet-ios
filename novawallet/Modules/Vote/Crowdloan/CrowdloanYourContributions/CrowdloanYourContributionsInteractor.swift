@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 
-final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
+final class CrowdloanYourContributionsInteractor: AnyProviderAutoCleaning, RuntimeConstantFetching {
     weak var presenter: CrowdloanContributionsInteractorOutputProtocol?
 
     let chain: ChainModel
@@ -14,9 +14,14 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         crowdloanState.generalLocalSubscriptionFactory
     }
 
+    var crowdloanSubscriptionFactory: CrowdloanLocalSubscriptionMaking {
+        crowdloanState.crowdloanSubscriptionFactory
+    }
+
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var priceProvider: StreamableProvider<PriceData>?
     private let blockTimeCancellable = CancellableCallStore()
+    private var crowdloanProvider: StreamableProvider<CrowdloanContribution>?
 
     init(
         chain: ChainModel,
@@ -37,7 +42,21 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
 
 private extension CrowdloanYourContributionsInteractor {
     func subscribeBlockNumber() {
-        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+        let timelineChain = chain.timelineChain ?? chain.chainId
+        blockNumberProvider = subscribeToBlockNumber(for: timelineChain)
+    }
+
+    func subscribeToCrowdloanContributions() {
+        clear(streamableProvider: &crowdloanProvider)
+
+        guard
+            let account = selectedMetaAccount.fetch(for: chain.accountRequest()),
+            let chainAssetId = chain.utilityChainAssetId() else {
+            presenter?.didReceiveContributions([])
+            return
+        }
+
+        crowdloanProvider = subscribeCrowdloansProvider(for: account.accountId, chainAssetId: chainAssetId)
     }
 
     func subscribePrice() {
@@ -87,8 +106,30 @@ extension CrowdloanYourContributionsInteractor: GeneralLocalStorageSubscriber, G
     }
 }
 
+extension CrowdloanYourContributionsInteractor: CrowdloanLocalStorageSubscriber, CrowdloanLocalStorageHandler {
+    func handleCrowdloans(
+        result: Result<[DataProviderChange<CrowdloanContribution>], Error>,
+        accountId _: AccountId,
+        chainAssetId: ChainAssetId
+    ) {
+        guard
+            let chain = crowdloanState.settings.value,
+            chain.utilityChainAssetId() == chainAssetId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            presenter?.didReceiveContributions(changes)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+}
+
 extension CrowdloanYourContributionsInteractor: CrowdloanContributionsInteractorInputProtocol {
     func setup() {
+        subscribeToCrowdloanContributions()
         subscribeBlockNumber()
         subscribePrice()
         provideBlockTime()

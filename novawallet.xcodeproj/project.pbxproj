@@ -106,7 +106,9 @@
 		0C03879C2D0F64F9000A2F24 /* HydraSwapParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
 		0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */; };
-		0C06C4F12ECA72C200E06744 /* CrowdloanContributionLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C4F02ECA72C200E06744 /* CrowdloanContributionLocalSubscriptionFactory.swift */; };
+		0C06C4F12ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */; };
+		0C06C50A2ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */; };
+		0C06C50C2ECA76ED00E06744 /* CrowdloanLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C50B2ECA76ED00E06744 /* CrowdloanLocalStorageHandler.swift */; };
 		0C0897682DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */; };
 		0C08976D2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */; };
 		0C08977F2DE124F000F06A0E /* WalletMigrationQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */; };
@@ -6686,7 +6688,9 @@
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGenericSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
-		0C06C4F02ECA72C200E06744 /* CrowdloanContributionLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		0C06C50B2ECA76ED00E06744 /* CrowdloanLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalStorageHandler.swift; sourceTree = "<group>"; };
 		0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToDeepLinkConversionFactory.swift; sourceTree = "<group>"; };
 		0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToInternalConvertionTests.swift; sourceTree = "<group>"; };
 		0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletMigrationQueryFactory.swift; sourceTree = "<group>"; };
@@ -13262,7 +13266,9 @@
 		0C06C4EF2ECA729A00E06744 /* CrowdloanContribution */ = {
 			isa = PBXGroup;
 			children = (
-				0C06C4F02ECA72C200E06744 /* CrowdloanContributionLocalSubscriptionFactory.swift */,
+				0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */,
+				0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */,
+				0C06C50B2ECA76ED00E06744 /* CrowdloanLocalStorageHandler.swift */,
 			);
 			path = CrowdloanContribution;
 			sourceTree = "<group>";
@@ -30978,7 +30984,7 @@
 				8428766724ADF22000D91AD8 /* TransformAnimator+Common.swift in Sources */,
 				8419F054295ED55000A14E05 /* LocalChainExternalApi.swift in Sources */,
 				2D5D0CDE2D53D405000E32F6 /* RemoteImageProvider.swift in Sources */,
-				0C06C4F12ECA72C200E06744 /* CrowdloanContributionLocalSubscriptionFactory.swift in Sources */,
+				0C06C4F12ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift in Sources */,
 				8476D39F27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift in Sources */,
 				0CE9338E2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift in Sources */,
 				77F9FB0D2A9D9C5600820625 /* NominationPoolBondMoreBaseProtocols.swift in Sources */,
@@ -31587,6 +31593,7 @@
 				845D8ED32977CBD000F22133 /* SubqueryDelegatorStatsOperationFactory.swift in Sources */,
 				2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */,
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
+				0C06C50C2ECA76ED00E06744 /* CrowdloanLocalStorageHandler.swift in Sources */,
 				88421057289BBA8D00306F2C /* CurrencyProtocols.swift in Sources */,
 				842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */,
 				845AADA32902D1EB00B5AE96 /* StackTitleValueDiffCell.swift in Sources */,
@@ -32506,6 +32513,7 @@
 				840874DA2978291900ACFA55 /* GovernanceDelegateLocal.swift in Sources */,
 				840874DC29782C2B00ACFA55 /* GovernanceDelegateListOperationFactory.swift in Sources */,
 				8468B87424F63D4B00B76BC6 /* AddAccount+AccountConfirmWireframe.swift in Sources */,
+				0C06C50A2ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift in Sources */,
 				84DB4E6C25EA740600A6DF41 /* ConstantCodingPath.swift in Sources */,
 				844138EC2830106C00AFEF6D /* CollatorStkNetworkInfoViewModelFactory.swift in Sources */,
 				842A738C27DE576C006EE1EA /* NovaTintImageProcessor.swift in Sources */,

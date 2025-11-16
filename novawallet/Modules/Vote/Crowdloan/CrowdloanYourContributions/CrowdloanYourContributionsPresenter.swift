@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 final class CrowdloanYourContributionsPresenter {
     weak var view: CrowdloanContributionsViewProtocol?
@@ -134,8 +135,8 @@ extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterPr
 }
 
 extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorOutputProtocol {
-    func didReceiveContributions(_ contributions: [CrowdloanContribution]) {
-        input = input.replacing(newContributions: contributions)
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>]) {
+        input = input.applyingChanges(changes)
 
         updateCrowdloans()
         updateReturnInTimeIntervals()

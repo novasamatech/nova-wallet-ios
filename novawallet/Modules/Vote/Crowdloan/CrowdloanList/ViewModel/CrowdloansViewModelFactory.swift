@@ -58,7 +58,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         locale: Locale
     ) -> CrowdloansViewModel {
         let active = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanActiveSection()
-        let crowdloansSections: [CrowdloansSection] = [.active(.loaded(value: active), [])]
+        let crowdloansSections: [CrowdloansSection] = [.empty(title: active)]
 
         let allContributionsCount = viewInfo.contributions.count
         let totalAmount = viewInfo.contributions.totalAmountLocked()

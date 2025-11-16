@@ -79,6 +79,27 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
     }
 }
 
+extension CrowdloanListInteractor: CrowdloanLocalStorageSubscriber, CrowdloanLocalStorageHandler {
+    func handleCrowdloans(
+        result: Result<[DataProviderChange<CrowdloanContribution>], Error>,
+        accountId _: AccountId,
+        chainAssetId: ChainAssetId
+    ) {
+        guard
+            let chain = crowdloanState.settings.value,
+            chain.utilityChainAssetId() == chainAssetId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            presenter?.didReceiveContributions(changes)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+}
+
 extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
@@ -93,14 +114,8 @@ extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
 extension CrowdloanListInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(
         result: Result<BlockNumber?, Error>,
-        chainId: ChainModel.Id
+        chainId _: ChainModel.Id
     ) {
-        guard
-            let chain = crowdloanState.settings.value,
-            chain.chainId == chainId else {
-            return
-        }
-
         switch result {
         case let .success(blockNumber):
             presenter?.didReceiveBlockNumber(blockNumber)

@@ -8,8 +8,11 @@ struct CrowdloanYourContributionsViewInput {
     let displayInfo: CrowdloanDisplayInfoDict?
     let chainAsset: ChainAssetDisplayInfo
 
-    func replacing(newContributions: [CrowdloanContribution]) -> Self {
-        .init(
+    func applyingChanges(_ changes: [DataProviderChange<CrowdloanContribution>]) -> Self {
+        let dict = contributions.reduceToDict()
+        let newContributions = Array(changes.mergeToDict(dict).values).sortedByUnlockTime()
+
+        return .init(
             contributions: newContributions,
             displayInfo: displayInfo,
             chainAsset: chainAsset
@@ -27,8 +30,6 @@ enum CrowdloanYourContributionsViewFactory {
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared
         else { return nil }
-
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let interactor = CrowdloanYourContributionsInteractor(
             chain: chain,
