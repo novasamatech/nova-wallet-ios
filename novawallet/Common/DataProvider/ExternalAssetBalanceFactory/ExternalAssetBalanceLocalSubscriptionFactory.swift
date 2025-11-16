@@ -65,7 +65,6 @@ enum ExternalBalanceLocalSubscriptionFacade {
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
             ),
-            paraIdOperationFactory: ParaIdOperationFactory.shared,
             operationQueue: operationQueue,
             logger: logger
         )

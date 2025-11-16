@@ -5,7 +5,6 @@ final class CrowdloanExternalServiceFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationFactory: AhOpsOperationFactoryProtocol
-    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -13,14 +12,12 @@ final class CrowdloanExternalServiceFactory {
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationFactory: AhOpsOperationFactoryProtocol,
-        paraIdOperationFactory: ParaIdOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
         self.operationFactory = operationFactory
-        self.paraIdOperationFactory = paraIdOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }

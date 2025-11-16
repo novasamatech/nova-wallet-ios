@@ -2,29 +2,25 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
+typealias CrowdloanContributionChange = BatchGenericSubscriptionChange<AhOpsPallet.Contribution>
+
 final class CrowdloanOnChainSyncService: BaseSyncService {
-    typealias ContributionChange = BatchGenericSubscriptionChange<AhOpsPallet.Contribution>
-
-    struct AggregateContributionKey: Hashable {
-        let accountId: AccountId
-        let paraId: ParaId
-    }
-
     private let operationFactory: AhOpsOperationFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let accountId: AccountId
     private let chainId: ChainModel.Id
-    private let repository: AnyDataProviderRepository<CrowdloanContributionData>
+    private let repository: AnyDataProviderRepository<CrowdloanContribution>
     private let operationQueue: OperationQueue
     private let syncQueue: DispatchQueue
 
     private let crowdloanCancellable = CancellableCallStore()
-    var subscription: CallbackBatchStorageSubscription<ContributionChange>?
+    private var state: [String: CrowdloanContribution] = [:]
+    var subscription: CallbackBatchStorageSubscription<CrowdloanContributionChange>?
 
     init(
         operationFactory: AhOpsOperationFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        repository: AnyDataProviderRepository<CrowdloanContributionData>,
+        repository: AnyDataProviderRepository<CrowdloanContribution>,
         accountId: AccountId,
         chainId: ChainModel.Id,
         operationQueue: OperationQueue,
@@ -124,6 +120,10 @@ private extension CrowdloanOnChainSyncService {
             )
         }
 
+        let depositors = crowdloanKeys.reduce(into: [ParaId: AccountId]()) {
+            $0[$1.paraId] = $1.contributor
+        }
+
         logger.debug("Subscribing contributions: \(chainId)")
 
         subscription = CallbackBatchStorageSubscription(
@@ -146,7 +146,7 @@ private extension CrowdloanOnChainSyncService {
 
             switch result {
             case let .success(change):
-                handle(contributionKeys: contributionKeys, change: change)
+                handle(contributionKeys: contributionKeys, depositors: depositors, change: change)
             case let .failure(error):
                 logger.error("Contributions subscription failed: \(chainId) \(error)")
                 completeImmediate(error)
@@ -158,42 +158,35 @@ private extension CrowdloanOnChainSyncService {
 
     func handle(
         contributionKeys: [AhOpsPallet.ContributionKey],
-        change: ContributionChange
+        depositors: [ParaId: AccountId],
+        change: CrowdloanContributionChange
     ) {
-        // TODO: Apply change to the state here
-
-        let nonNullContributions = change.values.values.compactMap { $0.valueWhenDefined(else: nil) }
-        logger.debug("Contribution changes: \(chainId) \(change.values.count) \(nonNullContributions.count)")
-
-        let contributionDataList = contributionKeys.reduce(
-            into: [AggregateContributionKey: CrowdloanContributionData]()
-        ) { accum, contributionKey in
-            guard let contributionValue = change.values[contributionKey.rawIdentifier]?.valueWhenDefined(
-                else: nil
-            ) else {
+        contributionKeys.forEach { contributionKey in
+            guard
+                let update = change.values[contributionKey.rawIdentifier],
+                case let .defined(optValue) = update,
+                let depositor = depositors[contributionKey.paraId] else {
                 return
             }
 
-            let key = AggregateContributionKey(
-                accountId: contributionKey.contributor,
-                paraId: contributionKey.paraId
-            )
-
-            if let currentData = accum[key] {
-                accum[key] = currentData.addingNewAmount(contributionValue.amount)
-            } else {
-                accum[key] = CrowdloanContributionData(
-                    accountId: accountId,
+            if let newValue = optValue {
+                state[contributionKey.rawIdentifier] = CrowdloanContribution(
+                    accountId: contributionKey.contributor,
                     chainAssetId: ChainAssetId(chainId: chainId, assetId: AssetModel.utilityAssetId),
                     paraId: contributionKey.paraId,
-                    source: nil,
-                    amount: contributionValue.amount
+                    unlocksAt: contributionKey.blockNumber,
+                    amount: newValue.amount,
+                    depositor: depositor
                 )
+            } else {
+                state[contributionKey.rawIdentifier] = nil
             }
-        }.values
+        }
+
+        let allContributions = Array(state.values)
 
         let replaceOperation = repository.replaceOperation {
-            Array(contributionDataList)
+            allContributions
         }
 
         execute(

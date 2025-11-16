@@ -57,9 +57,9 @@ private extension CrowdloanYourContributionsVMFactory {
         if let urlString = displayInfo?.icon, let url = URL(string: urlString) {
             return RemoteImageViewModel(url: url)
         } else {
-            // TODO: Need Depositor accountId
             guard
-                let depositorAddress = try? model.paraId.serialize32().blake2b32().toAddress(using: chainAsset.chain),
+                let depositor = model.depositor,
+                let depositorAddress = try? depositor.toAddress(using: chainAsset.chain),
                 let icon = try? iconGenerator.generateFromAddress(depositorAddress).imageWithFillColor(
                     R.color.colorIconPrimary()!,
                     size: UIConstants.normalAddressIconSize,
