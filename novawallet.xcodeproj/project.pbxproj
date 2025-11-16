@@ -1650,6 +1650,7 @@
 		2D0C96FD2EC9F2C20034F9F8 /* GiftsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C96FC2EC9F2C20034F9F8 /* GiftsLocalSubscriptionFactory.swift */; };
 		2D0C97342ECA48710034F9F8 /* GiftsOnboardingVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C97332ECA48710034F9F8 /* GiftsOnboardingVIew.swift */; };
 		2D0C975A2ECA49A30034F9F8 /* GiftsOnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C97592ECA49A30034F9F8 /* GiftsOnboardingViewModel.swift */; };
+		2D0C976A2ECA4DFB0034F9F8 /* GiftsSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C97692ECA4DFB0034F9F8 /* GiftsSyncService.swift */; };
 		2D1006122EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006112EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift */; };
 		2D1006212EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */; };
 		2D1006262EC0B6780017F48D /* GiftClaimViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */; };
@@ -8319,6 +8320,7 @@
 		2D0C97032ECA07960034F9F8 /* MultiassetUserDataModel20.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel20.xcdatamodel; sourceTree = "<group>"; };
 		2D0C97332ECA48710034F9F8 /* GiftsOnboardingVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsOnboardingVIew.swift; sourceTree = "<group>"; };
 		2D0C97592ECA49A30034F9F8 /* GiftsOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsOnboardingViewModel.swift; sourceTree = "<group>"; };
+		2D0C97692ECA4DFB0034F9F8 /* GiftsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsSyncService.swift; sourceTree = "<group>"; };
 		2D1006112EC093C50017F48D /* SubstrateGiftDescriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateGiftDescriptionFactory.swift; sourceTree = "<group>"; };
 		2D1006202EC0AF200017F48D /* GiftClaimWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimWalletOperationFactory.swift; sourceTree = "<group>"; };
 		2D1006252EC0B6780017F48D /* GiftClaimViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimViewModelFactory.swift; sourceTree = "<group>"; };
@@ -20784,6 +20786,7 @@
 				F1440B4954EF8D2DC0CE9100 /* GiftListPresenter.swift */,
 				1C1665DBA1D276C64A234EF5 /* GiftListInteractor.swift */,
 				489330E6B0521F038EF396DD /* GiftListViewController.swift */,
+				2D0C97692ECA4DFB0034F9F8 /* GiftsSyncService.swift */,
 			);
 			path = GiftList;
 			sourceTree = "<group>";
@@ -34269,6 +34272,7 @@
 				84FBDBDD28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift in Sources */,
 				0CA5BDF12C438A45000A4CDD /* TransactionSubscriptionFactory.swift in Sources */,
 				F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */,
+				2D0C976A2ECA4DFB0034F9F8 /* GiftsSyncService.swift in Sources */,
 				0C6108492CD889A000909928 /* AssetsExchange.swift in Sources */,
 				84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */,
 				849976C827B2B80700B14A6C /* DAppMetamaskWaitingAuthState.swift in Sources */,
