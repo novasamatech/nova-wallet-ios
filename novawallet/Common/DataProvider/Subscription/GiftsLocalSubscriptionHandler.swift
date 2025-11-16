@@ -3,7 +3,7 @@ import Operation_iOS
 
 protocol GiftsLocalSubscriptionHandler: AnyObject {
     func handleAllGifts(
-        result _: Result<[DataProviderChange<GiftModel>], Error>
+        result: Result<[DataProviderChange<GiftModel>], Error>
     )
 }
 

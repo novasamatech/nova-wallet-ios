@@ -40,15 +40,16 @@ private extension GiftHistoryCheckViewController {
     func setupLocalization() {
         rootView.loadingView.titleLabel.text = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
-        ).localizable.multisigOperationLoadingPlaceholderText()
+        ).localizable.giftLoadingMessage()
     }
 }
 
-// MARK: - MultisigOperationFetchProxyViewProtocol
+// MARK: - GiftHistoryCheckViewProtocol
 
-extension GiftHistoryCheckViewController: MultisigOperationFetchProxyViewProtocol {
-    func didReceive(loading: Bool) {
-        loading ? didStartLoading() : didStopLoading()
+extension GiftHistoryCheckViewController: GiftHistoryCheckViewProtocol {
+    func didReceive(_ loading: Bool) {
+        if loading { didStartLoading() }
+        else { didStopLoading() }
     }
 }
 

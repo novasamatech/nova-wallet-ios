@@ -6,7 +6,7 @@ protocol GiftsLocalSubscriptionFactoryProtocol {
 }
 
 extension GiftsLocalSubscriptionFactoryProtocol {
-    func getAllGiftsProvider(for metaId: MetaAccountModel.Id? = nil) -> StreamableProvider<GiftModel> {
+    func getAllGiftsProvider(for _: MetaAccountModel.Id? = nil) -> StreamableProvider<GiftModel> {
         getAllGiftsProvider(for: nil)
     }
 }
@@ -70,7 +70,7 @@ extension GiftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol {
                 guard let metaId else {
                     return true
                 }
-                
+
                 return entity.metaId == metaId
             }
         )

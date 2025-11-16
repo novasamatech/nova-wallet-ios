@@ -2,12 +2,18 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-struct GiftModel {
+struct GiftModel: Hashable, Equatable {
     let amount: BigUInt
     let chainAssetId: ChainAssetId
     let status: Status
     let giftAccountId: AccountId
     let senderMetaId: MetaAccountModel.Id?
+
+    static func == (lhs: GiftModel, rhs: GiftModel) -> Bool {
+        lhs.giftAccountId == rhs.giftAccountId
+            && lhs.status == rhs.status
+            && lhs.amount == rhs.amount
+    }
 }
 
 extension GiftModel {

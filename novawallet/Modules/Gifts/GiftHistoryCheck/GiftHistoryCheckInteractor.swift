@@ -3,10 +3,48 @@ import Operation_iOS
 
 final class GiftHistoryCheckInteractor {
     weak var presenter: GiftHistoryCheckInteractorOutputProtocol?
-    
-    let giftsSubscriptionFactory:
-    
-    private var giftsProvider: StreamableProvider<GiftModel>?
+
+    private let repository: AnyDataProviderRepository<GiftModel>
+    private let operationQueue: OperationQueue
+
+    init(
+        repository: AnyDataProviderRepository<GiftModel>,
+        operationQueue: OperationQueue
+    ) {
+        self.repository = repository
+        self.operationQueue = operationQueue
+    }
 }
 
-extension GiftHistoryCheckInteractor: GiftHistoryCheckInteractorInputProtocol {}
+// MARK: - Private
+
+private extension GiftHistoryCheckInteractor {
+    func provideGifts() {
+        let fetchOperation = repository.fetchAllOperation(with: .init())
+
+        execute(
+            operation: fetchOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(gifts):
+                self?.presenter?.didReceive(gifts)
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
+            }
+        }
+    }
+}
+
+// MARK: - GiftHistoryCheckInteractorInputProtocol
+
+extension GiftHistoryCheckInteractor: GiftHistoryCheckInteractorInputProtocol {
+    func setup() {
+        provideGifts()
+    }
+
+    func fetchGifts() {
+        provideGifts()
+    }
+}
