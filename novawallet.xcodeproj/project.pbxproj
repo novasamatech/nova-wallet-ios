@@ -105,6 +105,7 @@
 		0C03879A2D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */; };
 		0C03879C2D0F64F9000A2F24 /* HydraSwapParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
+		0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */; };
 		0C0897682DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */; };
 		0C08976D2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */; };
 		0C08977F2DE124F000F06A0E /* WalletMigrationQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */; };
@@ -6683,6 +6684,7 @@
 		0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParams.swift; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
+		0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGenericSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToDeepLinkConversionFactory.swift; sourceTree = "<group>"; };
 		0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToInternalConvertionTests.swift; sourceTree = "<group>"; };
 		0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletMigrationQueryFactory.swift; sourceTree = "<group>"; };
@@ -22965,6 +22967,7 @@
 				0C0F6D622D38077B00943A7C /* FreezesSubscription.swift */,
 				0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */,
 				0C1CF73E2E54CFE200B1DA66 /* BatchDictSubscriptionHandler.swift */,
+				0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -36396,6 +36399,7 @@
 				2B0B3DE595860BCA13DD745E /* SwipeGovReferendumDetailsViewController.swift in Sources */,
 				E462E4E84BE98F8CC83827A2 /* SwipeGovReferendumDetailsViewLayout.swift in Sources */,
 				0C0F6E512D4891AE00943A7C /* MythosStakingInitState.swift in Sources */,
+				0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */,
 				13C118A723E684D4272845FB /* SwipeGovReferendumDetailsViewFactory.swift in Sources */,
 				00AE6FF475338CEF6C65F3B0 /* SwipeGovVotingConfirmProtocols.swift in Sources */,
 				6919F96BC31D29A3FD1557AE /* SwipeGovVotingConfirmWireframe.swift in Sources */,

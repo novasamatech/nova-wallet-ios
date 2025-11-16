@@ -7,6 +7,16 @@ extension AhOpsPallet {
         let paraId: ParaId
         let contributor: AccountId
 
+        init(
+            blockNumber: BlockNumber,
+            paraId: ParaId,
+            contributor: AccountId
+        ) {
+            self.blockNumber = blockNumber
+            self.paraId = paraId
+            self.contributor = contributor
+        }
+
         init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
             let expectedFieldsCount = 3
             let actualFieldsCount = jsonList.count
@@ -47,4 +57,34 @@ extension AhOpsPallet {
     }
 
     typealias ContributionMapping = [ContributionKey: Contribution]
+    typealias CrowdloanReserveMapping = [ContributionKey: StringCodable<Balance>]
+}
+
+extension AhOpsPallet.ContributionKey: NMapKeyStorageKeyProtocol {
+    func appendSubkey(
+        to encoder: DynamicScaleEncoding,
+        type: String,
+        index: Int
+    ) throws {
+        switch index {
+        case 0:
+            try encoder.append(StringCodable(wrappedValue: blockNumber), ofType: type)
+        case 1:
+            try encoder.append(StringCodable(wrappedValue: paraId), ofType: type)
+        case 2:
+            try encoder.append(BytesCodable(wrappedValue: contributor), ofType: type)
+        default:
+            throw CommonError.dataCorruption
+        }
+    }
+}
+
+extension AhOpsPallet.ContributionKey {
+    var rawIdentifier: String {
+        [
+            String(blockNumber),
+            String(paraId),
+            contributor.toHex()
+        ].joined(with: .dash)
+    }
 }

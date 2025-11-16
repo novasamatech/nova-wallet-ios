@@ -55,11 +55,7 @@ private extension CrowdloanExternalServiceFactory {
 }
 
 extension CrowdloanExternalServiceFactory: ExternalAssetBalanceServiceFactoryProtocol {
-    func createAutomaticSyncServices(for _: ChainAsset, accountId _: AccountId) -> [SyncServiceProtocol] {
-        []
-    }
-
-    func createPollingSyncServices(for chainAsset: ChainAsset, accountId: AccountId) -> [SyncServiceProtocol] {
+    func createAutomaticSyncServices(for chainAsset: ChainAsset, accountId: AccountId) -> [SyncServiceProtocol] {
         guard chainAsset.chain.hasCrowdloans, chainAsset.asset.isUtility else {
             return []
         }
@@ -69,5 +65,9 @@ extension CrowdloanExternalServiceFactory: ExternalAssetBalanceServiceFactoryPro
         let onchainSyncService = createOnChainSyncService(chainId: chainId, accountId: accountId)
 
         return [onchainSyncService]
+    }
+
+    func createPollingSyncServices(for _: ChainAsset, accountId _: AccountId) -> [SyncServiceProtocol] {
+        []
     }
 }

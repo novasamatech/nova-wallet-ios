@@ -4,6 +4,7 @@ import Operation_iOS
 
 protocol AhOpsOperationFactoryProtocol {
     func fetchContributions(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AhOpsPallet.ContributionMapping>
+    func fetchCrowdloans(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AhOpsPallet.CrowdloanReserveMapping>
 }
 
 final class AhOpsOperationFactory {
@@ -29,6 +30,30 @@ extension AhOpsOperationFactory: AhOpsOperationFactoryProtocol {
             let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
             let wrapper: CompoundOperationWrapper<AhOpsPallet.ContributionMapping> = requestFactory.queryByPrefix(
+                engine: connection,
+                request: UnkeyedRemoteStorageRequest(storagePath: storagePath),
+                storagePath: storagePath,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+            )
+
+            wrapper.addDependency(operations: [codingFactoryOperation])
+
+            return wrapper.insertingHead(operations: [codingFactoryOperation])
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func fetchCrowdloans(by chainId: ChainModel.Id) -> CompoundOperationWrapper<AhOpsPallet.CrowdloanReserveMapping> {
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+            let storagePath = AhOpsPallet.rcCrowdloanReservePath
+
+            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+            let wrapper: CompoundOperationWrapper<AhOpsPallet.CrowdloanReserveMapping> = requestFactory.queryByPrefix(
                 engine: connection,
                 request: UnkeyedRemoteStorageRequest(storagePath: storagePath),
                 storagePath: storagePath,

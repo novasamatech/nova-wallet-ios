@@ -3,12 +3,23 @@ import SubstrateSdk
 import Operation_iOS
 
 final class CrowdloanOnChainSyncService: BaseSyncService {
+    typealias ContributionChange = BatchGenericSubscriptionChange<AhOpsPallet.Contribution>
+
+    struct AggregateContributionKey: Hashable {
+        let accountId: AccountId
+        let paraId: ParaId
+    }
+
     private let operationFactory: AhOpsOperationFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let accountId: AccountId
     private let chainId: ChainModel.Id
     private let repository: AnyDataProviderRepository<CrowdloanContributionData>
     private let operationQueue: OperationQueue
+    private let syncQueue: DispatchQueue
+
+    private let crowdloanCancellable = CancellableCallStore()
+    var subscription: CallbackBatchStorageSubscription<ContributionChange>?
 
     init(
         operationFactory: AhOpsOperationFactoryProtocol,
@@ -24,23 +35,10 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         self.repository = repository
         self.accountId = accountId
         self.operationQueue = operationQueue
+        syncQueue = DispatchQueue(label: "io.crowdloan.onchain.sync")
         self.chainId = chainId
 
         super.init(logger: logger)
-    }
-
-    private func createSaveOperation(
-        dependingOn operation: BaseOperation<[DataProviderChange<CrowdloanContributionData>]?>
-    ) -> BaseOperation<Void> {
-        let replaceOperation = repository.replaceOperation {
-            guard let changes = try operation.extractNoCancellableResultData() else {
-                return []
-            }
-            return changes.compactMap(\.item)
-        }
-
-        replaceOperation.addDependency(operation)
-        return replaceOperation
     }
 
     override func performSyncUp() {
@@ -55,7 +53,171 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
             completeImmediate(ChainRegistryError.runtimeMetadaUnavailable)
             return
         }
+
+        crowdloanCancellable.cancel()
+
+        logger.debug("Fetching crowdloans for: \(chainId)")
+
+        let crowdloansWrapper = operationFactory.fetchCrowdloans(by: chainId)
+
+        executeCancellable(
+            wrapper: crowdloansWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: crowdloanCancellable,
+            runningCallbackIn: syncQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            switch result {
+            case let .success(mapping):
+                logger.debug("Crowdloans fetched: \(chainId) \(mapping.count)")
+                subscribeContributions(
+                    for: Set(mapping.keys),
+                    connection: connection,
+                    runtimeService: runtimeService
+                )
+            case let .failure(error):
+                logger.error("Crowdloans fetched failed: \(chainId) \(error)")
+                completeImmediate(error)
+            }
+        }
     }
 
-    override func stopSyncUp() {}
+    override func stopSyncUp() {
+        crowdloanCancellable.cancel()
+        clearContributionSubscription()
+    }
+}
+
+private extension CrowdloanOnChainSyncService {
+    func clearContributionSubscription() {
+        subscription?.unsubscribe()
+        subscription = nil
+    }
+
+    func subscribeContributions(
+        for crowdloanKeys: Set<AhOpsPallet.ContributionKey>,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) {
+        clearContributionSubscription()
+
+        let contributionKeys = crowdloanKeys.map { key in
+            AhOpsPallet.ContributionKey(
+                blockNumber: key.blockNumber,
+                paraId: key.paraId,
+                contributor: accountId
+            )
+        }
+
+        let contributionRequests = contributionKeys.map { contributionKey in
+            BatchStorageSubscriptionRequest(
+                innerRequest: NMapSubscriptionRequest(
+                    storagePath: AhOpsPallet.rcCrowdloanContributionPath,
+                    localKey: "",
+                    keyParams: contributionKey
+                ),
+                mappingKey: contributionKey.rawIdentifier
+            )
+        }
+
+        logger.debug("Subscribing contributions: \(chainId)")
+
+        subscription = CallbackBatchStorageSubscription(
+            requests: contributionRequests,
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: nil,
+            operationQueue: operationQueue,
+            callbackQueue: syncQueue
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            switch result {
+            case let .success(change):
+                handle(contributionKeys: contributionKeys, change: change)
+            case let .failure(error):
+                logger.error("Contributions subscription failed: \(chainId) \(error)")
+                completeImmediate(error)
+            }
+        }
+
+        subscription?.subscribe()
+    }
+
+    func handle(
+        contributionKeys: [AhOpsPallet.ContributionKey],
+        change: ContributionChange
+    ) {
+        // TODO: Apply change to the state here
+
+        let nonNullContributions = change.values.values.compactMap { $0.valueWhenDefined(else: nil) }
+        logger.debug("Contribution changes: \(chainId) \(change.values.count) \(nonNullContributions.count)")
+
+        let contributionDataList = contributionKeys.reduce(
+            into: [AggregateContributionKey: CrowdloanContributionData]()
+        ) { accum, contributionKey in
+            guard let contributionValue = change.values[contributionKey.rawIdentifier]?.valueWhenDefined(
+                else: nil
+            ) else {
+                return
+            }
+
+            let key = AggregateContributionKey(
+                accountId: contributionKey.contributor,
+                paraId: contributionKey.paraId
+            )
+
+            if let currentData = accum[key] {
+                accum[key] = currentData.addingNewAmount(contributionValue.amount)
+            } else {
+                accum[key] = CrowdloanContributionData(
+                    accountId: accountId,
+                    chainAssetId: ChainAssetId(chainId: chainId, assetId: AssetModel.utilityAssetId),
+                    paraId: contributionKey.paraId,
+                    source: nil,
+                    amount: contributionValue.amount
+                )
+            }
+        }.values
+
+        let replaceOperation = repository.replaceOperation {
+            Array(contributionDataList)
+        }
+
+        execute(
+            operation: replaceOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: syncQueue
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            switch result {
+            case .success:
+                logger.debug("Contributions synced: \(chainId)")
+                completeImmediate(nil)
+            case let .failure(error):
+                completeImmediate(error)
+            }
+        }
+    }
 }

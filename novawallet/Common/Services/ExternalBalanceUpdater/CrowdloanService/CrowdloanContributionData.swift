@@ -24,6 +24,16 @@ struct CrowdloanContributionData: Equatable {
         case onChain
         case offChain
     }
+
+    func addingNewAmount(_ newAmount: Balance) -> CrowdloanContributionData {
+        CrowdloanContributionData(
+            accountId: accountId,
+            chainAssetId: chainAssetId,
+            paraId: paraId,
+            source: source,
+            amount: amount + newAmount
+        )
+    }
 }
 
 extension CrowdloanContributionData: Identifiable {

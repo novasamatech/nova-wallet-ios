@@ -55,7 +55,6 @@ enum ExternalBalanceLocalSubscriptionFacade {
         chainRegistry: ChainRegistryProtocol
     ) -> ExternalBalanceLocalSubscriptionFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
         let workingQueue = DispatchQueue.global(qos: .userInitiated)
         let logger = Logger.shared
 
