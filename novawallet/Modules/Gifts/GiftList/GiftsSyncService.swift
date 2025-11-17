@@ -5,7 +5,7 @@ protocol GiftsSyncServiceProtocol {
     func start()
 }
 
-final class GiftsSyncService: AnyProviderAutoCleaning {
+final class GiftsSyncService {
     let chainRegistry: ChainRegistryProtocol
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let assetStorageOperationFactory: AssetStorageInfoOperationFactoryProtocol
@@ -18,8 +18,6 @@ final class GiftsSyncService: AnyProviderAutoCleaning {
     var remoteBalancesSubscriptions: [AccountId: WalletRemoteSubscriptionProtocol] = [:]
 
     var balanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
-
-    var gifts: [GiftModel.Id: GiftModel] = [:]
 
     let mutex = NSLock()
 
@@ -40,6 +38,10 @@ final class GiftsSyncService: AnyProviderAutoCleaning {
         self.workingQueue = workingQueue
         self.logger = logger
     }
+
+    deinit {
+        clearSubscriptions()
+    }
 }
 
 // MARK: - Private
@@ -47,6 +49,12 @@ final class GiftsSyncService: AnyProviderAutoCleaning {
 private extension GiftsSyncService {
     func setup() {
         giftsLocalSubscription = subscribeAllGifts()
+    }
+
+    func clearSubscriptions() {
+        remoteBalancesSubscriptions.values.forEach { $0.unsubscribe() }
+        remoteBalancesSubscriptions = [:]
+        giftsLocalSubscription = nil
     }
 
     func updateSubscriptions(for changes: [DataProviderChange<GiftModel>]) {
@@ -184,7 +192,6 @@ extension GiftsSyncService: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionH
 
         switch result {
         case let .success(changes):
-            gifts = changes.mergeToDict(gifts)
             updateSubscriptions(for: changes)
         case let .failure(error):
             logger.error("Failed on gifts subscription: \(error)")
