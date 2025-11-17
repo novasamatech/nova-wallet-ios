@@ -89,6 +89,22 @@ private extension GiftListViewController {
         rootView.loadingView.titleLabel.text = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
         ).localizable.giftLoadingMessage()
+        rootView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.giftsActionCreateGift()
+    }
+
+    func setupListHandlers() {
+        rootView.actionButton.removeTarget(
+            self,
+            action: #selector(actionCreateGift),
+            for: .touchUpInside
+        )
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionCreateGift),
+            for: .touchUpInside
+        )
     }
 
     func setupOnboardingHandlers() {
@@ -160,7 +176,7 @@ extension GiftListViewController: GiftListViewProtocol {
     func didReceive(listSections: [GiftListSectionModel]) {
         guard !listSections.isEmpty else { return }
 
-        let snapshot = listSections.reduce(nil) {
+        let snapshot = listSections.reduce(dataSource?.snapshot()) {
             dataStore.updating(
                 section: $1.section,
                 rows: $1.rows,
@@ -172,6 +188,8 @@ extension GiftListViewController: GiftListViewProtocol {
 
         rootView.bind(loading: false)
         rootView.bind(contentModel: .list)
+
+        setupListHandlers()
 
         dataSource?.apply(snapshot, animatingDifferences: false)
     }

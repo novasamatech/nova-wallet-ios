@@ -57,7 +57,10 @@ private extension GiftListViewModelFactory {
         using chainAssets: [ChainAssetId: ChainAsset],
         _ locale: Locale
     ) -> GiftListGiftViewModel? {
-        guard let chainAsset = chainAssets[gift.chainAssetId] else { return nil }
+        guard
+            let chainAsset = chainAssets[gift.chainAssetId],
+            let status = GiftListGiftViewModel.Status(from: gift.status)
+        else { return nil }
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
@@ -68,7 +71,7 @@ private extension GiftListViewModelFactory {
 
         let tokenImageViewModel = assetIconViewModelFactory.createAssetIconViewModel(from: assetDisplayInfo)
 
-        let giftImage = switch gift.status {
+        let giftImage = switch status {
         case .pending:
             StaticImageViewModel(image: R.image.imageGiftPacked()!)
         case .claimed, .reclaimed:
@@ -77,7 +80,7 @@ private extension GiftListViewModelFactory {
 
         var subtitle: String?
 
-        switch gift.status {
+        switch status {
         case .pending:
             if let creationDate = gift.creationDate {
                 subtitle = dateFormatter.value(for: locale).string(from: creationDate)
@@ -98,7 +101,7 @@ private extension GiftListViewModelFactory {
             tokenImageViewModel: tokenImageViewModel,
             subtitle: subtitle,
             giftImageViewModel: giftImage,
-            status: gift.status
+            status: status
         )
     }
 }

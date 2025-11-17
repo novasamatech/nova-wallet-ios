@@ -8,6 +8,10 @@ final class GiftListViewLayout: UIView {
         return view
     }()
 
+    let actionButton: TriangularedButton = .create { view in
+        view.applyDefaultStyle()
+    }
+
     lazy var onboardingView = GiftsOnboardingView()
 
     let loadingView = ListLoadingView()
@@ -29,14 +33,28 @@ final class GiftListViewLayout: UIView {
 private extension GiftListViewLayout {
     func setupInitialLayout() {
         layoutTableView()
+        layoutButton()
         layoutLoadingView()
     }
+
+    // MARK: - Table View
 
     func layoutTableView() {
         addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+
+    // MARK: - Button
+
+    func layoutButton() {
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 

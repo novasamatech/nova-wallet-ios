@@ -14,5 +14,22 @@ struct GiftListGiftViewModel: Equatable {
 }
 
 extension GiftListGiftViewModel {
-    typealias Status = GiftModel.Status
+    enum Status {
+        case pending
+        case claimed
+        case reclaimed
+
+        init?(from status: GiftModel.Status) {
+            switch status {
+            case .pending:
+                self = .pending
+            case .claimed:
+                self = .claimed
+            case .reclaimed:
+                self = .reclaimed
+            case .created:
+                return nil
+            }
+        }
+    }
 }

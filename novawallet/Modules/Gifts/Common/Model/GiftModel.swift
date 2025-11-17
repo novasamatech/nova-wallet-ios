@@ -45,5 +45,6 @@ extension GiftModel {
         case pending
         case claimed
         case reclaimed
+        case created
     }
 }

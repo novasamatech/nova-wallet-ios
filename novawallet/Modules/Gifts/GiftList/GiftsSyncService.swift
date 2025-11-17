@@ -17,6 +17,7 @@ final class GiftsSyncService {
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
     var remoteBalancesSubscriptions: [AccountId: WalletRemoteSubscriptionProtocol] = [:]
 
+    var gifts: [GiftModel.Id: GiftModel] = [:]
     var balanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
 
     let mutex = NSLock()
@@ -96,7 +97,7 @@ private extension GiftsSyncService {
                 balanceExistences[chainAsset.chainAssetId] = balanceExistence
 
                 addRemoteBalanceSubscription(
-                    for: gift,
+                    for: gift.giftAccountId,
                     balanceExistence: balanceExistence,
                     chainAsset: chainAsset
                 )
@@ -128,7 +129,7 @@ private extension GiftsSyncService {
     }
 
     func addRemoteBalanceSubscription(
-        for gift: GiftModel,
+        for giftAccountId: AccountId,
         balanceExistence: AssetBalanceExistence,
         chainAsset: ChainAsset
     ) {
@@ -138,18 +139,20 @@ private extension GiftsSyncService {
             logger: logger
         )
 
-        remoteBalancesSubscriptions[gift.giftAccountId] = subscription
+        remoteBalancesSubscriptions[giftAccountId] = subscription
 
         subscription.subscribeBalance(
-            for: gift.giftAccountId,
+            for: giftAccountId,
             chainAsset: chainAsset,
             callbackQueue: workingQueue,
             callbackClosure: { [weak self] result in
                 switch result {
                 case let .success(update):
+                    self?.mutex.lock()
+                    defer { self?.mutex.unlock() }
+                    
                     self?.updateStatus(
-                        for: gift,
-                        chainAssetId: chainAsset.chainAssetId,
+                        for: giftAccountId,
                         balance: update.balance,
                         balanceExistence: balanceExistence
                     )
@@ -161,11 +164,12 @@ private extension GiftsSyncService {
     }
 
     func updateStatus(
-        for gift: GiftModel,
-        chainAssetId _: ChainAssetId,
+        for giftAccountId: AccountId,
         balance: AssetBalance?,
         balanceExistence: AssetBalanceExistence
     ) {
+        guard let gift = gifts[giftAccountId.toHex()] else { return }
+        
         let status: GiftModel.Status = if let balance, balance.transferable > balanceExistence.minBalance {
             .pending
         } else {
@@ -192,6 +196,7 @@ extension GiftsSyncService: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionH
 
         switch result {
         case let .success(changes):
+            gifts = changes.mergeToDict(gifts)
             updateSubscriptions(for: changes)
         case let .failure(error):
             logger.error("Failed on gifts subscription: \(error)")
