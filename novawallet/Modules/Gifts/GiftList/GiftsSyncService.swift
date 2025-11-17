@@ -154,7 +154,7 @@ private extension GiftsSyncService {
                         balanceExistence: balanceExistence
                     )
                 case let .failure(error):
-                    self?.logger.error("Failed local balance subscription: \(error)")
+                    self?.logger.error("Failed remote balance subscription: \(error)")
                 }
             }
         )

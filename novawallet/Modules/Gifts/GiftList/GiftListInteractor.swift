@@ -22,10 +22,6 @@ final class GiftListInteractor {
     }
 }
 
-// MARK: - Private
-
-private extension GiftListInteractor {}
-
 // MARK: - GiftsLocalStorageSubscriber
 
 extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionHandler {
