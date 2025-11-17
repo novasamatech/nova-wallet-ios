@@ -8,7 +8,10 @@ struct GiftListViewFactory {
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     ) -> GiftListViewProtocol? {
-        guard let selectedWallet = SelectedWalletSettings.shared.value else {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared
+        else {
             return nil
         }
 
@@ -34,6 +37,7 @@ struct GiftListViewFactory {
         )
 
         let interactor = GiftListInteractor(
+            chainRegistry: chainRegistry,
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             giftSyncService: giftSyncService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
@@ -47,10 +51,20 @@ struct GiftListViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let giftListViewModelFactory = GiftListViewModelFactory(
+            balanceViewModelFacade: balanceViewModelFacade,
+            assetIconViewModelFactory: AssetIconViewModelFactory()
+        )
+
         let presenter = GiftListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             onboardingViewModelFactory: GiftsOnboardingViewModelFactory(),
+            giftListViewModelFactory: giftListViewModelFactory,
             learnMoreUrl: ApplicationConfig.shared.giftsWikiURL,
             localizationManager: localizationManager
         )

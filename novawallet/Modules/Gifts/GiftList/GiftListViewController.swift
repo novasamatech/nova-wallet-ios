@@ -4,8 +4,19 @@ import Foundation_iOS
 final class GiftListViewController: UIViewController, ViewHolder {
     typealias RootViewType = GiftListViewLayout
 
+    typealias SectionId = String
+    typealias RowId = String
+    typealias DataSource = UITableViewDiffableDataSource<SectionId, RowId>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<SectionId, RowId>
+
     let presenter: GiftListPresenterProtocol
     let localizationManager: LocalizationManagerProtocol
+
+    private var dataSource: DataSource?
+    private var dataStore = DiffableDataStore<
+        GiftListSectionModel.Section,
+        GiftListSectionModel.Row
+    >()
 
     init(
         presenter: GiftListPresenterProtocol,
@@ -36,6 +47,10 @@ final class GiftListViewController: UIViewController, ViewHolder {
 // MARK: - Private
 
 private extension GiftListViewController {
+//    func createDataSource() -> DataSource {
+//
+//    }
+
     func setupLocalization() {
         rootView.loadingView.titleLabel.text = R.string(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -77,9 +92,28 @@ private extension GiftListViewController {
 // MARK: - GiftListViewProtocol
 
 extension GiftListViewController: GiftListViewProtocol {
+    func didReceive(listSections: [GiftListSectionModel]) {
+        guard !listSections.isEmpty else { return }
+
+        let snapshot = listSections.reduce(nil) {
+            dataStore.updating(
+                section: $1.section,
+                rows: $1.rows,
+                in: $0
+            )
+        }
+
+        guard let snapshot else { return }
+
+        rootView.bind(loading: false)
+        rootView.bind(contentModel: .list)
+
+        dataSource?.apply(snapshot, animatingDifferences: false)
+    }
+
     func didReceive(viewModel: GiftsOnboardingViewModel) {
         rootView.bind(loading: false)
-        rootView.bind(viewModel: viewModel)
+        rootView.bind(contentModel: .onboarding(viewModel))
 
         setupOnboardingHandlers()
     }

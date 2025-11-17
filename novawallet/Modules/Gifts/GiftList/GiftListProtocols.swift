@@ -2,6 +2,7 @@ import Operation_iOS
 
 protocol GiftListViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: GiftsOnboardingViewModel)
+    func didReceive(listSections: [GiftListSectionModel])
     func didReceive(loading: Bool)
 }
 
@@ -16,7 +17,10 @@ protocol GiftListInteractorInputProtocol: AnyObject {
 }
 
 protocol GiftListInteractorOutputProtocol: AnyObject {
-    func didReceive(_ changes: [DataProviderChange<GiftModel>])
+    func didReceive(
+        _ changes: [DataProviderChange<GiftModel>],
+        _ chainAssets: [ChainAssetId: ChainAsset]
+    )
     func didReceive(_ error: Error)
 }
 

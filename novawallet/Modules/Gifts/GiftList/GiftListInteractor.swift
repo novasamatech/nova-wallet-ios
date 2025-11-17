@@ -4,21 +4,38 @@ import Operation_iOS
 final class GiftListInteractor {
     weak var presenter: GiftListInteractorOutputProtocol?
 
+    let chainRegistry: ChainRegistryProtocol
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
 
     let giftSyncService: GiftsSyncServiceProtocol
     let operationQueue: OperationQueue
 
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
+    var chainAssets: [ChainAssetId: ChainAsset] = [:]
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftSyncService: GiftsSyncServiceProtocol,
         operationQueue: OperationQueue
     ) {
+        self.chainRegistry = chainRegistry
         self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
         self.giftSyncService = giftSyncService
         self.operationQueue = operationQueue
+    }
+}
+
+// MARK: - Private
+
+private extension GiftListInteractor {
+    func setupChainAssets() {
+        chainAssets = chainRegistry.availableChainIds?
+            .reduce(into: [:]) { acc, chainId in
+                chainRegistry.getChain(for: chainId)?.chainAssets().forEach {
+                    acc[$0.chainAssetId] = $0
+                }
+            } ?? [:]
     }
 }
 
@@ -28,7 +45,7 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
     func handleAllGifts(result: Result<[DataProviderChange<GiftModel>], any Error>) {
         switch result {
         case let .success(changes):
-            presenter?.didReceive(changes)
+            presenter?.didReceive(changes, chainAssets)
         case let .failure(error):
             presenter?.didReceive(error)
         }
@@ -39,6 +56,7 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
 
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
+        setupChainAssets()
         giftsLocalSubscription = subscribeAllGifts()
         giftSyncService.start()
     }

@@ -9,21 +9,25 @@ final class GiftListPresenter {
     let localizationManager: LocalizationManagerProtocol
 
     let onboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtocol
+    let giftListViewModelFactory: GiftListViewModelFactoryProtocol
 
     let learnMoreUrl: URL
 
     var gifts: [GiftModel.Id: GiftModel] = [:]
+    var chainAssets: [ChainAssetId: ChainAsset] = [:]
 
     init(
         interactor: GiftListInteractorInputProtocol,
         wireframe: GiftListWireframeProtocol,
         onboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtocol,
+        giftListViewModelFactory: GiftListViewModelFactoryProtocol,
         learnMoreUrl: URL,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.onboardingViewModelFactory = onboardingViewModelFactory
+        self.giftListViewModelFactory = giftListViewModelFactory
         self.learnMoreUrl = learnMoreUrl
         self.localizationManager = localizationManager
     }
@@ -38,6 +42,16 @@ private extension GiftListPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func provideGiftList() {
+        let sections = giftListViewModelFactory.createViewModel(
+            for: Array(gifts.values),
+            chainAssets: chainAssets,
+            locale: localizationManager.selectedLocale
+        )
+
+        view?.didReceive(listSections: sections)
     }
 }
 
@@ -67,15 +81,19 @@ extension GiftListPresenter: GiftListPresenterProtocol {
 // MARK: - GiftListInteractorOutputProtocol
 
 extension GiftListPresenter: GiftListInteractorOutputProtocol {
-    func didReceive(_ changes: [DataProviderChange<GiftModel>]) {
+    func didReceive(
+        _ changes: [DataProviderChange<GiftModel>],
+        _ chainAssets: [ChainAssetId: ChainAsset]
+    ) {
         gifts = changes.mergeToDict(gifts)
+        self.chainAssets = chainAssets
 
         guard !gifts.isEmpty else {
             provideOnboarding()
             return
         }
 
-        print(gifts)
+        provideGiftList()
     }
 
     func didReceive(_: any Error) {

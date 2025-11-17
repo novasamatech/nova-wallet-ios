@@ -56,6 +56,10 @@ private extension GiftListViewLayout {
         layoutOnboarding()
         onboardingView.bind(viewModel: viewModel)
     }
+
+    func removeOnboarding() {
+        onboardingView.removeFromSuperview()
+    }
 }
 
 // MARK: - Internal
@@ -66,7 +70,19 @@ extension GiftListViewLayout {
         else { stopLoading() }
     }
 
-    func bind(viewModel: GiftsOnboardingViewModel) {
-        applyOnboarding(viewModel: viewModel)
+    func bind(contentModel: ContentModel) {
+        switch contentModel {
+        case let .onboarding(viewModel):
+            applyOnboarding(viewModel: viewModel)
+        case .list:
+            removeOnboarding()
+        }
+    }
+}
+
+extension GiftListViewLayout {
+    enum ContentModel {
+        case onboarding(GiftsOnboardingViewModel)
+        case list
     }
 }

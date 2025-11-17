@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class GiftsOnboardingHeaderView: GenericPairValueView<MultiValueView, LinkView> {
+final class GiftsListHeaderView: GenericPairValueView<MultiValueView, LinkView> {
     private var titleLabel: UILabel {
         fView.valueTop
     }
@@ -35,7 +35,7 @@ final class GiftsOnboardingHeaderView: GenericPairValueView<MultiValueView, Link
 
 // MARK: - Private
 
-private extension GiftsOnboardingHeaderView {
+private extension GiftsListHeaderView {
     func setupLayout() {
         makeVertical()
 
@@ -68,7 +68,7 @@ private extension GiftsOnboardingHeaderView {
 
 // MARK: - Constants
 
-private extension GiftsOnboardingHeaderView {
+private extension GiftsListHeaderView {
     enum Constants {
         static let titleSubtitleSpacing: CGFloat = 8
         static let headerLearnMoreSpacing: CGFloat = 4

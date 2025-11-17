@@ -1981,6 +1981,9 @@
 		2D81FAEB2CC65CF800BA0E46 /* TokensManageSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAEA2CC65CF800BA0E46 /* TokensManageSearchView.swift */; };
 		2D81FAED2CC8F33B00BA0E46 /* BadgedManageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAEC2CC8F33B00BA0E46 /* BadgedManageButton.swift */; };
 		2D8463662C488416007E2986 /* ChainFilterStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */; };
+		2D8541942ECB052E000D8133 /* GiftListGiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541932ECB052E000D8133 /* GiftListGiftViewModel.swift */; };
+		2D8541A12ECB0B80000D8133 /* GiftListSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541A02ECB0B80000D8133 /* GiftListSectionModel.swift */; };
+		2D8541A62ECB14C3000D8133 /* GiftListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541A52ECB14C3000D8133 /* GiftListViewModelFactory.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
@@ -8647,6 +8650,9 @@
 		2D81FAEA2CC65CF800BA0E46 /* TokensManageSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageSearchView.swift; sourceTree = "<group>"; };
 		2D81FAEC2CC8F33B00BA0E46 /* BadgedManageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgedManageButton.swift; sourceTree = "<group>"; };
 		2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategyTests.swift; sourceTree = "<group>"; };
+		2D8541932ECB052E000D8133 /* GiftListGiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListGiftViewModel.swift; sourceTree = "<group>"; };
+		2D8541A02ECB0B80000D8133 /* GiftListSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListSectionModel.swift; sourceTree = "<group>"; };
+		2D8541A52ECB14C3000D8133 /* GiftListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
@@ -16839,6 +16845,7 @@
 			children = (
 				2DE37C452EA0FC10007C43A0 /* GiftsOnboardingViewModelFactory.swift */,
 				3ED77AC24ED30C7FBEFCFED9 /* GiftListViewFactory.swift */,
+				2D8541A52ECB14C3000D8133 /* GiftListViewModelFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -16856,6 +16863,8 @@
 			isa = PBXGroup;
 			children = (
 				2D0C97592ECA49A30034F9F8 /* GiftsOnboardingViewModel.swift */,
+				2D8541932ECB052E000D8133 /* GiftListGiftViewModel.swift */,
+				2D8541A02ECB0B80000D8133 /* GiftListSectionModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -33687,6 +33696,7 @@
 				8407716228CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift in Sources */,
 				0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */,
 				88DC3E25292CAA9300DBCE4D /* IconDetailsView+Style.swift in Sources */,
+				2D8541A12ECB0B80000D8133 /* GiftListSectionModel.swift in Sources */,
 				88D1F1B4298127F600316A1A /* InAppUpdatesInteractorError.swift in Sources */,
 				846C372E26B199D10098F303 /* BabeStakingDurationFactory.swift in Sources */,
 				9B4F0484B81BBF8DFA618599 /* AccountCreateViewFactory.swift in Sources */,
@@ -35081,6 +35091,7 @@
 				84ADA60E29B9E12700EB687E /* MultiExtrinsicSubmitRetryInputProtocol.swift in Sources */,
 				848CCB4E2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift in Sources */,
 				0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */,
+				2D8541942ECB052E000D8133 /* GiftListGiftViewModel.swift in Sources */,
 				2DAF539E2C1B2AA00076B4B6 /* NodePingOperationFactory.swift in Sources */,
 				2DFF39E42E18225700529984 /* MultisigCallDataImportViewFactory.swift in Sources */,
 				842806F52847A82500702F3A /* StackAccountSelectionCell.swift in Sources */,
@@ -36296,6 +36307,7 @@
 				60B66AA63089FC2A3A701CF2 /* GovernanceSelectTracksViewFactory.swift in Sources */,
 				0C1CF70D2E518F1E00B1DA66 /* ChainPollingStateStore.swift in Sources */,
 				1F45D221E855D5340572C243 /* GovernanceUnavailableTracksProtocols.swift in Sources */,
+				2D8541A62ECB14C3000D8133 /* GiftListViewModelFactory.swift in Sources */,
 				0C2285DA2E22AE070093FD44 /* MultisigDepositOperationFactory.swift in Sources */,
 				3EAB85420EDDDE7D5B03A1CF /* GovernanceUnavailableTracksWireframe.swift in Sources */,
 				2D4431E72D03015F00017951 /* DAppFavoriteItemTableViewCell.swift in Sources */,

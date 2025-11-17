@@ -2,7 +2,7 @@ import UIKit
 import UIKit_iOS
 
 final class GiftsOnboardingView: SCSingleActionLayoutView {
-    let headerView = GiftsOnboardingHeaderView()
+    let headerView = GiftsListHeaderView()
 
     let imageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
