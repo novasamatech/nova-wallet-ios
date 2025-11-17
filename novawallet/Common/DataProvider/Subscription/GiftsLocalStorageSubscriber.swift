@@ -10,6 +10,12 @@ protocol GiftsLocalStorageSubscriber: AnyObject {
 }
 
 extension GiftsLocalStorageSubscriber {
+    func subscribeAllGifts() -> StreamableProvider<GiftModel> {
+        subscribeAllGifts(for: nil)
+    }
+}
+
+extension GiftsLocalStorageSubscriber {
     func subscribeAllGifts(for metaId: MetaAccountModel.Id?) -> StreamableProvider<GiftModel> {
         let provider = giftsLocalSubscriptionFactory.getAllGiftsProvider(for: metaId)
 

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 final class GiftListPresenter {
     weak var view: GiftListViewProtocol?
@@ -10,6 +11,8 @@ final class GiftListPresenter {
     let onboardingViewModelFactory: GiftsOnboardingViewModelFactoryProtocol
 
     let learnMoreUrl: URL
+
+    var gifts: [GiftModel.Id: GiftModel] = [:]
 
     init(
         interactor: GiftListInteractorInputProtocol,
@@ -64,7 +67,9 @@ extension GiftListPresenter: GiftListPresenterProtocol {
 // MARK: - GiftListInteractorOutputProtocol
 
 extension GiftListPresenter: GiftListInteractorOutputProtocol {
-    func didReceive(_ gifts: [GiftModel]) {
+    func didReceive(_ changes: [DataProviderChange<GiftModel>]) {
+        gifts = changes.mergeToDict(gifts)
+
         guard !gifts.isEmpty else {
             provideOnboarding()
             return

@@ -4,35 +4,37 @@ import Operation_iOS
 final class GiftListInteractor {
     weak var presenter: GiftListInteractorOutputProtocol?
 
-    private let repository: AnyDataProviderRepository<GiftModel>
-    private let operationQueue: OperationQueue
+    let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
+
+    let giftSyncService: GiftsSyncServiceProtocol
+    let operationQueue: OperationQueue
+
+    var giftsLocalSubscription: StreamableProvider<GiftModel>?
 
     init(
-        repository: AnyDataProviderRepository<GiftModel>,
+        giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
+        giftSyncService: GiftsSyncServiceProtocol,
         operationQueue: OperationQueue
     ) {
-        self.repository = repository
+        self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
+        self.giftSyncService = giftSyncService
         self.operationQueue = operationQueue
     }
 }
 
 // MARK: - Private
 
-private extension GiftListInteractor {
-    func provideGifts() {
-        let fetchOperation = repository.fetchAllOperation(with: .init())
+private extension GiftListInteractor {}
 
-        execute(
-            operation: fetchOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(gifts):
-                self?.presenter?.didReceive(gifts)
-            case let .failure(error):
-                self?.presenter?.didReceive(error)
-            }
+// MARK: - GiftsLocalStorageSubscriber
+
+extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionHandler {
+    func handleAllGifts(result: Result<[DataProviderChange<GiftModel>], any Error>) {
+        switch result {
+        case let .success(changes):
+            presenter?.didReceive(changes)
+        case let .failure(error):
+            presenter?.didReceive(error)
         }
     }
 }
@@ -41,10 +43,7 @@ private extension GiftListInteractor {
 
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
-        provideGifts()
-    }
-
-    func fetchGifts() {
-        provideGifts()
+        giftsLocalSubscription = subscribeAllGifts()
+        giftSyncService.start()
     }
 }

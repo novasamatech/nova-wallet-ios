@@ -1,3 +1,5 @@
+import Operation_iOS
+
 protocol GiftListViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: GiftsOnboardingViewModel)
     func didReceive(loading: Bool)
@@ -14,7 +16,7 @@ protocol GiftListInteractorInputProtocol: AnyObject {
 }
 
 protocol GiftListInteractorOutputProtocol: AnyObject {
-    func didReceive(_ gifts: [GiftModel])
+    func didReceive(_ changes: [DataProviderChange<GiftModel>])
     func didReceive(_ error: Error)
 }
 

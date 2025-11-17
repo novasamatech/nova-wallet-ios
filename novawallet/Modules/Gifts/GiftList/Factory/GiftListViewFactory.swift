@@ -12,12 +12,30 @@ struct GiftListViewFactory {
             return nil
         }
 
-        let repository = AccountRepositoryFactory(
-            storageFacade: UserDataStorageFacade.shared
+        let logger = Logger.shared
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let storageFacade = UserDataStorageFacade.shared
+
+        let giftRepository = AccountRepositoryFactory(
+            storageFacade: storageFacade
         ).createGiftsRepository(for: selectedWallet.metaId)
 
+        let giftsLocalSubscriptionFactory = GiftsLocalSubscriptionFactory.shared
+
+        let giftSyncService = GiftsSyncService(
+            chainRegistry: chainRegistry,
+            giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
+            assetStorageOperationFactory: AssetStorageInfoOperationFactory(),
+            giftRepository: AnyDataProviderRepository(giftRepository),
+            operationQueue: operationQueue,
+            workingQueue: .main,
+            logger: logger
+        )
+
         let interactor = GiftListInteractor(
-            repository: AnyDataProviderRepository(repository),
+            giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
+            giftSyncService: giftSyncService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
