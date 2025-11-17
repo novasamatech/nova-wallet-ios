@@ -2,39 +2,50 @@ import Foundation
 import UIKit
 import UIKit_iOS
 
-final class GiftListGiftTableViewCell: BlurredTableViewCell<GiftListGiftView> {
+final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftView> {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        view.innerInsets = .init(
+            top: 4.0,
+            left: 12.0,
+            bottom: 4.0,
+            right: 12.0
+        )
+    }
+
     func bind(viewModel: GiftListGiftViewModel) {
         switch viewModel.status {
         case .pending:
-            backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
+            view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
         case .claimed, .reclaimed:
-            backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackgroundOpaque()!
+            view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackgroundOpaque()!
         }
 
-        view.bind(viewModel: viewModel)
+        view.view.bind(viewModel: viewModel)
     }
 }
 
 final class GiftListGiftView: GenericPairValueView<
-    AssetIconView,
     GenericPairValueView<
+        AssetIconView,
         GenericPairValueView<
             IconDetailsView,
             UILabel
-        >,
-        UIImageView
-    >
+        >
+    >,
+    UIImageView
 > {
     var assetIconView: AssetIconView {
-        fView
+        fView.fView
     }
 
     var giftImageView: UIImageView {
-        sView.sView
+        sView
     }
 
     var amountView: IconDetailsView {
-        sView.fView.fView
+        fView.sView.fView
     }
 
     var amountLabel: UILabel {
@@ -46,7 +57,7 @@ final class GiftListGiftView: GenericPairValueView<
     }
 
     var creationDateLabel: UILabel {
-        sView.fView.sView
+        fView.sView.sView
     }
 
     override init(frame: CGRect) {
@@ -61,32 +72,41 @@ final class GiftListGiftView: GenericPairValueView<
 
 private extension GiftListGiftView {
     func setupLayout() {
+        stackView.distribution = .fill
         makeHorizontal()
 
-        spacing = 12.0
+        fView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        sView.makeHorizontal()
+        fView.makeHorizontal()
 
-        sView.fView.makeVertical()
-        sView.fView.spacing = 2.0
+        fView.sView.makeVertical()
+        fView.spacing = 12.0
 
         amountView.mode = .detailsIcon
         amountView.spacing = 2.0
 
-        sView.fView.fView.iconWidth = 22.0
+        fView.sView.fView.iconWidth = 22.0
 
         giftImageView.snp.makeConstraints { make in
             make.size.equalTo(56.0)
         }
-
         assetIconView.snp.makeConstraints { make in
             make.size.equalTo(40.0)
+        }
+        amountAccessoryImageView.snp.makeConstraints { make in
+            make.size.equalTo(22.0)
         }
     }
 
     func setupStyle() {
         amountLabel.apply(style: .semiboldBodyPrimary)
         creationDateLabel.apply(style: .footnoteSecondary)
+
+        assetIconView.backgroundView.cornerRadius = 20
+        assetIconView.backgroundView.apply(style: .assetContainer)
+
+        assetIconView.contentMode = .scaleAspectFit
     }
 }
 

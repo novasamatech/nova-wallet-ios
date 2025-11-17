@@ -1,10 +1,18 @@
 import UIKit
 
 final class GiftListViewLayout: UIView {
-    var tableView: UITableView = {
-        let view = UITableView()
-        view.separatorStyle = .none
+    lazy var collectionView: UICollectionView = {
+        let layout = createCompositionalLayout()
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.backgroundColor = .clear
+        view.contentInsetAdjustmentBehavior = .always
+        view.contentInset = UIEdgeInsets(
+            top: 0.0,
+            left: 0.0,
+            bottom: Constants.collectionViewBottomInset,
+            right: 0.0
+        )
+        view.refreshControl = UIRefreshControl()
         return view
     }()
 
@@ -18,7 +26,6 @@ final class GiftListViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setupInitialLayout()
     }
 
@@ -31,6 +38,70 @@ final class GiftListViewLayout: UIView {
 // MARK: - Private
 
 private extension GiftListViewLayout {
+    func createCompositionalLayout() -> UICollectionViewLayout {
+        UICollectionViewCompositionalLayout { sectionIndex, _ in
+            // Determine section type based on index
+            // Assuming first section (0) is header, rest are gifts
+            if sectionIndex == 0 {
+                return self.createHeaderSection()
+            } else {
+                return self.createGiftsSection()
+            }
+        }
+    }
+
+    func createHeaderSection() -> NSCollectionLayoutSection {
+        // Self-sizing header
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .estimated(Constants.estimatedHeaderHeight)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .estimated(Constants.estimatedHeaderHeight)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+
+        section.contentInsets = .init(
+            top: .zero,
+            leading: 16.0,
+            bottom: .zero,
+            trailing: 16.0
+        )
+
+        return section
+    }
+
+    func createGiftsSection() -> NSCollectionLayoutSection {
+        // Fixed-size gifts
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(Constants.giftItemHeight)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(Constants.giftItemHeight)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = Constants.interItemSpacing
+
+        return section
+    }
+
     func setupInitialLayout() {
         layoutTableView()
         layoutButton()
@@ -40,9 +111,9 @@ private extension GiftListViewLayout {
     // MARK: - Table View
 
     func layoutTableView() {
-        addSubview(tableView)
+        addSubview(collectionView)
 
-        tableView.snp.makeConstraints { make in
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -111,6 +182,17 @@ extension GiftListViewLayout {
         case .list:
             removeOnboarding()
         }
+    }
+}
+
+// MARK: - Constants
+
+extension GiftListViewLayout {
+    enum Constants {
+        static let giftItemHeight: CGFloat = 64.0
+        static let estimatedHeaderHeight: CGFloat = 100.0
+        static let interItemSpacing: CGFloat = 8.0
+        static let collectionViewBottomInset: CGFloat = 16.0
     }
 }
 

@@ -6,7 +6,7 @@ final class GiftListViewController: UIViewController, ViewHolder {
 
     typealias SectionId = String
     typealias RowId = String
-    typealias DataSource = UITableViewDiffableDataSource<SectionId, RowId>
+    typealias DataSource = UICollectionViewDiffableDataSource<SectionId, RowId>
     typealias Snapshot = NSDiffableDataSourceSnapshot<SectionId, RowId>
 
     let presenter: GiftListPresenterProtocol
@@ -43,7 +43,7 @@ final class GiftListViewController: UIViewController, ViewHolder {
 
         presenter.setup()
         setupLocalization()
-        setupTableView()
+        setupCollectionView()
     }
 }
 
@@ -52,8 +52,8 @@ final class GiftListViewController: UIViewController, ViewHolder {
 private extension GiftListViewController {
     func createDataSource() -> DataSource {
         DataSource(
-            tableView: rootView.tableView
-        ) { [weak self] tableView, indexPath, model in
+            collectionView: rootView.collectionView
+        ) { [weak self] collectionView, indexPath, model in
             guard
                 let self,
                 let row = self.dataStore.row(
@@ -61,28 +61,34 @@ private extension GiftListViewController {
                     indexPath: indexPath,
                     snapshot: self.dataSource?.snapshot()
                 )
-            else { return UITableViewCell() }
+            else { return UICollectionViewCell() }
 
             switch row {
             case let .header(locale):
-                let cell: GiftsListHeaderTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
+                let cell = collectionView.dequeueReusableCellWithType(
+                    GiftsListHeaderTableViewCell.self,
+                    for: indexPath
+                )
                 cell?.bind(locale: locale)
                 return cell
             case let .gift(viewModel):
-                let cell: GiftListGiftTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
+                let cell: GiftListGiftTableViewCell? = collectionView.dequeueReusableCell(for: indexPath)
                 cell?.bind(viewModel: viewModel)
                 return cell
             }
         }
     }
 
-    func setupTableView() {
-        rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
-        rootView.tableView.registerClassForCell(GiftsListHeaderTableViewCell.self)
-        rootView.tableView.registerClassForCell(GiftListGiftTableViewCell.self)
+    func setupCollectionView() {
+        rootView.collectionView.registerClass(
+            TitleCollectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
+        rootView.collectionView.registerCellClass(GiftsListHeaderTableViewCell.self)
+        rootView.collectionView.registerCellClass(GiftListGiftTableViewCell.self)
         dataSource = createDataSource()
-        rootView.tableView.dataSource = dataSource
-        rootView.tableView.delegate = self
+        rootView.collectionView.dataSource = dataSource
+        rootView.collectionView.delegate = self
     }
 
     func setupLocalization() {
@@ -139,26 +145,13 @@ private extension GiftListViewController {
     }
 }
 
-// MARK: - UITableViewDelegate
+// MARK: - UICollectionViewDelegate
 
-extension GiftListViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let sectionModel = dataStore.section(
-            sectionNumber: indexPath.section,
-            snapshot: dataSource?.snapshot()
-        ) else {
-            return 0
-        }
-
-        return switch sectionModel {
-        case .header:
-            UITableView.automaticDimension
-        case .gifts:
-            64
-        }
-    }
-
-    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+extension GiftListViewController: UICollectionViewDelegate {
+    func collectionView(
+        _: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         guard
             viewModels.count > indexPath.section,
             viewModels[indexPath.section].rows.count > indexPath.row
