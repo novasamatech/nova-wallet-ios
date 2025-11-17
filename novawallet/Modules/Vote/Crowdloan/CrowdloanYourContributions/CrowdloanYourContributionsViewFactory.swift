@@ -37,7 +37,7 @@ enum CrowdloanYourContributionsViewFactory {
             crowdloanState: sharedState,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let wireframe = CrowdloanYourContributionsWireframe(state: sharedState)
