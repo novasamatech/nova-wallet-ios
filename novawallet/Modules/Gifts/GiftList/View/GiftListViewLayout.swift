@@ -40,8 +40,6 @@ final class GiftListViewLayout: UIView {
 private extension GiftListViewLayout {
     func createCompositionalLayout() -> UICollectionViewLayout {
         UICollectionViewCompositionalLayout { sectionIndex, _ in
-            // Determine section type based on index
-            // Assuming first section (0) is header, rest are gifts
             if sectionIndex == 0 {
                 return self.createHeaderSection()
             } else {
@@ -51,7 +49,6 @@ private extension GiftListViewLayout {
     }
 
     func createHeaderSection() -> NSCollectionLayoutSection {
-        // Self-sizing header
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .estimated(Constants.estimatedHeaderHeight)
@@ -80,7 +77,6 @@ private extension GiftListViewLayout {
     }
 
     func createGiftsSection() -> NSCollectionLayoutSection {
-        // Fixed-size gifts
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .absolute(Constants.giftItemHeight)

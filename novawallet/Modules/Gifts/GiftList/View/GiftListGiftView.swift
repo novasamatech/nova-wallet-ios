@@ -3,14 +3,21 @@ import UIKit
 import UIKit_iOS
 
 final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftView> {
+    enum Constants {
+        static let innerInsetsTop: CGFloat = 4.0
+        static let innerInsetsLeft: CGFloat = 12.0
+        static let innerInsetsBottom: CGFloat = 4.0
+        static let innerInsetsRight: CGFloat = 12.0
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         view.innerInsets = .init(
-            top: 4.0,
-            left: 12.0,
-            bottom: 4.0,
-            right: 12.0
+            top: Constants.innerInsetsTop,
+            left: Constants.innerInsetsLeft,
+            bottom: Constants.innerInsetsBottom,
+            right: Constants.innerInsetsRight
         )
     }
 
@@ -18,8 +25,10 @@ final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftVie
         switch viewModel.status {
         case .pending:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
+            isUserInteractionEnabled = true
         case .claimed, .reclaimed:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackgroundOpaque()!
+            isUserInteractionEnabled = false
         }
 
         view.view.bind(viewModel: viewModel)
@@ -30,7 +39,10 @@ final class GiftListGiftView: GenericPairValueView<
     GenericPairValueView<
         AssetIconView,
         GenericPairValueView<
-            IconDetailsView,
+            GenericPairValueView<
+                IconDetailsView,
+                FlexibleSpaceView
+            >,
             UILabel
         >
     >,
@@ -48,7 +60,7 @@ final class GiftListGiftView: GenericPairValueView<
     }
 
     var amountView: IconDetailsView {
-        fView.sView.fView
+        fView.sView.fView.fView
     }
 
     var amountLabel: UILabel {
@@ -83,25 +95,22 @@ private extension GiftListGiftView {
         fView.makeHorizontal()
         fView.sView.makeVertical()
         sView.makeHorizontal()
+        fView.sView.fView.makeHorizontal()
 
         fView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         sView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
-        fView.spacing = 12.0
+        fView.spacing = Constants.horizontalSpacing
 
         amountView.mode = .detailsIcon
-        amountView.spacing = 2.0
-
-        fView.sView.fView.iconWidth = 22.0
+        amountView.spacing = Constants.amountViewSpacing
+        amountView.iconWidth = Constants.amountViewIconWidth
 
         giftImageView.snp.makeConstraints { make in
-            make.size.equalTo(56.0)
+            make.size.equalTo(Constants.giftImageSize)
         }
         assetIconView.snp.makeConstraints { make in
-            make.size.equalTo(40.0)
-        }
-        amountAccessoryImageView.snp.makeConstraints { make in
-            make.size.equalTo(22.0)
+            make.size.equalTo(Constants.assetIconSize)
         }
     }
 
@@ -109,7 +118,7 @@ private extension GiftListGiftView {
         amountLabel.apply(style: .semiboldBodyPrimary)
         creationDateLabel.apply(style: .footnoteSecondary)
 
-        assetIconView.backgroundView.cornerRadius = 20
+        assetIconView.backgroundView.cornerRadius = Constants.assetIconCornerRadius
         assetIconView.backgroundView.apply(style: .assetContainer)
 
         assetIconView.contentMode = .scaleAspectFit
@@ -122,7 +131,10 @@ extension GiftListGiftView {
     func bind(viewModel: GiftListGiftViewModel) {
         viewModel.giftImageViewModel.loadImage(
             on: giftImageView,
-            targetSize: CGSize(width: 56.0, height: 56.0),
+            targetSize: CGSize(
+                width: Constants.giftImageSize,
+                height: Constants.giftImageSize
+            ),
             animated: true
         )
 
@@ -133,15 +145,18 @@ extension GiftListGiftView {
         case .pending:
             amountLabel.apply(style: .semiboldBodyPrimary)
             amountAccessoryImageView.image = R.image.iconSmallArrow()
-            assetIconView.alpha = 1.0
+            assetIconView.alpha = Constants.assetIconAlphaActive
         case .claimed, .reclaimed:
             amountLabel.apply(style: .semiboldBodySecondary)
             amountAccessoryImageView.image = nil
-            assetIconView.alpha = 0.56
+            assetIconView.alpha = Constants.assetIconAlphaInactive
         }
 
         let tokenIconSettings = ImageViewModelSettings(
-            targetSize: CGSize(width: 40.0, height: 40.0),
+            targetSize: CGSize(
+                width: Constants.assetIconSize,
+                height: Constants.assetIconSize
+            ),
             cornerRadius: nil,
             tintColor: nil
         )
@@ -150,5 +165,20 @@ extension GiftListGiftView {
             viewModel: viewModel.tokenImageViewModel,
             settings: tokenIconSettings
         )
+    }
+}
+
+// MARK: - Constants
+
+private extension GiftListGiftView {
+    enum Constants {
+        static let horizontalSpacing: CGFloat = 12.0
+        static let amountViewSpacing: CGFloat = 2.0
+        static let amountViewIconWidth: CGFloat = 22.0
+        static let giftImageSize: CGFloat = 56.0
+        static let assetIconSize: CGFloat = 40.0
+        static let assetIconCornerRadius: CGFloat = 20.0
+        static let assetIconAlphaActive: CGFloat = 1.0
+        static let assetIconAlphaInactive: CGFloat = 0.56
     }
 }

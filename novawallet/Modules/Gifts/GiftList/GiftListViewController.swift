@@ -136,7 +136,7 @@ private extension GiftListViewController {
 
     func setupOnboardingHandlers() {
         setupLearnMoreAction(for: rootView.onboardingView.headerView.learnMoreView.actionButton)
-        
+
         rootView.onboardingView.actionButton.removeTarget(
             self,
             action: #selector(actionCreateGift),
@@ -148,7 +148,7 @@ private extension GiftListViewController {
             for: .touchUpInside
         )
     }
-    
+
     func setupLearnMoreAction(for control: UIControl?) {
         control?.removeTarget(
             self,
