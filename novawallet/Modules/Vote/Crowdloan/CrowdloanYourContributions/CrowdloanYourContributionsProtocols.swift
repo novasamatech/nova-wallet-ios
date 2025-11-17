@@ -5,10 +5,12 @@ import Operation_iOS
 protocol CrowdloanContributionsViewProtocol: ControllerBackedProtocol {
     func reload(model: CrowdloanYourContributionsViewModel)
     func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel])
+    func reload(hasUnlockable: Bool)
 }
 
 protocol CrowdloanContributionsPresenterProtocol: AnyObject {
     func setup()
+    func unlock()
 }
 
 protocol CrowdloanContributionsVMFactoryProtocol: AnyObject {

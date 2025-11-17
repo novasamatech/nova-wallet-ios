@@ -132,6 +132,8 @@ extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterPr
         updateCrowdloans()
         interactor.setup()
     }
+
+    func unlock() {}
 }
 
 extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorOutputProtocol {

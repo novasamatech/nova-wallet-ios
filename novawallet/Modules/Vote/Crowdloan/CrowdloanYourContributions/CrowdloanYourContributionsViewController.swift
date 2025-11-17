@@ -42,6 +42,15 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
         rootView.tableView.registerClassForCell(CrowdloanYourContributionsCell.self)
     }
 
+    private func setupTargets() {
+        rootView.unlockButton.addAction(
+            UIAction { [weak self] _ in
+                self?.presenter.unlock()
+            },
+            for: .touchUpInside
+        )
+    }
+
     private func bindReturnInInterval(to cell: CrowdloanYourContributionsCell) {
         guard
             let returnInTimeIntervals = returnInTimeIntervals,
@@ -56,11 +65,11 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
             subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanReturnsInFormat(
                 interval
             )
+            cell.bind(unlockViewModel: subtitle, style: .returnIn)
         } else {
             subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanReturnInProgress()
+            cell.bind(unlockViewModel: subtitle, style: .claimable)
         }
-
-        cell.bind(returnInViewModel: subtitle)
     }
 }
 
@@ -83,6 +92,10 @@ extension CrowdloanYourContributionsViewController: CrowdloanContributionsViewPr
             bindReturnInInterval(to: contributionCell)
         }
     }
+
+    func reload(hasUnlockable: Bool) {
+        rootView.setHasUnlocks(hasUnlockable)
+    }
 }
 
 // MARK: - Localizable
@@ -92,6 +105,11 @@ extension CrowdloanYourContributionsViewController: Localizable {
         if isViewLoaded {
             title = R.string(preferredLanguages: selectedLocale.rLanguages)
                 .localizable.crowdloanYouContributionsTitle()
+
+            rootView.unlockButton.setTitle(
+                R.string(preferredLanguages: selectedLocale.rLanguages)
+                    .localizable.commonUnlock()
+            )
         }
     }
 }

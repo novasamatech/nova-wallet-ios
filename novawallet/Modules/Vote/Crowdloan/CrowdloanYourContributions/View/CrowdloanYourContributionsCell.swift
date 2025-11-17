@@ -13,7 +13,7 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
 
     private let nameDetailsView: MultiValueView = {
         let view = MultiValueView()
-        view.apply(style: .contributionRow)
+        view.apply(style: .contributionReturnsIn)
         view.valueTop.textAlignment = .left
         view.valueBottom.textAlignment = .left
         return view
@@ -21,7 +21,7 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
 
     private let contributedAmountView: MultiValueView = {
         let view = MultiValueView()
-        view.apply(style: .contributionRow)
+        view.apply(style: .contributionReturnsIn)
         return view
     }()
 
@@ -77,7 +77,21 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
         model = contributionViewModel
     }
 
-    func bind(returnInViewModel: String?) {
-        nameDetailsView.bind(topValue: nameDetailsView.valueTop.text ?? "", bottomValue: returnInViewModel)
+    func bind(unlockViewModel: String, style: UnlockStyle) {
+        switch style {
+        case .claimable:
+            nameDetailsView.apply(style: .contributionClamable)
+        case .returnIn:
+            nameDetailsView.apply(style: .contributionReturnsIn)
+        }
+
+        nameDetailsView.bind(topValue: nameDetailsView.valueTop.text ?? "", bottomValue: unlockViewModel)
+    }
+}
+
+extension CrowdloanYourContributionsCell {
+    enum UnlockStyle {
+        case claimable
+        case returnIn
     }
 }
