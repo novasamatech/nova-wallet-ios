@@ -11,7 +11,7 @@ protocol GiftListViewModelFactoryProtocol {
 final class GiftListViewModelFactory {
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
-    let dateFormatter = DateFormatter.shortDate
+    let dateFormatter = DateFormatter.giftsList
 
     init(
         balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
@@ -37,8 +37,15 @@ private extension GiftListViewModelFactory {
         chainAssets: [ChainAssetId: ChainAsset],
         locale: Locale
     ) -> GiftListSectionModel {
-        let giftRows = gifts
-            .sorted { ($0.creationDate ?? Date()) < ($1.creationDate ?? Date()) }
+        let pendingGifts = gifts
+            .filter { $0.status == .pending }
+            .sorted { $0.creationDate > $1.creationDate }
+
+        let claimedGifts = gifts
+            .filter { $0.status == .claimed || $0.status == .reclaimed }
+            .sorted { $0.creationDate > $1.creationDate }
+
+        let giftRows = (pendingGifts + claimedGifts)
             .compactMap { createGiftModel(for: $0, using: chainAssets, locale) }
             .map { GiftListSectionModel.Row.gift($0) }
 
@@ -82,9 +89,11 @@ private extension GiftListViewModelFactory {
 
         switch status {
         case .pending:
-            if let creationDate = gift.creationDate {
-                subtitle = dateFormatter.value(for: locale).string(from: creationDate)
-            }
+            subtitle = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.giftCreatedDateFormat(
+                dateFormatter.value(for: locale).string(from: gift.creationDate)
+            )
         case .claimed:
             subtitle = R.string(
                 preferredLanguages: locale.rLanguages
@@ -114,7 +123,9 @@ extension GiftListViewModelFactory: GiftListViewModelFactoryProtocol {
         chainAssets: [ChainAssetId: ChainAsset],
         locale: Locale
     ) -> [GiftListSectionModel] {
-        [
+        guard !gifts.isEmpty else { return [] }
+
+        return [
             createHeaderSection(with: locale),
 
             createGiftSection(

@@ -17,7 +17,7 @@ extension GiftMapper: CoreDataMapperProtocol {
             chainAssetId: ChainAssetId(chainId: entity.chainId!, assetId: UInt32(bitPattern: entity.assetId)),
             status: GiftModel.Status(rawValue: entity.status)!,
             giftAccountId: try Data(hexString: entity.giftAccountId!),
-            creationDate: entity.creationDate,
+            creationDate: entity.creationDate ?? Date(),
             senderMetaId: entity.metaId
         )
     }

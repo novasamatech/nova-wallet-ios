@@ -4,6 +4,13 @@ import Operation_iOS
 struct GiftListSectionModel {
     let section: Section
     let rows: [Row]
+
+    var title: String? {
+        switch section {
+        case let .gifts(title): title
+        case .header: nil
+        }
+    }
 }
 
 extension GiftListSectionModel {

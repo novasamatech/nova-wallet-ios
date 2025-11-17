@@ -7,7 +7,7 @@ struct GiftModel {
     let chainAssetId: ChainAssetId
     let status: Status
     let giftAccountId: AccountId
-    let creationDate: Date?
+    let creationDate: Date
     let senderMetaId: MetaAccountModel.Id?
 }
 

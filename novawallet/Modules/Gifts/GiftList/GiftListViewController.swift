@@ -51,7 +51,7 @@ final class GiftListViewController: UIViewController, ViewHolder {
 
 private extension GiftListViewController {
     func createDataSource() -> DataSource {
-        DataSource(
+        let dataSource = DataSource(
             collectionView: rootView.collectionView
         ) { [weak self] collectionView, indexPath, model in
             guard
@@ -70,6 +70,7 @@ private extension GiftListViewController {
                     for: indexPath
                 )
                 cell?.bind(locale: locale)
+                setupLearnMoreAction(for: cell?.view.learnMoreView.actionButton)
                 return cell
             case let .gift(viewModel):
                 let cell: GiftListGiftTableViewCell? = collectionView.dequeueReusableCell(for: indexPath)
@@ -77,6 +78,26 @@ private extension GiftListViewController {
                 return cell
             }
         }
+
+        dataSource.supplementaryViewProvider = { [weak self] collectionView, _, indexPath in
+            guard
+                let self,
+                viewModels.count > indexPath.section,
+                let headerModel = viewModels[indexPath.section].title
+            else { return nil }
+
+            let headerView: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
+                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                for: indexPath
+            )
+
+            headerView?.titleLabel.apply(style: .title3Primary)
+            headerView?.bind(title: headerModel)
+
+            return headerView
+        }
+
+        return dataSource
     }
 
     func setupCollectionView() {
@@ -114,14 +135,11 @@ private extension GiftListViewController {
     }
 
     func setupOnboardingHandlers() {
+        setupLearnMoreAction(for: rootView.onboardingView.headerView.learnMoreView.actionButton)
+        
         rootView.onboardingView.actionButton.removeTarget(
             self,
             action: #selector(actionCreateGift),
-            for: .touchUpInside
-        )
-        rootView.onboardingView.headerView.learnMoreView.actionButton.removeTarget(
-            self,
-            action: #selector(actionLearnMore),
             for: .touchUpInside
         )
         rootView.onboardingView.actionButton.addTarget(
@@ -129,7 +147,15 @@ private extension GiftListViewController {
             action: #selector(actionCreateGift),
             for: .touchUpInside
         )
-        rootView.onboardingView.headerView.learnMoreView.actionButton.addTarget(
+    }
+    
+    func setupLearnMoreAction(for control: UIControl?) {
+        control?.removeTarget(
+            self,
+            action: #selector(actionLearnMore),
+            for: .touchUpInside
+        )
+        control?.addTarget(
             self,
             action: #selector(actionLearnMore),
             for: .touchUpInside
@@ -168,6 +194,8 @@ extension GiftListViewController: UICollectionViewDelegate {
 extension GiftListViewController: GiftListViewProtocol {
     func didReceive(listSections: [GiftListSectionModel]) {
         guard !listSections.isEmpty else { return }
+
+        viewModels = listSections
 
         let snapshot = listSections.reduce(dataSource?.snapshot()) {
             dataStore.updating(

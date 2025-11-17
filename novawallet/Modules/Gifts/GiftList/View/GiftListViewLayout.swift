@@ -7,9 +7,9 @@ final class GiftListViewLayout: UIView {
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(
-            top: 0.0,
+            top: Constants.collectionViewVerticalInset,
             left: 0.0,
-            bottom: Constants.collectionViewBottomInset,
+            bottom: Constants.collectionViewVerticalInset,
             right: 0.0
         )
         view.refreshControl = UIRefreshControl()
@@ -72,7 +72,7 @@ private extension GiftListViewLayout {
         section.contentInsets = .init(
             top: .zero,
             leading: 16.0,
-            bottom: .zero,
+            bottom: 16,
             trailing: 16.0
         )
 
@@ -98,6 +98,18 @@ private extension GiftListViewLayout {
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = Constants.interItemSpacing
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(32)
+        )
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .topLeading,
+            absoluteOffset: .init(x: .zero, y: -Constants.interItemSpacing)
+        )
+        section.boundarySupplementaryItems = [header]
 
         return section
     }
@@ -192,7 +204,7 @@ extension GiftListViewLayout {
         static let giftItemHeight: CGFloat = 64.0
         static let estimatedHeaderHeight: CGFloat = 100.0
         static let interItemSpacing: CGFloat = 8.0
-        static let collectionViewBottomInset: CGFloat = 16.0
+        static let collectionViewVerticalInset: CGFloat = 16.0
     }
 }
 

@@ -2007,3 +2007,4 @@
 "gift.list.gifts.section.title" = "Gifts you created";
 "gift.status.claimed" = "Claimed";
 "gift.status.reclaimed" = "Reclaimed";
+"gift.created.date.format" = "Created: %@";
