@@ -1984,6 +1984,7 @@
 		2D8541942ECB052E000D8133 /* GiftListGiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541932ECB052E000D8133 /* GiftListGiftViewModel.swift */; };
 		2D8541A12ECB0B80000D8133 /* GiftListSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541A02ECB0B80000D8133 /* GiftListSectionModel.swift */; };
 		2D8541A62ECB14C3000D8133 /* GiftListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541A52ECB14C3000D8133 /* GiftListViewModelFactory.swift */; };
+		2D8541B62ECB3156000D8133 /* GiftListGiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8541B52ECB3156000D8133 /* GiftListGiftView.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
@@ -8653,6 +8654,7 @@
 		2D8541932ECB052E000D8133 /* GiftListGiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListGiftViewModel.swift; sourceTree = "<group>"; };
 		2D8541A02ECB0B80000D8133 /* GiftListSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListSectionModel.swift; sourceTree = "<group>"; };
 		2D8541A52ECB14C3000D8133 /* GiftListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8541B52ECB3156000D8133 /* GiftListGiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftListGiftView.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
@@ -16855,6 +16857,7 @@
 			children = (
 				2D0C97332ECA48710034F9F8 /* GiftsOnboardingVIew.swift */,
 				5D308B8B16112B33BBF119B4 /* GiftListViewLayout.swift */,
+				2D8541B52ECB3156000D8133 /* GiftListGiftView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -35653,6 +35656,7 @@
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,
 				0C9EC36F2E57BFEA002E5660 /* CurrenciesPallet.swift in Sources */,
 				F6F73F4862779FE0B58A7931 /* ParaStkRebondInteractor.swift in Sources */,
+				2D8541B62ECB3156000D8133 /* GiftListGiftView.swift in Sources */,
 				58D5B4F17DA37C241FF96A5F /* ParaStkRebondViewController.swift in Sources */,
 				0C8FC20D2E5F3FF700034ED3 /* DiscoveredAccount.swift in Sources */,
 				0C0F6D922D3AADB600943A7C /* ChainSessionCountdown.swift in Sources */,

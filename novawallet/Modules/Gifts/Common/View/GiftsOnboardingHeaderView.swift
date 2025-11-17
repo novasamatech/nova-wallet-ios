@@ -1,6 +1,18 @@
 import Foundation
 import UIKit
 
+final class GiftsListHeaderTableViewCell: PlainBaseTableViewCell<GiftsListHeaderView> {
+    override func setupStyle() {
+        super.setupStyle()
+
+        backgroundColor = .clear
+    }
+
+    func bind(locale: Locale) {
+        contentDisplayView.locale = locale
+    }
+}
+
 final class GiftsListHeaderView: GenericPairValueView<MultiValueView, LinkView> {
     private var titleLabel: UILabel {
         fView.valueTop

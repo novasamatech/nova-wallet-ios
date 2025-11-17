@@ -18,6 +18,8 @@ final class GiftListViewController: UIViewController, ViewHolder {
         GiftListSectionModel.Row
     >()
 
+    private var viewModels: [GiftListSectionModel] = []
+
     init(
         presenter: GiftListPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -41,15 +43,47 @@ final class GiftListViewController: UIViewController, ViewHolder {
 
         presenter.setup()
         setupLocalization()
+        setupTableView()
     }
 }
 
 // MARK: - Private
 
 private extension GiftListViewController {
-//    func createDataSource() -> DataSource {
-//
-//    }
+    func createDataSource() -> DataSource {
+        DataSource(
+            tableView: rootView.tableView
+        ) { [weak self] tableView, indexPath, model in
+            guard
+                let self,
+                let row = self.dataStore.row(
+                    rowId: model,
+                    indexPath: indexPath,
+                    snapshot: self.dataSource?.snapshot()
+                )
+            else { return UITableViewCell() }
+
+            switch row {
+            case let .header(locale):
+                let cell: GiftsListHeaderTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
+                cell?.bind(locale: locale)
+                return cell
+            case let .gift(viewModel):
+                let cell: GiftListGiftTableViewCell? = tableView.dequeueReusableCell(for: indexPath)
+                cell?.bind(viewModel: viewModel)
+                return cell
+            }
+        }
+    }
+
+    func setupTableView() {
+        rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
+        rootView.tableView.registerClassForCell(GiftsListHeaderTableViewCell.self)
+        rootView.tableView.registerClassForCell(GiftListGiftTableViewCell.self)
+        dataSource = createDataSource()
+        rootView.tableView.dataSource = dataSource
+        rootView.tableView.delegate = self
+    }
 
     func setupLocalization() {
         rootView.loadingView.titleLabel.text = R.string(
@@ -86,6 +120,37 @@ private extension GiftListViewController {
 
     @objc func actionLearnMore() {
         presenter.activateLearnMore()
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension GiftListViewController: UITableViewDelegate {
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let sectionModel = dataStore.section(
+            sectionNumber: indexPath.section,
+            snapshot: dataSource?.snapshot()
+        ) else {
+            return 0
+        }
+
+        return switch sectionModel {
+        case .header:
+            UITableView.automaticDimension
+        case .gifts:
+            64
+        }
+    }
+
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard
+            viewModels.count > indexPath.section,
+            viewModels[indexPath.section].rows.count > indexPath.row
+        else { return }
+
+        let rowModel = viewModels[indexPath.section].rows[indexPath.row]
+
+        presenter.selectGift(with: rowModel.identifier)
     }
 }
 

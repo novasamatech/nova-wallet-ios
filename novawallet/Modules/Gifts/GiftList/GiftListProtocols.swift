@@ -10,6 +10,7 @@ protocol GiftListPresenterProtocol: AnyObject {
     func setup()
     func activateLearnMore()
     func actionCreateGift()
+    func selectGift(with identifier: String)
 }
 
 protocol GiftListInteractorInputProtocol: AnyObject {

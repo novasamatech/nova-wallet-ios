@@ -1,6 +1,13 @@
 import UIKit
 
 final class GiftListViewLayout: UIView {
+    var tableView: UITableView = {
+        let view = UITableView()
+        view.separatorStyle = .none
+        view.backgroundColor = .clear
+        return view
+    }()
+
     lazy var onboardingView = GiftsOnboardingView()
 
     let loadingView = ListLoadingView()
@@ -21,7 +28,16 @@ final class GiftListViewLayout: UIView {
 
 private extension GiftListViewLayout {
     func setupInitialLayout() {
+        layoutTableView()
         layoutLoadingView()
+    }
+
+    func layoutTableView() {
+        addSubview(tableView)
+
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     // MARK: - Loading

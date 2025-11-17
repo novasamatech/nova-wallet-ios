@@ -58,6 +58,10 @@ private extension GiftListPresenter {
 // MARK: - GiftListPresenterProtocol
 
 extension GiftListPresenter: GiftListPresenterProtocol {
+    func selectGift(with identifier: String) {
+        print(identifier)
+    }
+
     func setup() {
         view?.didReceive(loading: true)
         interactor.setup()
