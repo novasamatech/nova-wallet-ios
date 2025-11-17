@@ -150,7 +150,7 @@ private extension GiftsSyncService {
                 case let .success(update):
                     self?.mutex.lock()
                     defer { self?.mutex.unlock() }
-                    
+
                     self?.updateStatus(
                         for: giftAccountId,
                         balance: update.balance,
@@ -169,7 +169,7 @@ private extension GiftsSyncService {
         balanceExistence: AssetBalanceExistence
     ) {
         guard let gift = gifts[giftAccountId.toHex()] else { return }
-        
+
         let status: GiftModel.Status = if let balance, balance.transferable > balanceExistence.minBalance {
             .pending
         } else {
