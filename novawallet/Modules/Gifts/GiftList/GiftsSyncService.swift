@@ -10,7 +10,6 @@ final class GiftsSyncService: AnyProviderAutoCleaning {
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let assetStorageOperationFactory: AssetStorageInfoOperationFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
-    let selectedMetaId: MetaAccountModel.Id
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
