@@ -12,7 +12,6 @@ private extension CrowdloanListInteractor {
         let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
 
         setup(with: accountId, chain: chain)
-        becomeOnline(with: chain)
     }
 }
 
@@ -38,22 +37,6 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
                 }
             }
         }
-    }
-
-    func becomeOnline() {
-        guard let chain = crowdloanState.settings.value else {
-            return
-        }
-
-        becomeOnline(with: chain)
-    }
-
-    func putOffline() {
-        guard let chain = crowdloanState.settings.value else {
-            return
-        }
-
-        putOffline(with: chain)
     }
 }
 
@@ -105,20 +88,6 @@ extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
         switch result {
         case let .success(price):
             presenter?.didReceivePriceData(price)
-        case let .failure(error):
-            presenter?.didReceiveError(error)
-        }
-    }
-}
-
-extension CrowdloanListInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId _: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            presenter?.didReceiveBlockNumber(blockNumber)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

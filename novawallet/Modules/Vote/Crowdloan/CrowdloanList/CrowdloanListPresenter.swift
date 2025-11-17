@@ -12,11 +12,9 @@ final class CrowdloanListPresenter {
     let logger: LoggerProtocol
 
     private var selectedChain: ChainModel?
-    private var accountBalance: AssetBalance?
+    private var accountBalance: UncertainStorage<AssetBalance?> = .undefined
     private var contributions: [CrowdloanContribution] = []
     private var displayInfo: CrowdloanDisplayInfoDict?
-    private var blockNumber: BlockNumber?
-    private var blockDuration: BlockTime?
     private var priceData: PriceData?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
@@ -46,7 +44,9 @@ final class CrowdloanListPresenter {
             return
         }
 
-        let balance = accountBalance?.transferable
+        let balance: Balance? = accountBalance
+            .map { $0?.transferable ?? 0 }
+            .valueWhenDefined(else: nil)
 
         let viewModel = chainBalanceFactory.createViewModel(
             from: ChainAsset(chain: chain, asset: asset),
@@ -57,25 +57,14 @@ final class CrowdloanListPresenter {
         view?.didReceive(chainInfo: .wrapped(viewModel, with: privacyModeEnabled))
     }
 
-    private func createMetadata() -> CrowdloanMetadata? {
-        guard let blockDuration, let blockNumber else {
-            return nil
-        }
-
-        return CrowdloanMetadata(blockNumber: blockNumber, blockDuration: blockDuration)
-    }
-
     private func createViewInfo() -> CrowdloansViewInfo? {
-        guard
-            let displayInfo,
-            let metadata = createMetadata() else {
+        guard let displayInfo else {
             return nil
         }
 
         return CrowdloansViewInfo(
             contributions: contributions,
-            displayInfo: displayInfo,
-            metadata: metadata
+            displayInfo: displayInfo
         )
     }
 
@@ -111,12 +100,10 @@ extension CrowdloanListPresenter: VoteChildPresenterProtocol {
     }
 
     func becomeOnline() {
-        interactor.becomeOnline()
+        // nothing special to do when page becomes active
     }
 
-    func putOffline() {
-        interactor.putOffline()
-    }
+    func putOffline() {}
 
     func selectChain() {
         guard let chainAssetId = selectedChain?.utilityChainAssetId() else {
@@ -165,21 +152,6 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         updateListView()
     }
 
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
-        logger.debug("Block number: \(String(describing: blockNumber))")
-
-        self.blockNumber = blockNumber
-
-        updateListView()
-    }
-
-    func didReceiveBlockDuration(_ blockTime: BlockTime) {
-        logger.debug("Block duration: \(blockTime)")
-
-        blockDuration = blockTime
-        updateListView()
-    }
-
     func didReceiveSelectedChain(_ chain: ChainModel) {
         logger.debug("Chain: \(chain.name)")
 
@@ -191,7 +163,7 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     func didReceiveAccountBalance(_ balance: AssetBalance?) {
         logger.debug("Balance: \(String(describing: balance?.transferable))")
 
-        accountBalance = balance
+        accountBalance = .defined(balance)
         updateChainView()
     }
 
@@ -214,11 +186,10 @@ extension CrowdloanListPresenter: ChainAssetSelectionDelegate {
         }
 
         selectedChain = chainAsset.chain
-        accountBalance = nil
+        accountBalance = .undefined
         contributions = []
         displayInfo = nil
-        blockNumber = nil
-        blockDuration = nil
+        priceData = nil
 
         updateChainView()
         updateListView()

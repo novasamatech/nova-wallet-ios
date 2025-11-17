@@ -16,15 +16,11 @@ protocol CrowdloanListPresenterProtocol: AnyObject {
 protocol CrowdloanListInteractorInputProtocol: AnyObject {
     func setup()
     func saveSelected(chainModel: ChainModel)
-    func becomeOnline()
-    func putOffline()
 }
 
 protocol CrowdloanListInteractorOutputProtocol: AnyObject {
     func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>])
     func didReceiveDisplayInfo(_ info: CrowdloanDisplayInfoDict)
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
-    func didReceiveBlockDuration(_ blockTime: BlockTime)
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAccountBalance(_ balance: AssetBalance?)
     func didReceivePriceData(_ price: PriceData?)

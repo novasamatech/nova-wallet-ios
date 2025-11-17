@@ -16,22 +16,14 @@ final class CrowdloanListInteractor: RuntimeConstantFetching, AnyProviderAutoCle
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
-        crowdloanState.generalLocalSubscriptionFactory
-    }
-
     var crowdloanSubscriptionFactory: CrowdloanLocalSubscriptionMaking {
         crowdloanState.crowdloanSubscriptionFactory
     }
 
-    private var blockNumberSubscriptionId: UUID?
-    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var crowdloanProvider: StreamableProvider<CrowdloanContribution>?
     private var priceProvider: StreamableProvider<PriceData>?
-
-    private var blockTimeCancellable = CancellableCallStore()
 
     deinit {
         clearBlockTimeService()
@@ -176,10 +168,6 @@ extension CrowdloanListInteractor {
     }
 
     func clear() {
-        if let oldChain = crowdloanState.settings.value {
-            putOffline(with: oldChain)
-        }
-
         clear(singleValueProvider: &displayInfoProvider)
         clear(streamableProvider: &balanceProvider)
     }
@@ -188,20 +176,6 @@ extension CrowdloanListInteractor {
         let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
 
         setup(with: accountId, chain: chain)
-        becomeOnline(with: chain)
-    }
-
-    func becomeOnline(with chain: ChainModel) {
-        if blockNumberProvider == nil {
-            let timelineChain = chain.timelineChain ?? chain.chainId
-            blockNumberProvider = subscribeToBlockNumber(for: timelineChain)
-        }
-
-        provideBlockTime()
-    }
-
-    func putOffline(with _: ChainModel) {
-        clear(dataProvider: &blockNumberProvider)
     }
 
     func setupState(onSuccess: @escaping (ChainModel?) -> Void) {
@@ -213,30 +187,6 @@ extension CrowdloanListInteractor {
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
-            }
-        }
-    }
-
-    func provideBlockTime() {
-        guard let timelineService = crowdloanState.createChainTimelineFacade() else {
-            return
-        }
-
-        blockTimeCancellable.cancel()
-
-        let blockTimeWrapper = timelineService.createBlockTimeOperation()
-
-        executeCancellable(
-            wrapper: blockTimeWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: blockTimeCancellable,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(blockTime):
-                self?.presenter?.didReceiveBlockDuration(blockTime)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(error)
             }
         }
     }
