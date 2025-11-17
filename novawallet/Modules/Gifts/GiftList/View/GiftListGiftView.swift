@@ -34,14 +34,17 @@ final class GiftListGiftView: GenericPairValueView<
             UILabel
         >
     >,
-    UIImageView
+    GenericPairValueView<
+        FlexibleSpaceView,
+        UIImageView
+    >
 > {
     var assetIconView: AssetIconView {
         fView.fView
     }
 
     var giftImageView: UIImageView {
-        sView
+        sView.sView
     }
 
     var amountView: IconDetailsView {
@@ -73,14 +76,17 @@ final class GiftListGiftView: GenericPairValueView<
 private extension GiftListGiftView {
     func setupLayout() {
         stackView.distribution = .fill
+        stackView.alignment = .center
+
         makeHorizontal()
 
-        fView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
         fView.makeHorizontal()
-
         fView.sView.makeVertical()
+        sView.makeHorizontal()
+
+        fView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        sView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
         fView.spacing = 12.0
 
         amountView.mode = .detailsIcon
@@ -123,22 +129,21 @@ extension GiftListGiftView {
         amountLabel.text = viewModel.amount
         creationDateLabel.text = viewModel.subtitle
 
-        var tintColor: UIColor?
-
         switch viewModel.status {
         case .pending:
             amountLabel.apply(style: .semiboldBodyPrimary)
             amountAccessoryImageView.image = R.image.iconSmallArrow()
+            assetIconView.alpha = 1.0
         case .claimed, .reclaimed:
             amountLabel.apply(style: .semiboldBodySecondary)
-            tintColor = R.color.colorIconSecondary()
             amountAccessoryImageView.image = nil
+            assetIconView.alpha = 0.56
         }
 
         let tokenIconSettings = ImageViewModelSettings(
             targetSize: CGSize(width: 40.0, height: 40.0),
             cornerRadius: nil,
-            tintColor: tintColor
+            tintColor: nil
         )
 
         assetIconView.bind(
