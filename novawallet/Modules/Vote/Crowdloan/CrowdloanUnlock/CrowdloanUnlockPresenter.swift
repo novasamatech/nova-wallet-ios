@@ -56,43 +56,6 @@ private extension CrowdloanUnlockPresenter {
         interactor.estimateFee(for: unlockModel.items)
     }
 
-    /* func updateUnlocks() {
-         guard let blockNumber else {
-             return
-         }
-
-         let (newUnlocks, newTotalUnlock) = contributions.values.reduce(
-             (Set<CrowdloanUnlock>(), Balance(0))
-         ) { currentValue, contribution in
-             guard contribution.unlocksAt <= blockNumber else {
-                 return currentValue
-             }
-
-             let newAmount = currentValue.1 + contribution.amount
-             let newUnlock = CrowdloanUnlock(
-                 paraId: contribution.paraId,
-                 block: contribution.unlocksAt
-             )
-
-             let newUnlocks = currentValue.0.union([newUnlock])
-
-             return (newUnlocks, newAmount)
-         }
-
-         let hasChanges = newUnlocks != unlocks || totalUnlock != newTotalUnlock
-
-         unlocks = newUnlocks
-         totalUnlock = newTotalUnlock
-
-         logger.debug("Unlocks count: \(newUnlocks.count)")
-         logger.debug("Total unlock: \(newTotalUnlock)")
-
-         if hasChanges {
-             provideUnlockAmount()
-             estimatedFee()
-         }
-     } */
-
     func provideUnlockAmount() {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             unlockModel.amount.decimal(assetInfo: chainAsset.assetDisplayInfo),
@@ -159,6 +122,8 @@ extension CrowdloanUnlockPresenter: CrowdloanUnlockPresenterProtocol {
         applyCurrentState()
 
         interactor.setup()
+
+        refreshFee()
     }
 
     func selectAccount() {
@@ -198,6 +163,7 @@ extension CrowdloanUnlockPresenter: CrowdloanUnlockPresenterProtocol {
                 return
             }
 
+            view?.didStartLoading()
             interactor.submit(unlocks: unlockModel.items)
         }
     }

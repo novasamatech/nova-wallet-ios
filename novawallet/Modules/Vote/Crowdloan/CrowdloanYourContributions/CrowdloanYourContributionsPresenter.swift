@@ -166,19 +166,20 @@ extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorO
 
         updateCrowdloans()
         updateReturnInTimeIntervals()
+        updateUnlockable()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
         self.blockNumber = blockNumber
 
         updateReturnInTimeIntervals()
+        updateUnlockable()
     }
 
     func didReceiveBlockDuration(_ blockDuration: BlockTime) {
         self.blockDuration = blockDuration
 
         updateReturnInTimeIntervals()
-        updateUnlockable()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {

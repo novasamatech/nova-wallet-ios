@@ -3,7 +3,13 @@ import SubstrateSdk
 
 extension AhOpsPallet {
     struct WithdrawCrowdloanContributionCall: Codable {
-        @StringCodable var blockNumber: BlockNumber
+        enum CodingKeys: String, CodingKey {
+            case block
+            case depositor
+            case paraId = "para_id"
+        }
+
+        @StringCodable var block: BlockNumber
         @NullCodable var depositor: BytesCodable?
         @StringCodable var paraId: ParaId
 

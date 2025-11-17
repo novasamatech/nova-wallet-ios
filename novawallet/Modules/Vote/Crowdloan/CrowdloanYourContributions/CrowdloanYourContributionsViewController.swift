@@ -31,6 +31,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
         super.viewDidLoad()
 
         setupTable()
+        setupTargets()
         applyLocalization()
         presenter.setup()
     }
@@ -67,7 +68,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
             )
             cell.bind(unlockViewModel: subtitle, style: .returnIn)
         } else {
-            subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.crowdloanReturnInProgress()
+            subtitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonUnlockable()
             cell.bind(unlockViewModel: subtitle, style: .claimable)
         }
     }

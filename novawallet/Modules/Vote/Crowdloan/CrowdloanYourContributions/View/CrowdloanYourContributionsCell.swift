@@ -68,12 +68,15 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
             bottomValue: contributionViewModel.contributed.price
         )
 
+        iconViewModel?.cancel(on: iconImageView)
+        iconViewModel = contributionViewModel.iconViewModel
+
         contributionViewModel.iconViewModel?.loadImage(
             on: iconImageView,
             targetSize: CGSize(width: 32, height: 32),
             animated: true
         )
-        iconViewModel = contributionViewModel.iconViewModel
+
         model = contributionViewModel
     }
 

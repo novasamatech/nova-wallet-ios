@@ -80,7 +80,7 @@ private extension CrowdloanUnlockInteractor {
         { builder in
             try items.reduce(builder) { builder, item in
                 let call = AhOpsPallet.WithdrawCrowdloanContributionCall(
-                    blockNumber: item.block,
+                    block: item.block,
                     paraId: item.paraId
                 )
 

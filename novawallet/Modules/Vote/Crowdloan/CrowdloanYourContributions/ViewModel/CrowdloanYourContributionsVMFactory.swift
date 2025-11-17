@@ -60,16 +60,12 @@ private extension CrowdloanYourContributionsVMFactory {
             guard
                 let depositor = model.depositor,
                 let depositorAddress = try? depositor.toAddress(using: chainAsset.chain),
-                let icon = try? iconGenerator.generateFromAddress(depositorAddress).imageWithFillColor(
-                    R.color.colorIconPrimary()!,
-                    size: UIConstants.normalAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
+                let icon = try? iconGenerator.generateFromAddress(depositorAddress)
             else {
                 return nil
             }
 
-            return StaticImageViewModel(image: icon)
+            return DrawableIconViewModel(icon: icon, fillColor: R.color.colorIconPrimary()!)
         }
     }
 
