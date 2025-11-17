@@ -14,25 +14,14 @@ final class SendAssetsOperationInteractor {
 
     init(
         stateObservable: AssetListModelObservable,
+        filter: @escaping ChainAssetsFilter,
         settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
+        self.filter = filter
         self.settingsManager = settingsManager
         self.logger = logger
-
-        filter = { chainAsset in
-            let assetMapper = CustomAssetMapper(type: chainAsset.asset.type, typeExtras: chainAsset.asset.typeExtras)
-
-            guard let transfersEnabled = try? assetMapper.transfersEnabled(), transfersEnabled else {
-                return false
-            }
-            guard let balance = try? stateObservable.state.value.balances[chainAsset.chainAssetId]?.get() else {
-                return false
-            }
-
-            return balance.transferable > 0
-        }
     }
 
     private func provideAssetsGroupStyle() {

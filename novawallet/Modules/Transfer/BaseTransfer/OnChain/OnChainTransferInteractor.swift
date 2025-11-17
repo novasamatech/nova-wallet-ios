@@ -6,6 +6,7 @@ import SubstrateSdk
 class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantFetching {
     let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
+    let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
@@ -42,6 +43,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
+        transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -54,6 +56,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
         self.feeAsset = feeAsset
+        self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
         self.substrateStorageFacade = substrateStorageFacade
@@ -119,186 +122,49 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
             return (builder, nil)
         }
 
-        switch sendingAssetInfo {
-        case let .orml(info), let .ormlHydrationEvm(info):
-            return try addingOrmlTransferCommand(
+        return try transferCommandFactory.addingTransferCommand(
+            to: builder,
+            amount: amount,
+            recipient: recepient,
+            assetStorageInfo: sendingAssetInfo
+        )
+    }
+
+    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
+
+        let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
+
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier,
+            payingIn: feeAsset?.chainAssetId
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
                 to: builder,
                 amount: amount,
-                recepient: recepient,
-                tokenStorageInfo: info
-            )
-        case let .statemine(info):
-            return try addingAssetsTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .native(info):
-            return try addingNativeTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                info: info
-            )
-        case let .equilibrium(extras):
-            return try addingEquilibriumTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepient,
-                extras: extras
-            )
-        case .erc20, .evmNative:
-            // we have a separate flow for evm
-            return (builder, nil)
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
+
+            return newBuilder
+        }
+    }
+
+    func processFee(
+        result: Result<ExtrinsicFeeProtocol, Error>,
+        for _: TransactionFeeId
+    ) {
+        switch result {
+        case let .success(info):
+            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
+            presenter?.didReceiveFee(result: .success(feeModel))
+        case let .failure(error):
+            presenter?.didReceiveFee(result: .failure(error))
         }
     }
 }
 
 private extension OnChainTransferInteractor {
-    func addingOrmlTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        switch amount {
-        case let .concrete(value):
-            return try addingOrmlTransferValueCommand(
-                to: builder,
-                recepient: recepient,
-                tokenStorageInfo: tokenStorageInfo,
-                value: value
-            )
-        case let .all(value):
-            if tokenStorageInfo.canTransferAll {
-                return try addingOrmlTransferAllCommand(
-                    to: builder,
-                    recepient: recepient,
-                    tokenStorageInfo: tokenStorageInfo
-                )
-            } else {
-                return try addingOrmlTransferValueCommand(
-                    to: builder,
-                    recepient: recepient,
-                    tokenStorageInfo: tokenStorageInfo,
-                    value: value
-                )
-            }
-        }
-    }
-
-    func addingOrmlTransferValueCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo,
-        value: BigUInt
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.ormlTransfer(
-            in: tokenStorageInfo.module,
-            currencyId: tokenStorageInfo.currencyId,
-            receiverId: recepient,
-            amount: value
-        )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingOrmlTransferAllCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.ormlTransferAll(
-            in: tokenStorageInfo.module,
-            currencyId: tokenStorageInfo.currencyId,
-            receiverId: recepient
-        )
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingNativeTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        info: NativeTokenStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        switch amount {
-        case let .concrete(value):
-            return try addingNativeTransferValueCommand(
-                to: builder,
-                recepient: recepient,
-                value: value,
-                callPath: info.transferCallPath
-            )
-        case let .all(value):
-            if info.canTransferAll {
-                return try addingNativeTransferAllCommand(to: builder, recepient: recepient)
-            } else {
-                return try addingNativeTransferValueCommand(
-                    to: builder,
-                    recepient: recepient,
-                    value: value,
-                    callPath: info.transferCallPath
-                )
-            }
-        }
-    }
-
-    func addingNativeTransferValueCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId,
-        value: BigUInt,
-        callPath: CallCodingPath
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.nativeTransfer(to: recepient, amount: value, callPath: callPath)
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingNativeTransferAllCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        recepient: AccountId
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.nativeTransferAll(to: recepient)
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingAssetsTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        info: AssetsPalletStorageInfo
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.assetsTransfer(
-            to: recepient,
-            info: info,
-            amount: amount.value
-        )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
-    func addingEquilibriumTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId,
-        extras: EquilibriumAssetExtras
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.equilibriumTransfer(
-            to: recepient,
-            extras: extras,
-            amount: amount.value
-        )
-
-        let newBuilder = try builder.adding(call: call)
-        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-    }
-
     func fetchAssetExistence(
         for assetStorageInfo: AssetStorageInfo,
         completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
@@ -529,26 +395,6 @@ extension OnChainTransferInteractor {
         self.feeAsset = feeAsset
     }
 
-    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
-        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
-
-        let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
-
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: identifier,
-            payingIn: feeAsset?.chainAssetId
-        ) { [weak self] builder in
-            let (newBuilder, _) = try self?.addingTransferCommand(
-                to: builder,
-                amount: amount,
-                recepient: recepientAccountId
-            ) ?? (builder, nil)
-
-            return newBuilder
-        }
-    }
-
     func requestFeePaymentAvailability(for chainAsset: ChainAsset) {
         let wrapper = transferAggregationWrapperFactory.createCanPayFeeWrapper(in: chainAsset)
 
@@ -589,14 +435,8 @@ extension OnChainTransferInteractor {
 extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<ExtrinsicFeeProtocol, Error>,
-        for _: TransactionFeeId
+        for transactionFeeId: TransactionFeeId
     ) {
-        switch result {
-        case let .success(info):
-            let feeModel = FeeOutputModel(value: info, validationProvider: nil)
-            presenter?.didReceiveFee(result: .success(feeModel))
-        case let .failure(error):
-            presenter?.didReceiveFee(result: .failure(error))
-        }
+        processFee(result: result, for: transactionFeeId)
     }
 }

@@ -61,6 +61,10 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
         titleView.setNeedsLayout()
     }
 
+    func bind(chainAccount _: ViewModel.ChainAccountAddressInfo) {
+        networkImageView.isHidden = true
+    }
+
     func setAppearance(for selectionAvailable: Bool) {
         if selectionAvailable {
             titleLabel.textColor = R.color.colorTextPrimary()

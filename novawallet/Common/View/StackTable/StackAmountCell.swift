@@ -1,6 +1,9 @@
 import UIKit
 
-final class StackNetworkFeeCell: RowView<NetworkFeeView> {
+typealias StackNetworkFeeCell = StackAmountCell<NetworkFeeView>
+typealias StackGiftAmountCell = StackAmountCell<GiftAmountView>
+
+class StackAmountCell<T: MultilineAmountView>: RowView<T>, StackTableViewCellProtocol {
     convenience init() {
         self.init(frame: .zero)
     }
@@ -20,7 +23,7 @@ final class StackNetworkFeeCell: RowView<NetworkFeeView> {
         isUserInteractionEnabled = false
 
         rowContentView.borderType = []
-        rowContentView.style = NetworkFeeView.ViewStyle(
+        rowContentView.style = TitleAmountView.ViewStyle(
             titleColor: R.color.colorTextSecondary()!,
             titleFont: .regularFootnote,
             tokenColor: R.color.colorTextPrimary()!,
@@ -30,5 +33,3 @@ final class StackNetworkFeeCell: RowView<NetworkFeeView> {
         )
     }
 }
-
-extension StackNetworkFeeCell: StackTableViewCellProtocol {}
