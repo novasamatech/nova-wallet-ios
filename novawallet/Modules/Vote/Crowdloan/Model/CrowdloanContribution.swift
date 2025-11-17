@@ -41,6 +41,12 @@ extension Array where Element == CrowdloanContribution {
     }
 
     func sortedByUnlockTime() -> [CrowdloanContribution] {
-        sorted { $0.unlocksAt < $1.unlocksAt }
+        sorted { cont1, cont2 in
+            guard cont1.unlocksAt == cont2.unlocksAt else {
+                return cont1.unlocksAt < cont2.unlocksAt
+            }
+
+            return cont1.paraId < cont2.paraId
+        }
     }
 }

@@ -83,6 +83,11 @@ final class CrowdloanYourContributionsPresenter {
         updateTimerDisplay()
     }
 
+    private func updateUnlockable() {
+        let hasUnlockable = createUnlockModel() != nil
+        view?.reload(hasUnlockable: hasUnlockable)
+    }
+
     private func invalidateTimer() {
         countdownTimer?.stop()
         countdownTimer = nil
@@ -125,6 +130,19 @@ final class CrowdloanYourContributionsPresenter {
 
         view?.reload(returnInIntervals: returnInViewModels)
     }
+
+    private func createUnlockModel() -> CrowdloanUnlock? {
+        guard
+            let blockNumber,
+            let unlockModel = CrowdloanUnlock(
+                contributions: input.contributions,
+                blockNumber: blockNumber
+            ) else {
+            return nil
+        }
+
+        return unlockModel
+    }
 }
 
 extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterProtocol {
@@ -133,7 +151,13 @@ extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterPr
         interactor.setup()
     }
 
-    func unlock() {}
+    func unlock() {
+        guard let unlockModel = createUnlockModel() else {
+            return
+        }
+
+        wireframe.showUnlock(from: view, model: unlockModel)
+    }
 }
 
 extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorOutputProtocol {
@@ -154,6 +178,7 @@ extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorO
         self.blockDuration = blockDuration
 
         updateReturnInTimeIntervals()
+        updateUnlockable()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {

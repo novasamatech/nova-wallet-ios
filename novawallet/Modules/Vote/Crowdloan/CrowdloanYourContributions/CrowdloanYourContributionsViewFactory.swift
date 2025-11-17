@@ -40,7 +40,7 @@ enum CrowdloanYourContributionsViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
         )
 
-        let wireframe = CrowdloanYourContributionsWireframe()
+        let wireframe = CrowdloanYourContributionsWireframe(state: sharedState)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         let viewModelFactory = CrowdloanYourContributionsVMFactory(

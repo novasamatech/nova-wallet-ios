@@ -38,4 +38,6 @@ protocol CrowdloanContributionsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol CrowdloanContributionsWireframeProtocol: AnyObject {}
+protocol CrowdloanContributionsWireframeProtocol: AnyObject {
+    func showUnlock(from view: CrowdloanContributionsViewProtocol?, model: CrowdloanUnlock)
+}
