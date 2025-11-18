@@ -1,8 +1,9 @@
 import Foundation
 import Operation_iOS
 
-final class EvmGiftReclaimWrapperFactory {
+final class EvmGiftReclaimWrapperFactory: GiftReclaimStatusUpdating {
     let chainRegistry: ChainRegistryProtocol
+    let giftRepository: AnyDataProviderRepository<GiftModel>
     let walletChecker: GiftReclaimWalletCheckerProtocol
     let claimOperationFactory: EvmGiftClaimFactoryProtocol
     let transactionService: EvmTransactionServiceProtocol
@@ -12,6 +13,7 @@ final class EvmGiftReclaimWrapperFactory {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        giftRepository: AnyDataProviderRepository<GiftModel>,
         walletChecker: GiftReclaimWalletCheckerProtocol,
         claimOperationFactory: EvmGiftClaimFactoryProtocol,
         transactionService: EvmTransactionServiceProtocol,
@@ -20,6 +22,7 @@ final class EvmGiftReclaimWrapperFactory {
         workingQueue: DispatchQueue
     ) {
         self.chainRegistry = chainRegistry
+        self.giftRepository = giftRepository
         self.walletChecker = walletChecker
         self.claimOperationFactory = claimOperationFactory
         self.transactionService = transactionService
@@ -129,9 +132,17 @@ extension EvmGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol {
                 )
             }
 
-            reclaimWrapper.addDependency(operations: [feeOperation])
+            let statusUpdateOperation = createPersistedStatusUpdateOperation(
+                for: gift,
+                dependingOn: reclaimWrapper
+            )
 
-            return reclaimWrapper.insertingHead(operations: [feeOperation])
+            reclaimWrapper.addDependency(operations: [feeOperation])
+            statusUpdateOperation.addDependency(reclaimWrapper.targetOperation)
+
+            return reclaimWrapper
+                .insertingHead(operations: [feeOperation])
+                .insertingTail(operation: statusUpdateOperation)
         } catch {
             return .createWithError(error)
         }

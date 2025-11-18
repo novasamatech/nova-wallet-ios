@@ -122,18 +122,19 @@ private extension GiftsSyncService {
         balance: AssetBalance?,
         asset: AssetModel
     ) {
-        guard let gift = gifts[giftAccountId.toHex()] else { return }
+        guard
+            let gift = gifts[giftAccountId.toHex()],
+            gift.status != .reclaimed
+        else { return }
 
         // TODO: - Remove after polling or any other submission monitoring implementation for EVM transactions
-        /// We take some time for block finalization, otherwise we will lock user's gift 
+        /// We take some time for block finalization, otherwise we will lock user's gift
         if asset.isAnyEvm {
             guard gift.creationDate.distance(to: Date()) > 60 else { return }
         }
 
         let status: GiftModel.Status = if let balance, balance.transferable > gift.amount {
             .pending
-        } else if gift.senderMetaId != nil {
-            .reclaimed
         } else {
             .claimed
         }

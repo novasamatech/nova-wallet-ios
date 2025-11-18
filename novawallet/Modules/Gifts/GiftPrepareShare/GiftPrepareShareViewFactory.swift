@@ -27,6 +27,7 @@ struct GiftPrepareShareViewFactory {
 
         guard let reclaimFactory = createReclaimFactory(
             for: giftAccountId,
+            selectedMetaAccountId: selectedWallet.metaId,
             chainAsset: chainAsset,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
@@ -89,6 +90,7 @@ struct GiftPrepareShareViewFactory {
 private extension GiftPrepareShareViewFactory {
     static func createReclaimFactory(
         for giftAccountId: AccountId,
+        selectedMetaAccountId: MetaAccountModel.Id,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
@@ -102,6 +104,7 @@ private extension GiftPrepareShareViewFactory {
         return switch chainAsset.asset.isAnyEvm {
         case true:
             createEvmReclaimFactory(
+                selectedMetaAccountId: selectedMetaAccountId,
                 giftAccountId: giftAccountId,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
@@ -110,6 +113,7 @@ private extension GiftPrepareShareViewFactory {
             )
         case false:
             createSubstrateReclaimFactory(
+                selectedMetaAccountId: selectedMetaAccountId,
                 giftAccountId: giftAccountId,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
@@ -120,6 +124,7 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createSubstrateReclaimFactory(
+        selectedMetaAccountId: MetaAccountModel.Id,
         giftAccountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
@@ -153,8 +158,13 @@ private extension GiftPrepareShareViewFactory {
             extrinsicMonitorFactory: extrinsicMonitorFactory
         )
 
+        let repository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createGiftsRepository(for: selectedMetaAccountId)
+
         return SubstrateGiftReclaimWrapperFactory(
             chainRegistry: chainRegistry,
+            giftRepository: repository,
             walletChecker: GiftReclaimWalletChecker(),
             claimOperationFactory: claimFactory,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
@@ -163,6 +173,7 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createEvmReclaimFactory(
+        selectedMetaAccountId: MetaAccountModel.Id,
         giftAccountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
@@ -197,8 +208,13 @@ private extension GiftPrepareShareViewFactory {
 
         let claimFactory = claimFactoryFacade.createEvmFactory(transactionService: transactionService)
 
+        let repository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createGiftsRepository(for: selectedMetaAccountId)
+
         return EvmGiftReclaimWrapperFactory(
             chainRegistry: chainRegistry,
+            giftRepository: repository,
             walletChecker: GiftReclaimWalletChecker(),
             claimOperationFactory: claimFactory,
             transactionService: transactionService,

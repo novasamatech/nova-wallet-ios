@@ -1,8 +1,9 @@
 import Foundation
 import Operation_iOS
 
-final class SubstrateGiftReclaimWrapperFactory {
+final class SubstrateGiftReclaimWrapperFactory: GiftReclaimStatusUpdating {
     let chainRegistry: ChainRegistryProtocol
+    let giftRepository: AnyDataProviderRepository<GiftModel>
     let walletChecker: GiftReclaimWalletCheckerProtocol
     let claimOperationFactory: SubstrateGiftClaimFactoryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
@@ -10,12 +11,14 @@ final class SubstrateGiftReclaimWrapperFactory {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        giftRepository: AnyDataProviderRepository<GiftModel>,
         walletChecker: GiftReclaimWalletCheckerProtocol,
         claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
+        self.giftRepository = giftRepository
         self.walletChecker = walletChecker
         self.claimOperationFactory = claimOperationFactory
         self.assetStorageInfoFactory = assetStorageInfoFactory
@@ -57,9 +60,17 @@ extension SubstrateGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol 
                 )
             }
 
-            reclaimWrapper.addDependency(wrapper: storageInfoWrapper)
+            let statusUpdateOperation = createPersistedStatusUpdateOperation(
+                for: gift,
+                dependingOn: reclaimWrapper
+            )
 
-            return reclaimWrapper.insertingHead(operations: storageInfoWrapper.allOperations)
+            reclaimWrapper.addDependency(wrapper: storageInfoWrapper)
+            statusUpdateOperation.addDependency(reclaimWrapper.targetOperation)
+
+            return reclaimWrapper
+                .insertingHead(operations: storageInfoWrapper.allOperations)
+                .insertingTail(operation: statusUpdateOperation)
         } catch {
             return .createWithError(error)
         }
