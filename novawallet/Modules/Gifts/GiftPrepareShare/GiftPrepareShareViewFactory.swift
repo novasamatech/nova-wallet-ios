@@ -124,7 +124,7 @@ private extension GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
-        operationQueue: OperationQueue,
+        operationQueue: OperationQueue
     ) -> GiftReclaimWrapperFactoryProtocol? {
         guard
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
@@ -167,7 +167,7 @@ private extension GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
-        operationQueue: OperationQueue,
+        operationQueue: OperationQueue
     ) -> GiftReclaimWrapperFactoryProtocol? {
         guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
