@@ -11,7 +11,9 @@ env:
   scheme: default
   platform: iOS Simulator
   device: iPhone 16
+  xcode-version: 16.1
   RUN_IN_CI: true
+  MINT_PATH: ${{ github.workspace }}/.mint
 
 jobs:
   build:
@@ -21,7 +23,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.1
+          xcode-version: ${{ env.xcode-version }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,18 +32,34 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Cache Mint packages
+        id: mint-cache
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/mint
-          key: ${{ runner.os }}-mint-${{ hashFiles('**/CIMintfile') }}
-          restore-keys: ${{ runner.os }}-mint-
+          path: ${{ env.MINT_PATH }}
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-
 
       - name: Install Mint
         run: brew install mint
 
       - name: Mint bootstrap
         if: steps.mint-cache.outputs.cache-hit != 'true'
-        run: mint bootstrap --mintfile CIMintfile
+        run: |
+          mint bootstrap --mintfile CIMintfile
+
+      - name: Debug Mint cache
+        run: |
+          echo "MINT_PATH: ${MINT_PATH}"
+          du -sh "${MINT_PATH}" || true
+          echo "--- ls -la ${MINT_PATH}"
+          ls -la "${MINT_PATH}" || true
+          echo "--- find (maxdepth 2)"
+          find "${MINT_PATH}" -maxdepth 2 -type d -print || true
+          echo "--- mint list"
+          mint list || true
+          echo "--- which sourcery"
+          mint which sourcery || echo "sourcery not found"
 
       - name: Set Default Scheme
         run: |
@@ -57,6 +75,24 @@ jobs:
           GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
 
           echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
+
+      - name: Restore SPM cache
+        uses: actions/cache@v4
+        with:
+          path: source_packages
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
+
+      - name: Ensure SPM directory exists
+        run: mkdir -p source_packages
+
+      - name: Resolve SPM dependencies
+        run: |
+          if [ $scheme = default ]; then scheme=$(cat default); fi
+          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
+          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+          xcodebuild -resolvePackageDependencies -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath "source_packages"
 
       - name: Build app
         env:
@@ -79,7 +115,7 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -skipPackagePluginValidation
+          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath "source_packages" -skipPackagePluginValidation
 
       - name: Run tests
         run: |
@@ -88,4 +124,4 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -skipPackagePluginValidation
+          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath "source_packages" -skipPackagePluginValidation
