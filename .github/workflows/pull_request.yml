@@ -31,7 +31,7 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Cache Mint packages
+      - name: Restore Mint packages сache
         id: mint-cache
         uses: actions/cache@v4
         with:
@@ -47,19 +47,6 @@ jobs:
         if: steps.mint-cache.outputs.cache-hit != 'true'
         run: |
           mint bootstrap --mintfile CIMintfile
-
-      - name: Debug Mint cache
-        run: |
-          echo "MINT_PATH: ${MINT_PATH}"
-          du -sh "${MINT_PATH}" || true
-          echo "--- ls -la ${MINT_PATH}"
-          ls -la "${MINT_PATH}" || true
-          echo "--- find (maxdepth 2)"
-          find "${MINT_PATH}" -maxdepth 2 -type d -print || true
-          echo "--- mint list"
-          mint list || true
-          echo "--- which sourcery"
-          mint which sourcery || echo "sourcery not found"
 
       - name: Set Default Scheme
         run: |
@@ -77,22 +64,24 @@ jobs:
           echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
       - name: Restore SPM cache
+        id: spm-cache
         uses: actions/cache@v4
         with:
-          path: source_packages
+          path: .source_packages
           key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
 
       - name: Ensure SPM directory exists
-        run: mkdir -p source_packages
+        run: mkdir -p .source_packages
 
       - name: Resolve SPM dependencies
+        if: steps.spm-cache.outputs.cache-hit != 'true'
         run: |
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild -resolvePackageDependencies -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath "source_packages"
+          xcodebuild -resolvePackageDependencies -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
 
       - name: Build app
         env:
@@ -115,7 +104,7 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath "source_packages" -skipPackagePluginValidation
+          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
 
       - name: Run tests
         run: |
@@ -124,4 +113,4 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath "source_packages" -skipPackagePluginValidation
+          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
