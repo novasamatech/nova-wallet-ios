@@ -65,7 +65,7 @@ extension GiftListPresenter: GiftListPresenterProtocol {
         else { return }
 
         wireframe.showGift(
-            with: gift.identifier,
+            gift,
             chainAsset: chainAsset,
             from: view
         )

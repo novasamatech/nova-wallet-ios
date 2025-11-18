@@ -27,7 +27,7 @@ protocol GiftListInteractorOutputProtocol: AnyObject {
 
 protocol GiftListWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, CommonRetryable {
     func showGift(
-        with id: GiftModel.Id,
+        _ gift: GiftModel,
         chainAsset: ChainAsset,
         from view: ControllerBackedProtocol?
     )

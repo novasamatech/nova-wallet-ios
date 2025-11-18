@@ -31,12 +31,13 @@ extension GiftListWireframe: GiftListWireframeProtocol {
     }
 
     func showGift(
-        with id: GiftModel.Id,
+        _ gift: GiftModel,
         chainAsset: ChainAsset,
         from view: ControllerBackedProtocol?
     ) {
         guard let giftView = GiftPrepareShareViewFactory.createView(
-            giftId: id,
+            giftId: gift.identifier,
+            giftAccountId: gift.giftAccountId,
             chainAsset: chainAsset,
             style: .share
         ) else { return }

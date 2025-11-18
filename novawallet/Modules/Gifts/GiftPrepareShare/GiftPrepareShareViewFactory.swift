@@ -6,13 +6,13 @@ import Keystore_iOS
 struct GiftPrepareShareViewFactory {
     static func createView(
         giftId: GiftModel.Id,
+        giftAccountId: AccountId,
         chainAsset: ChainAsset,
         style: GiftPrepareShareViewStyle
     ) -> GiftPrepareShareViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let selectedWallet = SelectedWalletSettings.shared.value,
-            let giftAccountId = try? giftId.toAccountId(using: chainAsset.chain.chainFormat)
+            let selectedWallet = SelectedWalletSettings.shared.value
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
