@@ -63,8 +63,9 @@ extension GiftOperationFactory: GiftOperationFactoryProtocol {
             return GiftModel(
                 amount: amount,
                 chainAssetId: chainAsset.chainAssetId,
-                status: .pending,
+                status: .created,
                 giftAccountId: accountId,
+                creationDate: Date(),
                 senderMetaId: metaId
             )
         }

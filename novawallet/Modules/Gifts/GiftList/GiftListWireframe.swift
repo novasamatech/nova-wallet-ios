@@ -1,9 +1,9 @@
 import Foundation
 
-final class GiftsOnboardingWireframe: GiftsOnboardingWireframeProtocol {
-    private let stateObservable: AssetListModelObservable
-    private let transferCompletion: TransferCompletionClosure
-    private let buyTokensClosure: BuyTokensClosure
+final class GiftListWireframe {
+    let stateObservable: AssetListModelObservable
+    let transferCompletion: TransferCompletionClosure
+    let buyTokensClosure: BuyTokensClosure
 
     init(
         stateObservable: AssetListModelObservable,
@@ -14,8 +14,10 @@ final class GiftsOnboardingWireframe: GiftsOnboardingWireframeProtocol {
         self.transferCompletion = transferCompletion
         self.buyTokensClosure = buyTokensClosure
     }
+}
 
-    func showCreateGift(from view: GiftsOnboardingViewProtocol?) {
+extension GiftListWireframe: GiftListWireframeProtocol {
+    func showCreateGift(from view: (any ControllerBackedProtocol)?) {
         guard let assetOperationView = AssetOperationViewFactory.createGiftView(
             for: stateObservable,
             transferCompletion: transferCompletion,
