@@ -15,11 +15,22 @@ struct GiftPrepareShareViewFactory {
         let storageFacade = UserDataStorageFacade.shared
         let repositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let giftRepository = repositoryFactory.createGiftsRepository(for: nil)
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        
+        let keystore = Keychain()
 
-        let giftSecretsManager = GiftSecretsManager(keystore: Keychain())
+        let giftSecretsManager = GiftSecretsManager(keystore: keystore)
+        
+        guard let reclaimFactory = createReclaimFactory(
+            for: chainAsset,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            keystore: keystore
+        ) else { return nil }
 
         let interactor = GiftPrepareShareInteractor(
             giftRepository: giftRepository,
+            reclaimWrapperFactory: reclaimFactory,
             giftSecretsManager: giftSecretsManager,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             giftId: giftId,
@@ -60,5 +71,131 @@ struct GiftPrepareShareViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+}
+
+// MARK: - Private
+
+private extension GiftPrepareShareViewFactory {
+    static func createReclaimFactory(
+        for chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
+        keystore: KeystoreProtocol
+    ) -> GiftReclaimWrapperFactoryProtocol? {
+        let claimFacade = GiftClaimFactoryFacade(
+            operationQueue: operationQueue,
+            keystore: keystore
+        )
+        
+        return switch chainAsset.asset.isAnyEvm {
+        case true:
+            createEvmReclaimFactory(
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry,
+                claimFactoryFacade: claimFacade,
+                operationQueue: operationQueue
+            )
+        case false:
+            createSubstrateReclaimFactory(
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry,
+                claimFactoryFacade: claimFacade,
+                operationQueue: operationQueue
+            )
+        }
+    }
+    
+    static func createSubstrateReclaimFactory(
+        chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        claimFactoryFacade: GiftClaimFactoryFacade,
+        operationQueue: OperationQueue,
+    ) -> GiftReclaimWrapperFactoryProtocol? {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+        else {
+            return nil
+        }
+        
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
+
+        let extrinsicMonitorFactory = ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            connection: connection,
+            runtimeService: runtimeProvider,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+        
+        let claimFactory = claimFactoryFacade.createSubstrateFactory(
+            extrinsicMonitorFactory: extrinsicMonitorFactory
+        )
+        
+        return SubstrateGiftReclaimWrapperFactory(
+            chainRegistry: chainRegistry,
+            walletChecker: GiftReclaimWalletChecker(),
+            claimOperationFactory: claimFactory,
+            assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
+            operationQueue: operationQueue
+        )
+    }
+    
+    static func createEvmReclaimFactory(
+        chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        claimFactoryFacade: GiftClaimFactoryFacade,
+        operationQueue: OperationQueue,
+    ) -> GiftReclaimWrapperFactoryProtocol? {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+        else {
+            return nil
+        }
+        
+        let operationFactory = EvmWebSocketOperationFactory(connection: connection)
+
+        let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
+            for: chainAsset.asset,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
+
+        let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
+
+        let transactionService = EvmTransactionService(
+            accountId: selectedAccount.accountId,
+            operationFactory: operationFactory,
+            maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
+            defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),
+            gasLimitProvider: gasLimitProvider,
+            nonceProvider: nonceProvider,
+            chain: chainAsset.chain,
+            operationQueue: operationQueue
+        )
+        
+        let claimFactory = claimFactoryFacade.createEvmFactory(transactionService: transactionService)
+        
+        return EvmGiftReclaimWrapperFactory(
+            chainRegistry: chainRegistry,
+            walletChecker: GiftReclaimWalletChecker(),
+            claimOperationFactory: claimFactory,
+            transactionService: transactionService,
+            transferCommandFactory: EvmTransferCommandFactory(),
+            operationQueue: operationQueue,
+            workingQueue: .main
+        )
     }
 }
