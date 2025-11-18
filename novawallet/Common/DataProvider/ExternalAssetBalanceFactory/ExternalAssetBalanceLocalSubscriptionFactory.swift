@@ -55,21 +55,16 @@ enum ExternalBalanceLocalSubscriptionFacade {
         chainRegistry: ChainRegistryProtocol
     ) -> ExternalBalanceLocalSubscriptionFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
         let workingQueue = DispatchQueue.global(qos: .userInitiated)
         let logger = Logger.shared
 
         let crowdloanServiceFactory = CrowdloanExternalServiceFactory(
             storageFacade: storageFacade,
             chainRegistry: chainRegistry,
-            operationFactory: CrowdloanOperationFactory(
-                requestOperationFactory: StorageRequestFactory(
-                    remoteFactory: StorageKeyFactory(),
-                    operationManager: operationManager
-                ),
-                operationManager: operationManager
+            operationFactory: AhOpsOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
             ),
-            paraIdOperationFactory: ParaIdOperationFactory.shared,
             operationQueue: operationQueue,
             logger: logger
         )

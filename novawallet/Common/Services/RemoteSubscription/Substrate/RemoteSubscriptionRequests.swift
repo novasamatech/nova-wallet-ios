@@ -144,3 +144,46 @@ struct DoubleMapSubscriptionRequest<T1: Encodable, T2: Encodable>: SubscriptionR
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [encodingOperation])
     }
 }
+
+struct NMapSubscriptionRequest: SubscriptionRequestProtocol {
+    let storagePath: StorageCodingPath
+    let localKey: String
+    let keyParams: NMapKeyStorageKeyProtocol
+
+    init(storagePath: StorageCodingPath, localKey: String, keyParams: NMapKeyStorageKeyProtocol) {
+        self.storagePath = storagePath
+        self.localKey = localKey
+        self.keyParams = keyParams
+    }
+
+    func createKeyEncodingWrapper(
+        using storageKeyFactory: StorageKeyFactoryProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<Data> {
+        let encodingOperation = NMapKeyEncodingOperation(
+            path: storagePath,
+            storageKeyFactory: storageKeyFactory,
+            keys: [keyParams]
+        )
+
+        encodingOperation.configurationBlock = {
+            do {
+                encodingOperation.codingFactory = try codingFactoryClosure()
+            } catch {
+                encodingOperation.result = .failure(error)
+            }
+        }
+
+        let mappingOperation = ClosureOperation<Data> {
+            guard let remoteKey = try encodingOperation.extractNoCancellableResultData().first else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return remoteKey
+        }
+
+        mappingOperation.addDependency(encodingOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [encodingOperation])
+    }
+}

@@ -46,13 +46,24 @@ extension MultiValueView.Style {
         )
     )
 
-    static let contributionRow = MultiValueView.Style(
+    static let contributionReturnsIn = MultiValueView.Style(
         topLabel: .init(
             textColor: R.color.colorTextPrimary(),
             font: .regularSubheadline
         ),
         bottomLabel: .init(
             textColor: R.color.colorTextSecondary(),
+            font: .caption1
+        )
+    )
+
+    static let contributionClamable = MultiValueView.Style(
+        topLabel: .init(
+            textColor: R.color.colorTextPrimary(),
+            font: .regularSubheadline
+        ),
+        bottomLabel: .init(
+            textColor: R.color.colorTextPositive(),
             font: .caption1
         )
     )
