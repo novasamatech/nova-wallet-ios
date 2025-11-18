@@ -5,7 +5,7 @@ import BigInt
 protocol GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
         for giftAccountId: AccountId,
-        chainAsset: ChainAsset
+        chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<GiftClaimAvailabilty>
 }
 
@@ -68,40 +68,47 @@ private extension GiftClaimAvailabilityCheckFactory {
 extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
         for giftAccountId: AccountId,
-        chainAsset: ChainAsset
+        chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<GiftClaimAvailabilty> {
-        let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
-            for: giftAccountId,
-            chainAsset: chainAsset
-        )
-        let balanceExistenceWrapper = createBalanceExisteceWrapper(
-            chainAsset: chainAsset
-        )
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
 
-        let resultOperation = ClosureOperation<GiftClaimAvailabilty> {
-            let transferableBalance = try transferableBalanceWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-                .transferable
+            let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
+                for: giftAccountId,
+                chainAsset: chainAsset
+            )
+            let balanceExistenceWrapper = createBalanceExisteceWrapper(
+                chainAsset: chainAsset
+            )
 
-            let existence = try balanceExistenceWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
+            let resultOperation = ClosureOperation<GiftClaimAvailabilty> {
+                let transferableBalance = try transferableBalanceWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+                    .transferable
 
-            return transferableBalance > existence.minBalance
-                ? .claimable(transferableBalance)
-                : .claimed
+                let existence = try balanceExistenceWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+
+                return transferableBalance > existence.minBalance
+                    ? .claimable(transferableBalance)
+                    : .claimed
+            }
+
+            resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
+            resultOperation.addDependency(balanceExistenceWrapper.targetOperation)
+
+            let dependencies = transferableBalanceWrapper.allOperations + balanceExistenceWrapper.allOperations
+
+            return CompoundOperationWrapper(
+                targetOperation: resultOperation,
+                dependencies: dependencies
+            )
+        } catch {
+            return .createWithError(error)
         }
-
-        resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
-        resultOperation.addDependency(balanceExistenceWrapper.targetOperation)
-
-        let dependencies = transferableBalanceWrapper.allOperations + balanceExistenceWrapper.allOperations
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: dependencies
-        )
     }
 }
 

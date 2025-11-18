@@ -11,6 +11,11 @@ protocol GiftClaimFactoryProtocol {
         using description: ClaimableGiftDescription,
         claimWrapperProvider: GiftClaimWrapperProvider
     ) -> CompoundOperationWrapper<Void>
+
+    func reclaimGift(
+        _ gift: GiftModel,
+        claimWrapperProvider: GiftClaimWrapperProvider
+    ) -> CompoundOperationWrapper<Void>
 }
 
 final class GiftClaimFactory {
@@ -66,7 +71,7 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
     ) -> CompoundOperationWrapper<Void> {
         let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
             for: description.accountId,
-            chainAsset: description.chainAsset
+            chainAssetId: description.chainAsset.chainAssetId
         )
         let giftWrapper = createGiftWrapperOrError(
             basedOn: claimAvailabilityWrapper,
@@ -74,6 +79,28 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
             amount: description.amount.value,
             chainAsset: description.chainAsset
         )
+        let claimWrapper = claimWrapperProvider(
+            giftWrapper
+        )
+
+        giftWrapper.addDependency(wrapper: claimAvailabilityWrapper)
+        claimWrapper.addDependency(wrapper: giftWrapper)
+
+        return claimWrapper
+            .insertingHead(operations: giftWrapper.allOperations)
+            .insertingHead(operations: claimAvailabilityWrapper.allOperations)
+    }
+
+    func reclaimGift(
+        _ gift: GiftModel,
+        claimWrapperProvider: GiftClaimWrapperProvider
+    ) -> CompoundOperationWrapper<Void> {
+        let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
+            for: gift.giftAccountId,
+            chainAssetId: gift.chainAssetId
+        )
+        let giftWrapper: CompoundOperationWrapper<GiftModel> = .createWithResult(gift)
+
         let claimWrapper = claimWrapperProvider(
             giftWrapper
         )

@@ -1990,7 +1990,6 @@
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
 		2D86C8752EBA115F003325FC /* GiftClaimViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8742EBA115F003325FC /* GiftClaimViewModel.swift */; };
-		2D86C8882EBA170F003325FC /* ClaimableGiftInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8872EBA170F003325FC /* ClaimableGiftInfo.swift */; };
 		2D86C88F2EBA6B04003325FC /* GiftSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */; };
 		2D86C8962EBA7837003325FC /* ClaimGiftUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */; };
 		2D86C89B2EBA7A82003325FC /* GiftClaimNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */; };
@@ -8660,7 +8659,6 @@
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D86C8742EBA115F003325FC /* GiftClaimViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimViewModel.swift; sourceTree = "<group>"; };
-		2D86C8872EBA170F003325FC /* ClaimableGiftInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimableGiftInfo.swift; sourceTree = "<group>"; };
 		2D86C88E2EBA6B04003325FC /* GiftSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSigningWrapper.swift; sourceTree = "<group>"; };
 		2D86C8952EBA7837003325FC /* ClaimGiftUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimGiftUrlParsingService.swift; sourceTree = "<group>"; };
 		2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftClaimNavigation.swift; sourceTree = "<group>"; };
@@ -18075,7 +18073,6 @@
 			isa = PBXGroup;
 			children = (
 				2D86C8742EBA115F003325FC /* GiftClaimViewModel.swift */,
-				2D86C8872EBA170F003325FC /* ClaimableGiftInfo.swift */,
 				2D86C89A2EBA7A82003325FC /* GiftClaimNavigation.swift */,
 			);
 			path = Model;
@@ -35877,7 +35874,6 @@
 				77EFFC932A72A288009E28F8 /* StakingTypeBaseBannerView.swift in Sources */,
 				2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
-				2D86C8882EBA170F003325FC /* ClaimableGiftInfo.swift in Sources */,
 				7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+Title.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,
 				19D3739A3C7800A5A18DA41C /* LedgerNetworkSelectionInteractor.swift in Sources */,
