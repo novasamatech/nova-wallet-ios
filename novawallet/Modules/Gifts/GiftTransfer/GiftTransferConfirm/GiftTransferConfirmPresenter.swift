@@ -241,6 +241,7 @@ extension GiftTransferConfirmPresenter: GiftTransferConfirmInteractorOutputProto
 
                 wireframe.showGiftShare(
                     from: view,
+                    giftAccountId: resultData.giftAccountId,
                     giftId: resultData.giftId,
                     chainAsset: chainAsset
                 )

@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol SubstrateGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGift,
+        for claimableGift: ClaimGiftPayload,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         assetStorageInfo: @escaping () throws -> AssetStorageInfo
@@ -12,17 +12,20 @@ protocol SubstrateGiftDescriptionFactoryProtocol {
 }
 
 final class SubstrateGiftDescriptionFactory {
+    let chainRegistry: ChainRegistryProtocol
     let transferCommandFactory: SubstrateTransferCommandFactory
     let extrinsicService: ExtrinsicServiceProtocol
     let callbackQueue: DispatchQueue
     let helper: ClaimableGiftDescriptionHelper
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         transferCommandFactory: SubstrateTransferCommandFactory,
         extrinsicService: ExtrinsicServiceProtocol,
         callbackQueue: DispatchQueue,
         helper: ClaimableGiftDescriptionHelper = ClaimableGiftDescriptionHelper()
     ) {
+        self.chainRegistry = chainRegistry
         self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.callbackQueue = callbackQueue
@@ -59,7 +62,7 @@ private extension SubstrateGiftDescriptionFactory {
 
 extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGift,
+        for claimableGift: ClaimGiftPayload,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         assetStorageInfo: @escaping () throws -> AssetStorageInfo
@@ -67,10 +70,11 @@ extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtoc
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let chainAsset = claimableGift.chainAsset
+            let chain = try chainRegistry.getChainOrError(for: claimableGift.chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: claimableGift.chainAssetId.assetId)
 
             let baseData = try helper.createBaseData(
-                for: claimableGift,
+                for: chainAsset,
                 giftAmountWithFee: giftAmountWithFee,
                 claimingWallet: claimingWallet
             )
@@ -91,6 +95,7 @@ extension SubstrateGiftDescriptionFactory: SubstrateGiftDescriptionFactoryProtoc
                 switch result {
                 case let .success(fee):
                     let description = helper.createFinalDescription(
+                        chainAsset: chainAsset,
                         claimableGift: claimableGift,
                         onChainAmountWithFee: baseData.onChainAmountWithFee,
                         feeAmount: fee.amount,

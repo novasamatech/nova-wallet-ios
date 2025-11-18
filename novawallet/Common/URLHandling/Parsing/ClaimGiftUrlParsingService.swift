@@ -43,7 +43,7 @@ private extension ClaimGiftUrlParsingService {
             switch checkResult {
             case let .claimable(totalAmount):
                 return GiftClaimNavigation(
-                    claimableGiftPayload: claimableGift.info(),
+                    claimableGiftPayload: claimableGift,
                     totalAmount: totalAmount
                 )
             case .claimed:
@@ -60,7 +60,7 @@ private extension ClaimGiftUrlParsingService {
         )
     }
 
-    func createParsePayloadWrapper(string: String) -> CompoundOperationWrapper<ClaimableGift> {
+    func createParsePayloadWrapper(string: String) -> CompoundOperationWrapper<ClaimGiftPayload> {
         guard let payload = payloadParser.parseLinkPayload(payloadString: string) else {
             return .createWithError(OpenScreenUrlParsingError.openGiftClaimScreen(.invalidURL))
         }
@@ -95,10 +95,10 @@ private extension ClaimGiftUrlParsingService {
                 ? publicKey.ethereumAddressFromPublicKey()
                 : publicKey.publicKeyToAccountId()
 
-            return ClaimableGift(
+            return ClaimGiftPayload(
                 seed: seed,
                 accountId: accountId,
-                chainAsset: chainAsset
+                chainAssetId: chainAsset.chainAssetId
             )
         }
 
@@ -108,14 +108,14 @@ private extension ClaimGiftUrlParsingService {
     }
 
     func createGiftClaimCheckWrapper(
-        dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimableGift>
+        dependingOn claimableGiftWrapper: CompoundOperationWrapper<ClaimGiftPayload>
     ) -> CompoundOperationWrapper<GiftClaimAvailabilty> {
         OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let claimableGift = try claimableGiftWrapper.targetOperation.extractNoCancellableResultData()
 
             return self.claimAvailabilityChecker.createAvailabilityWrapper(
                 for: claimableGift.accountId,
-                chainAsset: claimableGift.chainAsset
+                chainAssetId: claimableGift.chainAssetId
             )
         }
     }

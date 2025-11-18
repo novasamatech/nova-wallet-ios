@@ -29,4 +29,22 @@ extension GiftListWireframe: GiftListWireframeProtocol {
             animated: true
         )
     }
+
+    func showGift(
+        _ gift: GiftModel,
+        chainAsset: ChainAsset,
+        from view: ControllerBackedProtocol?
+    ) {
+        guard let giftView = GiftPrepareShareViewFactory.createView(
+            giftId: gift.identifier,
+            giftAccountId: gift.giftAccountId,
+            chainAsset: chainAsset,
+            style: .share
+        ) else { return }
+
+        view?.controller.navigationController?.pushViewController(
+            giftView.controller,
+            animated: true
+        )
+    }
 }

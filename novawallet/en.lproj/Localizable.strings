@@ -2008,3 +2008,10 @@
 "gift.status.claimed" = "Claimed";
 "gift.status.reclaimed" = "Reclaimed";
 "gift.created.date.format" = "Created: %@";
+"gift.action.reclaim.title" = "Reclaim";
+"gift.reclaim.no.account.alert.title" = "No Account Found";
+"gift.reclaim.no.account.alert.message" = "Please select another wallet or add a %@ account in Settings to continue.";
+"gift.reclaim.dialog.title" = "Reclaim %@ Gift?";
+"gift.reclaim.dialog.message" = "If you reclaim this gift, the shared link will be disabled, and tokens will be refunded to your wallet.
+Do you want to continue?";
+"gift.reclaim.success.status" = "You’ve successfully reclaimed your gift";
