@@ -12,8 +12,8 @@ env:
   platform: iOS Simulator
   device: iPhone 16
   xcode-version: 16.1
-  RUN_IN_CI: true
   MINT_PATH: ${{ github.workspace }}/.mint
+  RUN_IN_CI: true
 
 jobs:
   build:
@@ -78,10 +78,9 @@ jobs:
       - name: Resolve SPM dependencies
         if: steps.spm-cache.outputs.cache-hit != 'true'
         run: |
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
+          if [ "`ls -A | grep -i \\.xcworkspace\\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild -resolvePackageDependencies -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
+          xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
 
       - name: Build app
         env:
