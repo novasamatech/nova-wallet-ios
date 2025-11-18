@@ -9,7 +9,10 @@ struct GiftPrepareShareViewFactory {
         chainAsset: ChainAsset,
         style: GiftPrepareShareViewStyle
     ) -> GiftPrepareShareViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else { return nil }
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let selectedWallet = SelectedWalletSettings.shared.value
+        else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let storageFacade = UserDataStorageFacade.shared
@@ -22,13 +25,15 @@ struct GiftPrepareShareViewFactory {
         let giftSecretsManager = GiftSecretsManager(keystore: keystore)
 
         guard let reclaimFactory = createReclaimFactory(
-            for: chainAsset,
+            for: selectedWallet,
+            chainAsset: chainAsset,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
             keystore: keystore
         ) else { return nil }
 
         let interactor = GiftPrepareShareInteractor(
+            selectedWallet: selectedWallet,
             giftRepository: giftRepository,
             reclaimWrapperFactory: reclaimFactory,
             giftSecretsManager: giftSecretsManager,
@@ -61,6 +66,7 @@ struct GiftPrepareShareViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            flowStyle: style,
             localizationManager: localizationManager
         )
 
@@ -81,7 +87,8 @@ struct GiftPrepareShareViewFactory {
 
 private extension GiftPrepareShareViewFactory {
     static func createReclaimFactory(
-        for chainAsset: ChainAsset,
+        for selectedWallet: MetaAccountModel,
+        chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         keystore: KeystoreProtocol
@@ -94,6 +101,7 @@ private extension GiftPrepareShareViewFactory {
         return switch chainAsset.asset.isAnyEvm {
         case true:
             createEvmReclaimFactory(
+                selectedWallet: selectedWallet,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
                 claimFactoryFacade: claimFacade,
@@ -101,6 +109,7 @@ private extension GiftPrepareShareViewFactory {
             )
         case false:
             createSubstrateReclaimFactory(
+                selectedWallet: selectedWallet,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
                 claimFactoryFacade: claimFacade,
@@ -110,13 +119,13 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createSubstrateReclaimFactory(
+        selectedWallet: MetaAccountModel,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
         operationQueue: OperationQueue,
     ) -> GiftReclaimWrapperFactoryProtocol? {
         guard
-            let selectedWallet = SelectedWalletSettings.shared.value,
             let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
@@ -154,13 +163,13 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createEvmReclaimFactory(
+        selectedWallet: MetaAccountModel,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
         operationQueue: OperationQueue,
     ) -> GiftReclaimWrapperFactoryProtocol? {
         guard
-            let selectedWallet = SelectedWalletSettings.shared.value,
             let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
         else {

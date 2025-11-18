@@ -13,19 +13,19 @@ final class GiftPrepareSharePresenter {
     var gift: GiftModel?
     var viewModel: GiftPrepareViewModel?
 
-    var viewStyle: GiftPrepareShareViewStyle
+    var flowStyle: GiftPrepareShareViewStyle
 
     init(
         interactor: GiftPrepareShareInteractorInputProtocol,
         wireframe: GiftPrepareShareWireframeProtocol,
         viewModelFactory: GiftPrepareShareViewModelFactoryProtocol,
-        viewStyle: GiftPrepareShareViewStyle,
+        flowStyle: GiftPrepareShareViewStyle,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.viewStyle = viewStyle
+        self.flowStyle = flowStyle
         self.localizationManager = localizationManager
     }
 }
@@ -169,7 +169,7 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
                     actionTitle: localizedStrings.commonGotIt()
                 )
             default:
-                if viewStyle == .share {
+                if flowStyle == .share {
                     presentReclaimRetryable()
                 } else {
                     wireframe.present(
@@ -191,7 +191,7 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
                 message: localizedStrings.giftReclaimNoAccountAlertMessage(name),
                 actionTitle: localizedStrings.commonGotIt()
             )
-        } else if viewStyle == .share {
+        } else if flowStyle == .share {
             presentReclaimRetryable()
         } else {
             wireframe.present(
