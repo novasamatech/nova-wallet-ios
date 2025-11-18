@@ -11,7 +11,8 @@ struct GiftPrepareShareViewFactory {
     ) -> GiftPrepareShareViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let selectedWallet = SelectedWalletSettings.shared.value
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let giftAccountId = try? giftId.toAccountId(using: chainAsset.chain.chainFormat)
         else { return nil }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -25,7 +26,7 @@ struct GiftPrepareShareViewFactory {
         let giftSecretsManager = GiftSecretsManager(keystore: keystore)
 
         guard let reclaimFactory = createReclaimFactory(
-            for: selectedWallet,
+            for: giftAccountId,
             chainAsset: chainAsset,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
@@ -87,7 +88,7 @@ struct GiftPrepareShareViewFactory {
 
 private extension GiftPrepareShareViewFactory {
     static func createReclaimFactory(
-        for selectedWallet: MetaAccountModel,
+        for giftAccountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
@@ -101,7 +102,7 @@ private extension GiftPrepareShareViewFactory {
         return switch chainAsset.asset.isAnyEvm {
         case true:
             createEvmReclaimFactory(
-                selectedWallet: selectedWallet,
+                giftAccountId: giftAccountId,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
                 claimFactoryFacade: claimFacade,
@@ -109,7 +110,7 @@ private extension GiftPrepareShareViewFactory {
             )
         case false:
             createSubstrateReclaimFactory(
-                selectedWallet: selectedWallet,
+                giftAccountId: giftAccountId,
                 chainAsset: chainAsset,
                 chainRegistry: chainRegistry,
                 claimFactoryFacade: claimFacade,
@@ -119,14 +120,13 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createSubstrateReclaimFactory(
-        selectedWallet: MetaAccountModel,
+        giftAccountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
         operationQueue: OperationQueue,
     ) -> GiftReclaimWrapperFactoryProtocol? {
         guard
-            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
         else {
@@ -139,7 +139,7 @@ private extension GiftPrepareShareViewFactory {
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: selectedAccount, chain: chainAsset.chain)
+        ).createServiceForGiftClaim(accountId: giftAccountId, chain: chainAsset.chain)
 
         let extrinsicMonitorFactory = ExtrinsicSubmissionMonitorFactory(
             submissionService: extrinsicService,
@@ -163,16 +163,13 @@ private extension GiftPrepareShareViewFactory {
     }
 
     static func createEvmReclaimFactory(
-        selectedWallet: MetaAccountModel,
+        giftAccountId: AccountId,
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
         claimFactoryFacade: GiftClaimFactoryFacade,
         operationQueue: OperationQueue,
     ) -> GiftReclaimWrapperFactoryProtocol? {
-        guard
-            let selectedAccount = selectedWallet.fetch(for: chainAsset.chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
-        else {
+        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
         }
 
@@ -188,7 +185,7 @@ private extension GiftPrepareShareViewFactory {
         let nonceProvider = EvmDefaultNonceProvider(operationFactory: operationFactory)
 
         let transactionService = EvmTransactionService(
-            accountId: selectedAccount.accountId,
+            accountId: giftAccountId,
             operationFactory: operationFactory,
             maxPriorityGasPriceProvider: EvmMaxPriorityGasPriceProvider(operationFactory: operationFactory),
             defaultGasPriceProvider: EvmLegacyGasPriceProvider(operationFactory: operationFactory),

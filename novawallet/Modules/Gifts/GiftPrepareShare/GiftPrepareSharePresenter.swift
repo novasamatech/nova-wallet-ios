@@ -44,6 +44,8 @@ private extension GiftPrepareSharePresenter {
             )
         else { return }
 
+        self.viewModel = viewModel
+
         view?.didReceive(viewModel: viewModel)
     }
 
@@ -106,9 +108,8 @@ extension GiftPrepareSharePresenter: GiftPrepareSharePresenterProtocol {
     func actionReclaim() {
         guard let gift else { return }
 
-        view?.didReceive(reclaimLoading: true)
-
         presentReclaimDialog { [weak self] in
+            self?.view?.didReceive(reclaimLoading: true)
             self?.interactor.reclaim(gift: gift)
         }
     }

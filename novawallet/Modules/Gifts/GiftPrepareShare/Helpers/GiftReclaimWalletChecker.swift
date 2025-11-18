@@ -22,6 +22,7 @@ final class GiftReclaimWalletChecker: GiftReclaimWalletCheckerProtocol {
             )
         }
 
+        let address = try accountResponse.accountId.toAddress(using: chain.chainFormat)
         return accountResponse.accountId
     }
 }
