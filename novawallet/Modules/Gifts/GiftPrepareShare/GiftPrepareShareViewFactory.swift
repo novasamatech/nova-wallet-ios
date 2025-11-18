@@ -16,11 +16,11 @@ struct GiftPrepareShareViewFactory {
         let repositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let giftRepository = repositoryFactory.createGiftsRepository(for: nil)
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        
+
         let keystore = Keychain()
 
         let giftSecretsManager = GiftSecretsManager(keystore: keystore)
-        
+
         guard let reclaimFactory = createReclaimFactory(
             for: chainAsset,
             chainRegistry: chainRegistry,
@@ -55,16 +55,19 @@ struct GiftPrepareShareViewFactory {
             universalLinkFactory: universalLinkFactory
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = GiftPrepareSharePresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         let view = GiftPrepareShareViewController(
             presenter: presenter,
-            viewStyle: style
+            viewStyle: style,
+            localizationManager: localizationManager
         )
 
         presenter.view = view
@@ -87,7 +90,7 @@ private extension GiftPrepareShareViewFactory {
             operationQueue: operationQueue,
             keystore: keystore
         )
-        
+
         return switch chainAsset.asset.isAnyEvm {
         case true:
             createEvmReclaimFactory(
@@ -105,7 +108,7 @@ private extension GiftPrepareShareViewFactory {
             )
         }
     }
-    
+
     static func createSubstrateReclaimFactory(
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
@@ -120,7 +123,7 @@ private extension GiftPrepareShareViewFactory {
         else {
             return nil
         }
-        
+
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
@@ -136,11 +139,11 @@ private extension GiftPrepareShareViewFactory {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-        
+
         let claimFactory = claimFactoryFacade.createSubstrateFactory(
             extrinsicMonitorFactory: extrinsicMonitorFactory
         )
-        
+
         return SubstrateGiftReclaimWrapperFactory(
             chainRegistry: chainRegistry,
             walletChecker: GiftReclaimWalletChecker(),
@@ -149,7 +152,7 @@ private extension GiftPrepareShareViewFactory {
             operationQueue: operationQueue
         )
     }
-    
+
     static func createEvmReclaimFactory(
         chainAsset: ChainAsset,
         chainRegistry: ChainRegistryProtocol,
@@ -163,7 +166,7 @@ private extension GiftPrepareShareViewFactory {
         else {
             return nil
         }
-        
+
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
 
         let gasLimitProvider = EvmGasLimitProviderFactory.createGasLimitProvider(
@@ -185,9 +188,9 @@ private extension GiftPrepareShareViewFactory {
             chain: chainAsset.chain,
             operationQueue: operationQueue
         )
-        
+
         let claimFactory = claimFactoryFacade.createEvmFactory(transactionService: transactionService)
-        
+
         return EvmGiftReclaimWrapperFactory(
             chainRegistry: chainRegistry,
             walletChecker: GiftReclaimWalletChecker(),

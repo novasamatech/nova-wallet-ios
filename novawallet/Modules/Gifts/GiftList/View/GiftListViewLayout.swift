@@ -26,6 +26,7 @@ final class GiftListViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         setupInitialLayout()
     }
 
