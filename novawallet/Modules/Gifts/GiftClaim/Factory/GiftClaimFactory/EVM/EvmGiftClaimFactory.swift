@@ -104,7 +104,7 @@ extension EvmGiftClaimFactory: EvmGiftClaimFactoryProtocol {
             return .createWithError(GiftClaimError.claimingAccountNotFound)
         }
 
-        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper in
+        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper, _ in
             self.createClaimWrapper(
                 dependingOn: giftWrapper,
                 amount: giftDescription.amount,
@@ -117,6 +117,29 @@ extension EvmGiftClaimFactory: EvmGiftClaimFactoryProtocol {
 
         return claimFactory.claimGift(
             using: giftDescription,
+            claimWrapperProvider: claimWrapperProvider
+        )
+    }
+
+    func createReclaimWrapper(
+        gift: GiftModel,
+        claimingAccountId: AccountId,
+        evmFee: EvmFeeModel,
+        transferType: EvmTransferType
+    ) -> CompoundOperationWrapper<Void> {
+        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper, chainAsset in
+            self.createClaimWrapper(
+                dependingOn: giftWrapper,
+                amount: .all(value: gift.amount),
+                claimingAccountId: claimingAccountId,
+                evmFee: evmFee,
+                transferType: transferType,
+                chain: chainAsset.chain
+            )
+        }
+
+        return claimFactory.reclaimGift(
+            gift,
             claimWrapperProvider: claimWrapperProvider
         )
     }

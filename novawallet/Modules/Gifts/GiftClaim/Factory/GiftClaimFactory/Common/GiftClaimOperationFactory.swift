@@ -3,7 +3,8 @@ import BigInt
 import Operation_iOS
 
 typealias GiftClaimWrapperProvider = (
-    _ giftWrapper: CompoundOperationWrapper<GiftModel>
+    _ giftWrapper: CompoundOperationWrapper<GiftModel>,
+    _ chainAsset: ChainAsset
 ) -> CompoundOperationWrapper<Void>
 
 protocol GiftClaimFactoryProtocol {
@@ -19,15 +20,18 @@ protocol GiftClaimFactoryProtocol {
 }
 
 final class GiftClaimFactory {
+    let chainRegistry: ChainRegistryProtocol
     let giftFactory: GiftOperationFactoryProtocol
     let claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol
     let operationQueue: OperationQueue
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         giftFactory: GiftOperationFactoryProtocol,
         claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol,
         operationQueue: OperationQueue
     ) {
+        self.chainRegistry = chainRegistry
         self.giftFactory = giftFactory
         self.claimAvailabilityCheckFactory = claimAvailabilityCheckFactory
         self.operationQueue = operationQueue
@@ -80,7 +84,8 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
             chainAsset: description.chainAsset
         )
         let claimWrapper = claimWrapperProvider(
-            giftWrapper
+            giftWrapper,
+            description.chainAsset
         )
 
         giftWrapper.addDependency(wrapper: claimAvailabilityWrapper)
@@ -95,21 +100,29 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
         _ gift: GiftModel,
         claimWrapperProvider: GiftClaimWrapperProvider
     ) -> CompoundOperationWrapper<Void> {
-        let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
-            for: gift.giftAccountId,
-            chainAssetId: gift.chainAssetId
-        )
-        let giftWrapper: CompoundOperationWrapper<GiftModel> = .createWithResult(gift)
+        do {
+            let chain = try chainRegistry.getChainOrError(for: gift.chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: gift.chainAssetId.assetId)
 
-        let claimWrapper = claimWrapperProvider(
-            giftWrapper
-        )
+            let claimAvailabilityWrapper = claimAvailabilityCheckFactory.createAvailabilityWrapper(
+                for: gift.giftAccountId,
+                chainAssetId: gift.chainAssetId
+            )
+            let giftWrapper: CompoundOperationWrapper<GiftModel> = .createWithResult(gift)
 
-        giftWrapper.addDependency(wrapper: claimAvailabilityWrapper)
-        claimWrapper.addDependency(wrapper: giftWrapper)
+            let claimWrapper = claimWrapperProvider(
+                giftWrapper,
+                chainAsset
+            )
 
-        return claimWrapper
-            .insertingHead(operations: giftWrapper.allOperations)
-            .insertingHead(operations: claimAvailabilityWrapper.allOperations)
+            giftWrapper.addDependency(wrapper: claimAvailabilityWrapper)
+            claimWrapper.addDependency(wrapper: giftWrapper)
+
+            return claimWrapper
+                .insertingHead(operations: giftWrapper.allOperations)
+                .insertingHead(operations: claimAvailabilityWrapper.allOperations)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

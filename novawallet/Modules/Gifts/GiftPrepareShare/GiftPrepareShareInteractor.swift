@@ -5,6 +5,7 @@ final class GiftPrepareShareInteractor {
     weak var presenter: GiftPrepareShareInteractorOutputProtocol?
 
     let giftId: GiftModel.Id
+    let reclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol
     let giftSecretsManager: GiftSecretsProvidingProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let chainRegistry: ChainRegistryProtocol
@@ -16,6 +17,7 @@ final class GiftPrepareShareInteractor {
 
     init(
         giftRepository: AnyDataProviderRepository<GiftModel>,
+        reclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol,
         giftSecretsManager: GiftSecretsManagerProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftId: GiftModel.Id,
@@ -23,6 +25,7 @@ final class GiftPrepareShareInteractor {
         logger: LoggerProtocol
     ) {
         self.giftRepository = giftRepository
+        self.reclaimWrapperFactory = reclaimWrapperFactory
         self.giftSecretsManager = giftSecretsManager
         self.chainRegistry = chainRegistry
         self.giftId = giftId
