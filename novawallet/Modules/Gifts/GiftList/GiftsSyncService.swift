@@ -8,7 +8,6 @@ protocol GiftsSyncServiceProtocol {
 final class GiftsSyncService {
     let chainRegistry: ChainRegistryProtocol
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
-    let assetStorageOperationFactory: AssetStorageInfoOperationFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -18,14 +17,12 @@ final class GiftsSyncService {
     var remoteBalancesSubscriptions: [AccountId: WalletRemoteSubscriptionProtocol] = [:]
 
     var gifts: [GiftModel.Id: GiftModel] = [:]
-    var balanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
 
     let mutex = NSLock()
 
     init(
         chainRegistry: ChainRegistryProtocol,
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
-        assetStorageOperationFactory: AssetStorageInfoOperationFactoryProtocol,
         giftRepository: AnyDataProviderRepository<GiftModel>,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -33,7 +30,6 @@ final class GiftsSyncService {
     ) {
         self.chainRegistry = chainRegistry
         self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
-        self.assetStorageOperationFactory = assetStorageOperationFactory
         self.giftRepository = giftRepository
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -81,56 +77,14 @@ private extension GiftsSyncService {
             let chainAsset = chain.chainAsset(for: gift.chainAssetId.assetId)
         else { return }
 
-        let balanceExistenceWrapper = createBalanceExistenceWrapper(for: chainAsset)
-
-        execute(
-            wrapper: balanceExistenceWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case let .success(balanceExistence):
-                mutex.lock()
-                defer { mutex.unlock() }
-
-                balanceExistences[chainAsset.chainAssetId] = balanceExistence
-
-                addRemoteBalanceSubscription(
-                    for: gift.giftAccountId,
-                    balanceExistence: balanceExistence,
-                    chainAsset: chainAsset
-                )
-            case let .failure(error):
-                logger.error("Failed on fetch asset storage info: \(error)")
-            }
-        }
-    }
-
-    func createBalanceExistenceWrapper(
-        for chainAsset: ChainAsset
-    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
-        do {
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
-
-            return if let balanceExistence = balanceExistences[chainAsset.chainAssetId] {
-                .createWithResult(balanceExistence)
-            } else {
-                assetStorageOperationFactory.createAssetBalanceExistenceOperation(
-                    chainId: chainAsset.chain.chainId,
-                    asset: chainAsset.asset,
-                    runtimeProvider: runtimeProvider,
-                    operationQueue: operationQueue
-                )
-            }
-        } catch {
-            return .createWithError(error)
-        }
+        addRemoteBalanceSubscription(
+            for: gift.giftAccountId,
+            chainAsset: chainAsset
+        )
     }
 
     func addRemoteBalanceSubscription(
         for giftAccountId: AccountId,
-        balanceExistence: AssetBalanceExistence,
         chainAsset: ChainAsset
     ) {
         let subscription = WalletRemoteSubscription(
@@ -153,8 +107,7 @@ private extension GiftsSyncService {
 
                     self?.updateStatus(
                         for: giftAccountId,
-                        balance: update.balance,
-                        balanceExistence: balanceExistence
+                        balance: update.balance
                     )
                 case let .failure(error):
                     self?.logger.error("Failed remote balance subscription: \(error)")
@@ -165,12 +118,11 @@ private extension GiftsSyncService {
 
     func updateStatus(
         for giftAccountId: AccountId,
-        balance: AssetBalance?,
-        balanceExistence: AssetBalanceExistence
+        balance: AssetBalance?
     ) {
         guard let gift = gifts[giftAccountId.toHex()] else { return }
 
-        let status: GiftModel.Status = if let balance, balance.transferable > balanceExistence.minBalance {
+        let status: GiftModel.Status = if let balance, balance.transferable > gift.amount {
             .pending
         } else {
             .claimed

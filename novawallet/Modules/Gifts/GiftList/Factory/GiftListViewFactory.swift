@@ -29,7 +29,6 @@ struct GiftListViewFactory {
         let giftSyncService = GiftsSyncService(
             chainRegistry: chainRegistry,
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
-            assetStorageOperationFactory: AssetStorageInfoOperationFactory(),
             giftRepository: AnyDataProviderRepository(giftRepository),
             operationQueue: operationQueue,
             workingQueue: .main,
