@@ -64,6 +64,22 @@ private extension GiftClaimFactory {
             }
         }
     }
+
+    func reclaimableGiftWrapper(
+        gift: GiftModel,
+        basedOn claimAvailabilityWrapper: CompoundOperationWrapper<GiftClaimAvailabilty>
+    ) -> CompoundOperationWrapper<GiftModel> {
+        .init(targetOperation: ClosureOperation {
+            let claimCheckResult = try claimAvailabilityWrapper.targetOperation.extractNoCancellableResultData()
+
+            switch claimCheckResult {
+            case .claimable:
+                return gift
+            case .claimed:
+                throw GiftClaimError.alreadyClaimed
+            }
+        })
+    }
 }
 
 // MARK: - GiftClaimFactoryProtocol
@@ -108,7 +124,8 @@ extension GiftClaimFactory: GiftClaimFactoryProtocol {
                 for: gift.giftAccountId,
                 chainAssetId: gift.chainAssetId
             )
-            let giftWrapper: CompoundOperationWrapper<GiftModel> = .createWithResult(gift)
+
+            let giftWrapper = reclaimableGiftWrapper(gift: gift, basedOn: claimAvailabilityWrapper)
 
             let claimWrapper = claimWrapperProvider(
                 giftWrapper,

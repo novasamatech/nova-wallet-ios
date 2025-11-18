@@ -73,9 +73,7 @@ private extension EvmGiftReclaimWrapperFactory {
             self.transactionService.estimateFee(
                 builderClosure,
                 runningIn: self.workingQueue
-            ) { [weak self] result in
-                guard let self else { return }
-
+            ) { result in
                 switch result {
                 case let .success(fee):
                     completion(.success(fee))

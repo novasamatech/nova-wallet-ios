@@ -181,7 +181,7 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
                 }
             }
         } else if let giftClaimError = error as? GiftReclaimWalletCheckError {
-            guard case let .noAccountForChain(chainId, name) = giftClaimError else {
+            guard case let .noAccountForChain(_, name) = giftClaimError else {
                 presentReclaimRetryable()
                 return
             }
