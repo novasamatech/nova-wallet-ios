@@ -7,7 +7,7 @@ final class SubstrateGiftReclaimWrapperFactory {
     let claimOperationFactory: SubstrateGiftClaimFactoryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
     let operationQueue: OperationQueue
-    
+
     init(
         chainRegistry: ChainRegistryProtocol,
         walletChecker: GiftReclaimWalletCheckerProtocol,
@@ -34,31 +34,31 @@ extension SubstrateGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol 
             let chain = try chainRegistry.getChainOrError(for: gift.chainAssetId.chainId)
             let chainAsset = try chain.chainAssetOrError(for: gift.chainAssetId.assetId)
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
-            
+
             let recipientAccountId = try walletChecker.findGiftRecipientAccount(
                 for: chain,
                 in: selectedWallet
             )
-            
+
             let storageInfoWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
                 from: chainAsset.asset,
                 runtimeProvider: runtimeProvider
             )
-            
+
             let reclaimWrapper = OperationCombiningService.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) {
                 let storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
-                
+
                 return self.claimOperationFactory.createReclaimWrapper(
                     gift: gift,
                     claimingAccountId: recipientAccountId,
                     assetStorageInfo: storageInfo
                 )
             }
-            
+
             reclaimWrapper.addDependency(wrapper: storageInfoWrapper)
-            
+
             return reclaimWrapper.insertingHead(operations: storageInfoWrapper.allOperations)
         } catch {
             return .createWithError(error)

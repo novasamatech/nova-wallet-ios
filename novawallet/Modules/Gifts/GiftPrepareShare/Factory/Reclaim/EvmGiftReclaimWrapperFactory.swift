@@ -9,7 +9,7 @@ final class EvmGiftReclaimWrapperFactory {
     let transferCommandFactory: EvmTransferCommandFactory
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
-    
+
     init(
         chainRegistry: ChainRegistryProtocol,
         walletChecker: GiftReclaimWalletCheckerProtocol,
@@ -55,7 +55,7 @@ private extension EvmGiftReclaimWrapperFactory {
             return newBuilder
         }
     }
-    
+
     func createFeeOperation(
         for gift: GiftModel,
         recipientAccountId: AccountId,
@@ -69,7 +69,7 @@ private extension EvmGiftReclaimWrapperFactory {
                 transferType: transferType,
                 chainAsset: chainAsset
             )
-            
+
             self.transactionService.estimateFee(
                 builderClosure,
                 runningIn: self.workingQueue
@@ -97,12 +97,12 @@ extension EvmGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol {
         do {
             let chain = try chainRegistry.getChainOrError(for: gift.chainAssetId.chainId)
             let chainAsset = try chain.chainAssetOrError(for: gift.chainAssetId.assetId)
-            
+
             let recipientAccountId = try walletChecker.findGiftRecipientAccount(
                 for: chain,
                 in: selectedWallet
             )
-            
+
             let transferType: EvmTransferType = if chainAsset.asset.isEvmNative {
                 .native
             } else if let address = chainAsset.asset.evmContractAddress, (try? address.toEthereumAccountId()) != nil {
@@ -110,19 +110,19 @@ extension EvmGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol {
             } else {
                 throw AccountAddressConversionError.invalidEthereumAddress
             }
-            
+
             let feeOperation = createFeeOperation(
                 for: gift,
                 recipientAccountId: recipientAccountId,
                 transferType: transferType,
                 chainAsset: chainAsset
             )
-            
+
             let reclaimWrapper = OperationCombiningService.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) {
                 let fee = try feeOperation.extractNoCancellableResultData()
-                
+
                 return self.claimOperationFactory.createReclaimWrapper(
                     gift: gift,
                     claimingAccountId: recipientAccountId,
@@ -130,9 +130,9 @@ extension EvmGiftReclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol {
                     transferType: transferType
                 )
             }
-            
+
             reclaimWrapper.addDependency(operations: [feeOperation])
-            
+
             return reclaimWrapper.insertingHead(operations: [feeOperation])
         } catch {
             return .createWithError(error)

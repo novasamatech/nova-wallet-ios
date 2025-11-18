@@ -14,14 +14,14 @@ final class GiftReclaimWalletChecker: GiftReclaimWalletCheckerProtocol {
     ) throws -> AccountId {
         let request = chain.accountRequest()
         let accountResponse = wallet.fetch(for: request)
-        
+
         guard let accountResponse else {
             throw GiftReclaimWalletCheckError.noAccountForChain(
                 chainId: chain.chainId,
                 name: chain.name
             )
         }
-        
+
         return accountResponse.accountId
     }
 }
