@@ -57,9 +57,11 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
             }
 
             // set fallback image only if loading wasn't interrupted
-            if !error.isTaskCancelled, !error.isNotCurrentTask, let fallbackImage {
-                imageView.image = fallbackImage
+            guard !error.isTaskCancelled, !error.isNotCurrentTask, let fallbackImage else {
+                return
             }
+
+            imageView.image = fallbackImage
         }
     }
 

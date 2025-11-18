@@ -1,4 +1,5 @@
 import BigInt
+import Foundation
 import Operation_iOS
 
 struct CrowdloanContribution: Equatable {
@@ -25,13 +26,13 @@ extension CrowdloanContribution: Identifiable {
         paraId: ParaId,
         unlocksAt: BlockNumber
     ) -> String {
-        let data = [
+        let joinedString = [
             chainAssetId.stringValue,
             accountId.toHex(),
             paraId.toHex(),
             unlocksAt.toHex()
-        ].joined(with: .dash).data(using: .utf8)!
-        return data.sha256().toHex()
+        ].joined(with: .dash)
+        return Data(joinedString.utf8).sha256().toHex()
     }
 }
 
