@@ -178,14 +178,20 @@ extension GiftListViewController: UICollectionViewDelegate {
         _: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        guard
-            viewModels.count > indexPath.section,
-            viewModels[indexPath.section].rows.count > indexPath.row
-        else { return }
+        guard let snapshot = dataSource?.snapshot() else {
+            return
+        }
 
-        let rowModel = viewModels[indexPath.section].rows[indexPath.row]
+        let sectionId = snapshot.sectionIdentifiers[indexPath.section]
+        let rowId = snapshot.itemIdentifiers(inSection: sectionId)[indexPath.row]
 
-        presenter.selectGift(with: rowModel.identifier)
+        guard let row = dataStore.row(
+            rowId: rowId,
+            indexPath: indexPath,
+            snapshot: snapshot
+        ) else { return }
+
+        presenter.selectGift(with: row.identifier)
     }
 }
 
