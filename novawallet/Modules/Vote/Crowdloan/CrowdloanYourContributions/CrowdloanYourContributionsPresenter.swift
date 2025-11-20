@@ -1,41 +1,35 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 final class CrowdloanYourContributionsPresenter {
-    weak var view: CrowdloanYourContributionsViewProtocol?
-    let wireframe: CrowdloanYourContributionsWireframeProtocol
-    let interactor: CrowdloanYourContributionsInteractorInputProtocol
-    let input: CrowdloanYourContributionsViewInput
-    let viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol
+    weak var view: CrowdloanContributionsViewProtocol?
+    let wireframe: CrowdloanContributionsWireframeProtocol
+    let interactor: CrowdloanContributionsInteractorInputProtocol
+    let viewModelFactory: CrowdloanContributionsVMFactoryProtocol
     let timeFormatter: TimeFormatterProtocol
     let logger: LoggerProtocol?
-    let crowdloansCalculator: CrowdloansCalculatorProtocol
+
+    private var input: CrowdloanYourContributionsViewInput
 
     private var returnInIntervals: [ReturnInIntervalsViewModel]?
     private var maxReturnInInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
 
-    private var externalContributions: [ExternalContribution]?
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
-    private var leasingPeriod: LeasingPeriod?
-    private var leasingOffset: LeasingOffset?
     private var price: PriceData?
 
     private var crowloanMetadata: CrowdloanMetadata? {
         guard
             let blockNumber = blockNumber,
-            let blockDuration = blockDuration,
-            let leasingPeriod = leasingPeriod,
-            let leasingOffset = leasingOffset else {
+            let blockDuration = blockDuration else {
             return nil
         }
 
         return CrowdloanMetadata(
             blockNumber: blockNumber,
-            blockDuration: blockDuration,
-            leasingPeriod: leasingPeriod,
-            leasingOffset: leasingOffset
+            blockDuration: blockDuration
         )
     }
 
@@ -45,13 +39,12 @@ final class CrowdloanYourContributionsPresenter {
 
     init(
         input: CrowdloanYourContributionsViewInput,
-        viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol,
-        interactor: CrowdloanYourContributionsInteractorInputProtocol,
-        wireframe: CrowdloanYourContributionsWireframeProtocol,
+        viewModelFactory: CrowdloanContributionsVMFactoryProtocol,
+        interactor: CrowdloanContributionsInteractorInputProtocol,
+        wireframe: CrowdloanContributionsWireframeProtocol,
         timeFormatter: TimeFormatterProtocol,
         localizationManager: LocalizationManagerProtocol,
-        crowdloansCalculator: CrowdloansCalculatorProtocol,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.input = input
         self.viewModelFactory = viewModelFactory
@@ -59,20 +52,12 @@ final class CrowdloanYourContributionsPresenter {
         self.wireframe = wireframe
         self.timeFormatter = timeFormatter
         self.logger = logger
-        self.crowdloansCalculator = crowdloansCalculator
         self.localizationManager = localizationManager
     }
 
     private func updateCrowdloans() {
-        let amount = crowdloansCalculator.calculateTotal(
-            precision: input.chainAsset.asset.assetPrecision,
-            contributions: input.contributions,
-            externalContributions: externalContributions
-        )
         let viewModel = viewModelFactory.createViewModel(
             input: input,
-            externalContributions: externalContributions,
-            amount: amount ?? 0,
             price: price,
             locale: selectedLocale
         )
@@ -87,7 +72,6 @@ final class CrowdloanYourContributionsPresenter {
 
         returnInIntervals = viewModelFactory.createReturnInIntervals(
             input: input,
-            externalContributions: externalContributions,
             metadata: crowloanMetadata
         )
 
@@ -97,6 +81,11 @@ final class CrowdloanYourContributionsPresenter {
         setupTimer()
 
         updateTimerDisplay()
+    }
+
+    private func updateUnlockable() {
+        let hasUnlockable = createUnlockModel() != nil
+        view?.reload(hasUnlockable: hasUnlockable)
     }
 
     private func invalidateTimer() {
@@ -141,45 +130,54 @@ final class CrowdloanYourContributionsPresenter {
 
         view?.reload(returnInIntervals: returnInViewModels)
     }
+
+    private func createUnlockModel() -> CrowdloanUnlock? {
+        guard
+            let blockNumber,
+            let unlockModel = CrowdloanUnlock(
+                contributions: input.contributions,
+                blockNumber: blockNumber
+            ) else {
+            return nil
+        }
+
+        return unlockModel
+    }
 }
 
-extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsPresenterProtocol {
+extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterProtocol {
     func setup() {
         updateCrowdloans()
         interactor.setup()
     }
+
+    func unlock() {
+        guard let unlockModel = createUnlockModel() else {
+            return
+        }
+
+        wireframe.showUnlock(from: view, model: unlockModel)
+    }
 }
 
-extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInteractorOutputProtocol {
-    func didReceiveExternalContributions(_ externalContributions: [ExternalContribution]) {
-        let positiveContributions = externalContributions.filter { $0.amount > 0 }
-        self.externalContributions = positiveContributions
-        if !positiveContributions.isEmpty {
-            updateCrowdloans()
-            updateReturnInTimeIntervals()
-        }
+extension CrowdloanYourContributionsPresenter: CrowdloanContributionsInteractorOutputProtocol {
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>]) {
+        input = input.applyingChanges(changes)
+
+        updateCrowdloans()
+        updateReturnInTimeIntervals()
+        updateUnlockable()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
         self.blockNumber = blockNumber
 
         updateReturnInTimeIntervals()
+        updateUnlockable()
     }
 
     func didReceiveBlockDuration(_ blockDuration: BlockTime) {
         self.blockDuration = blockDuration
-
-        updateReturnInTimeIntervals()
-    }
-
-    func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod) {
-        self.leasingPeriod = leasingPeriod
-
-        updateReturnInTimeIntervals()
-    }
-
-    func didReceiveLeasingOffset(_ leasingOffset: LeasingOffset) {
-        self.leasingOffset = leasingOffset
 
         updateReturnInTimeIntervals()
     }
