@@ -15,19 +15,19 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
             }
         }
 
-        var queue = PriorityQueue<(cost: Int, path: [E])>(sort: { $0.cost < $1.cost })
+        var queue = PriorityQueue<(cost: Int, path: [E], visited: Set<N>)>(sort: { $0.cost < $1.cost })
         var result: [[E]] = []
         var counter: [N: Int] = [:]
 
         connections[nodeStart]?.forEach { edge in
             if filter.shouldVisit(edge: edge, predecessor: nil) {
                 let cost = edge.addingWeight(to: 0, predecessor: nil)
-                queue.push((cost: cost, path: [edge]))
+                queue.push((cost: cost, path: [edge], visited: [edge.origin, edge.destination]))
             }
         }
 
         while !queue.isEmpty, result.count < topN {
-            guard let (cost, path) = queue.pop() else { break }
+            guard let (cost, path, visited) = queue.pop() else { break }
 
             let currentEdge = path.last!
 
@@ -41,13 +41,14 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
             let neighbors = connections[currentEdge.destination] ?? []
 
             if newCounter <= topN {
-                for neighbor in neighbors {
+                for neighbor in neighbors where !visited.contains(neighbor.destination) {
                     if filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
                         var newPath = path
                         newPath.append(neighbor)
 
                         let newCost = neighbor.addingWeight(to: cost, predecessor: currentEdge)
-                        queue.push((cost: newCost, path: newPath))
+                        let newVisited = visited.union([neighbor.destination])
+                        queue.push((cost: newCost, path: newPath, visited: newVisited))
                     }
                 }
             }
