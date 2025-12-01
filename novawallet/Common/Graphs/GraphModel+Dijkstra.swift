@@ -41,7 +41,7 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
             let neighbors = connections[currentEdge.destination] ?? []
 
             if newCounter <= topN {
-                for neighbor in neighbors {
+                for neighbor in neighbors where !path.containsNode(neighbor.destination) {
                     if filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
                         var newPath = path
                         newPath.append(neighbor)
