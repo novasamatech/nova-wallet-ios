@@ -1,5 +1,4 @@
 import Foundation
-@testable import novawallet
 
 enum AssetsExchangeGraphDescription {
     static func getDescriptionForNode(_ node: ChainAssetId, chainRegistry: ChainRegistryProtocol) -> String {
