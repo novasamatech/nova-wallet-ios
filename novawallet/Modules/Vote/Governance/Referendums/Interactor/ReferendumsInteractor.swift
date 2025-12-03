@@ -13,7 +13,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
-    let serviceFactory: GovernanceServiceFactoryProtocol
+    let serviceFactory: VoteServiceFactoryProtocol
     let operationQueue: OperationQueue
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
@@ -45,7 +45,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        serviceFactory: GovernanceServiceFactoryProtocol,
+        serviceFactory: VoteServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,

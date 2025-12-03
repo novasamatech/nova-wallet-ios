@@ -20,4 +20,16 @@ enum BlockTimestampEstimator {
 
         return currentTimestamp - elapsedSeconds
     }
+
+    static func remainedTimeInterval(
+        till block: BlockNumber,
+        currentBlock: BlockNumber,
+        blockTimeInMillis: UInt64
+    ) -> TimeInterval {
+        guard currentBlock < block else {
+            return 0
+        }
+
+        return TimeInterval(block - currentBlock) * TimeInterval(blockTimeInMillis).seconds
+    }
 }
