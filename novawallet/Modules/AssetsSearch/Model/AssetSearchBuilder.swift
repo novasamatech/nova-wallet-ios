@@ -141,7 +141,7 @@ private extension AssetSearchBuilder {
         }
 
         let groupListsByChain = assetModels.mapValues { models in
-            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+            let comparator = AssetListModelHelpers.assetSortByUtilityThenPriority
 
             return models.sorted(by: comparator)
         }
@@ -202,7 +202,7 @@ private extension AssetSearchBuilder {
             state: state
         )
         .forEach { symbol, assetListModels in
-            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByUtility
+            let comparator = AssetListModelHelpers.chainAssetSortByUtilityThenPriority
             let sortedModels = assetListModels.sorted(by: comparator)
 
             newGroupListsByAsset[symbol] = sortedModels

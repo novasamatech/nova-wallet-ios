@@ -144,7 +144,8 @@ extension CustomNetworkSetupFinishStrategy {
             additional: network.additional,
             syncMode: network.syncMode,
             source: .user,
-            connectionMode: network.connectionMode
+            connectionMode: network.connectionMode,
+            displayPriority: nil
         )
     }
 

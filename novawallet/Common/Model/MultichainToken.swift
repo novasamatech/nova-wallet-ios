@@ -8,10 +8,12 @@ struct MultichainToken {
         let testnet: Bool
         let utility: Bool
         let icon: String?
+        let displayPriority: UInt8?
     }
 
     let symbol: String
     let instances: [Instance]
+    let displayPriority: UInt8?
 
     var icon: String? {
         instances.first(where: { $0.icon != nil })?.icon
@@ -34,13 +36,17 @@ extension MultichainToken.Instance {
             enabled: enabled,
             testnet: testnet,
             utility: utility,
-            icon: icon
+            icon: icon,
+            displayPriority: displayPriority
         )
     }
 }
 
 extension MultichainToken {
-    func byChanging(enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
+    func byChanging(
+        enabled: Bool,
+        for chainAssetId: ChainAssetId? = nil
+    ) -> MultichainToken {
         let newInstances = instances.map { instance in
             if chainAssetId == nil || chainAssetId == instance.chainAssetId {
                 return instance.byChanging(enabled: enabled)
@@ -49,13 +55,23 @@ extension MultichainToken {
             }
         }
 
-        return .init(symbol: symbol, instances: newInstances)
+        return MultichainToken(
+            symbol: symbol,
+            instances: newInstances,
+            displayPriority: displayPriority
+        )
     }
 }
 
 extension Array where Element == ChainModel {
     func createMultichainToken(for symbol: String) -> MultichainToken {
-        reduce(MultichainToken(symbol: symbol, instances: [])) { token, chain in
+        let token = MultichainToken(
+            symbol: symbol,
+            instances: [],
+            displayPriority: nil
+        )
+
+        return reduce(token) { token, chain in
             let assets = chain.assets.filter {
                 MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(symbol)
             }.sorted { $0.assetId < $1.assetId }
@@ -69,10 +85,15 @@ extension Array where Element == ChainModel {
                     enabled: asset.enabled,
                     testnet: chain.isTestnet,
                     utility: chainAsset.isUtilityAsset,
-                    icon: asset.icon
+                    icon: asset.icon,
+                    displayPriority: chain.displayPriority
                 )
 
-                return MultichainToken(symbol: symbol, instances: accumToken.instances + [instance])
+                return MultichainToken(
+                    symbol: symbol,
+                    instances: accumToken.instances + [instance],
+                    displayPriority: accumToken.displayPriority ?? asset.displayPriority
+                )
             }
         }
     }
@@ -141,7 +162,8 @@ extension Array where Element == ChainAsset {
                 enabled: chainAsset.asset.enabled,
                 testnet: chainAsset.chain.isTestnet,
                 utility: chainAsset.isUtilityAsset,
-                icon: chainAsset.asset.icon
+                icon: chainAsset.asset.icon,
+                displayPriority: chainAsset.chain.displayPriority
             )
 
             let symbolExtensions = MultichainToken.reserveTokensOf(symbol: chainAsset.asset.symbol)
@@ -152,12 +174,14 @@ extension Array where Element == ChainAsset {
             if let token = accum[tokenSymbol] {
                 accum[tokenSymbol] = MultichainToken(
                     symbol: tokenSymbol,
-                    instances: token.instances + [instance]
+                    instances: token.instances + [instance],
+                    displayPriority: token.displayPriority ?? chainAsset.asset.displayPriority
                 )
             } else {
                 accum[tokenSymbol] = MultichainToken(
                     symbol: tokenSymbol,
-                    instances: [instance]
+                    instances: [instance],
+                    displayPriority: chainAsset.asset.displayPriority
                 )
             }
         }
