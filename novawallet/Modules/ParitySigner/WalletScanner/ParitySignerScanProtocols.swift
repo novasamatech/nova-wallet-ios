@@ -4,7 +4,8 @@ protocol ParitySignerScanWireframeProtocol: AnyObject {
     func completeScan(
         on view: ControllerBackedProtocol?,
         addressScan: ParitySignerAddressScan,
-        type: ParitySignerType
+        type: ParitySignerType,
+        mode: ParitySignerWelcomeMode
     )
 }
 

@@ -5,6 +5,8 @@ final class ParitySignerWelcomePresenter {
     let wireframe: ParitySignerWelcomeWireframeProtocol
     let type: ParitySignerType
 
+    private var selectedMode: ParitySignerWelcomeMode = .pairPublicKey
+
     init(wireframe: ParitySignerWelcomeWireframeProtocol, type: ParitySignerType) {
         self.wireframe = wireframe
         self.type = type
@@ -13,8 +15,11 @@ final class ParitySignerWelcomePresenter {
 
 extension ParitySignerWelcomePresenter: ParitySignerWelcomePresenterProtocol {
     func scanQr() {
-        wireframe.showScanQR(from: view, type: type)
+        wireframe.showScanQR(from: view, type: type, mode: selectedMode)
+    }
+
+    func didSelectMode(_ mode: ParitySignerWelcomeMode) {
+        selectedMode = mode
+        view?.didChangeMode(mode)
     }
 }
-
-extension ParitySignerWelcomePresenter: ParitySignerWelcomeInteractorOutputProtocol {}

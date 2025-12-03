@@ -1,13 +1,12 @@
-protocol ParitySignerWelcomeViewProtocol: ControllerBackedProtocol {}
+protocol ParitySignerWelcomeViewProtocol: ControllerBackedProtocol {
+    func didChangeMode(_ mode: ParitySignerWelcomeMode)
+}
 
 protocol ParitySignerWelcomePresenterProtocol: AnyObject {
     func scanQr()
+    func didSelectMode(_ mode: ParitySignerWelcomeMode)
 }
 
-protocol ParitySignerWelcomeInteractorInputProtocol: AnyObject {}
-
-protocol ParitySignerWelcomeInteractorOutputProtocol: AnyObject {}
-
 protocol ParitySignerWelcomeWireframeProtocol: AnyObject {
-    func showScanQR(from view: ParitySignerWelcomeViewProtocol?, type: ParitySignerType)
+    func showScanQR(from view: ParitySignerWelcomeViewProtocol?, type: ParitySignerType, mode: ParitySignerWelcomeMode)
 }

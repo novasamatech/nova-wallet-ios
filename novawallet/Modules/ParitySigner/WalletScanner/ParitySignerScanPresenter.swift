@@ -12,6 +12,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
     let scanWireframe: ParitySignerScanWireframeProtocol
 
     let type: ParitySignerType
+    let mode: ParitySignerWelcomeMode
 
     private var lastHandledCode: String?
 
@@ -19,6 +20,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
     init(
         type: ParitySignerType,
+        mode: ParitySignerWelcomeMode,
         matcher: ParitySignerScanMatcherProtocol,
         interactor: ParitySignerScanInteractorInputProtocol,
         scanWireframe: ParitySignerScanWireframeProtocol,
@@ -30,6 +32,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.type = type
+        self.mode = mode
         self.matcher = matcher
         self.interactor = interactor
         self.scanWireframe = scanWireframe
@@ -99,7 +102,7 @@ extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
     func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>) {
         switch result {
         case let .success(addressScan):
-            scanWireframe.completeScan(on: view, addressScan: addressScan, type: type)
+            scanWireframe.completeScan(on: view, addressScan: addressScan, type: type, mode: mode)
         case .failure:
             handleFailure()
             setLastCode(nil)

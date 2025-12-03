@@ -5,7 +5,8 @@ extension AddAccount {
         func completeScan(
             on view: ControllerBackedProtocol?,
             addressScan: ParitySignerAddressScan,
-            type: ParitySignerType
+            type: ParitySignerType,
+            mode _: ParitySignerWelcomeMode
         ) {
             guard
                 let addressesView = ParitySignerAddressesViewFactory.createAddAccountView(

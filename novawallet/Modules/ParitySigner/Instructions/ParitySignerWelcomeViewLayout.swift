@@ -1,6 +1,11 @@
 import UIKit
 import UIKit_iOS
 
+enum ParitySignerWelcomeMode: Int, CaseIterable {
+    case pairPublicKey = 0
+    case importPrivateKey = 1
+}
+
 final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
@@ -24,6 +29,14 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         return label
     }()
 
+    let modeSegmentedControl: UISegmentedControl = {
+        let control = UISegmentedControl()
+        control.insertSegment(withTitle: "", at: ParitySignerWelcomeMode.pairPublicKey.rawValue, animated: false)
+        control.insertSegment(withTitle: "", at: ParitySignerWelcomeMode.importPrivateKey.rawValue, animated: false)
+        control.selectedSegmentIndex = ParitySignerWelcomeMode.pairPublicKey.rawValue
+        return control
+    }()
+
     let integrationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -42,15 +55,6 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         return view
     }()
 
-    let step2DetailsView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.imageView.image = R.image.iconAlgoItem()
-        view.spacing = 6.0
-        view.detailsLabel.textColor = R.color.colorTextPositive()
-        view.detailsLabel.font = .regularFootnote
-        return view
-    }()
-
     let step2DetailsImageView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
@@ -63,6 +67,15 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         return view
     }()
 
+    let step4: ProcessStepView = {
+        let view = ProcessStepView()
+        view.stepNumberView.titleLabel.text = "4"
+        view.isHidden = true
+        return view
+    }()
+
+    private var step2DetailsContainerView: UIView!
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -74,6 +87,15 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setMode(_ mode: ParitySignerWelcomeMode) {
+        switch mode {
+        case .pairPublicKey:
+            step4.isHidden = true
+        case .importPrivateKey:
+            step4.isHidden = false
+        }
     }
 
     private func setupLayout() {
@@ -91,7 +113,13 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.setCustomSpacing(32.0, after: titleLabel)
+        containerView.stackView.setCustomSpacing(16.0, after: titleLabel)
+
+        containerView.stackView.addArrangedSubview(modeSegmentedControl)
+        modeSegmentedControl.snp.makeConstraints { make in
+            make.height.equalTo(36.0)
+        }
+        containerView.stackView.setCustomSpacing(24.0, after: modeSegmentedControl)
 
         let imageScaleRatio: CGFloat = isAdaptiveWidthDecreased ? designScaleRatio.width : 1.0
         let integrationImageHeight = 88.0 * imageScaleRatio
@@ -110,22 +138,14 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         containerView.stackView.addArrangedSubview(step2)
         containerView.stackView.setCustomSpacing(12.0, after: step2)
 
-        let step2DetailsContainerView = UIView()
+        step2DetailsContainerView = UIView()
         containerView.stackView.addArrangedSubview(step2DetailsContainerView)
-
-        step2DetailsContainerView.addSubview(step2DetailsView)
-
-        let step2DetailsOffset = 2 * step2.stepNumberView.backgroundView.cornerRadius + step2.spacing
-        step2DetailsView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(step2DetailsOffset)
-            make.trailing.equalToSuperview()
-        }
 
         step2DetailsContainerView.addSubview(step2DetailsImageView)
 
+        let step2DetailsOffset = 2 * step2.stepNumberView.backgroundView.cornerRadius + step2.spacing
         step2DetailsImageView.snp.makeConstraints { make in
-            make.top.equalTo(step2DetailsView.snp.bottom).offset(6.0)
+            make.top.equalToSuperview()
             make.leading.equalToSuperview().offset(step2DetailsOffset)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview()
@@ -134,5 +154,8 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         containerView.stackView.setCustomSpacing(24.0, after: step2DetailsContainerView)
 
         containerView.stackView.addArrangedSubview(step3)
+        containerView.stackView.setCustomSpacing(24.0, after: step3)
+
+        containerView.stackView.addArrangedSubview(step4)
     }
 }

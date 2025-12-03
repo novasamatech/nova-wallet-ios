@@ -7,6 +7,8 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     let presenter: ParitySignerWelcomePresenterProtocol
     let type: ParitySignerType
 
+    private var currentMode: ParitySignerWelcomeMode = .pairPublicKey
+
     let highlightingAttributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: R.color.colorTextPrimary()!
     ]
@@ -43,6 +45,7 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+        rootView.modeSegmentedControl.addTarget(self, action: #selector(actionModeChanged), for: .valueChanged)
     }
 
     private func setupGraphics() {
@@ -69,18 +72,38 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
 
         rootView.actionButton.invalidateLayout()
 
+        setupSegmentedControlLocalization()
+        setupStepsLocalization(for: currentMode)
+    }
+
+    private func setupSegmentedControlLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        rootView.modeSegmentedControl.setTitle(
+            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultPairPublicKey(),
+            forSegmentAt: ParitySignerWelcomeMode.pairPublicKey.rawValue
+        )
+
+        rootView.modeSegmentedControl.setTitle(
+            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultImportPrivateKey(),
+            forSegmentAt: ParitySignerWelcomeMode.importPrivateKey.rawValue
+        )
+    }
+
+    private func setupStepsLocalization(for mode: ParitySignerWelcomeMode) {
         switch type {
         case .legacy:
-            setupLegacyInstruction(for: selectedLocale)
+            setupLegacyInstruction(for: selectedLocale, mode: mode)
         case .vault:
-            setupVaultInstruction(for: selectedLocale)
+            setupVaultInstruction(for: selectedLocale, mode: mode)
         }
     }
 
-    private func setupLegacyInstruction(for locale: Locale) {
+    private func setupLegacyInstruction(for locale: Locale, mode: ParitySignerWelcomeMode) {
         let languages = locale.rLanguages
-
         let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 1: Open Parity Signer application on your smartphone
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
             replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep1Highlighted()],
@@ -93,22 +116,32 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
             )
         )
 
+        switch mode {
+        case .pairPublicKey:
+            setupLegacyPairPublicKeySteps(for: locale)
+        case .importPrivateKey:
+            setupLegacyImportPrivateKeySteps(for: locale)
+        }
+    }
+
+    private func setupLegacyPairPublicKeySteps(for locale: Locale) {
+        let languages = locale.rLanguages
+        let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep2Highlighted()],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep2(marker)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string(
-            preferredLanguages: languages
-        ).localizable.welcomeParitySignerStep2Details()
-
+        // Step 3: Parity Signer will provide you QR code to scan
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
             replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3Highlighted()],
@@ -122,10 +155,55 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func setupVaultInstruction(for locale: Locale) {
+    private func setupLegacyImportPrivateKeySteps(for locale: Locale) {
         let languages = locale.rLanguages
-
         let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
+        let step2Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+            )
+        )
+
+        // Step 3: Tap the icon in the top-right corner and select Export Private Key
+        let step3Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3ImportHighlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Import(marker)
+            )
+        )
+
+        // Step 4: Parity Signer will provide you QR code to scan
+        let step4Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3Highlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3(marker)
+            )
+        )
+    }
+
+    private func setupVaultInstruction(for locale: Locale, mode: ParitySignerWelcomeMode) {
+        let languages = locale.rLanguages
+        let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 1: Open Polkadot Vault application on your smartphone
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
             replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep1Highlighted()],
@@ -138,31 +216,85 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
             )
         )
 
+        switch mode {
+        case .pairPublicKey:
+            setupVaultPairPublicKeySteps(for: locale)
+        case .importPrivateKey:
+            setupVaultImportPrivateKeySteps(for: locale)
+        }
+    }
+
+    private func setupVaultPairPublicKeySteps(for locale: Locale) {
+        let languages = locale.rLanguages
+        let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Highlighted()],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2(marker)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        rootView.step2DetailsView.detailsLabel.text = R.string(
-            preferredLanguages: languages
-        ).localizable.welcomePolkadotVaultStep2Details()
-
+        // Step 3: Polkadot Vault will provide you QR code to scan
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Highlighted()],
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLastHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3(marker)
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLast(marker)
+            )
+        )
+    }
+
+    private func setupVaultImportPrivateKeySteps(for locale: Locale) {
+        let languages = locale.rLanguages
+        let marker = AttributedReplacementStringDecorator.marker
+
+        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
+        let step2Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+            )
+        )
+
+        // Step 3: Tap the icon in the top-right corner and select Export Private Key
+        let step3Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3ImportHighlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Import(marker)
+            )
+        )
+
+        // Step 4: Polkadot Vault will provide you QR code to scan
+        let step4Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLastHighlighted()],
+            attributes: highlightingAttributes
+        )
+
+        rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
+            attributedString: NSAttributedString(
+                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLast(marker)
             )
         )
     }
@@ -170,9 +302,23 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     @objc private func actionProceed() {
         presenter.scanQr()
     }
+
+    @objc private func actionModeChanged() {
+        guard let mode = ParitySignerWelcomeMode(rawValue: rootView.modeSegmentedControl.selectedSegmentIndex) else {
+            return
+        }
+
+        presenter.didSelectMode(mode)
+    }
 }
 
-extension ParitySignerWelcomeViewController: ParitySignerWelcomeViewProtocol {}
+extension ParitySignerWelcomeViewController: ParitySignerWelcomeViewProtocol {
+    func didChangeMode(_ mode: ParitySignerWelcomeMode) {
+        currentMode = mode
+        rootView.setMode(mode)
+        setupStepsLocalization(for: mode)
+    }
+}
 
 extension ParitySignerWelcomeViewController: Localizable {
     func applyLocalization() {

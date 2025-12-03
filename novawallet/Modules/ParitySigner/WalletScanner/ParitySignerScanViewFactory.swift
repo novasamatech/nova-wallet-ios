@@ -2,21 +2,31 @@ import Foundation
 import Foundation_iOS
 
 struct ParitySignerScanViewFactory {
-    static func createOnboardingView(with type: ParitySignerType) -> QRScannerViewProtocol? {
-        createView(wireframe: ParitySignerScanWireframe(), type: type)
+    static func createOnboardingView(
+        with type: ParitySignerType,
+        mode: ParitySignerWelcomeMode
+    ) -> QRScannerViewProtocol? {
+        createView(wireframe: ParitySignerScanWireframe(), type: type, mode: mode)
     }
 
-    static func createAddAccountView(with type: ParitySignerType) -> QRScannerViewProtocol? {
-        createView(wireframe: AddAccount.ParitySignerScanWireframe(), type: type)
+    static func createAddAccountView(
+        with type: ParitySignerType,
+        mode: ParitySignerWelcomeMode
+    ) -> QRScannerViewProtocol? {
+        createView(wireframe: AddAccount.ParitySignerScanWireframe(), type: type, mode: mode)
     }
 
-    static func createSwitchAccountView(with type: ParitySignerType) -> QRScannerViewProtocol? {
-        createView(wireframe: SwitchAccount.ParitySignerScanWireframe(), type: type)
+    static func createSwitchAccountView(
+        with type: ParitySignerType,
+        mode: ParitySignerWelcomeMode
+    ) -> QRScannerViewProtocol? {
+        createView(wireframe: SwitchAccount.ParitySignerScanWireframe(), type: type, mode: mode)
     }
 
     private static func createView(
         wireframe: ParitySignerScanWireframeProtocol,
-        type: ParitySignerType
+        type: ParitySignerType,
+        mode: ParitySignerWelcomeMode
     ) -> QRScannerViewProtocol? {
         let interactor = ParitySignerScanInterator(chainRegistry: ChainRegistryFacade.sharedRegistry)
 
@@ -32,6 +42,7 @@ struct ParitySignerScanViewFactory {
 
         let presenter = ParitySignerScanPresenter(
             type: type,
+            mode: mode,
             matcher: ParitySignerScanMatcher(),
             interactor: interactor,
             scanWireframe: wireframe,
