@@ -167,10 +167,7 @@ private extension EvmTransactionService {
 
             let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void
             updateClosure = { [weak self, transactionHash] update in
-                guard
-                    let chainId = self?.evmChainId,
-                    let operationQueue = self?.operationQueue
-                else { return }
+                guard let chainId = self?.evmChainId else { return }
 
                 let blockNumber = update.params.result.blockNumber
 
