@@ -3,6 +3,11 @@ import BigInt
 import SubstrateSdk
 import Operation_iOS
 
+struct EvmSubscriptionStatus {
+    let lastBlockNumber: BigUInt
+    let transactionHash: String
+}
+
 typealias EvmFeeTransactionResult = Result<EvmFeeModel, Error>
 typealias EvmEstimateFeeClosure = (EvmFeeTransactionResult) -> Void
 typealias EvmSubmitTransactionResult = Result<String, Error>
@@ -11,7 +16,7 @@ typealias EvmTransactionSubmitClosure = (EvmSubmitTransactionResult) -> Void
 typealias EvmTransactionSignClosure = (EvmSignTransactionResult) -> Void
 typealias EvmTransactionBuilderClosure = (EvmTransactionBuilderProtocol) throws -> EvmTransactionBuilderProtocol
 typealias EvmSubscriptionIdClosure = (UInt16) -> Bool
-typealias EvmSubscriptionStatusClosure = (Result<EthereumTransactionReceipt, Error>) -> Void
+typealias EvmSubscriptionStatusClosure = (Result<EvmSubscriptionStatus, Error>) -> Void
 
 protocol EvmTransactionServiceProtocol {
     func estimateFee(
@@ -36,6 +41,8 @@ protocol EvmTransactionServiceProtocol {
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
     )
+    
+    func cancelTransactionWatch(for subscriptionId: UInt16)
 
     func sign(
         _ closure: @escaping EvmTransactionBuilderClosure,
@@ -116,31 +123,31 @@ private extension EvmTransactionService {
         subscriptionQueue: DispatchQueue,
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ) -> CompoundOperationWrapper<String> {
+    ) -> CompoundOperationWrapper<Void> {
         do {
             let transactionWrapper = try createSignedTransactionWrapper(
                 closure,
                 price: price,
                 signer: signer
             )
+
+            let sendOperation = operationFactory.createSendTransactionOperation {
+                try transactionWrapper.targetOperation.extractNoCancellableResultData()
+            }
             
             let subscriptionOperation = createSubscriptionOperation(
-                rawTransaction: { try transactionWrapper.targetOperation.extractNoCancellableResultData() },
+                transactionHash: { try sendOperation.extractNoCancellableResultData() },
                 runningIn: subscriptionQueue,
                 subscriptionIdClosure: subscriptionIdClosure,
                 notificationClosure: notificationClosure
             )
 
-            let sendOperation = operationFactory.createSendTransactionOperation {
-                try transactionWrapper.targetOperation.extractNoCancellableResultData()
-            }
-
-            subscriptionOperation.addDependency(transactionWrapper.targetOperation)
-            sendOperation.addDependency(subscriptionOperation)
+            sendOperation.addDependency(transactionWrapper.targetOperation)
+            subscriptionOperation.addDependency(sendOperation)
             
             let wrapper = CompoundOperationWrapper(
-                targetOperation: sendOperation,
-                dependencies: transactionWrapper.allOperations + [subscriptionOperation]
+                targetOperation: subscriptionOperation,
+                dependencies: transactionWrapper.allOperations + [sendOperation]
             )
             
             return wrapper
@@ -150,21 +157,18 @@ private extension EvmTransactionService {
     }
     
     func createSubscriptionOperation(
-        rawTransaction: @escaping () throws -> Data,
+        transactionHash: @escaping () throws -> (String),
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
     ) -> BaseOperation<Void> {
-        ClosureOperation { [weak self] in
-            guard let self else { return }
-            
-            let txHash = try rawTransaction().keccak256().toHex()
+        ClosureOperation {
+            let transactionHash = try transactionHash()
             
             let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void
-            updateClosure = { [weak self, txHash] update in
+            updateClosure = { [weak self, transactionHash] update in
                 guard
                     let chainId = self?.evmChainId,
-                    let receiptOperation = self?.operationFactory.createTransactionReceiptOperation(for: txHash),
                     let operationQueue = self?.operationQueue
                 else { return }
                 
@@ -172,19 +176,12 @@ private extension EvmTransactionService {
 
                 self?.logger.debug("Did receive new evm block: \(blockNumber) \(chainId)")
                 
-                execute(
-                    operation: receiptOperation,
-                    inOperationQueue: operationQueue,
-                    runningCallbackIn: queue
-                ) { result in
-                    switch result {
-                    case let .success(receipt):
-                        guard let receipt else { return }
-                        notificationClosure(.success(receipt))
-                    case let .failure(error):
-                        notificationClosure(.failure(error))
-                    }
-                }
+                let status = EvmSubscriptionStatus(
+                    lastBlockNumber: blockNumber,
+                    transactionHash: transactionHash
+                )
+                
+                notificationClosure(.success(status))
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
@@ -192,20 +189,20 @@ private extension EvmTransactionService {
                 self?.logger.error("Did receive subscription error: \(error) \(unsubscribed)")
             }
 
-            let subscriptionId = try operationFactory.connection.subscribe(
+            let subscriptionId = try self.operationFactory.connection.subscribe(
                 EvmSubscriptionMessage.subscribeMethod,
                 params: EvmSubscriptionMessage.NewHeadsParams(),
                 unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
                 updateClosure: updateClosure,
                 failureClosure: failureClosure
             )
-
+            
             guard subscriptionIdClosure(subscriptionId) else {
-                operationFactory.connection.cancelForIdentifier(subscriptionId)
+                self.operationFactory.connection.cancelForIdentifier(subscriptionId)
                 return
             }
             
-            logger.debug("Did create evm native balance subscription: \(evmChainId)")
+            self.logger.debug("Did create evm native balance subscription: \(self.evmChainId)")
         }
     }
     
