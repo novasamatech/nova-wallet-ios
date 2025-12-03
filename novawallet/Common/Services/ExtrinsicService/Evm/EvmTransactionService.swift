@@ -341,7 +341,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ){
+    ) {
         let wrapper = createSubmitAndSubscribeWrapper(
             closure,
             price: price,
@@ -353,7 +353,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
-    
+
     func cancelTransactionWatch(for subscriptionId: UInt16) {
         operationFactory.connection.cancelForIdentifier(subscriptionId)
     }

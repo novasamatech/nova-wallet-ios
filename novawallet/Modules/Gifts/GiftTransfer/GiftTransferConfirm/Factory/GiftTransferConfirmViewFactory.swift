@@ -194,7 +194,7 @@ private extension GiftTransferConfirmViewFactory {
             chain: chain,
             operationQueue: operationQueue
         )
-        
+
         let transactionMonitorFactory = TransactionSubmitMonitorFactory(
             submissionService: transactionService,
             evmOperationFactory: operationFactory,
