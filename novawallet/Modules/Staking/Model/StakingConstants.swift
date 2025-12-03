@@ -6,8 +6,8 @@ struct StakingConstants {
     static let maxUnlockingChunks: UInt32 = 32
 
     static let recommendedPoolIds: [ChainModel.Id: NominationPools.PoolId] = [
-        KnowChainId.polkadot: 54,
-        KnowChainId.kusama: 160,
+        KnowChainId.polkadotAssetHub: 54,
+        KnowChainId.kusamaAssetHub: 160,
         KnowChainId.alephZero: 74,
         KnowChainId.vara: 65,
         KnowChainId.avail: 3

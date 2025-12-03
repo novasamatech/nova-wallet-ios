@@ -15,7 +15,8 @@ final class NetworkDetailsInteractor {
     private let operationQueue: OperationQueue
 
     private var filteredNodes: Set<ChainNodeModel> = []
-    private var nodesConnections: [String: ChainConnection] = [:]
+    private var nodesConnections: [URL: ChainConnection] = [:]
+    private var urlToNode: [URL: ChainNodeModel] = [:]
 
     private var currentSelectedNode: ChainNodeModel?
 
@@ -149,7 +150,8 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
         DispatchQueue.main.async {
             guard
                 let connection = connection as? ChainConnection,
-                let nodeUrl = connection.urls.first
+                let nodeUrl = connection.urls.first,
+                let urlString = self.urlToNode[nodeUrl]?.url
             else {
                 return
             }
@@ -158,19 +160,19 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
             case .connecting, .waitingReconnection:
                 self.presenter?.didReceive(
                     .connecting,
-                    for: nodeUrl.absoluteString,
+                    for: urlString,
                     selected: false
                 )
             case .notConnected:
                 self.presenter?.didReceive(
                     .disconnected,
-                    for: nodeUrl.absoluteString,
+                    for: urlString,
                     selected: false
                 )
             case .connected:
                 self.measureNodePing(
                     for: nodeUrl,
-                    selected: self.currentSelectedNode?.url == nodeUrl.absoluteString
+                    selected: self.currentSelectedNode?.url == urlString
                 )
             }
         }
@@ -199,19 +201,23 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
                 selected: true
             )
         case let .connecting(selectedUrl), let .waitingReconnection(selectedUrl):
+            guard let node = urlToNode[selectedUrl] else {
+                return
+            }
+
             updateCurrentSelectedNode(with: selectedUrl)
             presenter?.didReceive(
                 .connecting,
-                for: selectedUrl.absoluteString,
+                for: node.url,
                 selected: true
             )
         case let .notConnected(selectedUrl):
-            guard let selectedUrl else { return }
+            guard let selectedUrl, let node = urlToNode[selectedUrl] else { return }
 
             presenter?.didReceive(
                 .disconnected,
-                for: selectedUrl.absoluteString,
-                selected: selectedUrl.absoluteString == currentSelectedNode?.url
+                for: node.url,
+                selected: node.url == currentSelectedNode?.url
             )
         }
     }
@@ -284,14 +290,22 @@ private extension NetworkDetailsInteractor {
         case let .manual(chainNodeModel):
             chainNodeModel
         case .autoBalanced:
-            chain.nodes.first { $0.url == updatedUrl?.absoluteString } ?? chain.nodes.first!
+            if let updatedUrl, let node = urlToNode[updatedUrl] {
+                node
+            } else {
+                chain.nodes.first!
+            }
+        }
+
+        guard let nodeUrl = newSelectedNode.getUrl() else {
+            return
         }
 
         if let currentSelectedNode, currentSelectedNode.url != newSelectedNode.url {
-            nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
+            nodesConnections[nodeUrl] = chainRegistry.getConnection(for: chain.chainId)
             connectTo(currentSelectedNode, of: chain)
         } else {
-            nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
+            nodesConnections[nodeUrl] = chainRegistry.getConnection(for: chain.chainId)
         }
 
         currentSelectedNode = newSelectedNode
@@ -314,7 +328,12 @@ private extension NetworkDetailsInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.nodesConnections[node.url] = nil
+                guard let url = node.getUrl() else {
+                    return
+                }
+
+                self?.nodesConnections[url] = nil
+                self?.urlToNode[url] = nil
 
                 if node.url == self?.currentSelectedNode?.url {
                     self?.currentSelectedNode = nil
@@ -349,15 +368,18 @@ private extension NetworkDetailsInteractor {
         _ node: ChainNodeModel,
         of chain: ChainModel
     ) {
-        guard let connection = try? connectionFactory.createConnection(
-            for: node,
-            chain: chain,
-            delegate: self
-        ) else {
+        guard
+            let connection = try? connectionFactory.createConnection(
+                for: node,
+                chain: chain,
+                delegate: self
+            ),
+            let url = connection.urls.first else {
             return
         }
 
-        nodesConnections[node.url] = connection
+        nodesConnections[url] = connection
+        urlToNode[url] = node
     }
 
     func disconnectNodes() {
@@ -366,13 +388,14 @@ private extension NetworkDetailsInteractor {
         }
 
         nodesConnections = [:]
+        urlToNode = [:]
     }
 
     func measureNodePing(
         for nodeUrl: URL,
         selected: Bool
     ) {
-        guard let connection = nodesConnections[nodeUrl.absoluteString] else {
+        guard let connection = nodesConnections[nodeUrl] else {
             return
         }
 
@@ -386,18 +409,21 @@ private extension NetworkDetailsInteractor {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let urlString = self?.urlToNode[nodeUrl]?.url else {
+                return
+            }
 
             switch result {
             case let .success(ping):
                 self?.presenter?.didReceive(
                     .pinged(ping),
-                    for: nodeUrl.absoluteString,
+                    for: urlString,
                     selected: selected
                 )
             case .failure:
                 self?.presenter?.didReceive(
                     .unknown,
-                    for: nodeUrl.absoluteString,
+                    for: urlString,
                     selected: selected
                 )
             }
