@@ -181,10 +181,16 @@ private extension GiftClaimViewFactory {
             callbackQueue: .main
         )
 
+        let transactionMonitorFactory = TransactionSubmitMonitorFactory(
+            submissionService: transactionService,
+            evmOperationFactory: operationFactory,
+            operationQueue: operationQueue
+        )
+
         let claimOperationFactory = GiftClaimFactoryFacade(
             operationQueue: operationQueue,
             keystore: InMemoryKeychain()
-        ).createEvmFactory(transactionService: transactionService)
+        ).createEvmFactory(transactionMonitorFactory: transactionMonitorFactory)
 
         return EvmGiftClaimInteractor(
             claimDescriptionFactory: claimDescriptionFactory,
