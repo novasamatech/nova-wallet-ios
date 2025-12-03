@@ -32,7 +32,7 @@ protocol EvmTransactionServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmTransactionSubmitClosure
     )
-    
+
     func submitAndWatch(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
@@ -41,7 +41,7 @@ protocol EvmTransactionServiceProtocol {
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
     )
-    
+
     func cancelTransactionWatch(for subscriptionId: UInt16)
 
     func sign(
@@ -134,7 +134,7 @@ private extension EvmTransactionService {
             let sendOperation = operationFactory.createSendTransactionOperation {
                 try transactionWrapper.targetOperation.extractNoCancellableResultData()
             }
-            
+
             let subscriptionOperation = createSubscriptionOperation(
                 transactionHash: { try sendOperation.extractNoCancellableResultData() },
                 runningIn: subscriptionQueue,
@@ -144,18 +144,18 @@ private extension EvmTransactionService {
 
             sendOperation.addDependency(transactionWrapper.targetOperation)
             subscriptionOperation.addDependency(sendOperation)
-            
+
             let wrapper = CompoundOperationWrapper(
                 targetOperation: subscriptionOperation,
                 dependencies: transactionWrapper.allOperations + [sendOperation]
             )
-            
+
             return wrapper
         } catch {
             return .createWithError(error)
         }
     }
-    
+
     func createSubscriptionOperation(
         transactionHash: @escaping () throws -> (String),
         runningIn queue: DispatchQueue,
@@ -164,23 +164,23 @@ private extension EvmTransactionService {
     ) -> BaseOperation<Void> {
         ClosureOperation {
             let transactionHash = try transactionHash()
-            
+
             let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void
             updateClosure = { [weak self, transactionHash] update in
                 guard
                     let chainId = self?.evmChainId,
                     let operationQueue = self?.operationQueue
                 else { return }
-                
+
                 let blockNumber = update.params.result.blockNumber
 
                 self?.logger.debug("Did receive new evm block: \(blockNumber) \(chainId)")
-                
+
                 let status = EvmSubscriptionStatus(
                     lastBlockNumber: blockNumber,
                     transactionHash: transactionHash
                 )
-                
+
                 notificationClosure(.success(status))
             }
 
@@ -196,16 +196,16 @@ private extension EvmTransactionService {
                 updateClosure: updateClosure,
                 failureClosure: failureClosure
             )
-            
+
             guard subscriptionIdClosure(subscriptionId) else {
                 self.operationFactory.connection.cancelForIdentifier(subscriptionId)
                 return
             }
-            
+
             self.logger.debug("Did create evm native balance subscription: \(self.evmChainId)")
         }
     }
-    
+
     func createSignedTransactionWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
@@ -333,7 +333,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             }
         }
     }
-    
+
     func submitAndWatch(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
@@ -341,7 +341,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping EvmSubscriptionIdClosure,
         notificationClosure: @escaping EvmSubscriptionStatusClosure
-    ) {
+    ){
         let wrapper = createSubmitAndSubscribeWrapper(
             closure,
             price: price,
@@ -350,8 +350,12 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             subscriptionIdClosure: subscriptionIdClosure,
             notificationClosure: notificationClosure
         )
-        
+
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+    
+    func cancelTransactionWatch(for subscriptionId: UInt16) {
+        operationFactory.connection.cancelForIdentifier(subscriptionId)
     }
 
     func sign(

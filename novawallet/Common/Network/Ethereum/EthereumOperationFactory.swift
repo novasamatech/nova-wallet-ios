@@ -6,7 +6,7 @@ import SubstrateSdk
 
 protocol EthereumOperationFactoryProtocol {
     var connection: JSONRPCEngine { get }
-    
+
     func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<HexCodable<BigUInt>>
 
     func createGasPriceOperation() -> BaseOperation<HexCodable<BigUInt>>

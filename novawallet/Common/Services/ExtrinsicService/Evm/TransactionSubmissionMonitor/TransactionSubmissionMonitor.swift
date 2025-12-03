@@ -5,13 +5,13 @@ import BigInt
 
 struct EvmTransactionMonitorSubmission {
     let status: TransactionStatus
-    
+
     var transactionHash: String {
         switch status {
         case let .success(successTransaction):
-            successTransaction.transcationHash
+            successTransaction.transactionHash
         case let .failure(failedTransaction):
-            failedTransaction.transcationHash
+            failedTransaction.transactionHash
         }
     }
 }
@@ -19,12 +19,12 @@ struct EvmTransactionMonitorSubmission {
 extension EvmTransactionMonitorSubmission {
     enum TransactionStatus {
         struct SuccessTransaction {
-            let transcationHash: String
+            let transactionHash: String
             let blockHash: String
         }
 
         struct FailedTransaction {
-            let transcationHash: String
+            let transactionHash: String
         }
 
         case success(SuccessTransaction)
@@ -37,7 +37,7 @@ protocol TransactionSubmitMonitorFactoryProtocol {
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission?>
+    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission>
 }
 
 final class TransactionSubmitMonitorFactory {
@@ -61,7 +61,7 @@ final class TransactionSubmitMonitorFactory {
         connection: JSONRPCEngine,
         operationQueue: OperationQueue,
         timeoutInterval: Int,
-        logger: LoggerProtocol
+        logger _: LoggerProtocol
     ) {
         let evmOperationFactory = EvmWebSocketOperationFactory(
             connection: connection,
@@ -74,6 +74,70 @@ final class TransactionSubmitMonitorFactory {
             operationQueue: operationQueue
         )
     }
+
+    func handleUpdate(
+        subscriptionStatus: EvmSubscriptionStatus,
+        subscriptionId: UInt16?,
+        completion: @escaping (Result<EvmTransactionMonitorSubmission, Error>) -> Void
+    ) {
+        let operation = evmOperationFactory.createTransactionReceiptOperation(
+            for: subscriptionStatus.transactionHash
+        )
+
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: processingQueue
+        ) { receiptResult in
+            switch receiptResult {
+            case let .success(receipt):
+                guard let receipt else { return }
+                self.handleFetchedReceipt(
+                    receipt,
+                    subscriptionId: subscriptionId,
+                    completion: completion
+                )
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func handleFetchedReceipt(
+        _ receipt: EthereumTransactionReceipt,
+        subscriptionId: UInt16?,
+        completion: @escaping (Result<EvmTransactionMonitorSubmission, Error>) -> Void
+    ) {
+        guard let subscriptionId else { return }
+
+        var status: EvmTransactionMonitorSubmission.TransactionStatus?
+
+        switch receipt.localStatus {
+        case .pending:
+            status = nil
+        case .success:
+            status = .success(
+                EvmTransactionMonitorSubmission.TransactionStatus.SuccessTransaction(
+                    transactionHash: receipt.transactionHash,
+                    blockHash: receipt.blockHash
+                )
+            )
+        case .failed:
+            status = .failure(
+                EvmTransactionMonitorSubmission.TransactionStatus.FailedTransaction(
+                    transactionHash: receipt.transactionHash
+                )
+            )
+        }
+
+        guard let status else { return }
+
+        submissionService.cancelTransactionWatch(for: subscriptionId)
+
+        let result = EvmTransactionMonitorSubmission(status: status)
+
+        completion(.success(result))
+    }
 }
 
 // MARK: - TransactionSubmitMonitorFactoryProtocol
@@ -83,10 +147,10 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission?> {
+    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
         var subscriptionId: UInt16?
-        
-        let submissionOperation = AsyncClosureOperation<EvmSubscriptionStatus>(
+
+        let submissionOperation = AsyncClosureOperation<EvmTransactionMonitorSubmission>(
             operationClosure: { completion in
                 self.submissionService.submitAndWatch(
                     closure,
@@ -100,7 +164,11 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
                     notificationClosure: { result in
                         switch result {
                         case let .success(status):
-                            completion(.success(status))
+                            self.handleUpdate(
+                                subscriptionStatus: status,
+                                subscriptionId: subscriptionId,
+                                completion: completion
+                            )
                         case let .failure(error):
                             completion(.failure(error))
                         }
@@ -114,67 +182,7 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
                 }
             }
         )
-        
-        let receiptWrapper: CompoundOperationWrapper<EthereumTransactionReceipt?>
-        receiptWrapper = OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let status = try submissionOperation.extractNoCancellableResultData()
-            let operation = self.evmOperationFactory.createTransactionReceiptOperation(
-                for: status.transactionHash
-            )
-            return CompoundOperationWrapper(targetOperation: operation)
-        }
-        
-        let statusOperation = ClosureOperation<EvmTransactionMonitorSubmission.TransactionStatus?> {
-            let receipt = try receiptWrapper.targetOperation.extractNoCancellableResultData()
-            
-            guard
-                let receipt,
-                let subscriptionId
-            else { return nil }
-            
-            switch receipt.localStatus {
-            case .pending:
-                return nil
-            case .success:
-                self.submissionService.cancelTransactionWatch(for: subscriptionId)
-                return .success(
-                    EvmTransactionMonitorSubmission.TransactionStatus.SuccessTransaction(
-                        transcationHash: receipt.transactionHash,
-                        blockHash: receipt.blockHash
-                    )
-                )
-            case .failed:
-                self.submissionService.cancelTransactionWatch(for: subscriptionId)
-                return .failure(
-                    EvmTransactionMonitorSubmission.TransactionStatus.FailedTransaction(
-                        transcationHash: receipt.transactionHash
-                    )
-                )
-            }
-        }
-        
-        let mappingOperation = ClosureOperation<EvmTransactionMonitorSubmission?> {
-            let receipt = try receiptWrapper.targetOperation.extractNoCancellableResultData()
-            let status = try statusOperation.extractNoCancellableResultData()
-            
-            guard let status, let receipt else { return nil }
-            
-            return EvmTransactionMonitorSubmission(status: status)
-        }
-        
-        receiptWrapper.addDependency(operations: [submissionOperation])
-        statusOperation.addDependency(receiptWrapper.targetOperation)
-        mappingOperation.addDependency(statusOperation)
-        
-        let dependencies = [submissionOperation]
-            + receiptWrapper.allOperations
-            + [statusOperation]
-        
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: dependencies
-        )
+
+        return CompoundOperationWrapper(targetOperation: submissionOperation)
     }
 }

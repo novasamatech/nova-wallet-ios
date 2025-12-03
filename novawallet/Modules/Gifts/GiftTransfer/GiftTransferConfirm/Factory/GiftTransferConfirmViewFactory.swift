@@ -194,12 +194,18 @@ private extension GiftTransferConfirmViewFactory {
             chain: chain,
             operationQueue: operationQueue
         )
+        
+        let transactionMonitorFactory = TransactionSubmitMonitorFactory(
+            submissionService: transactionService,
+            evmOperationFactory: operationFactory,
+            operationQueue: operationQueue
+        )
 
         let submissionFactory = GiftSubmissionFactoryFacade(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             operationQueue: operationQueue
-        ).createEvmFactory(transactionService: transactionService)
+        ).createEvmFactory(transactionMonitorFactory: transactionMonitorFactory)
 
         return EvmGiftTransferConfirmInteractor(
             giftSubmissionFactory: submissionFactory,
