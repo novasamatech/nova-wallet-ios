@@ -15,46 +15,6 @@ extension MockEventCenterProtocol {
     }
 }
 
-extension MockCrowdloanRemoteSubscriptionServiceProtocol {
-    func applyDefaultStub() -> MockCrowdloanRemoteSubscriptionServiceProtocol {
-        stub(self) { stub in
-            stub.attach(
-                for: any(),
-                runningCompletionIn: any(),
-                completion: any()
-            ).then { _, maybeQueue, maybeClosure in
-
-                if let closure = maybeClosure {
-                    let queue = maybeQueue ?? DispatchQueue.main
-
-                    queue.async {
-                        closure(.success(()))
-                    }
-                }
-
-                return UUID()
-            }
-
-            stub.detach(
-                for: any(),
-                chainId: any(),
-                runningCompletionIn: any(),
-                completion: any()
-            ).then { _, _, maybeQueue, maybeClosure in
-                if let closure = maybeClosure {
-                    let queue = maybeQueue ?? DispatchQueue.main
-
-                    queue.async {
-                        closure(.success(()))
-                    }
-                }
-            }
-        }
-
-        return self
-    }
-}
-
 extension MockRuntimeProviderProtocol {
     func applyDefault(
         for chainId: ChainModel.Id,

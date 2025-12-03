@@ -1,13 +1,6 @@
 import Foundation
 import BigInt
 
-protocol GraphEdgeProtocol {
-    associatedtype Node
-
-    var origin: Node { get }
-    var destination: Node { get }
-}
-
 struct SimpleEdge<N: Hashable>: GraphEdgeProtocol, Hashable {
     typealias Node = N
 

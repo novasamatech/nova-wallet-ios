@@ -151,15 +151,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func nodeUrl(from node: ChainNodeModel) -> ConnectionCreationParams? {
-        let builder = URLBuilder(urlTemplate: node.url)
-
-        guard let url = try? builder.buildBy(closure: { apiKeyType in
-            guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
-                throw CommonError.undefined
-            }
-
-            return apiKey
-        }) else {
+        guard let url = node.getUrl() else {
             return nil
         }
 

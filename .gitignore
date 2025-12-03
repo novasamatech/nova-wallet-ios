@@ -62,3 +62,5 @@ Templates/
 GoogleService-Info-*.plist
 GoogleService-Info.plist
 .ruby-version
+.source_packages/
+.mint/
