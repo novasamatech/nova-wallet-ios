@@ -8304,6 +8304,7 @@
 		2D081FA22E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestErrorResponseFactory.swift; sourceTree = "<group>"; };
 		2D081FA72E3D2130006019A3 /* DAppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestError.swift; sourceTree = "<group>"; };
 		2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestHandling.swift; sourceTree = "<group>"; };
+		2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel40.xcdatamodel; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -38748,6 +38749,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */,
 				2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */,
 				2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */,
 				2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */,
@@ -38788,7 +38790,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */;
+			currentVersion = 2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

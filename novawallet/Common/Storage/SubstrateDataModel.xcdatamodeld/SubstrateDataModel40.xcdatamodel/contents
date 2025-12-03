@@ -54,6 +54,7 @@
         <attribute name="chainId" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="connectionMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="displayPriority" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>
         <attribute name="hasAssetHubTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
