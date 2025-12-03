@@ -1,45 +1,62 @@
 import Foundation
-import Keystore_iOS
 import Operation_iOS
+import Keystore_iOS
 
 final class CrowdloanSharedState {
     let settings: CrowdloanChainSettings
-    let crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol
-    let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let crowdloanSubscriptionFactory: CrowdloanLocalSubscriptionMaking
+    let chainRegistry: ChainRegistryProtocol
+
+    private var blockTimeService: BlockTimeEstimationServiceProtocol?
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
-        storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         internalSettings: SettingsManagerProtocol = SettingsManager.shared,
-        operationManager: OperationManagerProtocol = OperationManagerFacade.sharedManager,
-        paraIdOperationFactory: ParaIdOperationFactoryProtocol = ParaIdOperationFactory.shared,
+        storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
+        operationQueue: OperationQueue = OperationQueue(),
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.chainRegistry = chainRegistry
+
         settings = CrowdloanChainSettings(
             chainRegistry: chainRegistry,
             settings: internalSettings
         )
 
-        crowdloanLocalSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
+        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
             operationManager: operationManager,
             logger: logger
         )
 
-        crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactory(
+        crowdloanSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
             storageFacade: storageFacade,
-            paraIdOperationFactory: paraIdOperationFactory
+            operationManager: operationManager,
+            logger: logger
         )
     }
+}
 
-    init(
-        settings: CrowdloanChainSettings,
-        crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
-        crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
-    ) {
-        self.settings = settings
-        self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
-        self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
+extension CrowdloanSharedState {
+    func replaceBlockTimeService(_ newService: BlockTimeEstimationServiceProtocol?) {
+        blockTimeService?.throttle()
+        blockTimeService = newService
+    }
+
+    func createChainTimelineFacade() -> ChainTimelineFacadeProtocol? {
+        guard let chain = settings.value, let blockTimeService else {
+            return nil
+        }
+
+        return ChainTimelineFacade(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry,
+            estimationService: blockTimeService
+        )
     }
 }

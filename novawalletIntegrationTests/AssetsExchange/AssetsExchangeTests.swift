@@ -287,14 +287,72 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
 
-    func testCalculateFee() {
+    func testRouteDOTHOLLARPolkadot() throws {
+        let params = buildCommonParams()
+
+        let polkadot = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        let hydration = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let hollarHydraion = try hydration.chainAssetForSymbolOrError("HOLLAR").chainAssetId
+        let dotPolkadot = try polkadot.chainAssetForSymbolOrError("DOT").chainAssetId
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let route = graph.fetchPaths(from: dotPolkadot, to: hollarHydraion, maxTopPaths: 4)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+
+    func testBestRouteDOTHOLLARPolkadot() throws {
+        let params = buildCommonParams()
+
+        let polkadot = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        let hydration = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let hollarHydraion = try hydration.chainAssetForSymbolOrError("HOLLAR")
+        let dotPolkadot = try polkadot.chainAssetForSymbolOrError("DOT")
+
+        do {
+            guard
+                let amountIn = Decimal(1000).toSubstrateAmount(
+                    precision: dotPolkadot.assetDisplayInfo.assetPrecision
+                ) else {
+                XCTFail("Can't convert amount")
+                return
+            }
+
+            let fee = try calculateFee(assetIn: dotPolkadot, assetOut: hollarHydraion, amountIn: amountIn)
+
+            let path = fee.route.items.map(\.edge)
+
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+
+            Logger.shared.info("Route: \(pathDescription)")
+        } catch {
+            XCTFail("Fee error: \(error)")
+        }
+    }
+
+    func testCalculateFeeDOTPolkadotUSDTAH() {
         let params = buildCommonParams()
 
         guard
             let dotPolkadot = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAsset(),
-            let usdtAssetHubId = params.chainRegistry.getChain(
+            let usdtAssetHub = params.chainRegistry.getChain(
                 for: KnowChainId.polkadotAssetHub
-            )?.chainAssetForSymbol("USDT")?.chainAssetId else {
+            )?.chainAssetForSymbol("USDT") else {
             XCTFail("No chain or asset")
             return
         }
@@ -308,41 +366,46 @@ final class AssetsExchangeTests: XCTestCase {
         }
 
         do {
-            let quoteArgs = AssetConversion.QuoteArgs(
-                assetIn: dotPolkadot.chainAssetId,
-                assetOut: usdtAssetHubId,
-                amount: amountIn,
-                direction: .sell
-            )
-
-            guard let factory = createExchangeFactory(for: params) else {
-                XCTFail("Service not found")
-                return
-            }
-
-            let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
-
-            params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
-
-            let quote = try routeWrapper.targetOperation.extractNoCancellableResultData()
-
-            let feeWrapper = factory.createFeeWrapper(
-                for: .init(
-                    route: quote.route,
-                    slippage: BigRational.percent(of: 5),
-                    feeAssetId: dotPolkadot.chainAssetId
-                )
-            )
-
-            params.operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
-
-            let feeResult = try feeWrapper.targetOperation.extractNoCancellableResultData()
+            let feeResult = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 
             params.logger.info("Fees: \(feeResult.operationFees)")
 
         } catch {
             XCTFail("Fee error: \(error)")
         }
+    }
+
+    private func calculateFee(assetIn: ChainAsset, assetOut: ChainAsset, amountIn: Balance) throws -> AssetExchangeFee {
+        let params = buildCommonParams()
+
+        let quoteArgs = AssetConversion.QuoteArgs(
+            assetIn: assetIn.chainAssetId,
+            assetOut: assetOut.chainAssetId,
+            amount: amountIn,
+            direction: .sell
+        )
+
+        guard let factory = createExchangeFactory(for: params) else {
+            throw CommonError.undefined
+        }
+
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
+
+        params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
+
+        let quote = try routeWrapper.targetOperation.extractNoCancellableResultData()
+
+        let feeWrapper = factory.createFeeWrapper(
+            for: .init(
+                route: quote.route,
+                slippage: BigRational.percent(of: 5),
+                feeAssetId: assetIn.chainAssetId
+            )
+        )
+
+        params.operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
+
+        return try feeWrapper.targetOperation.extractNoCancellableResultData()
     }
 
     private func findRoute(

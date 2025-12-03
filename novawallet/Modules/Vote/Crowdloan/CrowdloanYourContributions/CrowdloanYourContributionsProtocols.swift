@@ -1,43 +1,43 @@
 import Foundation_iOS
 import Foundation
+import Operation_iOS
 
-protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol {
+protocol CrowdloanContributionsViewProtocol: ControllerBackedProtocol {
     func reload(model: CrowdloanYourContributionsViewModel)
     func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel])
+    func reload(hasUnlockable: Bool)
 }
 
-protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
+protocol CrowdloanContributionsPresenterProtocol: AnyObject {
     func setup()
+    func unlock()
 }
 
-protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
+protocol CrowdloanContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
         input: CrowdloanYourContributionsViewInput,
-        externalContributions: [ExternalContribution]?,
-        amount: Decimal,
         price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel
 
     func createReturnInIntervals(
         input: CrowdloanYourContributionsViewInput,
-        externalContributions: [ExternalContribution]?,
         metadata: CrowdloanMetadata
     ) -> [ReturnInIntervalsViewModel]
 }
 
-protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
+protocol CrowdloanContributionsInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
-    func didReceiveExternalContributions(_ externalContributions: [ExternalContribution])
+protocol CrowdloanContributionsInteractorOutputProtocol: AnyObject {
+    func didReceiveContributions(_ changes: [DataProviderChange<CrowdloanContribution>])
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveBlockDuration(_ blockDuration: BlockTime)
-    func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod)
-    func didReceiveLeasingOffset(_ leasingOffset: LeasingOffset)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveError(_ error: Error)
 }
 
-protocol CrowdloanYourContributionsWireframeProtocol: AnyObject {}
+protocol CrowdloanContributionsWireframeProtocol: AnyObject {
+    func showUnlock(from view: CrowdloanContributionsViewProtocol?, model: CrowdloanUnlock)
+}
