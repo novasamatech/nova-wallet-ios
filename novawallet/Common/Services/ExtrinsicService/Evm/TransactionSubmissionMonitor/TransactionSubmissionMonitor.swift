@@ -3,41 +3,28 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-struct EvmTransactionMonitorSubmission {
-    let status: TransactionStatus
-
-    var transactionHash: String {
-        switch status {
-        case let .success(successTransaction):
-            successTransaction.transactionHash
-        case let .failure(failedTransaction):
-            failedTransaction.transactionHash
-        }
-    }
-}
-
-extension EvmTransactionMonitorSubmission {
-    enum TransactionStatus {
-        struct SuccessTransaction {
-            let transactionHash: String
-            let blockHash: String
-        }
-
-        struct FailedTransaction {
-            let transactionHash: String
-        }
-
-        case success(SuccessTransaction)
-        case failure(FailedTransaction)
-    }
-}
-
 protocol TransactionSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        timeout: EvmTransactionMonitorTimeout
     ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission>
+}
+
+extension TransactionSubmitMonitorFactoryProtocol {
+    func submitAndMonitorWrapper(
+        _ closure: @escaping EvmTransactionBuilderClosure,
+        price: EvmTransactionPrice,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
+        submitAndMonitorWrapper(
+            closure,
+            price: price,
+            signer: signer,
+            timeout: .default
+        )
+    }
 }
 
 final class TransactionSubmitMonitorFactory {
@@ -45,15 +32,18 @@ final class TransactionSubmitMonitorFactory {
     let evmOperationFactory: EthereumOperationFactoryProtocol
     let operationQueue: OperationQueue
     let processingQueue = DispatchQueue(label: "io.novawallet.evm.transaction.monitor.\(UUID().uuidString)")
+    let logger: LoggerProtocol
 
     init(
         submissionService: EvmTransactionServiceProtocol,
         evmOperationFactory: EthereumOperationFactoryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.submissionService = submissionService
         self.evmOperationFactory = evmOperationFactory
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     convenience init(
@@ -61,7 +51,7 @@ final class TransactionSubmitMonitorFactory {
         connection: JSONRPCEngine,
         operationQueue: OperationQueue,
         timeoutInterval: Int,
-        logger _: LoggerProtocol
+        logger: LoggerProtocol
     ) {
         let evmOperationFactory = EvmWebSocketOperationFactory(
             connection: connection,
@@ -71,7 +61,8 @@ final class TransactionSubmitMonitorFactory {
         self.init(
             submissionService: submissionService,
             evmOperationFactory: evmOperationFactory,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
     }
 
@@ -138,6 +129,37 @@ final class TransactionSubmitMonitorFactory {
 
         completion(.success(result))
     }
+
+    func checkAndUpdateTimeoutState(
+        maxBlocks: Int,
+        _ startBlockNumber: inout BigUInt?,
+        _ lastBlockNumber: BigUInt,
+        _ blocksPassed: inout BigUInt
+    ) -> Bool {
+        if startBlockNumber == nil {
+            startBlockNumber = lastBlockNumber
+            logger.debug("EVM monitor: initial block \(lastBlockNumber)")
+        } else if let startBlockNumber, lastBlockNumber > startBlockNumber {
+            blocksPassed = lastBlockNumber - startBlockNumber
+
+            logger.debug("EVM monitor: \(blocksPassed) blocks observed")
+        }
+
+        return blocksPassed < maxBlocks
+    }
+
+    func handleTimeout(
+        for subscriptionId: UInt16?,
+        blocksPassed: BigUInt,
+        completion: @escaping (Result<EvmTransactionMonitorSubmission, Error>) -> Void
+    ) {
+        if let subscriptionId {
+            submissionService.cancelTransactionWatch(for: subscriptionId)
+        }
+
+        logger.warning("EVM monitor: timeout after \(blocksPassed) blocks")
+        completion(.failure(EvmTransactionMonitorError.timeout(blocksWaited: blocksPassed)))
+    }
 }
 
 // MARK: - TransactionSubmitMonitorFactoryProtocol
@@ -146,9 +168,12 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
     func submitAndMonitorWrapper(
         _ closure: @escaping EvmTransactionBuilderClosure,
         price: EvmTransactionPrice,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        timeout: EvmTransactionMonitorTimeout
     ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
         var subscriptionId: UInt16?
+        var startBlockNumber: BigUInt?
+        var blocksPassed: BigUInt = 0
 
         let submissionOperation = AsyncClosureOperation<EvmTransactionMonitorSubmission>(
             operationClosure: { completion in
@@ -164,6 +189,22 @@ extension TransactionSubmitMonitorFactory: TransactionSubmitMonitorFactoryProtoc
                     notificationClosure: { result in
                         switch result {
                         case let .success(status):
+                            let timeIsValid = self.checkAndUpdateTimeoutState(
+                                maxBlocks: timeout.maxBlocks,
+                                &startBlockNumber,
+                                status.lastBlockNumber,
+                                &blocksPassed
+                            )
+
+                            guard timeIsValid else {
+                                self.handleTimeout(
+                                    for: subscriptionId,
+                                    blocksPassed: blocksPassed,
+                                    completion: completion
+                                )
+                                return
+                            }
+
                             self.handleUpdate(
                                 subscriptionStatus: status,
                                 subscriptionId: subscriptionId,
