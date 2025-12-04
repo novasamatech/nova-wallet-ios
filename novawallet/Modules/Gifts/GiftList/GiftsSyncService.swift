@@ -107,8 +107,7 @@ private extension GiftsSyncService {
 
                     self?.updateStatus(
                         for: giftAccountId,
-                        balance: update.balance,
-                        asset: chainAsset.asset
+                        balance: update.balance
                     )
                 case let .failure(error):
                     self?.logger.error("Failed remote balance subscription: \(error)")
@@ -119,8 +118,7 @@ private extension GiftsSyncService {
 
     func updateStatus(
         for giftAccountId: AccountId,
-        balance: AssetBalance?,
-        asset _: AssetModel
+        balance: AssetBalance?
     ) {
         guard
             let gift = gifts[giftAccountId.toHex()],
