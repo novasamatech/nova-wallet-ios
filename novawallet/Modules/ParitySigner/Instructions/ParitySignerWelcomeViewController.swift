@@ -79,15 +79,10 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     private func setupSegmentedControlLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.modeSegmentedControl.setTitle(
+        rootView.modeSegmentedControl.titles = [
             R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultPairPublicKey(),
-            forSegmentAt: ParitySignerWelcomeMode.pairPublicKey.rawValue
-        )
-
-        rootView.modeSegmentedControl.setTitle(
-            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultImportPrivateKey(),
-            forSegmentAt: ParitySignerWelcomeMode.importPrivateKey.rawValue
-        )
+            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultImportPrivateKey()
+        ]
     }
 
     private func setupStepsLocalization(for mode: ParitySignerWelcomeMode) {

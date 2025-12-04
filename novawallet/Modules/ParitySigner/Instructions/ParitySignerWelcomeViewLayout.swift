@@ -15,64 +15,49 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         return view
     }()
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    let actionButton: TriangularedButton = .create { view in
+        view.applyDefaultStyle()
+    }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .boldTitle3
-        label.numberOfLines = 0
-        return label
-    }()
+    let titleLabel: UILabel = .create { view in
+        view.textColor = R.color.colorTextPrimary()
+        view.font = .boldTitle3
+        view.numberOfLines = 0
+    }
 
-    let modeSegmentedControl: UISegmentedControl = {
-        let control = UISegmentedControl()
-        control.insertSegment(withTitle: "", at: ParitySignerWelcomeMode.pairPublicKey.rawValue, animated: false)
-        control.insertSegment(withTitle: "", at: ParitySignerWelcomeMode.importPrivateKey.rawValue, animated: false)
-        control.selectedSegmentIndex = ParitySignerWelcomeMode.pairPublicKey.rawValue
-        return control
-    }()
+    var modeSegmentedControl: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .regularSubheadline
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+        view.backgroundView.cornerRadius = 12
+    }
 
-    let integrationImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
-    let step1: ProcessStepView = {
-        let view = ProcessStepView()
-        view.stepNumberView.titleLabel.text = "1"
-        return view
-    }()
-
-    let step2: ProcessStepView = {
-        let view = ProcessStepView()
-        view.stepNumberView.titleLabel.text = "2"
-        return view
-    }()
-
-    let step2DetailsImageView: UIImageView = {
-        let view = UIImageView()
+    let integrationImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
-        return view
-    }()
+    }
 
-    let step3: ProcessStepView = {
-        let view = ProcessStepView()
+    let step1: ProcessStepView = .create { view in
+        view.stepNumberView.titleLabel.text = "1"
+    }
+
+    let step2: ProcessStepView = .create { view in
+        view.stepNumberView.titleLabel.text = "2"
+    }
+
+    let step2DetailsImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+    }
+
+    let step3: ProcessStepView = .create { view in
         view.stepNumberView.titleLabel.text = "3"
-        return view
-    }()
+    }
 
-    let step4: ProcessStepView = {
-        let view = ProcessStepView()
+    let step4: ProcessStepView = .create { view in
         view.stepNumberView.titleLabel.text = "4"
         view.isHidden = true
-        return view
-    }()
+    }
 
     private var step2DetailsContainerView: UIView!
 
@@ -117,7 +102,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
 
         containerView.stackView.addArrangedSubview(modeSegmentedControl)
         modeSegmentedControl.snp.makeConstraints { make in
-            make.height.equalTo(36.0)
+            make.height.equalTo(40.0)
         }
         containerView.stackView.setCustomSpacing(24.0, after: modeSegmentedControl)
 
