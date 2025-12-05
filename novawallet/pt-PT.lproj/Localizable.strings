@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Ver em %@";
 "import.json.unsupported.ethereum.crypto.message" = "Não é possível importar conta com segredo Substrate para a rede com criptografia Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Não é possível importar conta com segredo Ethereum para a rede com criptografia Substrate";
+"gift.reclaim.no.account.alert.title" = "Nenhuma conta encontrada";
 "common.today" = "Hoje";
 "common.yesterday" = "Ontem";
 "common.tx.details" = "Detalhes da Transação";
@@ -1968,6 +1969,8 @@
 "common.rewards" = "Recompensas";
 "staking.validator.apy.percent" = "Recompensa estimada (%% APY)";
 "parastk.collators.filter.rewards" = "Recompensas estimadas (%% APR)";
+"gift.reclaim.dialog.message" = "Se você reclamar este presente, o link compartilhado será desativado e os tokens serão reembolsados para sua carteira.\nVocê deseja continuar?";
+"gift.action.reclaim.title" = "Reclamar";
 "gift.claim.warning.wallet.message" = "Crie uma nova carteira ou importe uma existente para reivindicar o presente";
 "gift.claim.warning.wallet.manage.action" = "Gerenciar Carteiras";
 "gift.claim.success.status" = "Você reivindicou um presente com sucesso. Os tokens aparecerão em seu saldo em breve.";
@@ -1975,6 +1978,8 @@
 "gift.error.already.claimed.message" = "Ops, o presente já foi reivindicado";
 "gift.claim.action.title" = "Reivindicar o presente";
 "gift.claim.title" = "Você recebeu um presente cripto!";
+"gift.status.claimed" = "Reivindicado";
+"gift.status.reclaimed" = "Reclamado";
 "gift.claim.fee" = "Taxa de rede ao reivindicar";
 "gift.prepared.title" = "O Presente foi Preparado.\nCompartilhe Agora!";
 "gift.prepared.share.action.title" = "Compartilhar link do presente";
@@ -1986,6 +1991,7 @@
 "gifts.onboarding.step1.highlighted" = "Insira o valor do seu presente";
 "gifts.onboarding.step2.highlighted" = "Compartilhe o presente diretamente";
 "gifts.onboarding.title" = "Compartilhe Presentes Cripto com Qualquer Um, em Qualquer Lugar";
+"gift.list.gifts.section.title" = "Presentes que você criou";
 "common.gift" = "Presente";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ como um link e convide qualquer um para Nova";
@@ -2003,3 +2009,8 @@
 "common.total.fee" = "Taxa total";
 "gift.unsupported.token.alert.title" = "Este token não é suportado pela funcionalidade de presente";
 "gift.unsupported.token.alert.message" = "Presentear com este token atualmente não é suportado. Por favor, selecione um token diferente, uma rede diferente, ou verifique mais tarde.";
+"gift.reclaim.success.status" = "Você recuperou seu presente com sucesso";
+"gift.loading.message" = "Carregando presentes...";
+"gift.created.date.format" = "Criado: %@";
+"gift.reclaim.no.account.alert.message" = "Por favor, selecione outra carteira ou adicione uma conta %@ nas Configurações para continuar.";
+"gift.reclaim.dialog.title" = "Resgatar presente %@?";
