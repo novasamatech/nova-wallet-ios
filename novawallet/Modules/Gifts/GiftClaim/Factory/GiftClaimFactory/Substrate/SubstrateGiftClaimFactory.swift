@@ -136,7 +136,7 @@ extension SubstrateGiftClaimFactory: SubstrateGiftClaimFactoryProtocol {
             return .createWithError(GiftClaimError.claimingAccountNotFound)
         }
 
-        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper in
+        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper, _ in
             self.createClaimWrapper(
                 dependingOn: giftWrapper,
                 chainAsset: giftDescription.chainAsset,
@@ -148,6 +148,27 @@ extension SubstrateGiftClaimFactory: SubstrateGiftClaimFactoryProtocol {
 
         return claimFactory.claimGift(
             using: giftDescription,
+            claimWrapperProvider: claimWrapperProvider
+        )
+    }
+
+    func createReclaimWrapper(
+        gift: GiftModel,
+        claimingAccountId: AccountId,
+        assetStorageInfo: AssetStorageInfo?
+    ) -> CompoundOperationWrapper<Void> {
+        let claimWrapperProvider: GiftClaimWrapperProvider = { giftWrapper, chainAsset in
+            self.createClaimWrapper(
+                dependingOn: giftWrapper,
+                chainAsset: chainAsset,
+                amount: .all(value: gift.amount),
+                claimingAccountId: claimingAccountId,
+                assetStorageInfo: assetStorageInfo
+            )
+        }
+
+        return claimFactory.reclaimGift(
+            gift,
             claimWrapperProvider: claimWrapperProvider
         )
     }

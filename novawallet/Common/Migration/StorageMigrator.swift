@@ -94,7 +94,7 @@ final class UserStorageMigrator {
             settings: settings
         )
 
-        while currentVersion != destinationVersion, let nextVersion = currentVersion.nextVersion() {
+        while currentVersion != destinationVersion, let nextVersion = currentVersion.nextVersion {
             let currentModel = createManagedObjectModel(forResource: currentVersion.rawValue)
             let nextModel = createManagedObjectModel(forResource: nextVersion.rawValue)
 
