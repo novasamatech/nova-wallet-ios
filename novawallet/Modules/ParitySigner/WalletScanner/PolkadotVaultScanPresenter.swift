@@ -1,10 +1,10 @@
 import Foundation
 import Foundation_iOS
 
-final class ParitySignerScanPresenter: QRScannerPresenter {
+final class PolkadotVaultScanPresenter: QRScannerPresenter {
     let interactor: ParitySignerScanInteractorInputProtocol
 
-    let matcher: ParitySignerScanMatcherProtocol
+    let matcher: PolkadotVaultScanMatcherProtocol
     let qrExtractionError: LocalizableResource<String>
 
     let localizationManager: LocalizationManagerProtocol
@@ -12,7 +12,6 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
     let scanWireframe: ParitySignerScanWireframeProtocol
 
     let type: ParitySignerType
-    let mode: ParitySignerWelcomeMode
 
     private var lastHandledCode: String?
 
@@ -20,8 +19,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
     init(
         type: ParitySignerType,
-        mode: ParitySignerWelcomeMode,
-        matcher: ParitySignerScanMatcherProtocol,
+        matcher: PolkadotVaultScanMatcherProtocol,
         interactor: ParitySignerScanInteractorInputProtocol,
         scanWireframe: ParitySignerScanWireframeProtocol,
         baseWireframe: QRScannerWireframeProtocol,
@@ -32,7 +30,6 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.type = type
-        self.mode = mode
         self.matcher = matcher
         self.interactor = interactor
         self.scanWireframe = scanWireframe
@@ -80,9 +77,9 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
         setLastCode(code)
 
-        if let addressScan = matcher.match(code: code) {
+        if let accountScan = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.interactor.process(addressScan: addressScan)
+                self?.interactor.process(accountScan: accountScan)
             }
         } else {
             DispatchQueue.main.async { [weak self] in
@@ -98,11 +95,15 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
     }
 }
 
-extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
-    func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>) {
+extension PolkadotVaultScanPresenter: PolkadotVaultScanInteractorOutputProtocol {
+    func didReceiveValidation(result: Result<PolkadotVaultAccountScan, Error>) {
         switch result {
-        case let .success(addressScan):
-            scanWireframe.completeScan(on: view, addressScan: addressScan, type: type, mode: mode)
+        case let .success(scan):
+            scanWireframe.completeScan(
+                on: view,
+                accountScan: scan,
+                type: type
+            )
         case .failure:
             handleFailure()
             setLastCode(nil)

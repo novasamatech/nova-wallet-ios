@@ -4,7 +4,7 @@ import Foundation_iOS
 
 struct ParitySignerAddressesViewFactory {
     static func createOnboardingView(
-        with addressScan: ParitySignerAddressScan,
+        with addressScan: PolkadotVaultAddressScan,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
@@ -15,7 +15,7 @@ struct ParitySignerAddressesViewFactory {
     }
 
     static func createAddAccountView(
-        with addressScan: ParitySignerAddressScan,
+        with addressScan: PolkadotVaultAddressScan,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
@@ -26,7 +26,7 @@ struct ParitySignerAddressesViewFactory {
     }
 
     static func createSwitchAccountView(
-        with addressScan: ParitySignerAddressScan,
+        with addressScan: PolkadotVaultAddressScan,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
@@ -37,7 +37,7 @@ struct ParitySignerAddressesViewFactory {
     }
 
     private static func createView(
-        with addressScan: ParitySignerAddressScan,
+        with addressScan: PolkadotVaultAddressScan,
         type: ParitySignerType,
         wireframe: ParitySignerAddressesWireframeProtocol
     ) -> HardwareWalletAddressesViewProtocol? {

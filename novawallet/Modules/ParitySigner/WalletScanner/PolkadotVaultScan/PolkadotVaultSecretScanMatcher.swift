@@ -1,13 +1,13 @@
 import Foundation
 
 protocol PolkadotVaultScanSecretMatcherProtocol {
-    func match(code: String) -> PolkadotVaultSecretScan?
+    func match(code: String) -> PolkadotVaultSecret?
 }
 
 final class PolkadotVaultSecretScanMatcher {
     private let prefix: String
     private let separator: String
-    
+
     init(
         prefix: String,
         separator: String
@@ -20,16 +20,16 @@ final class PolkadotVaultSecretScanMatcher {
 // MARK: - PolkadotVaultScanSecretMatcherProtocol
 
 extension PolkadotVaultSecretScanMatcher: PolkadotVaultScanSecretMatcherProtocol {
-    func match(code: String) -> PolkadotVaultSecretScan? {
+    func match(code: String) -> PolkadotVaultSecret? {
         let components = code.components(separatedBy: separator)
-        
+
         guard
             components.count >= Constants.minComponents,
             components.first == prefix,
             let secretData = try? Data(hexString: components[1]),
             let genesisHash = try? Data(hexString: components[2])
         else { return nil }
-        
+
         let scanSecret: ScanSecret? = if secretData.count == Constants.seedLength {
             .seed(secretData)
         } else if secretData.count == Constants.keypairLength {
@@ -37,16 +37,16 @@ extension PolkadotVaultSecretScanMatcher: PolkadotVaultScanSecretMatcherProtocol
         } else {
             .none
         }
-        
+
         guard let scanSecret else { return nil }
-        
+
         let userName: String? = if components.count == Constants.maxComponents {
             components.last
         } else {
             nil
         }
-        
-        return PolkadotVaultSecretScan(
+
+        return PolkadotVaultSecret(
             secret: scanSecret,
             genesisHash: genesisHash,
             username: userName

@@ -1,16 +1,30 @@
 import Foundation
 
-enum PolkadotVaultAccountScan {
-    case `public`(PolkadotVaultAddressScan)
-    case `private`(PolkadotVaultSecretScan)
+enum PolkadotVaultAccount {
+    case `public`(PolkadotVaultAddress)
+    case `private`(address: AccountAddress, secret: PolkadotVaultSecret)
+
+    var genesisHash: Data {
+        switch self {
+        case let .public(scan): scan.genesisHash
+        case let .private(_, scan): scan.genesisHash
+        }
+    }
+
+    var address: AccountAddress {
+        switch self {
+        case let .public(scan): scan.address
+        case let .private(address, _): address
+        }
+    }
 }
 
-struct PolkadotVaultAddressScan {
+struct PolkadotVaultAddress {
     let address: AccountAddress
     let genesisHash: Data
 }
 
-struct PolkadotVaultSecretScan {
+struct PolkadotVaultSecret {
     let secret: ScanSecret
     let genesisHash: Data
     let username: String?

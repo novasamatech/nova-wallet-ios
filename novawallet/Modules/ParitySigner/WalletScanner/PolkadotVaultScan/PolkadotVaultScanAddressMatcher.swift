@@ -7,7 +7,7 @@ protocol PolkadotVaultScanAddressMatcherProtocol {
 final class PolkadotVaultScanAddressMatcher {
     private let prefix: String
     private let separator: String
-    
+
     init(
         prefix: String,
         separator: String

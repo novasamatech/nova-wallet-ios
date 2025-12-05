@@ -1,11 +1,10 @@
 import Foundation
 
-final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
+final class PolkadotVaultScanWireframe: PolkadotVaultScanWireframeProtocol {
     func completeScan(
         on view: ControllerBackedProtocol?,
-        addressScan: ParitySignerAddressScan,
-        type: ParitySignerType,
-        mode _: ParitySignerWelcomeMode
+        accountScan _: PolkadotVaultAccountScan,
+        type: ParitySignerType
     ) {
         guard
             let addressesView = ParitySignerAddressesViewFactory.createOnboardingView(
