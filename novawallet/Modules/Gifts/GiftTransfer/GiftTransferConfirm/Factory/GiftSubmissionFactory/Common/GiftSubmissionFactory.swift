@@ -195,6 +195,7 @@ private extension GiftSubmissionFactory {
 
             let submissionResult = GiftTransferSubmissionResult(
                 giftId: recipient.toHex(),
+                giftAccountId: recipient,
                 sender: submissionData.senderResolution
             )
 

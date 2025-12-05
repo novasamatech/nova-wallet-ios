@@ -5,6 +5,8 @@ final class GiftPrepareShareInteractor {
     weak var presenter: GiftPrepareShareInteractorOutputProtocol?
 
     let giftId: GiftModel.Id
+    let selectedWallet: MetaAccountModel
+    let reclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol
     let giftSecretsManager: GiftSecretsProvidingProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
     let chainRegistry: ChainRegistryProtocol
@@ -15,14 +17,18 @@ final class GiftPrepareShareInteractor {
     var chainAsset: ChainAsset?
 
     init(
+        selectedWallet: MetaAccountModel,
         giftRepository: AnyDataProviderRepository<GiftModel>,
+        reclaimWrapperFactory: GiftReclaimWrapperFactoryProtocol,
         giftSecretsManager: GiftSecretsManagerProtocol,
         chainRegistry: ChainRegistryProtocol,
         giftId: GiftModel.Id,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.selectedWallet = selectedWallet
         self.giftRepository = giftRepository
+        self.reclaimWrapperFactory = reclaimWrapperFactory
         self.giftSecretsManager = giftSecretsManager
         self.chainRegistry = chainRegistry
         self.giftId = giftId
@@ -111,6 +117,26 @@ extension GiftPrepareShareInteractor: GiftPrepareShareInteractorInputProtocol {
             case let .failure(error):
                 presenter?.didReceive(error)
                 logger.error("Failed on fetch secrets for gift: \(error)")
+            }
+        }
+    }
+
+    func reclaim(gift: GiftModel) {
+        let wrapper = reclaimWrapperFactory.reclaimGift(
+            gift,
+            selectedWallet: selectedWallet
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didReceiveClaimSuccess()
+            case let .failure(error):
+                self?.presenter?.didReceive(error)
             }
         }
     }

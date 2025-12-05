@@ -59,7 +59,16 @@ private extension GiftListPresenter {
 
 extension GiftListPresenter: GiftListPresenterProtocol {
     func selectGift(with identifier: String) {
-        print(identifier)
+        guard
+            let gift = gifts[identifier],
+            let chainAsset = chainAssets[gift.chainAssetId]
+        else { return }
+
+        wireframe.showGift(
+            gift,
+            chainAsset: chainAsset,
+            from: view
+        )
     }
 
     func setup() {

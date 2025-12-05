@@ -109,13 +109,13 @@ extension GiftSubmissionFactoryFacade {
     }
 
     func createEvmFactory(
-        transactionService: EvmTransactionServiceProtocol
+        transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     ) -> EvmGiftSubmissionFactoryProtocol {
         EvmGiftSubmissionFactory(
             submissionFactory: createSubmissionFactory(),
             signingWrapper: signingWrapper,
             chain: chainAsset.chain,
-            transactionService: transactionService,
+            transactionMonitorFactory: transactionMonitorFactory,
             transferCommandFactory: EvmTransferCommandFactory()
         )
     }

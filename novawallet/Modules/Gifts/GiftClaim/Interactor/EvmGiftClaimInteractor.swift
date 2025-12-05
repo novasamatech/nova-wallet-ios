@@ -13,7 +13,7 @@ final class EvmGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol,
         claimOperationFactory: EvmGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        claimableGift: ClaimableGift,
+        claimableGift: ClaimGiftPayload,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
@@ -130,7 +130,10 @@ private extension EvmGiftClaimInteractor {
     }
 
     func setupTransferType() {
-        let asset = claimableGift.chainAsset.asset
+        guard
+            let chain = chainRegistry.getChain(for: claimableGift.chainAssetId.chainId),
+            let asset = chain.asset(for: claimableGift.chainAssetId.assetId)
+        else { return }
 
         if asset.isEvmNative {
             transferType = .native

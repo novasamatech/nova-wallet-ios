@@ -120,7 +120,10 @@ private extension GiftsSyncService {
         for giftAccountId: AccountId,
         balance: AssetBalance?
     ) {
-        guard let gift = gifts[giftAccountId.toHex()] else { return }
+        guard
+            let gift = gifts[giftAccountId.toHex()],
+            gift.status != .reclaimed
+        else { return }
 
         let status: GiftModel.Status = if let balance, balance.transferable > gift.amount {
             .pending

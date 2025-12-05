@@ -10,7 +10,7 @@ class GiftClaimInteractor {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
 
-    let claimableGift: ClaimableGift
+    let claimableGift: ClaimGiftPayload
     let totalAmount: BigUInt
 
     var walletListSubscription: StreamableProvider<ManagedMetaAccountModel>?
@@ -20,7 +20,7 @@ class GiftClaimInteractor {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        claimableGift: ClaimableGift,
+        claimableGift: ClaimGiftPayload,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         logger: LoggerProtocol,
