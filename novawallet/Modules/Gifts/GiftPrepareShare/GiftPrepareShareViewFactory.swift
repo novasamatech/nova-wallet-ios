@@ -101,8 +101,7 @@ private extension GiftPrepareShareViewFactory {
             keystore: keystore
         )
 
-        return switch chainAsset.asset.isAnyEvm {
-        case true:
+        return if chainAsset.asset.isAnyEvm {
             createEvmReclaimFactory(
                 selectedMetaAccountId: selectedMetaAccountId,
                 giftAccountId: giftAccountId,
@@ -111,7 +110,7 @@ private extension GiftPrepareShareViewFactory {
                 claimFactoryFacade: claimFacade,
                 operationQueue: operationQueue
             )
-        case false:
+        } else {
             createSubstrateReclaimFactory(
                 selectedMetaAccountId: selectedMetaAccountId,
                 giftAccountId: giftAccountId,
