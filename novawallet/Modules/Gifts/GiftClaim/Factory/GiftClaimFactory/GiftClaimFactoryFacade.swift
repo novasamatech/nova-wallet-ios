@@ -93,13 +93,14 @@ extension GiftClaimFactoryFacade {
     }
 
     func createEvmFactory(
-        transactionService: EvmTransactionServiceProtocol
+        transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     ) -> EvmGiftClaimFactoryProtocol {
         EvmGiftClaimFactory(
             claimFactory: createClaimFactory(),
             signingWrapperFactory: signingWrapperFactory,
-            transactionService: transactionService,
-            transferCommandFactory: EvmTransferCommandFactory()
+            transactionMonitorFactory: transactionMonitorFactory,
+            transferCommandFactory: EvmTransferCommandFactory(),
+            operationQueue: operationQueue
         )
     }
 }

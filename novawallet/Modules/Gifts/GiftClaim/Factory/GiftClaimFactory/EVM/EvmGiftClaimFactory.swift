@@ -6,19 +6,22 @@ import BigInt
 final class EvmGiftClaimFactory {
     let claimFactory: GiftClaimFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
-    let transactionService: EvmTransactionServiceProtocol
+    let transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
+    let operationQueue: OperationQueue
 
     init(
         claimFactory: GiftClaimFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
-        transactionService: EvmTransactionServiceProtocol,
-        transferCommandFactory: EvmTransferCommandFactory
+        transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol,
+        transferCommandFactory: EvmTransferCommandFactory,
+        operationQueue: OperationQueue
     ) {
         self.claimFactory = claimFactory
         self.signingWrapperFactory = signingWrapperFactory
-        self.transactionService = transactionService
+        self.transactionMonitorFactory = transactionMonitorFactory
         self.transferCommandFactory = transferCommandFactory
+        self.operationQueue = operationQueue
     }
 }
 
@@ -33,62 +36,80 @@ private extension EvmGiftClaimFactory {
         transferType: EvmTransferType,
         chain: ChainModel
     ) -> CompoundOperationWrapper<Void> {
-        let operation = AsyncClosureOperation { [weak self] completion in
+        let transactionClosure: EvmTransactionBuilderClosure = { [weak self] builder in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let gift = try giftWrapper.targetOperation.extractNoCancellableResultData()
+            let claimingAccountAddress = try claimingAccountId.toAddress(using: chain.chainFormat)
 
-            let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
-                guard let self else { throw BaseOperationError.parentOperationCancelled }
+            let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recipient: claimingAccountAddress,
+                type: transferType
+            )
 
-                let claimingAccountAddress = try claimingAccountId.toAddress(using: chain.chainFormat)
+            return newBuilder
+        }
 
-                let (newBuilder, _) = try transferCommandFactory.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recipient: claimingAccountAddress,
-                    type: transferType
+        let submissionWrapper = createSubmitAndMonitorWrapper(
+            gift: { try giftWrapper.targetOperation.extractNoCancellableResultData() },
+            evmFee: evmFee,
+            transactionBuilderClosure: transactionClosure
+        )
+        let mapOperation = ClosureOperation {
+            guard let result = submissionWrapper.targetOperation.result else { return }
+
+            switch result {
+            case let .success(submission):
+                switch submission.status {
+                case .success:
+                    return
+                case .failure:
+                    throw GiftClaimError.giftClaimFailed(
+                        claimingAccountId: claimingAccountId,
+                        underlyingError: nil
+                    )
+                }
+            case let .failure(error):
+                throw GiftClaimError.giftClaimFailed(
+                    claimingAccountId: claimingAccountId,
+                    underlyingError: error
                 )
-
-                return newBuilder
             }
+        }
 
+        mapOperation.addDependency(submissionWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: submissionWrapper.allOperations
+        )
+    }
+
+    func createSubmitAndMonitorWrapper(
+        gift: @escaping () throws -> GiftModel,
+        evmFee: EvmFeeModel,
+        transactionBuilderClosure: @escaping EvmTransactionBuilderClosure
+    ) -> CompoundOperationWrapper<EvmTransactionMonitorSubmission> {
+        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let price = EvmTransactionPrice(
                 gasLimit: evmFee.gasLimit,
                 gasPrice: evmFee.gasPrice
             )
 
             let signingData = GiftSigningData(
-                gift: gift,
+                gift: try gift(),
                 ethereumBased: true,
                 cryptoType: .ethereumEcdsa
             )
-            let signingWrapper = signingWrapperFactory.createSigningWrapper(giftSigningData: signingData)
+            let signingWrapper = self.signingWrapperFactory.createSigningWrapper(giftSigningData: signingData)
 
-            transactionService.submit(
-                extrinsicClosure,
+            return self.transactionMonitorFactory.submitAndMonitorWrapper(
+                transactionBuilderClosure,
                 price: price,
-                signer: signingWrapper,
-                runningIn: .main,
-                completion: { result in
-                    switch result {
-                    case .success:
-                        completion(.success(()))
-                    case let .failure(error):
-                        completion(
-                            .failure(
-                                GiftClaimError.giftClaimFailed(
-                                    claimingAccountId: claimingAccountId,
-                                    underlyingError: error
-                                )
-                            )
-                        )
-                    }
-                }
+                signer: signingWrapper
             )
         }
-
-        return CompoundOperationWrapper(targetOperation: operation)
     }
 }
 

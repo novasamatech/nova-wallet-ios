@@ -206,7 +206,15 @@ private extension GiftPrepareShareViewFactory {
             operationQueue: operationQueue
         )
 
-        let claimFactory = claimFactoryFacade.createEvmFactory(transactionService: transactionService)
+        let transactionMonitorFactory = TransactionSubmitMonitorFactory(
+            submissionService: transactionService,
+            evmOperationFactory: operationFactory,
+            operationQueue: operationQueue
+        )
+
+        let claimFactory = claimFactoryFacade.createEvmFactory(
+            transactionMonitorFactory: transactionMonitorFactory
+        )
 
         let repository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared

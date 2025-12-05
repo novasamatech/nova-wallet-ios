@@ -107,8 +107,7 @@ private extension GiftsSyncService {
 
                     self?.updateStatus(
                         for: giftAccountId,
-                        balance: update.balance,
-                        asset: chainAsset.asset
+                        balance: update.balance
                     )
                 case let .failure(error):
                     self?.logger.error("Failed remote balance subscription: \(error)")
@@ -119,19 +118,12 @@ private extension GiftsSyncService {
 
     func updateStatus(
         for giftAccountId: AccountId,
-        balance: AssetBalance?,
-        asset: AssetModel
+        balance: AssetBalance?
     ) {
         guard
             let gift = gifts[giftAccountId.toHex()],
             gift.status != .reclaimed
         else { return }
-
-        // TODO: - Remove after polling or any other submission monitoring implementation for EVM transactions
-        /// We take some time for block finalization, otherwise we will lock user's gift
-        if asset.isAnyEvm {
-            guard gift.creationDate.distance(to: Date()) > 60 else { return }
-        }
 
         let status: GiftModel.Status = if let balance, balance.transferable > gift.amount {
             .pending
