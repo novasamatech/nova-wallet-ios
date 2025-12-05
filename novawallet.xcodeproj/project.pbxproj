@@ -1648,6 +1648,9 @@
 		2D081FA62E3D2064006019A3 /* AppAttestAssertionModelResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA02E3D2064006019A3 /* AppAttestAssertionModelResult.swift */; };
 		2D081FA82E3D2130006019A3 /* DAppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA72E3D2130006019A3 /* DAppAttestError.swift */; };
 		2D081FAA2E3D4CE7006019A3 /* DAppAttestHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */; };
+		2D0985E12EE2BEA8007A5E54 /* PolkadotVaultScanAddressMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985E02EE2BEA8007A5E54 /* PolkadotVaultScanAddressMatcher.swift */; };
+		2D0985E62EE2BEC3007A5E54 /* PolkadotVaultSecretScanMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985E52EE2BEC3007A5E54 /* PolkadotVaultSecretScanMatcher.swift */; };
+		2D0985F32EE2C2A4007A5E54 /* ScanSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */; };
 		2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */; };
 		2D0A82EE2CB47F080043B330 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */; };
 		2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
@@ -3471,8 +3474,8 @@
 		840B3D632899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D622899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift */; };
 		840B3D652899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D642899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift */; };
 		840B3D672899BFD200DA1DA9 /* QRScannerViewSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D662899BFD200DA1DA9 /* QRScannerViewSettings.swift */; };
-		840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */; };
-		840B3D6C2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6B2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift */; };
+		840B3D6A2899CD2900DA1DA9 /* PolkadotVaultAccountScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D692899CD2900DA1DA9 /* PolkadotVaultAccountScan.swift */; };
+		840B3D6C2899CD5A00DA1DA9 /* PolkadotVaultAccountScanMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6B2899CD5A00DA1DA9 /* PolkadotVaultAccountScanMatcher.swift */; };
 		840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6D289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift */; };
 		840B3D70289A575A00DA1DA9 /* ParitySignerScanProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6F289A575A00DA1DA9 /* ParitySignerScanProtocols.swift */; };
 		840BF22526C2653100E3A955 /* ChainSyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840BF22426C2653100E3A955 /* ChainSyncServiceTests.swift */; };
@@ -8227,6 +8230,9 @@
 		2D081FA22E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestErrorResponseFactory.swift; sourceTree = "<group>"; };
 		2D081FA72E3D2130006019A3 /* DAppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestError.swift; sourceTree = "<group>"; };
 		2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestHandling.swift; sourceTree = "<group>"; };
+		2D0985E02EE2BEA8007A5E54 /* PolkadotVaultScanAddressMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultScanAddressMatcher.swift; sourceTree = "<group>"; };
+		2D0985E52EE2BEC3007A5E54 /* PolkadotVaultSecretScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultSecretScanMatcher.swift; sourceTree = "<group>"; };
+		2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanSecret.swift; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -9673,8 +9679,8 @@
 		840B3D622899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanPresenter.swift; sourceTree = "<group>"; };
 		840B3D642899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanViewFactory.swift; sourceTree = "<group>"; };
 		840B3D662899BFD200DA1DA9 /* QRScannerViewSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerViewSettings.swift; sourceTree = "<group>"; };
-		840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerAddressScan.swift; sourceTree = "<group>"; };
-		840B3D6B2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanMatcher.swift; sourceTree = "<group>"; };
+		840B3D692899CD2900DA1DA9 /* PolkadotVaultAccountScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultAccountScan.swift; sourceTree = "<group>"; };
+		840B3D6B2899CD5A00DA1DA9 /* PolkadotVaultAccountScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultAccountScanMatcher.swift; sourceTree = "<group>"; };
 		840B3D6D289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanWireframe.swift; sourceTree = "<group>"; };
 		840B3D6F289A575A00DA1DA9 /* ParitySignerScanProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanProtocols.swift; sourceTree = "<group>"; };
 		840BF22426C2653100E3A955 /* ChainSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSyncServiceTests.swift; sourceTree = "<group>"; };
@@ -16683,6 +16689,17 @@
 			path = DAppAssertionCallFactory;
 			sourceTree = "<group>";
 		};
+		2D0985D92EE2BE85007A5E54 /* PolkadotVaultScan */ = {
+			isa = PBXGroup;
+			children = (
+				840B3D6B2899CD5A00DA1DA9 /* PolkadotVaultAccountScanMatcher.swift */,
+				2D0985E02EE2BEA8007A5E54 /* PolkadotVaultScanAddressMatcher.swift */,
+				2D0985E52EE2BEC3007A5E54 /* PolkadotVaultSecretScanMatcher.swift */,
+				2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */,
+			);
+			path = PolkadotVaultScan;
+			sourceTree = "<group>";
+		};
 		2D0A82EA2CB47E200043B330 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -20786,9 +20803,9 @@
 		840B3D612899BBB900DA1DA9 /* WalletScanner */ = {
 			isa = PBXGroup;
 			children = (
+				2D0985D92EE2BE85007A5E54 /* PolkadotVaultScan */,
 				840B3D622899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift */,
 				840B3D642899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift */,
-				840B3D6B2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift */,
 				840B3D6D289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift */,
 				840B3D6F289A575A00DA1DA9 /* ParitySignerScanProtocols.swift */,
 				8441007B28A3CD5900DCCA11 /* ParitySignerScanInteractor.swift */,
@@ -20799,7 +20816,7 @@
 		840B3D682899CD1600DA1DA9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */,
+				840B3D692899CD2900DA1DA9 /* PolkadotVaultAccountScan.swift */,
 				8428228F289BB3C700163031 /* ParitySignerWalletOperationFactory.swift */,
 				84282291289BB45700163031 /* ParitySignerWallet.swift */,
 				84F4B2362A31D2F300113DDD /* ParitySignerType.swift */,
@@ -31114,6 +31131,7 @@
 				845B08012918406A005785D3 /* Gov2ActionOperationFactory.swift in Sources */,
 				88B1C34229BA046000DCA101 /* StakingRebagConfirmError.swift in Sources */,
 				84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */,
+				2D0985E62EE2BEC3007A5E54 /* PolkadotVaultSecretScanMatcher.swift in Sources */,
 				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
 				8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */,
 				84CA407C2A037175004BB71E /* WalletConnectSessionListViewModel.swift in Sources */,
@@ -31326,7 +31344,7 @@
 				2D06738B2E13E519006392EB /* MultisigOpValidationInteractor.swift in Sources */,
 				0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedWalletSwitched.swift in Sources */,
-				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
+				840B3D6A2899CD2900DA1DA9 /* PolkadotVaultAccountScan.swift in Sources */,
 				883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */,
 				2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */,
 				0C11D85A2CCA3377003EC46D /* AssetsHydraOmnipoolExchange.swift in Sources */,
@@ -31683,6 +31701,7 @@
 				88F34FD928FFE68B00712BDE /* YourVoteRow.swift in Sources */,
 				84D8F15F24D8179000AF43E9 /* TitleWithSubtitleViewModel.swift in Sources */,
 				2D533C4F2EB0B57A0005FF8A /* GiftTransferSetupPresenter.swift in Sources */,
+				2D0985E12EE2BEA8007A5E54 /* PolkadotVaultScanAddressMatcher.swift in Sources */,
 				AEE5FB0126415E2A002B8FDC /* StakingRebondSetupInteractor.swift in Sources */,
 				2D039DE22BFBB08400A928E5 /* ExportNetworkView.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
@@ -33211,7 +33230,7 @@
 				77AAE2242AFB67BE006872CC /* OperationSwapDetailsInteractor.swift in Sources */,
 				F4617415260E23E900E8FA3D /* StakingRewardStatusViewModel.swift in Sources */,
 				4A520B7081BE2D7604B69354 /* AccountImportWireframe.swift in Sources */,
-				840B3D6C2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift in Sources */,
+				840B3D6C2899CD5A00DA1DA9 /* PolkadotVaultAccountScanMatcher.swift in Sources */,
 				848CC94428D9FBDA009EB4B0 /* ConvictionVoting.swift in Sources */,
 				7D281FEA78E2E5F44990C184 /* AccountImportPresenter.swift in Sources */,
 				6C56AB4AE63AB2DC73DE98E0 /* AccountImportInteractor.swift in Sources */,
@@ -35526,6 +35545,7 @@
 				8488D5D8298165280019B388 /* GovernanceDelegateProfileView.swift in Sources */,
 				0C7A3FD02B6A93B500764603 /* ObservableSubscriptionSyncService.swift in Sources */,
 				BCC42525D716872B7E6CD72B /* TokenManageSingleProtocols.swift in Sources */,
+				2D0985F32EE2C2A4007A5E54 /* ScanSecret.swift in Sources */,
 				9ECB28EA7E1D2C79869ED54F /* TokenManageSinglePresenter.swift in Sources */,
 				2DF95D2D2D785DA2001D8785 /* HapticPlayer.swift in Sources */,
 				7796C7032A17846B00D56094 /* EmptyCellContentView.swift in Sources */,
