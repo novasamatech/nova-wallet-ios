@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGift,
+        for claimableGift: ClaimGiftPayload,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         transferType: EvmTransferType
@@ -12,17 +12,20 @@ protocol EvmClaimableGiftDescriptionFactoryProtocol {
 }
 
 final class EvmClaimableGiftDescriptionFactory {
+    let chainRegistry: ChainRegistryProtocol
     let transferCommandFactory: EvmTransferCommandFactory
     let transactionService: EvmTransactionServiceProtocol
     let callbackQueue: DispatchQueue
     let helper: ClaimableGiftDescriptionHelper
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         transferCommandFactory: EvmTransferCommandFactory,
         transactionService: EvmTransactionServiceProtocol,
         callbackQueue: DispatchQueue,
         helper: ClaimableGiftDescriptionHelper = ClaimableGiftDescriptionHelper()
     ) {
+        self.chainRegistry = chainRegistry
         self.transferCommandFactory = transferCommandFactory
         self.transactionService = transactionService
         self.callbackQueue = callbackQueue
@@ -63,7 +66,7 @@ private extension EvmClaimableGiftDescriptionFactory {
 
 extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactoryProtocol {
     func createDescription(
-        for claimableGift: ClaimableGift,
+        for claimableGift: ClaimGiftPayload,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel,
         transferType: EvmTransferType
@@ -71,10 +74,11 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
         AsyncClosureOperation { [weak self] completion in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let chainAsset = claimableGift.chainAsset
+            let chain = try chainRegistry.getChainOrError(for: claimableGift.chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: claimableGift.chainAssetId.assetId)
 
             let baseData = try helper.createBaseData(
-                for: claimableGift,
+                for: chainAsset,
                 giftAmountWithFee: giftAmountWithFee,
                 claimingWallet: claimingWallet
             )
@@ -94,6 +98,7 @@ extension EvmClaimableGiftDescriptionFactory: EvmClaimableGiftDescriptionFactory
                 switch result {
                 case let .success(fee):
                     let description = helper.createFinalDescription(
+                        chainAsset: chainAsset,
                         claimableGift: claimableGift,
                         onChainAmountWithFee: baseData.onChainAmountWithFee,
                         feeAmount: fee.fee,

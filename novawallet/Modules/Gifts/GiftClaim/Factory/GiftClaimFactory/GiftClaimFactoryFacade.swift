@@ -3,6 +3,7 @@ import Keystore_iOS
 import Operation_iOS
 
 final class GiftClaimFactoryFacade {
+    private let chainRegistry: ChainRegistryProtocol
     private let signingWrapperFactory: SigningWrapperFactoryProtocol
     private let giftFactory: GiftOperationFactoryProtocol
     private let giftSecretManager: GiftSecretsManagerProtocol
@@ -10,12 +11,14 @@ final class GiftClaimFactoryFacade {
     private let operationQueue: OperationQueue
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         giftFactory: GiftOperationFactoryProtocol,
         giftSecretManager: GiftSecretsManagerProtocol,
         claimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol,
         operationQueue: OperationQueue
     ) {
+        self.chainRegistry = chainRegistry
         self.signingWrapperFactory = signingWrapperFactory
         self.giftFactory = giftFactory
         self.giftSecretManager = giftSecretManager
@@ -55,6 +58,7 @@ final class GiftClaimFactoryFacade {
         )
 
         self.init(
+            chainRegistry: chainRegistry,
             signingWrapperFactory: signingWrapperFactory,
             giftFactory: giftFactory,
             giftSecretManager: giftSecretsManager,
@@ -67,6 +71,7 @@ final class GiftClaimFactoryFacade {
 private extension GiftClaimFactoryFacade {
     func createClaimFactory() -> GiftClaimFactoryProtocol {
         GiftClaimFactory(
+            chainRegistry: chainRegistry,
             giftFactory: giftFactory,
             claimAvailabilityCheckFactory: claimAvailabilityCheckFactory,
             operationQueue: operationQueue
@@ -88,13 +93,14 @@ extension GiftClaimFactoryFacade {
     }
 
     func createEvmFactory(
-        transactionService: EvmTransactionServiceProtocol
+        transactionMonitorFactory: TransactionSubmitMonitorFactoryProtocol
     ) -> EvmGiftClaimFactoryProtocol {
         EvmGiftClaimFactory(
             claimFactory: createClaimFactory(),
             signingWrapperFactory: signingWrapperFactory,
-            transactionService: transactionService,
-            transferCommandFactory: EvmTransferCommandFactory()
+            transactionMonitorFactory: transactionMonitorFactory,
+            transferCommandFactory: EvmTransferCommandFactory(),
+            operationQueue: operationQueue
         )
     }
 }

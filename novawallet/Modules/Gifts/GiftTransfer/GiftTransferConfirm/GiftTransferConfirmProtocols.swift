@@ -31,6 +31,7 @@ protocol GiftTransferConfirmInteractorOutputProtocol: GiftTransferSetupInteracto
 protocol GiftTransferConfirmWireframeProtocol: TransferConfirmWireframeProtocol {
     func showGiftShare(
         from view: ControllerBackedProtocol?,
+        giftAccountId: AccountId,
         giftId: GiftModel.Id,
         chainAsset: ChainAsset
     )

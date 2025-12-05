@@ -8,11 +8,10 @@ struct ClaimableGiftBaseData {
 
 final class ClaimableGiftDescriptionHelper {
     func createBaseData(
-        for claimableGift: ClaimableGift,
+        for chainAsset: ChainAsset,
         giftAmountWithFee: BigUInt,
         claimingWallet: @escaping () throws -> MetaAccountModel
     ) throws -> ClaimableGiftBaseData {
-        let chainAsset = claimableGift.chainAsset
         let onChainAmountWithFee: OnChainTransferAmount<BigUInt> = .all(value: giftAmountWithFee)
 
         let claimingAccountId = try claimingWallet().fetch(
@@ -26,7 +25,8 @@ final class ClaimableGiftDescriptionHelper {
     }
 
     func createFinalDescription(
-        claimableGift: ClaimableGift,
+        chainAsset: ChainAsset,
+        claimableGift: ClaimGiftPayload,
         onChainAmountWithFee: OnChainTransferAmount<BigUInt>,
         feeAmount: BigUInt,
         claimingAccountId: AccountId?
@@ -37,7 +37,7 @@ final class ClaimableGiftDescriptionHelper {
             seed: claimableGift.seed,
             accountId: claimableGift.accountId,
             amount: giftAmount,
-            chainAsset: claimableGift.chainAsset,
+            chainAsset: chainAsset,
             claimingAccountId: claimingAccountId
         )
     }

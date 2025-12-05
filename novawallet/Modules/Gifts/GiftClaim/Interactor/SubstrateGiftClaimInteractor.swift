@@ -14,7 +14,7 @@ final class SubstrateGiftClaimInteractor: GiftClaimInteractor {
         claimDescriptionFactory: SubstrateGiftDescriptionFactoryProtocol,
         claimOperationFactory: SubstrateGiftClaimFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        claimableGift: ClaimableGift,
+        claimableGift: ClaimGiftPayload,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         walletOperationFactory: GiftClaimWalletOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
@@ -75,12 +75,14 @@ private extension SubstrateGiftClaimInteractor {
             return
         }
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(
-            for: claimableGift.chainAsset.chain.chainId
-        ) else { return }
+        guard
+            let chain = chainRegistry.getChain(for: claimableGift.chainAssetId.chainId),
+            let asset = chain.asset(for: claimableGift.chainAssetId.assetId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId)
+        else { return }
 
         let assetStorageWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: claimableGift.chainAsset.asset,
+            from: asset,
             runtimeProvider: runtimeService
         )
 

@@ -40,8 +40,18 @@ final class GiftPrepareShareViewLayout: UIView {
         view.applyEnabledStyle()
     }
 
+    let reclaimActionView: LoadableActionView = .create { view in
+        view.actionButton.applyEnabledStyle(
+            colored: .clear,
+            textColor: R.color.colorButtonTextAccent()!
+        )
+        view.actionButton.changesContentOpacityWhenHighlighted = true
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
