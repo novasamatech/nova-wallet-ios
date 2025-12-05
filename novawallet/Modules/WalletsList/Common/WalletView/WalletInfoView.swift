@@ -70,6 +70,10 @@ extension WalletInfoView: WalletViewProtocol {
         walletView.bind(delegatedAccount: viewModel)
     }
 
+    func bind(chainAccount viewModel: ViewModel.ChainAccountAddressInfo) {
+        walletView.bind(chainAccount: viewModel)
+    }
+
     func bind(regular viewModel: ViewModel.BalanceInfo) {
         walletView.bind(regular: viewModel)
     }

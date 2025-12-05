@@ -3,6 +3,14 @@ import Foundation
 
 final class DummySigningWrapperFactory: SigningWrapperFactoryProtocol {
     func createSigningWrapper(
+        giftSigningData: GiftSigningData
+    ) -> SigningWrapperProtocol {
+        try! DummySigner(
+            cryptoType: giftSigningData.ethereumBased ? .ethereumEcdsa : .sr25519
+        )
+    }
+
+    func createSigningWrapper(
         for _: String,
         accountResponse _: ChainAccountResponse
     ) -> SigningWrapperProtocol {

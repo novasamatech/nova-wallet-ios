@@ -62,41 +62,25 @@ final class VoteChildPresenterFactory {
         from state: CrowdloanSharedState,
         wallet: MetaAccountModel
     ) -> CrowdloanListInteractor {
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        let operationManager = OperationManager(operationQueue: operationQueue)
-
-        let crowdloanRemoteSubscriptionService = CrowdloanRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: AnyDataProviderRepository(repository),
-            syncOperationManager: operationManager,
-            repositoryOperationManager: operationManager,
+        let serviceFactory = VoteServiceFactory(
+            chainRegisty: chainRegistry,
+            storageFacade: substrateStorageFacade,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
             logger: logger
         )
 
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-
-        let crowdloanOperationFactory = CrowdloanOperationFactory(
-            requestOperationFactory: storageRequestFactory,
-            operationManager: operationManager
-        )
-
         return CrowdloanListInteractor(
-            eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
             crowdloanState: state,
             chainRegistry: chainRegistry,
-            crowdloanOperationFactory: crowdloanOperationFactory,
-            crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
+            voteServiceFactory: serviceFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             jsonDataProviderFactory: jsonDataProviderFactory,
-            operationQueue: operationQueue,
-            applicationHandler: applicationHandler,
-            currencyManager: currencyManager,
             priceLocalSubscriptionFactory: priceProviderFactory,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            currencyManager: currencyManager,
             logger: logger
         )
     }
@@ -105,7 +89,7 @@ final class VoteChildPresenterFactory {
         for state: GovernanceSharedState,
         wallet: MetaAccountModel
     ) -> ReferendumsInteractor {
-        let serviceFactory = GovernanceServiceFactory(
+        let serviceFactory = VoteServiceFactory(
             chainRegisty: chainRegistry,
             storageFacade: substrateStorageFacade,
             eventCenter: eventCenter,
@@ -144,7 +128,6 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let wireframe = CrowdloanListWireframe(state: state)
 
         let viewModelFactory = CrowdloansViewModelFactory(
-            amountFormatterFactory: AssetBalanceFormatterFactory(),
             balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
                 priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
             )
@@ -153,11 +136,8 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let presenter = CrowdloanListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            wallet: wallet,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
-            crowdloansCalculator: CrowdloansCalculator(),
-            accountManagementFilter: AccountManagementFilter(),
             appearanceFacade: AppearanceFacade.shared,
             privacyStateManager: PrivacyStateManager.shared,
             logger: Logger.shared

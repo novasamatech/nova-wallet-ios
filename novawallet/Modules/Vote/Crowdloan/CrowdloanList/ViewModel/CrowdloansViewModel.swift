@@ -10,7 +10,6 @@ enum CrowdloansSection {
     case about(AboutCrowdloansView.Model)
     case active(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
     case completed(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
-    case error(message: String)
     case empty(title: String)
 
     var isLoading: Bool {
@@ -27,7 +26,7 @@ enum CrowdloansSection {
 
                 return isLoading
             }
-        case .about, .error, .empty:
+        case .about, .empty:
             return false
         }
     }

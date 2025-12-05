@@ -1,5 +1,5 @@
 {
-  "originHash" : "ea694cb28b14d108434d02a69878b93610349a3c46aff24b4893f2bdb53b2e23",
+  "originHash" : "2e8db9bc8e325698c7405024e29ac56b016dad33163702fd77b3a697aa3477dc",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/hydra-math-swift",
       "state" : {
-        "revision" : "ad014506a6268b5e90ff25c64ee72d0a3bd7de8b",
-        "version" : "0.4.0"
+        "revision" : "52c6a9882721751254b0615892c289e08f0ce663",
+        "version" : "0.4.1"
       }
     },
     {
@@ -242,6 +242,15 @@
       "state" : {
         "revision" : "a0bc79961d7be727d258d33d5a6b2f1023270ba1",
         "version" : "1.22.5"
+      }
+    },
+    {
+      "identity" : "lottie-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-spm.git",
+      "state" : {
+        "revision" : "04f2fd18cc9404a0a0917265a449002674f24ec9",
+        "version" : "4.5.2"
       }
     },
     {
@@ -519,8 +528,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/WalletConnectSwiftV2.git",
       "state" : {
-        "revision" : "167de9777cbd0efdb7956dda1ca6f8675098292b",
-        "version" : "1.9.8"
+        "revision" : "1d9d78b5e37f48b689d1c4c07d2ef79dd33158f5",
+        "version" : "1.9.9"
       }
     },
     {

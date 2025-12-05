@@ -48,9 +48,20 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
             with: url,
             options: options
         ) { [weak self] result in
-            if case .failure = result {
-                imageView.image = self?.fallbackImage
+            guard let self else {
+                return
             }
+
+            guard case let .failure(error) = result else {
+                return
+            }
+
+            // set fallback image only if loading wasn't interrupted
+            guard !error.isTaskCancelled, !error.isNotCurrentTask, let fallbackImage else {
+                return
+            }
+
+            imageView.image = fallbackImage
         }
     }
 

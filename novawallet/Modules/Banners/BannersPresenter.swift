@@ -47,7 +47,7 @@ final class BannersPresenter {
 
 extension BannersPresenter: BannersPresenterProtocol {
     func setup(with availableTextWidth: CGFloat) {
-        guard !setUp else { return }
+        guard !setUp, availableTextWidth > 0 else { return }
 
         provideBanners()
 

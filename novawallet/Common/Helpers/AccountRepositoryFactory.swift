@@ -20,6 +20,8 @@ protocol AccountRepositoryFactoryProtocol {
     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>
 
     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>
+
+    func createGiftsRepository(for metaId: MetaAccountModel.Id?) -> AnyDataProviderRepository<GiftModel>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -103,6 +105,18 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings> {
         let mapper = DelegatedAccountSettingsMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createGiftsRepository(for metaId: MetaAccountModel.Id?) -> AnyDataProviderRepository<GiftModel> {
+        let mapper = GiftMapper()
+
+        let repository = storageFacade.createRepository(
+            filter: metaId.map { NSPredicate.gifts(for: $0) },
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         return AnyDataProviderRepository(repository)
     }
 }
