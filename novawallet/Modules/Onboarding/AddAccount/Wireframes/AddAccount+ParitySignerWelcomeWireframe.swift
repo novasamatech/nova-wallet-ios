@@ -1,16 +1,12 @@
 import Foundation
 
 extension AddAccount {
-    final class ParitySignerWelcomeWireframe: ParitySignerWelcomeWireframeProtocol {
+    final class PVWelcomeWireframe: PVWelcomeWireframeProtocol {
         func showScanQR(
-            from view: ParitySignerWelcomeViewProtocol?,
-            type: ParitySignerType,
-            mode: ParitySignerWelcomeMode
+            from view: PVWelcomeViewProtocol?,
+            type: ParitySignerType
         ) {
-            guard let scanView = ParitySignerScanViewFactory.createAddAccountView(
-                with: type,
-                mode: mode
-            ) else {
+            guard let scanView = PVScanViewFactory.createAddAccountView(with: type) else {
                 return
             }
 

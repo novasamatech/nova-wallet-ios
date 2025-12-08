@@ -157,6 +157,31 @@ extension MetaAccountOperationFactory {
         }
     }
 
+    func newSecretsMetaAccountOperation(request: MetaAccountImportKeypairRequest) -> BaseOperation<MetaAccountModel> {
+        ClosureOperation { [self] in
+            let junctionResult = try getJunctionResult(
+                from: request.derivationPath,
+                ethereumBased: false
+            )
+
+            let chaincodes = junctionResult?.chaincodes ?? []
+
+            let metaAccount = try prepopulateMetaAccount(
+                name: request.username,
+                type: .secrets,
+                publicKey: request.publicKey,
+                cryptoType: request.cryptoType
+            )
+
+            let metaId = metaAccount.metaId
+
+            try saveSecretKey(request.secretKey, metaId: metaId, ethereumBased: false)
+            try saveDerivationPath(request.derivationPath, metaId: metaId, ethereumBased: false)
+
+            return metaAccount
+        }
+    }
+
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
         request: ChainAccountImportMnemonicRequest,

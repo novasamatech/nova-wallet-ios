@@ -19,7 +19,7 @@ final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, Onbo
 
     override func showParitySignerWalletCreation(from view: ControllerBackedProtocol?, type: ParitySignerType) {
         guard
-            let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createOnboardingView(
+            let paritySignerWelcomeView = PVWelcomeViewFactory.createOnboardingView(
                 with: type
             ) else {
             return

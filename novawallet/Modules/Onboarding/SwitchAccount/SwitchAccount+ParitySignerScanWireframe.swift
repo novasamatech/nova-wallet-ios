@@ -1,16 +1,15 @@
 import Foundation
 
 extension SwitchAccount {
-    final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
+    final class PVScanWireframe: PVScanWireframeProtocol {
         func completeScan(
             on view: ControllerBackedProtocol?,
-            addressScan: ParitySignerAddressScan,
-            type: ParitySignerType,
-            mode _: ParitySignerWelcomeMode
+            account: PolkadotVaultAccount,
+            type: ParitySignerType
         ) {
             guard
-                let addressesView = ParitySignerAddressesViewFactory.createSwitchAccountView(
-                    with: addressScan,
+                let addressesView = PVAddressesViewFactory.createSwitchAccountView(
+                    with: account,
                     type: type
                 ) else {
                 return
