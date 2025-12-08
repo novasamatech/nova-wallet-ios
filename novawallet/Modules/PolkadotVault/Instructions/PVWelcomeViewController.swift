@@ -42,13 +42,17 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         setupGraphics()
         setupLocalization()
     }
+}
 
-    private func setupHandlers() {
+// MARK: - Private
+
+private extension PVWelcomeViewController {
+    func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
         rootView.modeSegmentedControl.addTarget(self, action: #selector(actionModeChanged), for: .valueChanged)
     }
 
-    private func setupGraphics() {
+    func setupGraphics() {
         switch type {
         case .legacy:
             rootView.integrationImageView.image = R.image.imageNovaParitySigner()
@@ -59,16 +63,14 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
+    func setupLocalization() {
+        let localizedStrings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.welcomeParitySignerTitle(
+        rootView.titleLabel.text = localizedStrings.welcomeParitySignerTitle(
             type.getName(for: selectedLocale)
         )
 
-        rootView.actionButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: languages
-        ).localizable.commonScanQrCode()
+        rootView.actionButton.imageWithTitleView?.title = localizedStrings.commonScanQrCode()
 
         rootView.actionButton.invalidateLayout()
 
@@ -76,16 +78,16 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         setupStepsLocalization(for: currentMode)
     }
 
-    private func setupSegmentedControlLocalization() {
-        let languages = selectedLocale.rLanguages
+    func setupSegmentedControlLocalization() {
+        let localizedStrings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
         rootView.modeSegmentedControl.titles = [
-            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultPairPublicKey(),
-            R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultImportPrivateKey()
+            localizedStrings.welcomePolkadotVaultPairPublicKey(),
+            localizedStrings.welcomePolkadotVaultImportPrivateKey()
         ]
     }
 
-    private func setupStepsLocalization(for mode: PVWelcomeMode) {
+    func setupStepsLocalization(for mode: PVWelcomeMode) {
         switch type {
         case .legacy:
             setupLegacyInstruction(for: selectedLocale, mode: mode)
@@ -94,20 +96,19 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupLegacyInstruction(for locale: Locale, mode: PVWelcomeMode) {
-        let languages = locale.rLanguages
+    func setupLegacyInstruction(for locale: Locale, mode: PVWelcomeMode) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 1: Open Parity Signer application on your smartphone
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep1Highlighted()],
+            replacements: [localizedStrings.welcomeParitySignerStep1Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep1(marker)
+                string: localizedStrings.welcomeParitySignerStep1(marker)
             )
         )
 
@@ -119,95 +120,89 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupLegacyPairPublicKeySteps(for locale: Locale) {
-        let languages = locale.rLanguages
+    func setupLegacyPairPublicKeySteps(for locale: Locale) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        // Step 3: Parity Signer will provide you QR code to scan
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3Highlighted()],
+            replacements: [localizedStrings.welcomeParitySignerStep3Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3(marker)
+                string: localizedStrings.welcomeParitySignerStep3(marker)
             )
         )
     }
 
-    private func setupLegacyImportPrivateKeySteps(for locale: Locale) {
-        let languages = locale.rLanguages
+    func setupLegacyImportPrivateKeySteps(for locale: Locale) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        // Step 3: Tap the icon in the top-right corner and select Export Private Key
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3ImportHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep3ImportHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Import(marker)
+                string: localizedStrings.welcomePolkadotVaultStep3Import(marker)
             )
         )
 
-        // Step 4: Parity Signer will provide you QR code to scan
         let step4Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3Highlighted()],
+            replacements: [localizedStrings.welcomeParitySignerStep3Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomeParitySignerStep3(marker)
+                string: localizedStrings.welcomeParitySignerStep3(marker)
             )
         )
     }
 
-    private func setupVaultInstruction(for locale: Locale, mode: PVWelcomeMode) {
-        let languages = locale.rLanguages
+    func setupVaultInstruction(for locale: Locale, mode: PVWelcomeMode) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 1: Open Polkadot Vault application on your smartphone
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep1Highlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep1Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep1(marker)
+                string: localizedStrings.welcomePolkadotVaultStep1(marker)
             )
         )
 
@@ -219,86 +214,81 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupVaultPairPublicKeySteps(for locale: Locale) {
-        let languages = locale.rLanguages
+    func setupVaultPairPublicKeySteps(for locale: Locale) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        // Step 3: Polkadot Vault will provide you QR code to scan
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLastHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStepLastHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLast(marker)
+                string: localizedStrings.welcomePolkadotVaultStepLast(marker)
             )
         )
     }
 
-    private func setupVaultImportPrivateKeySteps(for locale: Locale) {
-        let languages = locale.rLanguages
+    func setupVaultImportPrivateKeySteps(for locale: Locale) {
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
-        // Step 2: Tap on Derived Key you would like to add to Nova Wallet
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2PairHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep2Pair(marker)
+                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
             )
         )
 
-        // Step 3: Tap the icon in the top-right corner and select Export Private Key
         let step3Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3ImportHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStep3ImportHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStep3Import(marker)
+                string: localizedStrings.welcomePolkadotVaultStep3Import(marker)
             )
         )
 
-        // Step 4: Polkadot Vault will provide you QR code to scan
         let step4Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLastHighlighted()],
+            replacements: [localizedStrings.welcomePolkadotVaultStepLastHighlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string(preferredLanguages: languages).localizable.welcomePolkadotVaultStepLast(marker)
+                string: localizedStrings.welcomePolkadotVaultStepLast(marker)
             )
         )
     }
 
-    @objc private func actionProceed() {
+    @objc func actionProceed() {
         presenter.scanQr()
     }
 
-    @objc private func actionModeChanged() {
+    @objc func actionModeChanged() {
         guard let mode = PVWelcomeMode(rawValue: rootView.modeSegmentedControl.selectedSegmentIndex) else {
             return
         }
@@ -307,6 +297,8 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
     }
 }
 
+// MARK: - PVWelcomeViewProtocol
+
 extension PVWelcomeViewController: PVWelcomeViewProtocol {
     func didChangeMode(_ mode: PVWelcomeMode) {
         currentMode = mode
@@ -314,6 +306,8 @@ extension PVWelcomeViewController: PVWelcomeViewProtocol {
         setupStepsLocalization(for: mode)
     }
 }
+
+// MARK: - Localizable
 
 extension PVWelcomeViewController: Localizable {
     func applyLocalization() {
