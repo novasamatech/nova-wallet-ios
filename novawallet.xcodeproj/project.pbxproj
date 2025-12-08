@@ -1836,6 +1836,7 @@
 		2D4FF1582EE2F296005EC078 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1572EE2F296005EC078 /* SubstrateSdk */; };
 		2D4FF1632EE2F2C5005EC078 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1622EE2F2C5005EC078 /* SubstrateSdk */; };
 		2D4FF1772EE3118B005EC078 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1762EE3118B005EC078 /* NovaCrypto */; };
+		2D503AD12EE7638A002FD3F1 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 2D503AD02EE7638A002FD3F1 /* NovaCrypto */; };
 		2D50CC662EB8DCC80059F682 /* GiftSecretKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */; };
 		2D50CC792EB91CFA0059F682 /* KeystoreTag+MetaId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */; };
 		2D50CCB32EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CCB22EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift */; };
@@ -12835,6 +12836,7 @@
 				0C8FCEC62E67346F00034ED3 /* Algorithms in Frameworks */,
 				0C8FCEB12E672CFA00034ED3 /* SnapKit in Frameworks */,
 				0C8FCE7B2E65EE0B00034ED3 /* QRCode in Frameworks */,
+				2D503AD12EE7638A002FD3F1 /* NovaCrypto in Frameworks */,
 				0C8FCEBD2E67331300034ED3 /* Starscream in Frameworks */,
 				2D4FF1582EE2F296005EC078 /* SubstrateSdk in Frameworks */,
 				0C8FCE762E65ED3400034ED3 /* DGCharts in Frameworks */,
@@ -30155,7 +30157,7 @@
 				0C1A0F402E68DE5D00254E20 /* XCRemoteSwiftPackageReference "Charts" */,
 				2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				2D4FF1562EE2F296005EC078 /* XCLocalSwiftPackageReference "../substrate-sdk-ios" */,
-				2D4FF1752EE3118B005EC078 /* XCLocalSwiftPackageReference "../Crypto-iOS" */,
+				2D503ACF2EE7638A002FD3F1 /* XCRemoteSwiftPackageReference "Crypto-iOS" */,
 			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
@@ -37704,10 +37706,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../substrate-sdk-ios";
 		};
-		2D4FF1752EE3118B005EC078 /* XCLocalSwiftPackageReference "../Crypto-iOS" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../Crypto-iOS";
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -37949,6 +37947,14 @@
 			requirement = {
 				kind = exactVersion;
 				version = 2.1.1;
+			};
+		};
+		2D503ACF2EE7638A002FD3F1 /* XCRemoteSwiftPackageReference "Crypto-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/Crypto-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 0.4.1;
 			};
 		};
 		2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
@@ -38193,6 +38199,11 @@
 		};
 		2D4FF1762EE3118B005EC078 /* NovaCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = NovaCrypto;
+		};
+		2D503AD02EE7638A002FD3F1 /* NovaCrypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D503ACF2EE7638A002FD3F1 /* XCRemoteSwiftPackageReference "Crypto-iOS" */;
 			productName = NovaCrypto;
 		};
 		2DB586992EB8753800950F7D /* Lottie */ = {

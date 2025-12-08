@@ -1,5 +1,5 @@
 {
-  "originHash" : "abd7d627436c3818593339907d8954bd837e98f6728c1102e5e93cb8a5e00eec",
+  "originHash" : "21b3d133d80e400ecb48cc319d16d3635ad1c33aa8fd65cca22d2c4d8ab242ab",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -62,6 +62,15 @@
       "state" : {
         "revision" : "dd9c72e3d7e751e769971092a6bd72d39198ae63",
         "version" : "5.1.0"
+      }
+    },
+    {
+      "identity" : "crypto-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/novasamatech/Crypto-iOS",
+      "state" : {
+        "revision" : "f569b9c271c8694409bdb7ae3802408d48cc512a",
+        "version" : "0.4.1"
       }
     },
     {
@@ -357,8 +366,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/sr25519.c.git",
       "state" : {
-        "branch" : "feature/public-from-secret",
-        "revision" : "e50b7e0f0340e3280f140093a4ff831da1dc95b9"
+        "revision" : "f04ba5e9bfb48651334eee96167dfffc72b68c4d",
+        "version" : "0.2.1"
       }
     },
     {
