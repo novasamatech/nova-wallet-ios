@@ -1836,6 +1836,7 @@
 		2D4FF1582EE2F296005EC078 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1572EE2F296005EC078 /* SubstrateSdk */; };
 		2D4FF1632EE2F2C5005EC078 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1622EE2F2C5005EC078 /* SubstrateSdk */; };
 		2D4FF1772EE3118B005EC078 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1762EE3118B005EC078 /* NovaCrypto */; };
+		2D4FF20E2EE6E467005EC078 /* ScanInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF20D2EE6E467005EC078 /* ScanInputView.swift */; };
 		2D50CC662EB8DCC80059F682 /* GiftSecretKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */; };
 		2D50CC792EB91CFA0059F682 /* KeystoreTag+MetaId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */; };
 		2D50CCB32EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CCB22EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift */; };
@@ -8418,6 +8419,7 @@
 		2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
+		2D4FF20D2EE6E467005EC078 /* ScanInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanInputView.swift; sourceTree = "<group>"; };
 		2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretKeyInfo.swift; sourceTree = "<group>"; };
 		2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeystoreTag+MetaId.swift"; sourceTree = "<group>"; };
 		2D50CCB22EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSubmissionFactoryFacade.swift; sourceTree = "<group>"; };
@@ -22171,6 +22173,7 @@
 				844DBC68274E3422009F8351 /* AccountImportSeedView.swift */,
 				844DBC6A274E3D6B009F8351 /* AccountImportKeystoreView.swift */,
 				844DBC6E274E702C009F8351 /* AccountImportBaseView.swift */,
+				2D4FF20D2EE6E467005EC078 /* ScanInputView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -32930,6 +32933,7 @@
 				88D02FE82942EB1A00E26390 /* AssetDetailsModel.swift in Sources */,
 				2D20F1C72D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift in Sources */,
 				0C0E0A9B2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift in Sources */,
+				2D4FF20E2EE6E467005EC078 /* ScanInputView.swift in Sources */,
 				77F033A22A84E00F006BC67E /* StakingPoolView.swift in Sources */,
 				77E304A92AEB9F76006FD6F0 /* SwapConfirmInitState.swift in Sources */,
 				88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */,

@@ -152,6 +152,8 @@ extension AccountImportViewController: AccountImportMnemonicViewDelegate {
 }
 
 extension AccountImportViewController: AccountImportSeedViewDelegate {
+    func accountImportSeedViewDidTapScan(_: AccountImportSeedView) {}
+
     func accountImportSeedViewDidProceed(_: AccountImportSeedView) {
         presenter.proceed()
     }
