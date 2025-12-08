@@ -1,5 +1,5 @@
 {
-  "originHash" : "abd7d627436c3818593339907d8954bd837e98f6728c1102e5e93cb8a5e00eec",
+  "originHash" : "616a8cd1f2f3547f88550d2c37349e3b0e7fcfa2a7a0328cd80215fc004aed66",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -357,8 +357,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/sr25519.c.git",
       "state" : {
-        "branch" : "feature/public-from-secret",
-        "revision" : "e50b7e0f0340e3280f140093a4ff831da1dc95b9"
+        "revision" : "f04ba5e9bfb48651334eee96167dfffc72b68c4d",
+        "version" : "0.2.1"
       }
     },
     {

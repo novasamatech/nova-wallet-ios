@@ -1198,7 +1198,7 @@
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
-"wallet.connect.scan.message" = "Scan the QR code";
+//"wallet.connect.scan.message" = "Scan the QR code";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "New connection";
 "common.disconnect" = "Disconnect";
@@ -2006,3 +2006,5 @@
 "welcome.polkadot.vault.step3.import.highlighted" = "Export Private Key";
 "welcome.polkadot.vault.step.last" = "Polkadot Vault will provide you %@";
 "welcome.polkadot.vault.step.last.highlighted" = "QR code to scan";
+"common.invalid.qr.code" = "Invalid QR code";
+"common.scan.message" = "Scan the QR code";

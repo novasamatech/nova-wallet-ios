@@ -31,8 +31,5 @@ struct PolkadotVaultSecret {
 }
 
 extension PolkadotVaultSecret {
-    enum SecretType {
-        case seed(Data)
-        case keypair(publicKey: Data, secretKey: Data)
-    }
+    typealias SecretType = SecretScanModel
 }

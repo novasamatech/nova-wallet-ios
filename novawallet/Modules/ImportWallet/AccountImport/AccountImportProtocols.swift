@@ -15,6 +15,7 @@ protocol AccountImportPresenterProtocol: AnyObject {
     func activateUpload()
     func activateAdvancedSettings()
     func proceed()
+    func activateScanner()
 }
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
@@ -72,4 +73,9 @@ protocol BaseAccountImportWireframeProtocol {
 
 protocol AccountImportWireframeProtocol: BaseAccountImportWireframeProtocol, AlertPresentable, ErrorPresentable {
     func proceed(from view: AccountImportViewProtocol?)
+
+    func presentScanner(
+        from view: AccountImportViewProtocol?,
+        importDelegate: SecretScanImportDelegate
+    )
 }

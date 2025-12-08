@@ -270,8 +270,25 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         }
     }
 
+    func activateScanner() {
+        wireframe.presentScanner(from: view, importDelegate: self)
+    }
+
     func proceed() {
         processProceed()
+    }
+}
+
+extension BaseAccountImportPresenter: SecretScanImportDelegate {
+    func didReceive(_ scan: SecretScanModel) {
+        let secretString = switch scan {
+        case let .seed(seed):
+            seed.toHex(includePrefix: true)
+        case let .keypair(_, secretKey):
+            secretKey.toHex()
+        }
+
+        applySourceTextViewModel(secretString)
     }
 }
 

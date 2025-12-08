@@ -1837,6 +1837,11 @@
 		2D4FF1632EE2F2C5005EC078 /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1622EE2F2C5005EC078 /* SubstrateSdk */; };
 		2D4FF1772EE3118B005EC078 /* NovaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 2D4FF1762EE3118B005EC078 /* NovaCrypto */; };
 		2D4FF20E2EE6E467005EC078 /* ScanInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF20D2EE6E467005EC078 /* ScanInputView.swift */; };
+		2D4FF2442EE7350F005EC078 /* SecretScanImportProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF2432EE7350F005EC078 /* SecretScanImportProtocols.swift */; };
+		2D4FF2492EE735AE005EC078 /* SecretScanImportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF2482EE735AE005EC078 /* SecretScanImportPresenter.swift */; };
+		2D4FF2502EE7560D005EC078 /* SecretScanModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF24F2EE7560D005EC078 /* SecretScanModel.swift */; };
+		2D4FF2552EE75A8D005EC078 /* SecretScanViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF2542EE75A8D005EC078 /* SecretScanViewFactory.swift */; };
+		2D4FF25A2EE75AD9005EC078 /* SecretScanImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4FF2592EE75AD9005EC078 /* SecretScanImportWireframe.swift */; };
 		2D50CC662EB8DCC80059F682 /* GiftSecretKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */; };
 		2D50CC792EB91CFA0059F682 /* KeystoreTag+MetaId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */; };
 		2D50CCB32EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D50CCB22EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift */; };
@@ -8420,6 +8425,11 @@
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D4FF20D2EE6E467005EC078 /* ScanInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanInputView.swift; sourceTree = "<group>"; };
+		2D4FF2432EE7350F005EC078 /* SecretScanImportProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretScanImportProtocols.swift; sourceTree = "<group>"; };
+		2D4FF2482EE735AE005EC078 /* SecretScanImportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretScanImportPresenter.swift; sourceTree = "<group>"; };
+		2D4FF24F2EE7560D005EC078 /* SecretScanModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretScanModel.swift; sourceTree = "<group>"; };
+		2D4FF2542EE75A8D005EC078 /* SecretScanViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretScanViewFactory.swift; sourceTree = "<group>"; };
+		2D4FF2592EE75AD9005EC078 /* SecretScanImportWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretScanImportWireframe.swift; sourceTree = "<group>"; };
 		2D50CC652EB8DCC80059F682 /* GiftSecretKeyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSecretKeyInfo.swift; sourceTree = "<group>"; };
 		2D50CC782EB91CFA0059F682 /* KeystoreTag+MetaId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeystoreTag+MetaId.swift"; sourceTree = "<group>"; };
 		2D50CCB22EB94AA80059F682 /* GiftSubmissionFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSubmissionFactoryFacade.swift; sourceTree = "<group>"; };
@@ -15734,6 +15744,7 @@
 		0CD8461B2BDCA72B0026B5CA /* ImportWallet */ = {
 			isa = PBXGroup;
 			children = (
+				2D4FF23C2EE734A2005EC078 /* SecretScanImport */,
 				13A615962FF177D8E7483954 /* AdvancedWallet */,
 				90A23DC5F29924F7C315F602 /* OptionsList */,
 				BF6F50DD15230CADAC713359 /* AccountImport */,
@@ -17379,6 +17390,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2D4FF23C2EE734A2005EC078 /* SecretScanImport */ = {
+			isa = PBXGroup;
+			children = (
+				2D4FF2432EE7350F005EC078 /* SecretScanImportProtocols.swift */,
+				2D4FF2592EE75AD9005EC078 /* SecretScanImportWireframe.swift */,
+				2D4FF2482EE735AE005EC078 /* SecretScanImportPresenter.swift */,
+				2D4FF2542EE75A8D005EC078 /* SecretScanViewFactory.swift */,
+				2D4FF24F2EE7560D005EC078 /* SecretScanModel.swift */,
+			);
+			path = SecretScanImport;
 			sourceTree = "<group>";
 		};
 		2D50CC6C2EB91CCC0059F682 /* KeystoreTag */ = {
@@ -31222,6 +31245,7 @@
 				0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */,
 				0CD61EC82D356B770064AC97 /* XcmTransfersProtocol.swift in Sources */,
 				849D755D27577602007726C3 /* AccountExportPasswordViewLayout.swift in Sources */,
+				2D4FF25A2EE75AD9005EC078 /* SecretScanImportWireframe.swift in Sources */,
 				849628CB299684D70073F143 /* GovernanceYourDelegationGroup.swift in Sources */,
 				8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */,
 				84B8AA7D29F9063400347A37 /* WalletConnectStateAuthorizing.swift in Sources */,
@@ -33139,6 +33163,7 @@
 				84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */,
 				2D3C71D82E12683600DF9E49 /* MultisigOperationsPresenter.swift in Sources */,
 				2D74CA492CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift in Sources */,
+				2D4FF2442EE7350F005EC078 /* SecretScanImportProtocols.swift in Sources */,
 				0C1FE0EE2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift in Sources */,
 				845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */,
 				2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */,
@@ -33259,6 +33284,7 @@
 				8436B6DA2848119C00F24360 /* AccountDetailsSelectionCell.swift in Sources */,
 				501347BEA67CD30FE484358E /* AccountImportViewFactory.swift in Sources */,
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,
+				2D4FF2502EE7560D005EC078 /* SecretScanModel.swift in Sources */,
 				0C37AFD32B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift in Sources */,
 				842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */,
 				2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */,
@@ -34146,6 +34172,7 @@
 				2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */,
 				849ABE772628103200011A2A /* ControllersListReducer.swift in Sources */,
 				88C7165628C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift in Sources */,
+				2D4FF2552EE75A8D005EC078 /* SecretScanViewFactory.swift in Sources */,
 				0C6941CB2B203F3300A7CF6D /* ChainSyncMode.swift in Sources */,
 				84AF08D82941B6D800D0572B /* TokenManageViewModel.swift in Sources */,
 				840DFF532894189D001B11EA /* ChainAddressDetailsMeasurement.swift in Sources */,
@@ -35698,6 +35725,7 @@
 				D92FC57638EB959DB3850D3B /* DelegateVotedReferendaProtocols.swift in Sources */,
 				D4184799A74D5F9B28F95E80 /* DelegateVotedReferendaWireframe.swift in Sources */,
 				2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */,
+				2D4FF2492EE735AE005EC078 /* SecretScanImportPresenter.swift in Sources */,
 				835AE15B1F58CB87F775272F /* DelegateVotedReferendaPresenter.swift in Sources */,
 				FBB0A83A6F48E4E0EE15E11A /* DelegateVotedReferendaInteractor.swift in Sources */,
 				0C8FC2192E60653800034ED3 /* GlobalConfigProvide+Singleton.swift in Sources */,
