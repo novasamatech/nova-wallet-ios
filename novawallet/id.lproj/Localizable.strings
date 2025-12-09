@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Lihat di %@";
 "import.json.unsupported.ethereum.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Substrate ke jaringan dengan enkripsi Ethereum.";
 "import.json.unsupported.substrate.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Ethereum ke jaringan dengan enkripsi Substrate.";
+"gift.reclaim.no.account.alert.title" = "Tidak ditemukan akun";
 "common.today" = "Hari ini";
 "common.yesterday" = "Kemarin";
 "common.tx.details" = "Rincian transaksi";
@@ -1968,6 +1969,8 @@
 "common.rewards" = "Hadiah";
 "staking.validator.apy.percent" = "Imbalan Estimasi (%% APY)";
 "parastk.collators.filter.rewards" = "Perkiraan hadiah (%% APR)";
+"gift.reclaim.dialog.message" = "Jika Anda mengambil kembali hadiah ini, tautan yang dibagikan akan dinonaktifkan, dan token akan dikembalikan ke dompet Anda.\nApakah Anda ingin melanjutkan?";
+"gift.action.reclaim.title" = "Klaim kembali";
 "gift.claim.warning.wallet.message" = "Buat dompet baru atau impor yang sudah ada untuk mengklaim hadiah";
 "gift.claim.warning.wallet.manage.action" = "Kelola Dompet";
 "gift.claim.success.status" = "Anda berhasil mengklaim hadiah. Token akan segera muncul di saldo Anda.";
@@ -1975,6 +1978,8 @@
 "gift.error.already.claimed.message" = "Ups, hadiah tersebut sudah diklaim";
 "gift.claim.action.title" = "Klaim hadiah";
 "gift.claim.title" = "Anda mendapatkan hadiah kripto!";
+"gift.status.claimed" = "Diambil";
+"gift.status.reclaimed" = "Diklaim kembali";
 "gift.claim.fee" = "Biaya jaringan pada klaim";
 "gift.prepared.title" = "Hadiah Telah Disiapkan.\nBagikan Sekarang!";
 "gift.prepared.share.action.title" = "Bagikan tautan hadiah";
@@ -1986,6 +1991,7 @@
 "gifts.onboarding.step1.highlighted" = "Masukkan jumlah hadiah Anda";
 "gifts.onboarding.step2.highlighted" = "Bagikan hadiah secara langsung";
 "gifts.onboarding.title" = "Bagikan Hadiah Kripto kepada Siapa Saja, Di Mana Saja";
+"gift.list.gifts.section.title" = "Hadiah yang Anda buat";
 "common.gift" = "Hadiah";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ sebagai link dan undang siapa saja ke Nova";
@@ -2003,3 +2009,8 @@
 "common.total.fee" = "Biaya total";
 "gift.unsupported.token.alert.title" = "Token ini tidak didukung oleh fitur hadiah";
 "gift.unsupported.token.alert.message" = "Pemberian hadiah untuk token ini saat ini tidak didukung. Silakan pilih token yang berbeda, jaringan yang berbeda, atau periksa kembali nanti.";
+"gift.reclaim.success.status" = "Anda berhasil mengambil kembali hadiah Anda";
+"gift.loading.message" = "Memuat hadiah...";
+"gift.created.date.format" = "Dibuat: %@";
+"gift.reclaim.no.account.alert.message" = "Harap pilih dompet lain atau tambahkan akun %@ di Pengaturan untuk melanjutkan.";
+"gift.reclaim.dialog.title" = "Ambil kembali %@ Hadiah?";
