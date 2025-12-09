@@ -97,6 +97,14 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         importAccountUsingOperation(operation)
     }
 
+    func importAccountWithKeypair(request: MetaAccountImportKeypairRequest) {
+        let operation = metaAccountOperationFactoryProvider.createAppDefaultFactory().newSecretsMetaAccountOperation(
+            request: request
+        )
+
+        importAccountUsingOperation(operation)
+    }
+
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest) {
         let operation = metaAccountOperationFactoryProvider.createAppDefaultFactory().newSecretsMetaAccountOperation(
             request: request

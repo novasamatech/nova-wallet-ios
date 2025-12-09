@@ -27,6 +27,7 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
     )
 
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
+    func importAccountWithKeypair(request: MetaAccountImportKeypairRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
 
     func importAccountWithMnemonic(

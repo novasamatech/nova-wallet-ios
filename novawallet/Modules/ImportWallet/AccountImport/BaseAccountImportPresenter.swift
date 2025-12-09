@@ -11,6 +11,7 @@ class BaseAccountImportPresenter {
     static let maxMnemonicLength: Int = 250
     static let maxMnemonicSize: Int = 24
     static let maxSubstrateRawSeedLength: Int = 66
+    static let maxSubstrateSecretLength: Int = 130
     static let maxEthereumRawSeedLength: Int = 130
     static let maxKeystoreLength: Int = 4000
 
@@ -29,6 +30,7 @@ class BaseAccountImportPresenter {
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
     private(set) var ethereumDerivationPath: String?
+    private(set) var secretScan: SecretScanModel?
 
     init(secretSource: SecretSource, metadataFactory: AccountImportMetadataFactoryProtocol) {
         selectedSourceType = secretSource
@@ -96,7 +98,7 @@ class BaseAccountImportPresenter {
 
         case .seed:
             let inputHandler: InputHandler
-            let placeholder: String
+            let placeholder = "0xAB"
 
             if shouldUseEthereumSeed() {
                 inputHandler = InputHandler(
@@ -104,17 +106,18 @@ class BaseAccountImportPresenter {
                     maxLength: Self.maxEthereumRawSeedLength,
                     predicate: NSPredicate.ethereumSeed
                 )
-
-                placeholder = R.string(preferredLanguages: locale.rLanguages)
-                    .localizable.accountImportEthereumSeedPlaceholder_v2_2_0()
+            } else if let secretScan, case .keypair = secretScan {
+                inputHandler = InputHandler(
+                    value: value,
+                    maxLength: Self.maxSubstrateSecretLength,
+                    predicate: NSPredicate.substrateSecret
+                )
             } else {
                 inputHandler = InputHandler(
                     value: value,
                     maxLength: Self.maxSubstrateRawSeedLength,
                     predicate: NSPredicate.substrateSeed
                 )
-                placeholder = R.string(preferredLanguages: locale.rLanguages)
-                    .localizable.accountImportSubstrateSeedPlaceholder_v2_2_0()
             }
 
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
@@ -281,11 +284,13 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
 
 extension BaseAccountImportPresenter: SecretScanImportDelegate {
     func didReceive(_ scan: SecretScanModel) {
+        secretScan = scan
+
         let secretString = switch scan {
         case let .seed(seed):
             seed.toHex(includePrefix: true)
         case let .keypair(_, secretKey):
-            secretKey.toHex()
+            secretKey.toHex(includePrefix: true)
         }
 
         applySourceTextViewModel(secretString)
