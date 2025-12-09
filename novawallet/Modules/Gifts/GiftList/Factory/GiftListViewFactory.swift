@@ -39,6 +39,7 @@ struct GiftListViewFactory {
             chainRegistry: chainRegistry,
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             giftSyncService: giftSyncService,
+            selectedMetaId: selectedWallet.metaId,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

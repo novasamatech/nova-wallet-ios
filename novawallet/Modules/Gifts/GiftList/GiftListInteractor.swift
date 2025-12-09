@@ -4,6 +4,8 @@ import Operation_iOS
 final class GiftListInteractor {
     weak var presenter: GiftListInteractorOutputProtocol?
 
+    let selectedMetaId: MetaAccountModel.Id
+
     let chainRegistry: ChainRegistryProtocol
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
 
@@ -17,11 +19,13 @@ final class GiftListInteractor {
         chainRegistry: ChainRegistryProtocol,
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftSyncService: GiftsSyncServiceProtocol,
+        selectedMetaId: MetaAccountModel.Id,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
         self.giftSyncService = giftSyncService
+        self.selectedMetaId = selectedMetaId
         self.operationQueue = operationQueue
     }
 }
@@ -57,7 +61,7 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
         setupChainAssets()
-        giftsLocalSubscription = subscribeAllGifts()
+        giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
         giftSyncService.start()
     }
 }
