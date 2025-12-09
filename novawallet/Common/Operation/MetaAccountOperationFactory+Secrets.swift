@@ -305,6 +305,47 @@ extension MetaAccountOperationFactory {
 
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
+        request: ChainAccountImportKeypairRequest,
+        chainId: ChainModel.Id
+    ) -> BaseOperation<MetaAccountModel> {
+        ClosureOperation { [self] in
+            let ethereumBased = request.cryptoType == .ethereumEcdsa
+
+            let publicKey = request.publicKey
+            let accountId = ethereumBased
+                ? try publicKey.ethereumAddressFromPublicKey()
+                : try publicKey.publicKeyToAccountId()
+            let metaId = metaAccount.metaId
+
+            try saveSecretKey(
+                request.secretKey,
+                metaId: metaId,
+                accountId: accountId,
+                ethereumBased: ethereumBased
+            )
+
+            try saveDerivationPath(
+                request.derivationPath,
+                metaId: metaId,
+                accountId: accountId,
+                ethereumBased: ethereumBased
+            )
+
+            let chainAccount = ChainAccountModel(
+                chainId: chainId,
+                accountId: accountId,
+                publicKey: publicKey,
+                cryptoType: request.cryptoType.rawValue,
+                proxy: nil,
+                multisig: nil
+            )
+
+            return metaAccount.replacingChainAccount(chainAccount)
+        }
+    }
+
+    func replaceChainAccountOperation(
+        for metaAccount: MetaAccountModel,
         request: ChainAccountImportKeystoreRequest,
         chainId: ChainModel.Id
     ) -> BaseOperation<MetaAccountModel> {

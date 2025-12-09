@@ -140,6 +140,17 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         importAccountUsingOperation(operation)
     }
 
+    func importAccountWithKeypair(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportKeypairRequest,
+        into wallet: MetaAccountModel
+    ) {
+        let operation = metaAccountOperationFactoryProvider
+            .createAppDefaultFactory()
+            .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
+        importAccountUsingOperation(operation)
+    }
+
     func importAccountWithKeystore(
         chainId: ChainModel.Id,
         request: ChainAccountImportKeystoreRequest,

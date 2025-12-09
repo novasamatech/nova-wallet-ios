@@ -42,6 +42,12 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
         into wallet: MetaAccountModel
     )
 
+    func importAccountWithKeypair(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportKeypairRequest,
+        into wallet: MetaAccountModel
+    )
+
     func importAccountWithKeystore(
         chainId: ChainModel.Id,
         request: ChainAccountImportKeystoreRequest,

@@ -42,6 +42,13 @@ struct ChainAccountImportSeedRequest {
     let cryptoType: MultiassetCryptoType
 }
 
+struct ChainAccountImportKeypairRequest {
+    let secretKey: Data
+    let publicKey: Data
+    let derivationPath: String
+    let cryptoType: MultiassetCryptoType
+}
+
 struct ChainAccountImportKeystoreRequest {
     let keystore: String
     let password: String
