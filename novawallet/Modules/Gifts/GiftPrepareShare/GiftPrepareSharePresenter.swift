@@ -69,7 +69,7 @@ private extension GiftPrepareSharePresenter {
         let cancelAction = AlertPresentableAction(
             title: localizedStrings.commonCancel(),
             style: .cancel,
-            handler: { continueAction() }
+            handler: {}
         )
         let continueAction = AlertPresentableAction(
             title: localizedStrings.commonContinue(),
