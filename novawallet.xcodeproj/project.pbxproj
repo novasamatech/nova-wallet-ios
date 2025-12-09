@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -2008,6 +2008,7 @@
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
 		2D87C1A82E1C752200396A3B /* MultisigOperationsFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A72E1C752200396A3B /* MultisigOperationsFlowState.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
+		2D889D332EE80906005FC03A /* SubstrateSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 2D889D322EE80906005FC03A /* SubstrateSdk */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
 		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
@@ -12867,6 +12868,7 @@
 				2D4FF1772EE3118B005EC078 /* NovaCrypto in Frameworks */,
 				0C2BAA562E687BD0008157E7 /* HydraMathApi in Frameworks */,
 				0C8FCE992E6725D700034ED3 /* web3swift in Frameworks */,
+				2D889D332EE80906005FC03A /* SubstrateSdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30156,8 +30158,8 @@
 				0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */,
 				0C1A0F402E68DE5D00254E20 /* XCRemoteSwiftPackageReference "Charts" */,
 				2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */,
-				2D4FF1562EE2F296005EC078 /* XCLocalSwiftPackageReference "../substrate-sdk-ios" */,
 				2D503ACF2EE7638A002FD3F1 /* XCRemoteSwiftPackageReference "Crypto-iOS" */,
+				2D889D312EE80906005FC03A /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */,
 			);
 			productRefGroup = 849013A924A80984008F705E /* Products */;
 			projectDirPath = "";
@@ -37957,6 +37959,14 @@
 				version = 0.4.1;
 			};
 		};
+		2D889D312EE80906005FC03A /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/substrate-sdk-ios";
+			requirement = {
+				branch = "feature/public-key-derivation";
+				kind = branch;
+			};
+		};
 		2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
@@ -38205,6 +38215,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2D503ACF2EE7638A002FD3F1 /* XCRemoteSwiftPackageReference "Crypto-iOS" */;
 			productName = NovaCrypto;
+		};
+		2D889D322EE80906005FC03A /* SubstrateSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D889D312EE80906005FC03A /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */;
+			productName = SubstrateSdk;
 		};
 		2DB586992EB8753800950F7D /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
