@@ -105,13 +105,13 @@ final class AccountImportSeedView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.walletImportSeedTitle()
-        seedTitleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.importRawSeed()
-        seedHintLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.accountImportSubstrateSeedPlaceholder_v2_2_0()
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+        titleLabel.text = localizedStrings.walletImportSeedTitle()
+        seedTitleLabel.text = localizedStrings.importRawSeed()
+        seedHintLabel.text = localizedStrings.accountImportSubstrateSeedPlaceholder_v2_2_0()
 
-        walletNameTitleLabel.text = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.walletUsernameSetupChooseTitle_v2_2_0()
+        walletNameTitleLabel.text = localizedStrings.walletUsernameSetupChooseTitle_v2_2_0()
+        walletNameInputView.textField.placeholder = localizedStrings.commonName()
 
         updateProceedButton()
     }
