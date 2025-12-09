@@ -16,6 +16,7 @@ protocol AccountImportPresenterProtocol: AnyObject {
     func activateAdvancedSettings()
     func proceed()
     func activateScanner()
+    func shouldClearSecretScanOnBackspace() -> Bool
 }
 
 protocol AccountImportInteractorInputProtocol: AnyObject {

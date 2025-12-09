@@ -159,6 +159,10 @@ extension AccountImportViewController: AccountImportSeedViewDelegate {
     func accountImportSeedViewDidProceed(_: AccountImportSeedView) {
         presenter.proceed()
     }
+
+    func accountImportSeedViewShouldClearOnBackspace(_: AccountImportSeedView) -> Bool {
+        presenter.shouldClearSecretScanOnBackspace()
+    }
 }
 
 extension AccountImportViewController: AccountImportKeystoreViewDelegate {

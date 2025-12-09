@@ -277,6 +277,15 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         wireframe.presentScanner(from: view, importDelegate: self)
     }
 
+    func shouldClearSecretScanOnBackspace() -> Bool {
+        if secretScan != nil {
+            secretScan = nil
+            return true
+        }
+
+        return false
+    }
+
     func proceed() {
         processProceed()
     }

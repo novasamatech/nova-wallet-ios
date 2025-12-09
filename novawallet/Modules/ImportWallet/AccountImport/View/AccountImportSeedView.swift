@@ -5,6 +5,7 @@ import Foundation_iOS
 protocol AccountImportSeedViewDelegate: AnyObject {
     func accountImportSeedViewDidProceed(_ view: AccountImportSeedView)
     func accountImportSeedViewDidTapScan(_ view: AccountImportSeedView)
+    func accountImportSeedViewShouldClearOnBackspace(_ view: AccountImportSeedView) -> Bool
 }
 
 final class AccountImportSeedView: AccountImportBaseView {
@@ -255,9 +256,9 @@ private extension AccountImportSeedView {
 // MARK: - ScanInputViewDelegate
 
 extension AccountImportSeedView: ScanInputViewDelegate {
-    func accountInputViewWillStartEditing(_: ScanInputView) {}
+    func scanInputViewWillStartEditing(_: ScanInputView) {}
 
-    func accountInputViewShouldReturn(_ inputView: ScanInputView) -> Bool {
+    func scanInputViewShouldReturn(_ inputView: ScanInputView) -> Bool {
         if inputView === seedInputView {
             if !walletNameInputView.isHidden {
                 walletNameInputView.textField.becomeFirstResponder()
@@ -268,7 +269,13 @@ extension AccountImportSeedView: ScanInputViewDelegate {
         return false
     }
 
-    func accountInputViewDidEndEditing(_: ScanInputView) {}
+    func scanInputViewDidEndEditing(_: ScanInputView) {}
+
+    func scanInputViewShouldClearOnBackspace(_ inputView: ScanInputView) -> Bool {
+        guard inputView === seedInputView else { return false }
+
+        return delegate?.accountImportSeedViewShouldClearOnBackspace(self) ?? false
+    }
 }
 
 // MARK: - TextInputViewDelegate

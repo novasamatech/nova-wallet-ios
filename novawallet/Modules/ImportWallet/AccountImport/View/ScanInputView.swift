@@ -3,9 +3,10 @@ import UIKit_iOS
 import Foundation_iOS
 
 protocol ScanInputViewDelegate: AnyObject {
-    func accountInputViewWillStartEditing(_ inputView: ScanInputView)
-    func accountInputViewShouldReturn(_ inputView: ScanInputView) -> Bool
-    func accountInputViewDidEndEditing(_ inputView: ScanInputView)
+    func scanInputViewWillStartEditing(_ inputView: ScanInputView)
+    func scanInputViewShouldReturn(_ inputView: ScanInputView) -> Bool
+    func scanInputViewDidEndEditing(_ inputView: ScanInputView)
+    func scanInputViewShouldClearOnBackspace(_ inputView: ScanInputView) -> Bool
 }
 
 class ScanInputView: BackgroundedContentControl {
@@ -314,9 +315,7 @@ private extension ScanInputView {
     }
 
     @objc func actionClear() {
-        guard hasText else {
-            return
-        }
+        guard hasText else { return }
 
         textField.text = ""
         inputViewModel?.inputHandler.changeValue(to: "")
@@ -339,6 +338,20 @@ extension ScanInputView: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
+        if string.isEmpty, range.length > 0, hasText {
+            let shouldClearAll = delegate?.scanInputViewShouldClearOnBackspace(self) ?? false
+
+            if shouldClearAll {
+                textField.text = ""
+                inputViewModel?.inputHandler.changeValue(to: "")
+
+                updateControlsState()
+                sendActions(for: .editingChanged)
+
+                return false
+            }
+        }
+
         guard let inputViewModel = inputViewModel else {
             return true
         }
@@ -359,20 +372,20 @@ extension ScanInputView: UITextFieldDelegate {
     }
 
     func textFieldShouldReturn(_: UITextField) -> Bool {
-        if let delegate = delegate {
-            return delegate.accountInputViewShouldReturn(self)
-        } else {
+        guard let delegate else {
             textField.resignFirstResponder()
             return true
         }
+
+        return delegate.scanInputViewShouldReturn(self)
     }
 
     func textFieldShouldBeginEditing(_: UITextField) -> Bool {
-        delegate?.accountInputViewWillStartEditing(self)
+        delegate?.scanInputViewWillStartEditing(self)
         return true
     }
 
     func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
-        delegate?.accountInputViewDidEndEditing(self)
+        delegate?.scanInputViewDidEndEditing(self)
     }
 }
