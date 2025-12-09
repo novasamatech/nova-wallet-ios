@@ -2006,3 +2006,4 @@
 "welcome.polkadot.vault.step3.import.highlighted" = "Export Private Key";
 "welcome.polkadot.vault.step.last" = "Polkadot Vault will provide you %@";
 "welcome.polkadot.vault.step.last.highlighted" = "QR code to scan";
+"polkadot.vault.scanner.message" = "Scan the QR code\nfrom the %@";

@@ -44,7 +44,7 @@ struct PVScanViewFactory {
         )
 
         let message = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.paritySignerScanTitle_9_7_0(
+            R.string(preferredLanguages: locale.rLanguages).localizable.polkadotVaultScannerMessage(
                 type.getName(for: locale)
             )
         }
