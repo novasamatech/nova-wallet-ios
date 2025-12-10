@@ -2,161 +2,49 @@ name: Distribute to Firebase
 
 on:
   push:
-    branches: [develop]
+    branches: 
+      - 'develop'
 
 env:
-  scheme: "novawallet"
-  platform: "iOS Simulator"
-  device: "iPhone 16"
-  os_version: "latest"
-  xcode-version: "16.1"
-  MINT_PATH: ${{ github.workspace }}/.mint
+  IOS_BUNDLE_ID: "io.novafoundation.novawallet.dev"
+  IOS_EXTENSION_BUNDLE_ID: "io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  PROVISIONING_PROFILE_SPECIFIER: "match AdHoc io.novafoundation.novawallet.dev"
+  EXTENSION_PROVISIONING_PROFILE_SPECIFIER: "match AdHoc io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  CODE_SIGN_IDENTITY: "Apple Distribution"
+  EXPORT_METHOD: "ad-hoc"
+  FASTLANE_CONFIGURATION: "Dev"
+  BUILD_NUMBER: ${{ github.run_number }}
+  FIREBASE_GROUPS: dev-team
+  RELEASE_NOTES: ${{ github.event.head_commit.message }}
   RUN_IN_CI: true
 
 jobs:
   build:
-    name: Archive, export and upload to Firebase
-    runs-on: macos-14
+    name: Build and upload to Firebase
+    runs-on: macos-26
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@master
-        with:
-          xcode-version: ${{ env.xcode-version }}
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore Mint packages сache
-        id: mint-cache
-        uses: actions/cache@v4
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
         with:
-          path: ${{ env.MINT_PATH }}
-          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
 
-      - name: Install Mint
-        run: brew install mint
-
-      - name: Mint bootstrap
-        if: steps.mint-cache.outputs.cache-hit != 'true'
-        run: |
-          mint bootstrap --mintfile CIMintfile
-
-      # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
-      - name: Install the Apple certificate and provisioning profile
+      - name: Update build number
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ""
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64: ${{ secrets.PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          PBXPROJ_PATH: novawallet.xcodeproj/project.pbxproj
         run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          PUSH_NOTIFICATIONS_PP_PATH=$RUNNER_TEMP/push_notifications_build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          set -euo pipefail
 
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-          echo -n "$PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64" | base64 --decode -o $PUSH_NOTIFICATIONS_PP_PATH
+          echo "Setting build number to ${{ env.BUILD_NUMBER }} in Dev configuration..."
+          python3 .github/scripts/update_build_number.py "${PBXPROJ_PATH}" \
+            --config-name "Dev" \
+            --build-number ${{ env.BUILD_NUMBER }}
 
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PUSH_NOTIFICATIONS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: Push Notifications Setup
-        env:
-          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
-        run: |
-          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
-
-          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
-
-      - name: Bump version
-        uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
-        with:
-          info-plist-path: "./novawallet/Info.plist"
-          bundle-short-version-string: ${{ secrets.IOS_APP_VERSION }}
-          bundle-version: ${{github.run_number}}
-          print-file: true
-
-      - name: Restore SPM cache
-        id: spm-cache
-        uses: actions/cache@v4
-        with:
-          path: .source_packages
-          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
-
-      - name: Ensure SPM directory exists
-        run: mkdir -p .source_packages
-
-      - name: Resolve SPM dependencies
-        if: steps.spm-cache.outputs.cache-hit != 'true'
-        run: |
-          if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
-
-      - name: Archive
-        env:
-          MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
-          MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
-          MOONBEAM_HISTORY_API_KEY: ${{ secrets.MOONBEAM_HISTORY_API_KEY }}
-          MOONRIVER_HISTORY_API_KEY: ${{ secrets.MOONRIVER_HISTORY_API_KEY }}
-          ETHERSCAN_HISTORY_API_KEY: ${{ secrets.ETHERSCAN_HISTORY_API_KEY }}
-          ACALA_AUTH_TOKEN: ${{ secrets.ACALA_AUTH_TOKEN }}
-          ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
-          MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
-          MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-          WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
-          POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
-          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
-          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
-        run: |
-          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
-
-      - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: novawallet.ipa
-          path: export
-
-  # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
-  distribute-ios:
-    needs: build
-    name: Distribute archive to Firebase
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: novawallet.ipa
-          path: export
-
-      - name: Upload artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
-        with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: dev-team
-          file: export/novawallet.ipa
-          releaseNotes: ${{ github.event.head_commit.message }}
+      - name: Distribute to Firebase via fastlane
+        run: bundle exec fastlane distribute_app_to_firebase release_notes:"${{ env.RELEASE_NOTES }}"
