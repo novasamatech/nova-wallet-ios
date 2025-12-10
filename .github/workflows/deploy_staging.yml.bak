@@ -1,0 +1,133 @@
+name: Manual deploy to Firebase
+
+on:
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        description: "App version"
+        required: true
+      userGroup:
+        description: "Firebase user group"
+        default: "external-users"
+        required: true
+      config:
+        description: "Configuration Dev/Staging"
+        default: "Staging"
+        required: true
+        type: choice
+        options:
+          - Staging
+          - Dev
+
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  RUN_IN_CI: true
+
+jobs:
+  build:
+    name: Build and upload to Firebase
+    # TODO: update to latest version when all code improvements are complete
+    #runs-on: macos-26
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set configuration variables
+        id: config
+        run: |
+          # Determine configuration (from input or default for push)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CONFIG="${{ inputs.config }}"
+            APP_VERSION="${{ inputs.appVersion }}"
+            USER_GROUP="${{ inputs.userGroup }}"
+            UPDATE_VERSION="true"
+          else
+            # Defaults for push trigger (testing) - don't change version
+            CONFIG="Staging"
+            APP_VERSION=""
+            USER_GROUP="ci-test"
+            UPDATE_VERSION="false"
+          fi
+
+          echo "config=$CONFIG" >> $GITHUB_OUTPUT
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          echo "user_group=$USER_GROUP" >> $GITHUB_OUTPUT
+          echo "update_version=$UPDATE_VERSION" >> $GITHUB_OUTPUT
+
+          # Set bundle IDs and signing based on configuration
+          if [ "$CONFIG" = "Staging" ]; then
+            BUNDLE_ID="io.novafoundation.novawallet.staging"
+            EXTENSION_BUNDLE_ID="io.novafoundation.novawallet.staging.NovaPushNotificationServiceExtension"
+            PROFILE_SPEC="match AdHoc io.novafoundation.novawallet.staging"
+            EXTENSION_PROFILE_SPEC="match AdHoc io.novafoundation.novawallet.staging.NovaPushNotificationServiceExtension"
+          else
+            BUNDLE_ID="io.novafoundation.novawallet.dev"
+            EXTENSION_BUNDLE_ID="io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+            PROFILE_SPEC="match AdHoc io.novafoundation.novawallet.dev"
+            EXTENSION_PROFILE_SPEC="match AdHoc io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+          fi
+
+          echo "bundle_id=$BUNDLE_ID" >> $GITHUB_OUTPUT
+          echo "extension_bundle_id=$EXTENSION_BUNDLE_ID" >> $GITHUB_OUTPUT
+          echo "profile_spec=$PROFILE_SPEC" >> $GITHUB_OUTPUT
+          echo "extension_profile_spec=$EXTENSION_PROFILE_SPEC" >> $GITHUB_OUTPUT
+
+          # Debug output
+          echo "=== Configuration Variables ==="
+          echo "Event type: ${{ github.event_name }}"
+          echo "Config: $CONFIG"
+          echo "App version: $APP_VERSION"
+          echo "User group: $USER_GROUP"
+          echo "Update version: $UPDATE_VERSION"
+          echo "Bundle ID: $BUNDLE_ID"
+          echo "Extension bundle ID: $EXTENSION_BUNDLE_ID"
+          echo "Profile spec: $PROFILE_SPEC"
+          echo "Extension profile spec: $EXTENSION_PROFILE_SPEC"
+          echo "==============================="
+
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
+        with:
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
+
+      - name: Update build number
+        env:
+          PBXPROJ_PATH: novawallet.xcodeproj/project.pbxproj
+          CONFIG: ${{ steps.config.outputs.config }}
+        run: |
+          set -euo pipefail
+
+          echo "Setting build number to ${{ env.BUILD_NUMBER }} in $CONFIG configuration..."
+          python3 .github/scripts/update_build_number.py "${PBXPROJ_PATH}" \
+            --config-name "$CONFIG" \
+            --build-number ${{ env.BUILD_NUMBER }}
+
+      - name: Update marketing version
+        if: steps.config.outputs.update_version == 'true'
+        env:
+          PBXPROJ_PATH: novawallet.xcodeproj/project.pbxproj
+          CONFIG: ${{ steps.config.outputs.config }}
+          APP_VERSION: ${{ steps.config.outputs.app_version }}
+        run: |
+          set -euo pipefail
+
+          echo "Setting MARKETING_VERSION to $APP_VERSION in $CONFIG configuration..."
+          python3 .github/scripts/update_marketing_version.py "${PBXPROJ_PATH}" "$APP_VERSION" \
+            --config-name "$CONFIG"
+
+      - name: Distribute to Firebase via fastlane
+        env:
+          IOS_BUNDLE_ID: ${{ steps.config.outputs.bundle_id }}
+          IOS_EXTENSION_BUNDLE_ID: ${{ steps.config.outputs.extension_bundle_id }}
+          PROVISIONING_PROFILE_SPECIFIER: ${{ steps.config.outputs.profile_spec }}
+          EXTENSION_PROVISIONING_PROFILE_SPECIFIER: ${{ steps.config.outputs.extension_profile_spec }}
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          EXPORT_METHOD: "ad-hoc"
+          FASTLANE_CONFIGURATION: ${{ steps.config.outputs.config }}
+          FIREBASE_GROUPS: ${{ steps.config.outputs.user_group }}
+        run: bundle exec fastlane distribute_app_to_firebase release_notes:"${{ github.event.head_commit.message }}"

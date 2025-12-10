@@ -1,0 +1,94 @@
+opt_out_usage
+default_platform(:ios)
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+platform :ios do
+  # imports
+  import ("lanes/lane_build.rb")
+  import ("lanes/lane_tests.rb")
+  import ("lanes/lane_firebase_distribute.rb")
+  import ("lanes/lane_register_device.rb")
+  import ("lanes/lane_testflight.rb")
+  import ("lanes/lane_signing.rb")
+
+  # shared variables
+  main_target = "novawallet"
+  main_scheme = "novawallet"
+  main_configuration = ENV["FASTLANE_CONFIGURATION"].to_s.empty? ? "Debug" : ENV["FASTLANE_CONFIGURATION"]
+
+  test_scheme = "novawallet"
+
+  testflight_distribution_scheme = "novawallet"
+  testflight_distribution_configuration = "Release"
+
+  desc "Runs unit tests"
+  desc "Example usage: fastlane run_unit_tests"
+  desc "Example usage: fastlane run_unit_tests debug:true"
+  lane :run_unit_tests do |options|
+    # Pass debug option to test_build if provided
+    test_build(
+      scheme: test_scheme,
+      debug: options[:debug]
+    )
+  end
+
+  desc "Build app for CI"
+  desc "Parameters:"
+  desc "- 'debug : true/false' to enable verbose logging for troubleshooting build failures"
+  desc " "
+  desc "Example usage: fastlane build_app_ci"
+  desc "Example usage: fastlane build_app_ci debug:true"
+  lane :build_app_ci do |options|
+    prepare_code_signing
+    base_build_app(
+      scheme: main_scheme,
+      target: main_target,
+      configuration: main_configuration,
+      debug: options[:debug]
+    )
+  end
+
+  desc "Distribute app to Firebase"
+  desc "Parameters:"
+  desc "- 'release_notes : <value>' to define release notes"
+  desc " "
+  desc "Example usage: fastlane distribute_app_to_firebase release_notes:'Release notes'"
+  lane :distribute_app_to_firebase do |options|
+    prepare_code_signing
+    base_build_app(
+      scheme: main_scheme,
+      target: main_target,
+      configuration: main_configuration
+    )
+    distribute_to_firebase(
+      release_notes: options[:release_notes]
+    )
+  end
+
+  desc "Distribute new iOS build through TestFlight"
+  desc "Example usage: fastlane distribute_testflight"
+  lane :distribute_testflight do
+    load_asc_api_key
+    prepare_code_signing
+    new_build_number = latest_testflight_build_number + 1
+    base_build_app(
+      scheme: testflight_distribution_scheme,
+      target: main_target,
+      configuration: testflight_distribution_configuration,
+      build_number: new_build_number
+    )
+    upload_testflight(
+      scheme: testflight_distribution_scheme,
+      target: main_target,
+      configuration: testflight_distribution_configuration
+    )
+  end
+
+  desc "Update signing data"
+  desc "Example usage: fastlane update_signing"
+  lane :update_signing do
+    update_signing_data
+  end
+end
