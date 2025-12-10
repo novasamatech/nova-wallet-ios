@@ -1194,7 +1194,7 @@
 "transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
-"wallet.connect.scan.message" = "Отсканируйте QR-код";
+"common.scan.message" = "Отсканируйте QR-код";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Новое подключение";
 "common.disconnect" = "Отключить";
@@ -1254,11 +1254,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ на смартфоне";
 "welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Выберите множество ключей, затем аккаунт, который вы хотите добавить в Nova Wallet.";
-"welcome.polkadot.vault.step2.highlighted" = "Перейдите на вкладку «Key Sets».";
-"welcome.polkadot.vault.step2.details" = "Убедитесь, что путь деривации пуст";
-"welcome.polkadot.vault.step3" = "Polkadot Vault предоставит вам %@";
-"welcome.polkadot.vault.step3.highlighted" = "QR-код для сканирования";
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Используйте прокси для делегирования операций стейкинга другому аккаунту";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
@@ -1722,6 +1717,7 @@
 "gov.vote.conviction.hint.title" = "Убежденность будет установлена на 0.1x при Воздержании";
 "cloud.backup.password.confirm.title" = "Подтвердите пароль для бэкапа";
 "cloud.backup.password.confirm.details" = "Пожалуйста, введите пароль, который вы создали на предыдущем экране";
+"welcome.polkadot.vault.step.last.highlighted" = "QR-код для сканирования";
 "swipe.gov.empty.view.voted.text" = "Вы уже проголосовали во всех доступных референдумах";
 "swipe.gov.empty.view.button" = "Подтвердите ваши голоса";
 "gov.voting.list.title" = "Список голосований";
@@ -2003,3 +1999,12 @@
 "common.total.fee" = "Общая комиссия";
 "gift.unsupported.token.alert.title" = "Этот токен не поддерживается функцией подарка";
 "gift.unsupported.token.alert.message" = "Подарки для этого токена в настоящее время не поддерживаются. Пожалуйста, выберите другой токен, другую сеть или попробуйте позже.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Экспортировать приватный ключ";
+"welcome.polkadot.vault.import.private.key" = "приватный ключ";
+"welcome.polkadot.vault.pair.public.key" = "публичный ключ";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Нажмите на Derived Key";
+"common.invalid.qr.code" = "Недействительный QR-код";
+"polkadot.vault.scanner.message" = "Сканируйте QR-кодиз %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault предоставит вам %@";
+"welcome.polkadot.vault.step3.import" = "Нажмите на значок в верхнем правом углу и выберите %@";
+"welcome.polkadot.vault.step2.pair" = "%@ вы хотели бы добавить в Nova Wallet";
