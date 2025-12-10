@@ -2,8 +2,6 @@ import Foundation
 import Foundation_iOS
 
 final class PVScanPresenter: QRScannerPresenter {
-    let interactor: PVScanInteractorInputProtocol
-
     let matcher: PVScanMatcherProtocol
     let qrExtractionError: LocalizableResource<String>
 
@@ -20,7 +18,6 @@ final class PVScanPresenter: QRScannerPresenter {
     init(
         type: ParitySignerType,
         matcher: PVScanMatcherProtocol,
-        interactor: PVScanInteractorInputProtocol,
         scanWireframe: PVScanWireframeProtocol,
         baseWireframe: QRScannerWireframeProtocol,
         qrScanService: QRCaptureServiceProtocol,
@@ -31,7 +28,6 @@ final class PVScanPresenter: QRScannerPresenter {
     ) {
         self.type = type
         self.matcher = matcher
-        self.interactor = interactor
         self.scanWireframe = scanWireframe
         self.qrExtractionError = qrExtractionError
         self.localizationManager = localizationManager
@@ -79,11 +75,17 @@ final class PVScanPresenter: QRScannerPresenter {
 
         if let accountScan = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.interactor.process(accountScan: accountScan)
+                guard let self else { return }
+                scanWireframe.completeScan(
+                    on: view,
+                    account: accountScan,
+                    type: type
+                )
             }
         } else {
             DispatchQueue.main.async { [weak self] in
                 self?.handleFailure()
+                self?.setLastCode(nil)
             }
         }
     }
@@ -92,21 +94,5 @@ final class PVScanPresenter: QRScannerPresenter {
         super.viewWillAppear()
 
         setLastCode(nil)
-    }
-}
-
-extension PVScanPresenter: PVScanInteractorOutputProtocol {
-    func didReceiveValidation(result: Result<PolkadotVaultAccount, Error>) {
-        switch result {
-        case let .success(account):
-            scanWireframe.completeScan(
-                on: view,
-                account: account,
-                type: type
-            )
-        case .failure:
-            handleFailure()
-            setLastCode(nil)
-        }
     }
 }
