@@ -25,6 +25,12 @@ protocol MetaAccountOperationFactoryProtocol {
 
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
+        request: ChainAccountImportKeypairRequest,
+        chainId: ChainModel.Id
+    ) -> BaseOperation<MetaAccountModel>
+
+    func replaceChainAccountOperation(
+        for metaAccount: MetaAccountModel,
         request: ChainAccountImportKeystoreRequest,
         chainId: ChainModel.Id
     ) -> BaseOperation<MetaAccountModel>

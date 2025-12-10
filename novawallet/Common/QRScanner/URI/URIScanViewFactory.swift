@@ -7,7 +7,7 @@ struct URIScanViewFactory {
         context: AnyObject?
     ) -> QRScannerViewProtocol? {
         let scanTitle = LocalizableResource { locale in
-            R.string(preferredLanguages: locale.rLanguages).localizable.walletConnectScanMessage()
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonScanQrCode()
         }
 
         let details = LocalizableResource { locale in
