@@ -1194,7 +1194,7 @@
 "transfer.setup.recipient.input.placeholder" = "Adres lub w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Trwa wyszukiwanie nazwy";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Proszę, poczekaj aż zakończy się wyszukiwanie %@";
-"wallet.connect.scan.message" = "Skanuj kod QR";
+"common.scan.message" = "Skanuj kod QR";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Nowe połączenie";
 "common.disconnect" = "Odłącz";
@@ -1254,11 +1254,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ aplikacja na Twoim smartfonie";
 "welcome.polkadot.vault.step1.highlighted" = "Otwórz Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Wybierz swój zestaw kluczy, następnie konto, które chcesz dodać do Nova Wallet";
-"welcome.polkadot.vault.step2.highlighted" = "Przejdź do zakładki „Key Sets”.";
-"welcome.polkadot.vault.step2.details" = "Zwróć uwagę, ścieżka pochodzenia powinna być pusta";
-"welcome.polkadot.vault.step3" = "Polkadot Vault zapewni Ci %@";
-"welcome.polkadot.vault.step3.highlighted" = "Kod QR do zeskanowania";
 "staking.controller.deprecated.title" = "Kontroler Konta są Przedawniane";
 "staking.controller.deprecated.details" = "Użyj Proxies, aby delegować operacje Staking na inne konto";
 "staking.controller.deprecated.action" = "Aktualizuj Kontroler na Stash";
@@ -1722,6 +1717,7 @@
 "gov.vote.conviction.hint.title" = "Conviction zostanie ustawione na 0.1x podczas Wstrzymania się";
 "cloud.backup.password.confirm.title" = "Potwierdź hasło do kopii zapasowej";
 "cloud.backup.password.confirm.details" = "Proszę wprowadzić hasło, które utworzyłeś na poprzednim ekranie";
+"welcome.polkadot.vault.step.last.highlighted" = "kod QR do zeskanowania";
 "swipe.gov.empty.view.voted.text" = "Już zagłosowałeś we wszystkich dostępnych referendach";
 "swipe.gov.empty.view.button" = "Potwierdź swoje głosy";
 "gov.voting.list.title" = "Lista głosów";
@@ -2003,3 +1999,12 @@
 "common.total.fee" = "Łączna opłata";
 "gift.unsupported.token.alert.title" = "Ten token nie jest obsługiwany przez funkcję prezentów";
 "gift.unsupported.token.alert.message" = "Przepraszamy, aktualnie nie można wykorzystywać tego tokena do prezentów. Proszę wybrać inny token, inną sieć lub spróbować ponownie później.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Eksportuj Klucz Prywatny";
+"welcome.polkadot.vault.import.private.key" = "Importuj klucz prywatny";
+"welcome.polkadot.vault.pair.public.key" = "Połącz klucz publiczny";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Stuknij Wygenerowany Klucz";
+"common.invalid.qr.code" = "Nieprawidłowy kod QR";
+"polkadot.vault.scanner.message" = "Zeskanuj kod QR\nz %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault dostarczy Ci %@";
+"welcome.polkadot.vault.step3.import" = "Stuknij ikonę w prawym górnym rogu i wybierz %@";
+"welcome.polkadot.vault.step2.pair" = "%@, które chcesz dodać do Nova Wallet";
