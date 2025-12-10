@@ -2005,6 +2005,7 @@
 "welcome.polkadot.vault.step2.pair.highlighted" = "Нажмите на Derived Key";
 "common.invalid.qr.code" = "Недействительный QR-код";
 "polkadot.vault.scanner.message" = "Сканируйте QR-кодиз %@";
+"polkadot.vault.scanner.message" = "Сканируйте QR-код из %@";
 "welcome.polkadot.vault.step.last" = "Polkadot Vault предоставит вам %@";
 "welcome.polkadot.vault.step3.import" = "Нажмите на значок в верхнем правом углу и выберите %@";
 "welcome.polkadot.vault.step2.pair" = "%@ вы хотели бы добавить в Nova Wallet";
