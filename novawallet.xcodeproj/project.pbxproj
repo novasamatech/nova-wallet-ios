@@ -37959,8 +37959,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/substrate-sdk-ios";
 			requirement = {
-				branch = "feature/public-key-derivation";
-				kind = branch;
+				kind = exactVersion;
+				version = 4.5.2;
 			};
 		};
 		2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
