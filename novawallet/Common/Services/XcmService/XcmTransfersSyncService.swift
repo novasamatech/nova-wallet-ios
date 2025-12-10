@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 protocol XcmTransfersSyncServiceProtocol: AnyObject, ApplicationServiceProtocol {
     var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)? { get set }

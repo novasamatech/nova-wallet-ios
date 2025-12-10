@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 public protocol ObservableProtocol: AnyObject {
     associatedtype State

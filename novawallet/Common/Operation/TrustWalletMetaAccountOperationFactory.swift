@@ -285,6 +285,10 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
         .createWithError(MetaAccountOperationFactoryError.unsupportedMethod)
     }
 
+    func newSecretsMetaAccountOperation(request _: MetaAccountImportKeypairRequest) -> BaseOperation<MetaAccountModel> {
+        .createWithError(MetaAccountOperationFactoryError.unsupportedMethod)
+    }
+
     func replaceChainAccountOperation(
         for _: MetaAccountModel,
         request _: ChainAccountImportMnemonicRequest,

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 protocol PushNotificationOpenDelegate: AnyObject {
     func didAskScreenOpen(_ screen: PushNotification.OpenScreen)
