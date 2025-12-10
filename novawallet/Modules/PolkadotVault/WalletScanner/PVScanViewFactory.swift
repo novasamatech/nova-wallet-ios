@@ -18,8 +18,6 @@ struct PVScanViewFactory {
         wireframe: PVScanWireframeProtocol,
         type: ParitySignerType
     ) -> QRScannerViewProtocol? {
-        let interactor = PVScanInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
-
         let processingQueue = QRCaptureService.processingQueue
         let qrService = QRCaptureService(delegate: nil, delegateQueue: processingQueue)
         let qrExtractor = QRExtractionService(processingQueue: processingQueue)
@@ -33,7 +31,6 @@ struct PVScanViewFactory {
         let presenter = PVScanPresenter(
             type: type,
             matcher: PVAccountScanMatcher(),
-            interactor: interactor,
             scanWireframe: wireframe,
             baseWireframe: QRScannerWireframe(),
             qrScanService: qrService,
@@ -61,7 +58,6 @@ struct PVScanViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }
