@@ -1971,8 +1971,6 @@
 "gift.error.already.claimed.message" = "Ops, o presente já foi reivindicado";
 "gift.claim.action.title" = "Reivindicar o presente";
 "gift.claim.title" = "Você recebeu um presente cripto!";
-"gift.status.claimed" = "Reivindicado";
-"gift.status.reclaimed" = "Reclamado";
 "gift.claim.fee" = "Taxa de rede ao reivindicar";
 "gift.prepared.title" = "O Presente foi Preparado.\nCompartilhe Agora!";
 "gift.prepared.share.action.title" = "Compartilhar link do presente";
