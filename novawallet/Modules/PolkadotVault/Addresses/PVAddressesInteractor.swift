@@ -28,26 +28,6 @@ private extension PVAddressesInteractor {
         }
     }
 
-    func matchChain(
-        for accountScan: PolkadotVaultAccount,
-        from changes: [DataProviderChange<ChainModel>]
-    ) -> ChainModel? {
-        for change in changes {
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                let genesisHash = try? Data(hexString: newItem.chainId)
-
-                if genesisHash == accountScan.genesisHash {
-                    return newItem
-                }
-            case .delete:
-                break
-            }
-        }
-
-        return nil
-    }
-
     func subscribeChainsProvidingAccountId() {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.presenter?.didReceive(chains: changes)
