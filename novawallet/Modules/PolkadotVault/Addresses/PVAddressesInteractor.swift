@@ -19,12 +19,9 @@ final class PVAddressesInteractor {
 // MARK: - Private
 
 private extension PVAddressesInteractor {
-    func provideAccountId(
-        from accountScan: PolkadotVaultAccount,
-        chain: ChainModel
-    ) {
+    func provideAccountId(from accountScan: PolkadotVaultAccount) {
         do {
-            let accountId = try accountScan.address.toAccountId(using: chain.chainFormat)
+            let accountId = try accountScan.address.toAccountId(using: .multichainDisplayFormat)
             presenter?.didReceive(accountId: accountId)
         } catch {
             presenter?.didReceive(error: error)
@@ -51,12 +48,8 @@ private extension PVAddressesInteractor {
         return nil
     }
 
-    func subscribeChainsProvidingAccountId(from accountScan: PolkadotVaultAccount) {
+    func subscribeChainsProvidingAccountId() {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
-            if let addressChain = self?.matchChain(for: accountScan, from: changes) {
-                self?.provideAccountId(from: accountScan, chain: addressChain)
-            }
-
             self?.presenter?.didReceive(chains: changes)
         }
     }
@@ -67,6 +60,8 @@ private extension PVAddressesInteractor {
 extension PVAddressesInteractor: PVAddressesInteractorInputProtocol {
     func setup() {
         presenter?.didReceive(account: account)
-        subscribeChainsProvidingAccountId(from: account)
+        provideAccountId(from: account)
+
+        subscribeChainsProvidingAccountId()
     }
 }
