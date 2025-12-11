@@ -12,7 +12,7 @@ extension AddAccount {
 
         override func showParitySignerWalletCreation(from view: ControllerBackedProtocol?, type: ParitySignerType) {
             guard
-                let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createAddAccountView(
+                let paritySignerWelcomeView = PVWelcomeViewFactory.createAddAccountView(
                     with: type
                 ) else {
                 return

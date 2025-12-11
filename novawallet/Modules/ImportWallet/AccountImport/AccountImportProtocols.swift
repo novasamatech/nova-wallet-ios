@@ -15,6 +15,8 @@ protocol AccountImportPresenterProtocol: AnyObject {
     func activateUpload()
     func activateAdvancedSettings()
     func proceed()
+    func activateScanner()
+    func shouldClearSecretScanOnBackspace() -> Bool
 }
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
@@ -26,6 +28,7 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
     )
 
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
+    func importAccountWithKeypair(request: MetaAccountImportKeypairRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
 
     func importAccountWithMnemonic(
@@ -37,6 +40,12 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
     func importAccountWithSeed(
         chainId: ChainModel.Id,
         request: ChainAccountImportSeedRequest,
+        into wallet: MetaAccountModel
+    )
+
+    func importAccountWithKeypair(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportKeypairRequest,
         into wallet: MetaAccountModel
     )
 
@@ -72,4 +81,9 @@ protocol BaseAccountImportWireframeProtocol {
 
 protocol AccountImportWireframeProtocol: BaseAccountImportWireframeProtocol, AlertPresentable, ErrorPresentable {
     func proceed(from view: AccountImportViewProtocol?)
+
+    func presentScanner(
+        from view: AccountImportViewProtocol?,
+        importDelegate: SecretScanImportDelegate
+    )
 }

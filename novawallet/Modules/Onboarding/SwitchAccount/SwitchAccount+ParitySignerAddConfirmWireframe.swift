@@ -1,7 +1,7 @@
 import Foundation
 
 extension SwitchAccount {
-    final class ParitySignerAddConfirmWireframe: ParitySignerAddConfirmWireframeProtocol {
+    final class PVAddConfirmWireframe: PVAddConfirmWireframeProtocol {
         func complete(on view: ControllerBackedProtocol?) {
             guard let navigationController = view?.controller.navigationController else {
                 return

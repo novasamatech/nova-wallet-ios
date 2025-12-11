@@ -9,6 +9,7 @@ protocol MetaAccountOperationFactoryProtocol {
         -> BaseOperation<MetaAccountModel>
     func newSecretsMetaAccountOperation(request: MetaAccountImportSeedRequest) -> BaseOperation<MetaAccountModel>
     func newSecretsMetaAccountOperation(request: MetaAccountImportKeystoreRequest) -> BaseOperation<MetaAccountModel>
+    func newSecretsMetaAccountOperation(request: MetaAccountImportKeypairRequest) -> BaseOperation<MetaAccountModel>
 
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
@@ -19,6 +20,12 @@ protocol MetaAccountOperationFactoryProtocol {
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
         request: ChainAccountImportSeedRequest,
+        chainId: ChainModel.Id
+    ) -> BaseOperation<MetaAccountModel>
+
+    func replaceChainAccountOperation(
+        for metaAccount: MetaAccountModel,
+        request: ChainAccountImportKeypairRequest,
         chainId: ChainModel.Id
     ) -> BaseOperation<MetaAccountModel>
 

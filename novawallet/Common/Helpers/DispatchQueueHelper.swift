@@ -1,18 +1,5 @@
 import Foundation
-
-func dispatchInQueueWhenPossible(_ queue: DispatchQueue?, locking mutex: NSLock? = nil, block: @escaping () -> Void) {
-    if let queue = queue {
-        queue.async {
-            mutex?.lock()
-            block()
-            mutex?.unlock()
-        }
-    } else {
-        mutex?.lock()
-        block()
-        mutex?.unlock()
-    }
-}
+import Operation_iOS
 
 func callbackClosureIfProvided<T>(
     _ closure: ((Result<T, Error>) -> Void)?,
