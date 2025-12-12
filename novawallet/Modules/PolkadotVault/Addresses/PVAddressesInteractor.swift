@@ -21,7 +21,7 @@ final class PVAddressesInteractor {
 private extension PVAddressesInteractor {
     func provideAccountId(from accountScan: PolkadotVaultAccount) {
         do {
-            let accountId = try accountScan.address.toAccountId(using: .multichainDisplayFormat)
+            let accountId = try accountScan.address.toAccountId()
             presenter?.didReceive(accountId: accountId)
         } catch {
             presenter?.didReceive(error: error)
