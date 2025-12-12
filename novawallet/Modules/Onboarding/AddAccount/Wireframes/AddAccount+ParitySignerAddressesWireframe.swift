@@ -1,15 +1,15 @@
 import Foundation
 
 extension AddAccount {
-    final class ParitySignerAddressesWireframe: ParitySignerAddressesWireframeProtocol {
+    final class PVAddressesWireframe: PVAddressesWireframeProtocol {
         func showConfirmation(
             on view: HardwareWalletAddressesViewProtocol?,
-            accountId: AccountId,
+            account: PolkadotVaultAccount,
             type: ParitySignerType
         ) {
             guard
-                let confirmationView = ParitySignerAddConfirmViewFactory.createAddAccountView(
-                    with: accountId,
+                let confirmationView = PVAddConfirmViewFactory.createAddAccountView(
+                    with: account,
                     type: type
                 ) else {
                 return

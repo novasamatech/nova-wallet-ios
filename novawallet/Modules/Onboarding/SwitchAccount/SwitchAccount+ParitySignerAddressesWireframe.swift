@@ -1,15 +1,15 @@
 import Foundation
 
 extension SwitchAccount {
-    final class ParitySignerAddressesWireframe: ParitySignerAddressesWireframeProtocol {
+    final class PVAddressesWireframe: PVAddressesWireframeProtocol {
         func showConfirmation(
             on view: HardwareWalletAddressesViewProtocol?,
-            accountId: AccountId,
+            account: PolkadotVaultAccount,
             type: ParitySignerType
         ) {
             guard
-                let confirmationView = ParitySignerAddConfirmViewFactory.createSwitchAccountView(
-                    with: accountId,
+                let confirmationView = PVAddConfirmViewFactory.createSwitchAccountView(
+                    with: account,
                     type: type
                 ) else {
                 return

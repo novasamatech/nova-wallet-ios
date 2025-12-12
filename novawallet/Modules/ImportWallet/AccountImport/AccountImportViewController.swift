@@ -152,8 +152,16 @@ extension AccountImportViewController: AccountImportMnemonicViewDelegate {
 }
 
 extension AccountImportViewController: AccountImportSeedViewDelegate {
+    func accountImportSeedViewDidTapScan(_: AccountImportSeedView) {
+        presenter.activateScanner()
+    }
+
     func accountImportSeedViewDidProceed(_: AccountImportSeedView) {
         presenter.proceed()
+    }
+
+    func accountImportSeedViewShouldClearOnBackspace(_: AccountImportSeedView) -> Bool {
+        presenter.shouldClearSecretScanOnBackspace()
     }
 }
 
