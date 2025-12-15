@@ -18,10 +18,8 @@ class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
     }
 
     /*
-     *  For proxy the implementation wraps with proxy.proxy original calls and
-     *  then creates a batch of them. That is valid since all wrapped calls
-     *  share the same set of proxy types and can be dispatched from the single origin
-     *  provided by the batch call.
+     *  For proxy the implementation creates batch with original calls and then wraps it with proxy.proxy.
+     *  The logic is the same for every platform.
      */
     override func reduceCallsIntoSingle(
         using solution: DelegationResolution.PathFinderResult,
@@ -49,23 +47,25 @@ class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
             )
         }
 
-        let newBuilder = try builder.wrappingCalls { callJson in
-            let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
-            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+        let newBuilder = try builder
+            .batchingCalls(with: coderFactory.metadata)
+            .wrappingCalls { callJson in
+                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-            guard
-                let delegatePath = solution.callToPath[callPath],
-                let component = delegatePath.components.first else {
-                return callJson
+                guard
+                    let delegatePath = solution.callToPath[callPath],
+                    let component = delegatePath.components.first else {
+                    return callJson
+                }
+
+                return try component.delegationValue.wrapCall(
+                    callJson,
+                    delegatedAccountId: delegatedAccount.accountId,
+                    delegateAccountId: component.account.chainAccount.accountId,
+                    context: context
+                )
             }
-
-            return try component.delegationValue.wrapCall(
-                callJson,
-                delegatedAccountId: delegatedAccount.accountId,
-                delegateAccountId: component.account.chainAccount.accountId,
-                context: context
-            )
-        }.batchingCalls(with: coderFactory.metadata)
 
         let remainedComponents = Array(delegatedPath.components.dropFirst(1))
 
