@@ -14,10 +14,15 @@ final class ExtrinsicSubmissionDelayedCompleter {
 }
 
 private extension ExtrinsicSubmissionDelayedCompleter {
-    func switchToWalletIfNeeded(_ newWallet: MetaAccountModel) {
+    func switchToWalletIfNeeded(
+        _ newWallet: MetaAccountModel,
+        completion: @escaping () -> Void
+    ) {
         guard
             let currentWallet = selectedWalletSettings.value,
-            currentWallet.metaId != newWallet.metaId else {
+            currentWallet.metaId != newWallet.metaId
+        else {
+            completion()
             return
         }
 
@@ -28,6 +33,8 @@ private extension ExtrinsicSubmissionDelayedCompleter {
             if case .success = result {
                 self.eventCenter.notify(with: SelectedWalletSwitched())
             }
+
+            completion()
         }
     }
 }
@@ -40,21 +47,21 @@ extension ExtrinsicSubmissionDelayedCompleter: ExtrinsicSubmissionCompliting {
     ) -> Bool {
         guard
             let sender = params.sender,
-            let delayedCallWallet = sender.firstDelayedCallWallet(),
+            let delayedCallWallets = sender.firstDelayedCallWallets(),
             let controller = view?.controller else {
             return false
         }
 
-        MainTransitionHelper.transitToMainTabBarController(
-            selectingIndex: MainTabBarIndex.wallet,
-            closing: controller,
-            postProcessing: .postTransition { tabBar in
-                tabBar.presentDelayedOperationCreated()
-            },
-            animated: true
-        )
-
-        switchToWalletIfNeeded(delayedCallWallet)
+        switchToWalletIfNeeded(delayedCallWallets.delaying) {
+            MainTransitionHelper.transitToMainTabBarController(
+                selectingIndex: MainTabBarIndex.wallet,
+                closing: controller,
+                postProcessing: .postTransition { tabBar in
+                    tabBar.presentDelayedOperationCreated()
+                },
+                animated: true
+            )
+        }
 
         return true
     }
