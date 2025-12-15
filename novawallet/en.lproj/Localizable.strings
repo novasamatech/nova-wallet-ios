@@ -2021,3 +2021,5 @@
 "gift.reclaim.dialog.message" = "If you reclaim this gift, the shared link will be disabled, and tokens will be refunded to your wallet.
 Do you want to continue?";
 "gift.reclaim.success.status" = "You’ve successfully reclaimed your gift";
+"feature.unsupported.sheet.title.gift" = "Gifting is not supported for %@ wallets";
+"feature.unsupported.sheet.message.gift" = "To create or manage gifts, please switch to a different type of wallet.";

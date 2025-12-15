@@ -20,6 +20,12 @@ protocol FeatureSupportCheckerProtocol {
         for wallet: MetaAccountModel,
         completion: @escaping FeatureSupportCheckerClosure
     )
+
+    func checkGiftSupport(
+        for wallet: MetaAccountModel,
+        chains: [ChainModel],
+        completion: @escaping FeatureSupportCheckerClosure
+    )
 }
 
 extension FeatureSupportCheckerProtocol {
@@ -120,6 +126,45 @@ private extension FeatureSupportChecker {
         }
     }
 
+    func executeDelayCheck(
+        wallet: MetaAccountModel,
+        chains: [ChainModel],
+        completion: @escaping (Bool) -> Void
+    ) {
+        let wrappers = chains.map {
+            createDelayedCallWalletWrapper(
+                for: wallet,
+                chain: $0
+            )
+        }
+
+        let resultOperation = ClosureOperation {
+            try wrappers
+                .map { try $0.targetOperation.extractNoCancellableResultData() }
+                .allSatisfy { $0 }
+        }
+
+        wrappers.forEach { resultOperation.addDependency($0.targetOperation) }
+
+        let reusltWrapper = CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: wrappers.flatMap(\.allOperations)
+        )
+
+        execute(
+            wrapper: reusltWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            switch result {
+            case let .success(hasSupport):
+                completion(hasSupport)
+            case .failure:
+                completion(false)
+            }
+        }
+    }
+
     func checkSellByWalletTypeSupported(
         _ wallet: MetaAccountModel,
         chainAsset: ChainAsset
@@ -155,6 +200,20 @@ private extension FeatureSupportChecker {
             }
         case .watchOnly:
             .noSigning
+        }
+    }
+
+    func checkGiftByWalletTypeSupported(
+        _ wallet: MetaAccountModel,
+        chains _: [ChainModel]
+    ) -> FeatureSupportCheckResult {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .genericLedger, .ledger:
+            .commonResult(.available)
+        case .multisig, .proxied:
+            .delayedExecutionCheckRequired
+        case .watchOnly:
+            .commonResult(.noGiftSupport(wallet))
         }
     }
 }
@@ -222,6 +281,31 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
         let result = checkBuyByWalletTypeSupported(wallet, chainAsset: chainAsset)
 
         completion(result)
+    }
+
+    func checkGiftSupport(
+        for wallet: MetaAccountModel,
+        chains: [ChainModel],
+        completion: @escaping FeatureSupportCheckerClosure
+    ) {
+        let checkResult = checkGiftByWalletTypeSupported(
+            wallet,
+            chains: []
+        )
+
+        switch checkResult {
+        case let .commonResult(result):
+            completion(result)
+        case .delayedExecutionCheckRequired:
+            executeDelayCheck(
+                wallet: wallet,
+                chains: chains
+            ) { hasSupport in
+                let result: OperationCheckCommonResult = hasSupport ? .available : .noGiftSupport(wallet)
+
+                completion(result)
+            }
+        }
     }
 }
 
