@@ -1195,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "地址或w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "正在搜索名称";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "请等待搜索 %@ 完成";
-"wallet.connect.scan.message" = "扫描二维码";
+"common.scan.message" = "扫描二维码";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "新连接";
 "common.disconnect" = "断开";
@@ -1255,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "您智能手机上的 %@ 应用程序";
 "welcome.polkadot.vault.step1.highlighted" = "打开Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ 选择您的密钥集，然后选择您想要添加到Nova钱包的账户";
-"welcome.polkadot.vault.step2.highlighted" = "前往“Key Sets”标签页。";
-"welcome.polkadot.vault.step2.details" = "请注意，派生路径应为空";
-"welcome.polkadot.vault.step3" = "Polkadot Vault 将为您提供 QR 码扫描";
-"welcome.polkadot.vault.step3.highlighted" = "QR 码扫描";
 "staking.controller.deprecated.title" = "控制器账户正在被弃用";
 "staking.controller.deprecated.details" = "使用代理将Staking操作委托给另一个帐户";
 "staking.controller.deprecated.action" = "更新控制器到Stash";
@@ -1723,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "弃权时将把决心设置为 0.1x";
 "cloud.backup.password.confirm.title" = "确认备份密码";
 "cloud.backup.password.confirm.details" = "请输入您在上一个屏幕上创建的密码";
+"welcome.polkadot.vault.step.last.highlighted" = "QR 码扫描";
 "swipe.gov.empty.view.voted.text" = "您已为所有可用的公投投票";
 "swipe.gov.empty.view.button" = "确认您的投票";
 "gov.voting.list.title" = "投票列表";
@@ -2009,6 +2005,15 @@
 "common.total.fee" = "总费用";
 "gift.unsupported.token.alert.title" = "这个代币不支持礼品功能";
 "gift.unsupported.token.alert.message" = "目前不支持这个代币的赠送。请选择不同的代币，不同的网络，或稍后再试。";
+"welcome.polkadot.vault.step3.import.highlighted" = "导出私钥";
+"welcome.polkadot.vault.import.private.key" = "导入私钥";
+"welcome.polkadot.vault.pair.public.key" = "配对公钥";
+"welcome.polkadot.vault.step2.pair.highlighted" = "点击派生密钥";
+"common.invalid.qr.code" = "无效的二维码";
+"polkadot.vault.scanner.message" = "扫描QR码\n来自 %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault 将为您提供 %@";
+"welcome.polkadot.vault.step3.import" = "点击右上角的图标并选择 %@";
+"welcome.polkadot.vault.step2.pair" = "要添加到 Nova Wallet 的 %@";
 "gift.reclaim.success.status" = "您已成功领取您的礼物";
 "gift.loading.message" = "加载礼物...";
 "gift.created.date.format" = "创建时间：%@";

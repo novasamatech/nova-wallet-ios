@@ -1195,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Cím vagy w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "A név keresése folyamatban van";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Kérlek, várj amíg a(z) %@ keresése befejeződik";
-"wallet.connect.scan.message" = "QR-kód beolvasása";
+"common.scan.message" = "QR-kód beolvasása";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Új kapcsolat";
 "common.disconnect" = "Kapcsolat bontása";
@@ -1255,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ alkalmazást okostelefonján";
 "welcome.polkadot.vault.step1.highlighted" = "Nyisd meg a Polkadot Vault-ot";
-"welcome.polkadot.vault.step2" = "%@ Válaszd ki a \"Key set-et\", majd azt a fiókot, amit hozzá szeretnél adni Nova Wallet-hez";
-"welcome.polkadot.vault.step2.highlighted" = "Menj a \"Key Sets\" fülre.";
-"welcome.polkadot.vault.step2.details" = "Ügyelj arra, hogy a származtatási útvonalnak üresnek kell lennie";
-"welcome.polkadot.vault.step3" = "A Polkadot Vault-ban meg fog jelenni egy %@";
-"welcome.polkadot.vault.step3.highlighted" = "QR-kód a beolvasáshoz";
 "staking.controller.deprecated.title" = "A vezérlő fiókok hamarosan elavulnak";
 "staking.controller.deprecated.details" = "Proxy-k használata javasolt ahhoz, hogy stake-elési műveletek delegálhass egy másik fiókhoz";
 "staking.controller.deprecated.action" = "Vezérlő frissítése Stash-re";
@@ -1723,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "A megítélés 0.1x-re lesz állítva, ha tartózkodsz.";
 "cloud.backup.password.confirm.title" = "Erősítse meg a biztonsági mentés jelszavát";
 "cloud.backup.password.confirm.details" = "Kérjük, adja meg a korábban létrehozott jelszót az előző képernyőn";
+"welcome.polkadot.vault.step.last.highlighted" = "QR-kód a beolvasáshoz";
 "swipe.gov.empty.view.voted.text" = "Ön már az összes elérhető referendumra szavazott";
 "swipe.gov.empty.view.button" = "Erősítse meg szavazatait";
 "gov.voting.list.title" = "Szavazási lista";
@@ -2009,6 +2005,15 @@
 "common.total.fee" = "Teljes díj";
 "gift.unsupported.token.alert.title" = "Ez a token nem támogatott az ajándék funkció által";
 "gift.unsupported.token.alert.message" = "Jelenleg nem támogatott ez a token ajándékozása. Kérjük, válassz másik tokent, másik hálózatot, vagy próbálkozz később újra.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Privát kulcs exportálása";
+"welcome.polkadot.vault.import.private.key" = "Privát kulcs importálása";
+"welcome.polkadot.vault.pair.public.key" = "Párosítás nyilvános kulccsal";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Érints rá a <font>Származtatott kulcs</font> elemre";
+"common.invalid.qr.code" = "Érvénytelen QR-kód";
+"polkadot.vault.scanner.message" = "Olvasd be a QR-kódot a(z) %@";
+"welcome.polkadot.vault.step.last" = "A Polkadot Vault biztosítja számodra %@";
+"welcome.polkadot.vault.step3.import" = "Érintsd meg az ikont a jobb felső sarokban, és válaszd ki a(z) %@";
+"welcome.polkadot.vault.step2.pair" = "%@ amelyet hozzá szeretnél adni a Nova Wallethez";
 "gift.reclaim.success.status" = "Sikeresen visszakaptad az ajándékodat";
 "gift.loading.message" = "Ajándékok betöltése...";
 "gift.created.date.format" = "Létrehozva: %@";

@@ -53,15 +53,25 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             interactor.importAccountWithMnemonic(request: request, from: origin)
 
         case .seed:
-            let seed = sourceViewModel.inputHandler.value
-            let request = MetaAccountImportSeedRequest(
-                seed: seed,
-                username: username,
-                derivationPath: substrateDerivationPath,
-                cryptoType: selectedCryptoType
-            )
-
-            interactor.importAccountWithSeed(request: request)
+            if case let .keypair(publicKey, secretKey) = secretScan {
+                let request = MetaAccountImportKeypairRequest(
+                    secretKey: secretKey,
+                    publicKey: publicKey,
+                    username: username,
+                    derivationPath: substrateDerivationPath,
+                    cryptoType: selectedCryptoType
+                )
+                interactor.importAccountWithKeypair(request: request)
+            } else {
+                let seed = sourceViewModel.inputHandler.value
+                let request = MetaAccountImportSeedRequest(
+                    seed: seed,
+                    username: username,
+                    derivationPath: substrateDerivationPath,
+                    cryptoType: selectedCryptoType
+                )
+                interactor.importAccountWithSeed(request: request)
+            }
 
         case .keystore:
             let keystore = sourceViewModel.inputHandler.value

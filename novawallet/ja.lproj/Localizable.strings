@@ -1195,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "アドレスまたはw3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "名前を検索中";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "検索が完了するまでお待ちください %@";
-"wallet.connect.scan.message" = "QRコードをスキャンする";
+"common.scan.message" = "QRコードをスキャンする";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "新しい接続";
 "common.disconnect" = "切断する";
@@ -1255,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "スマートフォンの%@アプリケーション";
 "welcome.polkadot.vault.step1.highlighted" = "Polkadot Vault を開く";
-"welcome.polkadot.vault.step2" = "Nova Walletに追加したい%@のキーセットを選択";
-"welcome.polkadot.vault.step2.highlighted" = "Key Sets タブに行く。";
-"welcome.polkadot.vault.step2.details" = "派生パスが空であることに注意してください";
-"welcome.polkadot.vault.step3" = "Polkadot Vaultはあなたに%@を提供します";
-"welcome.polkadot.vault.step3.highlighted" = "スキャン用のQRコード";
 "staking.controller.deprecated.title" = "コントローラーアカウントは廃止されます";
 "staking.controller.deprecated.details" = "プロキシを使用して別のアカウントにStaking操作を委任";
 "staking.controller.deprecated.action" = "コントローラーをStashに更新";
@@ -1723,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "棄権時には信念が0.1xに設定されます";
 "cloud.backup.password.confirm.title" = "バックアップパスワードを確認";
 "cloud.backup.password.confirm.details" = "前の画面で作成したパスワードを入力してください";
+"welcome.polkadot.vault.step.last.highlighted" = "スキャン用のQRコード";
 "swipe.gov.empty.view.voted.text" = "利用可能なレファレンダに既に投票しています";
 "swipe.gov.empty.view.button" = "投票を確認する";
 "gov.voting.list.title" = "投票リスト";
@@ -2009,6 +2005,15 @@
 "common.total.fee" = "合計手数料";
 "gift.unsupported.token.alert.title" = "このトークンはギフト機能でサポートされていません";
 "gift.unsupported.token.alert.message" = "このトークンへのギフトは現在サポートされていません。 別のトークン、別のネットワークを選択するか、後で再度確認してください。";
+"welcome.polkadot.vault.step3.import.highlighted" = "秘密鍵をエクスポート";
+"welcome.polkadot.vault.import.private.key" = "秘密鍵をインポート";
+"welcome.polkadot.vault.pair.public.key" = "公開鍵をペアリング";
+"welcome.polkadot.vault.step2.pair.highlighted" = "派生キーをタップ";
+"common.invalid.qr.code" = "無効なQRコード";
+"polkadot.vault.scanner.message" = "QRコードをスキャン\n%";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに % を提供します";
+"welcome.polkadot.vault.step3.import" = "右上のアイコンをタップして %@ を選択";
+"welcome.polkadot.vault.step2.pair" = "Nova Wallet に追加したい %@";
 "gift.reclaim.success.status" = "ギフトを正常に再取得しました";
 "gift.loading.message" = "ギフトを読み込み中...";
 "gift.created.date.format" = "作成日: %@";

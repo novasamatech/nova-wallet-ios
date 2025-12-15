@@ -15,6 +15,14 @@ struct MetaAccountImportSeedRequest {
     let cryptoType: MultiassetCryptoType
 }
 
+struct MetaAccountImportKeypairRequest {
+    let secretKey: Data
+    let publicKey: Data
+    let username: String
+    let derivationPath: String
+    let cryptoType: MultiassetCryptoType
+}
+
 struct MetaAccountImportKeystoreRequest {
     let keystore: String
     let password: String
@@ -30,6 +38,13 @@ struct ChainAccountImportMnemonicRequest {
 
 struct ChainAccountImportSeedRequest {
     let seed: String
+    let derivationPath: String
+    let cryptoType: MultiassetCryptoType
+}
+
+struct ChainAccountImportKeypairRequest {
+    let secretKey: Data
+    let publicKey: Data
     let derivationPath: String
     let cryptoType: MultiassetCryptoType
 }
