@@ -232,9 +232,9 @@ GEM
       xcpretty (~> 0.2, >= 0.0.7)
 
 PLATFORMS
-  arm64-darwin
-  ruby
-  x86_64-linux
+  arm64-darwin-22
+  arm64-darwin-23
+  x86_64-darwin-20
 
 DEPENDENCIES
   fastlane (>= 2.229.1)
