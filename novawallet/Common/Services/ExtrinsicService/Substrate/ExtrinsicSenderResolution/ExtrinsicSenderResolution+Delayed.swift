@@ -18,19 +18,10 @@ extension ExtrinsicSenderResolution {
 extension ExtrinsicSenderResolution.ResolvedDelegate {
     func firstDelayedCallWallet() -> MetaAccountModel? {
         let delayedWalletIds: [MetaAccountModel.Id] = paths.flatMap { path in
-            let components = path.value.components
+            path.value.components.compactMap { component in
+                guard component.delegationValue.delaysCallExecution() else { return nil }
 
-            return components.enumerated().compactMap { indexedComponent in
-                let index = indexedComponent.offset
-                let component = indexedComponent.element
-
-                return if component.delegationValue.delaysCallExecution() {
-                    index == 0
-                        ? delegatedAccount.metaId
-                        : components[index - 1].account.metaId
-                } else {
-                    nil
-                }
+                return component.delegationValue.metaId
             }
         }
 
