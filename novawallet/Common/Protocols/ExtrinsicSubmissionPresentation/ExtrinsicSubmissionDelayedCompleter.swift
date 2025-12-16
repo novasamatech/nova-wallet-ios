@@ -47,12 +47,12 @@ extension ExtrinsicSubmissionDelayedCompleter: ExtrinsicSubmissionCompliting {
     ) -> Bool {
         guard
             let sender = params.sender,
-            let delayedCallWallets = sender.firstDelayedCallWallets(),
+            let delayedCallWallet = sender.firstDelayedCallWallet(),
             let controller = view?.controller else {
             return false
         }
 
-        switchToWalletIfNeeded(delayedCallWallets.delaying) {
+        switchToWalletIfNeeded(delayedCallWallet) {
             MainTransitionHelper.transitToMainTabBarController(
                 selectingIndex: MainTabBarIndex.wallet,
                 closing: controller,

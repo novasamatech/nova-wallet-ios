@@ -1,28 +1,23 @@
 import Foundation
 
-struct DelayedCallWallets {
-    let delayed: MetaAccountModel
-    let delaying: MetaAccountModel
-}
-
 extension ExtrinsicSenderResolution {
-    func firstDelayedCallWallets() -> DelayedCallWallets? {
+    func firstDelayedCallWallet() -> MetaAccountModel? {
         switch self {
         case .current:
             nil
         case let .delegate(resolvedDelegate):
-            resolvedDelegate.firstDelayedCallWallets()
+            resolvedDelegate.firstDelayedCallWallet()
         }
     }
 
     func delayedCallExecution() -> Bool {
-        firstDelayedCallWallets() != nil
+        firstDelayedCallWallet() != nil
     }
 }
 
 extension ExtrinsicSenderResolution.ResolvedDelegate {
-    func firstDelayedCallWallets() -> DelayedCallWallets? {
-        let delayedWalletIds: [(MetaAccountModel.Id, MetaAccountModel.Id?)] = paths.flatMap { path in
+    func firstDelayedCallWallet() -> MetaAccountModel? {
+        let delayedWalletIds: [MetaAccountModel.Id] = paths.flatMap { path in
             let components = path.value.components
 
             return components.enumerated().compactMap { indexedComponent in
@@ -31,25 +26,18 @@ extension ExtrinsicSenderResolution.ResolvedDelegate {
 
                 return if component.delegationValue.delaysCallExecution() {
                     index == 0
-                        ? (delegatedAccount.metaId, delegateAccount?.metaId)
-                        : (components[index - 1].account.metaId, component.account.metaId)
+                        ? delegatedAccount.metaId
+                        : components[index - 1].account.metaId
                 } else {
                     nil
                 }
             }
         }
 
-        guard
-            let delayedWalletsPair = delayedWalletIds.first,
-            let delayedWallet = allWallets.first(where: { $0.metaId == delayedWalletsPair.0 }),
-            let delayingWallet = allWallets.first(where: { $0.metaId == delayedWalletsPair.1 })
-        else {
+        guard let delayedWalletId = delayedWalletIds.first else {
             return nil
         }
 
-        return DelayedCallWallets(
-            delayed: delayedWallet,
-            delaying: delayingWallet
-        )
+        return allWallets.first { $0.metaId == delayedWalletId }
     }
 }
