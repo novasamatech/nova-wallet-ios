@@ -28,6 +28,10 @@ final class GiftListInteractor {
         self.selectedMetaId = selectedMetaId
         self.operationQueue = operationQueue
     }
+
+    deinit {
+        giftSyncService.remove(observer: self)
+    }
 }
 
 // MARK: - Private
@@ -40,6 +44,24 @@ private extension GiftListInteractor {
                     acc[$0.chainAssetId] = $0
                 }
             } ?? [:]
+    }
+
+    func subscribeGiftSync() {
+        giftSyncService.add(
+            observer: self,
+            sendStateOnSubscription: false,
+            queue: .main
+        ) { [weak self] _, accountIds in
+            guard let accountIds else { return }
+
+            self?.presenter?.didReceive(syncingAccountIds: accountIds)
+        }
+
+        giftSyncService.setup()
+    }
+
+    func subscribeLocalGifts() {
+        giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
     }
 }
 
@@ -56,24 +78,12 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
     }
 }
 
-// MARK: - GiftsSyncServiceDelegate
-
-extension GiftListInteractor: GiftsSyncServiceDelegate {
-    func giftsSyncService(
-        _: GiftsSyncServiceProtocol,
-        didUpdateSyncingAccountIds accountIds: Set<AccountId>
-    ) {
-        presenter?.didReceive(syncingAccountIds: accountIds)
-    }
-}
-
 // MARK: - GiftListInteractorInputProtocol
 
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
         setupChainAssets()
-        giftSyncService.delegate = self
-        giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
-        giftSyncService.start()
+        subscribeGiftSync()
+        subscribeLocalGifts()
     }
 }

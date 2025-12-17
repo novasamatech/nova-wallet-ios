@@ -32,13 +32,19 @@ struct GiftListViewFactory {
             logger: logger
         )
 
-        let giftSyncService = GiftsSyncService(
+        let syncer = GiftsSyncer(
             chainRegistry: chainRegistry,
-            giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            giftRepository: AnyDataProviderRepository(giftRepository),
             operationQueue: operationQueue,
             workingQueue: .main,
+            logger: logger
+        )
+
+        let giftSyncService = GiftsSyncService(
+            giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
+            giftRepository: AnyDataProviderRepository(giftRepository),
+            syncer: syncer,
+            operationQueue: operationQueue,
             logger: logger
         )
 

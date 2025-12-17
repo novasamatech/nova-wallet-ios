@@ -16,11 +16,11 @@ protocol GiftsSyncerDelegate: AnyObject {
 
 protocol GiftsSyncerProtocol: AnyObject {
     var delegate: GiftsSyncerDelegate? { get set }
-    
+
     func startSyncing(for gift: GiftModel)
-    
+
     func stopSyncing(for giftAccountId: AccountId)
-    
+
     func stopSyncing()
 }
 
@@ -127,7 +127,7 @@ private extension GiftsSyncer {
             for: giftAccountId
         )
     }
-    
+
     // MARK: - Block counting
 
     func startBlockCountingIfNeeded(
@@ -241,7 +241,7 @@ extension GiftsSyncer: GiftsSyncerProtocol {
         giftChainMapping.removeValue(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
     }
-    
+
     func stopSyncing() {
         remoteBalancesSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
         remoteBalancesSubscriptions.removeAllValues()

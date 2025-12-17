@@ -1,27 +1,26 @@
 import Foundation
 import Operation_iOS
 
-protocol GiftsSyncServiceDelegate: AnyObject {
-    func giftsSyncService(
-        _ service: GiftsSyncServiceProtocol,
-        didUpdateSyncingAccountIds accountIds: Set<AccountId>
-    )
-}
-
 protocol GiftsSyncServiceProtocol: AnyObject {
-    var delegate: GiftsSyncServiceDelegate? { get set }
+    func add(
+        observer: AnyObject,
+        sendStateOnSubscription: Bool,
+        queue: DispatchQueue?,
+        closure: @escaping Observable<GiftsSyncAccounts?>.StateChangeClosure
+    )
 
-    func start()
+    func remove(observer: AnyObject)
+
+    func setup()
 }
 
-final class GiftsSyncService {
-    weak var delegate: GiftsSyncServiceDelegate?
+typealias GiftsSyncAccounts = Set<AccountId>
 
+final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
-    let syncer: GiftsSyncerProtocol
+    let syncer: GiftsSyncer
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
 
@@ -30,7 +29,7 @@ final class GiftsSyncService {
     init(
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        syncer: GiftsSyncerProtocol,
+        syncer: GiftsSyncer,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -38,7 +37,8 @@ final class GiftsSyncService {
         self.giftRepository = giftRepository
         self.syncer = syncer
         self.operationQueue = operationQueue
-        self.logger = logger
+
+        super.init(logger: logger)
     }
 
     deinit {
@@ -49,11 +49,6 @@ final class GiftsSyncService {
 // MARK: - Private
 
 private extension GiftsSyncService {
-    func setup() {
-        syncer.delegate = self
-        giftsLocalSubscription = subscribeAllGifts()
-    }
-
     func clearSubscriptions() {
         syncer.stopSyncing()
         giftsLocalSubscription = nil
@@ -88,7 +83,7 @@ private extension GiftsSyncService {
 
 extension GiftsSyncService: GiftsSyncerDelegate {
     func giftsSyncer(
-        _ syncer: GiftsSyncer,
+        _: GiftsSyncer,
         didReceive status: GiftModel.Status,
         for giftAccountId: AccountId
     ) {
@@ -101,13 +96,10 @@ extension GiftsSyncService: GiftsSyncerDelegate {
     }
 
     func giftsSyncer(
-        _ syncer: GiftsSyncer,
+        _: GiftsSyncer,
         didUpdateSyncingAccountIds accountIds: Set<AccountId>
     ) {
-        delegate?.giftsSyncService(
-            self,
-            didUpdateSyncingAccountIds: accountIds
-        )
+        stateObservable.state = accountIds
     }
 }
 
@@ -135,7 +127,13 @@ extension GiftsSyncService: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionH
 // MARK: - GiftsSyncServiceProtocol
 
 extension GiftsSyncService: GiftsSyncServiceProtocol {
-    func start() {
-        setup()
+    func setup() {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        guard giftsLocalSubscription == nil else { return }
+
+        syncer.delegate = self
+        giftsLocalSubscription = subscribeAllGifts()
     }
 }
