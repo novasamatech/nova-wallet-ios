@@ -111,7 +111,6 @@ private extension GiftsStatusTracker {
 
         cancelBlockCounting(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
-        existingBalances.removeValue(for: giftAccountId)
 
         delegate?.giftsTracker(
             self,
@@ -233,6 +232,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
         blockNumberProviders.removeValue(for: giftAccountId)
         nilBalanceStartBlocks.removeValue(for: giftAccountId)
         giftChainMapping.removeValue(for: giftAccountId)
+        existingBalances.removeValue(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
     }
 
@@ -243,6 +243,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
         nilBalanceStartBlocks.removeAllValues()
         giftChainMapping.removeAllValues()
         currentBlockNumbers.removeAllValues()
+        existingBalances.removeAllValues()
         clearSyncingAccountIds()
     }
 }

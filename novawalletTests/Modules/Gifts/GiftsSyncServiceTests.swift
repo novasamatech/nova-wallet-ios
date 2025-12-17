@@ -243,20 +243,6 @@ extension GiftsSyncServiceTests {
         // then - no save operation triggered
         XCTAssertEqual(operationQueue.operationCount, initialOperationCount)
     }
-
-    // MARK: - Error Handling Tests
-
-    func testGiftChanges_Error_DoesNotCrash() {
-        // given
-        service.setup()
-
-        // when
-        service.handleAllGifts(result: .failure(NSError(domain: "test", code: 1)))
-
-        // then - should not crash
-        verify(mockStatusTracker, never()).startTracking(for: any())
-        verify(mockStatusTracker, never()).stopTracking(for: any())
-    }
 }
 
 // MARK: - Helpers

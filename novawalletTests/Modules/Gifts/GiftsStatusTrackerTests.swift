@@ -318,6 +318,41 @@ extension GiftsStatusTrackerTests {
         verify(mockGeneralLocalSubscriptionFactory).getBlockNumberProvider(for: any())
     }
 
+    func testNilBalance_DoesNotStartBlockCounting_OnExistedBalance() {
+        // given
+        let gift = createTestGift()
+        let giftAccountId = gift.giftAccountId
+
+        var capturedCallback: WalletRemoteSubscriptionClosure?
+        let mockSubscription = setupMockSubscription { callback in
+            capturedCallback = callback
+        }
+
+        stub(mockWalletSubscriptionFactory) { stub in
+            when(stub.createSubscription()).thenReturn(mockSubscription)
+        }
+
+        stub(mockDelegate) { stub in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
+        }
+
+        statusTracker.startTracking(for: gift)
+
+        // when - existing balance receive
+        let balance = createAssetBalance(
+            transferable: gift.amount + 1,
+            chainAssetId: gift.chainAssetId,
+            accountId: giftAccountId
+        )
+        capturedCallback?(.success(.init(balance: balance, blockHash: nil)))
+        // Simulate receive nil balance like a gift was claimed
+        capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
+
+        // then - should not have called getBlockNumberProvider
+        verify(mockGeneralLocalSubscriptionFactory, never()).getBlockNumberProvider(for: any())
+    }
+
     func testBlockCounting_EmitsClaimedStatus_After10Blocks() {
         // given
         let gift = createTestGift()
