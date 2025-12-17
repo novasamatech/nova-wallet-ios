@@ -1,38 +1,43 @@
 import Foundation
 import Operation_iOS
 
-protocol GiftsSyncServiceProtocol {
+protocol GiftsSyncServiceDelegate: AnyObject {
+    func giftsSyncService(
+        _ service: GiftsSyncServiceProtocol,
+        didUpdateSyncingAccountIds accountIds: Set<AccountId>
+    )
+}
+
+protocol GiftsSyncServiceProtocol: AnyObject {
+    var delegate: GiftsSyncServiceDelegate? { get set }
+
     func start()
 }
 
 final class GiftsSyncService {
-    let chainRegistry: ChainRegistryProtocol
+    weak var delegate: GiftsSyncServiceDelegate?
+
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
+    let syncer: GiftsSyncerProtocol
     let operationQueue: OperationQueue
-    let workingQueue: DispatchQueue
     let logger: LoggerProtocol
 
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
-    var remoteBalancesSubscriptions: [AccountId: WalletRemoteSubscriptionProtocol] = [:]
 
-    var gifts: [GiftModel.Id: GiftModel] = [:]
-
-    let mutex = NSLock()
+    private let gifts = InMemoryCache<GiftModel.Id, GiftModel>()
 
     init(
-        chainRegistry: ChainRegistryProtocol,
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftRepository: AnyDataProviderRepository<GiftModel>,
+        syncer: GiftsSyncerProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
-        self.chainRegistry = chainRegistry
         self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
         self.giftRepository = giftRepository
+        self.syncer = syncer
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
         self.logger = logger
     }
 
@@ -45,96 +50,33 @@ final class GiftsSyncService {
 
 private extension GiftsSyncService {
     func setup() {
+        syncer.delegate = self
         giftsLocalSubscription = subscribeAllGifts()
     }
 
     func clearSubscriptions() {
-        remoteBalancesSubscriptions.values.forEach { $0.unsubscribe() }
-        remoteBalancesSubscriptions = [:]
+        syncer.stopSyncing()
         giftsLocalSubscription = nil
+        gifts.removeAllValues()
     }
 
     func updateSubscriptions(for changes: [DataProviderChange<GiftModel>]) {
         changes
             .compactMap(\.item)
             .filter { $0.status == .pending }
-            .forEach { subscribeBalance(for: $0) }
+            .forEach { syncer.startSyncing(for: $0) }
 
         changes
             .compactMap(\.item)
             .filter { $0.status == .claimed || $0.status == .reclaimed }
-            .forEach { unsubscribeBalance(for: $0) }
+            .forEach { syncer.stopSyncing(for: $0.giftAccountId) }
     }
 
-    func unsubscribeBalance(for gift: GiftModel) {
-        remoteBalancesSubscriptions[gift.giftAccountId]?.unsubscribe()
-        remoteBalancesSubscriptions[gift.giftAccountId] = nil
-    }
-
-    func subscribeBalance(for gift: GiftModel) {
-        guard
-            let chain = chainRegistry.getChain(for: gift.chainAssetId.chainId),
-            let chainAsset = chain.chainAsset(for: gift.chainAssetId.assetId)
-        else { return }
-
-        addRemoteBalanceSubscription(
-            for: gift.giftAccountId,
-            chainAsset: chainAsset
-        )
-    }
-
-    func addRemoteBalanceSubscription(
-        for giftAccountId: AccountId,
-        chainAsset: ChainAsset
-    ) {
-        let subscription = WalletRemoteSubscription(
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-
-        remoteBalancesSubscriptions[giftAccountId] = subscription
-
-        subscription.subscribeBalance(
-            for: giftAccountId,
-            chainAsset: chainAsset,
-            callbackQueue: workingQueue,
-            callbackClosure: { [weak self] result in
-                switch result {
-                case let .success(update):
-                    self?.mutex.lock()
-                    defer { self?.mutex.unlock() }
-
-                    self?.updateStatus(
-                        for: giftAccountId,
-                        balance: update.balance
-                    )
-                case let .failure(error):
-                    self?.logger.error("Failed remote balance subscription: \(error)")
-                }
-            }
-        )
-    }
-
-    func updateStatus(
-        for giftAccountId: AccountId,
-        balance: AssetBalance?
-    ) {
-        guard
-            let gift = gifts[giftAccountId.toHex()],
-            gift.status != .reclaimed
-        else { return }
-
-        let status: GiftModel.Status = if let balance, balance.transferable > gift.amount {
-            .pending
-        } else {
-            .claimed
-        }
-
-        guard gift.status != status else { return }
+    func updateGiftStatusIfNeeded(gift: GiftModel, newStatus: GiftModel.Status) {
+        guard gift.status != newStatus else { return }
 
         let saveOperation = giftRepository.saveOperation(
-            { [gift.updating(status: status)] },
+            { [gift.updating(status: newStatus)] },
             { [] }
         )
 
@@ -142,16 +84,47 @@ private extension GiftsSyncService {
     }
 }
 
+// MARK: - GiftsSyncerDelegate
+
+extension GiftsSyncService: GiftsSyncerDelegate {
+    func giftsSyncer(
+        _ syncer: GiftsSyncer,
+        didReceive status: GiftModel.Status,
+        for giftAccountId: AccountId
+    ) {
+        guard
+            let gift = gifts.fetchValue(for: giftAccountId.toHex()),
+            gift.status != .reclaimed
+        else { return }
+
+        updateGiftStatusIfNeeded(gift: gift, newStatus: status)
+    }
+
+    func giftsSyncer(
+        _ syncer: GiftsSyncer,
+        didUpdateSyncingAccountIds accountIds: Set<AccountId>
+    ) {
+        delegate?.giftsSyncService(
+            self,
+            didUpdateSyncingAccountIds: accountIds
+        )
+    }
+}
+
 // MARK: - GiftsLocalStorageSubscriber
 
 extension GiftsSyncService: GiftsLocalStorageSubscriber, GiftsLocalSubscriptionHandler {
     func handleAllGifts(result: Result<[DataProviderChange<GiftModel>], any Error>) {
-        mutex.lock()
-        defer { mutex.unlock() }
-
         switch result {
         case let .success(changes):
-            gifts = changes.mergeToDict(gifts)
+            changes.forEach { change in
+                switch change {
+                case let .insert(gift), let .update(gift):
+                    gifts.store(value: gift, for: gift.identifier)
+                case let .delete(deletedIdentifier):
+                    gifts.removeValue(for: deletedIdentifier)
+                }
+            }
             updateSubscriptions(for: changes)
         case let .failure(error):
             logger.error("Failed on gifts subscription: \(error)")

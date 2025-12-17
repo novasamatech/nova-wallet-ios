@@ -56,11 +56,23 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
     }
 }
 
+// MARK: - GiftsSyncServiceDelegate
+
+extension GiftListInteractor: GiftsSyncServiceDelegate {
+    func giftsSyncService(
+        _: GiftsSyncServiceProtocol,
+        didUpdateSyncingAccountIds accountIds: Set<AccountId>
+    ) {
+        presenter?.didReceive(syncingAccountIds: accountIds)
+    }
+}
+
 // MARK: - GiftListInteractorInputProtocol
 
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
         setupChainAssets()
+        giftSyncService.delegate = self
         giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
         giftSyncService.start()
     }

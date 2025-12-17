@@ -23,6 +23,7 @@ protocol GiftListInteractorOutputProtocol: AnyObject {
         _ chainAssets: [ChainAssetId: ChainAsset]
     )
     func didReceive(_ error: Error)
+    func didReceive(syncingAccountIds: Set<AccountId>)
 }
 
 protocol GiftListWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, CommonRetryable {

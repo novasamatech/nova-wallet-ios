@@ -26,7 +26,7 @@ final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftVie
         case .pending:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorGiftBlockBackground()!
             isUserInteractionEnabled = true
-        case .claimed, .reclaimed:
+        case .syncing, .claimed, .reclaimed:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
             isUserInteractionEnabled = false
         }
@@ -40,10 +40,10 @@ final class GiftListGiftView: GenericPairValueView<
         AssetIconView,
         GenericPairValueView<
             GenericPairValueView<
-                IconDetailsView,
+                IconDetailsGenericView<ShimmerLabel>,
                 FlexibleSpaceView
             >,
-            UILabel
+            ShimmerLabel
         >
     >,
     GenericPairValueView<
@@ -59,19 +59,19 @@ final class GiftListGiftView: GenericPairValueView<
         sView.sView
     }
 
-    var amountView: IconDetailsView {
+    var amountView: IconDetailsGenericView<ShimmerLabel> {
         fView.sView.fView.fView
     }
 
-    var amountLabel: UILabel {
-        amountView.detailsLabel
+    var amountLabel: ShimmerLabel {
+        amountView.detailsView
     }
 
     var amountAccessoryImageView: UIImageView {
         amountView.imageView
     }
 
-    var creationDateLabel: UILabel {
+    var creationDateLabel: ShimmerLabel {
         fView.sView.sView
     }
 
@@ -123,12 +123,24 @@ private extension GiftListGiftView {
 
         assetIconView.contentMode = .scaleAspectFit
     }
+
+    func stopShimmering() {
+        amountLabel.stopShimmering()
+        creationDateLabel.stopShimmering()
+    }
+
+    func startShimmering() {
+        amountLabel.startShimmering()
+        creationDateLabel.startShimmering()
+    }
 }
 
 // MARK: - Internal
 
 extension GiftListGiftView {
     func bind(viewModel: GiftListGiftViewModel) {
+        stopShimmering()
+
         viewModel.giftImageViewModel.loadImage(
             on: giftImageView,
             targetSize: CGSize(
@@ -146,6 +158,11 @@ extension GiftListGiftView {
             amountLabel.apply(style: .semiboldBodyPrimary)
             amountAccessoryImageView.image = R.image.iconSmallArrow()
             assetIconView.alpha = Constants.assetIconAlphaActive
+        case .syncing:
+            amountLabel.apply(style: .semiboldBodySecondary)
+            amountAccessoryImageView.image = nil
+            assetIconView.alpha = Constants.assetIconAlphaInactive
+            startShimmering()
         case .claimed, .reclaimed:
             amountLabel.apply(style: .semiboldBodySecondary)
             amountAccessoryImageView.image = nil
