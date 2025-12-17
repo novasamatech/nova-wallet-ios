@@ -24,10 +24,10 @@ final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftVie
     func bind(viewModel: GiftListGiftViewModel) {
         switch viewModel.status {
         case .pending:
-            view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
+            view.backgroundBlurView.contentView?.fillColor = R.color.colorGiftBlockBackground()!
             isUserInteractionEnabled = true
         case .claimed, .reclaimed:
-            view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackgroundOpaque()!
+            view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
             isUserInteractionEnabled = false
         }
 
