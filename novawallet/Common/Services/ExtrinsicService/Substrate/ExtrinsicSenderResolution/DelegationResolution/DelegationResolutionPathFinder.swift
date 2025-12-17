@@ -11,6 +11,8 @@ protocol AccountDelegationPathValue {
 
     var delegationType: DelegationResolution.ItemType { get }
 
+    var metaId: MetaAccountModel.Id { get }
+
     func delaysCallExecution() -> Bool
 }
 
@@ -203,6 +205,7 @@ extension DelegationResolution {
 
 extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
+        let metaId: MetaAccountModel.Id
         let proxyType: Proxy.ProxyType
 
         var delegationType: DelegationResolution.ItemType {
@@ -230,6 +233,7 @@ extension DelegationResolution.PathFinder {
     }
 
     struct MultisigDelegationValue: AccountDelegationPathValue {
+        let metaId: MetaAccountModel.Id
         let threshold: UInt16
         let signatories: [AccountId]
 
