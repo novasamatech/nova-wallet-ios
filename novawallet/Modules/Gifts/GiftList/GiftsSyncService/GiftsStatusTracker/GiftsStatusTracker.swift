@@ -26,7 +26,6 @@ final class GiftsStatusTracker {
     private let nilBalanceStartBlocks = InMemoryCache<AccountId, BlockNumber>()
     private let giftChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
     private let currentBlockNumbers = InMemoryCache<ChainModel.Id, BlockNumber>()
-
     private let existingBalances = InMemoryCache<AccountId, AssetBalance>()
 
     private let blocksToWait: BlockNumber = 10
