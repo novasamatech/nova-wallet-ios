@@ -1,18 +1,18 @@
 import Foundation
 import Operation_iOS
 
-protocol GiftsSyncerProtocol: AnyObject {
-    var delegate: GiftsSyncerDelegate? { get set }
+protocol GiftsStatusTrackerProtocol: AnyObject {
+    var delegate: GiftsStatusTrackerDelegate? { get set }
 
-    func startSyncing(for gift: GiftModel)
+    func startTracking(for gift: GiftModel)
 
-    func stopSyncing(for giftAccountId: AccountId)
+    func stopTracking(for giftAccountId: AccountId)
 
-    func stopSyncing()
+    func stopTracking()
 }
 
-final class GiftsSyncer {
-    weak var delegate: GiftsSyncerDelegate?
+final class GiftsStatusTracker {
+    weak var delegate: GiftsStatusTrackerDelegate?
 
     let chainRegistry: ChainRegistryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -26,6 +26,8 @@ final class GiftsSyncer {
     private let nilBalanceStartBlocks = InMemoryCache<AccountId, BlockNumber>()
     private let giftChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
     private let currentBlockNumbers = InMemoryCache<ChainModel.Id, BlockNumber>()
+
+    private let existingBalances = InMemoryCache<AccountId, AssetBalance>()
 
     private let blocksToWait: BlockNumber = 10
 
@@ -44,33 +46,33 @@ final class GiftsSyncer {
     }
 
     deinit {
-        stopSyncing()
+        stopTracking()
     }
 }
 
 // MARK: - Private
 
-private extension GiftsSyncer {
+private extension GiftsStatusTracker {
     func addRemoteBalanceSubscription(
-        for giftAccountId: AccountId,
+        for gift: GiftModel,
         chainAsset: ChainAsset
     ) {
         let subscription = walletSubscriptionFactory.createSubscription()
 
         remoteBalancesSubscriptions.store(
             value: subscription,
-            for: giftAccountId
+            for: gift.giftAccountId
         )
 
         subscription.subscribeBalance(
-            for: giftAccountId,
+            for: gift.giftAccountId,
             chainAsset: chainAsset,
             callbackQueue: workingQueue,
             callbackClosure: { [weak self] result in
                 switch result {
                 case let .success(update):
                     self?.handleBalanceUpdate(
-                        for: giftAccountId,
+                        for: gift,
                         balance: update.balance,
                         chainId: chainAsset.chain.chainId
                     )
@@ -82,11 +84,23 @@ private extension GiftsSyncer {
     }
 
     func handleBalanceUpdate(
-        for giftAccountId: AccountId,
+        for gift: GiftModel,
         balance: AssetBalance?,
         chainId: ChainModel.Id
     ) {
-        guard let balance else {
+        let giftAccountId = gift.giftAccountId
+
+        var status: GiftModel.Status?
+
+        if let balance, balance.transferable > gift.amount {
+            existingBalances.store(value: balance, for: giftAccountId)
+            status = .pending
+        } else if balance != nil || existingBalances.fetchValue(for: giftAccountId) != nil {
+            // don't wait for previously tracked gifts since we know for sure that they existed
+            status = .claimed
+        }
+
+        guard let status else {
             startBlockCountingIfNeeded(
                 for: giftAccountId,
                 chainId: chainId
@@ -95,16 +109,11 @@ private extension GiftsSyncer {
             return
         }
 
-        let status: GiftModel.Status = if balance.transferable > 0 {
-            .pending
-        } else {
-            .claimed
-        }
-
         cancelBlockCounting(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
+        existingBalances.removeValue(for: giftAccountId)
 
-        delegate?.giftsSyncer(
+        delegate?.giftsTracker(
             self,
             didReceive: status,
             for: giftAccountId
@@ -152,8 +161,9 @@ private extension GiftsSyncer {
 
         cancelBlockCounting(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
+        existingBalances.removeValue(for: giftAccountId)
 
-        delegate?.giftsSyncer(
+        delegate?.giftsTracker(
             self,
             didReceive: .claimed,
             for: giftAccountId
@@ -186,17 +196,17 @@ private extension GiftsSyncer {
     }
 
     func notifyDelegateAboutSyncingAccountIds() {
-        delegate?.giftsSyncer(
+        delegate?.giftsTracker(
             self,
-            didUpdateSyncingAccountIds: Set(syncingAccountIdsCache.fetchAllKeys())
+            didUpdateTrackingAccountIds: Set(syncingAccountIdsCache.fetchAllKeys())
         )
     }
 }
 
-// MARK: - GiftsSyncerProtocol
+// MARK: - GiftsStatusTrackerProtocol
 
-extension GiftsSyncer: GiftsSyncerProtocol {
-    func startSyncing(for gift: GiftModel) {
+extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
+    func startTracking(for gift: GiftModel) {
         guard
             let chain = chainRegistry.getChain(for: gift.chainAssetId.chainId),
             let chainAsset = chain.chainAsset(for: gift.chainAssetId.assetId)
@@ -212,12 +222,12 @@ extension GiftsSyncer: GiftsSyncerProtocol {
         )
 
         addRemoteBalanceSubscription(
-            for: giftAccountId,
+            for: gift,
             chainAsset: chainAsset
         )
     }
 
-    func stopSyncing(for giftAccountId: AccountId) {
+    func stopTracking(for giftAccountId: AccountId) {
         remoteBalancesSubscriptions.fetchValue(for: giftAccountId)?.unsubscribe()
         remoteBalancesSubscriptions.removeValue(for: giftAccountId)
         blockNumberProviders.removeValue(for: giftAccountId)
@@ -226,7 +236,7 @@ extension GiftsSyncer: GiftsSyncerProtocol {
         removeSyncingAccountId(giftAccountId)
     }
 
-    func stopSyncing() {
+    func stopTracking() {
         remoteBalancesSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
         remoteBalancesSubscriptions.removeAllValues()
         blockNumberProviders.removeAllValues()
@@ -239,9 +249,7 @@ extension GiftsSyncer: GiftsSyncerProtocol {
 
 // MARK: - GeneralLocalStorageSubscriber
 
-extension GiftsSyncer: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    var generalLocalSubscriptionHandler: GeneralLocalStorageHandler { self }
-
+extension GiftsStatusTracker: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(
         result: Result<BlockNumber?, Error>,
         chainId: ChainModel.Id

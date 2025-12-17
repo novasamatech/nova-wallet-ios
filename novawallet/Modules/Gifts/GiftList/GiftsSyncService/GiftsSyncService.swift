@@ -19,7 +19,7 @@ typealias GiftsSyncAccounts = Set<AccountId>
 final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
-    let syncer: GiftsSyncerProtocol
+    let statusTracker: GiftsStatusTrackerProtocol
     let operationQueue: OperationQueue
 
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
@@ -29,13 +29,13 @@ final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
     init(
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        syncer: GiftsSyncerProtocol,
+        statusTracker: GiftsStatusTrackerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.giftsLocalSubscriptionFactory = giftsLocalSubscriptionFactory
         self.giftRepository = giftRepository
-        self.syncer = syncer
+        self.statusTracker = statusTracker
         self.operationQueue = operationQueue
 
         super.init(logger: logger)
@@ -50,7 +50,7 @@ final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
 
 private extension GiftsSyncService {
     func clearSubscriptions() {
-        syncer.stopSyncing()
+        statusTracker.stopTracking()
         giftsLocalSubscription = nil
         gifts.removeAllValues()
     }
@@ -59,12 +59,12 @@ private extension GiftsSyncService {
         changes
             .compactMap(\.item)
             .filter { $0.status == .pending }
-            .forEach { syncer.startSyncing(for: $0) }
+            .forEach { statusTracker.startTracking(for: $0) }
 
         changes
             .compactMap(\.item)
             .filter { $0.status == .claimed || $0.status == .reclaimed }
-            .forEach { syncer.stopSyncing(for: $0.giftAccountId) }
+            .forEach { statusTracker.stopTracking(for: $0.giftAccountId) }
     }
 
     func updateGiftStatusIfNeeded(gift: GiftModel, newStatus: GiftModel.Status) {
@@ -79,11 +79,11 @@ private extension GiftsSyncService {
     }
 }
 
-// MARK: - GiftsSyncerDelegate
+// MARK: - GiftsStatusTrackerDelegate
 
-extension GiftsSyncService: GiftsSyncerDelegate {
-    func giftsSyncer(
-        _: GiftsSyncerProtocol,
+extension GiftsSyncService: GiftsStatusTrackerDelegate {
+    func giftsTracker(
+        _: GiftsStatusTrackerProtocol,
         didReceive status: GiftModel.Status,
         for giftAccountId: AccountId
     ) {
@@ -95,9 +95,9 @@ extension GiftsSyncService: GiftsSyncerDelegate {
         updateGiftStatusIfNeeded(gift: gift, newStatus: status)
     }
 
-    func giftsSyncer(
-        _: GiftsSyncerProtocol,
-        didUpdateSyncingAccountIds accountIds: Set<AccountId>
+    func giftsTracker(
+        _: GiftsStatusTrackerProtocol,
+        didUpdateTrackingAccountIds accountIds: Set<AccountId>
     ) {
         stateObservable.state = accountIds
     }
@@ -133,7 +133,7 @@ extension GiftsSyncService: GiftsSyncServiceProtocol {
 
         guard giftsLocalSubscription == nil else { return }
 
-        syncer.delegate = self
+        statusTracker.delegate = self
         giftsLocalSubscription = subscribeAllGifts()
     }
 }

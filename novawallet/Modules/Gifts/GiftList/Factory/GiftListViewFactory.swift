@@ -38,7 +38,7 @@ struct GiftListViewFactory {
             logger: logger
         )
 
-        let syncer = GiftsSyncer(
+        let statusTracker = GiftsStatusTracker(
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             walletSubscriptionFactory: walletSubscriptionFactory,
@@ -49,7 +49,7 @@ struct GiftListViewFactory {
         let giftSyncService = GiftsSyncService(
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             giftRepository: AnyDataProviderRepository(giftRepository),
-            syncer: syncer,
+            statusTracker: statusTracker,
             operationQueue: operationQueue,
             logger: logger
         )

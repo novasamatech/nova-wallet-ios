@@ -6,7 +6,7 @@ import Operation_iOS
 final class GiftsSyncServiceTests: XCTestCase {
     private var storageFacade: StorageFacadeProtocol!
     private var service: GiftsSyncService!
-    private var mockSyncer: MockGiftsSyncerProtocol!
+    private var mockStatusTracker: MockGiftsStatusTrackerProtocol!
     private var mockGiftsLocalSubscriptionFactory: MockGiftsLocalSubscriptionFactoryProtocol!
     private var giftRepository: AnyDataProviderRepository<GiftModel>!
 
@@ -16,7 +16,7 @@ final class GiftsSyncServiceTests: XCTestCase {
         super.setUp()
 
         storageFacade = UserDataStorageTestFacade()
-        mockSyncer = MockGiftsSyncerProtocol()
+        mockStatusTracker = MockGiftsStatusTrackerProtocol()
         mockGiftsLocalSubscriptionFactory = MockGiftsLocalSubscriptionFactoryProtocol()
 
         let coreDataRepository = InMemoryDataProviderRepository<GiftModel>()
@@ -27,7 +27,7 @@ final class GiftsSyncServiceTests: XCTestCase {
         service = GiftsSyncService(
             giftsLocalSubscriptionFactory: mockGiftsLocalSubscriptionFactory,
             giftRepository: giftRepository,
-            syncer: mockSyncer,
+            statusTracker: mockStatusTracker,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
@@ -39,11 +39,11 @@ final class GiftsSyncServiceTests: XCTestCase {
 extension GiftsSyncServiceTests {
     // MARK: - Setup Tests
 
-    func testSetup_SetsSyncerDelegate() {
+    func testSetup_SetsStatusTrackerDelegate() {
         // given
-        var capturedDelegate: GiftsSyncerDelegate?
+        var capturedDelegate: GiftsStatusTrackerDelegate?
 
-        stub(mockSyncer) { stub in
+        stub(mockStatusTracker) { stub in
             when(stub.delegate.set(any())).then { delegate in
                 capturedDelegate = delegate
             }
@@ -86,7 +86,7 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .success([.insert(newItem: gift)]))
 
         // then
-        verify(mockSyncer).startSyncing(for: equal(to: gift))
+        verify(mockStatusTracker).startTracking(for: equal(to: gift))
     }
 
     func testGiftChanges_ClaimedGift_StopsSyncing() {
@@ -99,7 +99,7 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .success([.insert(newItem: gift)]))
 
         // then
-        verify(mockSyncer).stopSyncing(for: equal(to: gift.giftAccountId))
+        verify(mockStatusTracker).stopTracking(for: equal(to: gift.giftAccountId))
     }
 
     func testGiftChanges_ReclaimedGift_StopsSyncing() {
@@ -112,7 +112,7 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .success([.insert(newItem: gift)]))
 
         // then
-        verify(mockSyncer).stopSyncing(for: equal(to: gift.giftAccountId))
+        verify(mockStatusTracker).stopTracking(for: equal(to: gift.giftAccountId))
     }
 
     func testGiftChanges_MultiplePendingGifts_StartsAllSyncing() {
@@ -129,8 +129,8 @@ extension GiftsSyncServiceTests {
         ]))
 
         // then
-        verify(mockSyncer).startSyncing(for: equal(to: gift1))
-        verify(mockSyncer).startSyncing(for: equal(to: gift2))
+        verify(mockStatusTracker).startTracking(for: equal(to: gift1))
+        verify(mockStatusTracker).startTracking(for: equal(to: gift2))
     }
 
     func testGiftChanges_MixedStatuses_HandlesCorrectly() {
@@ -149,9 +149,9 @@ extension GiftsSyncServiceTests {
         ]))
 
         // then
-        verify(mockSyncer).startSyncing(for: equal(to: pendingGift))
-        verify(mockSyncer).stopSyncing(for: equal(to: claimedGift.giftAccountId))
-        verify(mockSyncer).stopSyncing(for: equal(to: reclaimedGift.giftAccountId))
+        verify(mockStatusTracker).startTracking(for: equal(to: pendingGift))
+        verify(mockStatusTracker).stopTracking(for: equal(to: claimedGift.giftAccountId))
+        verify(mockStatusTracker).stopTracking(for: equal(to: reclaimedGift.giftAccountId))
     }
 
     func testGiftChanges_UpdatedGift_HandlesCorrectly() {
@@ -164,12 +164,12 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .success([.update(newItem: gift)]))
 
         // then
-        verify(mockSyncer).startSyncing(for: equal(to: gift))
+        verify(mockStatusTracker).startTracking(for: equal(to: gift))
     }
 
-    // MARK: - Syncer Delegate Tests
+    // MARK: - StatusTracker Delegate Tests
 
-    func testSyncerDelegate_StatusDetermined_SavesGiftWithNewStatus() {
+    func testStatusTrackerDelegate_StatusDetermined_SavesGiftWithNewStatus() {
         // given
         let gift = createTestGift(status: .pending)
         let giftAccountId = gift.giftAccountId
@@ -178,7 +178,7 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .success([.insert(newItem: gift)]))
 
         // when
-        service.giftsSyncer(mockSyncer, didReceive: .claimed, for: giftAccountId)
+        service.giftsTracker(mockStatusTracker, didReceive: .claimed, for: giftAccountId)
 
         // then - wait for save operation to complete, then verify
         operationQueue.waitUntilAllOperationsAreFinished()
@@ -194,7 +194,7 @@ extension GiftsSyncServiceTests {
         XCTAssertEqual(savedGift?.giftAccountId, giftAccountId)
     }
 
-    func testSyncerDelegate_StatusDetermined_DoesNotUpdateReclaimedGift() {
+    func testStatusTrackerDelegate_StatusDetermined_DoesNotUpdateReclaimedGift() {
         // given
         let gift = createTestGift(status: .reclaimed)
         let giftAccountId = gift.giftAccountId
@@ -206,13 +206,13 @@ extension GiftsSyncServiceTests {
         let initialOperationCount = operationQueue.operationCount
 
         // when
-        service.giftsSyncer(mockSyncer, didReceive: .claimed, for: giftAccountId)
+        service.giftsTracker(mockStatusTracker, didReceive: .claimed, for: giftAccountId)
 
         // then - no new operations should be added
         XCTAssertEqual(operationQueue.operationCount, initialOperationCount)
     }
 
-    func testSyncerDelegate_StatusDetermined_DoesNotUpdateWhenStatusSame() {
+    func testStatusTrackerDelegate_StatusDetermined_DoesNotUpdateWhenStatusSame() {
         // given
         let gift = createTestGift(status: .pending)
         let giftAccountId = gift.giftAccountId
@@ -223,13 +223,13 @@ extension GiftsSyncServiceTests {
         let initialOperationCount = operationQueue.operationCount
 
         // when
-        service.giftsSyncer(mockSyncer, didReceive: .pending, for: giftAccountId)
+        service.giftsTracker(mockStatusTracker, didReceive: .pending, for: giftAccountId)
 
         // then - no save operation triggered
         XCTAssertEqual(operationQueue.operationCount, initialOperationCount)
     }
 
-    func testSyncerDelegate_StatusDetermined_UnknownGift_DoesNothing() {
+    func testStatusTrackerDelegate_StatusDetermined_UnknownGift_DoesNothing() {
         // given
         let unknownAccountId = Data(repeating: 99, count: 32)
 
@@ -238,7 +238,7 @@ extension GiftsSyncServiceTests {
         let initialOperationCount = operationQueue.operationCount
 
         // when
-        service.giftsSyncer(mockSyncer, didReceive: .claimed, for: unknownAccountId)
+        service.giftsTracker(mockStatusTracker, didReceive: .claimed, for: unknownAccountId)
 
         // then - no save operation triggered
         XCTAssertEqual(operationQueue.operationCount, initialOperationCount)
@@ -254,8 +254,8 @@ extension GiftsSyncServiceTests {
         service.handleAllGifts(result: .failure(NSError(domain: "test", code: 1)))
 
         // then - should not crash
-        verify(mockSyncer, never()).startSyncing(for: any())
-        verify(mockSyncer, never()).stopSyncing(for: any())
+        verify(mockStatusTracker, never()).startTracking(for: any())
+        verify(mockStatusTracker, never()).stopTracking(for: any())
     }
 }
 
@@ -263,12 +263,12 @@ extension GiftsSyncServiceTests {
 
 private extension GiftsSyncServiceTests {
     func setupDefaultStubs() {
-        stub(mockSyncer) { stub in
+        stub(mockStatusTracker) { stub in
             when(stub.delegate.set(any())).thenDoNothing()
             when(stub.delegate.get).thenReturn(nil)
-            when(stub.startSyncing(for: any())).thenDoNothing()
-            when(stub.stopSyncing(for: any())).thenDoNothing()
-            when(stub.stopSyncing()).thenDoNothing()
+            when(stub.startTracking(for: any())).thenDoNothing()
+            when(stub.stopTracking(for: any())).thenDoNothing()
+            when(stub.stopTracking()).thenDoNothing()
         }
 
         stub(mockGiftsLocalSubscriptionFactory) { stub in

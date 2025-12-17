@@ -4,9 +4,9 @@ import BigInt
 import Operation_iOS
 @testable import novawallet
 
-final class GiftsSyncerTests: XCTestCase {
-    private var syncer: GiftsSyncer!
-    private var mockDelegate: MockGiftsSyncerDelegate!
+final class GiftsStatusTrackerTests: XCTestCase {
+    private var statusTracker: GiftsStatusTracker!
+    private var mockDelegate: MockGiftsStatusTrackerDelegate!
     private var mockChainRegistry: MockChainRegistryProtocol!
     private var mockGeneralLocalSubscriptionFactory: MockGeneralStorageSubscriptionFactoryProtocol!
     private var mockWalletSubscriptionFactory: MockWalletRemoteSubscriptionFactoryProtocol!
@@ -17,12 +17,12 @@ final class GiftsSyncerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        mockDelegate = MockGiftsSyncerDelegate()
+        mockDelegate = MockGiftsStatusTrackerDelegate()
         mockChainRegistry = MockChainRegistryProtocol()
         mockGeneralLocalSubscriptionFactory = MockGeneralStorageSubscriptionFactoryProtocol()
         mockWalletSubscriptionFactory = MockWalletRemoteSubscriptionFactoryProtocol()
 
-        syncer = GiftsSyncer(
+        statusTracker = GiftsStatusTracker(
             chainRegistry: mockChainRegistry,
             generalLocalSubscriptionFactory: mockGeneralLocalSubscriptionFactory,
             walletSubscriptionFactory: mockWalletSubscriptionFactory,
@@ -30,7 +30,7 @@ final class GiftsSyncerTests: XCTestCase {
             logger: Logger.shared
         )
 
-        syncer.delegate = mockDelegate
+        statusTracker.delegate = mockDelegate
 
         chain = createTestChain()
 
@@ -40,7 +40,7 @@ final class GiftsSyncerTests: XCTestCase {
 
 // MARK: - Tests
 
-extension GiftsSyncerTests {
+extension GiftsStatusTrackerTests {
     // MARK: - Start Syncing Tests
 
     func testStartSyncing_AddsAccountIdToSyncingSet_AndNotifiesDelegate() {
@@ -51,18 +51,18 @@ extension GiftsSyncerTests {
         let syncingExpectation = expectation(description: "Delegate notified about syncing account ids")
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, accountIds in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, accountIds in
                 XCTAssertTrue(accountIds.contains(expectedAccountId))
                 syncingExpectation.fulfill()
             }
         }
 
         // when
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // then
         wait(for: [syncingExpectation], timeout: 1.0)
-        verify(mockDelegate).giftsSyncer(any(), didUpdateSyncingAccountIds: any())
+        verify(mockDelegate).giftsTracker(any(), didUpdateTrackingAccountIds: any())
     }
 
     func testStartSyncing_DoesNotDuplicateNotification_WhenCalledTwiceForSameGift() {
@@ -71,14 +71,14 @@ extension GiftsSyncerTests {
         var notificationCount = 0
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, _ in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, _ in
                 notificationCount += 1
             }
         }
 
         // when
-        syncer.startSyncing(for: gift)
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // then
         XCTAssertEqual(notificationCount, 1)
@@ -91,14 +91,14 @@ extension GiftsSyncerTests {
         var receivedAccountIds: Set<AccountId> = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, accountIds in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, accountIds in
                 receivedAccountIds = accountIds
             }
         }
 
         // when
-        syncer.startSyncing(for: gift1)
-        syncer.startSyncing(for: gift2)
+        statusTracker.startTracking(for: gift1)
+        statusTracker.startTracking(for: gift2)
 
         // then
         XCTAssertEqual(receivedAccountIds.count, 2)
@@ -115,16 +115,16 @@ extension GiftsSyncerTests {
         var lastReceivedAccountIds: Set<AccountId> = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, accountIds in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, accountIds in
                 lastReceivedAccountIds = accountIds
             }
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
         XCTAssertTrue(lastReceivedAccountIds.contains(giftAccountId))
 
         // when
-        syncer.stopSyncing(for: giftAccountId)
+        statusTracker.stopTracking(for: giftAccountId)
 
         // then
         XCTAssertFalse(lastReceivedAccountIds.contains(giftAccountId))
@@ -136,13 +136,13 @@ extension GiftsSyncerTests {
         var notificationCount = 0
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, _ in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, _ in
                 notificationCount += 1
             }
         }
 
         // when
-        syncer.stopSyncing(for: nonExistentAccountId)
+        statusTracker.stopTracking(for: nonExistentAccountId)
 
         // then
         XCTAssertEqual(notificationCount, 0)
@@ -155,17 +155,17 @@ extension GiftsSyncerTests {
         var lastReceivedAccountIds: Set<AccountId> = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, accountIds in
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, accountIds in
                 lastReceivedAccountIds = accountIds
             }
         }
 
-        syncer.startSyncing(for: gift1)
-        syncer.startSyncing(for: gift2)
+        statusTracker.startTracking(for: gift1)
+        statusTracker.startTracking(for: gift2)
         XCTAssertEqual(lastReceivedAccountIds.count, 2)
 
         // when
-        syncer.stopSyncing()
+        statusTracker.stopTracking()
 
         // then
         XCTAssertTrue(lastReceivedAccountIds.isEmpty)
@@ -173,7 +173,7 @@ extension GiftsSyncerTests {
 
     // MARK: - Balance Update Tests
 
-    func testBalanceUpdate_WithPositiveTransferable_EmitsPendingStatus() {
+    func testBalanceUpdate_WithAmountTransferable_EmitsPendingStatus() {
         // given
         let gift = createTestGift()
         let giftAccountId = gift.giftAccountId
@@ -190,19 +190,19 @@ extension GiftsSyncerTests {
         let statusExpectation = expectation(description: "Delegate receives pending status")
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).then { _, status, accountId in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, accountId in
                 XCTAssertEqual(status, .pending)
                 XCTAssertEqual(accountId, giftAccountId)
                 statusExpectation.fulfill()
             }
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // when
         let balance = createAssetBalance(
-            transferable: 100,
+            transferable: gift.amount + 1,
             chainAssetId: gift.chainAssetId,
             accountId: giftAccountId
         )
@@ -229,15 +229,15 @@ extension GiftsSyncerTests {
         let statusExpectation = expectation(description: "Delegate receives claimed status")
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).then { _, status, accountId in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, accountId in
                 XCTAssertEqual(status, .claimed)
                 XCTAssertEqual(accountId, giftAccountId)
                 statusExpectation.fulfill()
             }
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // when
         let balance = createAssetBalance(
@@ -268,18 +268,18 @@ extension GiftsSyncerTests {
         var lastReceivedAccountIds: Set<AccountId> = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).thenDoNothing()
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).then { _, accountIds in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).then { _, accountIds in
                 lastReceivedAccountIds = accountIds
             }
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
         XCTAssertTrue(lastReceivedAccountIds.contains(giftAccountId))
 
         // when
         let balance = createAssetBalance(
-            transferable: 100,
+            transferable: gift.amount + 1,
             chainAssetId: gift.chainAssetId,
             accountId: giftAccountId
         )
@@ -305,11 +305,11 @@ extension GiftsSyncerTests {
         }
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).thenDoNothing()
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // when
         capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
@@ -336,14 +336,14 @@ extension GiftsSyncerTests {
         let statusExpectation = expectation(description: "Delegate receives claimed status after block counting")
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).then { _, status, _ in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, _ in
                 receivedStatus = status
                 statusExpectation.fulfill()
             }
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // Start block counting with nil balance
         capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
@@ -352,10 +352,10 @@ extension GiftsSyncerTests {
         let startBlock: BlockNumber = 100
 
         // First block sets the start block
-        syncer.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
 
         // Simulate 10 more blocks passing
-        syncer.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
 
         // then
         wait(for: [statusExpectation], timeout: 2.0)
@@ -377,21 +377,21 @@ extension GiftsSyncerTests {
         }
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).thenDoNothing()
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
         capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         let startBlock: BlockNumber = 100
-        syncer.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
 
         // when - only 9 blocks passed
-        syncer.handleBlockNumber(result: .success(startBlock + 9), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock + 9), chainId: chainId)
 
         // then - should not have called didReceive
-        verify(mockDelegate, never()).giftsSyncer(any(), didReceive: any(), for: any())
+        verify(mockDelegate, never()).giftsTracker(any(), didReceive: any(), for: any())
     }
 
     func testBlockCounting_CancelledByNonNilBalance_EmitsPendingStatus() {
@@ -412,25 +412,25 @@ extension GiftsSyncerTests {
         var receivedStatuses: [GiftModel.Status] = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).then { _, status, _ in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, _ in
                 receivedStatuses.append(status)
             }
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // Start block counting with nil balance
         capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         let startBlock: BlockNumber = 100
-        syncer.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
 
         // when - balance becomes non-nil before 10 blocks
-        syncer.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
 
         let balance = createAssetBalance(
-            transferable: 100,
+            transferable: gift.amount + 1,
             chainAssetId: gift.chainAssetId,
             accountId: giftAccountId
         )
@@ -469,18 +469,18 @@ extension GiftsSyncerTests {
         var receivedStatusesForGift2: [GiftModel.Status] = []
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didReceive: any(), for: any())).then { _, status, accountId in
+            when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, accountId in
                 if accountId == gift1.giftAccountId {
                     receivedStatusesForGift1.append(status)
                 } else if accountId == gift2.giftAccountId {
                     receivedStatusesForGift2.append(status)
                 }
             }
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
-        syncer.startSyncing(for: gift1)
-        syncer.startSyncing(for: gift2)
+        statusTracker.startTracking(for: gift1)
+        statusTracker.startTracking(for: gift2)
 
         // Start block counting for both
         capturedCallback1?(.success(.init(balance: nil, blockHash: nil)))
@@ -488,20 +488,20 @@ extension GiftsSyncerTests {
 
         // when
         let startBlock: BlockNumber = 100
-        syncer.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
 
         // Gift 1 receives balance after 5 blocks
-        syncer.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
 
         let balance = createAssetBalance(
-            transferable: 100,
+            transferable: gift1.amount + 1,
             chainAssetId: gift1.chainAssetId,
             accountId: gift1.giftAccountId
         )
         capturedCallback1?(.success(.init(balance: balance, blockHash: nil)))
 
         // Gift 2 continues to 10 blocks
-        syncer.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
+        statusTracker.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
 
         // then
         XCTAssertEqual(receivedStatusesForGift1, [.pending])
@@ -519,20 +519,20 @@ extension GiftsSyncerTests {
         }
 
         stub(mockDelegate) { stub in
-            when(stub.giftsSyncer(any(), didUpdateSyncingAccountIds: any())).thenDoNothing()
+            when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
         }
 
         // when
-        syncer.startSyncing(for: gift)
+        statusTracker.startTracking(for: gift)
 
         // then
-        verify(mockDelegate, never()).giftsSyncer(any(), didUpdateSyncingAccountIds: any())
+        verify(mockDelegate, never()).giftsTracker(any(), didUpdateTrackingAccountIds: any())
     }
 }
 
 // MARK: - Helpers
 
-private extension GiftsSyncerTests {
+private extension GiftsStatusTrackerTests {
     func setupDefaultStubs() {
         stub(mockChainRegistry) { stub in
             when(stub.getChain(for: any())).thenReturn(chain)
