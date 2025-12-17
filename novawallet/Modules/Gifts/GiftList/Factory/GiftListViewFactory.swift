@@ -32,10 +32,16 @@ struct GiftListViewFactory {
             logger: logger
         )
 
+        let walletSubscriptionFactory = WalletRemoteSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         let syncer = GiftsSyncer(
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            operationQueue: operationQueue,
+            walletSubscriptionFactory: walletSubscriptionFactory,
             workingQueue: .main,
             logger: logger
         )

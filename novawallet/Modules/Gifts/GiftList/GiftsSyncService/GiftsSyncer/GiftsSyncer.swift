@@ -1,19 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol GiftsSyncerDelegate: AnyObject {
-    func giftsSyncer(
-        _ syncer: GiftsSyncer,
-        didReceive status: GiftModel.Status,
-        for giftAccountId: AccountId
-    )
-
-    func giftsSyncer(
-        _ syncer: GiftsSyncer,
-        didUpdateSyncingAccountIds accountIds: Set<AccountId>
-    )
-}
-
 protocol GiftsSyncerProtocol: AnyObject {
     var delegate: GiftsSyncerDelegate? { get set }
 
@@ -29,7 +16,7 @@ final class GiftsSyncer {
 
     let chainRegistry: ChainRegistryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let operationQueue: OperationQueue
+    let walletSubscriptionFactory: WalletRemoteSubscriptionFactoryProtocol
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
 
@@ -45,13 +32,13 @@ final class GiftsSyncer {
     init(
         chainRegistry: ChainRegistryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue,
+        walletSubscriptionFactory: WalletRemoteSubscriptionFactoryProtocol,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.operationQueue = operationQueue
+        self.walletSubscriptionFactory = walletSubscriptionFactory
         self.workingQueue = workingQueue
         self.logger = logger
     }
@@ -68,11 +55,7 @@ private extension GiftsSyncer {
         for giftAccountId: AccountId,
         chainAsset: ChainAsset
     ) {
-        let subscription = WalletRemoteSubscription(
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue,
-            logger: logger
-        )
+        let subscription = walletSubscriptionFactory.createSubscription()
 
         remoteBalancesSubscriptions.store(
             value: subscription,
@@ -168,6 +151,7 @@ private extension GiftsSyncer {
         guard blocksPassed >= blocksToWait else { return }
 
         cancelBlockCounting(for: giftAccountId)
+        removeSyncingAccountId(giftAccountId)
 
         delegate?.giftsSyncer(
             self,
@@ -269,7 +253,7 @@ extension GiftsSyncer: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler
             currentBlockNumbers.store(value: blockNumber, for: chainId)
 
             for (giftAccountId, giftChainId) in giftChainMapping.fetchAllPairs() where giftChainId == chainId {
-                guard nilBalanceStartBlocks.fetchValue(for: giftAccountId) != nil else { continue }
+                guard blockNumberProviders.fetchValue(for: giftAccountId) != nil else { continue }
 
                 checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
             }

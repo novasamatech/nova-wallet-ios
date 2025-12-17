@@ -119,6 +119,10 @@ sources = [
     "novawallet/Modules/DApp/WalletConnect/Service/WalletConnectProtocols.swift",
     "novawallet/Modules/ManualBackup/BackupAttention/CheckboxListPresenter/CheckboxListPresenterTrait.swift",
     "novawallet/Modules/TokensManage/List/TokensManageProtocols.swift",
+    "novawallet/Modules/Gifts/GiftList/GiftsSyncService/GiftsSyncer/GiftsSyncerDelegate.swift",
+    "novawallet/Common/Services/RemoteSubscription/WalletRemoteSubscription/WalletRemoteSubscription.swift",
+    "novawallet/Common/Services/RemoteSubscription/WalletRemoteSubscription/WalletRemoteSubscriptionFactory.swift",
+    "novawallet/Common/DataProvider/GeneralStorageSubscriptionFactory.swift",
 ]
 
 exclude = [
