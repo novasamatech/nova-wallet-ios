@@ -358,7 +358,7 @@ extension GiftsSyncerTests {
         syncer.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
 
         // then
-        wait(for: [statusExpectation], timeout: 5.0)
+        wait(for: [statusExpectation], timeout: 2.0)
         XCTAssertEqual(receivedStatus, .claimed)
     }
 
