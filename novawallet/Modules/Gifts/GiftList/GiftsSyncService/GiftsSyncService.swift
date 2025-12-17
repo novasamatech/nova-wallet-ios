@@ -19,7 +19,7 @@ typealias GiftsSyncAccounts = Set<AccountId>
 final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
     let giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol
     let giftRepository: AnyDataProviderRepository<GiftModel>
-    let syncer: GiftsSyncer
+    let syncer: GiftsSyncerProtocol
     let operationQueue: OperationQueue
 
     var giftsLocalSubscription: StreamableProvider<GiftModel>?
@@ -29,7 +29,7 @@ final class GiftsSyncService: BaseObservableStateStore<GiftsSyncAccounts> {
     init(
         giftsLocalSubscriptionFactory: GiftsLocalSubscriptionFactoryProtocol,
         giftRepository: AnyDataProviderRepository<GiftModel>,
-        syncer: GiftsSyncer,
+        syncer: GiftsSyncerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -83,7 +83,7 @@ private extension GiftsSyncService {
 
 extension GiftsSyncService: GiftsSyncerDelegate {
     func giftsSyncer(
-        _: GiftsSyncer,
+        _: GiftsSyncerProtocol,
         didReceive status: GiftModel.Status,
         for giftAccountId: AccountId
     ) {
@@ -96,7 +96,7 @@ extension GiftsSyncService: GiftsSyncerDelegate {
     }
 
     func giftsSyncer(
-        _: GiftsSyncer,
+        _: GiftsSyncerProtocol,
         didUpdateSyncingAccountIds accountIds: Set<AccountId>
     ) {
         stateObservable.state = accountIds
