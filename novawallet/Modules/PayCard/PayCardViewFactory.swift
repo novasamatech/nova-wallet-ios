@@ -29,7 +29,7 @@ struct PayCardViewFactory {
         let paramsProvider = MercuryoCardParamsProvider(
             chainRegistry: chainRegistry,
             wallet: SelectedWalletSettings.shared.value,
-            chainId: KnowChainId.polkadot
+            chainId: KnowChainId.polkadotAssetHub
         )
         let hooksFactory = MercuryoCardHookFactory(logger: logger)
         let resourceProvider = MercuryoCardResourceProvider()
