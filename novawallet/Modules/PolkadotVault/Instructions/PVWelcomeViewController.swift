@@ -40,6 +40,7 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
 
         setupHandlers()
         setupGraphics()
+        setupSegmentedControl()
         setupLocalization()
     }
 }
@@ -61,6 +62,11 @@ private extension PVWelcomeViewController {
             rootView.integrationImageView.image = R.image.imageNovaPolkadotVault()
             rootView.step2DetailsImageView.image = R.image.imagePolkadotVaultIntegrationHint()
         }
+    }
+
+    func setupSegmentedControl() {
+        let hidden = type == .legacy
+        rootView.modeSegmentedControl.isHidden = hidden
     }
 
     func setupLocalization() {
