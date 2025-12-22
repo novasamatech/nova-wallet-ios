@@ -50,6 +50,7 @@ struct AssetListHeaderViewModel {
     let locksAmount: SecuredViewModel<String>?
     let walletSwitch: WalletSwitchViewModel
     let hasSwaps: Bool
+    let hasGifts: Bool
     let privacyModelEnabled: Bool
 }
 

@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 final class NoBiometryAuth: BiometryAuthProtocol {
     var availableBiometryType: AvailableBiometryType { .none }

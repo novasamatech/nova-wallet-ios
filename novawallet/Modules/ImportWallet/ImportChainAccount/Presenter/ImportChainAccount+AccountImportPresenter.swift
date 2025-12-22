@@ -73,18 +73,33 @@ extension ImportChainAccount {
                 )
 
             case .seed:
-                let seed = sourceViewModel.inputHandler.value
-                let request = ChainAccountImportSeedRequest(
-                    seed: seed,
-                    derivationPath: substrateDerivationPath,
-                    cryptoType: selectedCryptoType
-                )
+                if case let .keypair(publicKey, secretKey) = secretScan {
+                    let request = ChainAccountImportKeypairRequest(
+                        secretKey: secretKey,
+                        publicKey: publicKey,
+                        derivationPath: substrateDerivationPath,
+                        cryptoType: selectedCryptoType
+                    )
 
-                interactor.importAccountWithSeed(
-                    chainId: chainModelId,
-                    request: request,
-                    into: metaAccountModel
-                )
+                    interactor.importAccountWithKeypair(
+                        chainId: chainModelId,
+                        request: request,
+                        into: metaAccountModel
+                    )
+                } else {
+                    let seed = sourceViewModel.inputHandler.value
+                    let request = ChainAccountImportSeedRequest(
+                        seed: seed,
+                        derivationPath: substrateDerivationPath,
+                        cryptoType: selectedCryptoType
+                    )
+
+                    interactor.importAccountWithSeed(
+                        chainId: chainModelId,
+                        request: request,
+                        into: metaAccountModel
+                    )
+                }
 
             case .keystore:
                 let keystore = sourceViewModel.inputHandler.value

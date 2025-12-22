@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import Operation_iOS
 
 struct WalletRemoteSubscriptionUpdate {
     let balance: AssetBalance?

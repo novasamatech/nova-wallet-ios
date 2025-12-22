@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "imagePolkadotVaultIntegrationHint.pdf",
-      "idiom" : "universal"
+      "filename" : "imagePolkadotVaultIntegrationHint.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "imagePolkadotVaultIntegrationHint2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "imagePolkadotVaultIntegrationHint3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

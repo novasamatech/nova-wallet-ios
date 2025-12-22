@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Xem trong %@";
 "import.json.unsupported.ethereum.crypto.message" = "Không thể nhập tài khoản với Substrate secret vào mạng với mã hóa Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Không thể nhập tài khoản với Ethereum secret vào mạng với mã hóa Substrate";
+"gift.reclaim.no.account.alert.title" = "Không tìm thấy tài khoản";
 "common.today" = "Hôm nay";
 "common.yesterday" = "Hôm qua";
 "common.tx.details" = "Chi tiết giao dịch";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Địa chỉ hoặc w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Đang diễn ra tìm kiếm tên";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Vui lòng chờ tới khi tìm kiếm %@ hoàn thành";
-"wallet.connect.scan.message" = "Quét mã QR";
+"common.scan.message" = "Quét mã QR";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Kết nối mới";
 "common.disconnect" = "Ngắt kết nối";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "ứng dụng %@ trên điện thoại thông minh của bạn";
 "welcome.polkadot.vault.step1.highlighted" = "Mở Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Chọn bộ khóa của bạn, sau đó tài khoản bạn muốn thêm vào Ví Nova";
-"welcome.polkadot.vault.step2.highlighted" = "Đi tới tab 'Key Sets'.";
-"welcome.polkadot.vault.step2.details" = "Chú ý, đường dẫn dẫn xuất nên để trống";
-"welcome.polkadot.vault.step3" = "Polkadot Vault sẽ cung cấp cho bạn %@";
-"welcome.polkadot.vault.step3.highlighted" = "Quét mã QR";
 "staking.controller.deprecated.title" = "Các tài khoản Controller đang bị loại bỏ";
 "staking.controller.deprecated.details" = "Sử dụng Proxies để ủy quyền các hoạt động Staking cho tài khoản khác";
 "staking.controller.deprecated.action" = "Cập nhật Controller đến Stash";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi bỏ phiếu Abstain";
 "cloud.backup.password.confirm.title" = "Xác nhận mật khẩu sao lưu";
 "cloud.backup.password.confirm.details" = "Vui lòng nhập mật khẩu bạn đã tạo ở màn hình trước";
+"welcome.polkadot.vault.step.last.highlighted" = "quét mã QR";
 "swipe.gov.empty.view.voted.text" = "Bạn đã bỏ phiếu cho tất cả các cuộc trưng cầu khả dụng";
 "swipe.gov.empty.view.button" = "Xác nhận phiếu của bạn";
 "gov.voting.list.title" = "Danh sách bỏ phiếu";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "Phần thưởng";
 "staking.validator.apy.percent" = "Phần thưởng ước tính (%% APY)";
 "parastk.collators.filter.rewards" = "Phần thưởng ước tính (%% APR)";
+"gift.reclaim.dialog.message" = "Nếu bạn đòi lại món quà này, liên kết chia sẻ sẽ bị tắt và token sẽ được hoàn lại vào ví của bạn.\nBạn có muốn tiếp tục không?";
+"gift.action.reclaim.title" = "Đòi lại";
 "gift.claim.warning.wallet.message" = "Tạo ví mới hoặc nhập một ví hiện có để nhận món quà";
 "gift.claim.warning.wallet.manage.action" = "Quản lý Ví";
 "gift.claim.success.status" = "Bạn đã nhận thành công một món quà. Token sẽ sớm xuất hiện trong số dư của bạn.";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Rất tiếc, món quà đã được nhận";
 "gift.claim.action.title" = "Nhận món quà";
 "gift.claim.title" = "Bạn đã nhận được một món quà crypto!";
+"gift.status.claimed" = "Đã nhận";
+"gift.status.reclaimed" = "Đã đòi lại";
 "gift.claim.fee" = "Phí mạng khi nhận";
 "gift.prepared.title" = "Quà Đã Được Chuẩn Bị.\nChia sẻ Ngay!";
 "gift.prepared.share.action.title" = "Chia sẻ liên kết quà";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Nhập số lượng quà của bạn";
 "gifts.onboarding.step2.highlighted" = "Chia sẻ quà trực tiếp";
 "gifts.onboarding.title" = "Chia sẻ Quà Crypto với Bất kỳ Ai, Ở Bất kỳ Đâu";
+"gift.list.gifts.section.title" = "Các món quà bạn đã tạo";
 "common.gift" = "Quà";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ như một liên kết và mời bất kỳ ai đến với Nova";
@@ -2003,3 +2005,17 @@
 "common.total.fee" = "Tổng phí";
 "gift.unsupported.token.alert.title" = "Token này không được hỗ trợ cho tính năng quà tặng";
 "gift.unsupported.token.alert.message" = "Hiện tại việc tặng quà cho token này không được hỗ trợ. Vui lòng chọn token khác, mạng khác hoặc kiểm tra lại sau.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Xuất Khóa Riêng Tư";
+"welcome.polkadot.vault.import.private.key" = "Nhập khóa riêng tư";
+"welcome.polkadot.vault.pair.public.key" = "Ghép khóa công khai";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Chạm vào Khóa dẫn xuất";
+"common.invalid.qr.code" = "Mã QR không hợp lệ";
+"polkadot.vault.scanner.message" = "Quét mã QR\ntừ %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault sẽ cung cấp cho bạn %@";
+"welcome.polkadot.vault.step3.import" = "Nhấn vào biểu tượng ở góc trên bên phải và chọn %@";
+"welcome.polkadot.vault.step2.pair" = "%@ bạn muốn thêm vào Nova Wallet";
+"gift.reclaim.success.status" = "Bạn đã thu hồi thành công món quà của mình";
+"gift.loading.message" = "Đang tải quà...";
+"gift.created.date.format" = "Tạo: %@";
+"gift.reclaim.no.account.alert.message" = "Vui lòng chọn một ví khác hoặc thêm tài khoản %@ trong Cài đặt để tiếp tục.";
+"gift.reclaim.dialog.title" = "Đòi lại quà %@?";

@@ -23,6 +23,7 @@ struct AssetListHeaderParams {
     let prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?
     let locks: [AssetListAssetAccountPrice]?
     let hasSwaps: Bool
+    let hasGifts: Bool
 }
 
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
@@ -252,6 +253,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 locksAmount: locksAmount,
                 walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps,
+                hasGifts: params.hasGifts,
                 privacyModelEnabled: genericParams.privacyModeEnabled
             )
         } else {
@@ -262,6 +264,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                 locksAmount: nil,
                 walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps,
+                hasGifts: params.hasGifts,
                 privacyModelEnabled: genericParams.privacyModeEnabled
             )
         }

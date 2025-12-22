@@ -4,8 +4,9 @@ import BigInt
 
 protocol GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftProtocol
-    ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult>
+        for giftAccountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> CompoundOperationWrapper<GiftClaimAvailabilty>
 }
 
 final class GiftClaimAvailabilityCheckFactory {
@@ -34,12 +35,12 @@ final class GiftClaimAvailabilityCheckFactory {
 
 private extension GiftClaimAvailabilityCheckFactory {
     func createBalanceExisteceWrapper(
-        claimableGift: ClaimableGiftProtocol
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            if claimableGift.chainAsset.asset.isAnyEvm {
+            if chainAsset.asset.isAnyEvm {
                 let existence = AssetBalanceExistence(
                     minBalance: 0,
                     isSelfSufficient: true
@@ -48,12 +49,12 @@ private extension GiftClaimAvailabilityCheckFactory {
                 return .createWithResult(existence)
             } else {
                 let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(
-                    for: claimableGift.chainAsset.chainAssetId.chainId
+                    for: chainAsset.chainAssetId.chainId
                 )
 
                 return self.assetInfoFactory.createAssetBalanceExistenceOperation(
-                    chainId: claimableGift.chainAsset.chainAssetId.chainId,
-                    asset: claimableGift.chainAsset.asset,
+                    chainId: chainAsset.chainAssetId.chainId,
+                    asset: chainAsset.asset,
                     runtimeProvider: runtimeProvider,
                     operationQueue: self.operationQueue
                 )
@@ -66,51 +67,49 @@ private extension GiftClaimAvailabilityCheckFactory {
 
 extension GiftClaimAvailabilityCheckFactory: GiftClaimAvailabilityCheckFactoryProtocol {
     func createAvailabilityWrapper(
-        for claimableGift: ClaimableGiftProtocol
-    ) -> CompoundOperationWrapper<GiftClaimAvailabilityCheckResult> {
-        let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
-            for: claimableGift.accountId,
-            chainAsset: claimableGift.chainAsset
-        )
-        let balanceExistenceWrapper = createBalanceExisteceWrapper(
-            claimableGift: claimableGift
-        )
+        for giftAccountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> CompoundOperationWrapper<GiftClaimAvailabilty> {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chainAssetId.chainId)
+            let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
 
-        let resultOperation = ClosureOperation<GiftClaimAvailabilityCheckResult> {
-            let transferableBalance = try transferableBalanceWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-                .transferable
-
-            let existence = try balanceExistenceWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-
-            let availability: GiftClaimAvailabilty = transferableBalance > existence.minBalance
-                ? .claimable(transferableBalance)
-                : .claimed
-
-            return GiftClaimAvailabilityCheckResult(
-                claimableGift: claimableGift,
-                availability: availability
+            let transferableBalanceWrapper = balanceQueryFactory.queryBalance(
+                for: giftAccountId,
+                chainAsset: chainAsset
             )
+            let balanceExistenceWrapper = createBalanceExisteceWrapper(
+                chainAsset: chainAsset
+            )
+
+            let resultOperation = ClosureOperation<GiftClaimAvailabilty> {
+                let transferableBalance = try transferableBalanceWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+                    .transferable
+
+                let existence = try balanceExistenceWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+
+                return transferableBalance > existence.minBalance
+                    ? .claimable(transferableBalance)
+                    : .claimed
+            }
+
+            resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
+            resultOperation.addDependency(balanceExistenceWrapper.targetOperation)
+
+            let dependencies = transferableBalanceWrapper.allOperations + balanceExistenceWrapper.allOperations
+
+            return CompoundOperationWrapper(
+                targetOperation: resultOperation,
+                dependencies: dependencies
+            )
+        } catch {
+            return .createWithError(error)
         }
-
-        resultOperation.addDependency(transferableBalanceWrapper.targetOperation)
-        resultOperation.addDependency(balanceExistenceWrapper.targetOperation)
-
-        let dependencies = transferableBalanceWrapper.allOperations + balanceExistenceWrapper.allOperations
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: dependencies
-        )
     }
-}
-
-struct GiftClaimAvailabilityCheckResult {
-    let claimableGift: ClaimableGiftProtocol
-    let availability: GiftClaimAvailabilty
 }
 
 enum GiftClaimAvailabilty {

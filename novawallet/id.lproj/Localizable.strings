@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Lihat di %@";
 "import.json.unsupported.ethereum.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Substrate ke jaringan dengan enkripsi Ethereum.";
 "import.json.unsupported.substrate.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Ethereum ke jaringan dengan enkripsi Substrate.";
+"gift.reclaim.no.account.alert.title" = "Tidak ditemukan akun";
 "common.today" = "Hari ini";
 "common.yesterday" = "Kemarin";
 "common.tx.details" = "Rincian transaksi";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Pencarian nama sedang berlangsung";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Tunggu sampai pencarian %@ selesai";
-"wallet.connect.scan.message" = "Pindai kode QR";
+"common.scan.message" = "Pindai kode QR";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Koneksi baru";
 "common.disconnect" = "Putus";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "Aplikasi %@ di smartphone Anda";
 "welcome.polkadot.vault.step1.highlighted" = "Buka Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Pilih set Kunci Anda, kemudian akun yang ingin Anda tambahkan ke Nova Wallet";
-"welcome.polkadot.vault.step2.highlighted" = "Pergi ke tab 'Key Sets'.";
-"welcome.polkadot.vault.step2.details" = "Perhatikan, jalur derivasi harus kosong";
-"welcome.polkadot.vault.step3" = "Polkadot Vault akan memberikan Anda %@";
-"welcome.polkadot.vault.step3.highlighted" = "Kode QR untuk dipindai";
 "staking.controller.deprecated.title" = "Akun Kontroler Sedang Dihentikan Penggunaannya";
 "staking.controller.deprecated.details" = "Gunakan Proksinya untuk mendelelasikan operasi Staking ke akun lain";
 "staking.controller.deprecated.action" = "Perbarui Kontroler ke Stash";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "Keyakinan akan diatur ke 0,1x ketika Abstain";
 "cloud.backup.password.confirm.title" = "Konfirmasikan kata sandi cadangan";
 "cloud.backup.password.confirm.details" = "Harap masukkan kata sandi yang Anda buat di layar sebelumnya";
+"welcome.polkadot.vault.step.last.highlighted" = "kode QR untuk dipindai";
 "swipe.gov.empty.view.voted.text" = "Anda telah memberikan suara untuk semua referendum yang tersedia";
 "swipe.gov.empty.view.button" = "Konfirmasi suara Anda";
 "gov.voting.list.title" = "Daftar suara";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "Hadiah";
 "staking.validator.apy.percent" = "Imbalan Estimasi (%% APY)";
 "parastk.collators.filter.rewards" = "Perkiraan hadiah (%% APR)";
+"gift.reclaim.dialog.message" = "Jika Anda mengambil kembali hadiah ini, tautan yang dibagikan akan dinonaktifkan, dan token akan dikembalikan ke dompet Anda.\nApakah Anda ingin melanjutkan?";
+"gift.action.reclaim.title" = "Klaim kembali";
 "gift.claim.warning.wallet.message" = "Buat dompet baru atau impor yang sudah ada untuk mengklaim hadiah";
 "gift.claim.warning.wallet.manage.action" = "Kelola Dompet";
 "gift.claim.success.status" = "Anda berhasil mengklaim hadiah. Token akan segera muncul di saldo Anda.";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Ups, hadiah tersebut sudah diklaim";
 "gift.claim.action.title" = "Klaim hadiah";
 "gift.claim.title" = "Anda mendapatkan hadiah kripto!";
+"gift.status.claimed" = "Diambil";
+"gift.status.reclaimed" = "Diklaim kembali";
 "gift.claim.fee" = "Biaya jaringan pada klaim";
 "gift.prepared.title" = "Hadiah Telah Disiapkan.\nBagikan Sekarang!";
 "gift.prepared.share.action.title" = "Bagikan tautan hadiah";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Masukkan jumlah hadiah Anda";
 "gifts.onboarding.step2.highlighted" = "Bagikan hadiah secara langsung";
 "gifts.onboarding.title" = "Bagikan Hadiah Kripto kepada Siapa Saja, Di Mana Saja";
+"gift.list.gifts.section.title" = "Hadiah yang Anda buat";
 "common.gift" = "Hadiah";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ sebagai link dan undang siapa saja ke Nova";
@@ -2003,3 +2005,17 @@
 "common.total.fee" = "Biaya total";
 "gift.unsupported.token.alert.title" = "Token ini tidak didukung oleh fitur hadiah";
 "gift.unsupported.token.alert.message" = "Pemberian hadiah untuk token ini saat ini tidak didukung. Silakan pilih token yang berbeda, jaringan yang berbeda, atau periksa kembali nanti.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Ekspor Kunci Pribadi";
+"welcome.polkadot.vault.import.private.key" = "Impor kunci pribadi";
+"welcome.polkadot.vault.pair.public.key" = "Pasangkan kunci publik";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Ketuk pada Kunci Turunan";
+"common.invalid.qr.code" = "Kode QR tidak valid";
+"polkadot.vault.scanner.message" = "Pindai kode QR\ndari %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault akan menyediakan Anda %@";
+"welcome.polkadot.vault.step3.import" = "Ketuk ikon di pojok kanan atas dan pilih %@";
+"welcome.polkadot.vault.step2.pair" = "%@ yang ingin Anda tambahkan ke Nova Wallet";
+"gift.reclaim.success.status" = "Anda berhasil mengambil kembali hadiah Anda";
+"gift.loading.message" = "Memuat hadiah...";
+"gift.created.date.format" = "Dibuat: %@";
+"gift.reclaim.no.account.alert.message" = "Harap pilih dompet lain atau tambahkan akun %@ di Pengaturan untuk melanjutkan.";
+"gift.reclaim.dialog.title" = "Ambil kembali %@ Hadiah?";

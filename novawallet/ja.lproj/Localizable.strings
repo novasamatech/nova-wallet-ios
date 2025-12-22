@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "%@で表示";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum暗号化のネットワークにSubstrateシークレットを持つアカウントをインポートできません";
 "import.json.unsupported.substrate.crypto.message" = "Substrate暗号化のネットワークにEthereumシークレットを持つアカウントをインポートできません";
+"gift.reclaim.no.account.alert.title" = "アカウントが見つかりません";
 "common.today" = "今日";
 "common.yesterday" = "昨日";
 "common.tx.details" = "トランザクション詳細";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "アドレスまたはw3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "名前を検索中";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "検索が完了するまでお待ちください %@";
-"wallet.connect.scan.message" = "QRコードをスキャンする";
+"common.scan.message" = "QRコードをスキャンする";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "新しい接続";
 "common.disconnect" = "切断する";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "スマートフォンの%@アプリケーション";
 "welcome.polkadot.vault.step1.highlighted" = "Polkadot Vault を開く";
-"welcome.polkadot.vault.step2" = "Nova Walletに追加したい%@のキーセットを選択";
-"welcome.polkadot.vault.step2.highlighted" = "Key Sets タブに行く。";
-"welcome.polkadot.vault.step2.details" = "派生パスが空であることに注意してください";
-"welcome.polkadot.vault.step3" = "Polkadot Vaultはあなたに%@を提供します";
-"welcome.polkadot.vault.step3.highlighted" = "スキャン用のQRコード";
 "staking.controller.deprecated.title" = "コントローラーアカウントは廃止されます";
 "staking.controller.deprecated.details" = "プロキシを使用して別のアカウントにStaking操作を委任";
 "staking.controller.deprecated.action" = "コントローラーをStashに更新";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "棄権時には信念が0.1xに設定されます";
 "cloud.backup.password.confirm.title" = "バックアップパスワードを確認";
 "cloud.backup.password.confirm.details" = "前の画面で作成したパスワードを入力してください";
+"welcome.polkadot.vault.step.last.highlighted" = "スキャン用のQRコード";
 "swipe.gov.empty.view.voted.text" = "利用可能なレファレンダに既に投票しています";
 "swipe.gov.empty.view.button" = "投票を確認する";
 "gov.voting.list.title" = "投票リスト";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "報酬";
 "staking.validator.apy.percent" = "推定報酬 (%% APY)";
 "parastk.collators.filter.rewards" = "推定報酬 (%% APR)";
+"gift.reclaim.dialog.message" = "この贈り物を回収すると、共有リンクが無効になり、トークンがウォレットに返金されます。\n続行しますか？";
+"gift.action.reclaim.title" = "回収";
 "gift.claim.warning.wallet.message" = "贈り物を受け取るために、新しいウォレットを作成するか既存のウォレットをインポートしてください";
 "gift.claim.warning.wallet.manage.action" = "ウォレットを管理";
 "gift.claim.success.status" = "贈り物を正常に受け取りました。トークンは間もなくあなたの残高に表示されます。";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "おっと、贈り物はすでに受け取られています";
 "gift.claim.action.title" = "贈り物を受け取る";
 "gift.claim.title" = "暗号通貨の贈り物を受け取りました！";
+"gift.status.claimed" = "請求済み";
+"gift.status.reclaimed" = "回収済み";
 "gift.claim.fee" = "請求時のネットワーク料金";
 "gift.prepared.title" = "贈り物が準備できました。\n今すぐ共有しましょう！";
 "gift.prepared.share.action.title" = "贈り物リンクを共有";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "贈り物の金額を入力";
 "gifts.onboarding.step2.highlighted" = "贈り物を直接共有";
 "gifts.onboarding.title" = "誰にでも、どこにでもクリプトギフトを共有";
+"gift.list.gifts.section.title" = "あなたが作成した贈り物";
 "common.gift" = "贈り物";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@をリンクとして共有し、誰でもNovaに招待";
@@ -2003,3 +2005,17 @@
 "common.total.fee" = "合計手数料";
 "gift.unsupported.token.alert.title" = "このトークンはギフト機能でサポートされていません";
 "gift.unsupported.token.alert.message" = "このトークンへのギフトは現在サポートされていません。 別のトークン、別のネットワークを選択するか、後で再度確認してください。";
+"welcome.polkadot.vault.step3.import.highlighted" = "秘密鍵をエクスポート";
+"welcome.polkadot.vault.import.private.key" = "秘密鍵をインポート";
+"welcome.polkadot.vault.pair.public.key" = "公開鍵をペアリング";
+"welcome.polkadot.vault.step2.pair.highlighted" = "派生キーをタップ";
+"common.invalid.qr.code" = "無効なQRコード";
+"polkadot.vault.scanner.message" = "QRコードをスキャン\n%";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに % を提供します";
+"welcome.polkadot.vault.step3.import" = "右上のアイコンをタップして %@ を選択";
+"welcome.polkadot.vault.step2.pair" = "Nova Wallet に追加したい %@";
+"gift.reclaim.success.status" = "ギフトを正常に再取得しました";
+"gift.loading.message" = "ギフトを読み込み中...";
+"gift.created.date.format" = "作成日: %@";
+"gift.reclaim.no.account.alert.message" = "続行するには別のウォレットを選択するか、設定で %@ アカウントを追加してください。";
+"gift.reclaim.dialog.title" = "%@ ギフトを再請求しますか？";
