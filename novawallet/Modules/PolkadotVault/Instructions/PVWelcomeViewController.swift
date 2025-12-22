@@ -109,13 +109,13 @@ private extension PVWelcomeViewController {
     func setupStepsLocalization(for mode: PVWelcomeMode) {
         switch type {
         case .legacy:
-            setupLegacyInstruction(for: selectedLocale, mode: mode)
+            setupLegacyInstruction(for: selectedLocale)
         case .vault:
             setupVaultInstruction(for: selectedLocale, mode: mode)
         }
     }
 
-    func setupLegacyInstruction(for locale: Locale, mode _: PVWelcomeMode) {
+    func setupLegacyInstruction(for locale: Locale) {
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
