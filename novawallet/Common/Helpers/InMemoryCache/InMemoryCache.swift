@@ -38,6 +38,26 @@ final class InMemoryCache<K: Hashable, V> {
         return Array(cache.values)
     }
 
+    func fetchAllKeys() -> [K] {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return Array(cache.keys)
+    }
+
+    func fetchAllPairs() -> [(K, V)] {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return Array(cache).map { ($0.key, $0.value) }
+    }
+
     func removeValue(for key: K) {
         mutex.lock()
 

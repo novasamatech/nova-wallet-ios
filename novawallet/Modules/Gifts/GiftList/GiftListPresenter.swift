@@ -15,6 +15,7 @@ final class GiftListPresenter {
 
     var gifts: [GiftModel.Id: GiftModel] = [:]
     var chainAssets: [ChainAssetId: ChainAsset] = [:]
+    var syncingAccountIds: Set<AccountId> = []
 
     init(
         interactor: GiftListInteractorInputProtocol,
@@ -48,6 +49,7 @@ private extension GiftListPresenter {
         let sections = giftListViewModelFactory.createViewModel(
             for: Array(gifts.values),
             chainAssets: chainAssets,
+            syncingAccountIds: syncingAccountIds,
             locale: localizationManager.selectedLocale
         )
 
@@ -119,5 +121,13 @@ extension GiftListPresenter: GiftListInteractorOutputProtocol {
                 self?.interactor.setup()
             }
         )
+    }
+
+    func didReceive(syncingAccountIds: Set<AccountId>) {
+        self.syncingAccountIds = syncingAccountIds
+
+        guard !gifts.isEmpty else { return }
+
+        provideGiftList()
     }
 }

@@ -4,6 +4,7 @@ protocol GiftListViewModelFactoryProtocol {
     func createViewModel(
         for gifts: [GiftModel],
         chainAssets: [ChainAssetId: ChainAsset],
+        syncingAccountIds: Set<AccountId>,
         locale: Locale
     ) -> [GiftListSectionModel]
 }
@@ -35,6 +36,7 @@ private extension GiftListViewModelFactory {
     func createGiftSection(
         for gifts: [GiftModel],
         chainAssets: [ChainAssetId: ChainAsset],
+        syncingAccountIds: Set<AccountId>,
         locale: Locale
     ) -> GiftListSectionModel {
         let pendingGifts = gifts
@@ -46,7 +48,7 @@ private extension GiftListViewModelFactory {
             .sorted { $0.creationDate > $1.creationDate }
 
         let giftRows = (pendingGifts + claimedGifts)
-            .compactMap { createGiftModel(for: $0, using: chainAssets, locale) }
+            .compactMap { createGiftModel(for: $0, using: chainAssets, syncingAccountIds: syncingAccountIds, locale) }
             .map { GiftListSectionModel.Row.gift($0) }
 
         let title = R.string(
@@ -62,11 +64,17 @@ private extension GiftListViewModelFactory {
     func createGiftModel(
         for gift: GiftModel,
         using chainAssets: [ChainAssetId: ChainAsset],
+        syncingAccountIds: Set<AccountId>,
         _ locale: Locale
     ) -> GiftListGiftViewModel? {
+        let isSyncing = syncingAccountIds.contains(gift.giftAccountId)
+
         guard
             let chainAsset = chainAssets[gift.chainAssetId],
-            let status = GiftListGiftViewModel.Status(from: gift.status)
+            let status = GiftListGiftViewModel.Status(
+                from: gift.status,
+                isSyncing: isSyncing
+            )
         else { return nil }
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
@@ -79,29 +87,23 @@ private extension GiftListViewModelFactory {
         let tokenImageViewModel = assetIconViewModelFactory.createAssetIconViewModel(from: assetDisplayInfo)
 
         let giftImage = switch status {
-        case .pending:
+        case .pending, .syncing:
             StaticImageViewModel(image: R.image.imageGiftPacked()!)
         case .claimed, .reclaimed:
             StaticImageViewModel(image: R.image.imageGiftUnpacked()!)
         }
 
-        var subtitle: String?
-
-        switch status {
+        let subtitle: String? = switch status {
         case .pending:
-            subtitle = R.string(
-                preferredLanguages: locale.rLanguages
-            ).localizable.giftCreatedDateFormat(
+            R.string(preferredLanguages: locale.rLanguages).localizable.giftCreatedDateFormat(
                 dateFormatter.value(for: locale).string(from: gift.creationDate)
             )
+        case .syncing:
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonSyncing()
         case .claimed:
-            subtitle = R.string(
-                preferredLanguages: locale.rLanguages
-            ).localizable.giftStatusClaimed()
+            R.string(preferredLanguages: locale.rLanguages).localizable.giftStatusClaimed()
         case .reclaimed:
-            subtitle = R.string(
-                preferredLanguages: locale.rLanguages
-            ).localizable.giftStatusReclaimed()
+            R.string(preferredLanguages: locale.rLanguages).localizable.giftStatusReclaimed()
         }
 
         return GiftListGiftViewModel(
@@ -121,6 +123,7 @@ extension GiftListViewModelFactory: GiftListViewModelFactoryProtocol {
     func createViewModel(
         for gifts: [GiftModel],
         chainAssets: [ChainAssetId: ChainAsset],
+        syncingAccountIds: Set<AccountId>,
         locale: Locale
     ) -> [GiftListSectionModel] {
         guard !gifts.isEmpty else { return [] }
@@ -131,6 +134,7 @@ extension GiftListViewModelFactory: GiftListViewModelFactoryProtocol {
             createGiftSection(
                 for: gifts,
                 chainAssets: chainAssets,
+                syncingAccountIds: syncingAccountIds,
                 locale: locale
             )
         ]

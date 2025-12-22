@@ -26,7 +26,7 @@ final class GiftListGiftTableViewCell: BlurredCollectionViewCell<GiftListGiftVie
         case .pending:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorGiftBlockBackground()!
             isUserInteractionEnabled = true
-        case .claimed, .reclaimed:
+        case .syncing, .claimed, .reclaimed:
             view.backgroundBlurView.contentView?.fillColor = R.color.colorBlockBackground()!
             isUserInteractionEnabled = false
         }
@@ -40,10 +40,10 @@ final class GiftListGiftView: GenericPairValueView<
         AssetIconView,
         GenericPairValueView<
             GenericPairValueView<
-                IconDetailsView,
+                IconDetailsGenericView<ShimmerLabel>,
                 FlexibleSpaceView
             >,
-            UILabel
+            ShimmerLabel
         >
     >,
     GenericPairValueView<
@@ -59,19 +59,19 @@ final class GiftListGiftView: GenericPairValueView<
         sView.sView
     }
 
-    var amountView: IconDetailsView {
+    var amountView: IconDetailsGenericView<ShimmerLabel> {
         fView.sView.fView.fView
     }
 
-    var amountLabel: UILabel {
-        amountView.detailsLabel
+    var amountLabel: ShimmerLabel {
+        amountView.detailsView
     }
 
     var amountAccessoryImageView: UIImageView {
         amountView.imageView
     }
 
-    var creationDateLabel: UILabel {
+    var creationDateLabel: ShimmerLabel {
         fView.sView.sView
     }
 
@@ -115,13 +115,23 @@ private extension GiftListGiftView {
     }
 
     func setupStyle() {
-        amountLabel.apply(style: .semiboldBodyPrimary)
-        creationDateLabel.apply(style: .footnoteSecondary)
+        amountLabel.applyShimmer(style: .semiboldBodyPrimary)
+        creationDateLabel.applyShimmer(style: .footnoteSecondary)
 
         assetIconView.backgroundView.cornerRadius = Constants.assetIconCornerRadius
         assetIconView.backgroundView.apply(style: .assetContainer)
 
         assetIconView.contentMode = .scaleAspectFit
+    }
+
+    func stopShimmering() {
+        amountLabel.stopShimmering()
+        creationDateLabel.stopShimmering()
+    }
+
+    func startShimmering() {
+        amountLabel.startShimmering()
+        creationDateLabel.startShimmering()
     }
 }
 
@@ -129,6 +139,8 @@ private extension GiftListGiftView {
 
 extension GiftListGiftView {
     func bind(viewModel: GiftListGiftViewModel) {
+        stopShimmering()
+
         viewModel.giftImageViewModel.loadImage(
             on: giftImageView,
             targetSize: CGSize(
@@ -143,14 +155,24 @@ extension GiftListGiftView {
 
         switch viewModel.status {
         case .pending:
-            amountLabel.apply(style: .semiboldBodyPrimary)
+            amountLabel.applyShimmer(style: .semiboldBodyPrimary)
             amountAccessoryImageView.image = R.image.iconSmallArrow()
             assetIconView.alpha = Constants.assetIconAlphaActive
-        case .claimed, .reclaimed:
-            amountLabel.apply(style: .semiboldBodySecondary)
+            giftImageView.alpha = Constants.assetIconAlphaActive
+        case .syncing:
+            amountLabel.applyShimmer(style: .semiboldBodySecondary)
             amountAccessoryImageView.image = nil
             assetIconView.alpha = Constants.assetIconAlphaInactive
+            giftImageView.alpha = Constants.assetIconAlphaInactive
+            startShimmering()
+        case .claimed, .reclaimed:
+            amountLabel.applyShimmer(style: .semiboldBodySecondary)
+            amountAccessoryImageView.image = nil
+            assetIconView.alpha = Constants.assetIconAlphaInactive
+            giftImageView.alpha = Constants.assetIconAlphaActive
         }
+
+        creationDateLabel.applyShimmer(style: .footnoteSecondary)
 
         let tokenIconSettings = ImageViewModelSettings(
             targetSize: CGSize(

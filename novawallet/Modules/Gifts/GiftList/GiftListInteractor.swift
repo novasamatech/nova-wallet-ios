@@ -41,6 +41,24 @@ private extension GiftListInteractor {
                 }
             } ?? [:]
     }
+
+    func subscribeGiftSync() {
+        giftSyncService.add(
+            observer: self,
+            sendStateOnSubscription: false,
+            queue: .main
+        ) { [weak self] _, accountIds in
+            guard let accountIds else { return }
+
+            self?.presenter?.didReceive(syncingAccountIds: accountIds)
+        }
+
+        giftSyncService.setup()
+    }
+
+    func subscribeLocalGifts() {
+        giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
+    }
 }
 
 // MARK: - GiftsLocalStorageSubscriber
@@ -61,7 +79,7 @@ extension GiftListInteractor: GiftsLocalStorageSubscriber, GiftsLocalSubscriptio
 extension GiftListInteractor: GiftListInteractorInputProtocol {
     func setup() {
         setupChainAssets()
-        giftsLocalSubscription = subscribeAllGifts(for: selectedMetaId)
-        giftSyncService.start()
+        subscribeGiftSync()
+        subscribeLocalGifts()
     }
 }

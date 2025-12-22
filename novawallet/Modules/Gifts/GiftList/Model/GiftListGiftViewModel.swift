@@ -16,10 +16,19 @@ struct GiftListGiftViewModel: Equatable {
 extension GiftListGiftViewModel {
     enum Status {
         case pending
+        case syncing
         case claimed
         case reclaimed
 
-        init?(from status: GiftModel.Status) {
+        init?(
+            from status: GiftModel.Status,
+            isSyncing: Bool
+        ) {
+            guard !isSyncing else {
+                self = .syncing
+                return
+            }
+
             switch status {
             case .pending:
                 self = .pending

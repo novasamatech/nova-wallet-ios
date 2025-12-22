@@ -2023,3 +2023,4 @@ Do you want to continue?";
 "gift.reclaim.success.status" = "You’ve successfully reclaimed your gift";
 "feature.unsupported.sheet.title.gift" = "Gifting is not supported for %@ wallets";
 "feature.unsupported.sheet.message.gift" = "To create or manage gifts, please switch to a different type of wallet.";
+"common.syncing" = "Syncing...";
