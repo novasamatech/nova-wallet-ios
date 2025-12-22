@@ -166,6 +166,8 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showGift(
         from view: AssetListViewProtocol?,
+        chains: [ChainModel],
+        selectedWallet: MetaAccountModel,
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     )

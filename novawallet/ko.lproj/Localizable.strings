@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "%@에서 보기";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum 암호화 네트워크에 Substrate 비밀이 있는 계정을 가져올 수 없습니다";
 "import.json.unsupported.substrate.crypto.message" = "Substrate 암호화 네트워크에 Ethereum 비밀이 있는 계정을 가져올 수 없습니다";
+"gift.reclaim.no.account.alert.title" = "계정을 찾을 수 없습니다";
 "common.today" = "오늘";
 "common.yesterday" = "어제";
 "common.tx.details" = "거래 세부정보";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "리워드";
 "staking.validator.apy.percent" = "예상 보상 (%% APY)";
 "parastk.collators.filter.rewards" = "예상 보상 (%% APR)";
+"gift.reclaim.dialog.message" = "이 선물을 회수하면 공유된 링크가 비활성화되고 토큰이 지갑으로 반환됩니다. 계속하시겠습니까?";
+"gift.action.reclaim.title" = "회수";
 "gift.claim.warning.wallet.message" = "새 지갑을 만들거나 기존 지갑을 가져와 선물을 받으세요";
 "gift.claim.warning.wallet.manage.action" = "지갑 관리";
 "gift.claim.success.status" = "성공적으로 선물을 수령했습니다. 곧 잔액에 반영될 것입니다.";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "이미 선물이 수령되었습니다";
 "gift.claim.action.title" = "선물 받기";
 "gift.claim.title" = "암호화폐 선물을 받았습니다!";
+"gift.status.claimed" = "수령됨";
+"gift.status.reclaimed" = "회수됨";
 "gift.claim.fee" = "청구 시 네트워크 수수료";
 "gift.prepared.title" = "선물이 준비되었습니다.\n지금 공유하세요!";
 "gift.prepared.share.action.title" = "선물 링크 공유";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "선물 금액 입력";
 "gifts.onboarding.step2.highlighted" = "선물을 직접 공유";
 "gifts.onboarding.title" = "누구와도 언제 어디서나 암호화폐 선물 공유";
+"gift.list.gifts.section.title" = "생성한 선물";
 "common.gift" = "선물";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@를 링크로 공유하고 Nova로 초대하세요";
@@ -2008,3 +2014,8 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault가 당신에게 %@를 제공할 것입니다";
 "welcome.polkadot.vault.step3.import" = "오른쪽 상단 모서리의 아이콘을 탭하고 %@를 선택하세요";
 "welcome.polkadot.vault.step2.pair" = "Nova Wallet에 추가하고 싶은 %@";
+"gift.reclaim.success.status" = "선물을 성공적으로 회수했습니다";
+"gift.loading.message" = "선물을 로딩 중...";
+"gift.created.date.format" = "생성됨: %@";
+"gift.reclaim.no.account.alert.message" = "계속하려면 다른 지갑을 선택하거나 설정에서 %@ 계정을 추가하세요.";
+"gift.reclaim.dialog.title" = "%@ 선물을 회수하시겠습니까?";

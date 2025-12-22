@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "%@で表示";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum暗号化のネットワークにSubstrateシークレットを持つアカウントをインポートできません";
 "import.json.unsupported.substrate.crypto.message" = "Substrate暗号化のネットワークにEthereumシークレットを持つアカウントをインポートできません";
+"gift.reclaim.no.account.alert.title" = "アカウントが見つかりません";
 "common.today" = "今日";
 "common.yesterday" = "昨日";
 "common.tx.details" = "トランザクション詳細";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "報酬";
 "staking.validator.apy.percent" = "推定報酬 (%% APY)";
 "parastk.collators.filter.rewards" = "推定報酬 (%% APR)";
+"gift.reclaim.dialog.message" = "この贈り物を回収すると、共有リンクが無効になり、トークンがウォレットに返金されます。\n続行しますか？";
+"gift.action.reclaim.title" = "回収";
 "gift.claim.warning.wallet.message" = "贈り物を受け取るために、新しいウォレットを作成するか既存のウォレットをインポートしてください";
 "gift.claim.warning.wallet.manage.action" = "ウォレットを管理";
 "gift.claim.success.status" = "贈り物を正常に受け取りました。トークンは間もなくあなたの残高に表示されます。";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "おっと、贈り物はすでに受け取られています";
 "gift.claim.action.title" = "贈り物を受け取る";
 "gift.claim.title" = "暗号通貨の贈り物を受け取りました！";
+"gift.status.claimed" = "請求済み";
+"gift.status.reclaimed" = "回収済み";
 "gift.claim.fee" = "請求時のネットワーク料金";
 "gift.prepared.title" = "贈り物が準備できました。\n今すぐ共有しましょう！";
 "gift.prepared.share.action.title" = "贈り物リンクを共有";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "贈り物の金額を入力";
 "gifts.onboarding.step2.highlighted" = "贈り物を直接共有";
 "gifts.onboarding.title" = "誰にでも、どこにでもクリプトギフトを共有";
+"gift.list.gifts.section.title" = "あなたが作成した贈り物";
 "common.gift" = "贈り物";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@をリンクとして共有し、誰でもNovaに招待";
@@ -2008,3 +2014,8 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault はあなたに % を提供します";
 "welcome.polkadot.vault.step3.import" = "右上のアイコンをタップして %@ を選択";
 "welcome.polkadot.vault.step2.pair" = "Nova Wallet に追加したい %@";
+"gift.reclaim.success.status" = "ギフトを正常に再取得しました";
+"gift.loading.message" = "ギフトを読み込み中...";
+"gift.created.date.format" = "作成日: %@";
+"gift.reclaim.no.account.alert.message" = "続行するには別のウォレットを選択するか、設定で %@ アカウントを追加してください。";
+"gift.reclaim.dialog.title" = "%@ ギフトを再請求しますか？";
