@@ -11,6 +11,8 @@ final class AssetListTotalBalanceView: UIView {
         view.loopMode = .loop
         view.contentMode = .scaleAspectFill
         view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        view.configuration = .init(renderingEngine: .coreAnimation)
+        view.animationSpeed = 0.5
     }
 
     let displayContentView: UIView = .create { view in
