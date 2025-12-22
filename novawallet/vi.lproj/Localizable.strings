@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Tạo: %@";
 "gift.reclaim.no.account.alert.message" = "Vui lòng chọn một ví khác hoặc thêm tài khoản %@ trong Cài đặt để tiếp tục.";
 "gift.reclaim.dialog.title" = "Đòi lại quà %@?";
+"feature.unsupported.sheet.title.gift" = "Tặng quà không được hỗ trợ cho ví %@";
+"feature.unsupported.sheet.message.gift" = "Để tạo hoặc quản lý quà tặng, vui lòng chuyển sang loại ví khác.";
+"common.syncing" = "Đang đồng bộ...";
