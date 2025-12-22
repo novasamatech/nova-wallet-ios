@@ -91,7 +91,8 @@ private extension AssetListPresenter {
                     ),
                     prices: nil,
                     locks: nil,
-                    hasSwaps: model.hasSwaps()
+                    hasSwaps: model.hasSwaps(),
+                    hasGifts: model.hasGifts()
                 ),
                 genericParams: createGenericViewModelFactoryParams()
             )
@@ -185,7 +186,8 @@ private extension AssetListPresenter {
                 ),
                 prices: totalValue,
                 locks: totalLocks,
-                hasSwaps: model.hasSwaps()
+                hasSwaps: model.hasSwaps(),
+                hasGifts: model.hasGifts()
             ),
             genericParams: createGenericViewModelFactoryParams()
         )
@@ -620,7 +622,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func gift() {
-        guard let wallet else { return }
+        guard let wallet, !model.allChains.isEmpty else { return }
 
         let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
             self?.wireframe.showAssetDetails(
