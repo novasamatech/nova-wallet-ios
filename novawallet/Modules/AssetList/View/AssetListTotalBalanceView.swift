@@ -6,15 +6,6 @@ import Lottie
 final class AssetListTotalBalanceView: UIView {
     let backgroundBlurView = GladingFrostedCardView()
 
-    let lottieAnimationView: LottieAnimationView = .create { view in
-        view.animation = snowfallAnimation
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFill
-        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        view.configuration = .init(renderingEngine: .coreAnimation)
-        view.animationSpeed = 0.5
-    }
-
     let displayContentView: UIView = .create { view in
         view.backgroundColor = .clear
     }
@@ -137,7 +128,6 @@ final class AssetListTotalBalanceView: UIView {
 
         setupLayout()
         setupLocalization()
-        setupAnimation()
     }
 
     @available(*, unavailable)
@@ -237,11 +227,6 @@ final class AssetListTotalBalanceView: UIView {
             make.top.bottom.equalToSuperview()
         }
 
-        backgroundBlurView.addSubview(lottieAnimationView)
-        lottieAnimationView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
         addSubview(displayContentView)
         displayContentView.snp.makeConstraints { make in
             make.leading.equalTo(backgroundBlurView).offset(Constants.insets.left)
@@ -291,11 +276,6 @@ final class AssetListTotalBalanceView: UIView {
         actionsView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-
-    func setupAnimation() {
-        lottieAnimationView.stop()
-        lottieAnimationView.play()
     }
 
     func startLoadingIfNeeded() {
