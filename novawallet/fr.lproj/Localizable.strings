@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Créé : %@";
 "gift.reclaim.no.account.alert.message" = "Veuillez sélectionner un autre portefeuille ou ajouter un compte %@ dans les paramètres pour continuer.";
 "gift.reclaim.dialog.title" = "Réclamer le cadeau %@?";
+"feature.unsupported.sheet.title.gift" = "Les cadeaux ne sont pas pris en charge pour les portefeuilles %@";
+"feature.unsupported.sheet.message.gift" = "Pour créer ou gérer des cadeaux, veuillez passer à un autre type de portefeuille.";
+"common.syncing" = "Synchronisation en cours...";

@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Létrehozva: %@";
 "gift.reclaim.no.account.alert.message" = "Kérjük, válasszon egy másik pénztárcát, vagy adjon hozzá egy %@ fiókot a Beállításokban a folytatáshoz.";
 "gift.reclaim.dialog.title" = "%@ ajándék visszaigénylése?";
+"feature.unsupported.sheet.title.gift" = "Az ajándékozás nem támogatott a(z) %@ pénztárcáknál";
+"feature.unsupported.sheet.message.gift" = "Ajándékok létrehozásához vagy kezeléséhez kérjük váltson egy másik típusú tárcára.";
+"common.syncing" = "Szinkronizálás...";
