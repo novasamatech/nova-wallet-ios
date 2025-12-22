@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "생성됨: %@";
 "gift.reclaim.no.account.alert.message" = "계속하려면 다른 지갑을 선택하거나 설정에서 %@ 계정을 추가하세요.";
 "gift.reclaim.dialog.title" = "%@ 선물을 회수하시겠습니까?";
+"feature.unsupported.sheet.title.gift" = "선물 보내기는 %@ 지갑에서 지원되지 않습니다";
+"feature.unsupported.sheet.message.gift" = "선물을 생성하거나 관리하려면 다른 유형의 지갑으로 전환하세요.";
+"common.syncing" = "동기화 중...";
