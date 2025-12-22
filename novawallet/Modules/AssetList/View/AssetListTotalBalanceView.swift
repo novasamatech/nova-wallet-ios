@@ -1,7 +1,6 @@
 import UIKit
 import UIKit_iOS
 import Kingfisher
-import Lottie
 
 final class AssetListTotalBalanceView: UIView {
     let backgroundBlurView = GladingFrostedCardView()
@@ -405,9 +404,4 @@ private extension AssetListTotalBalanceView {
         static let privacyButtonSize = CGSize(width: 20, height: 20)
         static let totalBalanceSecureHeight: CGFloat = 47.0
     }
-
-    static let snowfallAnimation: LottieAnimation? = LottieAnimation.named(
-        "snowfall",
-        bundle: .main
-    )
 }
