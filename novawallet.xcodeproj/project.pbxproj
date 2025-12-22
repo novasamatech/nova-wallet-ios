@@ -1695,6 +1695,7 @@
 		2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */; };
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
+		2D209DAA2EF94C8E00FB6F77 /* snowFall.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D209DA92EF94C8E00FB6F77 /* snowFall.json */; };
 		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
 		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
 		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
@@ -8279,6 +8280,7 @@
 		2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRetrieveOperationFactory.swift; sourceTree = "<group>"; };
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
+		2D209DA92EF94C8E00FB6F77 /* snowFall.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = snowFall.json; sourceTree = "<group>"; };
 		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
 		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
 		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
@@ -16847,6 +16849,14 @@
 			path = ImageRetrieve;
 			sourceTree = "<group>";
 		};
+		2D209DA82EF94C6B00FB6F77 /* NewYear */ = {
+			isa = PBXGroup;
+			children = (
+				2D209DA92EF94C8E00FB6F77 /* snowFall.json */,
+			);
+			path = NewYear;
+			sourceTree = "<group>";
+		};
 		2D20F1C52D3648F5003E9CF2 /* WalletStorageCleaning */ = {
 			isa = PBXGroup;
 			children = (
@@ -18343,6 +18353,7 @@
 		2DB586B22EB877C700950F7D /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
+				2D209DA82EF94C6B00FB6F77 /* NewYear */,
 				2DB586B32EB877CF00950F7D /* Gift */,
 			);
 			path = Lottie;
@@ -30212,6 +30223,7 @@
 				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
+				2D209DAA2EF94C8E00FB6F77 /* snowFall.json in Resources */,
 				0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
 				2D3DCA8D2EC4E11600D57275 /* USDT_packing.json in Resources */,

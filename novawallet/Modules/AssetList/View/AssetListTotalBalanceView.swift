@@ -1,9 +1,17 @@
 import UIKit
 import UIKit_iOS
 import Kingfisher
+import Lottie
 
 final class AssetListTotalBalanceView: UIView {
     let backgroundBlurView = GladingCardView()
+
+    let lottieAnimationView: LottieAnimationView = .create { view in
+        view.animation = snowFallAnimation
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+    }
 
     let displayContentView: UIView = .create { view in
         view.backgroundColor = .clear
@@ -127,6 +135,7 @@ final class AssetListTotalBalanceView: UIView {
 
         setupLayout()
         setupLocalization()
+        setupAnimation()
     }
 
     @available(*, unavailable)
@@ -226,6 +235,11 @@ final class AssetListTotalBalanceView: UIView {
             make.top.bottom.equalToSuperview()
         }
 
+        backgroundBlurView.addSubview(lottieAnimationView)
+        lottieAnimationView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         addSubview(displayContentView)
         displayContentView.snp.makeConstraints { make in
             make.leading.equalTo(backgroundBlurView).offset(Constants.insets.left)
@@ -275,6 +289,11 @@ final class AssetListTotalBalanceView: UIView {
         actionsView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    func setupAnimation() {
+        lottieAnimationView.stop()
+        lottieAnimationView.play()
     }
 
     func startLoadingIfNeeded() {
@@ -403,4 +422,9 @@ private extension AssetListTotalBalanceView {
         static let privacyButtonSize = CGSize(width: 20, height: 20)
         static let totalBalanceSecureHeight: CGFloat = 47.0
     }
+
+    static let snowFallAnimation: LottieAnimation? = LottieAnimation.named(
+        "snowFall",
+        bundle: .main
+    )
 }
