@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Criado: %@";
 "gift.reclaim.no.account.alert.message" = "Por favor, selecione outra carteira ou adicione uma conta %@ nas Configurações para continuar.";
 "gift.reclaim.dialog.title" = "Resgatar presente %@?";
+"feature.unsupported.sheet.title.gift" = "Presentes não são suportados para carteiras %@";
+"feature.unsupported.sheet.message.gift" = "Para criar ou gerenciar presentes, mude para um tipo diferente de carteira.";
+"common.syncing" = "Sincronizando...";

@@ -2020,3 +2020,6 @@
 "gift.created.date.format" = "Создано: %@";
 "gift.reclaim.no.account.alert.message" = "Пожалуйста, выберите другой кошелек или добавьте %@ аккаунт в Настройках, чтобы продолжить.";
 "gift.reclaim.dialog.title" = "Возвратить %@ Подарок?";
+"feature.unsupported.sheet.title.gift" = "Подарки не поддерживаются для %@ кошельков";
+"feature.unsupported.sheet.message.gift" = "Чтобы создать или управлять подарками, пожалуйста, переключитесь на другой тип кошелька.";
+"common.syncing" = "Синхронизация...";

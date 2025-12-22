@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "创建时间：%@";
 "gift.reclaim.no.account.alert.message" = "请选择另一个钱包或在设置中添加 %@ 账户以继续。";
 "gift.reclaim.dialog.title" = "重新领取 %@ 礼物？";
+"feature.unsupported.sheet.title.gift" = "不支持 %@ 钱包的赠礼功能";
+"feature.unsupported.sheet.message.gift" = "要创建或管理礼物，请切换到其他类型的钱包。";
+"common.syncing" = "正在同步...";

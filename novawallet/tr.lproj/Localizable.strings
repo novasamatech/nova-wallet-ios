@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Oluşturulma Tarihi: %@";
 "gift.reclaim.no.account.alert.message" = "Devam etmek için lütfen başka bir cüzdan seçin veya Ayarlar'dan bir %@ hesabı ekleyin.";
 "gift.reclaim.dialog.title" = "%@ Hediyesini Geri Al?";
+"feature.unsupported.sheet.title.gift" = "Hediye verme %@ cüzdanlar için desteklenmiyor";
+"feature.unsupported.sheet.message.gift" = "Hediyeler oluşturmak veya yönetmek için lütfen farklı bir cüzdan türüne geçin.";
+"common.syncing" = "Senkronize ediliyor...";
