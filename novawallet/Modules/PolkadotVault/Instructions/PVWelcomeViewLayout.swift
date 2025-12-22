@@ -46,6 +46,13 @@ final class PVWelcomeViewLayout: UIView, AdaptiveDesignable {
         view.stepNumberView.titleLabel.text = "2"
     }
 
+    let step2DetailsHintView: IconDetailsView = .create { view in
+        view.spacing = 6
+        view.iconWidth = 18
+        view.imageView.image = R.image.iconCheckmarkFilled()?.tinted(with: R.color.colorIconPositive()!)
+        view.detailsLabel.apply(style: .footnotePositive)
+    }
+
     let step2DetailsImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
     }
@@ -60,6 +67,7 @@ final class PVWelcomeViewLayout: UIView, AdaptiveDesignable {
     }
 
     private var step2DetailsContainerView: UIView!
+    private var step2DetailsStackView: UIStackView!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -124,12 +132,18 @@ final class PVWelcomeViewLayout: UIView, AdaptiveDesignable {
         containerView.stackView.setCustomSpacing(12.0, after: step2)
 
         step2DetailsContainerView = UIView()
+        step2DetailsStackView = UIStackView()
+        step2DetailsStackView.axis = .vertical
+        step2DetailsStackView.spacing = 6.0
+        step2DetailsStackView.alignment = .leading
+
+        step2DetailsContainerView.addSubview(step2DetailsStackView)
         containerView.stackView.addArrangedSubview(step2DetailsContainerView)
 
-        step2DetailsContainerView.addSubview(step2DetailsImageView)
+        step2DetailsStackView.addArrangedSubview(step2DetailsImageView)
 
         let step2DetailsOffset = 2 * step2.stepNumberView.backgroundView.cornerRadius + step2.spacing
-        step2DetailsImageView.snp.makeConstraints { make in
+        step2DetailsStackView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.equalToSuperview().offset(step2DetailsOffset)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
@@ -142,5 +156,15 @@ final class PVWelcomeViewLayout: UIView, AdaptiveDesignable {
         containerView.stackView.setCustomSpacing(24.0, after: step3)
 
         containerView.stackView.addArrangedSubview(step4)
+    }
+
+    func showStep2Hint(with text: String) {
+        hideStep2Hint()
+        step2DetailsHintView.detailsLabel.text = text
+        step2DetailsStackView.insertArrangedSubview(step2DetailsHintView, at: 0)
+    }
+
+    func hideStep2Hint() {
+        step2DetailsHintView.removeFromSuperview()
     }
 }
