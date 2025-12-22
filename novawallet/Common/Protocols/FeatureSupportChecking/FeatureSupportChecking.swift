@@ -53,6 +53,17 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
                     successRouteClosure: successClosure
                 )
             }
+        case let .gift(chains):
+            featureSupportChecker.checkGiftSupport(
+                for: metaAccountModel,
+                chains: chains
+            ) { [weak self] result in
+                self?.presentOperationCompletion(
+                    on: sheetPresentingView,
+                    by: result,
+                    successRouteClosure: successClosure
+                )
+            }
         }
     }
 }

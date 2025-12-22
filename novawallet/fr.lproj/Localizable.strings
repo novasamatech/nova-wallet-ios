@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Voir dans %@";
 "import.json.unsupported.ethereum.crypto.message" = "Impossible d'importer un compte avec un secret Substrate vers le réseau chiffré avec Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Impossible d'importer un compte avec un secret Ethereum vers le réseau chiffré avec Substrate";
+"gift.reclaim.no.account.alert.title" = "Aucun compte trouvé";
 "common.today" = "Aujourd’hui";
 "common.yesterday" = "Hier";
 "common.tx.details" = "Détails de la transaction";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "Récompenses";
 "staking.validator.apy.percent" = "Récompense estimée (%% APY)";
 "parastk.collators.filter.rewards" = "Récompenses estimées (%% APR)";
+"gift.reclaim.dialog.message" = "Si vous récupérez ce cadeau, le lien partagé sera désactivé et les tokens seront remboursés sur votre portefeuille.\nVoulez-vous continuer ?";
+"gift.action.reclaim.title" = "Récupérer";
 "gift.claim.warning.wallet.message" = "Créez un nouveau portefeuille ou importez-en un existant pour réclamer le cadeau";
 "gift.claim.warning.wallet.manage.action" = "Gérer les portefeuilles";
 "gift.claim.success.status" = "Vous avez bien réclamé un cadeau. Les tokens apparaîtront dans votre solde sous peu.";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Oups, le cadeau a déjà été réclamé";
 "gift.claim.action.title" = "Réclamer le cadeau";
 "gift.claim.title" = "Vous avez un cadeau crypto !";
+"gift.status.claimed" = "Réclamé";
+"gift.status.reclaimed" = "Récupéré";
 "gift.claim.fee" = "Frais de réseau lors de la réclamation";
 "gift.prepared.title" = "Le cadeau a été préparé.\nPartagez-le maintenant !";
 "gift.prepared.share.action.title" = "Partager le lien du cadeau";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Entrez le montant de votre cadeau";
 "gifts.onboarding.step2.highlighted" = "Partagez le cadeau directement";
 "gifts.onboarding.title" = "Partagez des cadeaux crypto avec n'importe qui, n'importe où";
+"gift.list.gifts.section.title" = "Cadeaux que vous avez créés";
 "common.gift" = "Cadeau";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ comme un lien et invitez quiconque à Nova";
@@ -2008,3 +2014,8 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault vous fournira %@";
 "welcome.polkadot.vault.step3.import" = "Appuyez sur l'icône dans le coin supérieur droit et sélectionnez %@";
 "welcome.polkadot.vault.step2.pair" = "%@ que vous souhaitez ajouter à Nova Wallet";
+"gift.reclaim.success.status" = "Vous avez récupéré votre cadeau avec succès";
+"gift.loading.message" = "Chargement des cadeaux...";
+"gift.created.date.format" = "Créé : %@";
+"gift.reclaim.no.account.alert.message" = "Veuillez sélectionner un autre portefeuille ou ajouter un compte %@ dans les paramètres pour continuer.";
+"gift.reclaim.dialog.title" = "Réclamer le cadeau %@?";

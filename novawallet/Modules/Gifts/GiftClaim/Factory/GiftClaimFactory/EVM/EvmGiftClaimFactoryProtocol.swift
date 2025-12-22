@@ -7,4 +7,11 @@ protocol EvmGiftClaimFactoryProtocol {
         evmFee: EvmFeeModel,
         transferType: EvmTransferType
     ) -> CompoundOperationWrapper<Void>
+
+    func createReclaimWrapper(
+        gift: GiftModel,
+        claimingAccountId: AccountId,
+        evmFee: EvmFeeModel,
+        transferType: EvmTransferType
+    ) -> CompoundOperationWrapper<Void>
 }

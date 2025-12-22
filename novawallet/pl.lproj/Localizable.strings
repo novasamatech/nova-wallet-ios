@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Zobacz w %@";
 "import.json.unsupported.ethereum.crypto.message" = "Nie można zaimportować konta z sekretem Substrate do sieci z szyfrowaniem Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Nie można zaimportować konta z sekretem Ethereum do sieci z szyfrowaniem Substrate";
+"gift.reclaim.no.account.alert.title" = "Nie znaleziono konta";
 "common.today" = "Dziś";
 "common.yesterday" = "Wczoraj";
 "common.tx.details" = "Szczegóły transakcji";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "Nagrody";
 "staking.validator.apy.percent" = "Szacowana nagroda (%% APY)";
 "parastk.collators.filter.rewards" = "Szacowane nagrody (%% APR)";
+"gift.reclaim.dialog.message" = "Jeśli odzyskasz ten prezent, udostępniony link zostanie dezaktywowany, a tokeny zostaną zwrócone do twojego portfela.\nCzy chcesz kontynuować?";
+"gift.action.reclaim.title" = "Odzyskaj";
 "gift.claim.warning.wallet.message" = "Stwórz nowy portfel lub zaimportuj istniejący, aby odebrać prezent";
 "gift.claim.warning.wallet.manage.action" = "Zarządzaj portfelami";
 "gift.claim.success.status" = "Pomyślnie odebrano prezent. Tokeny pojawią się wkrótce na twoim saldzie.";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Ups, ten prezent został już odebrany";
 "gift.claim.action.title" = "Odbierz prezent";
 "gift.claim.title" = "Masz prezent kryptograficzny!";
+"gift.status.claimed" = "Odebrano";
+"gift.status.reclaimed" = "Odzyskano";
 "gift.claim.fee" = "Opłata sieciowa za odebranie";
 "gift.prepared.title" = "Prezent został przygotowany.\nUdostępnij go teraz!";
 "gift.prepared.share.action.title" = "Udostępnij link do prezentu";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Wprowadź kwotę prezentu";
 "gifts.onboarding.step2.highlighted" = "Udostępnij prezent bezpośrednio";
 "gifts.onboarding.title" = "Udostępniaj prezenty kryptograficzne każdemu, wszędzie";
+"gift.list.gifts.section.title" = "Stworzone przez Ciebie prezenty";
 "common.gift" = "Prezent";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ jako link i zaproś kogoś do Nova";
@@ -2008,3 +2014,8 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault dostarczy Ci %@";
 "welcome.polkadot.vault.step3.import" = "Stuknij ikonę w prawym górnym rogu i wybierz %@";
 "welcome.polkadot.vault.step2.pair" = "%@, które chcesz dodać do Nova Wallet";
+"gift.reclaim.success.status" = "Pomyślnie odzyskano prezent";
+"gift.loading.message" = "Ładowanie prezentów...";
+"gift.created.date.format" = "Utworzono: %@";
+"gift.reclaim.no.account.alert.message" = "Proszę wybrać inny portfel lub dodać konto %@ w Ustawieniach, aby kontynuować.";
+"gift.reclaim.dialog.title" = "Odzyskać %@ prezent?";

@@ -297,6 +297,24 @@ extension ShimmerLabel {
             runningColor: R.color.colorTextPrimary()!
         )
 
+        static let footnoteSecondary = ShimmerStyle(
+            normal: .footnoteSecondary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let semiboldBodyPrimary = ShimmerStyle(
+            normal: .semiboldBodyPrimary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
+        static let semiboldBodySecondary = ShimmerStyle(
+            normal: .semiboldBodySecondary,
+            animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),
+            runningColor: R.color.colorTextPrimary()!
+        )
+
         static let semiboldCaps2Secondary = ShimmerStyle(
             normal: .semiboldCaps2Secondary,
             animatingColor: R.color.colorTextPrimary()!.withAlphaComponent(0.4),

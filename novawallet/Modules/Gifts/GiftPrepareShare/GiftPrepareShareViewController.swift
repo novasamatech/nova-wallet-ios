@@ -1,17 +1,21 @@
 import UIKit
+import Foundation_iOS
 
 final class GiftPrepareShareViewController: UIViewController, ViewHolder {
     typealias RootViewType = GiftPrepareShareViewLayout
 
     let presenter: GiftPrepareSharePresenterProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     let viewStyle: GiftPrepareShareViewStyle
 
     init(
         presenter: GiftPrepareSharePresenterProtocol,
-        viewStyle: GiftPrepareShareViewStyle
+        viewStyle: GiftPrepareShareViewStyle,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.localizationManager = localizationManager
         self.viewStyle = viewStyle
         super.init(nibName: nil, bundle: nil)
     }
@@ -28,6 +32,7 @@ final class GiftPrepareShareViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
         setupActions()
         presenter.setup()
     }
@@ -48,10 +53,31 @@ private extension GiftPrepareShareViewController {
             action: #selector(actionShare),
             for: .touchUpInside
         )
+
+        guard viewStyle == .share else { return }
+
+        let reclaimBarButton = UIBarButtonItem(customView: rootView.reclaimActionView)
+        navigationItem.setRightBarButton(reclaimBarButton, animated: true)
+
+        rootView.reclaimActionView.actionButton.addTarget(
+            self,
+            action: #selector(actionReclaim),
+            for: .touchUpInside
+        )
+    }
+
+    func setupLocalization() {
+        rootView.reclaimActionView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.giftActionReclaimTitle()
     }
 
     @objc func actionShare() {
         presenter.actionShare()
+    }
+
+    @objc func actionReclaim() {
+        presenter.actionReclaim()
     }
 }
 
@@ -60,5 +86,14 @@ private extension GiftPrepareShareViewController {
 extension GiftPrepareShareViewController: GiftPrepareShareViewProtocol {
     func didReceive(viewModel: GiftPrepareViewModel) {
         rootView.bind(viewModel: viewModel)
+    }
+
+    func didReceive(reclaimLoading: Bool) {
+        guard reclaimLoading else {
+            rootView.reclaimActionView.stopLoading()
+            return
+        }
+
+        rootView.reclaimActionView.startLoading()
     }
 }

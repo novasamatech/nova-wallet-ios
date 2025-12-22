@@ -66,7 +66,8 @@ private extension GiftSubmissionFactory {
                 let submissionData = try submitWrapper.targetOperation.extractNoCancellableResultData()
                 let gift = try giftOperation.targetOperation.extractNoCancellableResultData()
 
-                return createPersistExtrinsicWrapper(
+                return createFinalPersistenceWrapper(
+                    gift: gift.updating(status: .pending),
                     submissionData: submissionData,
                     recipient: gift.giftAccountId,
                     amount: gift.amount,
@@ -139,6 +140,39 @@ private extension GiftSubmissionFactory {
         )
     }
 
+    func createFinalPersistenceWrapper(
+        gift: GiftModel,
+        submissionData: SubmittedGiftTransactionMetadata,
+        recipient: AccountId,
+        amount: BigUInt,
+        lastFee: BigUInt?
+    ) -> CompoundOperationWrapper<GiftTransferSubmissionResult> {
+        let giftStatusUpdateOperation = giftsRepository.saveOperation(
+            { [gift] },
+            { [] }
+        )
+        let extrinsicPersistWrapper = createPersistExtrinsicWrapper(
+            submissionData: submissionData,
+            recipient: recipient,
+            amount: amount,
+            lastFee: lastFee
+        )
+
+        let resultOperation = ClosureOperation {
+            _ = try giftStatusUpdateOperation.extractNoCancellableResultData()
+
+            return try extrinsicPersistWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        resultOperation.addDependency(giftStatusUpdateOperation)
+        resultOperation.addDependency(extrinsicPersistWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [giftStatusUpdateOperation] + extrinsicPersistWrapper.allOperations
+        )
+    }
+
     func createPersistGiftWrapper(
         dependingOn giftOperation: CompoundOperationWrapper<GiftModel>
     ) -> CompoundOperationWrapper<Void> {
@@ -160,7 +194,8 @@ private extension GiftSubmissionFactory {
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             let submissionResult = GiftTransferSubmissionResult(
-                giftId: recipient,
+                giftId: recipient.toHex(),
+                giftAccountId: recipient,
                 sender: submissionData.senderResolution
             )
 
