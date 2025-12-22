@@ -24,10 +24,10 @@ enum KodaDotAssetHubApi {
 }
 
 final class KodaDotNftOperationFactory: SubqueryBaseOperationFactory {
-    private func buildNftQuery(for address: AccountAddress) -> String {
+    private func buildNftQuery(for _: AccountAddress) -> String {
         """
-        {
-           nftEntities(where: {currentOwner_eq: "\(address)"}) {
+        query nftListByOwner($id: String!) {
+           nftEntities(where: {currentOwner_eq: $id, burned_eq: false}) {
                id
                image
                metadata
@@ -73,8 +73,12 @@ final class KodaDotNftOperationFactory: SubqueryBaseOperationFactory {
 extension KodaDotNftOperationFactory: KodaDotNftOperationFactoryProtocol {
     func fetchNfts(for address: AccountAddress) -> CompoundOperationWrapper<KodaDotNftResponse> {
         let queryString = buildNftQuery(for: address)
+        let variables = ["id": address]
 
-        let operation: BaseOperation<KodaDotNftResponse> = createOperation(for: queryString)
+        let operation: BaseOperation<KodaDotNftResponse> = createOperation(
+            for: queryString,
+            variables: variables
+        )
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
