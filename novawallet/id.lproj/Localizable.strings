@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Dibuat: %@";
 "gift.reclaim.no.account.alert.message" = "Harap pilih dompet lain atau tambahkan akun %@ di Pengaturan untuk melanjutkan.";
 "gift.reclaim.dialog.title" = "Ambil kembali %@ Hadiah?";
+"feature.unsupported.sheet.title.gift" = "Pemberian hadiah tidak didukung untuk dompet %@";
+"feature.unsupported.sheet.message.gift" = "Untuk membuat atau mengelola hadiah, silakan beralih ke jenis dompet yang berbeda.";
+"common.syncing" = "Sinkronisasi...";

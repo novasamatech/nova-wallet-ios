@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "作成日: %@";
 "gift.reclaim.no.account.alert.message" = "続行するには別のウォレットを選択するか、設定で %@ アカウントを追加してください。";
 "gift.reclaim.dialog.title" = "%@ ギフトを再請求しますか？";
+"feature.unsupported.sheet.title.gift" = "送金は%@ ウォレットに対してサポートされていません";
+"feature.unsupported.sheet.message.gift" = "ギフトを作成または管理するには、別の種類のウォレットに切り替えてください。";
+"common.syncing" = "同期中...";

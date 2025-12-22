@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Creato: %@";
 "gift.reclaim.no.account.alert.message" = "Si prega di selezionare un altro portafoglio o aggiungere un account %@ nelle Impostazioni per continuare.";
 "gift.reclaim.dialog.title" = "Reclamare %@ Regalo?";
+"feature.unsupported.sheet.title.gift" = "I regali non sono supportati per i portafogli %@";
+"feature.unsupported.sheet.message.gift" = "Per creare o gestire regali, per favore cambia tipo di portafoglio.";
+"common.syncing" = "Sincronizzazione...";

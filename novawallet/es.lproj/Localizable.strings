@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Creado: %@";
 "gift.reclaim.no.account.alert.message" = "Por favor, seleccione otra billetera o añada una cuenta %@ en Configuración para continuar.";
 "gift.reclaim.dialog.title" = "¿Reclamar %@ regalo?";
+"feature.unsupported.sheet.title.gift" = "Los regalos no son compatibles para monederos %@";
+"feature.unsupported.sheet.message.gift" = "Para crear o gestionar regalos, por favor cambia a un tipo diferente de monedero.";
+"common.syncing" = "Sincronizando...";
