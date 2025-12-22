@@ -2019,3 +2019,6 @@
 "gift.created.date.format" = "Utworzono: %@";
 "gift.reclaim.no.account.alert.message" = "Proszę wybrać inny portfel lub dodać konto %@ w Ustawieniach, aby kontynuować.";
 "gift.reclaim.dialog.title" = "Odzyskać %@ prezent?";
+"feature.unsupported.sheet.title.gift" = "Prezenty nie są obsługiwane dla portfeli %@";
+"feature.unsupported.sheet.message.gift" = "Aby utworzyć lub zarządzać prezentami, proszę przełączyć się na inny typ portfela.";
+"common.syncing" = "Synchronizacja...";
