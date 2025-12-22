@@ -5,6 +5,7 @@ final class MainTabBarViewController: UITabBarController {
     let presenter: MainTabBarPresenterProtocol
 
     private var viewAppeared: Bool = false
+    private var tabBarConfigured: Bool = false
 
     private let sharedStatusBarPresenter = SharedStatusPresenter()
 
@@ -35,12 +36,20 @@ final class MainTabBarViewController: UITabBarController {
         sharedStatusBarPresenter.delegate = self
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard !tabBarConfigured else { return }
+
+        tabBarConfigured = true
+        configureNewYearTabBar()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         if !viewAppeared {
             viewAppeared = true
-            configureNewYearTabBar()
             presenter.setup()
         }
 
@@ -69,6 +78,8 @@ final class MainTabBarViewController: UITabBarController {
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
+
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 
     private func configureTabBar() {
