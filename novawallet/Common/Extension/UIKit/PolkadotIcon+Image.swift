@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import UIKit
 
 extension DrawableIcon {
     func imageWithFillColor(_ color: UIColor, size: CGSize, contentScale: CGFloat) -> UIImage? {

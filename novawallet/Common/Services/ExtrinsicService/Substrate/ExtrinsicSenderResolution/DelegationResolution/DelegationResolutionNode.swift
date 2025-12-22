@@ -2,12 +2,15 @@ import Foundation
 
 extension DelegationResolution {
     struct DelegationKey: Hashable {
-        let delegate: AccountId
-        let delegated: AccountId
+        let delegateAccountId: AccountId
+        let delegatedAccountId: AccountId
+        let relationType: DelegationClass
     }
 }
 
 protocol DelegationResolutionNodeProtocol {
+    var metaId: MetaAccountModel.Id { get }
+
     func pathDelegationValue() -> AccountDelegationPathValue?
 
     func toNestedValue(
@@ -30,9 +33,14 @@ protocol DelegationResolutionNodeSourceProtocol {
 
 extension DelegationResolution.Graph {
     final class ProxyResolutionNode: DelegationResolutionNodeProtocol {
+        let metaId: MetaAccountModel.Id
         let proxyTypes: Set<Proxy.ProxyType>
 
-        init(proxyTypes: Set<Proxy.ProxyType>) {
+        init(
+            metaId: MetaAccountModel.Id,
+            proxyTypes: Set<Proxy.ProxyType>
+        ) {
+            self.metaId = metaId
             self.proxyTypes = proxyTypes
         }
 
@@ -48,13 +56,19 @@ extension DelegationResolution.Graph {
 
             let availableTypes = proxyTypes.intersection(possibleTypes)
 
-            return availableTypes.isEmpty ? nil : ProxyResolutionNode(proxyTypes: availableTypes)
+            return availableTypes.isEmpty ? nil : ProxyResolutionNode(
+                metaId: metaId,
+                proxyTypes: availableTypes
+            )
         }
 
         func pathDelegationValue() -> AccountDelegationPathValue? {
             guard let proxyType = proxyTypes.first else { return nil }
 
-            return DelegationResolution.PathFinder.ProxyDelegationValue(proxyType: proxyType)
+            return DelegationResolution.PathFinder.ProxyDelegationValue(
+                metaId: metaId,
+                proxyType: proxyType
+            )
         }
 
         func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol {
@@ -62,7 +76,10 @@ extension DelegationResolution.Graph {
                 return self
             }
 
-            return ProxyResolutionNode(proxyTypes: proxyTypes.union(otherProxyNode.proxyTypes))
+            return ProxyResolutionNode(
+                metaId: other.metaId,
+                proxyTypes: proxyTypes.union(otherProxyNode.proxyTypes)
+            )
         }
 
         func delaysCallExecution() -> Bool {
@@ -75,13 +92,16 @@ extension DelegationResolution.Graph {
 
 extension DelegationResolution.Graph {
     final class MultisigResolutionNode: DelegationResolutionNodeProtocol {
+        let metaId: MetaAccountModel.Id
         let threshold: UInt16
         let signatories: [AccountId]
 
         init(
+            metaId: MetaAccountModel.Id,
             threshold: UInt16,
             signatories: [AccountId]
         ) {
+            self.metaId = metaId
             self.threshold = threshold
             self.signatories = signatories
         }
@@ -95,6 +115,7 @@ extension DelegationResolution.Graph {
 
         func pathDelegationValue() -> AccountDelegationPathValue? {
             DelegationResolution.PathFinder.MultisigDelegationValue(
+                metaId: metaId,
                 threshold: threshold,
                 signatories: signatories
             )
@@ -123,10 +144,14 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             let proxiedChainAccount = proxyChainAccount(chainId: chain.chainId),
             let proxy = proxiedChainAccount.proxy {
             let key = DelegationResolution.DelegationKey(
-                delegate: proxy.accountId,
-                delegated: proxiedChainAccount.accountId
+                delegateAccountId: proxy.accountId,
+                delegatedAccountId: proxiedChainAccount.accountId,
+                relationType: .proxy
             )
-            let value = DelegationResolution.Graph.ProxyResolutionNode(proxyTypes: [proxy.type])
+            let value = DelegationResolution.Graph.ProxyResolutionNode(
+                metaId: metaId,
+                proxyTypes: [proxy.type]
+            )
 
             return (key, value)
         } else if
@@ -135,10 +160,13 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             let allSignatories = multisig.otherSignatories + [multisig.signatory]
 
             let key = DelegationResolution.DelegationKey(
-                delegate: multisig.signatory,
-                delegated: multisig.accountId
+                delegateAccountId: multisig.signatory,
+                delegatedAccountId: multisig.accountId,
+                relationType: .multisig
             )
+
             let value = DelegationResolution.Graph.MultisigResolutionNode(
+                metaId: metaId,
                 threshold: UInt16(multisig.threshold),
                 signatories: allSignatories
             )

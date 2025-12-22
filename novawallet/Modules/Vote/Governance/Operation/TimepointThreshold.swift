@@ -1,4 +1,5 @@
 import SubstrateSdk
+import Foundation
 
 struct TimepointThreshold: Equatable {
     private var additionalValue: Int64?

@@ -49,14 +49,13 @@ class BaseNotificationSettingsViewController: UIViewController, ViewHolder {
     }
 
     func setupLocalization() {
-        let rightBarButtonItemTitle = R.string.localizable.commonClear(
-            preferredLanguages: selectedLocale.rLanguages)
+        let rightBarButtonItemTitle = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClear()
         navigationItem.title = navigationItemTitle.value(for: selectedLocale)
         navigationItem.rightBarButtonItem?.title = rightBarButtonItemTitle
     }
 
     func setupNavigationItem() {
-        let title = R.string.localizable.commonClear(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClear()
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: title,
             style: .plain,

@@ -1,9 +1,12 @@
 import Foundation
 
 extension SwitchAccount {
-    final class ParitySignerWelcomeWireframe: ParitySignerWelcomeWireframeProtocol {
-        func showScanQR(from view: ParitySignerWelcomeViewProtocol?, type: ParitySignerType) {
-            guard let scanView = ParitySignerScanViewFactory.createSwitchAccountView(with: type) else {
+    final class PVWelcomeWireframe: PVWelcomeWireframeProtocol {
+        func showScanQR(
+            from view: PVWelcomeViewProtocol?,
+            type: ParitySignerType
+        ) {
+            guard let scanView = PVScanViewFactory.createSwitchAccountView(with: type) else {
                 return
             }
 

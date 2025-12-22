@@ -1,6 +1,6 @@
 import Foundation_iOS
 
-protocol StakingRewardDestConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
+protocol StakingRewardDestConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveConfirmation(viewModel: StakingRewardDestConfirmViewModel)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }

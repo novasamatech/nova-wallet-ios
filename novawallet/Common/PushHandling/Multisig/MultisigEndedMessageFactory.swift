@@ -67,13 +67,12 @@ private extension MultisigEndedMessageFactory {
     func createUnformattedExecutedBody(for chain: ChainModel) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationExecutedNoFormat(
-                    chain.name.capitalized,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationExecutedNoFormat(
+                    chain.name.capitalized
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
-                    preferredLanguages: locale.rLanguages
-                )
+                R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
@@ -84,39 +83,42 @@ private extension MultisigEndedMessageFactory {
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationCancelledNoFormat(
-                    chain.name.capitalized,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationCancelledNoFormat(
+                    chain.name.capitalized
                 ),
-                R.string.localizable.multisigOperationFormatCancelledText(
-                    canceller,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationFormatCancelledText(
+                    canceller
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
+                R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
 
     func createExecutedBodySpecificPart() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationNoActionsRequired(
+            R.string(
                 preferredLanguages: locale.rLanguages
-            )
+            ).localizable.multisigOperationNoActionsRequired()
         }
     }
 
     func createRejectedBodySpecificPart(canceller: String) -> LocalizableResource<String> {
         LocalizableResource { locale in
             [
-                R.string.localizable.multisigOperationFormatCancelledText(
-                    canceller,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.multisigOperationFormatCancelledText(
+                    canceller
                 ),
-                R.string.localizable.multisigOperationNoActionsRequired(
+                R.string(
                     preferredLanguages: locale.rLanguages
-                )
+                ).localizable.multisigOperationNoActionsRequired()
             ].joined(with: .newLine)
         }
     }
@@ -139,7 +141,7 @@ private extension MultisigEndedMessageFactory {
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
             let delegatedAccountPart = [
-                R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+                R.string(preferredLanguages: locale.rLanguages).localizable.delegatedAccountOnBehalfOf(),
                 delegatedAccount
             ].joined(with: .space)
 
@@ -168,11 +170,10 @@ private extension MultisigEndedMessageFactory {
                 let nameOrAddress
             else { return "" }
 
-            return R.string.localizable.multisigOperationFormatTransferText(
+            return R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatTransferText(
                 amount,
                 nameOrAddress,
-                transfer.asset.chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                transfer.asset.chain.name.capitalized
             )
         }
     }
@@ -182,10 +183,9 @@ private extension MultisigEndedMessageFactory {
         chain: ChainModel
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatGeneralText(
                 batch.type.fullModuleCallDescription.value(for: locale),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                chain.name.capitalized
             )
         }
     }
@@ -195,10 +195,9 @@ private extension MultisigEndedMessageFactory {
         chain: ChainModel
     ) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.multisigOperationFormatGeneralText(
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationFormatGeneralText(
                 self.createModuleCallInfo(for: generalDefinition.callPath),
-                chain.name.capitalized,
-                preferredLanguages: locale.rLanguages
+                chain.name.capitalized
             )
         }
     }
@@ -212,13 +211,13 @@ private extension MultisigEndedMessageFactory {
 
     func createExecutedTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonMultisigExecuted(preferredLanguages: locale.rLanguages).capitalized
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigExecuted().capitalized
         }
     }
 
     func createRejectedTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.commonMultisigRejected(preferredLanguages: locale.rLanguages).capitalized
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonMultisigRejected().capitalized
         }
     }
 

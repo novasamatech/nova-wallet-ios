@@ -1,5 +1,6 @@
 import BigInt
 import SubstrateSdk
+import Foundation
 
 struct EquilibriumLock: Decodable {
     let type: Data

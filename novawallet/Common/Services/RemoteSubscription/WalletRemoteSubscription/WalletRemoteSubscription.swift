@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import Operation_iOS
 
 struct WalletRemoteSubscriptionUpdate {
     let balance: AssetBalance?
@@ -528,11 +529,6 @@ private struct AssetsPalletBalanceStateChange: BatchStorageSubscriptionResult {
 private struct AssetsPalletBalanceState {
     let account: PalletAssets.Account?
     let details: PalletAssets.Details?
-
-    init(account: PalletAssets.Account?, details: PalletAssets.Details?) {
-        self.account = account
-        self.details = details
-    }
 
     func applying(change: AssetsPalletBalanceStateChange) -> Self {
         .init(

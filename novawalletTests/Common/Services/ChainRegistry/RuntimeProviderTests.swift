@@ -53,7 +53,6 @@ class RuntimeProviderTests: XCTestCase {
         wait(for: [visitorAdd, commonTypesFetched, chainTypesFetched, eventSent], timeout: 10)
 
         XCTAssertNotNil(runtimeProvider.snapshot)
-
     }
 
     func testTypeCatalogCreationFailureIsHandled() throws {
@@ -132,9 +131,9 @@ class RuntimeProviderTests: XCTestCase {
                 return CompoundOperationWrapper.createWithResult(commonTypes)
             }
         }, chainTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(chainTypes)
+            CompoundOperationWrapper.createWithResult(chainTypes)
         }, runtimeMetadataClosure: {
-            return metadata
+            metadata
         }, eventVisitorClosure: nil)
 
         // when
@@ -190,11 +189,11 @@ class RuntimeProviderTests: XCTestCase {
                 }
             }
         }, commonTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(commonTypes)
+            CompoundOperationWrapper.createWithResult(commonTypes)
         }, chainTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(chainTypes)
+            CompoundOperationWrapper.createWithResult(chainTypes)
         }, runtimeMetadataClosure: {
-            return metadata
+            metadata
         }, eventVisitorClosure: nil)
 
         // when
@@ -254,7 +253,7 @@ class RuntimeProviderTests: XCTestCase {
                 }
             }
         }, commonTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(commonTypes)
+            CompoundOperationWrapper.createWithResult(commonTypes)
         }, chainTypesFetchClosure: {
             if isSetup {
                 return CompoundOperationWrapper.createWithResult(otherChainTypes)
@@ -262,7 +261,7 @@ class RuntimeProviderTests: XCTestCase {
                 return CompoundOperationWrapper.createWithResult(chainTypes)
             }
         }, runtimeMetadataClosure: {
-            return metadata
+            metadata
         }, eventVisitorClosure: nil)
 
         // when
@@ -308,9 +307,9 @@ class RuntimeProviderTests: XCTestCase {
         // when
 
         let runtimeProvider = performSetup(with: { _ in }, commonTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(commonTypes)
+            CompoundOperationWrapper.createWithResult(commonTypes)
         }, chainTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(chainTypes)
+            CompoundOperationWrapper.createWithResult(chainTypes)
         }, runtimeMetadataClosure: {
             metadata
         }, eventVisitorClosure: nil)
@@ -330,9 +329,9 @@ class RuntimeProviderTests: XCTestCase {
         // given
 
         let runtimeProvider = performSetup(with: { _ in }, commonTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(nil)
+            CompoundOperationWrapper.createWithResult(nil)
         }, chainTypesFetchClosure: {
-            return CompoundOperationWrapper.createWithResult(nil)
+            CompoundOperationWrapper.createWithResult(nil)
         }, runtimeMetadataClosure: {
             nil
         }, eventVisitorClosure: nil)
@@ -358,11 +357,11 @@ class RuntimeProviderTests: XCTestCase {
     }
 
     private func performSetup(
-        with eventHandlingClosure: @escaping (EventProtocol) -> (),
+        with eventHandlingClosure: @escaping (EventProtocol) -> Void,
         commonTypesFetchClosure: @escaping () -> CompoundOperationWrapper<Data?>,
         chainTypesFetchClosure: @escaping () -> CompoundOperationWrapper<Data?>,
         runtimeMetadataClosure: @escaping () -> Data?,
-        eventVisitorClosure: ((EventVisitorProtocol) -> ())?
+        eventVisitorClosure: ((EventVisitorProtocol) -> Void)?
     ) -> RuntimeProvider {
         let chainModel = ChainModelGenerator.generate(count: 1, withTypes: true).first!
         let filesOperationFactory = MockRuntimeFilesOperationFactoryProtocol()
@@ -374,7 +373,7 @@ class RuntimeProviderTests: XCTestCase {
                 eventHandlingClosure(event)
             }
 
-            stub.add(observer: any(), dispatchIn: any()).then { (visitor, queue) in
+            stub.add(observer: any(), dispatchIn: any()).then { visitor, _ in
                 eventVisitorClosure?(visitor)
             }
         }
@@ -401,11 +400,11 @@ class RuntimeProviderTests: XCTestCase {
 
         stub(filesOperationFactory) { stub in
             stub.fetchCommonTypesOperation().then {
-                return commonTypesFetchClosure()
+                commonTypesFetchClosure()
             }
 
-            stub.fetchChainTypesOperation(for: any()).then { chainId in
-                return chainTypesFetchClosure()
+            stub.fetchChainTypesOperation(for: any()).then { _ in
+                chainTypesFetchClosure()
             }
         }
 

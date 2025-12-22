@@ -33,13 +33,13 @@ extension ImportChainAccount {
                 // we don't support ethereum crypto for substrate accounts
 
                 wireframe.present(
-                    message: R.string.localizable.importJsonUnsupportedSubstrateCryptoMessage(
+                    message: R.string(
                         preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    title: R.string.localizable.commonErrorGeneralTitle(
+                    ).localizable.importJsonUnsupportedSubstrateCryptoMessage(),
+                    title: R.string(
                         preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                    ).localizable.commonErrorGeneralTitle(),
+                    closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                     from: view
                 )
 
@@ -73,18 +73,33 @@ extension ImportChainAccount {
                 )
 
             case .seed:
-                let seed = sourceViewModel.inputHandler.value
-                let request = ChainAccountImportSeedRequest(
-                    seed: seed,
-                    derivationPath: substrateDerivationPath,
-                    cryptoType: selectedCryptoType
-                )
+                if case let .keypair(publicKey, secretKey) = secretScan {
+                    let request = ChainAccountImportKeypairRequest(
+                        secretKey: secretKey,
+                        publicKey: publicKey,
+                        derivationPath: substrateDerivationPath,
+                        cryptoType: selectedCryptoType
+                    )
 
-                interactor.importAccountWithSeed(
-                    chainId: chainModelId,
-                    request: request,
-                    into: metaAccountModel
-                )
+                    interactor.importAccountWithKeypair(
+                        chainId: chainModelId,
+                        request: request,
+                        into: metaAccountModel
+                    )
+                } else {
+                    let seed = sourceViewModel.inputHandler.value
+                    let request = ChainAccountImportSeedRequest(
+                        seed: seed,
+                        derivationPath: substrateDerivationPath,
+                        cryptoType: selectedCryptoType
+                    )
+
+                    interactor.importAccountWithSeed(
+                        chainId: chainModelId,
+                        request: request,
+                        into: metaAccountModel
+                    )
+                }
 
             case .keystore:
                 let keystore = sourceViewModel.inputHandler.value
@@ -114,13 +129,13 @@ extension ImportChainAccount {
                 // we don't support substrate crypto for ethereum wallets
 
                 wireframe.present(
-                    message: R.string.localizable.importJsonUnsupportedEthereumCryptoMessage(
+                    message: R.string(
                         preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    title: R.string.localizable.commonErrorGeneralTitle(
+                    ).localizable.importJsonUnsupportedEthereumCryptoMessage(),
+                    title: R.string(
                         preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                    ).localizable.commonErrorGeneralTitle(),
+                    closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                     from: view
                 )
 
@@ -198,8 +213,9 @@ extension ImportChainAccount {
 
         override func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {
             if (try? Data(hexString: chainModelId)) != preferredInfo.genesisHash {
-                let message = R.string.localizable
-                    .accountImportWrongNetwork(preferredLanguages: selectedLocale.rLanguages)
+                let message = R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.accountImportWrongNetwork()
                 view?.setUploadWarning(message: message)
                 return
             }

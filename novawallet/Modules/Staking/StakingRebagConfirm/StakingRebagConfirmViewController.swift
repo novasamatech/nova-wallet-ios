@@ -33,19 +33,13 @@ final class StakingRebagConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let strings = R.string.localizable.self
-        title = strings.stakingImprovements(preferredLanguages: selectedLocale.rLanguages)
-        rootView.walletCell.titleLabel.text = strings.commonWallet(preferredLanguages: selectedLocale.rLanguages)
-        rootView.accountCell.titleLabel.text = strings.commonAccount(preferredLanguages: selectedLocale.rLanguages)
-        rootView.currentBagList.titleLabel.text = strings.stakingRebagConfirmCurrentBagList(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.newBagList.titleLabel.text = strings.stakingRebagConfirmNewBagList(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.confirmButton.imageWithTitleView?.title = strings.commonConfirm(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
+        title = strings.stakingImprovements()
+        rootView.walletCell.titleLabel.text = strings.commonWallet()
+        rootView.accountCell.titleLabel.text = strings.commonAccount()
+        rootView.currentBagList.titleLabel.text = strings.stakingRebagConfirmCurrentBagList()
+        rootView.newBagList.titleLabel.text = strings.stakingRebagConfirmNewBagList()
+        rootView.confirmButton.imageWithTitleView?.title = strings.commonConfirm()
     }
 
     private func setupHandlers() {

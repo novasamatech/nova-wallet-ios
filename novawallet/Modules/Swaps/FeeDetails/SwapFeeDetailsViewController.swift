@@ -36,9 +36,9 @@ final class SwapFeeDetailsViewController: UIViewController, ViewHolder {
 
 private extension SwapFeeDetailsViewController {
     func setupLocalization() {
-        rootView.totalFeeView.titleView.text = R.string.localizable.swapsDetailsTotalFee(
+        rootView.totalFeeView.titleView.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.swapsDetailsTotalFee()
     }
 }
 

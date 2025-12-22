@@ -3,13 +3,13 @@ import SubstrateSdk
 import Operation_iOS
 
 extension AnyDataProviderRepository where AnyDataProviderRepository.Model == ChainStorageItem {
-    func queryStorageByKey<T: ScaleDecodable>(_ identifier: String) -> CompoundOperationWrapper<T?> {
+    func queryStorageByKey<R: ScaleDecodable>(_ identifier: String) -> CompoundOperationWrapper<R?> {
         let fetchOperation = self.fetchOperation(
             by: identifier,
             options: RepositoryFetchOptions()
         )
 
-        let decoderOperation = ScaleDecoderOperation<T>()
+        let decoderOperation = ScaleDecoderOperation<R>()
         decoderOperation.configurationBlock = {
             do {
                 decoderOperation.data = try fetchOperation

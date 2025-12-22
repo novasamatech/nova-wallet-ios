@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Foundation_iOS
 
 enum AccountImportContext: String {
@@ -10,6 +11,7 @@ class BaseAccountImportPresenter {
     static let maxMnemonicLength: Int = 250
     static let maxMnemonicSize: Int = 24
     static let maxSubstrateRawSeedLength: Int = 66
+    static let maxSubstrateSecretLength: Int = 130
     static let maxEthereumRawSeedLength: Int = 130
     static let maxKeystoreLength: Int = 4000
 
@@ -28,6 +30,7 @@ class BaseAccountImportPresenter {
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
     private(set) var ethereumDerivationPath: String?
+    private(set) var secretScan: SecretScanModel?
 
     init(secretSource: SecretSource, metadataFactory: AccountImportMetadataFactoryProtocol) {
         selectedSourceType = secretSource
@@ -81,8 +84,8 @@ class BaseAccountImportPresenter {
 
         switch selectedSourceType {
         case .mnemonic:
-            let placeholder = R.string.localizable
-                .importMnemonic(preferredLanguages: locale.rLanguages)
+            let placeholder = R.string(preferredLanguages: locale.rLanguages)
+                .localizable.importMnemonic()
             let normalizer = MnemonicTextNormalizer()
             let inputHandler = InputHandler(
                 value: value,
@@ -95,7 +98,7 @@ class BaseAccountImportPresenter {
 
         case .seed:
             let inputHandler: InputHandler
-            let placeholder: String
+            let placeholder = "0xAB"
 
             if shouldUseEthereumSeed() {
                 inputHandler = InputHandler(
@@ -103,24 +106,25 @@ class BaseAccountImportPresenter {
                     maxLength: Self.maxEthereumRawSeedLength,
                     predicate: NSPredicate.ethereumSeed
                 )
-
-                placeholder = R.string.localizable
-                    .accountImportEthereumSeedPlaceholder_v2_2_0(preferredLanguages: locale.rLanguages)
+            } else if let secretScan, case .keypair = secretScan {
+                inputHandler = InputHandler(
+                    value: value,
+                    maxLength: Self.maxSubstrateSecretLength,
+                    predicate: NSPredicate.substrateSecret
+                )
             } else {
                 inputHandler = InputHandler(
                     value: value,
                     maxLength: Self.maxSubstrateRawSeedLength,
                     predicate: NSPredicate.substrateSeed
                 )
-                placeholder = R.string.localizable
-                    .accountImportSubstrateSeedPlaceholder_v2_2_0(preferredLanguages: locale.rLanguages)
             }
 
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
 
         case .keystore:
-            let placeholder = R.string.localizable
-                .accountImportRecoveryJsonPlaceholder(preferredLanguages: locale.rLanguages)
+            let placeholder = R.string(preferredLanguages: locale.rLanguages)
+                .localizable.accountImportRecoveryJsonPlaceholder()
             let inputHandler = InputHandler(
                 value: value,
                 maxLength: Self.maxKeystoreLength,
@@ -226,16 +230,17 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func activateUpload() {
         let locale = localizationManager?.selectedLocale
 
-        let pasteTitle = R.string.localizable
-            .accountImportRecoveryJsonPlaceholder(preferredLanguages: locale?.rLanguages)
+        let pasteTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.accountImportRecoveryJsonPlaceholder()
         let pasteAction = AlertPresentableAction(title: pasteTitle) { [weak self] in
             if let json = UIPasteboard.general.string {
                 self?.interactor.deriveMetadataFromKeystore(json)
             }
         }
 
-        let title = R.string.localizable.importRecoveryJson(preferredLanguages: locale?.rLanguages)
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.importRecoveryJson()
+        let closeTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: nil,
@@ -268,8 +273,36 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         }
     }
 
+    func activateScanner() {
+        wireframe.presentScanner(from: view, importDelegate: self)
+    }
+
+    func shouldClearSecretScanOnBackspace() -> Bool {
+        if secretScan != nil {
+            secretScan = nil
+            return true
+        }
+
+        return false
+    }
+
     func proceed() {
         processProceed()
+    }
+}
+
+extension BaseAccountImportPresenter: SecretScanImportDelegate {
+    func didReceive(_ scan: SecretScanModel) {
+        secretScan = scan
+
+        let secretString = switch scan {
+        case let .seed(seed):
+            seed.toHex(includePrefix: true)
+        case let .keypair(_, secretKey):
+            secretKey.toHex(includePrefix: true)
+        }
+
+        applySourceTextViewModel(secretString)
     }
 }
 

@@ -4,11 +4,14 @@ import SubstrateSdk
 protocol AccountDelegationPathValue {
     func wrapCall(
         _ call: JSON,
-        delegation: DelegationResolution.DelegationKey,
+        delegatedAccountId: AccountId,
+        delegateAccountId: AccountId,
         context: RuntimeJsonContext
     ) throws -> JSON
 
     var delegationType: DelegationResolution.ItemType { get }
+
+    var metaId: MetaAccountModel.Id { get }
 
     func delaysCallExecution() -> Bool
 }
@@ -202,6 +205,7 @@ extension DelegationResolution {
 
 extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
+        let metaId: MetaAccountModel.Id
         let proxyType: Proxy.ProxyType
 
         var delegationType: DelegationResolution.ItemType {
@@ -210,11 +214,12 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationResolution.DelegationKey,
+            delegatedAccountId: AccountId,
+            delegateAccountId _: AccountId,
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
-                real: .accoundId(delegation.delegated),
+                real: .accoundId(delegatedAccountId),
                 forceProxyType: proxyType,
                 call: call
             )
@@ -228,6 +233,7 @@ extension DelegationResolution.PathFinder {
     }
 
     struct MultisigDelegationValue: AccountDelegationPathValue {
+        let metaId: MetaAccountModel.Id
         let threshold: UInt16
         let signatories: [AccountId]
 
@@ -237,11 +243,12 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationResolution.DelegationKey,
+            delegatedAccountId _: AccountId,
+            delegateAccountId: AccountId,
             context: RuntimeJsonContext
         ) throws -> JSON {
             let otherSignatories = signatories
-                .filter { $0 != delegation.delegate }
+                .filter { $0 != delegateAccountId }
                 .sorted { $0.lexicographicallyPrecedes($1) }
                 .map { BytesCodable(wrappedValue: $0) }
 

@@ -1,5 +1,6 @@
 import Operation_iOS
 import SubstrateSdk
+import Foundation
 
 protocol NodePingOperationFactoryProtocol {
     func createOperation(

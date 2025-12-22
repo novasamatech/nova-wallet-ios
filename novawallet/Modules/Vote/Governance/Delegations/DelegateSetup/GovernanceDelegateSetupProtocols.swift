@@ -1,4 +1,5 @@
 import BigInt
+import Foundation
 
 protocol GovernanceDelegateSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveBalance(viewModel: String)

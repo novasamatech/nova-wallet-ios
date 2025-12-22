@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import Operation_iOS
 
 /**
  * For the parachains, there is an issue that leads to the returning old value if a client subscribes for

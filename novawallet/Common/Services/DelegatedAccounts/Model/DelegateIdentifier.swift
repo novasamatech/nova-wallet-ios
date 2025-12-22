@@ -53,7 +53,7 @@ enum DelegationType: Hashable, Equatable {
     }
 }
 
-enum DelegationClass: Equatable {
+enum DelegationClass: Hashable, Equatable, CaseIterable {
     case proxy
     case multisig
 }

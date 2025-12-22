@@ -1,9 +1,9 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 import Starscream
 import Combine
 import CryptoSwift
-import Core
+import Web3Core
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
@@ -518,7 +518,7 @@ private struct DefaultCryptoProvider: CryptoProvider {
         case invalidSignatureOrMessage
     }
 
-    public func recoverPubKey(signature: WalletConnectSwiftV2.EthereumSignature, message: Data) throws -> Data {
+    public func recoverPubKey(signature: WalletConnectSign.EthereumSignature, message: Data) throws -> Data {
         guard
             let publicKey = SECP256K1.recoverPublicKey(
                 hash: message,

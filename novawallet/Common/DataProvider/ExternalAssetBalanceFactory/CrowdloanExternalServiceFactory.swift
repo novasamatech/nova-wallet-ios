@@ -4,28 +4,27 @@ import Operation_iOS
 final class CrowdloanExternalServiceFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
-    let operationFactory: CrowdloanOperationFactoryProtocol
-    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
+    let operationFactory: AhOpsOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
-        operationFactory: CrowdloanOperationFactoryProtocol,
-        paraIdOperationFactory: ParaIdOperationFactoryProtocol,
+        operationFactory: AhOpsOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
         self.operationFactory = operationFactory
-        self.paraIdOperationFactory = paraIdOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
+}
 
-    private func createOnChainSyncService(chainId: ChainModel.Id, accountId: AccountId) -> SyncServiceProtocol {
+private extension CrowdloanExternalServiceFactory {
+    func createOnChainSyncService(chainId: ChainModel.Id, accountId: AccountId) -> SyncServiceProtocol {
         let mapper = CrowdloanContributionDataMapper()
 
         let onChainFilter = NSPredicate.crowdloanContribution(
@@ -46,49 +45,14 @@ final class CrowdloanExternalServiceFactory {
             repository: AnyDataProviderRepository(onChainCrowdloansRepository),
             accountId: accountId,
             chainId: chainId,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationQueue: operationQueue,
             logger: logger
         )
-    }
-
-    private func createOffChainSyncServices(
-        from sources: [ExternalContributionSourceProtocol],
-        chain: ChainModel,
-        accountId: AccountId
-    ) -> [SyncServiceProtocol] {
-        let mapper = CrowdloanContributionDataMapper()
-
-        return sources.map { source in
-            let chainFilter = NSPredicate.crowdloanContribution(
-                for: chain.chainId,
-                accountId: accountId,
-                source: source.sourceName
-            )
-
-            let serviceRepository = storageFacade.createRepository(
-                filter: chainFilter,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(mapper)
-            )
-
-            return CrowdloanOffChainSyncService(
-                source: source,
-                chain: chain,
-                accountId: accountId,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                repository: AnyDataProviderRepository(serviceRepository),
-                logger: logger
-            )
-        }
     }
 }
 
 extension CrowdloanExternalServiceFactory: ExternalAssetBalanceServiceFactoryProtocol {
-    func createAutomaticSyncServices(for _: ChainAsset, accountId _: AccountId) -> [SyncServiceProtocol] {
-        []
-    }
-
-    func createPollingSyncServices(for chainAsset: ChainAsset, accountId: AccountId) -> [SyncServiceProtocol] {
+    func createAutomaticSyncServices(for chainAsset: ChainAsset, accountId: AccountId) -> [SyncServiceProtocol] {
         guard chainAsset.chain.hasCrowdloans, chainAsset.asset.isUtility else {
             return []
         }
@@ -97,17 +61,10 @@ extension CrowdloanExternalServiceFactory: ExternalAssetBalanceServiceFactoryPro
 
         let onchainSyncService = createOnChainSyncService(chainId: chainId, accountId: accountId)
 
-        let offchainSources = ExternalContributionSourcesFactory.createExternalSources(
-            for: chainId,
-            paraIdOperationFactory: paraIdOperationFactory
-        )
+        return [onchainSyncService]
+    }
 
-        let offChainSyncServices = createOffChainSyncServices(
-            from: offchainSources,
-            chain: chainAsset.chain,
-            accountId: accountId
-        )
-
-        return [onchainSyncService] + offChainSyncServices
+    func createPollingSyncServices(for _: ChainAsset, accountId _: AccountId) -> [SyncServiceProtocol] {
+        []
     }
 }

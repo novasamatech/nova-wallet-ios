@@ -71,10 +71,9 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
 
 private extension NotificationWalletListPresenter {
     func provideTitle() {
-        let title = R.string.localizable.notificationsWalletListTitle(
-            walletsLimit,
+        let title = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.notificationsWalletListTitle(walletsLimit)
 
         view?.setTitle(title)
     }
@@ -102,15 +101,16 @@ private extension NotificationWalletListPresenter {
         if selectedWallets.count < walletsLimit {
             selectedWallets.insert(walletId)
         } else {
-            let title = R.string.localizable.notificationsWalletListLimitErrorTitle(
-                walletsLimit,
+            let title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
-            let message = R.string.localizable.notificationsWalletListLimitErrorMessage(
-                walletsLimit,
+            ).localizable.notificationsWalletListLimitErrorTitle(walletsLimit)
+            let message = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
-            let closeAction = R.string.localizable.commonCancel()
+            ).localizable.notificationsWalletListLimitErrorMessage(walletsLimit)
+            let closeAction = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.commonCancel()
+
             wireframe?.present(
                 message: message,
                 title: title,

@@ -119,6 +119,7 @@ final class SelectValidatorsStartViewFactory {
             existingStashAddress: existingStashAddress,
             initialTargets: selectedValidators,
             applicationConfig: ApplicationConfig.shared,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
@@ -130,8 +131,6 @@ final class SelectValidatorsStartViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
-
-        view.localizationManager = LocalizationManager.shared
 
         return view
     }

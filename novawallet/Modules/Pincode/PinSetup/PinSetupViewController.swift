@@ -92,19 +92,16 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
     }
 
     private func updateTitleLabelState() {
-        let languages = localizationManager?.preferredLocalizations
+        let languages = localizationManager?.preferredLocalizations ?? []
 
         if pinView.mode == .create {
             if pinView.creationState == .normal {
-                titleLabel.text = R.string.localizable
-                    .pincodeSetYourPinCode(preferredLanguages: languages)
+                titleLabel.text = R.string(preferredLanguages: languages).localizable.pincodeSetYourPinCode()
             } else {
-                titleLabel.text = R.string.localizable
-                    .pincodeConfirmYourPinCode(preferredLanguages: languages)
+                titleLabel.text = R.string(preferredLanguages: languages).localizable.pincodeConfirmYourPinCode()
             }
         } else {
-            titleLabel.text = R.string.localizable
-                .pincodeEnterPinCode(preferredLanguages: languages)
+            titleLabel.text = R.string(preferredLanguages: languages).localizable.pincodeEnterPinCode()
         }
     }
 
@@ -136,7 +133,7 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         cancelButton?.setTitle(
-            R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel(),
             for: .normal
         )
 
@@ -213,15 +210,15 @@ extension PinSetupViewController: PinSetupViewProtocol {
         var title: String?
         var message: String?
 
-        let languages = localizationManager?.selectedLocale.rLanguages
+        let languages = localizationManager?.selectedLocale.rLanguages ?? []
 
         switch biometryType {
         case .touchId:
-            title = R.string.localizable.askTouchidTitle(preferredLanguages: languages)
-            message = R.string.localizable.askTouchidMessage(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.askTouchidTitle()
+            message = R.string(preferredLanguages: languages).localizable.askTouchidMessage()
         case .faceId:
-            title = R.string.localizable.askFaceidTitle(preferredLanguages: languages)
-            message = R.string.localizable.askFaceidMessage(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.askFaceidTitle()
+            message = R.string(preferredLanguages: languages).localizable.askFaceidMessage()
         case .none:
             completionBlock(true)
             return
@@ -230,14 +227,14 @@ extension PinSetupViewController: PinSetupViewProtocol {
         let alertView = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
         let useAction = UIAlertAction(
-            title: R.string.localizable.commonUse(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonUse(),
             style: .default
         ) { (_: UIAlertAction) -> Void in
             completionBlock(true)
         }
 
         let skipAction = UIAlertAction(
-            title: R.string.localizable.commonSkip(preferredLanguages: languages),
+            title: R.string(preferredLanguages: languages).localizable.commonSkip(),
             style: .cancel
         ) { (_: UIAlertAction) -> Void in
             completionBlock(false)

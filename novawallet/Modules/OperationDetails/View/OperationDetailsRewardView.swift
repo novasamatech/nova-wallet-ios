@@ -39,7 +39,7 @@ final class OperationDetailsRewardView: LocalizableView {
     }
 
     func bindReward(viewModel: OperationRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
-        let type = R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages)
+        let type = R.string(preferredLanguages: locale.rLanguages).localizable.stakingReward()
         bindCommon(
             networkViewModel: networkViewModel,
             eventId: viewModel.eventId,
@@ -51,7 +51,7 @@ final class OperationDetailsRewardView: LocalizableView {
     }
 
     func bindSlash(viewModel: OperationRewardOrSlashViewModel, networkViewModel: NetworkViewModel) {
-        let type = R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
+        let type = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSlash()
         bindCommon(
             networkViewModel: networkViewModel,
             eventId: viewModel.eventId,
@@ -92,31 +92,28 @@ final class OperationDetailsRewardView: LocalizableView {
     }
 
     private func setupLocalization() {
-        networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
-        )
+        networkView.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonNetwork()
 
-        eventIdView.titleLabel.text = R.string.localizable.stakingCommonEventId(
+        eventIdView.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingCommonEventId()
 
-        typeView.titleLabel.text = R.string.localizable.stakingAnalyticsDetailsType(
+        typeView.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingAnalyticsDetailsType()
 
         setupValidatorLocalization()
         setupEraLocalization()
     }
 
     private func setupValidatorLocalization() {
-        validatorView?.titleLabel.text = R.string.localizable.stakingCommonValidator(
+        validatorView?.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingCommonValidator()
     }
 
     private func setupEraLocalization() {
-        eraView?.titleLabel.text = R.string.localizable.stakingCommonEra(
-            preferredLanguages: locale.rLanguages
-        )
+        eraView?.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonEra()
     }
 
     private func setupValidatorView() -> StackInfoTableCell {

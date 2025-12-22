@@ -136,7 +136,7 @@ private extension MainTabBarWireframe {
         present(
             message: localizedModel.description,
             title: localizedModel.title,
-            closeAction: R.string.localizable.commonGotIt(preferredLanguages: locale.rLanguages),
+            closeAction: R.string(preferredLanguages: locale.rLanguages).localizable.commonGotIt(),
             from: controller
         )
     }
@@ -207,6 +207,27 @@ private extension MainTabBarWireframe {
         navigationController.barSettings = .init(
             style: .defaultStyle,
             shouldSetCloseButton: false
+        )
+
+        navigationController.isModalInPresentation = true
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
+    func openClaimGiftScreen(
+        in view: MainTabBarViewProtocol?,
+        with navigation: GiftClaimNavigation
+    ) {
+        guard let claimView = GiftClaimViewFactory.createView(
+            giftPayload: navigation.claimableGiftPayload,
+            totalAmount: navigation.totalAmount
+        ) else { return }
+
+        let navigationController = NovaNavigationController(rootViewController: claimView.controller)
+
+        navigationController.barSettings = .init(
+            style: .defaultStyle,
+            shouldSetCloseButton: true
         )
 
         navigationController.isModalInPresentation = true
@@ -369,7 +390,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             switch screen {
             case let .error(error):
                 if let errorContent = error.content(for: locale) {
-                    let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                    let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonOk()
                     present(
                         message: errorContent.message,
                         title: errorContent.title,
@@ -385,6 +406,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                 openCardScreen(in: view, cardNavigation: cardNavigation)
             case let .assetHubMigration(ahmNavigation):
                 openAssetHubMigrationInfoScreen(in: view, with: ahmNavigation.config)
+            case let .giftClaim(giftNavigation):
+                openClaimGiftScreen(in: view, with: giftNavigation)
             default:
                 break
             }

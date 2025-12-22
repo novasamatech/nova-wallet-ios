@@ -70,16 +70,16 @@ protocol SubstrateRepositoryFactoryProtocol {
         accountId: AccountId,
         chainId: ChainModel.Id,
         source: String?
-    ) -> AnyDataProviderRepository<CrowdloanContributionData>
+    ) -> AnyDataProviderRepository<CrowdloanContribution>
 
     func createCrowdloanContributionRepository(
         accountId: AccountId,
         chainId: ChainModel.Id
-    ) -> AnyDataProviderRepository<CrowdloanContributionData>
+    ) -> AnyDataProviderRepository<CrowdloanContribution>
 
     func createCrowdloanContributionRepository(
         chainIds: Set<ChainModel.Id>
-    ) -> AnyDataProviderRepository<CrowdloanContributionData>
+    ) -> AnyDataProviderRepository<CrowdloanContribution>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -301,7 +301,7 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         accountId: AccountId,
         chainId: ChainModel.Id,
         source: String?
-    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+    ) -> AnyDataProviderRepository<CrowdloanContribution> {
         let filter = NSPredicate.crowdloanContribution(
             for: chainId,
             accountId: accountId,
@@ -314,7 +314,7 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     func createCrowdloanContributionRepository(
         accountId: AccountId,
         chainId: ChainModel.Id
-    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+    ) -> AnyDataProviderRepository<CrowdloanContribution> {
         let filter = NSPredicate.crowdloanContribution(
             for: chainId,
             accountId: accountId
@@ -325,14 +325,14 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
 
     func createCrowdloanContributionRepository(
         chainIds: Set<ChainModel.Id>
-    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+    ) -> AnyDataProviderRepository<CrowdloanContribution> {
         let filter = NSPredicate.crowdloanContribution(chainIds: chainIds)
         return createCrowdloanContributionRepository(for: filter)
     }
 
     private func createCrowdloanContributionRepository(
         for filter: NSPredicate
-    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+    ) -> AnyDataProviderRepository<CrowdloanContribution> {
         let mapper = CrowdloanContributionDataMapper()
         let repository = storageFacade.createRepository(
             filter: filter,

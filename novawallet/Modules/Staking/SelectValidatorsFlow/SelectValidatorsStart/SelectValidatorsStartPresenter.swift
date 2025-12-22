@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SelectValidatorsStartPresenter {
@@ -6,6 +7,7 @@ final class SelectValidatorsStartPresenter {
     let wireframe: SelectValidatorsStartWireframeProtocol
     let interactor: SelectValidatorsStartInteractorInputProtocol
     let applicationConfig: ApplicationConfigProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     let initialTargets: [SelectedValidatorInfo]?
     let existingStashAddress: AccountAddress?
@@ -24,6 +26,7 @@ final class SelectValidatorsStartPresenter {
         existingStashAddress: AccountAddress?,
         initialTargets: [SelectedValidatorInfo]?,
         applicationConfig: ApplicationConfigProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -31,6 +34,7 @@ final class SelectValidatorsStartPresenter {
         self.existingStashAddress = existingStashAddress
         self.initialTargets = initialTargets
         self.applicationConfig = applicationConfig
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -88,7 +92,7 @@ final class SelectValidatorsStartPresenter {
     private func handle(error: Error) {
         logger?.error("Did receive error \(error)")
 
-        let locale = view?.localizationManager?.selectedLocale
+        let locale = localizationManager.selectedLocale
         if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(
                 error: BaseOperationError.unexpectedDependentResult,

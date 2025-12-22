@@ -2,7 +2,9 @@ import Foundation
 import Foundation_iOS
 
 struct WalletSelectionViewFactory {
-    static func createView(delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol) -> WalletsListViewProtocol? {
+    static func createView(
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+    ) -> WalletsListViewProtocol? {
         guard let interactor = createInteractor(delegatedAccountSyncService: delegatedAccountSyncService),
               let currencyManager = CurrencyManager.shared else {
             return nil

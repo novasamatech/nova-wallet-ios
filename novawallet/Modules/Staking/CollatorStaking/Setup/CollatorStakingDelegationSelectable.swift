@@ -28,7 +28,7 @@ extension CollatorStakingDelegationSelectable {
         context: AnyObject?
     ) {
         let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNewCollator()
             let icon = R.image.iconBlueAdd()
 
             return IconWithTitleViewModel(icon: icon, title: title)

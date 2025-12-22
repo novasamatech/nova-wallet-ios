@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 import SubstrateSdk
 
 final class WalletConnectStateSigning: WalletConnectBaseState {

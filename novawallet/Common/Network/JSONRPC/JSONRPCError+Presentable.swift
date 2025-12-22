@@ -10,7 +10,7 @@ extension JSONRPCError: ErrorContentConvertible {
             title = message
             details = "\(data) (code \(code))"
         } else {
-            title = R.string.localizable.operationErrorTitle(preferredLanguages: locale?.rLanguages)
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorTitle()
             details = "\(message) (code \(code))"
         }
 

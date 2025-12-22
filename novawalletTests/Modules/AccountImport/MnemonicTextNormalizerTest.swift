@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class MnemonicTextNormalizerTest: XCTestCase {
-
     func testTrimmedMnemonic() {
         let normalizer = MnemonicTextNormalizer()
         let normalized = normalizer.process(text: "   remove  \t stairs edit swift write \n agent sing     train vacuum nothing gesture axis ")

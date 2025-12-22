@@ -43,7 +43,7 @@ extension CrowdloanListViewManager: UITableViewDataSource {
             return cellViewModels.count
         case let .completed(_, cellViewModels):
             return cellViewModels.count
-        case .yourContributions, .about, .error, .empty:
+        case .yourContributions, .about, .empty:
             return 1
         }
     }
@@ -64,17 +64,9 @@ extension CrowdloanListViewManager: UITableViewDataSource {
             let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!
             cell.view.bind(model: model)
             return cell
-        case let .error(message):
-            let cell: BlurredTableViewCell<ErrorStateView> = tableView.dequeueReusableCell(for: indexPath)
-            cell.view.errorDescriptionLabel.text = message
-            cell.view.delegate = self
-            cell.view.locale = locale
-            cell.applyStyle()
-            return cell
         case .empty:
             let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-            let text = R.string.localizable
-                .crowdloanEmptyMessage_v3_9_1(preferredLanguages: locale.rLanguages)
+            let text = R.string(preferredLanguages: locale.rLanguages).localizable.crowdloanEmptyMessage_v3_9_1()
             cell.view.bind(
                 image: R.image.iconEmptyHistory(),
                 text: text
@@ -91,11 +83,6 @@ extension CrowdloanListViewManager: UITableViewDelegate {
 
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
-        case let .active(_, cellViewModels):
-            guard let crowdloan = cellViewModels[indexPath.row].value else {
-                return
-            }
-            presenter?.selectCrowdloan(crowdloan.paraId)
         case let .yourContributions(viewModel):
             guard viewModel.value != nil else {
                 return
@@ -178,12 +165,6 @@ extension CrowdloanListViewManager: UITableViewDelegate {
     }
 }
 
-extension CrowdloanListViewManager: ErrorStateViewDelegate {
-    func didRetry(errorView _: ErrorStateView) {
-        presenter?.refresh(shouldReset: true)
-    }
-}
-
 extension CrowdloanListViewManager: CrowdloansViewProtocol {
     func didReceive(chainInfo: SecuredViewModel<ChainBalanceViewModel>) {
         chainSelectionView.bind(viewModel: chainInfo)
@@ -228,7 +209,6 @@ extension CrowdloanListViewManager: VoteChildViewProtocol {
         tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
         tableView.registerClassForCell(CrowdloanTableViewCell.self)
         tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
-        tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
 
         tableView.dataSource = self
@@ -242,7 +222,6 @@ extension CrowdloanListViewManager: VoteChildViewProtocol {
         tableView.unregisterClassForCell(AboutCrowdloansTableViewCell.self)
         tableView.unregisterClassForCell(CrowdloanTableViewCell.self)
         tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
-        tableView.unregisterClassForCell(BlurredTableViewCell<ErrorStateView>.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
 
         tableView.dataSource = nil

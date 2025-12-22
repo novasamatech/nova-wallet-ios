@@ -1,5 +1,5 @@
 import Foundation
-import HydraMath
+import HydraMathApi
 import BigInt
 
 enum HydraXYKSwapApiError: Error {

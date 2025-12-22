@@ -2,14 +2,16 @@ name: Distribute to Firebase
 
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
 
 env:
   scheme: "novawallet"
   platform: "iOS Simulator"
   device: "iPhone 16"
   os_version: "latest"
-  xcode-version: "16.0"
+  xcode-version: "16.1"
+  MINT_PATH: ${{ github.workspace }}/.mint
+  RUN_IN_CI: true
 
 jobs:
   build:
@@ -19,22 +21,27 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16.1
+          xcode-version: ${{ env.xcode-version }}
 
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
+      - name: Restore Mint packages сache
+        id: mint-cache
         uses: actions/cache@v4
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: ${{ env.MINT_PATH }}
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: |
+          mint bootstrap --mintfile CIMintfile
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
       - name: Install the Apple certificate and provisioning profile
@@ -81,10 +88,29 @@ jobs:
       - name: Bump version
         uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
         with:
-          info-plist-path: './novawallet/Info.plist'
+          info-plist-path: "./novawallet/Info.plist"
           bundle-short-version-string: ${{ secrets.IOS_APP_VERSION }}
           bundle-version: ${{github.run_number}}
           print-file: true
+
+      - name: Restore SPM cache
+        id: spm-cache
+        uses: actions/cache@v4
+        with:
+          path: .source_packages
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
+
+      - name: Ensure SPM directory exists
+        run: mkdir -p .source_packages
+
+      - name: Resolve SPM dependencies
+        if: steps.spm-cache.outputs.cache-hit != 'true'
+        run: |
+          if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
+          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+          xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
 
       - name: Archive
         env:
@@ -99,11 +125,13 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
+          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
+          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: |
-          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -workspace novawallet.xcworkspace -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}"
+          xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme ${{ env.scheme }} -project novawallet.xcodeproj -configuration Dev -destination "platform=${{ env.platform }},name=${{ env.device }},OS=${{ env.os_version }}" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import SubstrateSdk
 import BigInt
 
@@ -90,11 +91,15 @@ private extension MultisigOperationConfirmViewModelFactory {
         let walletViewModel = createWalletViewModel(using: wallet)
 
         let networkField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonNetwork(),
             value: networkModel
         )
         let walletField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonMultisig(preferredLanguages: locale.rLanguages),
+            title: R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonMultisig(),
             value: walletViewModel
         )
 
@@ -107,7 +112,7 @@ private extension MultisigOperationConfirmViewModelFactory {
                 chain: chain
             ) {
             delegatedField = MultisigOperationConfirmViewModel.SectionField(
-                title: R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.delegatedAccountOnBehalfOf(),
                 value: delegatedViewModel
             )
         }
@@ -135,7 +140,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         else { return nil }
 
         let fieldModel = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonRecipient(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonRecipient(),
             value: recipientViewModel
         )
 
@@ -175,7 +180,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             name: localSignatory.metaAccount.chainAccount.name
         )
         let signatoryField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory(),
             value: walletViewModel
         )
 
@@ -195,7 +200,7 @@ private extension MultisigOperationConfirmViewModelFactory {
                 locale: locale
             )
             feeField = MultisigOperationConfirmViewModel.SectionField(
-                title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),
                 value: feeViewModel
             )
         }
@@ -257,11 +262,8 @@ private extension MultisigOperationConfirmViewModelFactory {
             let definition = pendingOperation.multisigDefinition
         else { return nil }
 
-        let title = R.string.localizable.multisigOperationSignatoriesProgressFormat(
-            definition.approvals.count,
-            multisigContext.threshold,
-            preferredLanguages: locale.rLanguages
-        )
+        let title = R.string(preferredLanguages: locale.rLanguages
+        ).localizable.multisigOperationSignatoriesProgressFormat(definition.approvals.count, multisigContext.threshold)
         let signatoryViewModels = createSignatoriesViewModels(
             from: signatories,
             chain: chain,
@@ -276,7 +278,7 @@ private extension MultisigOperationConfirmViewModelFactory {
 
     func createFullDetailsSection(locale: Locale) -> MultisigOperationConfirmViewModel.Section {
         let model = MultisigOperationConfirmViewModel.FullDetailsModel(
-            title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonFullDetails(),
             value: ""
         )
 
@@ -373,7 +375,7 @@ private extension MultisigOperationConfirmViewModelFactory {
 
             let delegatedAccountInfo = WalletView.ViewModel.DelegatedAccountInfo(
                 networkIcon: iconViewModel,
-                type: R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages),
+                type: R.string(preferredLanguages: locale.rLanguages).localizable.commonSignatory(),
                 pairedAccountIcon: iconViewModel,
                 pairedAccountName: delegate.metaAccount.chainAccount.name,
                 isNew: false
@@ -432,16 +434,16 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         if operationProperties.canReject {
             let action = MultisigOperationConfirmViewModel.Action(
-                title: R.string.localizable.commonReject(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.commonReject(),
                 type: .reject,
                 actionClosure: confirmClosure
             )
             actions.append(action)
         } else if operationProperties.canApprove {
             let title = if operationProperties.willExecute {
-                R.string.localizable.commonApproveAndExecute(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonApproveAndExecute()
             } else {
-                R.string.localizable.commonApprove(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.commonApprove()
             }
             let action = MultisigOperationConfirmViewModel.Action(
                 title: title,
@@ -453,7 +455,7 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         if !operationProperties.hasCall {
             let action = MultisigOperationConfirmViewModel.Action(
-                title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: locale.rLanguages),
+                title: R.string(preferredLanguages: locale.rLanguages).localizable.enterCallDataDetailsButtonTitle(),
                 type: .addCallData,
                 actionClosure: callDataAddClosure
             )
@@ -473,13 +475,9 @@ private extension MultisigOperationConfirmViewModelFactory {
         case let .batch(batch):
             batch.type.callDescription.value(for: locale)
         case .transfer:
-            R.string.localizable.transferTitle(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.transferTitle()
         case nil:
-            R.string.localizable.multisigOperationTypeUnknown(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.multisigOperationTypeUnknown()
         }
     }
 
@@ -587,7 +585,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             locale: locale
         )
         let feeField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee(),
             value: feeViewModel
         )
 

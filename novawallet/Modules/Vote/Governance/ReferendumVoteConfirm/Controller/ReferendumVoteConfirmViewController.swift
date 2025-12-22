@@ -42,9 +42,8 @@ final class ReferendumVoteConfirmViewController: BaseReferendumVoteConfirmViewCo
     private func applyReferendumNumber() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.govVoteSetupTitleFormat(
-            referendumNumber ?? "",
-            preferredLanguages: languages
+        title = R.string(preferredLanguages: languages).localizable.govVoteSetupTitleFormat(
+            referendumNumber ?? ""
         )
     }
 }

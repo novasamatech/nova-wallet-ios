@@ -59,9 +59,10 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
     ) {
         let selectedChain: ChainModel?
 
-        if let chain = chains.first(where: { $0.chainId == currentChainId }) {
+        // make sure selected chain id still supports crowdloans
+        if let chain = chains.first(where: { $0.chainId == currentChainId && $0.hasCrowdloans }) {
             selectedChain = chain
-        } else if let firstChain = chains.first(where: { $0.isRelaychain && $0.hasCrowdloans }) {
+        } else if let firstChain = chains.first(where: { $0.hasCrowdloans }) {
             settings.crowdloanChainId = firstChain.chainId
             selectedChain = firstChain
         } else {

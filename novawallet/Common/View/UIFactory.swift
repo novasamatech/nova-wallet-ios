@@ -97,7 +97,6 @@ extension UIFactoryProtocol {
     }
 }
 
-// swiftlint:disable:next type_body_length
 final class UIFactory: UIFactoryProtocol {
     static let `default` = UIFactory()
 
@@ -245,7 +244,7 @@ final class UIFactory: UIFactoryProtocol {
         let toolBar = AmountInputAccessoryView(frame: frame)
         toolBar.actionDelegate = delegate
 
-        let maxTitle = R.string.localizable.commonMax(preferredLanguages: locale.rLanguages)
+        let maxTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonMax()
         let actions: [ViewSelectorAction] = [
             ViewSelectorAction(title: maxTitle.uppercased(), selector: #selector(toolBar.actionSelect100)),
             ViewSelectorAction(title: "75%", selector: #selector(toolBar.actionSelect75)),
@@ -253,7 +252,7 @@ final class UIFactory: UIFactoryProtocol {
             ViewSelectorAction(title: "25%", selector: #selector(toolBar.actionSelect25))
         ]
 
-        let doneTitle = R.string.localizable.commonDone(preferredLanguages: locale.rLanguages)
+        let doneTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonDone()
         let doneAction = ViewSelectorAction(
             title: doneTitle,
             selector: #selector(toolBar.actionSelectDone)
@@ -541,7 +540,7 @@ extension UIFactory {
 
         let toolBar = UIToolbar(frame: frame)
 
-        let doneTitle = R.string.localizable.commonDone(preferredLanguages: locale.rLanguages)
+        let doneTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonDone()
         let doneAction = ViewSelectorAction(
             title: doneTitle,
             selector: selector

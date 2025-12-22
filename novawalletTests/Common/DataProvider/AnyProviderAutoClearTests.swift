@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 class AnyProviderAutoClearTests: XCTestCase {
-
     func testPerformanceExample() throws {
         // given
 
@@ -24,5 +23,4 @@ class AnyProviderAutoClearTests: XCTestCase {
 
         XCTAssertNil(provider)
     }
-
 }

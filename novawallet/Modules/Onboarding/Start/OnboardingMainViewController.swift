@@ -39,17 +39,16 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        let createTitle = R.string.localizable.onboardingCreateWallet(preferredLanguages: languages)
+        let createTitle = R.string(preferredLanguages: languages).localizable.onboardingCreateWallet()
         rootView.createButton.imageWithTitleView?.title = createTitle
 
-        let importTitle = R.string.localizable.onboardingRestoreWallet(preferredLanguages: languages)
+        let importTitle = R.string(preferredLanguages: languages).localizable.onboardingRestoreWallet()
         rootView.importButton.imageWithTitleView?.title = importTitle
 
         let marker = AttributedReplacementStringDecorator.marker
-        let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(
+        let termsText = R.string(preferredLanguages: languages).localizable.onboardingTermsAndConditions1_v2_2_0(
             marker,
-            marker,
-            preferredLanguages: languages
+            marker
         )
 
         let termDecorator = CompoundAttributedStringDecorator.legal(for: selectedLocale, marker: marker)

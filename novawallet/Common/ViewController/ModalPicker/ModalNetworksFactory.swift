@@ -44,7 +44,7 @@ enum ModalNetworksFactory {
         let viewController: ModalPickerViewController<NetworkSelectionTableViewCell, NetworkViewModel>
 
         let title = LocalizableResource { locale in
-            R.string.localizable.xcmDestinationSelectionTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.xcmDestinationSelectionTitle()
         }
 
         viewController = createNetworksController(for: title)
@@ -59,7 +59,7 @@ enum ModalNetworksFactory {
         }
 
         let onChainTitle = LocalizableResource { locale in
-            R.string.localizable.commonOnChain(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonOnChain()
         }
 
         viewController.addSection(viewModels: [onChainViewModel], title: onChainTitle)
@@ -69,7 +69,7 @@ enum ModalNetworksFactory {
         }
 
         let crossChainTitle = LocalizableResource { locale in
-            R.string.localizable.commonCrossChain(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChain()
         }
 
         viewController.addSection(viewModels: crossChainViewModels, title: crossChainTitle)
@@ -106,9 +106,8 @@ enum ModalNetworksFactory {
         let viewController: ModalPickerViewController<NetworkTableViewCell, NetworkViewModel>
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonNetworksTitle(
-                networks.count,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworksTitle(
+                networks.count
             )
         }
 
@@ -136,9 +135,8 @@ enum ModalNetworksFactory {
         let networksCount = requiredResolution.totalChainsCount + (optionalResolution?.totalChainsCount ?? 0)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonNetworksTitle(
-                networksCount,
-                preferredLanguages: locale.rLanguages
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworksTitle(
+                networksCount
             )
         }
 
@@ -153,7 +151,7 @@ enum ModalNetworksFactory {
                 to: viewController,
                 from: requiredResolution,
                 title: LocalizableResource { locale in
-                    R.string.localizable.dappsRequiredNetworks(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.dappsRequiredNetworks()
                 }
             )
 
@@ -169,7 +167,7 @@ enum ModalNetworksFactory {
                 to: viewController,
                 from: optionalResolution,
                 title: LocalizableResource { locale in
-                    R.string.localizable.dappsOptionalNetworks(preferredLanguages: locale.rLanguages)
+                    R.string(preferredLanguages: locale.rLanguages).localizable.dappsOptionalNetworks()
                 }
             )
 
@@ -205,9 +203,10 @@ enum ModalNetworksFactory {
 
         if resolution.hasUnresolved {
             sectionFooter = LocalizableResource { locale in
-                R.string.localizable.dappsUnsupportedNetworksFormat(
-                    format: resolution.unresolved.count,
+                R.string(
                     preferredLanguages: locale.rLanguages
+                ).localizable.dappsUnsupportedNetworksFormat(
+                    format: resolution.unresolved.count
                 )
             }
         } else {

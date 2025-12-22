@@ -80,30 +80,31 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.bannerView.infoView.titleLabel.text = R.string.localizable.stakingRecommendedBannerTitle(
+        rootView.bannerView.infoView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.stakingRecommendedBannerTitle()
 
-        rootView.bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingRecommendedBannerMessage(
+        rootView.bannerView.infoView.subtitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.stakingRecommendedBannerMessage()
 
-        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonHowItWorks(
+        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonHowItWorks()
 
-        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonContinue()
 
-        rootView.customValidatorsCell.titleLabel.text = R.string.localizable
-            .stakingSelectValidatorsCustomButtonTitle(preferredLanguages: languages)
+        rootView.customValidatorsCell.titleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.stakingSelectValidatorsCustomButtonTitle()
 
         switch phase {
         case .setup:
-            title = R.string.localizable.stakingSetValidators(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.stakingSetValidators()
         case .update:
-            title = R.string.localizable.stakingChangeValidators(preferredLanguages: languages)
+            title = R.string(preferredLanguages: languages).localizable.stakingChangeValidators()
         }
 
         updateSelected()
@@ -140,12 +141,12 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
 
         if viewModel.selectedCount > 0 {
             let languages = selectedLocale.rLanguages
-            let text = R.string.localizable
-                .stakingValidatorInfoNominators(
-                    "\(viewModel.selectedCount)",
-                    "\(viewModel.totalCount)",
-                    preferredLanguages: languages
-                )
+            let text = R.string(
+                preferredLanguages: languages
+            ).localizable.stakingValidatorInfoNominators(
+                "\(viewModel.selectedCount)",
+                "\(viewModel.totalCount)"
+            )
             rootView.customValidatorsCell.detailsLabel.text = text
         } else {
             rootView.customValidatorsCell.detailsLabel.text = ""
@@ -174,7 +175,7 @@ extension SelectValidatorsStartViewController: SelectValidatorsStartViewProtocol
     }
 }
 
-extension SelectValidatorsStartViewController {
+extension SelectValidatorsStartViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

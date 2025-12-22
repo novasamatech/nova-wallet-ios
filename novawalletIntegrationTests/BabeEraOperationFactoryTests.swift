@@ -4,7 +4,6 @@ import SubstrateSdk
 @testable import novawallet
 
 class EraCountdownOperationFactoryTests: XCTestCase {
-
     func testService() {
         let operationManager = OperationManagerFacade.sharedManager
 

@@ -6,9 +6,9 @@ extension PushNotification.TransferType {
         let title: String
         switch self {
         case .income:
-            title = R.string.localizable.pushNotificationReceiveTokensTitle(preferredLanguages: locale.rLanguages)
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReceiveTokensTitle()
         case .outcome:
-            title = R.string.localizable.pushNotificationSentTokensTitle(preferredLanguages: locale.rLanguages)
+            title = R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationSentTokensTitle()
         }
 
         return [title, walletString].joined(with: .space)
@@ -24,27 +24,26 @@ extension PushNotification.TransferType {
         let priceString = price.map { "(\($0))" } ?? ""
         switch self {
         case .income:
-            return R.string.localizable.pushNotificationReceiveTokensSubtitle(
+            return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationReceiveTokensSubtitle(
                 amount,
                 priceString,
-                chainName,
-                preferredLanguages: locale.rLanguages
+                chainName
             )
         case .outcome:
             if let address = address {
-                return R.string.localizable.pushNotificationSentTokensSubtitle(
+                return R.string(preferredLanguages: locale.rLanguages).localizable.pushNotificationSentTokensSubtitle(
                     amount,
                     priceString,
                     address,
-                    chainName,
-                    preferredLanguages: locale.rLanguages
+                    chainName
                 )
             } else {
-                return R.string.localizable.pushNotificationSentTokensNoAddressSubtitle(
+                return R.string(
+                    preferredLanguages: locale.rLanguages
+                ).localizable.pushNotificationSentTokensNoAddressSubtitle(
                     amount,
                     priceString,
-                    chainName,
-                    preferredLanguages: locale.rLanguages
+                    chainName
                 )
             }
         }

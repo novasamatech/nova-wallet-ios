@@ -47,9 +47,9 @@ final class CollatorStakingInfoPresenter {
 
             view?.didRecieve(state: .validatorInfo(viewModel))
         } catch {
-            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
+            let errorDescription = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonErrorNoDataRetrieved()
 
             view?.didRecieve(state: .error(errorDescription))
         }

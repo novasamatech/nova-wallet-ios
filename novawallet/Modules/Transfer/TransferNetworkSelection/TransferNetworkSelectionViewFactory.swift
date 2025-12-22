@@ -31,7 +31,7 @@ struct TransferNetworkSelectionViewFactory {
         interactor.presenter = presenter
 
         viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.commonFromNetwork(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonFromNetwork()
         }
 
         viewController.modalPresentationStyle = .custom
@@ -44,7 +44,7 @@ struct TransferNetworkSelectionViewFactory {
         viewController.cellHeight = 52
 
         let sectionTitle = LocalizableResource { locale in
-            R.string.localizable.commonCrossChain(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonCrossChain()
         }
 
         viewController.addSection(viewModels: [], title: sectionTitle)

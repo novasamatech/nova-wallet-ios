@@ -129,7 +129,9 @@ final class StakingDashboardActiveCellView: UIView {
     ) {
         rewardsView.valueTop.text = [
             viewModel.assetName,
-            R.string.localizable.commonRewards(preferredLanguages: locale.rLanguages).lowercased()
+            R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonRewards().lowercased()
         ].joined(with: .space)
     }
 

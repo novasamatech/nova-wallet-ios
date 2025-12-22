@@ -131,7 +131,7 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
             )
         }
         rootView.tableView.reloadData()
-        title = R.string.localizable.delegationsAddTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.delegationsAddTitle()
     }
 }
 

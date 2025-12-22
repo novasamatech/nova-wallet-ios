@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import Core
+import Web3Core
 import SubstrateSdk
 
 protocol BlockNumberToHashMapping {

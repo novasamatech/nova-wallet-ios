@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectSign
 
 class WalletConnectStateAuthorizing: WalletConnectBaseState {
     let proposal: Session.Proposal

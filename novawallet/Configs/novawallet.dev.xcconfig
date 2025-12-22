@@ -1,5 +1,3 @@
-#include "../../Pods/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.dev.xcconfig"
-
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_DEV"
 
 APP_NAME = Nova Dev

@@ -55,32 +55,32 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonYieldBoost(preferredLanguages: languages)
+        title = R.string(preferredLanguages: languages).localizable.commonYieldBoost()
 
-        rootView.collatorTitleLabel.text = R.string.localizable.yieldBoostSetupCollatorTitle(
+        rootView.collatorTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.yieldBoostSetupCollatorTitle()
 
         applyCollator(viewModel: collatorViewModel)
 
-        rootView.rewardComparisonTitleLabel.text = R.string.localizable.yieldBoostSetupRewardComparisonTitle(
+        rootView.rewardComparisonTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.yieldBoostSetupRewardComparisonTitle()
 
-        rootView.withoutYieldBoostOptionView.titleLabel.text = R.string.localizable.withoutYieldBoost(
+        rootView.withoutYieldBoostOptionView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.withoutYieldBoost()
 
-        rootView.withYieldBoostOptionView.titleLabel.text = R.string.localizable.withYieldBoost(
+        rootView.withYieldBoostOptionView.titleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.withYieldBoost()
 
         applyYieldBoostPeriod(viewModel: yieldBoostPeriod)
 
-        rootView.amountView.titleView.text = R.string.localizable.yieldBoostThreshold(preferredLanguages: languages)
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+        rootView.amountView.titleView.text = R.string(preferredLanguages: languages).localizable.yieldBoostThreshold()
+        rootView.amountView.detailsTitleLabel.text = R.string(
             preferredLanguages: languages
-        )
+        ).localizable.commonTransferablePrefix()
 
         setupThresholdAmountInputAccessoryView()
 
@@ -135,23 +135,24 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
 
         if let newDays = viewModel?.new {
             if let oldDays = viewModel?.old, oldDays != newDays {
-                period = R.string.localizable.yieldBoostSetupUpdatedPeriodDetails(
-                    newDays.localizedDaysPeriod(for: selectedLocale),
-                    oldDays.localizedDaysPeriod(for: selectedLocale),
+                period = R.string(
                     preferredLanguages: selectedLocale.rLanguages
+                ).localizable.yieldBoostSetupUpdatedPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale),
+                    oldDays.localizedDaysPeriod(for: selectedLocale)
                 )
             } else {
-                period = R.string.localizable.yieldBoostSetupNewPeriodDetails(
-                    newDays.localizedDaysPeriod(for: selectedLocale),
+                period = R.string(
                     preferredLanguages: selectedLocale.rLanguages
+                ).localizable.yieldBoostSetupNewPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale)
                 )
             }
 
         } else {
-            period = R.string.localizable.yieldBoostSetupNewPeriodDetails(
-                "⌛",
+            period = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.yieldBoostSetupNewPeriodDetails("⌛")
         }
 
         rootView.thresholdDetailsLabel.text = period
@@ -164,9 +165,9 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
             let emptyViewModel = AccountDetailsSelectionViewModel(
                 displayAddress: DisplayAddressViewModel(
                     address: "",
-                    name: R.string.localizable.parachainStakingSelectCollator(
+                    name: R.string(
                         preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    ).localizable.parachainStakingSelectCollator(),
                     imageViewModel: nil
                 ),
                 details: nil
@@ -189,9 +190,9 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
 
     private func updateActionButtonState() {
         if collatorViewModel == nil {
-            let title = R.string.localizable.parachainStakingHintSelectCollator(
+            let title = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.parachainStakingHintSelectCollator()
 
             rootView.actionButton.applyState(title: title, enabled: false)
 
@@ -199,20 +200,20 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, 
         }
 
         if !hasChanges {
-            let title = R.string.localizable.commonNoChanges(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonNoChanges()
             rootView.actionButton.applyState(title: title, enabled: false)
 
             return
         }
 
         if !rootView.amountInputView.hasValidNumber {
-            let title = R.string.localizable.transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferSetupEnterAmount()
             rootView.actionButton.applyState(title: title, enabled: false)
 
             return
         }
 
-        let title = R.string.localizable.commonContinue(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonContinue()
 
         rootView.actionButton.applyState(title: title, enabled: true)
     }

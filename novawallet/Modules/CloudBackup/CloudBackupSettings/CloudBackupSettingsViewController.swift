@@ -62,31 +62,31 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonBackup(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonBackup()
 
-        rootView.cloudBackupTitleLabel.text = R.string.localizable.commonIcloud(
+        rootView.cloudBackupTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonIcloud()
 
-        rootView.cloudBackupSubtitleLabel.text = R.string.localizable.backupSettingsCloudSubtitle(
+        rootView.cloudBackupSubtitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.backupSettingsCloudSubtitle()
 
-        rootView.cloudBackupActionControl.titleLabel.text = R.string.localizable.commonBackupIcloud(
+        rootView.cloudBackupActionControl.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonBackupIcloud()
 
-        rootView.manualBackupTitleLabel.text = R.string.localizable.commonManual(
+        rootView.manualBackupTitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonManual()
 
-        rootView.manualBackupSubtitleLabel.text = R.string.localizable.backupSettingsManualSubtitle(
+        rootView.manualBackupSubtitleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.backupSettingsManualSubtitle()
 
-        rootView.manualBackupActionControl.titleLabel.text = R.string.localizable.commonBackupManual(
+        rootView.manualBackupActionControl.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonBackupManual()
     }
 
     @objc func actionIcloudSwitch() {

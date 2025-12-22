@@ -51,7 +51,7 @@ private extension BanxaProvider {
             type: .onRamp,
             logo: R.image.banxaLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.banxaBuyActionDescription()
             },
             urlFactory: urlFactory,
             displayURLString: displayURL,

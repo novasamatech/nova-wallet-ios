@@ -3,7 +3,6 @@ import SubstrateSdk
 @testable import novawallet
 
 class KeystoreImportTests: XCTestCase {
-
     func testValidKeystore() {
         XCTAssertTrue(SecretImportService(logger: Logger.shared).handle(url: KeystoreDefinition.validURL))
     }

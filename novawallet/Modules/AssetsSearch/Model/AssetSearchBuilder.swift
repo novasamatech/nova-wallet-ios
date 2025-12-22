@@ -13,7 +13,8 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     private var state: AssetListState?
 
     private var query: String = ""
-    private var currentOperation: CancellableCall?
+
+    private let callStore = CancellableCallStore()
 
     init(
         filter: ChainAssetsFilter?,
@@ -31,49 +32,100 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         self.logger = logger
     }
 
-    private func rebuildResult(for query: String, filter: ChainAssetsFilter?) {
-        guard let state = state else {
-            return
+    func assetListState(from model: AssetListModel) -> AssetListState {
+        let chainAssets = model.allChains.flatMap { _, chain in
+            chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
 
-        clear(cancellable: &currentOperation)
+        let balanceResults = chainAssets.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
+            switch model.balances[$1] {
+            case let .success(amount):
+                $0[$1] = .success(amount.totalInPlank)
+            case let .failure(error):
+                $0[$1] = .failure(error)
+            case .none:
+                $0[$1] = .success(0)
+            }
+        }
 
-        let searchOperation = ClosureOperation<AssetSearchBuilderResult> {
-            let chainAssets = self.filterAssets(
-                for: query,
-                filter: filter,
-                chains: state.allChains
-            )
+        return AssetListState(
+            priceResult: model.priceResult,
+            balanceResults: balanceResults,
+            allChains: model.allChains,
+            externalBalances: model.externalBalances
+        )
+    }
+
+    func createFilterWrapper(
+        for query: String,
+        filter: ChainAssetsFilter?,
+        chains: [ChainModel.Id: ChainModel]
+    ) -> CompoundOperationWrapper<[ChainAsset]> {
+        let chainAssets = filterAssets(
+            for: query,
+            filter: filter,
+            chains: chains
+        )
+
+        return .createWithResult(chainAssets)
+    }
+}
+
+private extension AssetSearchBuilder {
+    func createSearchWrapper(
+        for query: String,
+        filter: ChainAssetsFilter?,
+        state: AssetListState
+    ) -> CompoundOperationWrapper<AssetSearchBuilderResult> {
+        let filterWrapper = createFilterWrapper(
+            for: query,
+            filter: filter,
+            chains: state.allChains
+        )
+
+        let resultOperation = ClosureOperation<AssetSearchBuilderResult> {
+            let chainAssets = try filterWrapper.targetOperation.extractNoCancellableResultData()
 
             return self.createResult(from: chainAssets, state: state)
         }
 
-        searchOperation.completionBlock = { [weak self] in
-            self?.workingQueue.async {
-                guard searchOperation === self?.currentOperation else {
-                    return
-                }
+        resultOperation.addDependency(filterWrapper.targetOperation)
 
-                self?.currentOperation = nil
-
-                do {
-                    let result = try searchOperation.extractNoCancellableResultData()
-
-                    self?.callbackQueue.async {
-                        self?.callbackClosure(result)
-                    }
-                } catch {
-                    self?.logger.error("Unexpected error: \(error)")
-                }
-            }
-        }
-
-        currentOperation = searchOperation
-
-        operationQueue.addOperation(searchOperation)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: filterWrapper.allOperations
+        )
     }
 
-    private func createResult(
+    func rebuildResult(for query: String, filter: ChainAssetsFilter?) {
+        guard let state = state else {
+            return
+        }
+
+        let searchWrapper = createSearchWrapper(
+            for: query,
+            filter: filter,
+            state: state
+        )
+
+        executeCancellable(
+            wrapper: searchWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(builderResult):
+                self?.callbackQueue.async {
+                    self?.callbackClosure(builderResult)
+                }
+            case let .failure(error):
+                self?.logger.error("Unexpected error: \(error)")
+            }
+        }
+    }
+
+    func createResult(
         from assets: [ChainAsset],
         state: AssetListState
     ) -> AssetSearchBuilderResult {
@@ -173,7 +225,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         return (newGroups, newGroupListsByAsset)
     }
 
-    private func assetsBySymbol(
+    func assetsBySymbol(
         using tokensByChainAsset: [ChainAssetId: MultichainToken],
         state: AssetListState
     ) -> [AssetModel.Symbol: [AssetListAssetModel]] {
@@ -197,7 +249,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         }
     }
 
-    private func filterAssets(
+    func filterAssets(
         for query: String,
         filter: ChainAssetsFilter?,
         chains: [ChainModel.Id: ChainModel]
@@ -227,7 +279,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
 
         var allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
-            let match = SearchMatch<ChainAsset>.matchInclusion(
+            let match = SearchMatch.matchInclusion(
                 for: query,
                 recordField: chain.name,
                 record: chain
@@ -252,30 +304,6 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         }
 
         return allMatchedAssets + allMatchedChains
-    }
-
-    func assetListState(from model: AssetListModel) -> AssetListState {
-        let chainAssets = model.allChains.flatMap { _, chain in
-            chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
-        }
-
-        let balanceResults = chainAssets.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
-            switch model.balances[$1] {
-            case let .success(amount):
-                $0[$1] = .success(amount.totalInPlank)
-            case let .failure(error):
-                $0[$1] = .failure(error)
-            case .none:
-                $0[$1] = .success(0)
-            }
-        }
-
-        return AssetListState(
-            priceResult: model.priceResult,
-            balanceResults: balanceResults,
-            allChains: model.allChains,
-            externalBalances: model.externalBalances
-        )
     }
 }
 

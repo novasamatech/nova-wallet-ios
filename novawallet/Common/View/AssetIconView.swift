@@ -1,4 +1,5 @@
 import UIKit_iOS
+import UIKit
 
 final class AssetIconView: UIView {
     let backgroundView: RoundedView = {

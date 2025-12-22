@@ -38,7 +38,7 @@ class SettingsMigrator {
 
 extension SettingsMigrator: SettingsMigrating {
     func switchVersion() throws {
-        guard let nextVersion = currentVersion.nextVersion() else {
+        guard let nextVersion = currentVersion.nextVersion else {
             throw KeystoreMigratingError.nextVersionMissing
         }
 
@@ -46,7 +46,7 @@ extension SettingsMigrator: SettingsMigrating {
     }
 
     func value(for key: String) -> Any? {
-        if sourceVersion.nextVersion() == currentVersion {
+        if sourceVersion.nextVersion == currentVersion {
             return settings.anyValue(for: key)
         } else {
             return tempKeystore[key]

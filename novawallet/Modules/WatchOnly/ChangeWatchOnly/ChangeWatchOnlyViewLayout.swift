@@ -38,7 +38,7 @@ final class ChangeWatchOnlyViewLayout: UIView {
         view.showsMyself = false
 
         view.localizablePlaceholder = LocalizableResource { locale in
-            R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonAddress()
         }
 
         return view

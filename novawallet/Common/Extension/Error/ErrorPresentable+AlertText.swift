@@ -7,7 +7,7 @@ extension ErrorPresentable where Self: AlertPresentable {
             return false
         }
 
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: content.message, title: content.title, closeAction: closeAction, from: view)
 
@@ -25,7 +25,7 @@ extension ErrorPresentable where Self: AlertPresentable {
             return false
         }
 
-        let actionTitle = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+        let actionTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
         let closeAction = AlertPresentableAction(title: actionTitle, style: .cancel, handler: completion)
 
         let viewModel = AlertPresentableViewModel(
@@ -48,16 +48,16 @@ extension ErrorPresentable where Self: AlertPresentable {
             return contentConvertibleError.toErrorContent(for: locale)
         }
 
-        if error as? BaseOperationError != nil {
-            let title = R.string.localizable.operationErrorTitle(preferredLanguages: locale?.rLanguages)
-            let message = R.string.localizable.operationErrorMessage(preferredLanguages: locale?.rLanguages)
+        if error is BaseOperationError {
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorTitle()
+            let message = R.string(preferredLanguages: locale.rLanguages).localizable.operationErrorMessage()
 
             return ErrorContent(title: title, message: message)
         }
 
         if (error as NSError).domain == NSURLErrorDomain {
-            let title = R.string.localizable.connectionErrorTitle(preferredLanguages: locale?.rLanguages)
-            let message = R.string.localizable.connectionErrorMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.connectionErrorTitle()
+            let message = R.string(preferredLanguages: locale.rLanguages).localizable.connectionErrorMessage_v2_2_0()
 
             return ErrorContent(title: title, message: message)
         }

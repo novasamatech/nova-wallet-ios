@@ -71,28 +71,30 @@ extension NetworkNodeConnectingError: ErrorContentConvertible {
 
         switch self {
         case let .alreadyExists(node, _):
-            title = R.string.localizable.networkNodeAddAlertAlreadyExistsTitle(
-                preferredLanguages: locale?.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertAlreadyExistsMessage(
-                node.name,
-                preferredLanguages: locale?.rLanguages
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertAlreadyExistsTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertAlreadyExistsMessage(
+                node.name
             )
         case .wrongFormat:
-            title = R.string.localizable.networkNodeAddAlertNodeErrorTitle(
-                preferredLanguages: locale?.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertNodeErrorMessageWss(
-                preferredLanguages: locale?.rLanguages
-            )
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertNodeErrorTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertNodeErrorMessageWss()
         case let .unableToConnect(networkName):
-            title = R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
-                preferredLanguages: locale?.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertWrongNetworkMessage(
+            title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertWrongNetworkTitle()
+            message = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.networkNodeAddAlertWrongNetworkMessage(
                 networkName,
-                networkName,
-                preferredLanguages: locale?.rLanguages
+                networkName
             )
         }
 

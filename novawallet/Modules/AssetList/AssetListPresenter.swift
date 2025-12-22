@@ -3,6 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 import Foundation_iOS
 import BigInt
+import UIKit
 
 final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
@@ -89,7 +90,8 @@ private extension AssetListPresenter {
                     ),
                     prices: nil,
                     locks: nil,
-                    hasSwaps: model.hasSwaps()
+                    hasSwaps: model.hasSwaps(),
+                    hasGifts: model.hasGifts()
                 ),
                 genericParams: createGenericViewModelFactoryParams()
             )
@@ -115,7 +117,8 @@ private extension AssetListPresenter {
                 ),
                 prices: totalValue,
                 locks: totalLocks,
-                hasSwaps: model.hasSwaps()
+                hasSwaps: model.hasSwaps(),
+                hasGifts: model.hasGifts()
             ),
             genericParams: createGenericViewModelFactoryParams()
         )
@@ -616,6 +619,34 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func swap() {
         wireframe.showSwapTokens(from: view)
+    }
+
+    func gift() {
+        guard let wallet, !model.allChains.isEmpty else { return }
+
+        let transferCompletionClosure: TransferCompletionClosure = { [weak self] chainAsset in
+            self?.wireframe.showAssetDetails(
+                from: self?.view,
+                chainAsset: chainAsset
+            )
+        }
+        let buyTokensClosure: BuyTokensClosure = { [weak self] in
+            guard let self else { return }
+
+            wireframe.showRamp(
+                from: view,
+                action: .onRamp,
+                delegate: self
+            )
+        }
+
+        wireframe.showGift(
+            from: view,
+            chains: Array(model.allChains.values),
+            selectedWallet: wallet,
+            transferCompletion: transferCompletionClosure,
+            buyTokensClosure: buyTokensClosure
+        )
     }
 
     func presentWalletConnect() {

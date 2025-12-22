@@ -31,49 +31,49 @@ extension SettingsRow {
     func title(for locale: Locale) -> String {
         switch self {
         case .wallets:
-            R.string.localizable.profileWalletsTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.profileWalletsTitle()
         case .currency:
-            R.string.localizable.profileCurrencyTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.profileCurrencyTitle()
         case .language:
-            R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.profileLanguageTitle()
         case .biometricAuth:
-            R.string.localizable.settingsBiometricAuth(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsBiometricAuth()
         case .approveWithPin:
-            R.string.localizable.settingsApproveWithPin(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsApproveWithPin()
         case .hideBalances:
-            R.string.localizable.settingsHideBalancesOnLaunch(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsHideBalancesOnLaunch()
         case .changePin:
-            R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.profilePincodeChangeTitle()
         case .telegram:
-            R.string.localizable.aboutTelegram(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.aboutTelegram()
         case .youtube:
-            R.string.localizable.settingsYoutube(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsYoutube()
         case .twitter:
-            R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsTwitter()
         case .rateUs:
-            R.string.localizable.settingsRateUs(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsRateUs()
         case .email:
-            R.string.localizable.settingsEmail(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsEmail()
         case .website:
-            R.string.localizable.aboutWebsite(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.aboutWebsite()
         case .github:
-            R.string.localizable.aboutGithub(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.aboutGithub()
         case .terms:
-            R.string.localizable.aboutTerms(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.aboutTerms()
         case .privacyPolicy:
-            R.string.localizable.aboutPrivacy(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.aboutPrivacy()
         case .walletConnect:
-            R.string.localizable.commonWalletConnect(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletConnect()
         case .wiki:
-            R.string.localizable.settingsWiki(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsWiki()
         case .notifications:
-            R.string.localizable.settingsPushNotifications(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsPushNotifications()
         case .backup:
-            R.string.localizable.commonBackup(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonBackup()
         case .networks:
-            R.string.localizable.connectionManagementTitle(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.connectionManagementTitle()
         case .appearance:
-            R.string.localizable.settingsAppearance(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsAppearance()
         }
     }
 

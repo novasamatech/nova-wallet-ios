@@ -26,14 +26,14 @@ extension NominationPoolsBondMoreHintsFactory: NominationPoolsBondMoreHintsFacto
         rewards: BigUInt?,
         locale: Locale
     ) -> [String] {
-        let eraHint = R.string.localizable.stakingHintRewardBondMore_v2_2_0(preferredLanguages: locale.rLanguages)
+        let eraHint = R.string(preferredLanguages: locale.rLanguages).localizable.stakingHintRewardBondMore_v2_2_0()
 
         var hints: [String] = [eraHint]
 
         if let rewards = rewards, rewards > 0 {
             let decimalAmount = rewards.decimal(precision: chainAsset.asset.precision)
             let amount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: locale)
-            let hint = R.string.localizable.stakingPoolRewardsClaimHint(amount, preferredLanguages: locale.rLanguages)
+            let hint = R.string(preferredLanguages: locale.rLanguages).localizable.stakingPoolRewardsClaimHint(amount)
             hints.append(hint)
         }
 

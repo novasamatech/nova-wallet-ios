@@ -1,7 +1,7 @@
 import Foundation
-import Core
+import Web3Core
 
 struct EvmBalanceUpdateBlock {
-    let updateDetectedAt: Core.BlockNumber?
-    let fetchRequestedAt: Core.BlockNumber
+    let updateDetectedAt: Web3Core.BlockNumber?
+    let fetchRequestedAt: Web3Core.BlockNumber
 }

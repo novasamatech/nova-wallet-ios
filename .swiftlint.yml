@@ -12,4 +12,9 @@ identifier_name:
     - id
 nesting:
   type_level: 3
-  statement_level: 3
+large_tuple:
+  warning: 6
+  error: 7
+type_body_length:
+  warning: 400
+  error: 500

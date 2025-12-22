@@ -19,12 +19,14 @@ class ValidatorListFilterTests: XCTestCase {
 
         let hasIdentity = true
         let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
-        let presenter = ValidatorListFilterPresenter(wireframe: wireframe,
-                                                     viewModelFactory: viewModelFactory,
-                                                     assetInfo: assetInfo,
-                                                     filter: filter,
-                                                     hasIdentity: hasIdentity,
-                                                     localizationManager: LocalizationManager.shared)
+        let presenter = ValidatorListFilterPresenter(
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            assetInfo: assetInfo,
+            filter: filter,
+            hasIdentity: hasIdentity,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
 
@@ -36,7 +38,7 @@ class ValidatorListFilterTests: XCTestCase {
         var optFilterViewModel: ValidatorListFilterViewModel?
 
         stub(view) { stub in
-            when(stub).didUpdateViewModel(any()).then { viewModel in
+            when(stub.didUpdateViewModel(any())).then { viewModel in
                 optFilterViewModel = viewModel
 
                 XCTAssertFalse(viewModel.canApply)
@@ -55,7 +57,7 @@ class ValidatorListFilterTests: XCTestCase {
         }
 
         stub(view) { stub in
-            when(stub).didUpdateViewModel(any()).then { viewModel in
+            when(stub.didUpdateViewModel(any())).then { viewModel in
                 XCTAssertTrue(viewModel.canApply)
                 XCTAssertTrue(viewModel.canReset)
                 filterChangeExpectation.fulfill()
@@ -67,4 +69,5 @@ class ValidatorListFilterTests: XCTestCase {
         // then
 
         wait(for: [filterChangeExpectation], timeout: Constants.defaultExpectationDuration)
-    }}
+    }
+}

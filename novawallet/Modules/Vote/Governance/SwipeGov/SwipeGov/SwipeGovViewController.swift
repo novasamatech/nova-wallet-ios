@@ -12,9 +12,7 @@ final class SwipeGovViewController: UIViewController, ViewHolder {
     private lazy var titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
         view.textAlignment = .center
-        view.text = R.string.localizable.commonSwipeGov(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        view.text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSwipeGov()
     }
 
     private lazy var backControl: UIControl = createNavbarControl(

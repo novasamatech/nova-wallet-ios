@@ -3,7 +3,6 @@ import XCTest
 import Operation_iOS
 
 class NFTIntegrationTests: XCTestCase {
-
     func testRMRKV1NftFetch() {
         let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
 
@@ -25,6 +24,7 @@ class NFTIntegrationTests: XCTestCase {
             XCTFail("Unexpected error \(error)")
         }
     }
+
     func testIPFSMetadataV1Fetch() {
         let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
 

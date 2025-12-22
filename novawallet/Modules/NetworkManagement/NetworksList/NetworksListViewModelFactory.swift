@@ -73,12 +73,10 @@ class NetworksListViewModelFactory {
             return [
                 .placeholder(
                     .init(
-                        message: R.string.localizable.networksListPlaceholderMesssage(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        ),
-                        buttonTitle: R.string.localizable.networksListAddNetworkButtonTitle(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
+                        message: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.networksListPlaceholderMesssage(),
+                        buttonTitle: R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ).localizable.networksListAddNetworkButtonTitle()
                     )
                 )
             ]
@@ -94,9 +92,9 @@ class NetworksListViewModelFactory {
                 connectionState = .notConnected
             } else {
                 connectionState = .connecting(
-                    R.string.localizable.networkStatusConnecting(
+                    R.string(
                         preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ).uppercased()
+                    ).localizable.networkStatusConnecting().uppercased()
                 )
             }
 
@@ -106,16 +104,16 @@ class NetworksListViewModelFactory {
                 networkState = .enabled
             } else {
                 networkState = .disabled(
-                    R.string.localizable.commonDisabled(
+                    R.string(
                         preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    )
+                    ).localizable.commonDisabled()
                 )
             }
 
             let networkType: String? = chainModel.isTestnet
-                ? R.string.localizable.commonTestnet(
+                ? R.string(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ).uppercased()
+                ).localizable.commonTestnet().uppercased()
                 : nil
 
             return .network(

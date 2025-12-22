@@ -3,25 +3,12 @@ import BigInt
 import Operation_iOS
 
 class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
-    enum TransferType {
-        case native
-        case erc20(AccountAddress)
-
-        var transactionSource: TransactionHistoryItemSource {
-            switch self {
-            case .native:
-                return .evmNative
-            case .erc20:
-                return .evmAsset
-            }
-        }
-    }
-
     let feeProxy: EvmTransactionFeeProxyProtocol
+    let transferCommandFactory: EvmTransferCommandFactory
     let extrinsicService: EvmTransactionServiceProtocol
     let validationProviderFactory: EvmValidationProviderFactoryProtocol
 
-    private(set) var transferType: TransferType?
+    private(set) var transferType: EvmTransferType?
     private(set) var lastFeeModel: EvmFeeModel?
 
     init(
@@ -29,6 +16,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         chain: ChainModel,
         asset: AssetModel,
         feeProxy: EvmTransactionFeeProxyProtocol,
+        transferCommandFactory: EvmTransferCommandFactory,
         extrinsicService: EvmTransactionServiceProtocol,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -37,6 +25,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.feeProxy = feeProxy
+        self.transferCommandFactory = transferCommandFactory
         self.extrinsicService = extrinsicService
         self.validationProviderFactory = validationProviderFactory
 
@@ -56,30 +45,6 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         // we don't have existential deposit for evm tokens
         presenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
         presenter?.didReceiveUtilityAssetMinBalance(0)
-    }
-
-    func addingTransferCommand(
-        to builder: EvmTransactionBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountAddress,
-        type: TransferType
-    ) throws -> (EvmTransactionBuilderProtocol, CallCodingPath?) {
-        let amountValue = amount.value
-
-        switch type {
-        case .native:
-            let newBuilder = try builder.nativeTransfer(to: recepient, amount: amountValue)
-
-            return (newBuilder, CallCodingPath.evmNativeTransfer)
-        case let .erc20(contract):
-            let newBuilder = try builder.erc20Transfer(
-                to: recepient,
-                contract: contract,
-                amount: amountValue
-            )
-
-            return (newBuilder, CallCodingPath.erc20Tranfer)
-        }
     }
 
     private func continueSetup() {
@@ -153,10 +118,10 @@ extension EvmOnChainTransferInteractor {
                 using: extrinsicService,
                 reuseIdentifier: identifier
             ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
+                let (newBuilder, _) = try self?.transferCommandFactory.addingTransferCommand(
                     to: builder,
                     amount: amount,
-                    recepient: recepientAddress,
+                    recipient: recepientAddress,
                     type: transferType
                 ) ?? (builder, nil)
 

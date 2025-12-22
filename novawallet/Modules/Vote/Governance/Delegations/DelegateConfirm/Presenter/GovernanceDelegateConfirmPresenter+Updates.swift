@@ -164,8 +164,8 @@ extension GovernanceDelegateConfirmPresenter {
     }
 
     func provideHints() {
-        let hint1 = R.string.localizable.govAddDelegateHint1(preferredLanguages: selectedLocale.rLanguages)
-        let hint2 = R.string.localizable.govAddDelegateHint2(preferredLanguages: selectedLocale.rLanguages)
+        let hint1 = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govAddDelegateHint1()
+        let hint2 = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.govAddDelegateHint2()
 
         view?.didReceiveHints(viewModel: [hint1, hint2])
     }

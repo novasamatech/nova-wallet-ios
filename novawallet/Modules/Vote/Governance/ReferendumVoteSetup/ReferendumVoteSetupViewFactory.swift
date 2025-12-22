@@ -107,7 +107,6 @@ struct ReferendumVoteSetupViewFactory {
         )
     }
 
-    // swiftlint:disable function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
         currencyManager: CurrencyManagerProtocol

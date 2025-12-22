@@ -21,7 +21,7 @@ extension SwapExecutionState.Failure {
 
         return switch verificationError {
         case .verificationFailed:
-            R.string.localizable.swapDryRunFailedInlineMessage(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapDryRunFailedInlineMessage()
         }
     }
 }

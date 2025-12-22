@@ -1,3 +1,4 @@
+import UIKit
 import Foundation_iOS
 
 final class CurrencyViewController: UIViewController, ViewHolder {
@@ -101,8 +102,8 @@ extension CurrencyViewController: CurrencyViewProtocol {
 extension CurrencyViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            let languages = localizationManager?.preferredLocalizations
-            title = R.string.localizable.currencyTitle(preferredLanguages: languages)
+            let languages = localizationManager?.preferredLocalizations ?? []
+            title = R.string(preferredLanguages: languages).localizable.currencyTitle()
         }
     }
 }

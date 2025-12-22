@@ -7,7 +7,7 @@ struct DAppWalletAuthViewFactory {
         delegate: DAppAuthDelegate
     ) -> DAppWalletAuthViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonWalletConnect(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonWalletConnect()
         }
 
         return createView(for: request, delegate: delegate, title: title)

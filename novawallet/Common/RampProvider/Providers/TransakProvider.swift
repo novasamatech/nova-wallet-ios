@@ -82,7 +82,7 @@ private extension TransakProvider {
             type: .offRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.transakSellActionDescription()
             },
             urlFactory: urlFactory,
             displayURLString: displayURL,
@@ -118,7 +118,7 @@ private extension TransakProvider {
             type: .onRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.transakBuyActionDescription()
             },
             urlFactory: urlFactory,
             displayURLString: displayURL,

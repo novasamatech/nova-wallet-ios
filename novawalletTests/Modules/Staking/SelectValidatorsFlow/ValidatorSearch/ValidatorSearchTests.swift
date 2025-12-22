@@ -26,14 +26,14 @@ class ValidatorSearchTests: XCTestCase {
         let fullValidatorList = generator
             .createSelectedValidators(from: generator.goodValidators)
 
-
         let presenter = ValidatorSearchPresenter(
             wireframe: wireframe,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             fullValidatorList: fullValidatorList,
             selectedValidatorList: selectedValidatorList,
-            localizationManager: LocalizationManager.shared)
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
 
@@ -42,9 +42,9 @@ class ValidatorSearchTests: XCTestCase {
         let reloadExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReset().thenDoNothing()
-            
-            when(stub).didReload(any()).then { viewModel in
+            when(stub.didReset()).thenDoNothing()
+
+            when(stub.didReload(any())).then { viewModel in
                 XCTAssertEqual(viewModel.cellViewModels.count, fullValidatorList.count)
                 reloadExpectation.fulfill()
             }

@@ -11,8 +11,8 @@ class StakingAnalyticsLocalSubscriptionFactoryStub {
 
 extension StakingAnalyticsLocalSubscriptionFactoryStub: StakingAnalyticsLocalSubscriptionFactoryProtocol {
     func getWeaklyAnalyticsProvider(
-        for address: AccountAddress,
-        urls: [URL]
+        for _: AccountAddress,
+        urls _: [URL]
     ) -> AnySingleValueProvider<[SubqueryRewardItemData]> {
         let provider = SingleValueProviderStub(item: weaklyAnalytics)
         return AnySingleValueProvider(provider)

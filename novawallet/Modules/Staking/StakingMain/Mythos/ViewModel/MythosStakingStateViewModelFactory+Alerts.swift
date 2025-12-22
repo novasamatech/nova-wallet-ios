@@ -65,13 +65,11 @@ extension MythosStkStateViewModelFactory {
         }
 
         let description = LocalizableResource { locale in
-            R.string.localizable.parachainStakingAlertCollatorsChange(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingAlertCollatorsChange()
         }
 
         let title = LocalizableResource { locale in
-            R.string.localizable.parachainStakingChangeCollator(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingChangeCollator()
         }
 
         return .nominatorChangeValidators(title: title, details: description)

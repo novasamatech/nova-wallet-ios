@@ -4,77 +4,67 @@ import Foundation_iOS
 
 protocol AccountImportSeedViewDelegate: AnyObject {
     func accountImportSeedViewDidProceed(_ view: AccountImportSeedView)
+    func accountImportSeedViewDidTapScan(_ view: AccountImportSeedView)
+    func accountImportSeedViewShouldClearOnBackspace(_ view: AccountImportSeedView) -> Bool
 }
 
 final class AccountImportSeedView: AccountImportBaseView {
     weak var delegate: AccountImportSeedViewDelegate?
 
+    private let seedHeaderStackView: UIStackView = .create { view in
+        view.axis = .horizontal
+        view.distribution = .equalSpacing
+        view.alignment = .center
+    }
+
     let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
-        view.stackView.alignment = .fill
-        view.stackView.isLayoutMarginsRelativeArrangement = true
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(
-            top: UIConstants.verticalTitleInset,
+            top: 12.0,
             left: UIConstants.horizontalInset,
             bottom: 0.0,
             right: UIConstants.horizontalInset
         )
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
         return view
     }()
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .h2Title
-        label.numberOfLines = 0
-        return label
-    }()
-
-    let seedBackgroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
-
-    let seedTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .p2Paragraph
-        return label
-    }()
-
-    let seedHintLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .p2Paragraph
-        return label
-    }()
-
-    let seedTextView: UITextView = {
-        let view = UITextView()
-        view.font = .p1Paragraph
+    let titleLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
-        view.tintColor = R.color.colorTextPrimary()
-        view.backgroundColor = .clear
-        view.isScrollEnabled = false
-        view.showsVerticalScrollIndicator = false
-        view.showsHorizontalScrollIndicator = false
-        return view
-    }()
+        view.font = .boldTitle3
+        view.numberOfLines = 0
+    }
 
-    let usernameBackgroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
+    let seedTitleLabel = AccountImportSeedView.createSectionTitleLabel()
 
-    let usernameTextField: AnimatedTextField = UIFactory.default.createAnimatedTextField()
+    let seedHintLabel: UILabel = .create { view in
+        view.textColor = R.color.colorTextSecondary()
+        view.font = .regularFootnote
+    }
 
-    let usernameHintLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorTextSecondary()
-        label.numberOfLines = 0
-        return label
-    }()
+    let seedInputView: ScanInputView = .create { view in
+        view.localizablePlaceholder = LocalizableResource { _ in
+            "0xAB"
+        }
 
-    let proceedButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+        view.textField.keyboardType = .default
+        view.textField.returnKeyType = .done
+        view.textField.textContentType = .none
+        view.textField.autocapitalizationType = .none
+        view.textField.autocorrectionType = .no
+        view.textField.spellCheckingType = .no
+    }
+
+    let walletNameTitleLabel = createSectionTitleLabel()
+
+    let walletNameInputView: TextInputView = .create { view in
+        view.textField.returnKeyType = .done
+    }
+
+    let proceedButton: TriangularedButton = .create { view in
+        view.applyDefaultStyle()
+    }
 
     private(set) var sourceViewModel: InputViewModelProtocol?
     private(set) var usernameViewModel: InputViewModelProtocol?
@@ -82,7 +72,7 @@ final class AccountImportSeedView: AccountImportBaseView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
         setupHandlers()
@@ -95,42 +85,39 @@ final class AccountImportSeedView: AccountImportBaseView {
 
     func bindSource(viewModel: InputViewModelProtocol) {
         sourceViewModel = viewModel
-        seedTextView.text = viewModel.inputHandler.value
-        seedHintLabel.text = viewModel.placeholder
+        seedInputView.bind(inputViewModel: viewModel)
 
         updateProceedButton()
     }
 
     func bindUsername(viewModel: InputViewModelProtocol?) {
         usernameViewModel = viewModel
-        usernameTextField.text = viewModel?.inputHandler.value
+
+        if let viewModel = viewModel {
+            walletNameInputView.bind(inputViewModel: viewModel)
+        }
 
         let isHidden = viewModel == nil
-        usernameBackgroundView.isHidden = isHidden
-        usernameHintLabel.isHidden = isHidden
+        walletNameTitleLabel.isHidden = isHidden
+        walletNameInputView.isHidden = isHidden
 
         updateProceedButton()
     }
 
     override func setupLocalization() {
-        titleLabel.text = R.string.localizable.walletImportSeedTitle(
-            preferredLanguages: locale?.rLanguages
-        )
-        seedTitleLabel.text = R.string.localizable.importRawSeed(preferredLanguages: locale?.rLanguages)
+        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
+        titleLabel.text = localizedStrings.walletImportSeedTitle()
+        seedTitleLabel.text = localizedStrings.importRawSeed()
+        seedHintLabel.text = localizedStrings.accountImportSubstrateSeedPlaceholder_v2_2_0()
 
-        usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
-
-        usernameHintLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
-            preferredLanguages: locale?.rLanguages
-        )
+        walletNameTitleLabel.text = localizedStrings.walletUsernameSetupChooseTitle_v2_2_0()
+        walletNameInputView.textField.placeholder = localizedStrings.commonName()
 
         updateProceedButton()
     }
 
     override func updateOnAppear() {
-        seedTextView.becomeFirstResponder()
+        seedInputView.textField.becomeFirstResponder()
     }
 
     override func updateOnKeyboardBottomInsetChange(_ newInset: CGFloat) {
@@ -143,10 +130,10 @@ final class AccountImportSeedView: AccountImportBaseView {
         if contentInsets.bottom > 0.0 {
             let targetView: UIView?
 
-            if seedTextView.isFirstResponder {
-                targetView = seedBackgroundView
-            } else if usernameTextField.isFirstResponder {
-                targetView = usernameBackgroundView
+            if seedInputView.textField.isFirstResponder {
+                targetView = seedInputView
+            } else if walletNameInputView.textField.isFirstResponder {
+                targetView = walletNameInputView
             } else {
                 targetView = nil
             }
@@ -161,29 +148,38 @@ final class AccountImportSeedView: AccountImportBaseView {
             }
         }
     }
+}
 
-    private func setupHandlers() {
-        proceedButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+// MARK: - Private
 
-        seedTextView.returnKeyType = .done
-        seedTextView.textContentType = .none
-        seedTextView.autocapitalizationType = .none
-        seedTextView.autocorrectionType = .no
-        seedTextView.spellCheckingType = .no
-        seedTextView.delegate = self
-
-        usernameTextField.textField.returnKeyType = .done
-        usernameTextField.textField.textContentType = .nickname
-        usernameTextField.textField.autocapitalizationType = .sentences
-        usernameTextField.textField.autocorrectionType = .no
-        usernameTextField.textField.spellCheckingType = .no
-
-        usernameTextField.delegate = self
-
-        usernameTextField.addTarget(self, action: #selector(actionTextFieldChanged(_:)), for: .editingChanged)
+private extension AccountImportSeedView {
+    static func createSectionTitleLabel() -> UILabel {
+        let label = UILabel()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorTextSecondary()
+        return label
     }
 
-    private func setupLayout() {
+    static func createHintLabel() -> UILabel {
+        let label = UILabel()
+        label.font = .caption1
+        label.textColor = R.color.colorTextSecondary()
+        label.numberOfLines = 0
+        return label
+    }
+
+    func setupHandlers() {
+        proceedButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+
+        seedInputView.scanButton.addTarget(self, action: #selector(actionScan), for: .touchUpInside)
+        seedInputView.addTarget(self, action: #selector(actionSeedInputChanged), for: .editingChanged)
+        seedInputView.delegate = self
+
+        walletNameInputView.addTarget(self, action: #selector(actionWalletNameChanged), for: .editingChanged)
+        walletNameInputView.delegate = self
+    }
+
+    func setupLayout() {
         addSubview(proceedButton)
         proceedButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -193,147 +189,111 @@ final class AccountImportSeedView: AccountImportBaseView {
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide.snp.top)
-            make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(proceedButton.snp.top).offset(-8.0)
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.setCustomSpacing(24.0, after: titleLabel)
+        containerView.stackView.setCustomSpacing(Constants.groupSpacing, after: titleLabel)
 
-        containerView.stackView.addArrangedSubview(seedBackgroundView)
+        seedHeaderStackView.addArrangedSubview(seedTitleLabel)
+        seedHeaderStackView.addArrangedSubview(seedHintLabel)
 
-        seedBackgroundView.addSubview(seedTitleLabel)
-        seedTitleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8.0)
-            make.leading.equalToSuperview().inset(16.0)
-        }
+        containerView.stackView.addArrangedSubview(seedHeaderStackView)
+        containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: seedHeaderStackView)
 
-        seedBackgroundView.addSubview(seedHintLabel)
-        seedHintLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8.0)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.leading.greaterThanOrEqualTo(seedTitleLabel.snp.trailing).offset(4.0)
-        }
+        containerView.stackView.addArrangedSubview(seedInputView)
+        containerView.stackView.setCustomSpacing(Constants.groupSpacing, after: seedInputView)
 
-        seedBackgroundView.addSubview(seedTextView)
-        seedTextView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(20)
-            make.leading.trailing.equalToSuperview().inset(12.0)
-            make.height.greaterThanOrEqualTo(36.0)
-        }
+        containerView.stackView.addArrangedSubview(walletNameTitleLabel)
+        containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: walletNameTitleLabel)
 
-        seedBackgroundView.snp.makeConstraints { make in
-            make.height.equalTo(seedTextView).offset(32.0)
-        }
-
-        containerView.stackView.setCustomSpacing(16.0, after: seedBackgroundView)
-
-        containerView.stackView.addArrangedSubview(usernameBackgroundView)
-        usernameBackgroundView.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.triangularedViewHeight)
-        }
-
-        usernameBackgroundView.addSubview(usernameTextField)
-        usernameTextField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        containerView.stackView.setCustomSpacing(12.0, after: usernameBackgroundView)
-
-        containerView.stackView.addArrangedSubview(usernameHintLabel)
+        containerView.stackView.addArrangedSubview(walletNameInputView)
+        containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: walletNameInputView)
     }
 
-    private func updateProceedButton() {
-        if let viewModel = sourceViewModel, viewModel.inputHandler.required, seedTextView.text.isEmpty {
+    func updateProceedButton() {
+        if let viewModel = sourceViewModel, viewModel.inputHandler.required,
+           (seedInputView.textField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoSeedTitle(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.walletImportNoSeedTitle()
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
-                  (usernameTextField.text ?? "").isEmpty {
+                  (walletNameInputView.textField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonEnterWalletNameDisabled(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonEnterWalletNameDisabled()
         } else {
             proceedButton.applyEnabledStyle()
             proceedButton.isUserInteractionEnabled = true
-            proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: locale?.rLanguages
-            )
+            proceedButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.commonContinue()
         }
     }
 
-    @objc private func actionProceed() {
+    @objc func actionProceed() {
         delegate?.accountImportSeedViewDidProceed(self)
     }
 
-    @objc private func actionTextFieldChanged(_ sender: UITextField) {
-        if usernameViewModel?.inputHandler.value != sender.text {
-            sender.text = usernameViewModel?.inputHandler.value
-        }
+    @objc func actionScan() {
+        delegate?.accountImportSeedViewDidTapScan(self)
+    }
 
+    @objc func actionSeedInputChanged() {
+        updateProceedButton()
+    }
+
+    @objc func actionWalletNameChanged() {
         updateProceedButton()
     }
 }
 
-extension AccountImportSeedView: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        if textView.text != sourceViewModel?.inputHandler.value {
-            textView.text = sourceViewModel?.inputHandler.value
+// MARK: - ScanInputViewDelegate
+
+extension AccountImportSeedView: ScanInputViewDelegate {
+    func scanInputViewWillStartEditing(_: ScanInputView) {}
+
+    func scanInputViewShouldReturn(_ inputView: ScanInputView) -> Bool {
+        if inputView === seedInputView {
+            if !walletNameInputView.isHidden {
+                walletNameInputView.textField.becomeFirstResponder()
+            } else {
+                inputView.textField.resignFirstResponder()
+            }
         }
-
-        updateProceedButton()
-    }
-
-    func textView(
-        _ textView: UITextView,
-        shouldChangeTextIn range: NSRange,
-        replacementText text: String
-    ) -> Bool {
-        if text == String.returnKey {
-            textView.resignFirstResponder()
-            return false
-        }
-
-        guard let model = sourceViewModel else {
-            return false
-        }
-
-        let shouldApply = model.inputHandler.didReceiveReplacement(text, for: range)
-
-        if !shouldApply, textView.text != model.inputHandler.value {
-            textView.text = model.inputHandler.value
-        }
-
-        return shouldApply
-    }
-}
-
-extension AccountImportSeedView: AnimatedTextFieldDelegate {
-    func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
-        textField.resignFirstResponder()
         return false
     }
 
-    func animatedTextField(
-        _ textField: AnimatedTextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        guard let currentViewModel = usernameViewModel else {
-            return true
-        }
+    func scanInputViewDidEndEditing(_: ScanInputView) {}
 
-        let shouldApply = currentViewModel.inputHandler.didReceiveReplacement(string, for: range)
+    func scanInputViewShouldClearOnBackspace(_ inputView: ScanInputView) -> Bool {
+        guard inputView === seedInputView else { return false }
 
-        if !shouldApply, textField.text != currentViewModel.inputHandler.value {
-            textField.text = currentViewModel.inputHandler.value
-        }
+        return delegate?.accountImportSeedViewShouldClearOnBackspace(self) ?? false
+    }
+}
 
-        return shouldApply
+// MARK: - TextInputViewDelegate
+
+extension AccountImportSeedView: TextInputViewDelegate {
+    func textInputViewWillStartEditing(_: TextInputView) {}
+
+    func textInputViewShouldReturn(_ inputView: TextInputView) -> Bool {
+        inputView.textField.resignFirstResponder()
+        return false
+    }
+}
+
+// MARK: - Constants
+
+private extension AccountImportSeedView {
+    enum Constants {
+        static let sectionSpacing: CGFloat = 8.0
+        static let groupSpacing: CGFloat = 16.0
     }
 }

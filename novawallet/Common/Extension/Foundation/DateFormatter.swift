@@ -66,10 +66,10 @@ extension DateFormatter {
         let dateFormatterBuilder = CompoundDateFormatterBuilder()
 
         let today = LocalizableResource { locale in
-            R.string.localizable.commonToday(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonToday()
         }
         let yesterday = LocalizableResource { locale in
-            R.string.localizable.commonYesterday(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.commonYesterday()
         }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMMM"
@@ -99,6 +99,20 @@ extension DateFormatter {
         LocalizableResource { locale in
             let format = DateFormatter.dateFormat(
                 fromTemplate: "d MMM' at 'HH:mm, yyyy",
+                options: 0,
+                locale: locale
+            )
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = format
+            dateFormatter.locale = locale
+            return dateFormatter
+        }
+    }
+
+    static var giftsList: LocalizableResource<DateFormatter> {
+        LocalizableResource { locale in
+            let format = DateFormatter.dateFormat(
+                fromTemplate: "dd.MM.yyyy",
                 options: 0,
                 locale: locale
             )

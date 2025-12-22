@@ -93,7 +93,7 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
         context: AnyObject?
     ) {
         let title = LocalizableResource { locale in
-            R.string.localizable.stakingRebond(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebond()
         }
 
         guard let infoView = ModalPickerFactory.createCollatorsSelectionList(

@@ -138,8 +138,6 @@ extension CustomNetworkViewController: KeyboardAdoptable {
                 targetView = rootView.nameInput
             } else if rootView.currencySymbolInput.textField.isFirstResponder {
                 targetView = rootView.currencySymbolInput
-            } else if rootView.currencySymbolInput.textField.isFirstResponder {
-                targetView = rootView.currencySymbolInput
             } else if rootView.blockExplorerUrlInput.textField.isFirstResponder {
                 targetView = rootView.blockExplorerUrlInput
             } else if rootView.coingeckoUrlInput.textField.isFirstResponder {

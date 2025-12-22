@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 
 class SharedArrayTests: XCTestCase {
-
     func testQueryFunctions() {
         let items = [1, 2, 3]
         let sharedList = SharedList(items: items)

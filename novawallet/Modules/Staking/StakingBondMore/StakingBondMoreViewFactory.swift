@@ -34,6 +34,7 @@ struct StakingBondMoreViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

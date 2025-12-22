@@ -67,6 +67,7 @@ struct StakingRebondConfirmationViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
     }

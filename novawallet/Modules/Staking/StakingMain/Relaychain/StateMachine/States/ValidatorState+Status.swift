@@ -42,11 +42,15 @@ extension ValidatorState {
     private func createActiveStatus(
         for locale: Locale?
     ) -> AlertPresentableViewModel? {
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusAlertActiveTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingNominatorStatusAlertActiveMessage(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertActiveTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertActiveMessage()
 
         return AlertPresentableViewModel(
             title: title,
@@ -59,11 +63,15 @@ extension ValidatorState {
     private func createInactiveStatus(
         for locale: Locale?
     ) -> AlertPresentableViewModel? {
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-        let title = R.string.localizable
-            .stakingNominatorStatusAlertInactiveTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable
-            .stakingNominatorStatusAlertNoValidators(preferredLanguages: locale?.rLanguages)
+        let closeAction = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonClose()
+        let title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertInactiveTitle()
+        let message = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingNominatorStatusAlertNoValidators()
 
         return AlertPresentableViewModel(
             title: title,

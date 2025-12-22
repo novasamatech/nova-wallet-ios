@@ -31,6 +31,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let footnotePositive = UILabel.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .regularFootnote
+    )
+
     static let footnoteSecondaryOnWhite = UILabel.Style(
         textColor: R.color.colorTextSecondaryOnWhite(),
         font: .regularFootnote
@@ -128,6 +133,11 @@ extension UILabel.Style {
 
     static let caption1Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
+        font: .caption1
+    )
+
+    static let caption1Accent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
         font: .caption1
     )
 

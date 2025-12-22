@@ -6,7 +6,10 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
 
     let presenter: TransferConfirmPresenterProtocol
 
-    init(presenter: TransferConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: TransferConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
@@ -52,45 +55,46 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.walletSendTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletSendTitle()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonConfirm()
 
         if rootView.destinationNetworkCell == nil {
-            rootView.originNetworkCell.titleLabel.text = R.string.localizable.commonNetwork(
+            rootView.originNetworkCell.titleLabel.text = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonNetwork()
         } else {
-            rootView.originNetworkCell.titleLabel.text = R.string.localizable.commonFromNetwork(
+            rootView.originNetworkCell.titleLabel.text = R.string(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).localizable.commonFromNetwork()
         }
 
-        rootView.destinationNetworkCell?.titleLabel.text = R.string.localizable.commonToNetwork(
+        rootView.destinationNetworkCell?.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonToNetwork()
 
-        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
+        rootView.walletCell.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonWallet()
 
-        rootView.senderCell.titleLabel.text = R.string.localizable.commonSender(
+        rootView.senderCell.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonSender()
 
         rootView.originFeeCell.rowContentView.locale = selectedLocale
 
         rootView.crossChainFeeCell?.rowContentView.locale = selectedLocale
 
         if let hintView = rootView.crossChainHintView {
-            let hint = R.string.localizable.transferCrossChainHint(preferredLanguages: selectedLocale.rLanguages)
+            let hint = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.transferCrossChainHint()
             hintView.bind(texts: [hint])
         }
 
-        rootView.recepientCell.titleLabel.text = R.string.localizable.commonRecipient(
+        rootView.recepientCell.titleLabel.text = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.commonRecipient()
     }
 
     @objc func actionSubmit() {

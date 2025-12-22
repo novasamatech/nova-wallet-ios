@@ -8,7 +8,9 @@ final class OpenCardUrlParsingService: OpenScreenUrlParsingServiceProtocol {
         completion: @escaping (Result<UrlHandlingScreen, OpenScreenUrlParsingError>) -> Void
     ) {
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        let providerParam = components?.queryItems?.first(where: { $0.name == UniversalLink.CardScreen.QueryKey.provider })?.value
+        let providerParam = components?.queryItems?.first(
+            where: { $0.name == UniversalLink.CardScreen.QueryKey.provider }
+        )?.value
 
         guard let providerParam = providerParam else {
             completion(.success(.card(nil)))

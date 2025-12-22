@@ -8,7 +8,6 @@ import Foundation_iOS
 import BigInt
 
 class YourValidatorListTests: XCTestCase {
-
     func testSetupCompletesAndActiveValidatorReceived() throws {
         // given
 
@@ -47,7 +46,7 @@ class YourValidatorListTests: XCTestCase {
             legacyClaimedRewards: nil
         )
 
-        let electedValidators: [EraValidatorInfo] = (0..<16).map { _ in
+        let electedValidators: [EraValidatorInfo] = (0 ..< 16).map { _ in
             let accountId = AccountGenerator.generateMetaAccount().substrateAccountId!
 
             let nominator = Staking.IndividualExposure(who: selectedAccount.accountId, value: BigUInt(1e+12))
@@ -70,9 +69,9 @@ class YourValidatorListTests: XCTestCase {
             return SelectedValidatorInfo(address: address)
         }
 
-        let expectedValidatorAddresses = Set(activeValidators.map { $0.address })
+        let expectedValidatorAddresses = Set(activeValidators.map(\.address))
 
-        let targets = electedValidators.map { $0.accountId }
+        let targets = electedValidators.map(\.accountId)
 
         let nomination = Staking.Nomination(
             targets: targets,
@@ -89,15 +88,15 @@ class YourValidatorListTests: XCTestCase {
         let validatorOperationFactory = MockValidatorOperationFactoryProtocol()
 
         stub(validatorOperationFactory) { stub in
-            when(stub).allSelectedOperation(by: any(), nominatorAddress: any()).then { _ in
+            when(stub.allSelectedOperation(by: any(), nominatorAddress: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(activeValidators)
             }
 
-            when(stub).pendingValidatorsOperation(for: any()).then { _ in
+            when(stub.pendingValidatorsOperation(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult([])
             }
 
-            when(stub).activeValidatorsOperation(for: any()).then { _ in
+            when(stub.activeValidatorsOperation(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(activeValidators)
             }
         }
@@ -145,10 +144,10 @@ class YourValidatorListTests: XCTestCase {
         var receivedValidatorAddresses: Set<AccountAddress>?
 
         stub(view) { stub in
-            when(stub).reload(state: any()).then { state in
-                if case .validatorList(let viewModel) = state, !viewModel.sections.isEmpty {
+            when(stub.reload(state: any())).then { state in
+                if case let .validatorList(viewModel) = state, !viewModel.sections.isEmpty {
                     receivedValidatorAddresses = viewModel.sections
-                        .flatMap { $0.validators }
+                        .flatMap(\.validators)
                         .reduce(into: Set<AccountAddress>()) { $0.insert($1.address) }
                     expectation.fulfill()
                 }

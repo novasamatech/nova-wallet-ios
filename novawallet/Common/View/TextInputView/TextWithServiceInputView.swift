@@ -34,9 +34,9 @@ class TextWithServiceInputView: TextInputView {
     }
 
     func setupLocalization() {
-        pasteButton.imageWithTitleView?.title = R.string.localizable.commonPaste(
+        pasteButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.commonPaste()
 
         setNeedsLayout()
     }

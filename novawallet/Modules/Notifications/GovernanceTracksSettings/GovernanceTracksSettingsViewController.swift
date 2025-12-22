@@ -17,10 +17,8 @@ final class GovernanceTracksSettingsViewController: GovernanceSelectTracksViewCo
 
     override func setupLocalization() {
         super.setupLocalization()
-        let strings = R.string.localizable.self
-        governanceTracksSettingsLayout?.tracksView.titleLabel.text = strings.notificationsManagementGovTracksTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.self
+        governanceTracksSettingsLayout?.tracksView.titleLabel.text = strings.notificationsManagementGovTracksTitle()
     }
 }
 

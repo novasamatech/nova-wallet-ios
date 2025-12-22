@@ -1,6 +1,7 @@
 import Foundation
 
-final class MythosCollatorsSearchWireframe: CollatorStakingSelectSearchWireframe, CollatorStakingSelectSearchWireframeProtocol {
+final class MythosCollatorsSearchWireframe: CollatorStakingSelectSearchWireframe,
+    CollatorStakingSelectSearchWireframeProtocol {
     let sharedState: MythosStakingSharedStateProtocol
 
     init(sharedState: MythosStakingSharedStateProtocol) {

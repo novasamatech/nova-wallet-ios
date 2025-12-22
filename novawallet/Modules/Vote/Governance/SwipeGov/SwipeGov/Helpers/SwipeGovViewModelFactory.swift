@@ -34,19 +34,16 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
             return nil
         }
 
-        let titleText = R.string.localizable.commonCountedReferenda(
-            filteredReferendums.count,
-            preferredLanguages: genericParams.locale.rLanguages
-        )
+        let languages = genericParams.locale.rLanguages
+
+        let titleText = R.string(
+            preferredLanguages: languages
+        ).localizable.commonCountedReferenda(filteredReferendums.count)
 
         return .swipeGov(
             SwipeGovBannerViewModel(
-                title: R.string.localizable.commonSwipeGov(
-                    preferredLanguages: genericParams.locale.rLanguages
-                ),
-                description: R.string.localizable.swipeGovBannerMessage(
-                    preferredLanguages: genericParams.locale.rLanguages
-                ),
+                title: R.string(preferredLanguages: languages).localizable.commonSwipeGov(),
+                description: R.string(preferredLanguages: languages).localizable.swipeGovBannerMessage(),
                 referendumCounterText: .wrapped(titleText, with: genericParams.privacyModeEnabled)
             )
         )
@@ -61,12 +58,12 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
         return if votingList.isEmpty {
             VotingListWidgetViewModel.empty(
                 value: "0",
-                title: R.string.localizable.votingListWidgetTitleEmpty(preferredLanguages: languages)
+                title: R.string(preferredLanguages: languages).localizable.votingListWidgetTitleEmpty()
             )
         } else {
             VotingListWidgetViewModel.votings(
                 value: "\(votingList.count)",
-                title: R.string.localizable.votingListWidgetTitle(preferredLanguages: languages)
+                title: R.string(preferredLanguages: languages).localizable.votingListWidgetTitle()
             )
         }
     }
@@ -76,14 +73,9 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
         locale: Locale
     ) -> String? {
         if availableToVoteCount > 0 {
-            R.string.localizable.swipeGovReferendaCounter(
-                availableToVoteCount,
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovReferendaCounter(availableToVoteCount)
         } else {
-            R.string.localizable.swipeGovReferendaCounterEmpty(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swipeGovReferendaCounterEmpty()
         }
     }
 }

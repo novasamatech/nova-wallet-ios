@@ -35,7 +35,7 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     func setupDoneButton(for locale: Locale) -> TriangularedButton {
         let button = setupActionButton()
 
-        button.setTitle(R.string.localizable.commonDone(preferredLanguages: locale.rLanguages))
+        button.setTitle(R.string(preferredLanguages: locale.rLanguages).localizable.commonDone())
 
         containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
             UIConstants.actionHeight + 8
@@ -46,7 +46,7 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     func setupTryAgainButton(for locale: Locale) -> TriangularedButton {
         let button = setupActionButton()
 
-        button.setTitle(R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages))
+        button.setTitle(R.string(preferredLanguages: locale.rLanguages).localizable.commonTryAgain())
 
         containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
             UIConstants.actionHeight + 8
@@ -55,31 +55,25 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+        detailsView.titleControl.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.swapsSetupDetailsTitle()
 
         slippageCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupSlippage(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupSlippage()
         )
         priceDifferenceCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupPriceDifference(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupPriceDifference()
         )
         rateCell.titleButton.setTitle(
-            R.string.localizable.swapsSetupDetailsRate(
-                preferredLanguages: locale.rLanguages
-            )
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupDetailsRate()
         )
         routeCell.titleButton.setTitle(
-            R.string.localizable.swapsDetailsRoute(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsRoute()
         )
 
         totalFeeCell.titleButton.setTitle(
-            R.string.localizable.swapsDetailsTotalFee(preferredLanguages: locale.rLanguages)
+            R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsTotalFee()
         )
     }
 

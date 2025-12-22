@@ -279,14 +279,10 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
 
     func showPriceDifferenceInfo() {
         let title = LocalizableResource {
-            R.string.localizable.swapsSetupPriceDifference(
-                preferredLanguages: $0.rLanguages
-            )
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifference()
         }
         let details = LocalizableResource {
-            R.string.localizable.swapsSetupPriceDifferenceDescription(
-                preferredLanguages: $0.rLanguages
-            )
+            R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupPriceDifferenceDescription()
         }
         wireframe.showInfo(
             from: view,

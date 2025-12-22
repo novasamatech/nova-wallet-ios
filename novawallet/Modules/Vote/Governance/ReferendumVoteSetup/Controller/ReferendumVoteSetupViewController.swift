@@ -81,9 +81,8 @@ private extension ReferendumVoteSetupViewController {
     func applyReferendumNumber() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.govVoteSetupTitleFormat(
-            referendumNumber ?? "",
-            preferredLanguages: languages
+        rootView.titleLabel.text = R.string(preferredLanguages: languages).localizable.govVoteSetupTitleFormat(
+            referendumNumber ?? ""
         )
     }
 

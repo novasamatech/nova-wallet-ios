@@ -5,28 +5,56 @@ on:
   # push:
   #   branches: [ develop ]
 
+env:
+  MINT_PATH: ${{ github.workspace }}/.mint
+  xcode-version: "13.0"
+
 jobs:
   build:
     runs-on: macos-11
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: '13.0'
+          xcode-version: ${{ env.xcode-version }}
 
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
+      - name: Restore Mint packages сache
+        id: mint-cache
         uses: actions/cache@v4
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: ${{ env.MINT_PATH }}
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Mint bootstrap
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: |
+          mint bootstrap --mintfile CIMintfile
+
+      - name: Restore SPM cache
+        id: spm-cache
+        uses: actions/cache@v4
+        with:
+          path: .source_packages
+          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
+
+      - name: Ensure SPM directory exists
+        run: mkdir -p .source_packages
+
+      - name: Resolve SPM dependencies
+        if: steps.spm-cache.outputs.cache-hit != 'true'
+        run: |
+          if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
+          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+          xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
 
       - name: Test
         env:
@@ -34,7 +62,7 @@ jobs:
           platform: ${{ 'iOS Simulator' }}
           device: ${{ 'iPhone 14' }}
           os_version: ${{ '15.2' }}
-        run: set -o pipefail && xcodebuild test -workspace novawallet.xcworkspace -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" build test | xcpretty --test
+        run: set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation build test | xcpretty --test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

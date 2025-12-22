@@ -13,6 +13,7 @@ protocol WalletViewProtocol: UIView {
     func setAppearance(for selectionAvailable: Bool)
     func bind(regular viewModel: ViewModel.BalanceInfo)
     func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo)
+    func bind(chainAccount viewModel: ViewModel.ChainAccountAddressInfo)
     func bindNoInfo()
 }
 
@@ -25,6 +26,8 @@ extension WalletViewProtocol {
             bind(regular: balanceViewModel)
         case let .proxy(delegatedAccountViewModel), let .multisig(delegatedAccountViewModel):
             bind(delegatedAccount: delegatedAccountViewModel)
+        case let .account(accountViewModel):
+            bind(chainAccount: accountViewModel)
         case .noInfo:
             bindNoInfo()
         }

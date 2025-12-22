@@ -45,26 +45,29 @@ final class StakingRewardDestSetupLayout: UIView {
     private func applyLocalization() {
         networkFeeView.locale = locale
 
-        learnMoreView.titleView.text = R.string.localizable.stakingRewardsDestinationTitle(
+        learnMoreView.titleView.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingRewardsDestinationTitle()
 
-        learnMoreView.actionButton.imageWithTitleView?.title = R.string.localizable.stakingAboutRewards(
+        learnMoreView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingAboutRewards()
 
-        restakeOptionView.titleLabel.text = R.string.localizable
-            .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
-
-        payoutOptionView.titleLabel.text = R.string.localizable
-            .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
-
-        accountView.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
+        restakeOptionView.titleLabel.text = R.string(
             preferredLanguages: locale.rLanguages
-        )
+        ).localizable.stakingRestakeTitle_v2_2_0()
 
-        actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: locale.rLanguages)
+        payoutOptionView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingPayoutTitle_v2_2_0()
+
+        accountView.titleLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingRewardPayoutAccount()
+
+        actionButton.imageWithTitleView?.title = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonContinue()
     }
 
     func setupPayoutAccountShown(_ isShown: Bool) {

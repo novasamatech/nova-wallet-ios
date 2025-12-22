@@ -59,9 +59,7 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
         from availableTrackTypes: Set<String>
     ) -> [GovernanceSelectTrackViewModel.Group] {
         let selectAllViewModel = GovernanceSelectTrackViewModel.Group.all(
-            title: R.string.localizable.commonSelectAll(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSelectAll()
         )
 
         let allTrackGroups = ReferendumTrackGroup.groupsByPriority()

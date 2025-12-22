@@ -49,16 +49,16 @@ final class DelegationReferendumVotersPresenter {
         switch votersType {
         case .ayes:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersAye(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersAye()
             }
 
         case .nays:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersNay()
             }
         case .abstains:
             return LocalizableResource { locale in
-                R.string.localizable.govVotersAbstain(preferredLanguages: locale.rLanguages)
+                R.string(preferredLanguages: locale.rLanguages).localizable.govVotersAbstain()
             }
         }
     }

@@ -30,6 +30,13 @@ extension MessageSheetPresentable {
                 walletType: .init(walletType: wallet.type),
                 completion: {}
             )
+        case let .noGiftSupport(wallet):
+            presentFeatureUnsupportedView(
+                from: view,
+                type: .gift,
+                walletType: .init(walletType: wallet.type),
+                completion: {}
+            )
         case .noRampActions:
             break
         case .noSigning:

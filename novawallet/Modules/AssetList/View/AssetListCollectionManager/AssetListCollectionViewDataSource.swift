@@ -104,6 +104,11 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionSwap),
             for: .touchUpInside
         )
+        totalBalanceView.giftButton.addTarget(
+            self,
+            action: #selector(actionGift),
+            for: .touchUpInside
+        )
 
         let cardView = totalBalanceCell.cardView
 
@@ -242,10 +247,10 @@ private extension AssetListCollectionViewDataSource {
             for: indexPath
         )!
 
-        let text = R.string.localizable.walletListEmptyMessage(preferredLanguages: selectedLocale.rLanguages)
-        let actionTitle = R.string.localizable.walletListEmptyActionTitle(
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListEmptyMessage()
+        let actionTitle = R.string(
             preferredLanguages: selectedLocale.rLanguages
-        )
+        ).localizable.walletListEmptyActionTitle()
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
@@ -401,6 +406,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwap() {
         actionsDelegate?.actionSwap()
+    }
+
+    @objc func actionGift() {
+        actionsDelegate?.actionGift()
     }
 
     @objc func actionSwitchStyle() {

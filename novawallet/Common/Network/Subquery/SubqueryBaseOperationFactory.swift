@@ -9,12 +9,21 @@ class SubqueryBaseOperationFactory {
         self.url = url
     }
 
-    func createRequestFactory(for query: String) -> BlockNetworkRequestFactory {
+    func createRequestFactory(
+        for query: String,
+        variables: [String: String]? = nil
+    ) -> BlockNetworkRequestFactory {
         BlockNetworkRequestFactory {
             var request = URLRequest(url: self.url)
 
-            let body = JSON.dictionaryValue(["query": JSON.stringValue(query)])
-            request.httpBody = try JSONEncoder().encode(body)
+            var body: [String: JSON] = ["query": JSON.stringValue(query)]
+
+            if let variables {
+                let variablesJson = variables.mapValues { JSON.stringValue($0) }
+                body["variables"] = JSON.dictionaryValue(variablesJson)
+            }
+
+            request.httpBody = try JSONEncoder().encode(JSON.dictionaryValue(body))
             request.setValue(
                 HttpContentType.json.rawValue,
                 forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
@@ -27,9 +36,10 @@ class SubqueryBaseOperationFactory {
 
     func createOperation<P: Decodable, R>(
         for query: String,
+        variables: [String: String]? = nil,
         resultHandler: @escaping (P) throws -> R
     ) -> BaseOperation<R> {
-        let requestFactory = createRequestFactory(for: query)
+        let requestFactory = createRequestFactory(for: query, variables: variables)
 
         let resultFactory = AnyNetworkResultFactory<R> { data in
             let response = try JSONDecoder().decode(
@@ -47,8 +57,11 @@ class SubqueryBaseOperationFactory {
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
-    func createOperation<R: Decodable>(for query: String) -> BaseOperation<R> {
+    func createOperation<R: Decodable>(
+        for query: String,
+        variables: [String: String]? = nil
+    ) -> BaseOperation<R> {
         let handler: (R) -> R = { $0 }
-        return createOperation(for: query, resultHandler: handler)
+        return createOperation(for: query, variables: variables, resultHandler: handler)
     }
 }

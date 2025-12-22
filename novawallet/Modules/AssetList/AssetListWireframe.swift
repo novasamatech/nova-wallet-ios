@@ -179,6 +179,37 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
+    func showGift(
+        from view: AssetListViewProtocol?,
+        chains: [ChainModel],
+        selectedWallet: MetaAccountModel,
+        transferCompletion: @escaping TransferCompletionClosure,
+        buyTokensClosure: @escaping BuyTokensClosure
+    ) {
+        checkingSupport(
+            of: .gift(chains: chains),
+            for: selectedWallet,
+            sheetPresentingView: view
+        ) { [weak self] in
+            guard let self else { return }
+
+            guard let giftFlowView = GiftListViewFactory.createView(
+                stateObservable: assetListModelObservable,
+                transferCompletion: transferCompletion,
+                buyTokensClosure: buyTokensClosure
+            ) else { return }
+
+            let navigationController = NovaNavigationController(
+                rootViewController: giftFlowView.controller
+            )
+
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        }
+    }
+
     func showNfts(from view: AssetListViewProtocol?) {
         guard let nftListView = NftListViewFactory.createView() else {
             return

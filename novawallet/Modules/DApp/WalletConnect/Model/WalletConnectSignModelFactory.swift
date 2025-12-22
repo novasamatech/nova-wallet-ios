@@ -1,5 +1,5 @@
 import Foundation
-import WalletConnectSwiftV2
+import WalletConnectPairing
 import SubstrateSdk
 import EthereumSignTypedDataUtil
 

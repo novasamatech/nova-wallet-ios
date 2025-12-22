@@ -95,18 +95,18 @@ private extension RampActionsPresentable where Self: AlertPresentable {
         onActionAvailable: @escaping (RampActionType) -> Void,
         onActionUnavailable: @escaping () -> Void
     ) -> ModalActionsContext {
-        var actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
+        let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
             LocalizableResource { locale in
                 ActionManageViewModel(
                     icon: R.image.iconAddStroke(),
-                    title: R.string.localizable.tokenActionsPickerBuy(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.tokenActionsPickerBuy(),
                     style: availableOptions.contains(.onRamp) ? .available : .unavailable
                 )
             },
             LocalizableResource { locale in
                 ActionManageViewModel(
                     icon: R.image.iconSellStroke(),
-                    title: R.string.localizable.tokenActionsPickerSell(preferredLanguages: locale.rLanguages),
+                    title: R.string(preferredLanguages: locale.rLanguages).localizable.tokenActionsPickerSell(),
                     style: availableOptions.contains(.offRamp) ? .available : .unavailable
                 )
             }
@@ -138,24 +138,24 @@ private extension RampActionsPresentable where Self: AlertPresentable {
         locale: Locale
     ) {
         let languages = locale.rLanguages
-        let localizable = R.string.localizable.self
+        let localizable = R.string(preferredLanguages: languages).localizable.self
 
         let (title, message): (String, String)
 
         if !availableOptions.notEmpty {
-            title = localizable.rampNotSupportedAlertTitle(preferredLanguages: languages)
-            message = localizable.rampNotSupportedAlertMessage(preferredLanguages: languages)
+            title = localizable.rampNotSupportedAlertTitle()
+            message = localizable.rampNotSupportedAlertMessage()
         } else if !availableOptions.contains(.onRamp) {
-            title = localizable.onRampNotSupportedAlertTitle(preferredLanguages: languages)
-            message = localizable.onRampNotSupportedAlertMessage(preferredLanguages: languages)
+            title = localizable.onRampNotSupportedAlertTitle()
+            message = localizable.onRampNotSupportedAlertMessage()
         } else if !availableOptions.contains(.offRamp) {
-            title = localizable.offRampNotSupportedAlertTitle(preferredLanguages: languages)
-            message = localizable.offRampNotSupportedAlertMessage(preferredLanguages: languages)
+            title = localizable.offRampNotSupportedAlertTitle()
+            message = localizable.offRampNotSupportedAlertMessage()
         } else {
             return
         }
 
-        let actionTitle = localizable.commonGotIt(preferredLanguages: languages)
+        let actionTitle = localizable.commonGotIt()
 
         present(
             message: message,

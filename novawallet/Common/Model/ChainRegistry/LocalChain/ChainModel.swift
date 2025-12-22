@@ -42,7 +42,7 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
-    enum ConnectionMode: Hashable, Equatable {
+    enum ConnectionMode: Hashable, Equatable, Codable {
         case manual(ChainNodeModel)
         case autoBalanced
 

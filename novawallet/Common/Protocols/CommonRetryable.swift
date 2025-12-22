@@ -22,18 +22,16 @@ extension CommonRetryable where Self: AlertPresentable {
     ) {
         var actions: [AlertPresentableAction] = [
             AlertPresentableAction(
-                title: R.string.localizable.commonRetry(
-                    preferredLanguages: viewModel.locale?.rLanguages
-                ),
+                title: R.string(preferredLanguages: viewModel.locale.rLanguages).localizable.commonRetry(),
                 handler: viewModel.retryAction
             )
         ]
 
         if let skipAction = viewModel.skipAction {
             let skipViewModel = AlertPresentableAction(
-                title: R.string.localizable.commonSkip(
-                    preferredLanguages: viewModel.locale?.rLanguages
-                ),
+                title: R.string(
+                    preferredLanguages: viewModel.locale.rLanguages
+                ).localizable.commonSkip(),
                 handler: skipAction
             )
 
@@ -78,9 +76,9 @@ extension CommonRetryable where Self: AlertPresentable {
         locale: Locale?,
         retryAction: @escaping () -> Void
     ) {
-        let cancelActionTitle = cancelAction ?? R.string.localizable.commonSkip(
-            preferredLanguages: locale?.rLanguages
-        )
+        let cancelActionTitle = cancelAction ?? R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.commonSkip()
 
         presentRequestStatus(
             on: view,
@@ -99,8 +97,8 @@ extension CommonRetryable where Self: AlertPresentable {
         locale: Locale?,
         retryAction: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonRequestRetry()
 
         presentRequestStatus(
             on: view,
@@ -117,8 +115,8 @@ extension CommonRetryable where Self: AlertPresentable {
         retryAction: @escaping () -> Void,
         skipAction: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let message = R.string(preferredLanguages: locale.rLanguages).localizable.commonRequestRetry()
 
         presentRequestStatus(
             on: view,
