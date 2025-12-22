@@ -7,7 +7,7 @@ final class AssetListTotalBalanceView: UIView {
     let backgroundBlurView = GladingCardView()
 
     let lottieAnimationView: LottieAnimationView = .create { view in
-        view.animation = snowFallAnimation
+        view.animation = snowfallAnimation
         view.loopMode = .loop
         view.contentMode = .scaleAspectFill
         view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -423,8 +423,8 @@ private extension AssetListTotalBalanceView {
         static let totalBalanceSecureHeight: CGFloat = 47.0
     }
 
-    static let snowFallAnimation: LottieAnimation? = LottieAnimation.named(
-        "snowFall",
+    static let snowfallAnimation: LottieAnimation? = LottieAnimation.named(
+        "snowfall",
         bundle: .main
     )
 }
