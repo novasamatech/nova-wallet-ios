@@ -38,11 +38,15 @@ struct GiftListViewFactory {
             logger: logger
         )
 
+        let statusTrackerQueue = DispatchQueue(
+            label: "io.novasama.gift.status.tracking.queue.\(UUID().uuidString)",
+            qos: .utility
+        )
         let statusTracker = GiftsStatusTracker(
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             walletSubscriptionFactory: walletSubscriptionFactory,
-            workingQueue: .main,
+            workingQueue: statusTrackerQueue,
             logger: logger
         )
 

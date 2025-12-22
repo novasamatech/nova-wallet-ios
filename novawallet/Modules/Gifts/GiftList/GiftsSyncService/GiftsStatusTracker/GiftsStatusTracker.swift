@@ -91,7 +91,7 @@ private extension GiftsStatusTracker {
 
         var status: GiftModel.Status?
 
-        if let balance, balance.transferable > gift.amount {
+        if let balance, balance.transferable > (gift.amount/2) {
             existingBalances.store(value: balance, for: giftAccountId)
             status = .pending
         } else if balance != nil || existingBalances.fetchValue(for: giftAccountId) != nil {

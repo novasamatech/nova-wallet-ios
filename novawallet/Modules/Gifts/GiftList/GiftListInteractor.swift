@@ -28,10 +28,6 @@ final class GiftListInteractor {
         self.selectedMetaId = selectedMetaId
         self.operationQueue = operationQueue
     }
-
-    deinit {
-        giftSyncService.remove(observer: self)
-    }
 }
 
 // MARK: - Private
