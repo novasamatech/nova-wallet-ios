@@ -7,14 +7,16 @@ extension GladingPatternModel {
             endPoint: .init(x: 1.0, y: 0),
             colors: [
                 UIColor.white,
-                UIColor.white,
-                UIColor.white,
-                UIColor.white.withAlphaComponent(0.65),
-                UIColor.white.withAlphaComponent(0.35),
-                UIColor.white.withAlphaComponent(0.15),
+                UIColor.white.withAlphaComponent(0.85),
+                UIColor.white.withAlphaComponent(0.56),
+                UIColor.white.withAlphaComponent(0.39),
+                UIColor.white.withAlphaComponent(0.25),
+                UIColor.white.withAlphaComponent(0.14),
+                UIColor.white.withAlphaComponent(0.06),
+                UIColor.white.withAlphaComponent(0.02),
                 UIColor.white.withAlphaComponent(0.0)
             ],
-            locations: [0.0, 0.2, 0.4, 0.55, 0.7, 0.85, 1.0]
+            locations: [0.0, 0.12, 0.25, 0.37, 0.50, 0.62, 0.75, 0.87, 1.0]
         )
     }
 
@@ -24,9 +26,9 @@ extension GladingPatternModel {
             slidingX: .init(min: 0.5, max: -0.5),
             slidingY: .init(min: 0.5, max: -0.5),
             gradientRotation: -CGFloat.pi / 4,
-            gradientSize: CGSize(width: 500, height: 150),
+            gradientSize: CGSize(width: 800, height: 240),
             pattern: R.image.frostCardPattern()!,
-            opacity: 0.5,
+            opacity: 0.75,
             maskContentsGravity: .resizeAspectFill
         )
     }
