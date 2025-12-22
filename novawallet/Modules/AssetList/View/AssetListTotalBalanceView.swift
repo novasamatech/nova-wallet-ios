@@ -4,7 +4,7 @@ import Kingfisher
 import Lottie
 
 final class AssetListTotalBalanceView: UIView {
-    let backgroundBlurView = GladingCardView()
+    let backgroundBlurView = GladingFrostedCardView()
 
     let lottieAnimationView: LottieAnimationView = .create { view in
         view.animation = snowfallAnimation
