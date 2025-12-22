@@ -6,4 +6,10 @@ protocol SubstrateGiftClaimFactoryProtocol {
         giftDescription: ClaimableGiftDescription,
         assetStorageInfo: AssetStorageInfo?
     ) -> CompoundOperationWrapper<Void>
+
+    func createReclaimWrapper(
+        gift: GiftModel,
+        claimingAccountId: AccountId,
+        assetStorageInfo: AssetStorageInfo?
+    ) -> CompoundOperationWrapper<Void>
 }

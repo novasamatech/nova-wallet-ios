@@ -163,6 +163,7 @@ final class AssetListTotalBalanceView: UIView {
         }
 
         swapButton.isEnabled = viewModel.hasSwaps
+        giftButton.isEnabled = viewModel.hasGifts
 
         setupPrivacyModeToggle(enabled: viewModel.privacyModelEnabled)
     }

@@ -39,7 +39,9 @@ final class PVWelcomeViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupHandlers()
+        setupHints()
         setupGraphics()
+        setupSegmentedControl()
         setupLocalization()
     }
 }
@@ -52,6 +54,18 @@ private extension PVWelcomeViewController {
         rootView.modeSegmentedControl.addTarget(self, action: #selector(actionModeChanged), for: .valueChanged)
     }
 
+    func setupHints() {
+        switch type {
+        case .legacy:
+            let text = R.string(preferredLanguages: selectedLocale.rLanguages)
+                .localizable
+                .welcomeParitySignerStep2Details()
+            rootView.showStep2Hint(with: text)
+        case .vault:
+            rootView.hideStep2Hint()
+        }
+    }
+
     func setupGraphics() {
         switch type {
         case .legacy:
@@ -61,6 +75,11 @@ private extension PVWelcomeViewController {
             rootView.integrationImageView.image = R.image.imageNovaPolkadotVault()
             rootView.step2DetailsImageView.image = R.image.imagePolkadotVaultIntegrationHint()
         }
+    }
+
+    func setupSegmentedControl() {
+        let hidden = type == .legacy
+        rootView.modeSegmentedControl.isHidden = hidden
     }
 
     func setupLocalization() {
@@ -90,13 +109,13 @@ private extension PVWelcomeViewController {
     func setupStepsLocalization(for mode: PVWelcomeMode) {
         switch type {
         case .legacy:
-            setupLegacyInstruction(for: selectedLocale, mode: mode)
+            setupLegacyInstruction(for: selectedLocale)
         case .vault:
             setupVaultInstruction(for: selectedLocale, mode: mode)
         }
     }
 
-    func setupLegacyInstruction(for locale: Locale, mode: PVWelcomeMode) {
+    func setupLegacyInstruction(for locale: Locale) {
         let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
         let marker = AttributedReplacementStringDecorator.marker
 
@@ -112,27 +131,15 @@ private extension PVWelcomeViewController {
             )
         )
 
-        switch mode {
-        case .pairPublicKey:
-            setupLegacyPairPublicKeySteps(for: locale)
-        case .importPrivateKey:
-            setupLegacyImportPrivateKeySteps(for: locale)
-        }
-    }
-
-    func setupLegacyPairPublicKeySteps(for locale: Locale) {
-        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let marker = AttributedReplacementStringDecorator.marker
-
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
+            replacements: [localizedStrings.welcomeParitySignerStep2Highlighted()],
             attributes: highlightingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
+                string: localizedStrings.welcomeParitySignerStep2(marker)
             )
         )
 
@@ -143,47 +150,6 @@ private extension PVWelcomeViewController {
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
-            attributedString: NSAttributedString(
-                string: localizedStrings.welcomeParitySignerStep3(marker)
-            )
-        )
-    }
-
-    func setupLegacyImportPrivateKeySteps(for locale: Locale) {
-        let localizedStrings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let marker = AttributedReplacementStringDecorator.marker
-
-        let step2Decorator = AttributedReplacementStringDecorator(
-            pattern: marker,
-            replacements: [localizedStrings.welcomePolkadotVaultStep2PairHighlighted()],
-            attributes: highlightingAttributes
-        )
-
-        rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
-            attributedString: NSAttributedString(
-                string: localizedStrings.welcomePolkadotVaultStep2Pair(marker)
-            )
-        )
-
-        let step3Decorator = AttributedReplacementStringDecorator(
-            pattern: marker,
-            replacements: [localizedStrings.welcomePolkadotVaultStep3ImportHighlighted()],
-            attributes: highlightingAttributes
-        )
-
-        rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
-            attributedString: NSAttributedString(
-                string: localizedStrings.welcomePolkadotVaultStep3Import(marker)
-            )
-        )
-
-        let step4Decorator = AttributedReplacementStringDecorator(
-            pattern: marker,
-            replacements: [localizedStrings.welcomeParitySignerStep3Highlighted()],
-            attributes: highlightingAttributes
-        )
-
-        rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
             attributedString: NSAttributedString(
                 string: localizedStrings.welcomeParitySignerStep3(marker)
             )
