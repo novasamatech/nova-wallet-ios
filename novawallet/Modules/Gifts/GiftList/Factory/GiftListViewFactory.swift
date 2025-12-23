@@ -25,31 +25,31 @@ struct GiftListViewFactory {
         ).createGiftsRepository(for: selectedWallet.metaId)
 
         let giftsLocalSubscriptionFactory = GiftsLocalSubscriptionFactory.shared
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            logger: logger
+
+        let statusTrackerQueue = DispatchQueue(
+            label: "io.novasama.gift.status.tracking.queue.\(UUID().uuidString)",
+            qos: .utility
         )
 
+        let blockNumberSubscriptionFactory = BlockNumberCallbackSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            workingQueue: statusTrackerQueue
+        )
         let walletSubscriptionFactory = WalletRemoteSubscriptionFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
             logger: logger
         )
 
-        let statusTrackerQueue = DispatchQueue(
-            label: "io.novasama.gift.status.tracking.queue.\(UUID().uuidString)",
-            qos: .utility
-        )
         let statusTracker = GiftsStatusTracker(
             chainRegistry: chainRegistry,
             walletSubscriptionFactory: walletSubscriptionFactory,
+            blockNumberSubscriptionFactory: blockNumberSubscriptionFactory,
             workingQueue: statusTrackerQueue,
             operationQueue: operationQueue,
             logger: logger
         )
-
         let giftSyncService = GiftsSyncService(
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             giftRepository: AnyDataProviderRepository(giftRepository),
