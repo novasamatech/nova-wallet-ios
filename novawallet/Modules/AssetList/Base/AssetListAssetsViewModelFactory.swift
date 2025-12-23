@@ -235,7 +235,7 @@ private extension AssetListAssetViewModelFactory {
     ) {
         let balanceViewModelFactory = balanceViewModelFactory(assetInfo: assetDisplayInfo)
 
-        let balanceAmountString = formattingCache.formatDecimal(
+        let balanceAmountString = formattingCache.formatDecimalAmount(
             balance,
             info: assetDisplayInfo,
             locale: genericParams.locale
@@ -273,7 +273,7 @@ private extension AssetListAssetViewModelFactory {
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let balanceAmountString = formattingCache.formatDecimal(
+            let balanceAmountString = formattingCache.formatDecimalAmount(
                 decimalBalance,
                 info: assetInfo,
                 locale: genericParams.locale

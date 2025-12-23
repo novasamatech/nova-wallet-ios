@@ -3,13 +3,13 @@ import Foundation_iOS
 import BigInt
 
 protocol AssetFormattingCacheProtocol {
-    func formatDecimal(
+    func formatDecimalAmount(
         _ value: Decimal,
         info: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> String
 
-    func formatBigUInt(
+    func formatPlankAmount(
         _ value: BigUInt,
         info: AssetBalanceDisplayInfo,
         locale: Locale
@@ -125,7 +125,7 @@ final class AssetFormattingCache {
 // MARK: - AssetFormattingCacheProtocol
 
 extension AssetFormattingCache: AssetFormattingCacheProtocol {
-    func formatDecimal(
+    func formatDecimalAmount(
         _ value: Decimal,
         info: AssetBalanceDisplayInfo,
         locale: Locale
@@ -135,7 +135,7 @@ extension AssetFormattingCache: AssetFormattingCacheProtocol {
             .stringFromDecimal(value) ?? ""
     }
 
-    func formatBigUInt(
+    func formatPlankAmount(
         _ value: BigUInt,
         info: AssetBalanceDisplayInfo,
         locale: Locale

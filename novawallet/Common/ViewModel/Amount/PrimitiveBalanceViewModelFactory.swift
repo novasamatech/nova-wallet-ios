@@ -36,10 +36,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     ) -> LocalizableResource<String> {
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
 
-        return LocalizableResource { [weak self] locale in
-            guard let self else { return "" }
-
-            return formattingCache.formatPrice(
+        return LocalizableResource { locale in
+            self.formattingCache.formatPrice(
                 decimalValue,
                 info: priceAssetInfo,
                 useSuffixForBigNumbers: true,
@@ -56,10 +54,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
         let targetAmount = rate * amount
 
-        return LocalizableResource { [weak self] locale in
-            guard let self else { return "" }
-
-            return formattingCache.formatPrice(
+        return LocalizableResource { locale in
+            self.formattingCache.formatPrice(
                 targetAmount,
                 info: priceAssetInfo,
                 useSuffixForBigNumbers: true,
@@ -71,15 +67,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     func priceFormatter(for currencyId: Int?) -> LocalizableResource<TokenFormatter> {
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
 
-        return LocalizableResource { [weak self] locale in
-            guard let self else {
-                return TokenFormatter(
-                    decimalFormatter: NumberFormatter(),
-                    tokenSymbol: ""
-                )
-            }
-
-            return formattingCache.assetPriceFormatter(
+        return LocalizableResource { locale in
+            self.formattingCache.assetPriceFormatter(
                 for: priceAssetInfo,
                 locale: locale
             )
@@ -92,10 +81,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     ) -> LocalizableResource<String> {
         let unitsInfo = AssetBalanceDisplayInfo.units(for: targetAssetInfo.assetPrecision)
 
-        return LocalizableResource { [weak self] locale in
-            guard let self else { return "" }
-
-            return formattingCache.formatToken(
+        return LocalizableResource { locale in
+            self.formattingCache.formatToken(
                 value,
                 info: unitsInfo,
                 roundingMode: roundingMode,
@@ -109,12 +96,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         _ value: Decimal,
         roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<String> {
-        LocalizableResource { [weak self] locale in
-            guard let self else { return "" }
-
-            return formattingCache.formatToken(
+        LocalizableResource { locale in
+            self.formattingCache.formatToken(
                 value,
-                info: targetAssetInfo,
+                info: self.targetAssetInfo,
                 roundingMode: roundingMode,
                 useSuffixForBigNumbers: true,
                 locale: locale
@@ -126,14 +111,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         _ amount: Decimal,
         priceData: PriceData?
     ) -> LocalizableResource<BalanceViewModelProtocol> {
-        LocalizableResource { [weak self] locale in
-            guard let self else {
-                return BalanceViewModel(amount: "", price: nil)
-            }
-
-            let amountString = formattingCache.formatToken(
+        LocalizableResource { locale in
+            let amountString = self.formattingCache.formatToken(
                 amount,
-                info: targetAssetInfo,
+                info: self.targetAssetInfo,
                 roundingMode: .down,
                 useSuffixForBigNumbers: true,
                 locale: locale
@@ -147,10 +128,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
             }
 
             let targetAmount = rate * amount
-            let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
+            let priceAssetInfo = self.priceAssetInfoFactory.createAssetBalanceDisplayInfo(
                 from: priceData.currencyId
             )
-            let priceString = formattingCache.formatPrice(
+            let priceString = self.formattingCache.formatPrice(
                 targetAmount,
                 info: priceAssetInfo,
                 useSuffixForBigNumbers: true,
@@ -166,14 +147,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         priceData: PriceData?,
         roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<BalanceViewModelProtocol> {
-        LocalizableResource { [weak self] locale in
-            guard let self else {
-                return BalanceViewModel(amount: "", price: nil)
-            }
-
-            let amountString = formattingCache.formatToken(
+        LocalizableResource { locale in
+            let amountString = self.formattingCache.formatToken(
                 amount,
-                info: targetAssetInfo,
+                info: self.targetAssetInfo,
                 roundingMode: roundingMode,
                 useSuffixForBigNumbers: true,
                 locale: locale
@@ -187,8 +164,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
             }
 
             let targetAmount = rate * amount
-            let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
-            let priceString = formattingCache.formatPrice(
+            let priceAssetInfo = self.priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
+            let priceString = self.formattingCache.formatPrice(
                 targetAmount,
                 info: priceAssetInfo,
                 useSuffixForBigNumbers: true,
@@ -203,14 +180,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         _ amount: Decimal,
         priceData: PriceData?
     ) -> LocalizableResource<BalanceViewModelProtocol> {
-        LocalizableResource { [weak self] locale in
-            guard let self else {
-                return BalanceViewModel(amount: "", price: nil)
-            }
-
-            let amountString = formattingCache.formatToken(
+        LocalizableResource { locale in
+            let amountString = self.formattingCache.formatToken(
                 amount,
-                info: targetAssetInfo,
+                info: self.targetAssetInfo,
                 roundingMode: .down,
                 useSuffixForBigNumbers: true,
                 locale: locale
@@ -224,10 +197,10 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
             }
 
             let targetAmount = rate * amount
-            let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
+            let priceAssetInfo = self.priceAssetInfoFactory.createAssetBalanceDisplayInfo(
                 from: priceData.currencyId
             )
-            let priceString = formattingCache.formatPrice(
+            let priceString = self.formattingCache.formatPrice(
                 targetAmount,
                 info: priceAssetInfo,
                 useSuffixForBigNumbers: true,

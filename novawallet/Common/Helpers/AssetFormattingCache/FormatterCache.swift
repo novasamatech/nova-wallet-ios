@@ -62,10 +62,39 @@ final class FormatterCache {
     private var assetPriceFormatters: InMemoryCache<AssetPriceFormatterKey, TokenFormatter> = .init()
     private var inputFormatters: InMemoryCache<InputFormatterKey, NumberFormatter> = .init()
 
+    private var locale: Locale = .current
+
+    private let mutex = NSLock()
+
     private let factory: AssetBalanceFormatterFactoryProtocol
 
     init(factory: AssetBalanceFormatterFactoryProtocol) {
         self.factory = factory
+    }
+}
+
+// MARK: - Private
+
+private extension FormatterCache {
+    func clearFormatters() {
+        displayFormatters.removeAllValues()
+        tokenFormatters.removeAllValues()
+        assetPriceFormatters.removeAllValues()
+        inputFormatters.removeAllValues()
+    }
+
+    func flush(to locale: Locale) {
+        clearFormatters()
+
+        mutex.lock()
+        self.locale = locale
+        mutex.unlock()
+    }
+
+    func flushIfNeeded(to locale: Locale) {
+        guard self.locale != locale else { return }
+
+        flush(to: locale)
     }
 }
 
@@ -76,12 +105,13 @@ extension FormatterCache: FormatterCacheProtocol {
         for info: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> LocalizableDecimalFormatting {
+        flushIfNeeded(to: locale)
+
         let key = DisplayFormatterKey(
             assetPrecision: info.assetPrecision,
             symbol: info.symbol,
             symbolPosition: info.symbolPosition,
-            symbolValueSeparator: info.symbolValueSeparator,
-            locale: locale
+            symbolValueSeparator: info.symbolValueSeparator
         )
 
         if let cached = displayFormatters.fetchValue(for: key) {
@@ -101,11 +131,10 @@ extension FormatterCache: FormatterCacheProtocol {
         useSuffixForBigNumbers: Bool,
         locale: Locale
     ) -> TokenFormatter {
+        flushIfNeeded(to: locale)
+
         let key = TokenFormatterKey(
-            assetPrecision: info.assetPrecision,
-            symbol: info.symbol,
-            symbolPosition: info.symbolPosition,
-            symbolValueSeparator: info.symbolValueSeparator,
+            info: info,
             roundingMode: roundingMode,
             useSuffixForBigNumbers: useSuffixForBigNumbers,
             locale: locale
@@ -131,13 +160,11 @@ extension FormatterCache: FormatterCacheProtocol {
         useSuffixForBigNumbers: Bool,
         locale: Locale
     ) -> TokenFormatter {
+        flushIfNeeded(to: locale)
+
         let key = AssetPriceFormatterKey(
-            assetPrecision: info.assetPrecision,
-            symbol: info.symbol,
-            symbolPosition: info.symbolPosition,
-            symbolValueSeparator: info.symbolValueSeparator,
-            useSuffixForBigNumbers: useSuffixForBigNumbers,
-            locale: locale
+            info: info,
+            useSuffixForBigNumbers: useSuffixForBigNumbers
         )
 
         if let cached = assetPriceFormatters.fetchValue(for: key) {
@@ -158,12 +185,13 @@ extension FormatterCache: FormatterCacheProtocol {
         for info: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> NumberFormatter {
+        flushIfNeeded(to: locale)
+
         let key = InputFormatterKey(
             assetPrecision: info.assetPrecision,
             symbol: info.symbol,
             symbolPosition: info.symbolPosition,
-            symbolValueSeparator: info.symbolValueSeparator,
-            locale: locale
+            symbolValueSeparator: info.symbolValueSeparator
         )
 
         if let cached = inputFormatters.fetchValue(for: key) {
@@ -178,47 +206,114 @@ extension FormatterCache: FormatterCacheProtocol {
     }
 
     func clearCache() {
-        displayFormatters.removeAllValues()
-        tokenFormatters.removeAllValues()
-        assetPriceFormatters.removeAllValues()
+        clearFormatters()
     }
 }
 
 // MARK: - Private types
 
 private extension FormatterCache {
-    struct DisplayFormatterKey: Hashable {
+    protocol CacheKey: Hashable {
+        var prefix: String { get }
+    }
+
+    struct DisplayFormatterKey: CacheKey {
+        var prefix: String { "display" }
+
         let assetPrecision: Int16
         let symbol: String
         let symbolPosition: TokenSymbolPosition
         let symbolValueSeparator: String
-        let locale: Locale
     }
 
-    struct InputFormatterKey: Hashable {
+    struct InputFormatterKey: CacheKey {
+        var prefix: String { "input" }
+
         let assetPrecision: Int16
         let symbol: String
         let symbolPosition: TokenSymbolPosition
         let symbolValueSeparator: String
-        let locale: Locale
     }
 
-    struct TokenFormatterKey: Hashable {
+    struct TokenFormatterKey: CacheKey {
+        var prefix: String { "token" }
+
         let assetPrecision: Int16
         let symbol: String
         let symbolPosition: TokenSymbolPosition
         let symbolValueSeparator: String
         let roundingMode: NumberFormatter.RoundingMode
         let useSuffixForBigNumbers: Bool
-        let locale: Locale
+
+        init(
+            assetPrecision: Int16,
+            symbol: String,
+            symbolPosition: TokenSymbolPosition,
+            symbolValueSeparator: String,
+            roundingMode: NumberFormatter.RoundingMode,
+            useSuffixForBigNumbers: Bool
+        ) {
+            self.assetPrecision = assetPrecision
+            self.symbol = symbol
+            self.symbolPosition = symbolPosition
+            self.symbolValueSeparator = symbolValueSeparator
+            self.roundingMode = roundingMode
+            self.useSuffixForBigNumbers = useSuffixForBigNumbers
+        }
+
+        init(
+            info: AssetBalanceDisplayInfo,
+            roundingMode: NumberFormatter.RoundingMode,
+            useSuffixForBigNumbers: Bool
+        ) {
+            assetPrecision = info.assetPrecision
+            symbol = info.symbol
+            symbolPosition = info.symbolPosition
+            symbolValueSeparator = info.symbolValueSeparator
+            self.roundingMode = roundingMode
+            self.useSuffixForBigNumbers = useSuffixForBigNumbers
+        }
     }
 
-    struct AssetPriceFormatterKey: Hashable {
+    struct AssetPriceFormatterKey: CacheKey {
+        var prefix: String { "asset_price" }
+
         let assetPrecision: Int16
         let symbol: String
         let symbolPosition: TokenSymbolPosition
         let symbolValueSeparator: String
         let useSuffixForBigNumbers: Bool
-        let locale: Locale
+
+        init(
+            assetPrecision: Int16,
+            symbol: String,
+            symbolPosition: TokenSymbolPosition,
+            symbolValueSeparator: String,
+            useSuffixForBigNumbers: Bool
+        ) {
+            self.assetPrecision = assetPrecision
+            self.symbol = symbol
+            self.symbolPosition = symbolPosition
+            self.symbolValueSeparator = symbolValueSeparator
+            self.useSuffixForBigNumbers = useSuffixForBigNumbers
+        }
+
+        init(
+            info: AssetBalanceDisplayInfo,
+            useSuffixForBigNumbers: Bool,
+        ) {
+            assetPrecision = info.assetPrecision
+            symbol = info.symbol
+            symbolPosition = info.symbolPosition
+            symbolValueSeparator = info.symbolValueSeparator
+            self.useSuffixForBigNumbers = useSuffixForBigNumbers
+        }
+    }
+}
+
+extension FormatterCache.CacheKey {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(prefix)
+        hasher.combine(self)
     }
 }
