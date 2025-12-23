@@ -35,7 +35,7 @@ final class GladingPatternView: GladingBaseView {
         let mask = CALayer()
         mask.frame = CGRect(origin: .zero, size: bounds.size)
         mask.contents = model.pattern.withRenderingMode(.alwaysTemplate).cgImage
-        mask.contentsGravity = .center
+        mask.contentsGravity = model.maskContentsGravity
         mask.contentsScale = model.pattern.scale
 
         layer.mask = mask
