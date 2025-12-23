@@ -259,9 +259,9 @@ extension GiftsStatusTracker: GeneralLocalStorageSubscriber, GeneralLocalStorage
     ) {
         switch result {
         case let .success(blockNumber):
-            guard let blockNumber else { return }
-
             workingQueue.async {
+                guard let blockNumber else { return }
+                
                 self.giftTimelineChainMapping
                     .fetchAllPairs()
                     .forEach { giftAccountId, giftChainId in

@@ -503,12 +503,15 @@ extension GiftsStatusTrackerTests {
         var receivedStatusesForGift1: [GiftModel.Status] = []
         var receivedStatusesForGift2: [GiftModel.Status] = []
 
+        let gift2StatusExpectation = expectation(description: "Delegate receives gift2 status")
+
         stub(mockDelegate) { stub in
             when(stub.giftsTracker(any(), didReceive: any(), for: any())).then { _, status, accountId in
                 if accountId == gift1.giftAccountId {
                     receivedStatusesForGift1.append(status)
                 } else if accountId == gift2.giftAccountId {
                     receivedStatusesForGift2.append(status)
+                    gift2StatusExpectation.fulfill()
                 }
             }
             when(stub.giftsTracker(any(), didUpdateTrackingAccountIds: any())).thenDoNothing()
@@ -539,6 +542,7 @@ extension GiftsStatusTrackerTests {
         statusTracker.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
 
         // then
+        wait(for: [gift2StatusExpectation], timeout: 2.0)
         XCTAssertEqual(receivedStatusesForGift1, [.pending])
         XCTAssertEqual(receivedStatusesForGift2, [.claimed])
     }
