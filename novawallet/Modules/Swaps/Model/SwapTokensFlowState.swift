@@ -29,7 +29,12 @@ final class SwapTokensFlowState {
         self.assetExchangeParams = assetExchangeParams
         priceStore = AssetExchangePriceStore(assetListObservable: assetListObservable)
 
-        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory.shared
+        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: assetExchangeParams.chainRegistry,
+            storageFacade: assetExchangeParams.substrateStorageFacade,
+            operationManager: OperationManager(operationQueue: assetExchangeParams.operationQueue),
+            logger: assetExchangeParams.logger
+        )
     }
 
     deinit {

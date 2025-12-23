@@ -26,7 +26,12 @@ final class CrowdloanSharedState {
 
         let operationManager = OperationManager(operationQueue: operationQueue)
 
-        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory.shared
+        generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: operationManager,
+            logger: logger
+        )
 
         crowdloanSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
             chainRegistry: chainRegistry,

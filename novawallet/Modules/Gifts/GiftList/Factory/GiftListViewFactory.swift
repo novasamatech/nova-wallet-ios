@@ -25,7 +25,12 @@ struct GiftListViewFactory {
         ).createGiftsRepository(for: selectedWallet.metaId)
 
         let giftsLocalSubscriptionFactory = GiftsLocalSubscriptionFactory.shared
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory.shared
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: logger
+        )
 
         let walletSubscriptionFactory = WalletRemoteSubscriptionFactory(
             chainRegistry: chainRegistry,
@@ -58,7 +63,7 @@ struct GiftListViewFactory {
             giftsLocalSubscriptionFactory: giftsLocalSubscriptionFactory,
             giftSyncService: giftSyncService,
             selectedMetaId: selectedWallet.metaId,
-            operationQueue: operationQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let wireframe = GiftListWireframe(

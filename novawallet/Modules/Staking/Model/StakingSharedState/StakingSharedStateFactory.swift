@@ -405,7 +405,12 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             collatorService: collatorService
         )
 
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory.shared
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
 
         let preferredValidatorsProvider = PreferredValidatorsProvider(
             remoteUrl: applicationConfig.preferredValidatorsURL
@@ -543,7 +548,12 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
                 logger: logger
             ),
             blockTimeService: blockTimeService,
-            generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory.shared,
+            generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: storageFacade,
+                operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
             preferredCollatorsProvider: preferredValidatorsProvider,
             operationQueue: syncOperationQueue,
             logger: logger

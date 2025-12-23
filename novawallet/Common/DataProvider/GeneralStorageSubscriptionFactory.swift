@@ -45,12 +45,3 @@ final class GeneralStorageSubscriptionFactory: SubstrateLocalSubscriptionFactory
         )
     }
 }
-
-extension GeneralStorageSubscriptionFactory {
-    static let shared = GeneralStorageSubscriptionFactory(
-        chainRegistry: ChainRegistryFacade.sharedRegistry,
-        storageFacade: SubstrateDataStorageFacade.shared,
-        operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue),
-        logger: Logger.shared
-    )
-}
