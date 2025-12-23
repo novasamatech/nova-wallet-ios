@@ -86,12 +86,13 @@ private extension FormatterCache {
     func flush(to locale: Locale) {
         clearFormatters()
 
-        mutex.lock()
         self.locale = locale
-        mutex.unlock()
     }
 
     func flushIfNeeded(to locale: Locale) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         guard self.locale != locale else { return }
 
         flush(to: locale)
