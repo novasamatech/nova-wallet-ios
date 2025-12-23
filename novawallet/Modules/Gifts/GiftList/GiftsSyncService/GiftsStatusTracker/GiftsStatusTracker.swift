@@ -24,8 +24,7 @@ final class GiftsStatusTracker {
     private let blockNumberProviders = InMemoryCache<AccountId, AnyDataProvider<DecodedBlockNumber>>()
     private let syncingAccountIdsCache = InMemoryCache<AccountId, Bool>()
     private let nilBalanceStartBlocks = InMemoryCache<AccountId, BlockNumber>()
-    private let giftChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
-    private let currentBlockNumbers = InMemoryCache<ChainModel.Id, BlockNumber>()
+    private let giftTimelineChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
     private let existingBalances = InMemoryCache<AccountId, AssetBalance>()
 
     private let blocksToWait: BlockNumber = 10
@@ -73,7 +72,7 @@ private extension GiftsStatusTracker {
                     self?.handleBalanceUpdate(
                         for: gift,
                         balance: update.balance,
-                        chainId: chainAsset.chain.chainId
+                        chain: chainAsset.chain
                     )
                 case let .failure(error):
                     self?.logger.error("Failed remote balance subscription: \(error)")
@@ -85,13 +84,13 @@ private extension GiftsStatusTracker {
     func handleBalanceUpdate(
         for gift: GiftModel,
         balance: AssetBalance?,
-        chainId: ChainModel.Id
+        chain: ChainModel
     ) {
         let giftAccountId = gift.giftAccountId
 
         var status: GiftModel.Status?
 
-        if let balance, balance.transferable > (gift.amount/2) {
+        if let balance, balance.transferable > (gift.amount / 2) {
             existingBalances.store(value: balance, for: giftAccountId)
             status = .pending
         } else if balance != nil || existingBalances.fetchValue(for: giftAccountId) != nil {
@@ -102,7 +101,7 @@ private extension GiftsStatusTracker {
         guard let status else {
             startBlockCountingIfNeeded(
                 for: giftAccountId,
-                chainId: chainId
+                chainId: timelineChainId(for: chain)
             )
 
             return
@@ -199,6 +198,10 @@ private extension GiftsStatusTracker {
             didUpdateTrackingAccountIds: Set(syncingAccountIdsCache.fetchAllKeys())
         )
     }
+
+    func timelineChainId(for chain: ChainModel) -> ChainModel.Id {
+        chain.timelineChain ?? chain.chainId
+    }
 }
 
 // MARK: - GiftsStatusTrackerProtocol
@@ -214,8 +217,8 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
 
         addSyncingAccountId(giftAccountId)
 
-        giftChainMapping.store(
-            value: chain.chainId,
+        giftTimelineChainMapping.store(
+            value: timelineChainId(for: chain),
             for: giftAccountId
         )
 
@@ -230,7 +233,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
         remoteBalancesSubscriptions.removeValue(for: giftAccountId)
         blockNumberProviders.removeValue(for: giftAccountId)
         nilBalanceStartBlocks.removeValue(for: giftAccountId)
-        giftChainMapping.removeValue(for: giftAccountId)
+        giftTimelineChainMapping.removeValue(for: giftAccountId)
         existingBalances.removeValue(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
     }
@@ -238,10 +241,10 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
     func stopTracking() {
         remoteBalancesSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
         remoteBalancesSubscriptions.removeAllValues()
+        blockNumberProviders.fetchAllValues().forEach { $0.removeObserver(self) }
         blockNumberProviders.removeAllValues()
         nilBalanceStartBlocks.removeAllValues()
-        giftChainMapping.removeAllValues()
-        currentBlockNumbers.removeAllValues()
+        giftTimelineChainMapping.removeAllValues()
         existingBalances.removeAllValues()
         clearSyncingAccountIds()
     }
@@ -258,12 +261,17 @@ extension GiftsStatusTracker: GeneralLocalStorageSubscriber, GeneralLocalStorage
         case let .success(blockNumber):
             guard let blockNumber else { return }
 
-            currentBlockNumbers.store(value: blockNumber, for: chainId)
-
-            for (giftAccountId, giftChainId) in giftChainMapping.fetchAllPairs() where giftChainId == chainId {
-                guard blockNumberProviders.fetchValue(for: giftAccountId) != nil else { continue }
-
-                checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
+            workingQueue.async {
+                self.giftTimelineChainMapping
+                    .fetchAllPairs()
+                    .forEach { giftAccountId, giftChainId in
+                        guard
+                            giftChainId == chainId,
+                            self.blockNumberProviders.fetchValue(for: giftAccountId) != nil
+                        else { return }
+                        
+                        self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
+                    }
             }
         case let .failure(error):
             logger.error("Failed block number subscription: \(error)")
