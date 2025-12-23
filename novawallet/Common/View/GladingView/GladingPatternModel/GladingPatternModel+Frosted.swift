@@ -27,7 +27,7 @@ extension GladingPatternModel {
             slidingY: .init(min: 0.5, max: -0.5),
             gradientRotation: -CGFloat.pi / 4,
             gradientSize: CGSize(width: 800, height: 240),
-            pattern: R.image.frostCardPattern()!,
+            pattern: R.image.frostCardPatternHighlighted()!,
             opacity: 0.75,
             maskContentsGravity: .resizeAspectFill
         )
