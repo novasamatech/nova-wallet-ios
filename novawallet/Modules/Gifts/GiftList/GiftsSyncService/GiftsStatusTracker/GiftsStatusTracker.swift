@@ -27,7 +27,7 @@ final class GiftsStatusTracker {
     private let blockNumberSubscriptions = InMemoryCache<AccountId, BlockNumberSubscription>()
     private let syncingAccountIdsCache = InMemoryCache<AccountId, Bool>()
     private let nilBalanceStartBlocks = InMemoryCache<AccountId, BlockNumber>()
-    private let giftTimelineChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
+    private let giftChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
     private let existingBalances = InMemoryCache<AccountId, AssetBalance>()
 
     private let blocksToWait: BlockNumber = 10
@@ -75,7 +75,7 @@ private extension GiftsStatusTracker {
                     self?.handleBalanceUpdate(
                         for: gift,
                         balance: update.balance,
-                        chain: chainAsset.chain
+                        chainId: chainAsset.chain.chainId
                     )
                 case let .failure(error):
                     self?.logger.error("Failed remote balance subscription: \(error)")
@@ -87,7 +87,7 @@ private extension GiftsStatusTracker {
     func handleBalanceUpdate(
         for gift: GiftModel,
         balance: AssetBalance?,
-        chain: ChainModel
+        chainId: ChainModel.Id
     ) {
         let giftAccountId = gift.giftAccountId
 
@@ -104,7 +104,7 @@ private extension GiftsStatusTracker {
         guard let status else {
             startBlockCountingIfNeeded(
                 for: giftAccountId,
-                chainId: timelineChainId(for: chain)
+                chainId: chainId
             )
 
             return
@@ -239,10 +239,6 @@ private extension GiftsStatusTracker {
             didUpdateTrackingAccountIds: Set(syncingAccountIdsCache.fetchAllKeys())
         )
     }
-
-    func timelineChainId(for chain: ChainModel) -> ChainModel.Id {
-        chain.timelineChain ?? chain.chainId
-    }
 }
 
 // MARK: - Internal
@@ -252,16 +248,14 @@ extension GiftsStatusTracker {
         _ blockNumber: BlockNumber,
         on chainId: ChainModel.Id
     ) {
-        giftTimelineChainMapping
-            .fetchAllPairs()
-            .forEach { giftAccountId, giftChainId in
-                guard
-                    giftChainId == chainId,
-                    blockNumberSubscriptions.fetchValue(for: giftAccountId) != nil
-                else { return }
+        giftChainMapping.fetchAllPairs().forEach { giftAccountId, giftChainId in
+            guard
+                giftChainId == chainId,
+                blockNumberSubscriptions.fetchValue(for: giftAccountId) != nil
+            else { return }
 
-                self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
-            }
+            self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
+        }
     }
 }
 
@@ -278,8 +272,8 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
 
         addSyncingAccountId(giftAccountId)
 
-        giftTimelineChainMapping.store(
-            value: timelineChainId(for: chain),
+        giftChainMapping.store(
+            value: chain.chainId,
             for: giftAccountId
         )
 
@@ -294,7 +288,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
         remoteBalancesSubscriptions.removeValue(for: giftAccountId)
         blockNumberSubscriptions.removeValue(for: giftAccountId)
         nilBalanceStartBlocks.removeValue(for: giftAccountId)
-        giftTimelineChainMapping.removeValue(for: giftAccountId)
+        giftChainMapping.removeValue(for: giftAccountId)
         existingBalances.removeValue(for: giftAccountId)
         removeSyncingAccountId(giftAccountId)
     }
@@ -305,7 +299,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
         blockNumberSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
         blockNumberSubscriptions.removeAllValues()
         nilBalanceStartBlocks.removeAllValues()
-        giftTimelineChainMapping.removeAllValues()
+        giftChainMapping.removeAllValues()
         existingBalances.removeAllValues()
         clearSyncingAccountIds()
     }
