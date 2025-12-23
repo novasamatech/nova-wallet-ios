@@ -138,6 +138,7 @@ private extension GiftsStatusTracker {
             let subscription = try blockNumberSubscriptionFactory.createSubscription(
                 for: chainId
             )
+
             try subscription.start { [weak self, chainId, giftAccountId] result in
                 guard let self else { return }
 

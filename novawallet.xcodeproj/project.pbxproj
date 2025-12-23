@@ -1609,7 +1609,6 @@
 		2D008A6A2CC59F3700BFEE99 /* AssetListCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A692CC59F3700BFEE99 /* AssetListCollectionManager.swift */; };
 		2D02DBB72EFAA904008DBCF9 /* BlockNumberCallbackSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02DBB62EFAA904008DBCF9 /* BlockNumberCallbackSubscriptionFactory.swift */; };
 		2D02DBC52EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02DBC42EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift */; };
-		2D02DBED2EFABF07008DBCF9 /* BlockNumberRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02DBC42EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift */; };
 		2D033C172ECC60F500562B82 /* GiftReclaimWalletChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D033C162ECC60F500562B82 /* GiftReclaimWalletChecker.swift */; };
 		2D033C202ECC612300562B82 /* GiftReclaimWrapperFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D033C1F2ECC612300562B82 /* GiftReclaimWrapperFactoryProtocol.swift */; };
 		2D033C282ECC613C00562B82 /* SubstrateGiftReclaimWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D033C272ECC613C00562B82 /* SubstrateGiftReclaimWrapperFactory.swift */; };
@@ -36930,7 +36929,6 @@
 				84B7C712289BFA79001A3566 /* ExtrinsicDetailsTests.swift in Sources */,
 				842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */,
 				84B7C711289BFA79001A3566 /* OnboardingMainTests.swift in Sources */,
-				2D02DBED2EFABF07008DBCF9 /* BlockNumberRemoteSubscription.swift in Sources */,
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
 				0C3731CE2E92856F00EBB7D4 /* ExtrinsicSubmitMonitorFactoryStub.swift in Sources */,
 				0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */,

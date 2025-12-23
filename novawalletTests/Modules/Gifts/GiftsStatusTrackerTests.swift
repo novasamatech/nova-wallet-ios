@@ -8,10 +8,11 @@ final class GiftsStatusTrackerTests: XCTestCase {
     private var statusTracker: GiftsStatusTracker!
     private var mockDelegate: MockGiftsStatusTrackerDelegate!
     private var mockChainRegistry: MockChainRegistryProtocol!
-    private var mockGeneralLocalSubscriptionFactory: MockGeneralStorageSubscriptionFactoryProtocol!
+    private var mockBlockNumberSubscriptionFactory: MockBlockNumberCallbackSubscriptionFactoryProtocol!
     private var mockWalletSubscriptionFactory: MockWalletRemoteSubscriptionFactoryProtocol!
     private var chain: ChainModel!
 
+    private let operationQueue = OperationQueue()
     private let workingQueue = DispatchQueue.main
 
     override func setUp() {
@@ -19,14 +20,15 @@ final class GiftsStatusTrackerTests: XCTestCase {
 
         mockDelegate = MockGiftsStatusTrackerDelegate()
         mockChainRegistry = MockChainRegistryProtocol()
-        mockGeneralLocalSubscriptionFactory = MockGeneralStorageSubscriptionFactoryProtocol()
+        mockBlockNumberSubscriptionFactory = MockBlockNumberCallbackSubscriptionFactoryProtocol()
         mockWalletSubscriptionFactory = MockWalletRemoteSubscriptionFactoryProtocol()
 
         statusTracker = GiftsStatusTracker(
             chainRegistry: mockChainRegistry,
-            generalLocalSubscriptionFactory: mockGeneralLocalSubscriptionFactory,
             walletSubscriptionFactory: mockWalletSubscriptionFactory,
+            blockNumberSubscriptionFactory: mockBlockNumberSubscriptionFactory,
             workingQueue: workingQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -179,7 +181,7 @@ extension GiftsStatusTrackerTests {
         let giftAccountId = gift.giftAccountId
 
         var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
+        let mockSubscription = setupMockWalletSubscription { callback in
             capturedCallback = callback
         }
 
@@ -218,7 +220,7 @@ extension GiftsStatusTrackerTests {
         let giftAccountId = gift.giftAccountId
 
         var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
+        let mockSubscription = setupMockWalletSubscription { callback in
             capturedCallback = callback
         }
 
@@ -257,7 +259,7 @@ extension GiftsStatusTrackerTests {
         let giftAccountId = gift.giftAccountId
 
         var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
+        let mockSubscription = setupMockWalletSubscription { callback in
             capturedCallback = callback
         }
 
@@ -296,7 +298,7 @@ extension GiftsStatusTrackerTests {
         let gift = createTestGift()
 
         var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
+        let mockSubscription = setupMockWalletSubscription { callback in
             capturedCallback = callback
         }
 
@@ -315,7 +317,7 @@ extension GiftsStatusTrackerTests {
         capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         // then
-        verify(mockGeneralLocalSubscriptionFactory).getBlockNumberProvider(for: any())
+        verify(mockBlockNumberSubscriptionFactory).createSubscription(for: any())
     }
 
     func testNilBalance_DoesNotStartBlockCounting_OnExistedBalance() {
@@ -323,13 +325,19 @@ extension GiftsStatusTrackerTests {
         let gift = createTestGift()
         let giftAccountId = gift.giftAccountId
 
-        var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
-            capturedCallback = callback
+        var capturedWalletCallback: WalletRemoteSubscriptionClosure?
+        let mockWalletSubscription = setupMockWalletSubscription { callback in
+            capturedWalletCallback = callback
         }
 
+        let mockBlockSubscription = setupMockBlockNumberSubscription { _ in }
+
         stub(mockWalletSubscriptionFactory) { stub in
-            when(stub.createSubscription()).thenReturn(mockSubscription)
+            when(stub.createSubscription()).thenReturn(mockWalletSubscription)
+        }
+
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).thenReturn(mockBlockSubscription)
         }
 
         stub(mockDelegate) { stub in
@@ -345,26 +353,34 @@ extension GiftsStatusTrackerTests {
             chainAssetId: gift.chainAssetId,
             accountId: giftAccountId
         )
-        capturedCallback?(.success(.init(balance: balance, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: balance, blockHash: nil)))
         // Simulate receive nil balance like a gift was claimed
-        capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: nil, blockHash: nil)))
 
-        // then - should not have called getBlockNumberProvider
-        verify(mockGeneralLocalSubscriptionFactory, never()).getBlockNumberProvider(for: any())
+        // then - should not have called createSubscription for block number
+        verify(mockBlockNumberSubscriptionFactory, never()).createSubscription(for: any())
     }
 
     func testBlockCounting_EmitsClaimedStatus_After10Blocks() {
         // given
         let gift = createTestGift()
-        let chainId = gift.chainAssetId.chainId
 
-        var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
-            capturedCallback = callback
+        var capturedWalletCallback: WalletRemoteSubscriptionClosure?
+        let mockWalletSubscription = setupMockWalletSubscription { callback in
+            capturedWalletCallback = callback
+        }
+
+        var capturedBlockCallback: BlockNumberRemoteSubscriptionClosure?
+        let mockBlockSubscription = setupMockBlockNumberSubscription { callback in
+            capturedBlockCallback = callback
         }
 
         stub(mockWalletSubscriptionFactory) { stub in
-            when(stub.createSubscription()).thenReturn(mockSubscription)
+            when(stub.createSubscription()).thenReturn(mockWalletSubscription)
+        }
+
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).thenReturn(mockBlockSubscription)
         }
 
         var receivedStatus: GiftModel.Status?
@@ -381,16 +397,16 @@ extension GiftsStatusTrackerTests {
         statusTracker.startTracking(for: gift)
 
         // Start block counting with nil balance
-        capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         // when - simulate block number updates
         let startBlock: BlockNumber = 100
 
         // First block sets the start block
-        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock))
 
         // Simulate 10 more blocks passing
-        statusTracker.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock + 10))
 
         // then
         wait(for: [statusExpectation], timeout: 2.0)
@@ -400,15 +416,23 @@ extension GiftsStatusTrackerTests {
     func testBlockCounting_DoesNotEmitStatus_Before10Blocks() {
         // given
         let gift = createTestGift()
-        let chainId = gift.chainAssetId.chainId
 
-        var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
-            capturedCallback = callback
+        var capturedWalletCallback: WalletRemoteSubscriptionClosure?
+        let mockWalletSubscription = setupMockWalletSubscription { callback in
+            capturedWalletCallback = callback
+        }
+
+        var capturedBlockCallback: BlockNumberRemoteSubscriptionClosure?
+        let mockBlockSubscription = setupMockBlockNumberSubscription { callback in
+            capturedBlockCallback = callback
         }
 
         stub(mockWalletSubscriptionFactory) { stub in
-            when(stub.createSubscription()).thenReturn(mockSubscription)
+            when(stub.createSubscription()).thenReturn(mockWalletSubscription)
+        }
+
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).thenReturn(mockBlockSubscription)
         }
 
         stub(mockDelegate) { stub in
@@ -417,13 +441,13 @@ extension GiftsStatusTrackerTests {
         }
 
         statusTracker.startTracking(for: gift)
-        capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         let startBlock: BlockNumber = 100
-        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock))
 
         // when - only 9 blocks passed
-        statusTracker.handleBlockNumber(result: .success(startBlock + 9), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock + 9))
 
         // then - should not have called didReceive
         verify(mockDelegate, never()).giftsTracker(any(), didReceive: any(), for: any())
@@ -433,15 +457,23 @@ extension GiftsStatusTrackerTests {
         // given
         let gift = createTestGift()
         let giftAccountId = gift.giftAccountId
-        let chainId = gift.chainAssetId.chainId
 
-        var capturedCallback: WalletRemoteSubscriptionClosure?
-        let mockSubscription = setupMockSubscription { callback in
-            capturedCallback = callback
+        var capturedWalletCallback: WalletRemoteSubscriptionClosure?
+        let mockWalletSubscription = setupMockWalletSubscription { callback in
+            capturedWalletCallback = callback
+        }
+
+        var capturedBlockCallback: BlockNumberRemoteSubscriptionClosure?
+        let mockBlockSubscription = setupMockBlockNumberSubscription { callback in
+            capturedBlockCallback = callback
         }
 
         stub(mockWalletSubscriptionFactory) { stub in
-            when(stub.createSubscription()).thenReturn(mockSubscription)
+            when(stub.createSubscription()).thenReturn(mockWalletSubscription)
+        }
+
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).thenReturn(mockBlockSubscription)
         }
 
         var receivedStatuses: [GiftModel.Status] = []
@@ -456,20 +488,20 @@ extension GiftsStatusTrackerTests {
         statusTracker.startTracking(for: gift)
 
         // Start block counting with nil balance
-        capturedCallback?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: nil, blockHash: nil)))
 
         let startBlock: BlockNumber = 100
-        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock))
 
         // when - balance becomes non-nil before 10 blocks
-        statusTracker.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock + 5))
 
         let balance = createAssetBalance(
             transferable: gift.amount + 1,
             chainAssetId: gift.chainAssetId,
             accountId: giftAccountId
         )
-        capturedCallback?(.success(.init(balance: balance, blockHash: nil)))
+        capturedWalletCallback?(.success(.init(balance: balance, blockHash: nil)))
 
         // then - should receive pending status, not claimed
         XCTAssertEqual(receivedStatuses.count, 1)
@@ -480,23 +512,35 @@ extension GiftsStatusTrackerTests {
         // given
         let gift1 = createTestGift(accountId: Data(repeating: 1, count: 32))
         let gift2 = createTestGift(accountId: Data(repeating: 2, count: 32))
-        let chainId = gift1.chainAssetId.chainId
 
-        var capturedCallback1: WalletRemoteSubscriptionClosure?
-        var capturedCallback2: WalletRemoteSubscriptionClosure?
+        // setup balance callbacks
+        var capturedWalletCallback1: WalletRemoteSubscriptionClosure?
+        var capturedWalletCallback2: WalletRemoteSubscriptionClosure?
 
-        let mockSubscription1 = setupMockSubscription { callback in
-            capturedCallback1 = callback
+        let mockWalletSubscription1 = setupMockWalletSubscription { callback in
+            capturedWalletCallback1 = callback
         }
-        let mockSubscription2 = setupMockSubscription { callback in
-            capturedCallback2 = callback
+        let mockWalletSubscription2 = setupMockWalletSubscription { callback in
+            capturedWalletCallback2 = callback
         }
 
-        var subscriptionIndex = 0
+        // setup block callback
+        var capturedBlockCallback: BlockNumberRemoteSubscriptionClosure?
+
+        let mockBlockSubscription = setupMockBlockNumberSubscription { callback in
+            capturedBlockCallback = callback
+        }
+
+        var walletSubscriptionIndex = 0
         stub(mockWalletSubscriptionFactory) { stub in
             when(stub.createSubscription()).then { _ -> WalletRemoteSubscriptionProtocol in
-                subscriptionIndex += 1
-                return subscriptionIndex == 1 ? mockSubscription1 : mockSubscription2
+                walletSubscriptionIndex += 1
+                return walletSubscriptionIndex == 1 ? mockWalletSubscription1 : mockWalletSubscription2
+            }
+        }
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).then { _ -> BlockNumberRemoteSubscriptionProtocol in
+                mockBlockSubscription
             }
         }
 
@@ -521,25 +565,26 @@ extension GiftsStatusTrackerTests {
         statusTracker.startTracking(for: gift2)
 
         // Start block counting for both
-        capturedCallback1?(.success(.init(balance: nil, blockHash: nil)))
-        capturedCallback2?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback1?(.success(.init(balance: nil, blockHash: nil)))
+        capturedWalletCallback2?(.success(.init(balance: nil, blockHash: nil)))
 
         // when
+
         let startBlock: BlockNumber = 100
-        statusTracker.handleBlockNumber(result: .success(startBlock), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock))
 
         // Gift 1 receives balance after 5 blocks
-        statusTracker.handleBlockNumber(result: .success(startBlock + 5), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock + 5))
 
         let balance = createAssetBalance(
             transferable: gift1.amount + 1,
             chainAssetId: gift1.chainAssetId,
             accountId: gift1.giftAccountId
         )
-        capturedCallback1?(.success(.init(balance: balance, blockHash: nil)))
+        capturedWalletCallback1?(.success(.init(balance: balance, blockHash: nil)))
 
         // Gift 2 continues to 10 blocks
-        statusTracker.handleBlockNumber(result: .success(startBlock + 10), chainId: chainId)
+        capturedBlockCallback?(.success(startBlock + 10))
 
         // then
         wait(for: [gift2StatusExpectation], timeout: 2.0)
@@ -577,19 +622,33 @@ private extension GiftsStatusTrackerTests {
             when(stub.getChain(for: any())).thenReturn(chain)
         }
 
-        stub(mockGeneralLocalSubscriptionFactory) { stub in
-            when(stub.getBlockNumberProvider(for: any())).thenReturn(
-                AnyDataProvider(DataProviderStub<DecodedBlockNumber>(models: []))
-            )
+        let mockBlockNumberSubscription = setupMockBlockNumberSubscription { _ in }
+        stub(mockBlockNumberSubscriptionFactory) { stub in
+            when(stub.createSubscription(for: any())).thenReturn(mockBlockNumberSubscription)
         }
 
-        let mockSubscription = setupMockSubscription { _ in }
+        let mockWalletSubscription = setupMockWalletSubscription { _ in }
         stub(mockWalletSubscriptionFactory) { stub in
-            when(stub.createSubscription()).thenReturn(mockSubscription)
+            when(stub.createSubscription()).thenReturn(mockWalletSubscription)
         }
     }
 
-    func setupMockSubscription(
+    func setupMockBlockNumberSubscription(
+        capturingCallback: @escaping (BlockNumberRemoteSubscriptionClosure?) -> Void
+    ) -> MockBlockNumberRemoteSubscriptionProtocol {
+        let mockSubscription = MockBlockNumberRemoteSubscriptionProtocol()
+
+        stub(mockSubscription) { stub in
+            when(stub.start(callback: any())).then { callback in
+                capturingCallback(callback)
+            }
+            when(stub.unsubscribe()).thenDoNothing()
+        }
+
+        return mockSubscription
+    }
+
+    func setupMockWalletSubscription(
         capturingCallback: @escaping (WalletRemoteSubscriptionClosure?) -> Void
     ) -> MockWalletRemoteSubscriptionProtocol {
         let mockSubscription = MockWalletRemoteSubscriptionProtocol()
