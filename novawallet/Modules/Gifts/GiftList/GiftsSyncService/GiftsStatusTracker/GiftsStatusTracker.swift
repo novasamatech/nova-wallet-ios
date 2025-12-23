@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 protocol GiftsStatusTrackerProtocol: AnyObject {
     var delegate: GiftsStatusTrackerDelegate? { get set }
@@ -15,13 +16,15 @@ final class GiftsStatusTracker {
     weak var delegate: GiftsStatusTrackerDelegate?
 
     let chainRegistry: ChainRegistryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let walletSubscriptionFactory: WalletRemoteSubscriptionFactoryProtocol
     let workingQueue: DispatchQueue
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private lazy var localKeyFactory = LocalStorageKeyFactory()
+
     private let remoteBalancesSubscriptions = InMemoryCache<AccountId, WalletRemoteSubscriptionProtocol>()
-    private let blockNumberProviders = InMemoryCache<AccountId, AnyDataProvider<DecodedBlockNumber>>()
+    private let blockNumberSubscriptions = InMemoryCache<AccountId, BlockNumberSubscription>()
     private let syncingAccountIdsCache = InMemoryCache<AccountId, Bool>()
     private let nilBalanceStartBlocks = InMemoryCache<AccountId, BlockNumber>()
     private let giftTimelineChainMapping = InMemoryCache<AccountId, ChainModel.Id>()
@@ -31,15 +34,15 @@ final class GiftsStatusTracker {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         walletSubscriptionFactory: WalletRemoteSubscriptionFactoryProtocol,
         workingQueue: DispatchQueue,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.walletSubscriptionFactory = walletSubscriptionFactory
         self.workingQueue = workingQueue
+        self.operationQueue = operationQueue
         self.logger = logger
     }
 
@@ -125,19 +128,57 @@ private extension GiftsStatusTracker {
     ) {
         guard
             nilBalanceStartBlocks.fetchValue(for: giftAccountId) == nil,
-            blockNumberProviders.fetchValue(for: giftAccountId) == nil,
-            let provider = subscribeToBlockNumber(for: chainId)
+            blockNumberSubscriptions.fetchValue(for: giftAccountId) == nil,
+            let subscription = try? createBlockNumberSubscription(for: giftAccountId, chainId: chainId)
         else { return }
 
-        blockNumberProviders.store(
-            value: provider,
+        blockNumberSubscriptions.store(
+            value: subscription,
             for: giftAccountId
         )
     }
 
+    func createBlockNumberSubscription(
+        for giftAccountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> BlockNumberSubscription {
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+        let path = SystemPallet.blockNumberPath
+        let localKey = try localKeyFactory.createFromStoragePath(path, chainId: chainId)
+
+        let request = UnkeyedSubscriptionRequest(
+            storagePath: path,
+            localKey: localKey
+        )
+
+        return BlockNumberSubscription(
+            request: request,
+            connection: connection,
+            runtimeService: runtimeProvider,
+            repository: nil,
+            operationQueue: operationQueue,
+            callbackQueue: workingQueue
+        ) { [weak self, chainId, giftAccountId] result in
+            guard let self else { return }
+
+            switch result {
+            case let .success(subscriptionValue):
+                guard let blockNumber = subscriptionValue?.value else { return }
+
+                handle(blockNumber, on: chainId)
+            case let .failure(error):
+                logger.error("Failed block number subscription: \(error)")
+
+                cancelBlockCounting(for: giftAccountId)
+            }
+        }
+    }
+
     func cancelBlockCounting(for giftAccountId: AccountId) {
         nilBalanceStartBlocks.removeValue(for: giftAccountId)
-        blockNumberProviders.removeValue(for: giftAccountId)
+        blockNumberSubscriptions.removeValue(for: giftAccountId)
     }
 
     func checkBlockProgress(
@@ -204,6 +245,26 @@ private extension GiftsStatusTracker {
     }
 }
 
+// MARK: - Internal
+
+extension GiftsStatusTracker {
+    func handle(
+        _ blockNumber: BlockNumber,
+        on chainId: ChainModel.Id
+    ) {
+        giftTimelineChainMapping
+            .fetchAllPairs()
+            .forEach { giftAccountId, giftChainId in
+                guard
+                    giftChainId == chainId,
+                    blockNumberSubscriptions.fetchValue(for: giftAccountId) != nil
+                else { return }
+
+                self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
+            }
+    }
+}
+
 // MARK: - GiftsStatusTrackerProtocol
 
 extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
@@ -231,7 +292,7 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
     func stopTracking(for giftAccountId: AccountId) {
         remoteBalancesSubscriptions.fetchValue(for: giftAccountId)?.unsubscribe()
         remoteBalancesSubscriptions.removeValue(for: giftAccountId)
-        blockNumberProviders.removeValue(for: giftAccountId)
+        blockNumberSubscriptions.removeValue(for: giftAccountId)
         nilBalanceStartBlocks.removeValue(for: giftAccountId)
         giftTimelineChainMapping.removeValue(for: giftAccountId)
         existingBalances.removeValue(for: giftAccountId)
@@ -241,8 +302,8 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
     func stopTracking() {
         remoteBalancesSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
         remoteBalancesSubscriptions.removeAllValues()
-        blockNumberProviders.fetchAllValues().forEach { $0.removeObserver(self) }
-        blockNumberProviders.removeAllValues()
+        blockNumberSubscriptions.fetchAllValues().forEach { $0.unsubscribe() }
+        blockNumberSubscriptions.removeAllValues()
         nilBalanceStartBlocks.removeAllValues()
         giftTimelineChainMapping.removeAllValues()
         existingBalances.removeAllValues()
@@ -250,31 +311,8 @@ extension GiftsStatusTracker: GiftsStatusTrackerProtocol {
     }
 }
 
-// MARK: - GeneralLocalStorageSubscriber
+// MARK: - Private Types
 
-extension GiftsStatusTracker: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            workingQueue.async {
-                guard let blockNumber else { return }
-                
-                self.giftTimelineChainMapping
-                    .fetchAllPairs()
-                    .forEach { giftAccountId, giftChainId in
-                        guard
-                            giftChainId == chainId,
-                            self.blockNumberProviders.fetchValue(for: giftAccountId) != nil
-                        else { return }
-
-                        self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
-                    }
-            }
-        case let .failure(error):
-            logger.error("Failed block number subscription: \(error)")
-        }
-    }
+private extension GiftsStatusTracker {
+    typealias BlockNumberSubscription = CallbackStorageSubscription<StringScaleMapper<BlockNumber>>
 }

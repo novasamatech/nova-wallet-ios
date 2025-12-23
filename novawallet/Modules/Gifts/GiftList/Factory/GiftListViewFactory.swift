@@ -44,9 +44,9 @@ struct GiftListViewFactory {
         )
         let statusTracker = GiftsStatusTracker(
             chainRegistry: chainRegistry,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             walletSubscriptionFactory: walletSubscriptionFactory,
             workingQueue: statusTrackerQueue,
+            operationQueue: operationQueue,
             logger: logger
         )
 
