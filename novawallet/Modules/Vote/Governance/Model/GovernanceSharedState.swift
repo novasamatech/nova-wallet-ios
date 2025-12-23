@@ -57,12 +57,7 @@ final class GovernanceSharedState {
         if let generalLocalSubscriptionFactory = generalLocalSubscriptionFactory {
             self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         } else {
-            self.generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-                chainRegistry: chainRegistry,
-                storageFacade: substrateStorageFacade,
-                operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue),
-                logger: Logger.shared
-            )
+            self.generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory.shared
         }
 
         self.requestFactory = requestFactory
