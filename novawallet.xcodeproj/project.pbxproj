@@ -1712,6 +1712,8 @@
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
 		2D1E04092ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1E04082ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift */; };
+		2D209DCC2EF9630000FB6F77 /* GladingPatternModel+Frosted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D209DCB2EF9630000FB6F77 /* GladingPatternModel+Frosted.swift */; };
+		2D209DD32EF9631200FB6F77 /* GladingFrostedCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D209DD22EF9631200FB6F77 /* GladingFrostedCardView.swift */; };
 		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
 		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
 		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
@@ -8318,6 +8320,8 @@
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
 		2D1E04082ECD05D60032462F /* BaseGiftReclaimWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGiftReclaimWrapperFactory.swift; sourceTree = "<group>"; };
+		2D209DCB2EF9630000FB6F77 /* GladingPatternModel+Frosted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GladingPatternModel+Frosted.swift"; sourceTree = "<group>"; };
+		2D209DD22EF9631200FB6F77 /* GladingFrostedCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GladingFrostedCardView.swift; sourceTree = "<group>"; };
 		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
 		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
 		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
@@ -16953,6 +16957,24 @@
 				2DBB28902CD42ED800DFA0AD /* ChainLogoImageInfo.swift */,
 			);
 			path = ImageRetrieve;
+			sourceTree = "<group>";
+		};
+		2D209DEF2EF9733A00FB6F77 /* CardViews */ = {
+			isa = PBXGroup;
+			children = (
+				84F96FA42A136E1B00EB70E2 /* GladingCardView.swift */,
+				2D209DD22EF9631200FB6F77 /* GladingFrostedCardView.swift */,
+			);
+			path = CardViews;
+			sourceTree = "<group>";
+		};
+		2D209DFC2EF9739D00FB6F77 /* GladingPatternModel */ = {
+			isa = PBXGroup;
+			children = (
+				840E59B82A187E0700BA6ADD /* GladingPatternModel.swift */,
+				2D209DCB2EF9630000FB6F77 /* GladingPatternModel+Frosted.swift */,
+			);
+			path = GladingPatternModel;
 			sourceTree = "<group>";
 		};
 		2D20F1C52D3648F5003E9CF2 /* WalletStorageCleaning */ = {
@@ -27311,9 +27333,9 @@
 		84F96FA32A136E0400EB70E2 /* GladingView */ = {
 			isa = PBXGroup;
 			children = (
-				84F96FA42A136E1B00EB70E2 /* GladingCardView.swift */,
+				2D209DEF2EF9733A00FB6F77 /* CardViews */,
+				2D209DFC2EF9739D00FB6F77 /* GladingPatternModel */,
 				840E59B62A187A9200BA6ADD /* GladingPatternView.swift */,
-				840E59B82A187E0700BA6ADD /* GladingPatternModel.swift */,
 				849C7BD62A1B212800434621 /* GladingRectView.swift */,
 				849C7BD82A1B21CF00434621 /* GladingRectModel.swift */,
 				849C7BDA2A1B236900434621 /* GladingBaseView.swift */,
@@ -31168,6 +31190,7 @@
 				0C71049A2C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift in Sources */,
 				0C962F882AA85C7F00C0B551 /* TransactionHistoryAccountPrefixFilter.swift in Sources */,
 				77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */,
+				2D209DD32EF9631200FB6F77 /* GladingFrostedCardView.swift in Sources */,
 				0C0F6E192D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift in Sources */,
 				840E59BD2A188B7B00BA6ADD /* UIImage+Filter.swift in Sources */,
 				0CB06E752A68139C00C7EC99 /* StakingDashboardNominationPoolMapper.swift in Sources */,
@@ -34259,6 +34282,7 @@
 				0C2285E22E23E14E0093FD44 /* ProxyResolutionCallWrapper.swift in Sources */,
 				847F2D4427A9822200AFD476 /* AssetIconView.swift in Sources */,
 				20B2942A4241F6713A1C70D9 /* StakingRewardDetailsViewFactory.swift in Sources */,
+				2D209DCC2EF9630000FB6F77 /* GladingPatternModel+Frosted.swift in Sources */,
 				84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */,
 				2D3C71D12E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift in Sources */,
 				848CCB442832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift in Sources */,
