@@ -269,7 +269,7 @@ extension GiftsStatusTracker: GeneralLocalStorageSubscriber, GeneralLocalStorage
                             giftChainId == chainId,
                             self.blockNumberProviders.fetchValue(for: giftAccountId) != nil
                         else { return }
-                        
+
                         self.checkBlockProgress(for: giftAccountId, currentBlock: blockNumber)
                     }
             }
