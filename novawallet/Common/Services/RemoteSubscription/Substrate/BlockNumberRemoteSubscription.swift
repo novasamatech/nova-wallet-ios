@@ -3,7 +3,7 @@ import SubstrateSdk
 
 typealias BlockNumberRemoteSubscriptionClosure = (Result<BlockNumber?, Error>) -> Void
 
-protocol BlockNumberRemoteSubscriptionProtocol {
+protocol BlockNumberRemoteSubscriptionProtocol: AnyObject {
     func start(callback: @escaping BlockNumberRemoteSubscriptionClosure) throws
     func unsubscribe()
 }
@@ -43,6 +43,8 @@ extension BlockNumberRemoteSubscription: BlockNumberRemoteSubscriptionProtocol {
     func start(callback: @escaping BlockNumberRemoteSubscriptionClosure) throws {
         mutex.lock()
         defer { mutex.unlock() }
+
+        guard currentSubscription == nil else { return }
 
         let path = SystemPallet.blockNumberPath
         let localKey = try localKeyFactory.createFromStoragePath(path, chainId: chainId)

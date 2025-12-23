@@ -13,6 +13,10 @@ final class BlockNumberCallbackSubscriptionFactory {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
+    var subscriptions: [ChainModel.Id: WeakWrapper] = [:]
+
+    let mutex = NSLock()
+
     init(
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
@@ -24,8 +28,8 @@ final class BlockNumberCallbackSubscriptionFactory {
     }
 }
 
-extension BlockNumberCallbackSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol {
-    func createSubscription(for chainId: ChainModel.Id) throws -> BlockNumberRemoteSubscriptionProtocol {
+private extension BlockNumberCallbackSubscriptionFactory {
+    func createNewSubscription(for chainId: ChainModel.Id) throws -> BlockNumberRemoteSubscriptionProtocol {
         BlockNumberRemoteSubscription(
             chainId: chainId,
             connection: try chainRegistry.getConnectionOrError(for: chainId),
@@ -34,5 +38,25 @@ extension BlockNumberCallbackSubscriptionFactory: BlockNumberCallbackSubscriptio
             workingQueue: workingQueue,
             localKeyFactory: localKeyFactory
         )
+    }
+}
+
+extension BlockNumberCallbackSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol {
+    func createSubscription(for chainId: ChainModel.Id) throws -> BlockNumberRemoteSubscriptionProtocol {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        guard
+            let weakWrapper = subscriptions[chainId],
+            let subscription = weakWrapper.target as? BlockNumberRemoteSubscriptionProtocol
+        else {
+            let subscription = try createNewSubscription(for: chainId)
+
+            subscriptions[chainId] = WeakWrapper(target: subscription)
+
+            return subscription
+        }
+
+        return subscription
     }
 }
