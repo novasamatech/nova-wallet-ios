@@ -1756,6 +1756,7 @@
 		2D32BE1D2C6A49900047F520 /* TransactionFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE102C6A49900047F520 /* TransactionFeeProxy.swift */; };
 		2D32BE202C6CF4A20047F520 /* AssetTransferAggregationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE1F2C6CF4A20047F520 /* AssetTransferAggregationFactory.swift */; };
 		2D32BE222C6D247C0047F520 /* FeeAssetSelectionPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE212C6D247C0047F520 /* FeeAssetSelectionPresentable.swift */; };
+		2D32C9942EFA359B0094A036 /* FormatterCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32C9932EFA359B0094A036 /* FormatterCacheTests.swift */; };
 		2D32D7352DCBC1530016354C /* DelegatedAccountsAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32D7342DCBC1530016354C /* DelegatedAccountsAggregator.swift */; };
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
@@ -8334,6 +8335,7 @@
 		2D32BE102C6A49900047F520 /* TransactionFeeProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionFeeProxy.swift; sourceTree = "<group>"; };
 		2D32BE1F2C6CF4A20047F520 /* AssetTransferAggregationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTransferAggregationFactory.swift; sourceTree = "<group>"; };
 		2D32BE212C6D247C0047F520 /* FeeAssetSelectionPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeAssetSelectionPresentable.swift; sourceTree = "<group>"; };
+		2D32C9932EFA359B0094A036 /* FormatterCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatterCacheTests.swift; sourceTree = "<group>"; };
 		2D32D7342DCBC1530016354C /* DelegatedAccountsAggregator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsAggregator.swift; sourceTree = "<group>"; };
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
@@ -17021,6 +17023,14 @@
 			path = FeeManaging;
 			sourceTree = "<group>";
 		};
+		2D32C9922EFA35930094A036 /* FormatterCache */ = {
+			isa = PBXGroup;
+			children = (
+				2D32C9932EFA359B0094A036 /* FormatterCacheTests.swift */,
+			);
+			path = FormatterCache;
+			sourceTree = "<group>";
+		};
 		2D32D72E2DCB95840016354C /* DelegatedAccounts */ = {
 			isa = PBXGroup;
 			children = (
@@ -21483,6 +21493,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2D32C9922EFA35930094A036 /* FormatterCache */,
 				0CED71D52D9EF76700F79C02 /* Xcm */,
 				0C1FE0E82E4636ED00517A1D /* Operation */,
 				0C27F3862DA8024800191FFF /* Substrate */,
@@ -36785,6 +36796,7 @@
 				84B7C72A289BFA79001A3566 /* RecommendationsComposerTests.swift in Sources */,
 				0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */,
 				84B7C73B289BFA79001A3566 /* StakingUnbondConfirmTests.swift in Sources */,
+				2D32C9942EFA359B0094A036 /* FormatterCacheTests.swift in Sources */,
 				842A738E27DEF592006EE1EA /* AssetTransactionGenerator.swift in Sources */,
 				84CE69ED25667A5600559427 /* ByteLengthEncodingTests.swift in Sources */,
 				0C6FE80A2D507AB100E5B651 /* URLOriginTests.swift in Sources */,

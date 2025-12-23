@@ -136,8 +136,7 @@ extension FormatterCache: FormatterCacheProtocol {
         let key = TokenFormatterKey(
             info: info,
             roundingMode: roundingMode,
-            useSuffixForBigNumbers: useSuffixForBigNumbers,
-            locale: locale
+            useSuffixForBigNumbers: useSuffixForBigNumbers
         )
 
         if let cached = tokenFormatters.fetchValue(for: key) {
@@ -214,11 +213,11 @@ extension FormatterCache: FormatterCacheProtocol {
 
 private extension FormatterCache {
     protocol CacheKey: Hashable {
-        var prefix: String { get }
+        var id: String { get }
     }
 
     struct DisplayFormatterKey: CacheKey {
-        var prefix: String { "display" }
+        var id: String { "display" }
 
         let assetPrecision: Int16
         let symbol: String
@@ -227,7 +226,7 @@ private extension FormatterCache {
     }
 
     struct InputFormatterKey: CacheKey {
-        var prefix: String { "input" }
+        var id: String { "input" }
 
         let assetPrecision: Int16
         let symbol: String
@@ -236,7 +235,7 @@ private extension FormatterCache {
     }
 
     struct TokenFormatterKey: CacheKey {
-        var prefix: String { "token" }
+        var id: String { "token" }
 
         let assetPrecision: Int16
         let symbol: String
@@ -276,7 +275,7 @@ private extension FormatterCache {
     }
 
     struct AssetPriceFormatterKey: CacheKey {
-        var prefix: String { "asset_price" }
+        var id: String { "asset_price" }
 
         let assetPrecision: Int16
         let symbol: String
@@ -308,12 +307,5 @@ private extension FormatterCache {
             symbolValueSeparator = info.symbolValueSeparator
             self.useSuffixForBigNumbers = useSuffixForBigNumbers
         }
-    }
-}
-
-extension FormatterCache.CacheKey {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(prefix)
-        hasher.combine(self)
     }
 }
