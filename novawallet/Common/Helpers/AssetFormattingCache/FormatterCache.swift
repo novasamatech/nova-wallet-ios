@@ -299,7 +299,7 @@ private extension FormatterCache {
 
         init(
             info: AssetBalanceDisplayInfo,
-            useSuffixForBigNumbers: Bool,
+            useSuffixForBigNumbers: Bool
         ) {
             assetPrecision = info.assetPrecision
             symbol = info.symbol
