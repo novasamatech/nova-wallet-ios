@@ -1,0 +1,33 @@
+name: Update signing data
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *" # 10:00 AM every day
+
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  RUN_IN_CI: true
+
+jobs:
+  update_signing_data:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
+        with:
+          minimal_mode: true
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
+
+      - name: Update signing data
+        run: |
+          bundle exec fastlane update_signing_data

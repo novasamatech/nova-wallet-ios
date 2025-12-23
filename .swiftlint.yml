@@ -1,17 +1,17 @@
 disabled_rules:
-   - switch_case_alignment
+  - switch_case_alignment
 excluded:
-  - Pods
-  - PrivatePods
   - R.generated.swift
   - novawalletTests
   - novawalletIntegrationTests
   - NovaPushNotificationServiceExtension/R.generated.swift
+  - vendor/bundle
 identifier_name:
   excluded:
     - id
 nesting:
   type_level: 3
+  statement_level: 3
 large_tuple:
   warning: 6
   error: 7

@@ -4,112 +4,82 @@ on:
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
-  scheme: default
-  platform: iOS Simulator
-  device: iPhone 16
-  xcode-version: 16.1
-  MINT_PATH: ${{ github.workspace }}/.mint
+  IOS_BUNDLE_ID: "io.novafoundation.novawallet.dev"
+  IOS_EXTENSION_BUNDLE_ID: "io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  PROVISIONING_PROFILE_SPECIFIER: "match Development io.novafoundation.novawallet.dev"
+  EXTENSION_PROVISIONING_PROFILE_SPECIFIER: "match Development io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  CODE_SIGN_IDENTITY: "Apple Development"
+  EXPORT_METHOD: "development"
+  BUILD_NUMBER: ${{ github.run_number }}
   RUN_IN_CI: true
+  # DEBUG MODE: Set to 'true' to enable enhanced debugging for build failures
+  # What it does:
+  #   - Enables verbose xcodebuild logging
+  #   - Collects and uploads build artifacts (logs, test results)
+  #   - Continues build even on failures to gather maximum information
+  DEBUG_CI: false
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-14
+    name: Build app
+    runs-on: macos-26
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@master
-        with:
-          xcode-version: ${{ env.xcode-version }}
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          fetch-depth: 0
 
-      - name: Restore Mint packages сache
-        id: mint-cache
-        uses: actions/cache@v4
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
         with:
-          path: ${{ env.MINT_PATH }}
-          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-${{ env.xcode-version }}-mint-
-
-      - name: Install Mint
-        run: brew install mint
-
-      - name: Mint bootstrap
-        if: steps.mint-cache.outputs.cache-hit != 'true'
-        run: |
-          mint bootstrap --mintfile CIMintfile
-
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
-          echo $default | cat >default
-          echo Using default scheme: $default
-
-      - name: Push Notifications Setup
-        env:
-          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
-        run: |
-          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
-
-          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
-
-      - name: Restore SPM cache
-        id: spm-cache
-        uses: actions/cache@v4
-        with:
-          path: .source_packages
-          key: ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-${{ env.xcode-version }}-spm-
-
-      - name: Ensure SPM directory exists
-        run: mkdir -p .source_packages
-
-      - name: Resolve SPM dependencies
-        if: steps.spm-cache.outputs.cache-hit != 'true'
-        run: |
-          if [ "`ls -A | grep -i \\.xcworkspace\\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
 
       - name: Build app
-        env:
-          MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
-          MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
-          MOONBEAM_HISTORY_API_KEY: ${{ secrets.MOONBEAM_HISTORY_API_KEY }}
-          MOONRIVER_HISTORY_API_KEY: ${{ secrets.MOONRIVER_HISTORY_API_KEY }}
-          ETHERSCAN_HISTORY_API_KEY: ${{ secrets.ETHERSCAN_HISTORY_API_KEY }}
-          ACALA_AUTH_TOKEN: ${{ secrets.ACALA_AUTH_TOKEN }}
-          ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
-          MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
-          MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-          WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
-          POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
-          DWELLIR_API_KEY: ${{ secrets.DWELLIR_API_KEY }}
-          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
         run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
+          # Pass debug flag to fastlane if DEBUG_CI is enabled
+          if [ "${{ env.DEBUG_CI }}" = "true" ]; then
+            echo "🔍 Building app in debug mode..."
+            bundle exec fastlane build_app_ci debug:true
+          else
+            bundle exec fastlane build_app_ci
+          fi
+
+      # Upload build artifacts for debugging - only when DEBUG_CI is enabled
+      - name: Upload build artifacts
+        if: env.DEBUG_CI == 'true' && (failure() || success())
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: |
+            ./fastlane/build_logs/
+          retention-days: 3
+
+  test:
+    name: Run tests
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
+        with:
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
 
       - name: Run tests
-        run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -clonedSourcePackagesDirPath ".source_packages" -skipPackagePluginValidation
+        run: bundle exec fastlane run_unit_tests

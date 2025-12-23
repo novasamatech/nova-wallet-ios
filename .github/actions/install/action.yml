@@ -1,0 +1,129 @@
+name: "Setup iOS Environment"
+description: "Installs Xcode and Ruby dependencies"
+inputs:
+  xcode-version:
+    description: "The Xcode version to install"
+    required: true
+    default: "26.1.1"
+  minimal_mode:
+    description: "Skip Mint, SPM and Google service plist setup (for signing-only workflows)"
+    required: false
+    default: "false"
+  scw_access_key:
+    description: "Scaleway Access Key"
+    required: true
+  scw_secret_key:
+    description: "Scaleway Secret Key"
+    required: true
+  scw_default_project_id:
+    description: "Scaleway Default Project ID"
+    required: true
+  scw_default_organization_id:
+    description: "Scaleway Default Organization ID"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set MINT_PATH env
+      if: inputs.minimal_mode != 'true'
+      shell: bash
+      run: |
+        MINT_PATH_VALUE="${MINT_PATH:-$GITHUB_WORKSPACE/.mint}"
+        echo "MINT_PATH=$MINT_PATH_VALUE" >> "$GITHUB_ENV"
+
+    - name: Restore Mint cache
+      if: inputs.minimal_mode != 'true'
+      id: mint-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/.mint
+        key: ${{ runner.os }}-xcode-${{ inputs.xcode-version }}-mint-${{ hashFiles('**/CIMintfile', '**/Mintfile') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode-${{ inputs.xcode-version }}-mint-
+
+    - name: Install Mint
+      if: inputs.minimal_mode != 'true'
+      shell: bash
+      run: brew install mint
+
+    - name: Mint bootstrap
+      if: inputs.minimal_mode != 'true' && steps.mint-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: mint bootstrap --mintfile CIMintfile
+
+    - uses: scaleway/action-scw-secret@v0
+      with:
+        # ENV_NAME,SECRET_NAME (with path)
+        secret-names: |
+          MATCH_GIT_BASIC_AUTHORIZATION,/dev/ios/MATCH_GIT_BASIC_AUTH
+          KEYCHAIN_PASSWORD,/dev/ios/KEYCHAIN_PASSWORD
+          MATCH_PASSWORD,/dev/ios/MATCH_PASSWORD
+          CREDENTIAL_FILE_CONTENT,/dev/ios/CREDENTIAL_FILE_CONTENT
+          FIREBASE_APP_ID,/dev/ios/FIREBASE_APP_ID
+          ASC_KEY_BASE64,/dev/ios/ASC_KEY_BASE64
+          ASC_KEY_ID,/dev/ios/ASC_KEY_ID
+          ASC_ISSUER_ID,/dev/ios/ASC_ISSUER_ID
+          GOOGLE_DEV_SERVICE_FILE_CONTENT,/dev/ios/GOOGLE_DEV_SERVICE_FILE_CONTENT
+          GOOGLE_SERVICE_FILE_CONTENT,/dev/ios/GOOGLE_SERVICE_FILE_CONTENT
+          MERCURYO_PRODUCTION_SECRET,/dev/ios/MERCURYO_PRODUCTION_SECRET
+          MERCURYO_TEST_SECRET,/dev/ios/MERCURYO_TEST_SECRET
+          MOONBEAM_HISTORY_API_KEY,/dev/ios/MOONBEAM_HISTORY_API_KEY
+          MOONRIVER_HISTORY_API_KEY,/dev/ios/MOONRIVER_HISTORY_API_KEY
+          ETHERSCAN_HISTORY_API_KEY,/dev/ios/ETHERSCAN_HISTORY_API_KEY
+          ACALA_AUTH_TOKEN,/dev/ios/ACALA_AUTH_TOKEN
+          ACALA_TEST_AUTH_TOKEN,/dev/ios/ACALA_TEST_AUTH_TOKEN
+          MOONBEAM_API_KEY,/dev/ios/MOONBEAM_API_KEY
+          MOONBEAM_TEST_API_KEY,/dev/ios/MOONBEAM_TEST_API_KEY
+          WC_PROJECT_ID,/dev/ios/WC_PROJECT_ID
+          POLKASSEMBLY_SUMMARY_API_KEY,/dev/ios/POLKASSEMBLY_SUMMARY_API_KEY
+          DWELLIR_API_KEY,/dev/ios/DWELLIR_API_KEY
+          INFURA_API_KEY,/dev/ios/INFURA_API_KEY
+        access-key: ${{ inputs.scw_access_key }}
+        secret-key: ${{ inputs.scw_secret_key }}
+        default-project-id: ${{ inputs.scw_default_project_id }}
+        default-organization-id: ${{ inputs.scw_default_organization_id }}
+
+    - name: Google service plist files setup
+      if: inputs.minimal_mode != 'true'
+      shell: bash
+      run: |
+        echo "${GOOGLE_DEV_SERVICE_FILE_CONTENT}" > "./novawallet/GoogleService-Info-Dev.plist"
+        echo "${GOOGLE_SERVICE_FILE_CONTENT}" > "./novawallet/GoogleService-Info-Release.plist"
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      if: inputs.minimal_mode != 'true'
+      with:
+        xcode-version: ${{ inputs.xcode-version }}
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Ensure SPM directory exists
+      if: inputs.minimal_mode != 'true'
+      shell: bash
+      run: mkdir -p .source_packages
+
+    - name: Restore SPM cache
+      if: inputs.minimal_mode != 'true'
+      id: spm-cache
+      uses: actions/cache@v4
+      with:
+        path: .source_packages
+        key: ${{ runner.os }}-xcode-${{ inputs.xcode-version }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode-${{ inputs.xcode-version }}-spm-
+
+    - name: Resolve SPM dependencies
+      if: inputs.minimal_mode != 'true' && steps.spm-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
+        file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+        xcodebuild -resolvePackageDependencies -"$filetype_parameter" "$file_to_build" -clonedSourcePackagesDirPath ".source_packages"
