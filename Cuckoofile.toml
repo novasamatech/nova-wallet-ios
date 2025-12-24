@@ -31,6 +31,8 @@ sources = [
     "novawallet/Common/Services/RemoteSubscription/Substrate/CrowdloanRemoteSubscriptionService.swift",
     "novawallet/Common/Services/RemoteSubscription/Substrate/StakingRemoteSubscriptionService.swift",
     "novawallet/Common/Services/RemoteSubscription/Substrate/StakingAccountUpdatingService.swift",
+    "novawallet/Common/Services/RemoteSubscription/Substrate/BlockNumberCallbackSubscriptionFactory.swift",
+    "novawallet/Common/Services/RemoteSubscription/Substrate/BlockNumberRemoteSubscription.swift",
     "novawallet/Modules/Staking/Services/StakingServiceFactory.swift",
     "novawallet/Common/Currency/CurrencyRepository.swift",
     "novawallet/Common/Services/ApplicationService.swift",
