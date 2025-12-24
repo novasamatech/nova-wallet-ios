@@ -13,6 +13,7 @@ struct GladingPatternModel {
     let gradientSize: CGSize
     let pattern: UIImage
     let opacity: CGFloat
+    let maskContentsGravity: CALayerContentsGravity
 }
 
 extension GladingPatternModel {
@@ -48,7 +49,8 @@ extension GladingPatternModel {
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
             pattern: R.image.cardBigPattern()!,
-            opacity: 1.0
+            opacity: 1.0,
+            maskContentsGravity: .center
         )
     }
 
@@ -60,7 +62,8 @@ extension GladingPatternModel {
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
             pattern: R.image.cardMiddlePattern()!.blurred(with: 2)!,
-            opacity: 0.8
+            opacity: 0.8,
+            maskContentsGravity: .center
         )
     }
 
@@ -72,7 +75,8 @@ extension GladingPatternModel {
             gradientRotation: Self.gradientRotation,
             gradientSize: Self.gradientSize,
             pattern: R.image.cardSmallPattern()!.blurred(with: 3)!,
-            opacity: 0.7
+            opacity: 0.7,
+            maskContentsGravity: .center
         )
     }
 }
