@@ -2234,6 +2234,7 @@
 		2DC6945A2DF836D2004F4584 /* InMemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCache.swift */; };
 		2DC6945C2DF8376A004F4584 /* WeakWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8463A70225E2FCD0003B8160 /* WeakWrapper.swift */; };
 		2DC6945D2DF837A6004F4584 /* NotEqualWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DE5828FD32780055345C /* NotEqualWrapper.swift */; };
+		2DCBA16A2EC62B03008E1939 /* RemoteChainsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBA1692EC62B03008E1939 /* RemoteChainsModel.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */; };
 		2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */; };
@@ -8244,6 +8245,7 @@
 		2D0985E02EE2BEA8007A5E54 /* PVScanAddressMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVScanAddressMatcher.swift; sourceTree = "<group>"; };
 		2D0985E52EE2BEC3007A5E54 /* PVSecretScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVSecretScanMatcher.swift; sourceTree = "<group>"; };
 		2D0985F22EE2C2A4007A5E54 /* ScanSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanSecret.swift; sourceTree = "<group>"; };
+		2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel40.xcdatamodel; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -8787,6 +8789,8 @@
 		2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsSubscription.swift; sourceTree = "<group>"; };
 		2DC694542DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsSyncService.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
+		2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
+		2DCBA1692EC62B03008E1939 /* RemoteChainsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainsModel.swift; sourceTree = "<group>"; };
 		2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTotalVotesFactory.swift; sourceTree = "<group>"; };
 		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
 		2DCC87612C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreatePasswordPresenter.swift; sourceTree = "<group>"; };
@@ -26054,6 +26058,7 @@
 				889F7F3A292373560024CB1E /* RemoteAssetModel+Evm.swift */,
 				842AEB80292F34B600C61B0C /* RemoteChainExternalApi.swift */,
 				84BAD219293B18EC00C55C49 /* RemoteAssetModel.swift */,
+				2DCBA1692EC62B03008E1939 /* RemoteChainsModel.swift */,
 			);
 			path = RemoteChain;
 			sourceTree = "<group>";
@@ -34977,6 +34982,7 @@
 				77740BC22AD69E3400E8C06F /* SwapMaxButtonView.swift in Sources */,
 				84ADA61029B9E2E800EB687E /* MultiExtrinsicRetryable.swift in Sources */,
 				0C2285DE2E23DD1C0093FD44 /* MultisigResolutionCallWrapper.swift in Sources */,
+				2DCBA16A2EC62B03008E1939 /* RemoteChainsModel.swift in Sources */,
 				0CAB7DA82C47B8860070CE4D /* NominationPool+MigrateWrapping.swift in Sources */,
 				67684F7576ED0252C1050CA5 /* OperationDetailsViewLayout.swift in Sources */,
 				77F189442A49974A00E8B933 /* UITextView+bind.swift in Sources */,
@@ -38362,7 +38368,8 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */,
+				2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */,
+				2DCBA1472EC5D8B6008E1939 /* SubstrateDataModel39.xcdatamodel */,
 				2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */,
 				2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */,
 				2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */,
@@ -38402,7 +38409,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */;
+			currentVersion = 2D0985542EE0BD6F007A5E54 /* SubstrateDataModel40.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

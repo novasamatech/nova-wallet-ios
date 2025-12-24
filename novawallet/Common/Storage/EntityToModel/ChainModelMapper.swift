@@ -82,6 +82,7 @@ final class ChainModelMapper {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
+            displayPriority: entity.displayPriority?.uint8Value,
             enabled: entity.enabled,
             source: source
         )
@@ -127,6 +128,10 @@ final class ChainModelMapper {
             assetEntity.type = asset.type
             assetEntity.enabled = asset.enabled
             assetEntity.source = asset.source.rawValue
+
+            if let displayPriority = asset.displayPriority {
+                assetEntity.displayPriority = NSNumber(value: displayPriority)
+            }
 
             try updateStakings(on: assetEntity, newStakings: asset.stakings)
 
@@ -440,7 +445,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            connectionMode: connectionMode ?? .autoBalanced
+            connectionMode: connectionMode ?? .autoBalanced,
+            displayPriority: entity.displayPriority?.uint8Value
         )
     }
 
@@ -461,6 +467,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             NSNumber(value: legacyAddressPrefix)
         } else {
             nil
+        }
+
+        if let displayPriority = model.displayPriority {
+            entity.displayPriority = NSNumber(value: displayPriority)
         }
 
         entity.icon = model.icon
