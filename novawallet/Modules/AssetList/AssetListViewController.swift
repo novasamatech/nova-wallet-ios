@@ -98,29 +98,46 @@ private extension AssetListViewController {
             }
         }
     }
+
+    func updateOrganizer(viewModel: AssetListOrganizerViewModel?) {
+        collectionViewManager.updateOrganizerViewModel(with: viewModel)
+
+        let isOrganizerActive = viewModel != nil
+        setOrganizerActive(isOrganizerActive)
+    }
+
+    func updateHeader(viewModel: AssetListHeaderViewModel) {
+        collectionViewManager.updateHeaderViewModel(with: viewModel)
+    }
+
+    func updateTotalBalanceViewHeight(viewModel: AssetListHeaderViewModel) {
+        let cellHeight = viewModel.locksAmount == nil ?
+            AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
+
+        updateTotalBalanceHeight(cellHeight)
+    }
 }
 
 // MARK: AssetListViewProtocol
 
 extension AssetListViewController: AssetListViewProtocol {
+    func didReceiveFullUpdate(viewModel: AssetListFullUpdateViewModel) {
+        updateOrganizer(viewModel: viewModel.organizer)
+        updateHeader(viewModel: viewModel.header)
+        updateTotalBalanceViewHeight(viewModel: viewModel.header)
+
+        didReceiveGroups(viewModel: viewModel.assetGroups)
+    }
+
     func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?) {
-        collectionViewManager.updateOrganizerViewModel(with: viewModel)
-
-        let isOrganizerActive = viewModel != nil
-        setOrganizerActive(isOrganizerActive)
-
+        updateOrganizer(viewModel: viewModel)
         rootView.collectionView.reloadData()
     }
 
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
-        collectionViewManager.updateHeaderViewModel(with: viewModel)
-
+        updateHeader(viewModel: viewModel)
         rootView.collectionView.reloadData()
-
-        let cellHeight = viewModel.locksAmount == nil ?
-            AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
-
-        updateTotalBalanceHeight(cellHeight)
+        updateTotalBalanceViewHeight(viewModel: viewModel)
     }
 
     func didReceiveGroups(viewModel: AssetListViewModel) {

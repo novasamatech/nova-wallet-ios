@@ -12,6 +12,7 @@ sources = [
     "novawallet/Common/EventCenter/EventProtocols.swift",
     "novawallet/Common/Network/Misc/SubstrateOperationFactory.swift",
     "novawallet/Common/Helpers/AccountRepositoryFactory.swift",
+    "novawallet/Common/Helpers/AssetBalance/AssetBalanceFormatterFactory.swift",
     "novawallet/Common/Operation/EraCountdownOperationFactory/EraCountdownOperationFactory.swift",
     "novawallet/Common/Network/JSONRPC/ConnectionAutobalancing.swift",
     "novawallet/Common/Network/JSONRPC/ConnectionStateReporting.swift",
