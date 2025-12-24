@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "%@'de Görüntüle";
 "import.json.unsupported.ethereum.crypto.message" = "Substrate gizli anahtarı olan bir hesabın Ethereum şifrelemesi olan ağa aktarımı yapılamaz";
 "import.json.unsupported.substrate.crypto.message" = "Ethereum gizli anahtarı olan bir hesabın Substrate şifrelemesi olan ağa aktarımı yapılamaz";
+"gift.reclaim.no.account.alert.title" = "Hesap bulunamadı";
 "common.today" = "Bugün";
 "common.yesterday" = "Dün";
 "common.tx.details" = "İşlem Detayları";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "Ödüller";
 "staking.validator.apy.percent" = "Tahmini ödül (%% APY)";
 "parastk.collators.filter.rewards" = "Tahmini ödüller (%% APR)";
+"gift.reclaim.dialog.message" = "Bu hediyeyi geri alırsanız, paylaşılan bağlantı devre dışı bırakılacak ve token'ler cüzdanınıza geri yüklenecektir.\nDevam etmek istiyor musunuz?";
+"gift.action.reclaim.title" = "Geri Al";
 "gift.claim.warning.wallet.message" = "Hediyeyi talep etmek için yeni bir cüzdan oluşturun veya mevcut bir cüzdanı içe aktarın";
 "gift.claim.warning.wallet.manage.action" = "Cüzdanları Yönet";
 "gift.claim.success.status" = "Hediye başarıyla talep edildi. Token'ler kısa sürede bakiyenizde görünecek.";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Oops, hediye zaten talep edilmiş";
 "gift.claim.action.title" = "Hediyeyi talep et";
 "gift.claim.title" = "Kripto bir hediye aldınız!";
+"gift.status.claimed" = "Talep Edildi";
+"gift.status.reclaimed" = "Geri Alındı";
 "gift.claim.fee" = "Talepte ağ ücreti";
 "gift.prepared.title" = "Hediye Hazırlandı.\nŞimdi Paylaş!";
 "gift.prepared.share.action.title" = "Hediye bağlantısını paylaş";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Hediye miktarınızı girin";
 "gifts.onboarding.step2.highlighted" = "Hediyeyi doğrudan paylaşın";
 "gifts.onboarding.title" = "Kripto Hediyelerini Herkese Her Yerde Paylaşın";
+"gift.list.gifts.section.title" = "Oluşturulan Hediyeler";
 "common.gift" = "Hediye";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ bir bağlantı olarak paylaşın ve Nova'ya herkesi davet edin";
@@ -2008,3 +2014,11 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault size %@ sağlayacak";
 "welcome.polkadot.vault.step3.import" = "Sağ üst köşedeki simgeye dokunun ve %@ seçin";
 "welcome.polkadot.vault.step2.pair" = "Nova Wallet'a eklemek istediğiniz %@";
+"gift.reclaim.success.status" = "Hediyenizi başarıyla aldınız";
+"gift.loading.message" = "Hediyeler yükleniyor...";
+"gift.created.date.format" = "Oluşturulma Tarihi: %@";
+"gift.reclaim.no.account.alert.message" = "Devam etmek için lütfen başka bir cüzdan seçin veya Ayarlar'dan bir %@ hesabı ekleyin.";
+"gift.reclaim.dialog.title" = "%@ Hediyesini Geri Al?";
+"feature.unsupported.sheet.title.gift" = "Hediye verme %@ cüzdanlar için desteklenmiyor";
+"feature.unsupported.sheet.message.gift" = "Hediyeler oluşturmak veya yönetmek için lütfen farklı bir cüzdan türüne geçin.";
+"common.syncing" = "Senkronize ediliyor...";

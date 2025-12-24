@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Megtekintés itt: %@";
 "import.json.unsupported.ethereum.crypto.message" = "A Substrate titkos kulccsal rendelkező fiókot nem lehet Ethereum titkosítással importálni a hálózatba";
 "import.json.unsupported.substrate.crypto.message" = "Az Ethereum titkos kulccsal rendelkező fiókot nem lehet Substrate titkosítással importálni a hálózatba";
+"gift.reclaim.no.account.alert.title" = "A fiók nem található";
 "common.today" = "Ma";
 "common.yesterday" = "Tegnap";
 "common.tx.details" = "Átutalás részletei";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "Jutalmak";
 "staking.validator.apy.percent" = "Becsült jutalom (%% APY)";
 "parastk.collators.filter.rewards" = "Becsült jutalmak (%% APR)";
+"gift.reclaim.dialog.message" = "Ha visszakéred ezt az ajándékot, akkor a megosztott link le lesz tiltva, és a tokenek visszatérnek a pénztárcádba.\nTovább szeretnél lépni?";
+"gift.action.reclaim.title" = "Visszakövetelés";
 "gift.claim.warning.wallet.message" = "Hozz létre egy új pénztárcát, vagy importálj egy meglévőt az ajándék igényléséhez";
 "gift.claim.warning.wallet.manage.action" = "Pénztárcák kezelése";
 "gift.claim.success.status" = "Sikeresen igényeltél egy ajándékot. A tokenek hamarosan megjelennek az egyenlegeden.";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Hoppá, az ajándék már be lett igényelve";
 "gift.claim.action.title" = "Igényeld az ajándékot";
 "gift.claim.title" = "Kaptál egy kripto ajándékot!";
+"gift.status.claimed" = "Igényelve";
+"gift.status.reclaimed" = "Visszakövetelve";
 "gift.claim.fee" = "Hálózati díj igényléskor";
 "gift.prepared.title" = "Ajándék Előkészítve.\nOszd Meg Most!";
 "gift.prepared.share.action.title" = "Ajándék link megosztása";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Adja meg ajándékának összegét";
 "gifts.onboarding.step2.highlighted" = "Oszd meg közvetlenül az ajándékot";
 "gifts.onboarding.title" = "Küldj Kripto Ajándékot Bárkinek, Bárhol";
+"gift.list.gifts.section.title" = "Létrehozott ajándékaid";
 "common.gift" = "Ajándék";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ linkként és hívd meg bárkit a Novához";
@@ -2008,3 +2014,11 @@
 "welcome.polkadot.vault.step.last" = "A Polkadot Vault biztosítja számodra %@";
 "welcome.polkadot.vault.step3.import" = "Érintsd meg az ikont a jobb felső sarokban, és válaszd ki a(z) %@";
 "welcome.polkadot.vault.step2.pair" = "%@ amelyet hozzá szeretnél adni a Nova Wallethez";
+"gift.reclaim.success.status" = "Sikeresen visszakaptad az ajándékodat";
+"gift.loading.message" = "Ajándékok betöltése...";
+"gift.created.date.format" = "Létrehozva: %@";
+"gift.reclaim.no.account.alert.message" = "Kérjük, válasszon egy másik pénztárcát, vagy adjon hozzá egy %@ fiókot a Beállításokban a folytatáshoz.";
+"gift.reclaim.dialog.title" = "%@ ajándék visszaigénylése?";
+"feature.unsupported.sheet.title.gift" = "Az ajándékozás nem támogatott a(z) %@ pénztárcáknál";
+"feature.unsupported.sheet.message.gift" = "Ajándékok létrehozásához vagy kezeléséhez kérjük váltson egy másik típusú tárcára.";
+"common.syncing" = "Szinkronizálás...";

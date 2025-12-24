@@ -177,12 +177,13 @@ private extension MainTabBarViewFactory {
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
 
-        let commonIconImage = R.image.iconTabWallet()
-        let selectedIconImage = R.image.iconTabWalletFilled()
+        let iconImage = R.image.iconTabNewYearAssets()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        let selectedColor = R.color.colorTabNewYearAssets()!
+
+        let commonIcon = iconImage?.tinted(with: R.color.colorIconNavbarInactive()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+        let selectedIcon = iconImage?.tinted(with: selectedColor)?
             .withRenderingMode(.alwaysOriginal)
 
         viewController.tabBarItem = createTabBarItem(
@@ -217,12 +218,13 @@ private extension MainTabBarViewFactory {
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
 
-        let commonIconImage = R.image.iconTabStaking()
-        let selectedIconImage = R.image.iconTabStakingFilled()
+        let iconImage = R.image.iconTabNewYearStaking()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        let selectedColor = R.color.colorTabNewYearStaking()!
+
+        let commonIcon = iconImage?.tinted(with: R.color.colorIconNavbarInactive()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+        let selectedIcon = iconImage?.tinted(with: selectedColor)?
             .withRenderingMode(.alwaysOriginal)
 
         viewController.tabBarItem = createTabBarItem(
@@ -258,12 +260,13 @@ private extension MainTabBarViewFactory {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabSettings()
-        let selectedIconImage = R.image.iconTabSettingsFilled()
+        let iconImage = R.image.iconTabNewYearSettings()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        let selectedColor = R.color.colorTabNewYearSettings()!
+
+        let commonIcon = iconImage?.tinted(with: R.color.colorIconNavbarInactive()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+        let selectedIcon = iconImage?.tinted(with: selectedColor)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(
@@ -299,12 +302,13 @@ private extension MainTabBarViewFactory {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabVote()
-        let selectedIconImage = R.image.iconTabVoteFilled()
+        let iconImage = R.image.iconTabNewYearVote()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        let selectedColor = R.color.colorTabNewYearVote()!
+
+        let commonIcon = iconImage?.tinted(with: R.color.colorIconNavbarInactive()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+        let selectedIcon = iconImage?.tinted(with: selectedColor)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(
@@ -340,12 +344,13 @@ private extension MainTabBarViewFactory {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabDApps()
-        let selectedIconImage = R.image.iconTabDAppsFilled()
+        let iconImage = R.image.iconTabNewYearBrowser()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+        let selectedColor = R.color.colorTabNewYearBrowser()!
+
+        let commonIcon = iconImage?.tinted(with: R.color.colorIconNavbarInactive()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+        let selectedIcon = iconImage?.tinted(with: selectedColor)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(
@@ -367,6 +372,10 @@ private extension MainTabBarViewFactory {
         normalImage: UIImage?,
         selectedImage: UIImage?
     ) -> UITabBarItem {
-        UITabBarItem(title: title, image: normalImage, selectedImage: selectedImage)
+        UITabBarItem(
+            title: title,
+            image: normalImage,
+            selectedImage: selectedImage
+        )
     }
 }

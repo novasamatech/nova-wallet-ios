@@ -225,10 +225,10 @@ extension WalletView {
                 animated: true
             )
             subtitleContainer.sView.iconWidth = 16
-            subtitleContainer.sView.spacing = .zero
+            subtitleContainer.sView.spacing = 4
         } else {
             subtitleContainer.sView.iconWidth = .zero
-            subtitleContainer.sView.spacing = 4
+            subtitleContainer.sView.spacing = .zero
         }
 
         subtitleDetailsLabel.text = viewModel.text

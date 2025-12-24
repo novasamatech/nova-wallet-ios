@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "在%@中查看";
 "import.json.unsupported.ethereum.crypto.message" = "不能将含有Substrate秘密的账户导入到以太坊加密网络";
 "import.json.unsupported.substrate.crypto.message" = "不能将含有以太坊秘密的账户导入到Substrate加密网络";
+"gift.reclaim.no.account.alert.title" = "没有找到账户";
 "common.today" = "今天";
 "common.yesterday" = "昨天";
 "common.tx.details" = "交易详情";
@@ -1964,6 +1965,8 @@
 "common.rewards" = "奖励";
 "staking.validator.apy.percent" = "预计奖励（%% APY）";
 "parastk.collators.filter.rewards" = "预计奖励（%% APR）";
+"gift.reclaim.dialog.message" = "如果您追回此礼物，分享链接将被禁用，代币将退回到您的钱包。\n您想继续吗？";
+"gift.action.reclaim.title" = "追回";
 "gift.claim.warning.wallet.message" = "创建一个新钱包或导入现有钱包以领取礼物";
 "gift.claim.warning.wallet.manage.action" = "管理钱包";
 "gift.claim.success.status" = "您已成功领取礼物。代币很快会出现在您的余额中。";
@@ -1971,6 +1974,8 @@
 "gift.error.already.claimed.message" = "哦哦，礼物已经被领取了";
 "gift.claim.action.title" = "领取礼物";
 "gift.claim.title" = "您收到了一份加密礼物！";
+"gift.status.claimed" = "已领取";
+"gift.status.reclaimed" = "已追回";
 "gift.claim.fee" = "领取的网络费用";
 "gift.prepared.title" = "礼物已准备好。\n立即分享！";
 "gift.prepared.share.action.title" = "分享礼物链接";
@@ -1982,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "输入您的礼物金额";
 "gifts.onboarding.step2.highlighted" = "直接分享礼物";
 "gifts.onboarding.title" = "与任何人、任何地方分享加密礼物";
+"gift.list.gifts.section.title" = "您创建的礼物";
 "common.gift" = "礼物";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@作为链接并邀请任何人到Nova";
@@ -2008,3 +2014,11 @@
 "welcome.polkadot.vault.step.last" = "Polkadot Vault 将为您提供 %@";
 "welcome.polkadot.vault.step3.import" = "点击右上角的图标并选择 %@";
 "welcome.polkadot.vault.step2.pair" = "要添加到 Nova Wallet 的 %@";
+"gift.reclaim.success.status" = "您已成功领取您的礼物";
+"gift.loading.message" = "加载礼物...";
+"gift.created.date.format" = "创建时间：%@";
+"gift.reclaim.no.account.alert.message" = "请选择另一个钱包或在设置中添加 %@ 账户以继续。";
+"gift.reclaim.dialog.title" = "重新领取 %@ 礼物？";
+"feature.unsupported.sheet.title.gift" = "不支持 %@ 钱包的赠礼功能";
+"feature.unsupported.sheet.message.gift" = "要创建或管理礼物，请切换到其他类型的钱包。";
+"common.syncing" = "正在同步...";
