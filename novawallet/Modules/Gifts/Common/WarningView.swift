@@ -126,7 +126,7 @@ private extension WarningView {
         static let contentInsets: UIEdgeInsets = .init(
             top: 10.0,
             left: 12.0,
-            bottom: 4.0,
+            bottom: 10.0,
             right: 12.0
         )
         static let cornerRadius: CGFloat = 12

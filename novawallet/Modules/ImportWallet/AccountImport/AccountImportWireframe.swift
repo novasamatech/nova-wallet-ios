@@ -11,4 +11,16 @@ final class AccountImportWireframe: BaseAccountImportWireframe, AccountImportWir
 
         rootAnimator.animateTransition(to: pincodeViewController)
     }
+
+    func presentScanner(
+        from view: AccountImportViewProtocol?,
+        importDelegate: SecretScanImportDelegate
+    ) {
+        let scanView = SecretScanViewFactory.createView(importDelegate: importDelegate)
+
+        view?.controller.navigationController?.pushViewController(
+            scanView.controller,
+            animated: true
+        )
+    }
 }

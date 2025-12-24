@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "%@'de Görüntüle";
 "import.json.unsupported.ethereum.crypto.message" = "Substrate gizli anahtarı olan bir hesabın Ethereum şifrelemesi olan ağa aktarımı yapılamaz";
 "import.json.unsupported.substrate.crypto.message" = "Ethereum gizli anahtarı olan bir hesabın Substrate şifrelemesi olan ağa aktarımı yapılamaz";
+"gift.reclaim.no.account.alert.title" = "Hesap bulunamadı";
 "common.today" = "Bugün";
 "common.yesterday" = "Dün";
 "common.tx.details" = "İşlem Detayları";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Adres veya w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Ad araması devam ediyor";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Lütfen, %@ araması tamamlanana kadar bekleyin";
-"wallet.connect.scan.message" = "QR kodunu tarayın";
+"common.scan.message" = "QR kodunu tarayın";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Yeni bağlantı";
 "common.disconnect" = "Bağlantıyı kes";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ uygulamasını açın";
 "welcome.polkadot.vault.step1.highlighted" = "Polkadot Vault'u açın";
-"welcome.polkadot.vault.step2" = "%@ Key setinizi seçin, ardından Nova Cüzdan'a eklemek istediğiniz hesabı seçin";
-"welcome.polkadot.vault.step2.highlighted" = "‘Key Sets’ sekmesine gidin.";
-"welcome.polkadot.vault.step2.details" = "Dikkat edin, türev yolu boş olmalıdır";
-"welcome.polkadot.vault.step3" = "Polkadot Vault size %@ sağlayacak";
-"welcome.polkadot.vault.step3.highlighted" = "Taramak için QR kodu";
 "staking.controller.deprecated.title" = "Denetleyici Hesaplar Kullanımdan Kaldırılıyor";
 "staking.controller.deprecated.details" = "Başka bir hesaba Staking işlemlerini devretmek için Araçları kullanın";
 "staking.controller.deprecated.action" = "Kontrolörü Stash olarak güncelle";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "Çekinmelerde 0.1x olarak Ayarlanacak";
 "cloud.backup.password.confirm.title" = "Yedekleme parolasını onaylayın";
 "cloud.backup.password.confirm.details" = "Lütfen önceki ekranda oluşturduğunuz parolayı girin";
+"welcome.polkadot.vault.step.last.highlighted" = "taramak için QR kodu";
 "swipe.gov.empty.view.voted.text" = "Mevcut tüm referandumlara zaten oy verdiniz";
 "swipe.gov.empty.view.button" = "Oylarınızı onaylayın";
 "gov.voting.list.title" = "Oy listesi";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "Ödüller";
 "staking.validator.apy.percent" = "Tahmini ödül (%% APY)";
 "parastk.collators.filter.rewards" = "Tahmini ödüller (%% APR)";
+"gift.reclaim.dialog.message" = "Bu hediyeyi geri alırsanız, paylaşılan bağlantı devre dışı bırakılacak ve token'ler cüzdanınıza geri yüklenecektir.\nDevam etmek istiyor musunuz?";
+"gift.action.reclaim.title" = "Geri Al";
 "gift.claim.warning.wallet.message" = "Hediyeyi talep etmek için yeni bir cüzdan oluşturun veya mevcut bir cüzdanı içe aktarın";
 "gift.claim.warning.wallet.manage.action" = "Cüzdanları Yönet";
 "gift.claim.success.status" = "Hediye başarıyla talep edildi. Token'ler kısa sürede bakiyenizde görünecek.";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Oops, hediye zaten talep edilmiş";
 "gift.claim.action.title" = "Hediyeyi talep et";
 "gift.claim.title" = "Kripto bir hediye aldınız!";
+"gift.status.claimed" = "Talep Edildi";
+"gift.status.reclaimed" = "Geri Alındı";
 "gift.claim.fee" = "Talepte ağ ücreti";
 "gift.prepared.title" = "Hediye Hazırlandı.\nŞimdi Paylaş!";
 "gift.prepared.share.action.title" = "Hediye bağlantısını paylaş";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Hediye miktarınızı girin";
 "gifts.onboarding.step2.highlighted" = "Hediyeyi doğrudan paylaşın";
 "gifts.onboarding.title" = "Kripto Hediyelerini Herkese Her Yerde Paylaşın";
+"gift.list.gifts.section.title" = "Oluşturulan Hediyeler";
 "common.gift" = "Hediye";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ bir bağlantı olarak paylaşın ve Nova'ya herkesi davet edin";
@@ -2003,3 +2005,20 @@
 "common.total.fee" = "Toplam Ücret";
 "gift.unsupported.token.alert.title" = "Hediye özelliği tarafından bu jeton desteklenmiyor";
 "gift.unsupported.token.alert.message" = "Bu jeton için hediye verme şu anda desteklenmemektedir. Lütfen farklı bir jeton, farklı bir ağ seçin veya daha sonra tekrar kontrol edin.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Özel Anahtarı Dışa Aktar";
+"welcome.polkadot.vault.import.private.key" = "Özel anahtarı içe aktar";
+"welcome.polkadot.vault.pair.public.key" = "Anahtar çiftleştir";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Türemiş Anahtar'a dokunun";
+"common.invalid.qr.code" = "Geçersiz QR kodu";
+"polkadot.vault.scanner.message" = "QR kodu tara\n%@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault size %@ sağlayacak";
+"welcome.polkadot.vault.step3.import" = "Sağ üst köşedeki simgeye dokunun ve %@ seçin";
+"welcome.polkadot.vault.step2.pair" = "Nova Wallet'a eklemek istediğiniz %@";
+"gift.reclaim.success.status" = "Hediyenizi başarıyla aldınız";
+"gift.loading.message" = "Hediyeler yükleniyor...";
+"gift.created.date.format" = "Oluşturulma Tarihi: %@";
+"gift.reclaim.no.account.alert.message" = "Devam etmek için lütfen başka bir cüzdan seçin veya Ayarlar'dan bir %@ hesabı ekleyin.";
+"gift.reclaim.dialog.title" = "%@ Hediyesini Geri Al?";
+"feature.unsupported.sheet.title.gift" = "Hediye verme %@ cüzdanlar için desteklenmiyor";
+"feature.unsupported.sheet.message.gift" = "Hediyeler oluşturmak veya yönetmek için lütfen farklı bir cüzdan türüne geçin.";
+"common.syncing" = "Senkronize ediliyor...";

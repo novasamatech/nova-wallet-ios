@@ -67,6 +67,7 @@ protocol AssetListCollectionViewLayoutDelegate: AnyObject {
 // MARK: View
 
 protocol AssetListViewProtocol: ControllerBackedProtocol {
+    func didReceiveFullUpdate(viewModel: AssetListFullUpdateViewModel)
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?)
@@ -166,6 +167,8 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showGift(
         from view: AssetListViewProtocol?,
+        chains: [ChainModel],
+        selectedWallet: MetaAccountModel,
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     )

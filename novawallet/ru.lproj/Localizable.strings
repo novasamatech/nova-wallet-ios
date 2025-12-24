@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Открыть в %@";
 "import.json.unsupported.ethereum.crypto.message" = "Не поддерживается импорт аккаунта с Substrate секретом в сеть с Ethereum шифрованием";
 "import.json.unsupported.substrate.crypto.message" = "Не поддерживается импорт аккаунта с Ethereum секретом в сеть с Substrate шифрованием";
+"gift.reclaim.no.account.alert.title" = "Аккаунт не найден";
 "common.today" = "Сегодня";
 "common.yesterday" = "Вчера";
 "common.tx.details" = "Детали транзакции";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
-"wallet.connect.scan.message" = "Отсканируйте QR-код";
+"common.scan.message" = "Отсканируйте QR-код";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Новое подключение";
 "common.disconnect" = "Отключить";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ на смартфоне";
 "welcome.polkadot.vault.step1.highlighted" = "Откройте приложение Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Выберите множество ключей, затем аккаунт, который вы хотите добавить в Nova Wallet.";
-"welcome.polkadot.vault.step2.highlighted" = "Перейдите на вкладку «Key Sets».";
-"welcome.polkadot.vault.step2.details" = "Убедитесь, что путь деривации пуст";
-"welcome.polkadot.vault.step3" = "Polkadot Vault предоставит вам %@";
-"welcome.polkadot.vault.step3.highlighted" = "QR-код для сканирования";
 "staking.controller.deprecated.title" = "Контроллер Аккаунты Устаревают";
 "staking.controller.deprecated.details" = "Используйте прокси для делегирования операций стейкинга другому аккаунту";
 "staking.controller.deprecated.action" = "Изменить контроллер на стэш";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "Убежденность будет установлена на 0.1x при Воздержании";
 "cloud.backup.password.confirm.title" = "Подтвердите пароль для бэкапа";
 "cloud.backup.password.confirm.details" = "Пожалуйста, введите пароль, который вы создали на предыдущем экране";
+"welcome.polkadot.vault.step.last.highlighted" = "QR-код для сканирования";
 "swipe.gov.empty.view.voted.text" = "Вы уже проголосовали во всех доступных референдумах";
 "swipe.gov.empty.view.button" = "Подтвердите ваши голоса";
 "gov.voting.list.title" = "Список голосований";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "Награды";
 "staking.validator.apy.percent" = "Примерное вознаграждение (%% APY)";
 "parastk.collators.filter.rewards" = "Примерная награда (%% APR)";
+"gift.reclaim.dialog.message" = "Если вы вернете этот подарок, общая ссылка будет отключена, а токены будут возвращены в ваш кошелек.\nХотите продолжить?";
+"gift.action.reclaim.title" = "Вернуть";
 "gift.claim.warning.wallet.message" = "Создайте новый кошелек или импортируйте существующий, чтобы забрать подарок";
 "gift.claim.warning.wallet.manage.action" = "Управление кошельками";
 "gift.claim.success.status" = "Вы успешно забрали подарок. Токены скоро появятся на вашем балансе.";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Упс, подарок уже был востребован";
 "gift.claim.action.title" = "Забрать подарок";
 "gift.claim.title" = "У вас крипто-подарок!";
+"gift.status.claimed" = "Забрано";
+"gift.status.reclaimed" = "Возвращено";
 "gift.claim.fee" = "Сетевая комиссия за запрос";
 "gift.prepared.title" = "Подарок подготовлен.\nПоделитесь им сейчас!";
 "gift.prepared.share.action.title" = "Поделиться ссылкой на подарок";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Введите сумму вашего подарка";
 "gifts.onboarding.step2.highlighted" = "Поделитесь подарком напрямую";
 "gifts.onboarding.title" = "Делитесь крипто-подарками с кем угодно, где угодно";
+"gift.list.gifts.section.title" = "Созданные вами подарки";
 "common.gift" = "Подарить";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ в виде ссылки и пригласите кого-нибудь в Nova";
@@ -2003,3 +2005,21 @@
 "common.total.fee" = "Общая комиссия";
 "gift.unsupported.token.alert.title" = "Этот токен не поддерживается функцией подарка";
 "gift.unsupported.token.alert.message" = "Подарки для этого токена в настоящее время не поддерживаются. Пожалуйста, выберите другой токен, другую сеть или попробуйте позже.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Экспортировать приватный ключ";
+"welcome.polkadot.vault.import.private.key" = "приватный ключ";
+"welcome.polkadot.vault.pair.public.key" = "публичный ключ";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Нажмите на Derived Key";
+"common.invalid.qr.code" = "Недействительный QR-код";
+"polkadot.vault.scanner.message" = "Сканируйте QR-кодиз %@";
+"polkadot.vault.scanner.message" = "Сканируйте QR-код из %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault предоставит вам %@";
+"welcome.polkadot.vault.step3.import" = "Нажмите на значок в верхнем правом углу и выберите %@";
+"welcome.polkadot.vault.step2.pair" = "%@ вы хотели бы добавить в Nova Wallet";
+"gift.reclaim.success.status" = "Вы успешно забрали свой подарок";
+"gift.loading.message" = "Загрузка подарков...";
+"gift.created.date.format" = "Создано: %@";
+"gift.reclaim.no.account.alert.message" = "Пожалуйста, выберите другой кошелек или добавьте %@ аккаунт в Настройках, чтобы продолжить.";
+"gift.reclaim.dialog.title" = "Возвратить %@ Подарок?";
+"feature.unsupported.sheet.title.gift" = "Подарки не поддерживаются для %@ кошельков";
+"feature.unsupported.sheet.message.gift" = "Чтобы создать или управлять подарками, пожалуйста, переключитесь на другой тип кошелька.";
+"common.syncing" = "Синхронизация...";

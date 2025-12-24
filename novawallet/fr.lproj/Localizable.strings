@@ -522,6 +522,7 @@
 "commmon.view.in.format" = "Voir dans %@";
 "import.json.unsupported.ethereum.crypto.message" = "Impossible d'importer un compte avec un secret Substrate vers le réseau chiffré avec Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Impossible d'importer un compte avec un secret Ethereum vers le réseau chiffré avec Substrate";
+"gift.reclaim.no.account.alert.title" = "Aucun compte trouvé";
 "common.today" = "Aujourd’hui";
 "common.yesterday" = "Hier";
 "common.tx.details" = "Détails de la transaction";
@@ -1194,7 +1195,7 @@
 "transfer.setup.recipient.input.placeholder" = "Adresse ou w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "La recherche de nom est en cours";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Veuillez patienter jusqu'à ce que la recherche %@ soit terminée";
-"wallet.connect.scan.message" = "Scannez le code QR";
+"common.scan.message" = "Scannez le code QR";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Nouvelle connexion";
 "common.disconnect" = "Déconnecter";
@@ -1254,11 +1255,6 @@
 "common.polkadot.vault" = "Polkadot Vault";
 "welcome.polkadot.vault.step1" = "%@ sur votre smartphone";
 "welcome.polkadot.vault.step1.highlighted" = "Ouvrir Polkadot Vault";
-"welcome.polkadot.vault.step2" = "%@ Sélectionnez votre jeu de clés, puis le compte que vous souhaitez ajouter à Nova Wallet";
-"welcome.polkadot.vault.step2.highlighted" = "Allez dans l'onglet \"Key Sets\".";
-"welcome.polkadot.vault.step2.details" = "Faites attention, le chemin de dérivation doit être vide";
-"welcome.polkadot.vault.step3" = "Polkadot Vault vous fournira un code %@";
-"welcome.polkadot.vault.step3.highlighted" = "code QR à scanner";
 "staking.controller.deprecated.title" = "Les comptes de contrôleur sont obsolètes";
 "staking.controller.deprecated.details" = "Utilisez des proxys pour déléguer les opérations de Staking à un autre compte";
 "staking.controller.deprecated.action" = "Mettre à jour le contrôleur vers Stash";
@@ -1722,6 +1718,7 @@
 "gov.vote.conviction.hint.title" = "La conviction sera fixée à 0,1x lorsque vous vous abstenez";
 "cloud.backup.password.confirm.title" = "Confirmer le mot de passe de sauvegarde";
 "cloud.backup.password.confirm.details" = "Veuillez entrer le mot de passe que vous avez créé à l'écran précédent";
+"welcome.polkadot.vault.step.last.highlighted" = "code QR à scanner";
 "swipe.gov.empty.view.voted.text" = "Vous avez déjà voté pour tous les référendums disponibles";
 "swipe.gov.empty.view.button" = "Confirmez vos votes";
 "gov.voting.list.title" = "Liste de vote";
@@ -1968,6 +1965,8 @@
 "common.rewards" = "Récompenses";
 "staking.validator.apy.percent" = "Récompense estimée (%% APY)";
 "parastk.collators.filter.rewards" = "Récompenses estimées (%% APR)";
+"gift.reclaim.dialog.message" = "Si vous récupérez ce cadeau, le lien partagé sera désactivé et les tokens seront remboursés sur votre portefeuille.\nVoulez-vous continuer ?";
+"gift.action.reclaim.title" = "Récupérer";
 "gift.claim.warning.wallet.message" = "Créez un nouveau portefeuille ou importez-en un existant pour réclamer le cadeau";
 "gift.claim.warning.wallet.manage.action" = "Gérer les portefeuilles";
 "gift.claim.success.status" = "Vous avez bien réclamé un cadeau. Les tokens apparaîtront dans votre solde sous peu.";
@@ -1975,6 +1974,8 @@
 "gift.error.already.claimed.message" = "Oups, le cadeau a déjà été réclamé";
 "gift.claim.action.title" = "Réclamer le cadeau";
 "gift.claim.title" = "Vous avez un cadeau crypto !";
+"gift.status.claimed" = "Réclamé";
+"gift.status.reclaimed" = "Récupéré";
 "gift.claim.fee" = "Frais de réseau lors de la réclamation";
 "gift.prepared.title" = "Le cadeau a été préparé.\nPartagez-le maintenant !";
 "gift.prepared.share.action.title" = "Partager le lien du cadeau";
@@ -1986,6 +1987,7 @@
 "gifts.onboarding.step1.highlighted" = "Entrez le montant de votre cadeau";
 "gifts.onboarding.step2.highlighted" = "Partagez le cadeau directement";
 "gifts.onboarding.title" = "Partagez des cadeaux crypto avec n'importe qui, n'importe où";
+"gift.list.gifts.section.title" = "Cadeaux que vous avez créés";
 "common.gift" = "Cadeau";
 "gifts.onboarding.step1.template" = "%@";
 "gifts.onboarding.step2.template" = "%@ comme un lien et invitez quiconque à Nova";
@@ -2003,3 +2005,20 @@
 "common.total.fee" = "Frais totaux";
 "gift.unsupported.token.alert.title" = "Ce token n'est pas supporté par la fonctionnalité de cadeau";
 "gift.unsupported.token.alert.message" = "L'attribution de cadeau pour ce token n'est actuellement pas supportée. Veuillez sélectionner un autre token, un autre réseau ou réessayer plus tard.";
+"welcome.polkadot.vault.step3.import.highlighted" = "Exporter la clé privée";
+"welcome.polkadot.vault.import.private.key" = "Importer une clé privée";
+"welcome.polkadot.vault.pair.public.key" = "Associer une clé publique";
+"welcome.polkadot.vault.step2.pair.highlighted" = "Appuyez sur Derived Key";
+"common.invalid.qr.code" = "Code QR invalide";
+"polkadot.vault.scanner.message" = "Scannez le code QR\nde %@";
+"welcome.polkadot.vault.step.last" = "Polkadot Vault vous fournira %@";
+"welcome.polkadot.vault.step3.import" = "Appuyez sur l'icône dans le coin supérieur droit et sélectionnez %@";
+"welcome.polkadot.vault.step2.pair" = "%@ que vous souhaitez ajouter à Nova Wallet";
+"gift.reclaim.success.status" = "Vous avez récupéré votre cadeau avec succès";
+"gift.loading.message" = "Chargement des cadeaux...";
+"gift.created.date.format" = "Créé : %@";
+"gift.reclaim.no.account.alert.message" = "Veuillez sélectionner un autre portefeuille ou ajouter un compte %@ dans les paramètres pour continuer.";
+"gift.reclaim.dialog.title" = "Réclamer le cadeau %@?";
+"feature.unsupported.sheet.title.gift" = "Les cadeaux ne sont pas pris en charge pour les portefeuilles %@";
+"feature.unsupported.sheet.message.gift" = "Pour créer ou gérer des cadeaux, veuillez passer à un autre type de portefeuille.";
+"common.syncing" = "Synchronisation en cours...";

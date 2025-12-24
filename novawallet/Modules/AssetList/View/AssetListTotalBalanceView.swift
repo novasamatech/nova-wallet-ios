@@ -3,7 +3,7 @@ import UIKit_iOS
 import Kingfisher
 
 final class AssetListTotalBalanceView: UIView {
-    let backgroundBlurView = GladingCardView()
+    let backgroundBlurView = GladingFrostedCardView()
 
     let displayContentView: UIView = .create { view in
         view.backgroundColor = .clear
@@ -162,6 +162,7 @@ final class AssetListTotalBalanceView: UIView {
         }
 
         swapButton.isEnabled = viewModel.hasSwaps
+        giftButton.isEnabled = viewModel.hasGifts
 
         setupPrivacyModeToggle(enabled: viewModel.privacyModelEnabled)
     }

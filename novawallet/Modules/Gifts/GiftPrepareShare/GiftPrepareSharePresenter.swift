@@ -11,16 +11,21 @@ final class GiftPrepareSharePresenter {
 
     var chainAsset: ChainAsset?
     var gift: GiftModel?
+    var viewModel: GiftPrepareViewModel?
+
+    var flowStyle: GiftPrepareShareViewStyle
 
     init(
         interactor: GiftPrepareShareInteractorInputProtocol,
         wireframe: GiftPrepareShareWireframeProtocol,
         viewModelFactory: GiftPrepareShareViewModelFactoryProtocol,
+        flowStyle: GiftPrepareShareViewStyle,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.flowStyle = flowStyle
         self.localizationManager = localizationManager
     }
 }
@@ -39,7 +44,51 @@ private extension GiftPrepareSharePresenter {
             )
         else { return }
 
+        self.viewModel = viewModel
+
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func presentReclaimRetryable() {
+        guard let gift else { return }
+
+        wireframe.showRetryableError(
+            from: view,
+            locale: localizationManager.selectedLocale,
+            retryAction: { [weak self] in self?.interactor.reclaim(gift: gift) }
+        )
+    }
+
+    func presentReclaimDialog(continueAction: @escaping () -> Void) {
+        guard let viewModel else { return }
+
+        let localizedStrings = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable
+
+        let cancelAction = AlertPresentableAction(
+            title: localizedStrings.commonCancel(),
+            style: .cancel,
+            handler: {}
+        )
+        let continueAction = AlertPresentableAction(
+            title: localizedStrings.commonContinue(),
+            style: .normal,
+            handler: { continueAction() }
+        )
+
+        let alertViewModel = AlertPresentableViewModel(
+            title: localizedStrings.giftReclaimDialogTitle(viewModel.amount),
+            message: localizedStrings.giftReclaimDialogMessage(),
+            actions: [cancelAction, continueAction],
+            closeAction: nil
+        )
+
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
     }
 }
 
@@ -54,6 +103,15 @@ extension GiftPrepareSharePresenter: GiftPrepareSharePresenterProtocol {
         guard let gift, let chainAsset else { return }
 
         interactor.share(gift: gift, chainAsset: chainAsset)
+    }
+
+    func actionReclaim() {
+        guard let gift else { return }
+
+        presentReclaimDialog { [weak self] in
+            self?.view?.didReceive(reclaimLoading: true)
+            self?.interactor.reclaim(gift: gift)
+        }
     }
 }
 
@@ -84,11 +142,64 @@ extension GiftPrepareSharePresenter: GiftPrepareShareInteractorOutputProtocol {
         )
     }
 
-    func didReceive(_ error: Error) {
-        wireframe.present(
-            error: error,
+    func didReceiveClaimSuccess() {
+        let successText = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.giftReclaimSuccessStatus()
+
+        wireframe.completeReclaim(
             from: view,
-            locale: localizationManager.selectedLocale
+            with: successText
         )
+    }
+
+    func didReceive(_ error: Error) {
+        view?.didReceive(reclaimLoading: false)
+
+        let localizedStrings = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable
+
+        if let giftClaimError = error as? GiftClaimError {
+            switch giftClaimError {
+            case .alreadyClaimed:
+                wireframe.showError(
+                    from: view,
+                    title: localizedStrings.giftErrorAlreadyClaimedTitle(),
+                    message: localizedStrings.giftErrorAlreadyClaimedMessage(),
+                    actionTitle: localizedStrings.commonGotIt()
+                )
+            default:
+                if flowStyle == .share {
+                    presentReclaimRetryable()
+                } else {
+                    wireframe.present(
+                        error: error,
+                        from: view,
+                        locale: localizationManager.selectedLocale
+                    )
+                }
+            }
+        } else if let giftClaimError = error as? GiftReclaimWalletCheckError {
+            guard case let .noAccountForChain(_, name) = giftClaimError else {
+                presentReclaimRetryable()
+                return
+            }
+
+            wireframe.showError(
+                from: view,
+                title: localizedStrings.giftReclaimNoAccountAlertTitle(),
+                message: localizedStrings.giftReclaimNoAccountAlertMessage(name),
+                actionTitle: localizedStrings.commonGotIt()
+            )
+        } else if flowStyle == .share {
+            presentReclaimRetryable()
+        } else {
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        }
     }
 }

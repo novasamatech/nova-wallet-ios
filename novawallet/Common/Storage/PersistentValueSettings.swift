@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 enum PersistentValueSettingsError: Error {
     case missingValue

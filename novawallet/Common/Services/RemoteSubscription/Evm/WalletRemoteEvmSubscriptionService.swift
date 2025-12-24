@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 struct RemoteEvmSubscriptionInfo {
     let accountId: AccountId

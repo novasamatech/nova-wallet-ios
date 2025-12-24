@@ -12,6 +12,7 @@ sources = [
     "novawallet/Common/EventCenter/EventProtocols.swift",
     "novawallet/Common/Network/Misc/SubstrateOperationFactory.swift",
     "novawallet/Common/Helpers/AccountRepositoryFactory.swift",
+    "novawallet/Common/Helpers/AssetBalance/AssetBalanceFormatterFactory.swift",
     "novawallet/Common/Operation/EraCountdownOperationFactory/EraCountdownOperationFactory.swift",
     "novawallet/Common/Network/JSONRPC/ConnectionAutobalancing.swift",
     "novawallet/Common/Network/JSONRPC/ConnectionStateReporting.swift",
@@ -31,6 +32,8 @@ sources = [
     "novawallet/Common/Services/RemoteSubscription/Substrate/CrowdloanRemoteSubscriptionService.swift",
     "novawallet/Common/Services/RemoteSubscription/Substrate/StakingRemoteSubscriptionService.swift",
     "novawallet/Common/Services/RemoteSubscription/Substrate/StakingAccountUpdatingService.swift",
+    "novawallet/Common/Services/RemoteSubscription/Substrate/BlockNumberCallbackSubscriptionFactory.swift",
+    "novawallet/Common/Services/RemoteSubscription/Substrate/BlockNumberRemoteSubscription.swift",
     "novawallet/Modules/Staking/Services/StakingServiceFactory.swift",
     "novawallet/Common/Currency/CurrencyRepository.swift",
     "novawallet/Common/Services/ApplicationService.swift",
@@ -119,6 +122,12 @@ sources = [
     "novawallet/Modules/DApp/WalletConnect/Service/WalletConnectProtocols.swift",
     "novawallet/Modules/ManualBackup/BackupAttention/CheckboxListPresenter/CheckboxListPresenterTrait.swift",
     "novawallet/Modules/TokensManage/List/TokensManageProtocols.swift",
+    "novawallet/Modules/Gifts/GiftList/GiftsSyncService/GiftsStatusTracker/GiftsStatusTracker.swift",
+    "novawallet/Modules/Gifts/GiftList/GiftsSyncService/GiftsStatusTracker/GiftsStatusTrackerDelegate.swift",
+    "novawallet/Common/Services/RemoteSubscription/WalletRemoteSubscription/WalletRemoteSubscription.swift",
+    "novawallet/Common/Services/RemoteSubscription/WalletRemoteSubscription/WalletRemoteSubscriptionFactory.swift",
+    "novawallet/Common/DataProvider/GeneralStorageSubscriptionFactory.swift",
+    "novawallet/Common/DataProvider/GiftsLocalSubscriptionFactory.swift",
 ]
 
 exclude = [

@@ -1,5 +1,5 @@
 {
-  "originHash" : "2e8db9bc8e325698c7405024e29ac56b016dad33163702fd77b3a697aa3477dc",
+  "originHash" : "0734f3975635885728927ea114f6851993fc72604dfdb110c496dc604a69436b",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Crypto-iOS",
       "state" : {
-        "revision" : "648ed379cc7175479146655dda83e09dba87e0b0",
-        "version" : "0.3.0"
+        "revision" : "f569b9c271c8694409bdb7ae3802408d48cc512a",
+        "version" : "0.4.1"
       }
     },
     {
@@ -276,8 +276,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/Operation-iOS",
       "state" : {
-        "revision" : "fd512cd2186bd4047ff7f326c13df6aa5e3c3557",
-        "version" : "2.1.1"
+        "revision" : "e60771338561aa529daeb9d984cb485a939709e0",
+        "version" : "2.1.2"
       }
     },
     {
@@ -366,8 +366,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/sr25519.c.git",
       "state" : {
-        "revision" : "a7b119eff15c724982c4641d279a90f2548d968c",
-        "version" : "0.2.0"
+        "revision" : "f04ba5e9bfb48651334eee96167dfffc72b68c4d",
+        "version" : "0.2.1"
       }
     },
     {
@@ -391,10 +391,10 @@
     {
       "identity" : "substrate-sdk-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nova-wallet/substrate-sdk-ios.git",
+      "location" : "https://github.com/novasamatech/substrate-sdk-ios",
       "state" : {
-        "revision" : "03f6f819b15db222ec003fbbfd891e410d3f7604",
-        "version" : "4.5.0"
+        "revision" : "67eee2c11c3c7ebb22c6ee255e5db73e1dedb404",
+        "version" : "4.5.2"
       }
     },
     {

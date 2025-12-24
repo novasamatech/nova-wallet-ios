@@ -49,6 +49,11 @@ extension NSPredicate {
         return NSPredicate(format: "SELF MATCHES %@", format)
     }
 
+    static var substrateSecret: NSPredicate {
+        let format = "(0x)?[a-fA-F0-9]{128}"
+        return NSPredicate(format: "SELF MATCHES %@", format)
+    }
+
     static var ws: NSPredicate { websocketPredicate(for: .ws) }
 
     static var websocket: NSPredicate { websocketPredicate(for: .wss) }

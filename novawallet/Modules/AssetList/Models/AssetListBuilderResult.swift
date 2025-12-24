@@ -97,6 +97,10 @@ struct AssetListBuilderResult {
                 }
             }
         }
+
+        func hasGifts() -> Bool {
+            !allChains.isEmpty
+        }
     }
 
     enum ChangeKind {
