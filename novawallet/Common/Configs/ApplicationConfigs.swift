@@ -382,5 +382,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/watch-only-wallets/scam-warning")!
     }
 
+    var appstoreMigrationConfigPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/migrations/appstore_migration/"
+    }
+
     // swiftlint:enable line_length
 }

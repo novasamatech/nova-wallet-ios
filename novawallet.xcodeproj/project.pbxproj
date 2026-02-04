@@ -2113,6 +2113,9 @@
 		2D9837A62F310CE000B184D4 /* WOScamAlertSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D98379A2F310CE000B184D4 /* WOScamAlertSheetPresenter.swift */; };
 		2D9837BC2F3128C000B184D4 /* WOScamAlertSheetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9837BB2F3128C000B184D4 /* WOScamAlertSheetViewModelFactory.swift */; };
 		2D9837EB2F313F5900B184D4 /* CreateWatchOnlyViewController+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9837EA2F313F5900B184D4 /* CreateWatchOnlyViewController+Keyboard.swift */; };
+		2D9836B02F2938D600B184D4 /* ASMRemoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9836AF2F2938D600B184D4 /* ASMRemoteData.swift */; };
+		2D9836BB2F29391600B184D4 /* ASMInfoFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9836BA2F29391600B184D4 /* ASMInfoFetchOperationFactory.swift */; };
+		2D9836C02F2939D100B184D4 /* ASMInfoRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9836BF2F2939D100B184D4 /* ASMInfoRepository.swift */; };
 		2DA3AE8F2E5DB03300689F65 /* XcmDynamicModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3D1B1D2DA3BE0A0008057B /* XcmDynamicModelFactory.swift */; };
 		2DA3AE902E5DB04200689F65 /* XcmUni.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C42D9E957400F79C02 /* XcmUni.swift */; };
 		2DA3AE912E5DB06200689F65 /* XcmUni+Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71C62D9E95EC00F79C02 /* XcmUni+Location.swift */; };
@@ -8716,6 +8719,9 @@
 		2D98379F2F310CE000B184D4 /* WOScamAlertSheetWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOScamAlertSheetWireframe.swift; sourceTree = "<group>"; };
 		2D9837BB2F3128C000B184D4 /* WOScamAlertSheetViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOScamAlertSheetViewModelFactory.swift; sourceTree = "<group>"; };
 		2D9837EA2F313F5900B184D4 /* CreateWatchOnlyViewController+Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreateWatchOnlyViewController+Keyboard.swift"; sourceTree = "<group>"; };
+		2D9836AF2F2938D600B184D4 /* ASMRemoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASMRemoteData.swift; sourceTree = "<group>"; };
+		2D9836BA2F29391600B184D4 /* ASMInfoFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASMInfoFetchOperationFactory.swift; sourceTree = "<group>"; };
+		2D9836BF2F2939D100B184D4 /* ASMInfoRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASMInfoRepository.swift; sourceTree = "<group>"; };
 		2DA3AE9A2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA3AE9C2E5E203D00689F65 /* UpdatedWalletNotificationsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletNotificationsCleaner.swift; sourceTree = "<group>"; };
 		2DA4D5362EB21DC4006FCCC0 /* GiftSetupIssuesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftSetupIssuesViewModelFactory.swift; sourceTree = "<group>"; };
@@ -18354,6 +18360,16 @@
 			path = ScamAlert;
 			sourceTree = "<group>";
 		};
+		2D9836AE2F2938BF00B184D4 /* AppStoreMigrationInfo */ = {
+			isa = PBXGroup;
+			children = (
+				2D9836AF2F2938D600B184D4 /* ASMRemoteData.swift */,
+				2D9836BA2F29391600B184D4 /* ASMInfoFetchOperationFactory.swift */,
+				2D9836BF2F2939D100B184D4 /* ASMInfoRepository.swift */,
+			);
+			path = AppStoreMigrationInfo;
+			sourceTree = "<group>";
+		};
 		2DA4D5302EB21DB1006FCCC0 /* Factory */ = {
 			isa = PBXGroup;
 			children = (
@@ -21200,6 +21216,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2D9836AE2F2938BF00B184D4 /* AppStoreMigrationInfo */,
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
 				2D06CC272E38F4E80093CA84 /* AppAttest */,
@@ -32572,6 +32589,7 @@
 				84FA7C1C284F8EB400B648E1 /* PendingExtrinsicInteracting.swift in Sources */,
 				0CD76AF62E57639A00C6E34B /* AssetModel+Orml.swift in Sources */,
 				84BC7043289EEF85008A9758 /* NoSigningSupportWrapper.swift in Sources */,
+				2D9836B02F2938D600B184D4 /* ASMRemoteData.swift in Sources */,
 				88A95FA828FAA99D00BE26F3 /* DAppView.swift in Sources */,
 				84838A3C299CD38300E030C4 /* GovernanceUndelegateValidatingParams.swift in Sources */,
 				AEA0C8BE2681141700F9666F /* YourValidatorList+SelectedList.swift in Sources */,
@@ -35517,6 +35535,7 @@
 				2DB5862A2EB74AB700950F7D /* GiftMapper.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				84D184E82A04D5DC0060C1BD /* ScrollableContainerLayoutView.swift in Sources */,
+				2D9836C02F2939D100B184D4 /* ASMInfoRepository.swift in Sources */,
 				77A0B2F92A3CA40E00CBF653 /* StakingMoreOptionsSection.swift in Sources */,
 				1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */,
 				887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */,
@@ -36281,6 +36300,7 @@
 				CC8C6FFB98086AFBE38BDB82 /* StakingSelectPoolInteractor.swift in Sources */,
 				2DEDEF3E2E4B3E8C008F07B2 /* MultisigNotificationsPresenter.swift in Sources */,
 				621E843DCEA85A00B419926F /* StakingSelectPoolViewController.swift in Sources */,
+				2D9836BB2F29391600B184D4 /* ASMInfoFetchOperationFactory.swift in Sources */,
 				2D5D0CD32D51422C000E32F6 /* BannersFetchOperationFactory.swift in Sources */,
 				A3FD763479AAB9290A612A1C /* StakingSelectPoolViewLayout.swift in Sources */,
 				2F73FA6B6061F343E2F033F0 /* StakingSelectPoolViewFactory.swift in Sources */,

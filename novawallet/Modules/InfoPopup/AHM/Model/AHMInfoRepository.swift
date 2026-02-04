@@ -9,18 +9,15 @@ protocol AHMInfoRepositoryProtocol {
 final class AHMInfoRepository {
     private let cache: ExpiringInMemoryCache<ChainModel.Id, AHMRemoteData>
     private let fetchOperationFactory: AHMInfoFetchOperationFactoryProtocol
-    private let ahmConfigsPath: String
 
     private let mutex = NSLock()
 
     init(
         cache: ExpiringInMemoryCache<ChainModel.Id, AHMRemoteData> = .init(expirationPeriod: .day),
         fetchOperationFactory: AHMInfoFetchOperationFactoryProtocol = AHMInfoFetchOperationFactory(),
-        ahmConfigsPath: String = ApplicationConfig.shared.assetHubMigrationConfigsPath
     ) {
         self.cache = cache
         self.fetchOperationFactory = fetchOperationFactory
-        self.ahmConfigsPath = ahmConfigsPath
     }
 }
 

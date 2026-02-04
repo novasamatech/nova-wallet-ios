@@ -320,6 +320,26 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
+    func presentAppStoreMigrationInfoScreen(
+        in view: MainTabBarViewProtocol?,
+        with info: ASMRemoteData
+    ) {
+        guard let asmInfoView = ASMInfoPopupViewFactory.createView(info: info) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: asmInfoView.controller)
+
+        navigationController.barSettings = .init(
+            style: .defaultStyle,
+            shouldSetCloseButton: false
+        )
+
+        navigationController.isModalInPresentation = true
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
         guard let tabBarController = view?.controller else {
             return

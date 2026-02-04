@@ -16,6 +16,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
 
+    let asmInfoRepository: ASMInfoRepositoryProtocol
     let notificationsPromoService: MultisigNotificationsPromoServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
@@ -26,6 +27,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
             OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.ASMInfoSetup(),
             OnLaunchAction.AHMInfoSetup(),
             OnLaunchAction.MultisigNotificationsPromo()
         ]
@@ -43,6 +45,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
+        asmInfoRepository: ASMInfoRepositoryProtocol,
         notificationsPromoService: MultisigNotificationsPromoServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
@@ -57,6 +60,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
+        self.asmInfoRepository = asmInfoRepository
         self.notificationsPromoService = notificationsPromoService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
@@ -131,6 +135,12 @@ private extension MainTabBarInteractor {
         }
     }
 
+    func showAsmInfoOrNextAction() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.showAsmInfoOrNext { self?.onLaunchQueue.runNext() }
+        }
+    }
+
     func setupNotificationPromoObserver() {
         notificationsPromoService.add(
             observer: self,
@@ -167,6 +177,29 @@ private extension MainTabBarInteractor {
                     return
                 }
                 self?.presenter?.didRequestAHMInfoOpen(with: info)
+            case let .failure(error):
+                self?.logger.error("Error fetching AHM info: \(error)")
+            }
+
+            nextOnLaunchClosure?()
+        }
+    }
+
+    func showAsmInfoOrNext(nextOnLaunchClosure: (() -> Void)? = nil) {
+        let wrapper = asmInfoRepository.fetchWrapper()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                guard let info else {
+                    nextOnLaunchClosure?()
+                    return
+                }
+                self?.presenter?.didRequestASMInfoOpen(with: info)
             case let .failure(error):
                 self?.logger.error("Error fetching AHM info: \(error)")
             }
@@ -358,6 +391,10 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
 
     func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
         showAhmInfoOrNextAction()
+    }
+
+    func onLaunchProcessASMInfoSetup(_: OnLaunchAction.ASMInfoSetup) {
+        showAsmInfoOrNextAction()
     }
 }
 

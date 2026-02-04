@@ -95,6 +95,7 @@ private extension MainTabBarViewFactory {
             secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
+            asmInfoRepository: ASMInfoRepository.shared,
             notificationsPromoService: notificationsPromoService,
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,

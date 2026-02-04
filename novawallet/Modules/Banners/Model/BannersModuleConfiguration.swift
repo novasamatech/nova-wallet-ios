@@ -11,7 +11,7 @@ enum Banners {
         case assets
         case ahmKusama = "ahm_kusama"
         case ahmPolkadot = "ahm_polkadot"
-        case appStoreMigration = "appstore_migration"
+        case appStoreMigration = "asm"
     }
 }
 
