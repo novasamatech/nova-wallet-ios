@@ -9,6 +9,7 @@ struct CustomValidatorCellViewModel {
     let shouldShowWarning: Bool
     let shouldShowError: Bool
     var isSelected: Bool = false
+    var isLocked: Bool = false
 }
 
 struct CustomValidatorListViewModel {

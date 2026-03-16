@@ -38,6 +38,7 @@ final class CustomValidatorListViewModelFactory {
     private func createCellsViewModel(
         from validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         filter: CustomValidatorListFilter,
         priceData: PriceData?,
         locale: Locale
@@ -46,6 +47,7 @@ final class CustomValidatorListViewModelFactory {
 
         return validatorList.map { validator in
             let icon = try? self.iconGenerator.generateFromAddress(validator.address)
+            let isPreferred = preferredAddresses.contains(validator.address)
 
             let detailsText: String?
             let auxDetailsText: String?
@@ -83,7 +85,8 @@ final class CustomValidatorListViewModelFactory {
                 auxDetails: auxDetailsText,
                 shouldShowWarning: validator.oversubscribed,
                 shouldShowError: validator.hasSlashes,
-                isSelected: selectedValidatorList.contains(validator)
+                isSelected: selectedValidatorList.contains(validator),
+                isLocked: isPreferred
             )
         }
     }
@@ -95,6 +98,7 @@ extension CustomValidatorListViewModelFactory: CustomValidatorListViewModelFacto
         selectedValidatorList: [SelectedValidatorInfo],
         totalValidatorsCount: Int,
         filter: CustomValidatorListFilter,
+        preferredAddresses: Set<String>,
         priceData: PriceData?,
         locale: Locale
     ) -> CustomValidatorListViewModel {
@@ -108,6 +112,7 @@ extension CustomValidatorListViewModelFactory: CustomValidatorListViewModelFacto
         let cellsViewModel = createCellsViewModel(
             from: displayValidatorList,
             selectedValidatorList: selectedValidatorList,
+            preferredAddresses: preferredAddresses,
             filter: filter,
             priceData: priceData,
             locale: locale

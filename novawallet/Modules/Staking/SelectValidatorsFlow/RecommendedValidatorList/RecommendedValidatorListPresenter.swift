@@ -7,17 +7,20 @@ final class RecommendedValidatorListPresenter {
     let viewModelFactory: RecommendedValidatorListViewModelFactoryProtocol
     let validators: [SelectedValidatorInfo]
     let maxTargets: Int
+    let preferredAddresses: Set<String>
     let logger: LoggerProtocol?
 
     init(
         viewModelFactory: RecommendedValidatorListViewModelFactoryProtocol,
         validators: [SelectedValidatorInfo],
         maxTargets: Int,
+        preferredAddresses: Set<String> = [],
         logger: LoggerProtocol? = nil
     ) {
         self.viewModelFactory = viewModelFactory
         self.validators = validators
         self.maxTargets = maxTargets
+        self.preferredAddresses = preferredAddresses
         self.logger = logger
     }
 
@@ -25,7 +28,8 @@ final class RecommendedValidatorListPresenter {
         do {
             let viewModel = try viewModelFactory.createViewModel(
                 from: validators,
-                maxTargets: maxTargets
+                maxTargets: maxTargets,
+                preferredAddresses: preferredAddresses
             )
 
             view?.didReceive(viewModel: viewModel)

@@ -14,7 +14,9 @@ class GenericStakingTypeAccountView<T>: RowView<
     var isLoading: Bool = false
 
     var canProceed: Bool = true {
-        didSet {}
+        didSet {
+            updateActivityState()
+        }
     }
 
     override init(frame: CGRect) {

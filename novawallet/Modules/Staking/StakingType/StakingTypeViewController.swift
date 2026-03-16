@@ -6,6 +6,7 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 
     let presenter: StakingTypePresenterProtocol
     private var saveChangesAvailable: Bool = false
+    private var canChangePool: Bool = true
 
     init(
         presenter: StakingTypePresenterProtocol,
@@ -129,9 +130,15 @@ final class StakingTypeViewController: UIViewController, ViewHolder {
 }
 
 extension StakingTypeViewController: StakingTypeViewProtocol {
-    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool) {
+    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool, canChangePool: Bool) {
+        self.canChangePool = canChangePool
         rootView.bind(poolStakingTypeViewModel: viewModel)
         rootView.poolStakingBannerView.setEnabledStyle(available)
+        rootView.poolStakingBannerView.accountView.canProceed = canChangePool
+
+        if !canChangePool {
+            rootView.poolStakingBannerView.accountView.isHidden = true
+        }
     }
 
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool) {
@@ -151,6 +158,10 @@ extension StakingTypeViewController: StakingTypeViewProtocol {
                 activeBanner: rootView.poolStakingBannerView,
                 inactiveBanner: rootView.directStakingBannerView
             )
+
+            if !canChangePool {
+                rootView.poolStakingBannerView.accountView.isHidden = true
+            }
         }
     }
 

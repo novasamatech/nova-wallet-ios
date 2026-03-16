@@ -18,43 +18,47 @@ extension CustomValidatorListComposer: RecommendationsComposing {
         preferrences: [RecommendableType]
     ) -> [RecommendableType] {
         let preferredAddresses = Set(preferrences.map(\.address))
-        var filtered = preferrences + recommendables.filter { !preferredAddresses.contains($0.address) }
+        var communityFiltered = recommendables.filter { !preferredAddresses.contains($0.address) }
+        var preferredFiltered = preferrences
 
         if !filter.allowsNoIdentity {
-            filtered = filtered.filter {
-                $0.hasIdentity
-            }
+            communityFiltered = communityFiltered.filter { $0.hasIdentity }
+            preferredFiltered = preferredFiltered.filter { $0.hasIdentity }
         }
 
         if !filter.allowsOversubscribed {
-            filtered = filtered.filter {
-                !$0.oversubscribed
-            }
+            communityFiltered = communityFiltered.filter { !$0.oversubscribed }
+            preferredFiltered = preferredFiltered.filter { !$0.oversubscribed }
         }
 
         if !filter.allowsSlashed {
-            filtered = filtered.filter {
-                !$0.hasSlashes
-            }
+            communityFiltered = communityFiltered.filter { !$0.hasSlashes }
+            preferredFiltered = preferredFiltered.filter { !$0.hasSlashes }
         }
 
-        let sorted: [RecommendableType]
+        let sortedCommunity: [RecommendableType]
 
         switch filter.sortedBy {
         case .estimatedReward:
-            sorted = filtered.sorted(by: { $0.stakeReturn >= $1.stakeReturn })
+            sortedCommunity = communityFiltered.sorted(by: { $0.stakeReturn >= $1.stakeReturn })
         case .totalStake:
-            sorted = filtered.sorted(by: { $0.totalStake >= $1.totalStake })
+            sortedCommunity = communityFiltered.sorted(by: { $0.totalStake >= $1.totalStake })
         case .ownStake:
-            sorted = filtered.sorted(by: { $0.ownStake >= $1.ownStake })
+            sortedCommunity = communityFiltered.sorted(by: { $0.ownStake >= $1.ownStake })
         }
 
-        guard case let .limited(clusterSizeLimit) = filter.allowsClusters else { return sorted }
+        let processed: [RecommendableType]
 
-        return processClusters(
-            items: sorted,
-            clusterSizeLimit: clusterSizeLimit,
-            resultSize: sorted.count
-        )
+        if case let .limited(clusterSizeLimit) = filter.allowsClusters {
+            processed = processClusters(
+                items: sortedCommunity,
+                clusterSizeLimit: clusterSizeLimit,
+                resultSize: sortedCommunity.count
+            )
+        } else {
+            processed = sortedCommunity
+        }
+
+        return processed + preferredFiltered
     }
 }

@@ -25,6 +25,7 @@ protocol SelectedValidatorListViewModelFactoryProtocol: AnyObject {
     func createViewModel(
         from validatorList: [SelectedValidatorInfo],
         totalValidatorsCount: Int,
+        preferredAddresses: Set<String>,
         locale: Locale
     ) -> SelectedValidatorListViewModel
 }

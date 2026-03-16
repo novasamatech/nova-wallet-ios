@@ -3,6 +3,8 @@ import SubstrateSdk
 import Foundation_iOS
 
 protocol ValidatorInfoViewModelFactoryProtocol {
+    var preferredAddresses: Set<String> { get }
+
     func createStakingAmountsViewModel(
         from validatorInfo: ValidatorInfoProtocol,
         priceData: PriceData?
@@ -17,11 +19,16 @@ protocol ValidatorInfoViewModelFactoryProtocol {
 
 final class ValidatorInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let preferredAddresses: Set<String>
 
     private lazy var accountViewModelFactory = WalletAccountViewModelFactory()
 
-    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
+    init(
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        preferredAddresses: Set<String> = []
+    ) {
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.preferredAddresses = preferredAddresses
     }
 
     private func createExposure(

@@ -5,7 +5,8 @@ import Foundation_iOS
 protocol RecommendedValidatorListViewModelFactoryProtocol {
     func createViewModel(
         from validators: [SelectedValidatorInfo],
-        maxTargets: Int
+        maxTargets: Int,
+        preferredAddresses: Set<String>
     ) throws -> RecommendedValidatorListViewModelProtocol
 }
 
@@ -38,16 +39,20 @@ final class RecommendedValidatorListViewModelFactory {
 }
 
 extension RecommendedValidatorListViewModelFactory: RecommendedValidatorListViewModelFactoryProtocol {
+    // preferredAddresses is unused here: recommended validators are system-selected
+    // and don't display individual lock state.
     func createViewModel(
         from validators: [SelectedValidatorInfo],
-        maxTargets: Int
+        maxTargets: Int,
+        preferredAddresses _: Set<String>
     ) throws -> RecommendedValidatorListViewModelProtocol {
         let items: [LocalizableResource<RecommendedValidatorViewModelProtocol>] =
             try validators.map { validator in
                 let icon = try iconGenerator.generateFromAddress(validator.address)
                 let title = validator.identity?.displayName ?? validator.address
 
-                let details = createStakeReturnString(from: validator.stakeInfo?.stakeReturn)
+                let details: LocalizableResource<String>
+                details = createStakeReturnString(from: validator.stakeInfo?.stakeReturn)
 
                 return LocalizableResource { locale in
                     RecommendedValidatorViewModel(

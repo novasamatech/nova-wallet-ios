@@ -1,7 +1,7 @@
 import BigInt
 
 protocol StakingTypeViewProtocol: ControllerBackedProtocol {
-    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool)
+    func didReceivePoolBanner(viewModel: PoolStakingTypeViewModel, available: Bool, canChangePool: Bool)
     func didReceiveDirectStakingBanner(viewModel: DirectStakingTypeViewModel, available: Bool)
     func didReceive(stakingTypeSelection: StakingTypeSelection)
     func didReceiveSaveChangesState(available: Bool)

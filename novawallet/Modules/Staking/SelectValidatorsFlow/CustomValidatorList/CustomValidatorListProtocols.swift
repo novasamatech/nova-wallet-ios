@@ -27,6 +27,7 @@ protocol CustomValidatorListViewModelFactoryProtocol: AnyObject {
         selectedValidatorList: [SelectedValidatorInfo],
         totalValidatorsCount: Int,
         filter: CustomValidatorListFilter,
+        preferredAddresses: Set<String>,
         priceData: PriceData?,
         locale: Locale
     ) -> CustomValidatorListViewModel
@@ -57,6 +58,7 @@ protocol CustomValidatorListWireframeProtocol: AlertPresentable, ErrorPresentabl
         from view: ControllerBackedProtocol?,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         delegate: ValidatorSearchDelegate?
     )
 

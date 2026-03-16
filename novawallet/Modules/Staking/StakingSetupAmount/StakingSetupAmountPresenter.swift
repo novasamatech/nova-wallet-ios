@@ -216,6 +216,10 @@ final class StakingSetupAmountPresenter {
         }
     }
 
+    private var isPoolForced: Bool {
+        StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId)
+    }
+
     private func provideManualStakingTypeViewModel(for model: RelaychainStakingManual) {
         let innerViewModel: StakingTypeViewModel.TypeModel
 
@@ -232,7 +236,7 @@ final class StakingSetupAmountPresenter {
             let poolViewModel = stakingTypeViewModelFactory.createPool(
                 for: selectedPool,
                 chainAsset: chainAsset,
-                displaysRecommended: model.usedRecommendation,
+                displaysRecommended: model.usedRecommendation || isPoolForced,
                 locale: selectedLocale
             )
 

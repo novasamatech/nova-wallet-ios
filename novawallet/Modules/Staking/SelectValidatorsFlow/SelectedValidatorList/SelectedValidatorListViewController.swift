@@ -209,6 +209,16 @@ extension SelectedValidatorListViewController: UITableViewDataSource {
 
     func tableView(
         _: UITableView,
+        canEditRowAt indexPath: IndexPath
+    ) -> Bool {
+        guard let cellViewModel = viewModel?.cellViewModels[indexPath.row] else {
+            return true
+        }
+        return !cellViewModel.isLocked
+    }
+
+    func tableView(
+        _: UITableView,
         commit _: UITableViewCell.EditingStyle,
         forRowAt indexPath: IndexPath
     ) {

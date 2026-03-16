@@ -50,12 +50,14 @@ final class StartStakingCustomValidatorListWireframe: CustomValidatorListWirefra
         from view: ControllerBackedProtocol?,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         delegate: ValidatorSearchDelegate?
     ) {
         guard let searchView = ValidatorSearchViewFactory.createView(
             startStakingState: stakingState,
             validatorList: fullValidatorList,
             selectedValidatorList: selectedValidatorList,
+            preferredAddresses: preferredAddresses,
             delegate: delegate
         ) else { return }
 

@@ -81,6 +81,10 @@ final class StakingTypePresenter {
         view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: available)
     }
 
+    private var isPoolForced: Bool {
+        StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId)
+    }
+
     private func provideNominationPoolViewModel() {
         guard let restrictions = nominationPoolRestrictions else {
             return
@@ -95,7 +99,7 @@ final class StakingTypePresenter {
 
         let available = selection == .nominationPool || canChangeType
 
-        view?.didReceivePoolBanner(viewModel: viewModel, available: available)
+        view?.didReceivePoolBanner(viewModel: viewModel, available: available, canChangePool: !isPoolForced)
     }
 
     private func updateView() {
@@ -239,6 +243,10 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
 
     func selectNominationPool() {
         guard let method = method, case let .pool(selectedPool) = method.selectedStakingOption else {
+            return
+        }
+
+        if StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId) {
             return
         }
 

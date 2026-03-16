@@ -172,7 +172,15 @@ class CustomValidatorCell: UITableViewCell {
             detailsLabel.isHidden = true
         }
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        if viewModel.isLocked {
+            selectionImageView.image = R.image.iconCheckbox()?.withRenderingMode(.alwaysTemplate)
+            selectionImageView.tintColor = R.color.colorTextSecondary()
+            selectionImageView.alpha = 1.0
+        } else {
+            selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+            selectionImageView.tintColor = nil
+            selectionImageView.alpha = 1.0
+        }
     }
 
     func bind(viewModel: ValidatorSearchCellViewModel) {
@@ -195,7 +203,15 @@ class CustomValidatorCell: UITableViewCell {
 
         detailsAuxLabel.text = viewModel.details
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        if viewModel.isLocked {
+            selectionImageView.image = R.image.iconCheckbox()?.withRenderingMode(.alwaysTemplate)
+            selectionImageView.tintColor = R.color.colorTextSecondary()
+            selectionImageView.alpha = 1.0
+        } else {
+            selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+            selectionImageView.tintColor = nil
+            selectionImageView.alpha = 1.0
+        }
     }
 
     private func clearStatusView() {

@@ -7,6 +7,7 @@ final class SelectedValidatorListPresenter {
     let wireframe: SelectedValidatorListWireframeProtocol
     let viewModelFactory: SelectedValidatorListViewModelFactory
     let maxTargets: Int
+    let preferredAddresses: Set<String>
 
     private var selectedValidatorList: [SelectedValidatorInfo]
 
@@ -15,12 +16,14 @@ final class SelectedValidatorListPresenter {
         viewModelFactory: SelectedValidatorListViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
         selectedValidatorList: [SelectedValidatorInfo],
-        maxTargets: Int
+        maxTargets: Int,
+        preferredAddresses: Set<String> = []
     ) {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.selectedValidatorList = selectedValidatorList
         self.maxTargets = maxTargets
+        self.preferredAddresses = preferredAddresses
         self.localizationManager = localizationManager
     }
 
@@ -30,6 +33,7 @@ final class SelectedValidatorListPresenter {
         viewModelFactory.createViewModel(
             from: selectedValidatorList,
             totalValidatorsCount: maxTargets,
+            preferredAddresses: preferredAddresses,
             locale: selectedLocale
         )
     }
@@ -54,6 +58,10 @@ extension SelectedValidatorListPresenter: SelectedValidatorListPresenterProtocol
 
     func removeItem(at index: Int) {
         let validator = selectedValidatorList[index]
+
+        guard !preferredAddresses.contains(validator.address) else {
+            return
+        }
 
         selectedValidatorList.remove(at: index)
 

@@ -47,12 +47,14 @@ class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
         from view: ControllerBackedProtocol?,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         delegate: ValidatorSearchDelegate?
     ) {
         guard let searchView = ValidatorSearchViewFactory.createView(
             for: stakingState,
             validatorList: fullValidatorList,
             selectedValidatorList: selectedValidatorList,
+            preferredAddresses: preferredAddresses,
             delegate: delegate
         ) else { return }
 

@@ -99,7 +99,10 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     }
 
     private func updateFillRestButton() {
-        let isEnabled = selectedValidatorsCount < selectedValidatorsLimit
+        let lockedCount = cellViewModels.filter(\.isLocked).count
+        let availableLimit = selectedValidatorsLimit - lockedCount
+        let communitySelected = selectedValidatorsCount - lockedCount
+        let isEnabled = communitySelected < availableLimit
         rootView.fillRestButton.isEnabled = isEnabled
 
         if isEnabled {
@@ -118,7 +121,9 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     }
 
     private func updateDeselectButton() {
-        let isEnabled = selectedValidatorsCount > 0
+        let lockedCount = cellViewModels.filter(\.isLocked).count
+        let communitySelected = selectedValidatorsCount - lockedCount
+        let isEnabled = communitySelected > 0
         rootView.deselectButton.isEnabled = isEnabled
 
         applyDarkButtonStyle(rootView.deselectButton, isEnabled: isEnabled)
@@ -133,6 +138,10 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     }
 
     private func updateProceedButton() {
+        let lockedCount = cellViewModels.filter(\.isLocked).count
+        let availableLimit = selectedValidatorsLimit - lockedCount
+        let communitySelected = selectedValidatorsCount - lockedCount
+
         let buttonTitle: String
         let isEnabled: Bool
 
@@ -140,13 +149,16 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
             isEnabled = false
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingCustomProceedButtonDisabledTitle(selectedValidatorsLimit)
+            ).localizable.stakingCustomProceedButtonDisabledTitle(availableLimit)
 
         } else {
             isEnabled = true
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingCustomProceedButtonEnabledTitle(selectedValidatorsCount, selectedValidatorsLimit)
+            ).localizable.stakingCustomProceedButtonEnabledTitle(
+                max(communitySelected, 0),
+                availableLimit
+            )
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle

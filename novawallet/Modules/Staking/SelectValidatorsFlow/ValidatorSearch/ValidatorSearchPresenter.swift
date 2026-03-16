@@ -17,6 +17,7 @@ final class ValidatorSearchPresenter {
     private var viewModel: ValidatorSearchViewModel?
     private var searchString: String = ""
     private var isSearching: Bool = false
+    private let preferredAddresses: Set<String>
 
     init(
         wireframe: ValidatorSearchWireframeProtocol,
@@ -24,6 +25,7 @@ final class ValidatorSearchPresenter {
         viewModelFactory: ValidatorSearchViewModelFactoryProtocol,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String> = [],
         localizationManager: LocalizationManager,
         logger: LoggerProtocol? = nil
     ) {
@@ -33,6 +35,7 @@ final class ValidatorSearchPresenter {
         self.fullValidatorList = fullValidatorList
         self.selectedValidatorList = selectedValidatorList
         referenceValidatorList = selectedValidatorList
+        self.preferredAddresses = preferredAddresses
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -51,6 +54,7 @@ final class ValidatorSearchPresenter {
             from: filteredValidatorList,
             selectedValidatorList: selectedValidatorList,
             referenceValidatorList: referenceValidatorList,
+            preferredAddresses: preferredAddresses,
             locale: selectedLocale
         )
 
@@ -113,6 +117,10 @@ extension ValidatorSearchPresenter: ValidatorSearchPresenterProtocol {
         guard var viewModel = viewModel else { return }
 
         let changedValidator = filteredValidatorList[index]
+
+        guard !preferredAddresses.contains(changedValidator.address) else {
+            return
+        }
 
         guard !changedValidator.blocked else {
             wireframe.present(

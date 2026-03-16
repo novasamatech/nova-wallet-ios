@@ -14,6 +14,8 @@ final class CustomValidatorListPresenter {
     private let recommendedValidatorList: [SelectedValidatorInfo]
     private var fullValidatorList: CustomValidatorsFullList
 
+    private lazy var preferredAddresses: Set<String> = Set(fullValidatorList.preferredValidators.map(\.address))
+
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
     private var filter: CustomValidatorListFilter
@@ -64,6 +66,7 @@ final class CustomValidatorListPresenter {
             selectedValidatorList: selectedValidatorList.items,
             totalValidatorsCount: fullValidatorList.distinctCount(),
             filter: filter,
+            preferredAddresses: preferredAddresses,
             priceData: priceData,
             locale: selectedLocale
         )
@@ -91,22 +94,27 @@ final class CustomValidatorListPresenter {
 
         let changedModels: [CustomValidatorCellViewModel] = viewModel.cellViewModels.map {
             var newItem = $0
-            newItem.isSelected = false
+            if !newItem.isLocked {
+                newItem.isSelected = false
+            }
             return newItem
         }
 
         let indices = viewModel.cellViewModels
             .enumerated()
             .filter {
-                $1.isSelected
+                $1.isSelected && !$1.isLocked
             }.map { index, _ in
                 index
             }
 
-        selectedValidatorList.set([])
+        let keptValidators = selectedValidatorList.items.filter {
+            preferredAddresses.contains($0.address)
+        }
+        selectedValidatorList.set(keptValidators)
 
         viewModel.cellViewModels = changedModels
-        viewModel.selectedValidatorsCount = 0
+        viewModel.selectedValidatorsCount = selectedValidatorList.count
         self.viewModel = viewModel
 
         view?.reload(viewModel, at: indices)
@@ -117,6 +125,13 @@ final class CustomValidatorListPresenter {
 
 extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
     func setup() {
+        let preferredToAdd = fullValidatorList.preferredValidators.filter {
+            !selectedValidatorList.contains($0)
+        }
+        if !preferredToAdd.isEmpty {
+            selectedValidatorList.append(contentsOf: preferredToAdd)
+        }
+
         provideViewModels()
         interactor.setup()
     }
@@ -155,6 +170,10 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
         guard var viewModel = viewModel else { return }
 
         let changedValidator = filteredValidatorList[index]
+
+        guard !preferredAddresses.contains(changedValidator.address) else {
+            return
+        }
 
         guard !changedValidator.blocked else {
             wireframe.present(
@@ -204,6 +223,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
             from: view,
             fullValidatorList: fullValidatorList.distinctAll(),
             selectedValidatorList: selectedValidatorList.items,
+            preferredAddresses: preferredAddresses,
             delegate: self
         )
     }
@@ -237,6 +257,10 @@ extension CustomValidatorListPresenter: CustomValidatorListInteractorOutputProto
 
 extension CustomValidatorListPresenter: SelectedValidatorListDelegate {
     func didRemove(_ validator: SelectedValidatorInfo) {
+        guard !preferredAddresses.contains(validator.address) else {
+            return
+        }
+
         if let displayedIndex = filteredValidatorList.firstIndex(of: validator) {
             changeValidatorSelection(at: displayedIndex)
         } else if let selectedIndex = selectedValidatorList.firstIndex(of: validator) {

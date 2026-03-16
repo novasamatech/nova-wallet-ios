@@ -30,6 +30,7 @@ final class StaticValidatorListPresenter {
         let viewModel = viewModelFactory.createViewModel(
             from: selectedValidatorList,
             totalValidatorsCount: maxTargets,
+            preferredAddresses: [],
             locale: selectedLocale
         )
 

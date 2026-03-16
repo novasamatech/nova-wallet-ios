@@ -21,14 +21,16 @@ final class ValidatorSearchViewModelFactory {
     private func createCellsViewModel(
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         locale: Locale
     ) -> [ValidatorSearchCellViewModel] {
         let apyFormatter = NumberFormatter.percent.localizableResource().value(for: locale)
 
         return displayValidatorList.map { validator in
             let icon = try? self.iconGenerator.generateFromAddress(validator.address)
+            let isPreferred = preferredAddresses.contains(validator.address)
 
-            let detailsText = apyFormatter.string(
+            let detailsText: String? = apyFormatter.string(
                 from: validator.stakeReturn as NSNumber
             )
 
@@ -39,7 +41,8 @@ final class ValidatorSearchViewModelFactory {
                 details: detailsText,
                 shouldShowWarning: validator.oversubscribed,
                 shouldShowError: validator.hasSlashes,
-                isSelected: selectedValidatorList.contains(validator)
+                isSelected: selectedValidatorList.contains(validator),
+                isLocked: isPreferred
             )
         }
     }
@@ -57,6 +60,7 @@ extension ValidatorSearchViewModelFactory: ValidatorSearchViewModelFactoryProtoc
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
         referenceValidatorList: [SelectedValidatorInfo],
+        preferredAddresses: Set<String>,
         locale: Locale
     ) -> ValidatorSearchViewModel {
         guard !displayValidatorList.isEmpty else {
@@ -71,6 +75,7 @@ extension ValidatorSearchViewModelFactory: ValidatorSearchViewModelFactoryProtoc
         let cellsViewModel = createCellsViewModel(
             from: displayValidatorList,
             selectedValidatorList: selectedValidatorList,
+            preferredAddresses: preferredAddresses,
             locale: locale
         )
 
