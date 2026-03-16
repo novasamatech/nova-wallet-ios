@@ -25,6 +25,7 @@ final class OnboardingMainPresenter {
 
 extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     func setup() {
+        PostHogAnalyticsService.shared.track(.onboardingStarted(source: .freshInstall))
         interactor.setup()
     }
 
@@ -49,10 +50,12 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     }
 
     func activateSignup() {
+        PostHogAnalyticsService.shared.track(.walletCreationMethodSelected(method: .create))
         wireframe.showSignup(from: view)
     }
 
     func activateAccountRestore() {
+        PostHogAnalyticsService.shared.track(.walletCreationMethodSelected(method: .importMnemonic))
         wireframe.showAccountRestore(from: view)
     }
 }

@@ -639,6 +639,8 @@ extension SwapSetupPresenter {
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
+        PostHogAnalyticsService.shared.track(.swapScreenOpened(source: .mainScreen))
+
         updateViews()
 
         interactor.setup()
@@ -831,6 +833,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     quote: quote,
                     quoteArgs: quoteArgs
                 )
+
+                PostHogAnalyticsService.shared.track(.swapInitiatedDefault(source: .mainScreen))
 
                 self?.wireframe.showConfirmation(
                     from: self?.view,

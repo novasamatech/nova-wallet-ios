@@ -19,6 +19,8 @@ final class SettingsPresenter {
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
 
+    private lazy var analyticsOptOutManager = AnalyticsOptOutManager()
+
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
@@ -239,6 +241,10 @@ extension SettingsPresenter: SettingsPresenterProtocol {
 
     func handleSwitchAction() {
         wireframe.showWalletSwitch(from: view)
+    }
+
+    func changeAnalytics() {
+        analyticsOptOutManager.isAnalyticsEnabled.toggle()
     }
 }
 

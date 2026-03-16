@@ -33,6 +33,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // setup the facade after dependencies are proper initialized by Root module
         setupUrlHandling()
 
+        PostHogAnalyticsService.shared.initialize()
+
+        let isFirstLaunch = settings.isAppFirstLaunch
+        PostHogAnalyticsService.shared.track(.appOpened(isFirstLaunch: isFirstLaunch))
+
         markAppFirstTimeLaunchIfNeeded()
 
         return true

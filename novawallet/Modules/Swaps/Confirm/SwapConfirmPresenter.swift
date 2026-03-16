@@ -399,6 +399,8 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func confirm() {
+        PostHogAnalyticsService.shared.track(.swapConfirmedDefault())
+
         guard let swapModel = getSwapModel() else {
             return
         }
@@ -427,6 +429,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
     func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>) {
         switch result {
         case let .success(model):
+            PostHogAnalyticsService.shared.track(.swapCompletedDefault())
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -434,6 +437,7 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
                 locale: selectedLocale
             )
         case let .failure(error):
+            PostHogAnalyticsService.shared.track(.swapFailed(reason: .unknown))
             view?.didReceiveStopLoading()
 
             logger.error("Swap failed: \(error)")
