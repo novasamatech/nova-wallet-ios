@@ -30,6 +30,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var barsHideOffset: CGFloat = 20
     private lazy var slidingAnimator = BlockViewAnimator(duration: 0.2, delay: 0, options: [.curveLinear])
     private var isBarHidden: Bool = false
+    private var bypassStakingWarningURL: URL?
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
@@ -111,6 +112,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             let render = DAppBrowserTabRender(for: image)
             self?.presenter.willDismissInteractive(stateRender: render)
         }
+    }
+
+    func loadBypassingStakingWarning(_ request: URLRequest) {
+        bypassStakingWarningURL = request.url
+        rootView.webView?.load(request)
     }
 }
 
@@ -463,6 +469,14 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         setupScripts()
         setupWebPreferences()
 
+        // If we are about to load a staking domain for the first time, bypass the
+        // in-browser staking warning for the initial navigation. The pre-browser
+        // staking warning (shown by BrowserNavigationTaskFactory) has already been
+        // handled before the browser was opened.
+        if reload, ThirdPartyStakingDomainMatcher.isBlocked(url: viewModel.selectedTab.url) {
+            bypassStakingWarningURL = viewModel.selectedTab.url
+        }
+
         setupUrl(
             viewModel.selectedTab.url,
             with: reload
@@ -566,6 +580,14 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
             let url = navigationAction.request.url,
             localRouter.canOpenLocalUrl(url) {
             localRouter.openLocalUrl(url)
+            decisionHandler(.cancel)
+        } else if let url = navigationAction.request.url,
+                  let bypassURL = bypassStakingWarningURL,
+                  url.host == bypassURL.host {
+            bypassStakingWarningURL = nil
+            decisionHandler(.allow)
+        } else if let url = navigationAction.request.url,
+                  presenter.checkStakingWarning(for: url) {
             decisionHandler(.cancel)
         } else {
             decisionHandler(.allow)

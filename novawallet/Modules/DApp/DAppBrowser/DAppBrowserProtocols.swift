@@ -38,6 +38,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func close(stateRender: DAppBrowserTabRenderProtocol)
     func showTabs(stateRender: DAppBrowserTabRenderProtocol)
     func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)
+    func checkStakingWarning(for url: URL) -> Bool
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
@@ -115,6 +116,12 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
         from view: DAppBrowserViewProtocol?,
         state: DAppSettingsInput,
         delegate: DAppSettingsDelegate
+    )
+
+    func presentStakingWarning(
+        from view: DAppBrowserViewProtocol?,
+        url: URL,
+        delegate: DAppStakingWarningViewDelegate
     )
 
     func close(view: ControllerBackedProtocol?)

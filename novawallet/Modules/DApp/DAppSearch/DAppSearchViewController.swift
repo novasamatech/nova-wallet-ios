@@ -61,6 +61,7 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         setupTableView()
         setupSearchBar()
         setupCategoriesBar()
+        setupStakingBanner()
         setupLocalization()
 
         presenter.setup()
@@ -81,6 +82,11 @@ private extension DAppSearchViewController {
         rootView.searchBar.textField.placeholder = R.string(preferredLanguages: languages).localizable.dappListSearch()
 
         rootView.cancelBarItem.title = R.string(preferredLanguages: languages).localizable.commonCancel()
+
+        rootView.stakingBannerView.titleLabel.text = R.string(preferredLanguages: languages).localizable
+            .dappStakingSearchBannerTitle()
+        rootView.stakingBannerView.actionButton.imageWithTitleView?.title = R.string(preferredLanguages: languages)
+            .localizable.dappStakingSearchBannerAction()
     }
 
     func setupTableView() {
@@ -113,6 +119,14 @@ private extension DAppSearchViewController {
         rootView.categoriesView.delegate = self
     }
 
+    func setupStakingBanner() {
+        rootView.stakingBannerView.actionButton.addTarget(
+            self,
+            action: #selector(actionGoToStaking),
+            for: .touchUpInside
+        )
+    }
+
     @objc func actionTextFieldChanged() {
         let oldSectionCount = Section.numberOfSections(
             for: searchTitle,
@@ -137,6 +151,10 @@ private extension DAppSearchViewController {
 
     @objc func actionCancel() {
         presenter.cancel()
+    }
+
+    @objc func actionGoToStaking() {
+        presenter.selectStakingBanner()
     }
 }
 
@@ -276,6 +294,10 @@ extension DAppSearchViewController: DAppSearchViewProtocol {
         )
 
         rootView.tableView.reloadData()
+    }
+
+    func didReceive(showStakingBanner: Bool) {
+        rootView.setStakingBannerHidden(!showStakingBanner)
     }
 }
 

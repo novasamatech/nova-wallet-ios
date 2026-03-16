@@ -116,6 +116,10 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
             transitionBuilder: transitionBuilder
         )
     }
+
+    func closeBrowser() {
+        close()
+    }
 }
 
 // MARK: DAppBrowserParentViewProtocol

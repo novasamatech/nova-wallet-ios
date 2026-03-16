@@ -56,6 +56,13 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
         } else {
             view?.didReceive(viewModel: nil)
         }
+
+        provideStakingBannerState()
+    }
+
+    private func provideStakingBannerState() {
+        let shouldShow = StakingKeywordMatcher.matches(query: query ?? "")
+        view?.didReceive(showStakingBanner: shouldShow)
     }
 }
 
@@ -103,18 +110,30 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             self?.wireframe.close(from: self?.view)
         }
 
-        guard search(by: query, in: dAppList).isEmpty else {
+        // Always show the unknown DApp warning for staking competitor domains,
+        // even if the DApp is present in the catalogue.
+        // Check both URL-based (for "https://staking.polkadot.cloud") and host-based
+        // (for bare "staking.polkadot.cloud" without protocol) matching.
+        let queryString = query ?? ""
+        let queryURL = URL(string: queryString)
+        let isStakingCompetitor = (queryURL.map { ThirdPartyStakingDomainMatcher.isBlocked(url: $0) } ?? false)
+            || ThirdPartyStakingDomainMatcher.isBlocked(host: queryString)
+        let isInCatalogue = !search(by: query, in: dAppList).isEmpty
+
+        if isStakingCompetitor || !isInCatalogue {
+            wireframe.showUnknownDappWarning(
+                from: view,
+                email: applicationConfig.supportEmail,
+                locale: localizationManager.selectedLocale,
+                handler: proceedClosure
+            )
+        } else {
             proceedClosure()
-
-            return
         }
+    }
 
-        wireframe.showUnknownDappWarning(
-            from: view,
-            email: applicationConfig.supportEmail,
-            locale: localizationManager.selectedLocale,
-            handler: proceedClosure
-        )
+    func selectStakingBanner() {
+        wireframe.navigateToStaking(from: view)
     }
 
     func cancel() {

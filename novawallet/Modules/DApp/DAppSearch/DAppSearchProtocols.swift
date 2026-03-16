@@ -3,6 +3,7 @@ import Operation_iOS
 protocol DAppSearchViewProtocol: ControllerBackedProtocol {
     func didReceive(initialQuery: String)
     func didReceive(viewModel: DAppListViewModel?)
+    func didReceive(showStakingBanner: Bool)
 }
 
 protocol DAppSearchPresenterProtocol: AnyObject {
@@ -11,6 +12,7 @@ protocol DAppSearchPresenterProtocol: AnyObject {
     func selectDApp(viewModel: DAppViewModel)
     func selectCategory(with id: String?)
     func selectSearchQuery()
+    func selectStakingBanner()
     func cancel()
 }
 
@@ -25,6 +27,7 @@ protocol DAppSearchInteractorOutputProtocol: AnyObject {
 
 protocol DAppSearchWireframeProtocol: DAppAlertPresentable {
     func close(from view: DAppSearchViewProtocol?)
+    func navigateToStaking(from view: DAppSearchViewProtocol?)
 }
 
 protocol DAppSearchDelegate: AnyObject {

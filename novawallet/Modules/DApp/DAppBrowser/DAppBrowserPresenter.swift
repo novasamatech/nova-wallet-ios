@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import Foundation_iOS
 import Operation_iOS
 
@@ -178,6 +178,15 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func didLoadPage() {
         interactor.saveTabIfNeeded()
     }
+
+    func checkStakingWarning(for url: URL) -> Bool {
+        guard ThirdPartyStakingDomainMatcher.isBlocked(url: url) else {
+            return false
+        }
+
+        wireframe.presentStakingWarning(from: view, url: url, delegate: self)
+        return true
+    }
 }
 
 // MARK: DAppBrowserInteractorOutputProtocol
@@ -293,5 +302,32 @@ extension DAppBrowserPresenter: DAppSettingsDelegate {
     func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {
         let settings = DAppGlobalSettings(identifier: page.domain, desktopMode: isOn)
         interactor.save(settings: settings)
+    }
+}
+
+// MARK: DAppStakingWarningViewDelegate
+
+extension DAppBrowserPresenter: DAppStakingWarningViewDelegate {
+    func dappStakingWarningDidSelectGoToStake() {
+        view?.didDecideClose()
+        interactor.close()
+        wireframe.close(view: view)
+
+        DispatchQueue.main.async {
+            // Close the browser widget so the tab bar is visible
+            let rootContainer = UIApplication.shared.rootContainer
+            rootContainer?.browserWidget?.closeBrowser()
+
+            // Switch to the staking tab
+            UIApplication.shared.tabBarController?.selectedIndex = MainTabBarIndex.staking
+        }
+    }
+
+    func dappStakingWarningDidSelectContinue(to url: URL) {
+        // User chose to continue - the VC will allow navigation by loading the URL directly
+        if let browserView = view as? DAppBrowserViewController {
+            let request = URLRequest(url: url)
+            browserView.loadBypassingStakingWarning(request)
+        }
     }
 }

@@ -4039,6 +4039,19 @@ class MockDAppBrowserPresenterProtocol: DAppBrowserPresenterProtocol, Cuckoo.Pro
         )
     }
 
+    func checkStakingWarning(for url: URL) -> Bool {
+        cuckoo_manager.call(
+            "checkStakingWarning(for: URL)",
+            parameters: url,
+            escapingParameters: url,
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.checkStakingWarning(for: url)
+        )
+    }
+
     struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -4099,6 +4112,11 @@ class MockDAppBrowserPresenterProtocol: DAppBrowserPresenterProtocol, Cuckoo.Pro
         func willDismissInteractive<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<DAppBrowserTabRenderProtocol> where M1.MatchedType == DAppBrowserTabRenderProtocol {
             let matchers: [Cuckoo.ParameterMatcher<DAppBrowserTabRenderProtocol>] = [wrap(matchable: stateRender) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", parameterMatchers: matchers))
+        }
+
+        func checkStakingWarning<M1: Cuckoo.Matchable>(for url: M1) -> Cuckoo.ProtocolStubFunction<URL, Bool> where M1.MatchedType == URL {
+            let matchers: [Cuckoo.ParameterMatcher<URL>] = [wrap(matchable: url) { $0 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "checkStakingWarning(for: URL)", parameterMatchers: matchers))
         }
     }
 
@@ -4178,6 +4196,12 @@ class MockDAppBrowserPresenterProtocol: DAppBrowserPresenterProtocol, Cuckoo.Pro
             let matchers: [Cuckoo.ParameterMatcher<DAppBrowserTabRenderProtocol>] = [wrap(matchable: stateRender) { $0 }]
             return cuckoo_manager.verify("willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
+
+        @discardableResult
+        func checkStakingWarning<M1: Cuckoo.Matchable>(for url: M1) -> Cuckoo.__DoNotUse<URL, Bool> where M1.MatchedType == URL {
+            let matchers: [Cuckoo.ParameterMatcher<URL>] = [wrap(matchable: url) { $0 }]
+            return cuckoo_manager.verify("checkStakingWarning(for: URL)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
     }
 }
 
@@ -4224,6 +4248,10 @@ class DAppBrowserPresenterProtocolStub: DAppBrowserPresenterProtocol {
 
     func willDismissInteractive(stateRender _: DAppBrowserTabRenderProtocol) {
         DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func checkStakingWarning(for _: URL) -> Bool {
+        DefaultValueRegistry.defaultValue(for: Bool.self)
     }
 }
 
@@ -5109,6 +5137,19 @@ class MockDAppBrowserWireframeProtocol: DAppBrowserWireframeProtocol, Cuckoo.Pro
         )
     }
 
+    func presentStakingWarning(from view: DAppBrowserViewProtocol?, url: URL, delegate: DAppStakingWarningViewDelegate) {
+        cuckoo_manager.call(
+            "presentStakingWarning(from: DAppBrowserViewProtocol?, url: URL, delegate: DAppStakingWarningViewDelegate)",
+            parameters: (view, url, delegate),
+            escapingParameters: (view, url, delegate),
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.presentStakingWarning(from: view, url: url, delegate: delegate)
+        )
+    }
+
     struct __StubbingProxy_DAppBrowserWireframeProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -5149,6 +5190,11 @@ class MockDAppBrowserWireframeProtocol: DAppBrowserWireframeProtocol, Cuckoo.Pro
         func showTabs<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<DAppBrowserViewProtocol?> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
             let matchers: [Cuckoo.ParameterMatcher<DAppBrowserViewProtocol?>] = [wrap(matchable: view) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "showTabs(from: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
+        }
+
+        func presentStakingWarning<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, url: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, URL, DAppStakingWarningViewDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == URL, M3.MatchedType == DAppStakingWarningViewDelegate {
+            let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, URL, DAppStakingWarningViewDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: url) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentStakingWarning(from: DAppBrowserViewProtocol?, url: URL, delegate: DAppStakingWarningViewDelegate)", parameterMatchers: matchers))
         }
     }
 
@@ -5204,6 +5250,12 @@ class MockDAppBrowserWireframeProtocol: DAppBrowserWireframeProtocol, Cuckoo.Pro
             let matchers: [Cuckoo.ParameterMatcher<DAppBrowserViewProtocol?>] = [wrap(matchable: view) { $0 }]
             return cuckoo_manager.verify("showTabs(from: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
+
+        @discardableResult
+        func presentStakingWarning<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, url: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, URL, DAppStakingWarningViewDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == URL, M3.MatchedType == DAppStakingWarningViewDelegate {
+            let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, URL, DAppStakingWarningViewDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: url) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+            return cuckoo_manager.verify("presentStakingWarning(from: DAppBrowserViewProtocol?, url: URL, delegate: DAppStakingWarningViewDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
     }
 }
 
@@ -5233,6 +5285,10 @@ class DAppBrowserWireframeProtocolStub: DAppBrowserWireframeProtocol {
     }
 
     func showTabs(from _: DAppBrowserViewProtocol?) {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func presentStakingWarning(from _: DAppBrowserViewProtocol?, url _: URL, delegate _: DAppStakingWarningViewDelegate) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }
@@ -7666,6 +7722,19 @@ class MockDAppSearchViewProtocol: DAppSearchViewProtocol, Cuckoo.ProtocolMock {
         )
     }
 
+    func didReceive(showStakingBanner: Bool) {
+        cuckoo_manager.call(
+            "didReceive(showStakingBanner: Bool)",
+            parameters: showStakingBanner,
+            escapingParameters: showStakingBanner,
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.didReceive(showStakingBanner: showStakingBanner)
+        )
+    }
+
     struct __StubbingProxy_DAppSearchViewProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -7689,6 +7758,11 @@ class MockDAppSearchViewProtocol: DAppSearchViewProtocol, Cuckoo.ProtocolMock {
         func didReceive<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<DAppListViewModel?> where M1.OptionalMatchedType == DAppListViewModel {
             let matchers: [Cuckoo.ParameterMatcher<DAppListViewModel?>] = [wrap(matchable: viewModel) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchViewProtocol.self, method: "didReceive(viewModel: DAppListViewModel?)", parameterMatchers: matchers))
+        }
+
+        func didReceive<M1: Cuckoo.Matchable>(showStakingBanner: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Bool> where M1.MatchedType == Bool {
+            let matchers: [Cuckoo.ParameterMatcher<Bool>] = [wrap(matchable: showStakingBanner) { $0 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchViewProtocol.self, method: "didReceive(showStakingBanner: Bool)", parameterMatchers: matchers))
         }
     }
 
@@ -7722,6 +7796,12 @@ class MockDAppSearchViewProtocol: DAppSearchViewProtocol, Cuckoo.ProtocolMock {
             let matchers: [Cuckoo.ParameterMatcher<DAppListViewModel?>] = [wrap(matchable: viewModel) { $0 }]
             return cuckoo_manager.verify("didReceive(viewModel: DAppListViewModel?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
+
+        @discardableResult
+        func didReceive<M1: Cuckoo.Matchable>(showStakingBanner: M1) -> Cuckoo.__DoNotUse<Bool, Void> where M1.MatchedType == Bool {
+            let matchers: [Cuckoo.ParameterMatcher<Bool>] = [wrap(matchable: showStakingBanner) { $0 }]
+            return cuckoo_manager.verify("didReceive(showStakingBanner: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
     }
 }
 
@@ -7739,6 +7819,10 @@ class DAppSearchViewProtocolStub: DAppSearchViewProtocol {
     }
 
     func didReceive(viewModel _: DAppListViewModel?) {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func didReceive(showStakingBanner _: Bool) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }
@@ -7823,6 +7907,19 @@ class MockDAppSearchPresenterProtocol: DAppSearchPresenterProtocol, Cuckoo.Proto
         )
     }
 
+    func selectStakingBanner() {
+        cuckoo_manager.call(
+            "selectStakingBanner()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.selectStakingBanner()
+        )
+    }
+
     func cancel() {
         cuckoo_manager.call(
             "cancel()",
@@ -7866,6 +7963,11 @@ class MockDAppSearchPresenterProtocol: DAppSearchPresenterProtocol, Cuckoo.Proto
         func selectSearchQuery() -> Cuckoo.ProtocolStubNoReturnFunction<Void> {
             let matchers: [Cuckoo.ParameterMatcher<Void>] = []
             return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "selectSearchQuery()", parameterMatchers: matchers))
+        }
+
+        func selectStakingBanner() -> Cuckoo.ProtocolStubNoReturnFunction<Void> {
+            let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "selectStakingBanner()", parameterMatchers: matchers))
         }
 
         func cancel() -> Cuckoo.ProtocolStubNoReturnFunction<Void> {
@@ -7916,6 +8018,12 @@ class MockDAppSearchPresenterProtocol: DAppSearchPresenterProtocol, Cuckoo.Proto
         }
 
         @discardableResult
+        func selectStakingBanner() -> Cuckoo.__DoNotUse<Void, Void> {
+            let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+            return cuckoo_manager.verify("selectStakingBanner()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
+
+        @discardableResult
         func cancel() -> Cuckoo.__DoNotUse<Void, Void> {
             let matchers: [Cuckoo.ParameterMatcher<Void>] = []
             return cuckoo_manager.verify("cancel()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -7941,6 +8049,10 @@ class DAppSearchPresenterProtocolStub: DAppSearchPresenterProtocol {
     }
 
     func selectSearchQuery() {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func selectStakingBanner() {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 
@@ -8137,6 +8249,19 @@ class MockDAppSearchWireframeProtocol: DAppSearchWireframeProtocol, Cuckoo.Proto
         )
     }
 
+    func navigateToStaking(from view: DAppSearchViewProtocol?) {
+        cuckoo_manager.call(
+            "navigateToStaking(from: DAppSearchViewProtocol?)",
+            parameters: view,
+            escapingParameters: view,
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.navigateToStaking(from: view)
+        )
+    }
+
     struct __StubbingProxy_DAppSearchWireframeProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -8147,6 +8272,11 @@ class MockDAppSearchWireframeProtocol: DAppSearchWireframeProtocol, Cuckoo.Proto
         func close<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<DAppSearchViewProtocol?> where M1.OptionalMatchedType == DAppSearchViewProtocol {
             let matchers: [Cuckoo.ParameterMatcher<DAppSearchViewProtocol?>] = [wrap(matchable: view) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchWireframeProtocol.self, method: "close(from: DAppSearchViewProtocol?)", parameterMatchers: matchers))
+        }
+
+        func navigateToStaking<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<DAppSearchViewProtocol?> where M1.OptionalMatchedType == DAppSearchViewProtocol {
+            let matchers: [Cuckoo.ParameterMatcher<DAppSearchViewProtocol?>] = [wrap(matchable: view) { $0 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchWireframeProtocol.self, method: "navigateToStaking(from: DAppSearchViewProtocol?)", parameterMatchers: matchers))
         }
     }
 
@@ -8166,11 +8296,21 @@ class MockDAppSearchWireframeProtocol: DAppSearchWireframeProtocol, Cuckoo.Proto
             let matchers: [Cuckoo.ParameterMatcher<DAppSearchViewProtocol?>] = [wrap(matchable: view) { $0 }]
             return cuckoo_manager.verify("close(from: DAppSearchViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
+
+        @discardableResult
+        func navigateToStaking<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<DAppSearchViewProtocol?, Void> where M1.OptionalMatchedType == DAppSearchViewProtocol {
+            let matchers: [Cuckoo.ParameterMatcher<DAppSearchViewProtocol?>] = [wrap(matchable: view) { $0 }]
+            return cuckoo_manager.verify("navigateToStaking(from: DAppSearchViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
     }
 }
 
 class DAppSearchWireframeProtocolStub: DAppSearchWireframeProtocol {
     func close(from _: DAppSearchViewProtocol?) {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func navigateToStaking(from _: DAppSearchViewProtocol?) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }

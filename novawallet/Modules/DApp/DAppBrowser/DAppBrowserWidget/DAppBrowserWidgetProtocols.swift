@@ -12,6 +12,7 @@ protocol DAppBrowserWidgetProtocol {
     var view: UIView! { get set }
 
     func openBrowser(with tab: DAppBrowserTab?)
+    func closeBrowser()
 }
 
 // MARK: PRESENTER -> VIEW

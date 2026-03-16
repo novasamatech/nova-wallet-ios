@@ -112,6 +112,27 @@ class BaseDAppBrowserWireframe {
         view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
     }
 
+    func presentStakingWarning(
+        from view: DAppBrowserViewProtocol?,
+        url: URL,
+        delegate: DAppStakingWarningViewDelegate
+    ) {
+        guard let warningView = DAppStakingWarningViewFactory.createView(
+            for: url,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.novaManual
+        )
+        warningView.controller.modalTransitioningFactory = factory
+        warningView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(warningView.controller, animated: true, completion: nil)
+    }
+
     func showTabs(from view: DAppBrowserViewProtocol?) {
         DAppBrowserTabTransition.setTransition(
             from: view?.controller,
