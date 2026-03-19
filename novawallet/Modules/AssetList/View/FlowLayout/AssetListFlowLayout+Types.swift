@@ -72,8 +72,14 @@ extension AssetListFlowLayout {
         case settings
         case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
+        case loadMore
 
-        init(indexPath: IndexPath, in collectionView: UICollectionView) {
+        init(indexPath: IndexPath, in collectionView: UICollectionView, loadMoreSection: Int?) {
+            if let loadMoreSection, indexPath.section == loadMoreSection {
+                self = .loadMore
+                return
+            }
+
             switch indexPath.section {
             case 0 where indexPath.row == 0:
                 self = .account
@@ -92,6 +98,10 @@ extension AssetListFlowLayout {
             }
         }
 
+        init(indexPath: IndexPath, in collectionView: UICollectionView) {
+            self.init(indexPath: indexPath, in: collectionView, loadMoreSection: nil)
+        }
+
         var indexPath: IndexPath {
             switch self {
             case .account: IndexPath(item: 0, section: 0)
@@ -102,6 +112,7 @@ extension AssetListFlowLayout {
             case .settings: IndexPath(item: 0, section: 3)
             case .emptyState: IndexPath(item: 1, section: 3)
             case let .asset(sectionIndex, itemIndex): IndexPath(item: itemIndex, section: sectionIndex)
+            case .loadMore: IndexPath(item: 0, section: 0) // placeholder, actual section determined dynamically
             }
         }
     }

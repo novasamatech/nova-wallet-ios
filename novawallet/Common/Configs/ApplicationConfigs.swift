@@ -52,6 +52,7 @@ protocol ApplicationConfigProtocol {
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
     var watchOnlyURL: URL { get }
+    var defaultTokensURL: URL { get }
 }
 
 extension ApplicationConfigProtocol {
@@ -380,6 +381,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var watchOnlyURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/watch-only-wallets/scam-warning")!
+    }
+
+    var defaultTokensURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/v1/default_tokens.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/v1/default_tokens_dev.json")!
+        #endif
     }
 
     // swiftlint:enable line_length

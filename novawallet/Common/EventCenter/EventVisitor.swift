@@ -22,6 +22,8 @@ protocol EventVisitorProtocol: AnyObject {
     func processRuntimeCoderCreationFailed(event: RuntimeCoderCreationFailed)
 
     func processHideZeroBalances(event: HideZeroBalancesChanged)
+    func processDustFilterChanged(event: DustFilterChanged)
+    func processUserAddedTokensChanged(event: UserAddedTokensChanged)
 
     func processBlockTimeChanged(event: BlockTimeChanged)
 
@@ -58,6 +60,8 @@ extension EventVisitorProtocol {
     func processRuntimeCoderCreationFailed(event _: RuntimeCoderCreationFailed) {}
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {}
+    func processDustFilterChanged(event _: DustFilterChanged) {}
+    func processUserAddedTokensChanged(event _: UserAddedTokensChanged) {}
 
     func processBlockTimeChanged(event _: BlockTimeChanged) {}
 

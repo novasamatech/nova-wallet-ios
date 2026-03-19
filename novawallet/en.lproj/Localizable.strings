@@ -405,7 +405,7 @@
 "staking.custom.validators.list.title" = "Select validators";
 "staking.custom.fill.button.title" = "Fill rest with recommended";
 "staking.custom.clear.button.title" = "Clear filters";
-"staking.custom.deselect.button.title" = "Deselect all";
+"staking.custom.deselect.button.title" = "Deselect All";
 "staking.custom.header.validators.title" = "Validators: %li of %li";
 "staking.set.validators.title" = "Select validators to start staking";
 "staking.set.validators.message" = "Validators are not selected";
@@ -661,6 +661,8 @@
 "dapp.search.app.section" = "DApps";
 "wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\"\nfilter is turned off";
 "assets.manage.hide.zero.balances" = "Hide assets with zero balances";
+"assets.manage.hide.dust" = "Hide small balances";
+"assets.manage.hidden.by.dust.filter" = "Hidden by dust filter (%@ tokens)";
 "wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
 "transaction.min.balance.violation.message" = "You need to have at least %@ to pay this transaction fee and stay above the minimum network balance. Your current balance is: %@. You need to add %@ to your balance to perform this operation.";
@@ -1086,6 +1088,8 @@
 "add.token.network.selection.title" = "Select network to add ERC-20 token";
 "common.disabled" = "Disabled";
 "tokens.manage.title" = "Manage tokens";
+"tokens.manage.deselect.all.message" = "Deselect all tokens? You can re-enable them later.";
+"tokens.manage.deselect.all.kept.message" = "At least one token must remain enabled";
 "tokens.manage.all.selected" = "All networks";
 "common.more.format" = "%@ (+%@ more)";
 "common.token.decimals" = "Decimals";
@@ -1119,7 +1123,9 @@
 "gov.track.group.fellowship" = "Fellowship";
 "gov.track.group.governance" = "Governance";
 "gov.track.group.treasury" = "Treasury";
-"common.select.all" = "Select all";
+"common.select.all" = "Select All";
+"common.select.visible" = "Select Visible";
+"common.deselect.visible" = "Deselect Visible";
 "gov.add.delegation.tracks.details" = "Please select the tracks in which you would like to delegate your voting power.";
 "gov.available.tracks" = "Available tracks";
 "delegations.lastVoted" = "Voted last %@";
@@ -2042,3 +2048,5 @@ Do you want to continue?";
 "inlinable.alert.wo.message" = "Beware of scammers. No one can unlock a watch-only wallet or its funds";
 "create.watch.only.missing.any.address" = "Enter at least one address...";
 "asset.list.watch.only.balance" = "Watch-only balance";
+"asset.list.load.more.tokens" = "Manage Tokens";
+"asset.list.load.more.networks" = "Manage Networks";

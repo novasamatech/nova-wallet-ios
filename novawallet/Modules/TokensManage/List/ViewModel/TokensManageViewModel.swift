@@ -1,17 +1,29 @@
 import Foundation
 
-struct TokensManageViewModel: Hashable {
-    let identifier: Int
-    let symbol: String
-    let imageViewModel: ImageViewModelProtocol?
-    let subtitle: String
-    let isOn: Bool
+struct ManageTokenSection {
+    let title: String
+    let icon: ImageViewModelProtocol?
+    let items: [ManageTokenItem]
+    let isExpanded: Bool
+    let enabledCount: Int
 
-    static func == (lhs: TokensManageViewModel, rhs: TokensManageViewModel) -> Bool {
-        lhs.identifier == rhs.identifier
+    var allEnabled: Bool {
+        enabledCount == items.count
+    }
+}
+
+struct ManageTokenItem: Hashable {
+    let chainAssetId: ChainAssetId
+    let name: String
+    let icon: ImageViewModelProtocol?
+    let isEnabled: Bool
+
+    static func == (lhs: ManageTokenItem, rhs: ManageTokenItem) -> Bool {
+        lhs.chainAssetId == rhs.chainAssetId && lhs.isEnabled == rhs.isEnabled
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
+        hasher.combine(chainAssetId)
+        hasher.combine(isEnabled)
     }
 }

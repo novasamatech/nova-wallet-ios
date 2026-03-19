@@ -1,6 +1,8 @@
 import Foundation
 
 enum AssetListGroupModelComparator {
+    private static let tokenPriorityOrder = ["DOT", "KSM", "USDC", "USDT", "ETH", "HOLLAR", "TBTC", "HDX", "SOL"]
+
     static func by<T>(
         _ keyPath: KeyPath<T, Decimal>,
         _ lhs: T,
@@ -13,6 +15,13 @@ enum AssetListGroupModelComparator {
         lhs: AssetListAssetGroupModel,
         rhs: AssetListAssetGroupModel
     ) -> Bool {
+        let lhsTokenPriority = tokenPriorityIndex(for: lhs.multichainToken.symbol)
+        let rhsTokenPriority = tokenPriorityIndex(for: rhs.multichainToken.symbol)
+
+        if lhsTokenPriority != rhsTokenPriority {
+            return lhsTokenPriority < rhsTokenPriority
+        }
+
         let lhsPriority = priority(for: lhs.multichainToken)
         let rhsPriority = priority(for: rhs.multichainToken)
 
@@ -21,6 +30,22 @@ enum AssetListGroupModelComparator {
         } else {
             lhs.multichainToken.symbol.lexicographicallyPrecedes(rhs.multichainToken.symbol)
         }
+    }
+
+    private static func normalizeForPriority(_ symbol: String) -> String {
+        let uppercased = symbol.uppercased()
+        if let range = uppercased.range(of: #"-(SNOWBRIDGE|WORMHOLE).*"#, options: [.regularExpression, .caseInsensitive]) {
+            return String(uppercased[uppercased.startIndex ..< range.lowerBound])
+        }
+        return uppercased
+    }
+
+    private static func tokenPriorityIndex(for symbol: String) -> Int {
+        let normalized = normalizeForPriority(symbol)
+        if let index = tokenPriorityOrder.firstIndex(where: { $0.caseInsensitiveCompare(normalized) == .orderedSame }) {
+            return index
+        }
+        return Int.max
     }
 
     private static func priority(for token: MultichainToken) -> UInt8 {

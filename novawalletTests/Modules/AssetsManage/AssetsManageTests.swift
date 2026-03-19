@@ -26,13 +26,18 @@ class AssetsManageTests: XCTestCase {
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
 
+        let defaultTokensService = DefaultTokensService(
+            remoteUrl: ApplicationConfig.shared.defaultTokensURL
+        )
+
         let interactor = TokensManageInteractor(
             chainRegistry: chainRegistry,
             eventCenter: eventCenter,
             settingsManager: settingsManager,
             repository: AnyDataProviderRepository(repository),
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: storageFacade),
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            defaultTokensService: defaultTokensService
         )
 
         let viewModelFactory = TokensManageViewModelFactory(
@@ -64,7 +69,10 @@ class AssetsManageTests: XCTestCase {
                 setupCompletion.fulfill()
             }
 
-            stub.didReceive(viewModels: any()).thenDoNothing()
+            stub.didReceive(sections: any()).thenDoNothing()
+            stub.didReceive(selectAllTitle: any()).thenDoNothing()
+            stub.didReceive(dustFilterEnabled: any()).thenDoNothing()
+            stub.didReceive(dustFilterThreshold: any()).thenDoNothing()
         }
 
         presenter.setup()

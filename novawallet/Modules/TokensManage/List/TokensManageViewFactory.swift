@@ -41,13 +41,18 @@ struct TokensManageViewFactory {
         let eventCenter = EventCenter.shared
         let settingsManager = SettingsManager.shared
 
+        let defaultTokensService = DefaultTokensService(
+            remoteUrl: ApplicationConfig.shared.defaultTokensURL
+        )
+
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             eventCenter: eventCenter,
             settingsManager: settingsManager,
             repository: repository,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            defaultTokensService: defaultTokensService
         )
     }
 }

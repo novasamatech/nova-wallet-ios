@@ -17,6 +17,10 @@ struct AssetListViewFactory {
 
         let assetListModelObservable = AssetListModelObservable(state: .init(value: .init()))
 
+        let defaultTokensService = DefaultTokensService(
+            remoteUrl: ApplicationConfig.shared.defaultTokensURL
+        )
+
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -31,6 +35,7 @@ struct AssetListViewFactory {
             settingsManager: SettingsManager.shared,
             currencyManager: currencyManager,
             walletConnect: walletConnect,
+            defaultTokensService: defaultTokensService,
             logger: Logger.shared
         )
 

@@ -467,19 +467,61 @@ private extension AssetListCollectionViewDataSource {
     @objc func actionTogglePrivacy() {
         actionsDelegate?.actionTogglePrivacy()
     }
+
+    @objc func actionLoadMore() {
+        actionsDelegate?.actionLoadMore()
+    }
+
+    var loadMoreSectionIndex: Int? {
+        guard groupsViewModel.showsLoadMore else { return nil }
+        return AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
+    }
+
+    func provideLoadMoreCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> AssetListLoadMoreCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListLoadMoreCell.self,
+            for: indexPath
+        )!
+
+        let languages = selectedLocale.rLanguages
+        let title: String = switch groupsViewModel.listGroupStyle {
+        case .tokens:
+            R.string(preferredLanguages: languages).localizable.assetListLoadMoreTokens()
+        case .networks:
+            R.string(preferredLanguages: languages).localizable.assetListLoadMoreNetworks()
+        }
+
+        cell.bind(title: title)
+        cell.actionButton.removeTarget(nil, action: nil, for: .touchUpInside)
+        cell.actionButton.addTarget(
+            self,
+            action: #selector(actionLoadMore),
+            for: .touchUpInside
+        )
+
+        return cell
+    }
 }
 
 // MARK: UICollectionViewDataSource
 
 extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
+        let baseSections = AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
+        return groupsViewModel.showsLoadMore ? baseSections + 1 : baseSections
     }
 
     func collectionView(
         _: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
+        if section == loadMoreSectionIndex {
+            return 1
+        }
+
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             var itemsCount = 0
@@ -503,7 +545,11 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        switch AssetListFlowLayout.CellType(indexPath: indexPath, in: collectionView) {
+        switch AssetListFlowLayout.CellType(
+            indexPath: indexPath,
+            in: collectionView,
+            loadMoreSection: loadMoreSectionIndex
+        ) {
         case .account:
             provideAccountCell(collectionView, indexPath: indexPath)
         case .alert:
@@ -520,6 +566,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
             provideAssetCell(collectionView, indexPath: indexPath)
+        case .loadMore:
+            provideLoadMoreCell(collectionView, indexPath: indexPath)
         }
     }
 
@@ -538,6 +586,11 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             forSupplementaryViewOfKind: kind,
             for: indexPath
         )!
+
+        // Do not configure for load more section
+        guard indexPath.section != loadMoreSectionIndex else {
+            return view
+        }
 
         // Configure the header view with the appropriate view model
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(indexPath.section),
