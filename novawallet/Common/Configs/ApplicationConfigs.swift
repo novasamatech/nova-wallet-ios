@@ -385,9 +385,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var defaultTokensURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/v1/default_tokens.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/v1/default_tokens_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets.json")!
         #endif
     }
 
