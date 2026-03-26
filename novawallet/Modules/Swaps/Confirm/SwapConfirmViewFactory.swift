@@ -55,6 +55,7 @@ struct SwapConfirmViewFactory {
             priceStore: flowState.priceStore,
             slippageBounds: .init(config: SlippageConfig.defaultConfig),
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

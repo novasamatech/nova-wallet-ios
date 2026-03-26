@@ -6,4 +6,5 @@ struct SettingsParameters {
     let isPinConfirmationOn: Bool
     let isNotificationsOn: Bool
     let isHideBalancesOn: Bool
+    let isAnalyticsOn: Bool
 }

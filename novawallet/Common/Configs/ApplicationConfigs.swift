@@ -52,6 +52,8 @@ protocol ApplicationConfigProtocol {
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
     var watchOnlyURL: URL { get }
+    var analyticsApiKey: String { get }
+    var analyticsHost: String { get }
 }
 
 extension ApplicationConfigProtocol {
@@ -380,6 +382,16 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var watchOnlyURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/watch-only-wallets/scam-warning")!
+    }
+
+    /// PostHog analytics API key.
+    var analyticsApiKey: String {
+        "phc_sGA7fK8DPZTBqrc2dNKrzjeF9mr2nWJ2stIlWX3e9ZD"
+    }
+
+    /// PostHog analytics host.
+    var analyticsHost: String {
+        "https://us.i.posthog.com"
     }
 
     // swiftlint:enable line_length

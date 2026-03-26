@@ -177,8 +177,16 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
 
         view?.didStopLoading()
 
+        let stakingType = "nomination_pools"
+        let network = chainAsset.chain.name
+
         switch submissionResult {
         case let .success(model):
+            let priceDecimal = price?.decimalRate ?? 0
+            let amountBucket = AmountBucket.from(usdValue: unstakingAmount * priceDecimal)
+            PostHogAnalyticsService.shared.track(.unstakeInitiated(stakingType: stakingType, network: network, amountBucket: amountBucket))
+            PostHogAnalyticsService.shared.track(.unstakeCompleted(stakingType: stakingType, network: network, amountBucket: amountBucket))
+
             wireframe?.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -186,6 +194,18 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
                 locale: selectedLocale
             )
         case let .failure(error):
+            let reason: String
+            if error is NoKeysSigningWrapperError {
+                reason = "signing_unavailable"
+            } else if error.isSigningCancelled {
+                reason = "user_cancelled"
+            } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+                reason = "network_error"
+            } else {
+                reason = "unknown"
+            }
+            PostHogAnalyticsService.shared.track(.unstakeFailed(stakingType: stakingType, network: network, reason: reason))
+
             wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,

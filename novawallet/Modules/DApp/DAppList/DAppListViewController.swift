@@ -138,10 +138,12 @@ extension DAppListViewController {
     ) {
         let item = section.cells[index]
 
+        let source = section.sectionId ?? "unknown"
+
         switch item {
         case let .category(model, _),
              let .favorites(model, _):
-            presenter.selectDApp(with: model.identifier)
+            presenter.selectDApp(with: model.identifier, source: source)
         default:
             break
         }

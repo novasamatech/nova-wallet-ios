@@ -14,6 +14,9 @@ class BaseAccountImportInteractor {
     let operationQueue: OperationQueue
     let secretImportService: SecretImportServiceProtocol
 
+    /// Tracks which import method was last invoked, for analytics.
+    private(set) var lastImportMethod: WalletCreationMethod?
+
     init(
         metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
         operationQueue: OperationQueue,
@@ -86,6 +89,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             mnemonic: mnemonic
         )
 
+        lastImportMethod = .importMnemonic
         importAccountUsingOperation(accountOperation)
     }
 
@@ -94,6 +98,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             request: request
         )
 
+        lastImportMethod = .importSeed
         importAccountUsingOperation(operation)
     }
 
@@ -102,6 +107,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             request: request
         )
 
+        lastImportMethod = .importSeed
         importAccountUsingOperation(operation)
     }
 
@@ -110,6 +116,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             request: request
         )
 
+        lastImportMethod = .importJson
         importAccountUsingOperation(operation)
     }
 

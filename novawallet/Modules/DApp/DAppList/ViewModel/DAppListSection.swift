@@ -30,6 +30,7 @@ enum DAppListSectionViewModel: Equatable {
 
 struct DAppListSection: Hashable, SectionProtocol {
     let title: String?
+    let sectionId: String?
     var cells: [DAppListItem]
 }
 

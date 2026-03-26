@@ -192,6 +192,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     // MARK: - StartStakingInfoPresenterProtocol
 
     func setup() {
+        PostHogAnalyticsService.shared.track(.stakingFlowOpened(
+            network: chainAsset.chain.name,
+            source: "staking"
+        ))
+
         baseInteractor.setup()
     }
 

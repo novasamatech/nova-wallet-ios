@@ -105,6 +105,14 @@ extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputP
     func didReceiveSuccessBatchVoting(_ sender: ExtrinsicSenderResolution?) {
         view?.didStopLoading()
 
+        #if F_DEV
+            logger.debug("ANALYTICS_DEBUG: didReceiveSuccessBatchVoting called, tracking \(votingItems.count) governance_vote_cast events")
+        #endif
+
+        for item in votingItems {
+            trackGovernanceVoteCast(voteAction: item.mapToVote().voteAction)
+        }
+
         wireframe.presentExtrinsicSubmission(
             from: view,
             sender: sender,

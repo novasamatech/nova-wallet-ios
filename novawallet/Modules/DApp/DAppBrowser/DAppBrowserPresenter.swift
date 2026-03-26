@@ -8,6 +8,7 @@ final class DAppBrowserPresenter {
     let interactor: DAppBrowserInteractorInputProtocol
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
+    let analyticsService: AnalyticsServiceProtocol
 
     private(set) var favorites: [String: DAppFavorite]?
     private(set) var tabs: [DAppBrowserTab] = []
@@ -17,11 +18,13 @@ final class DAppBrowserPresenter {
         interactor: DAppBrowserInteractorInputProtocol,
         wireframe: DAppBrowserWireframeProtocol,
         localizationManager: LocalizationManager,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
+        self.analyticsService = analyticsService
         self.logger = logger
     }
 }
@@ -109,6 +112,15 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         guard let newHost = browserPage?.url.host, newHost != oldHost else {
             return
         }
+
+        let source = PostHogAnalyticsService.lastDAppSource
+        PostHogAnalyticsService.lastDAppSource = "unknown"
+        let isKnown = favorites?[page.identifier] != nil || source.hasPrefix("catalog_")
+        analyticsService.track(.dappOpened(
+            dappHost: newHost,
+            source: source,
+            isKnownDapp: isKnown
+        ))
 
         interactor.process(host: newHost)
         updateSettingsState()

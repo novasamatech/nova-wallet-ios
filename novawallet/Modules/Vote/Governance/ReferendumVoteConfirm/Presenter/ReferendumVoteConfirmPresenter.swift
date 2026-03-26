@@ -187,6 +187,12 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
     func didReceiveVotingCompletion(_ sender: ExtrinsicSenderResolution) {
         view?.didStopLoading()
 
+        #if F_DEV
+            logger.debug("ANALYTICS_DEBUG: didReceiveVotingCompletion called, tracking governance_vote_cast")
+        #endif
+
+        trackGovernanceVoteCast(voteAction: vote.voteAction)
+
         wireframe.presentExtrinsicSubmission(
             from: baseView,
             sender: sender,

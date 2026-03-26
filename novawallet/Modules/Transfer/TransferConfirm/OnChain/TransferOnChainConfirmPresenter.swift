@@ -17,6 +17,8 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     private lazy var walletIconGenerator = NovaIconGenerator()
     let transferCompletion: TransferCompletionClosure?
 
+    private let analyticsService: AnalyticsServiceProtocol
+
     init(
         interactor: TransferConfirmOnChainInteractorInputProtocol,
         wireframe: TransferConfirmWireframeProtocol,
@@ -31,6 +33,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         transferCompletion: TransferCompletionClosure?,
         logger: LoggerProtocol? = nil
@@ -42,6 +45,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.transferCompletion = transferCompletion
+        self.analyticsService = analyticsService
         super.init(
             chainAsset: chainAsset,
             feeAsset: feeAsset,
@@ -136,6 +140,16 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         )
     }
 
+    // MARK: - Analytics helpers
+
+    private func computeAmountBucket() -> AmountBucket {
+        guard let priceString = sendingAssetPrice?.price,
+              let price = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: amount.value * price)
+    }
+
     // MARK: Subsclass
 
     override func refreshFee() {
@@ -189,6 +203,22 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
 
+        let reason: String
+        if error is NoKeysSigningWrapperError || wallet.type == .watchOnly {
+            reason = "signing_unavailable"
+        } else if error.isSigningCancelled {
+            reason = "user_cancelled"
+        } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+            reason = "network_error"
+        } else {
+            reason = "unknown"
+        }
+        analyticsService.track(.sendFailed(
+            asset: chainAsset.asset.symbol,
+            network: chainAsset.chain.name,
+            reason: reason
+        ))
+
         view?.didStopLoading()
 
         wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
@@ -232,6 +262,16 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
                 return
             }
 
+            let amountBucket = strongSelf.computeAmountBucket()
+            strongSelf.analyticsService.track(.sendInitiated(
+                asset: strongSelf.chainAsset.asset.symbol,
+                network: strongSelf.chainAsset.chain.name,
+                destinationNetwork: nil,
+                assetCategory: AssetCategory.classify(strongSelf.chainAsset),
+                amountBucket: amountBucket,
+                isCrossChain: false
+            ))
+
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
@@ -254,6 +294,13 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 extension TransferOnChainConfirmPresenter: TransferConfirmOnChainInteractorOutputProtocol {
     func didCompleteSubmition(by sender: ExtrinsicSenderResolution?) {
         view?.didStopLoading()
+
+        let amountBucket = computeAmountBucket()
+        analyticsService.track(.sendCompleted(
+            asset: chainAsset.asset.symbol,
+            network: chainAsset.chain.name,
+            amountBucket: amountBucket
+        ))
 
         // Note: that transferCompletion is not called for delayed transfers
         wireframe.presentExtrinsicSubmission(

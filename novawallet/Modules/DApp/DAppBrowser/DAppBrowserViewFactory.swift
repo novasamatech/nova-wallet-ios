@@ -47,6 +47,7 @@ struct DAppBrowserViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,
+            analyticsService: PostHogAnalyticsService.shared,
             logger: logger
         )
 

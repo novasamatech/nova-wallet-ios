@@ -5,11 +5,17 @@ import Foundation_iOS
 final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
     static func createViewForOnboarding() -> OnboardingMainViewProtocol? {
         let wireframe = OnboardingMainWireframe()
-        return createView(for: wireframe)
+        return createView(for: wireframe, onboardingSource: .freshInstall)
+    }
+
+    static func createViewForAdding() -> OnboardingMainViewProtocol? {
+        let wireframe = OnboardingMainWireframe()
+        return createView(for: wireframe, onboardingSource: .addWallet)
     }
 
     private static func createView(
-        for wireframe: OnboardingMainWireframeProtocol
+        for wireframe: OnboardingMainWireframeProtocol,
+        onboardingSource: OnboardingSource
     ) -> OnboardingMainViewProtocol? {
         guard let urlHandlingFacade = URLHandlingServiceFacade.shared else {
             Logger.shared.error("Url handling has not been setup")
@@ -46,6 +52,8 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
+            onboardingSource: onboardingSource,
+            analyticsService: PostHogAnalyticsService.shared,
             locale: LocalizationManager.shared.selectedLocale
         )
 

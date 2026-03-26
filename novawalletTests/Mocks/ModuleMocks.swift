@@ -6129,16 +6129,16 @@ class MockDAppListPresenterProtocol: DAppListPresenterProtocol, Cuckoo.ProtocolM
         )
     }
 
-    func selectDApp(with id: String) {
+    func selectDApp(with id: String, source: String) {
         cuckoo_manager.call(
-            "selectDApp(with: String)",
-            parameters: id,
-            escapingParameters: id,
+            "selectDApp(with: String, source: String)",
+            parameters: (id, source),
+            escapingParameters: (id, source),
             superclassCall:
 
             Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
 
-            defaultCall: __defaultImplStub!.selectDApp(with: id)
+            defaultCall: __defaultImplStub!.selectDApp(with: id, source: source)
         )
     }
 
@@ -6184,9 +6184,9 @@ class MockDAppListPresenterProtocol: DAppListPresenterProtocol, Cuckoo.ProtocolM
             return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectCategory(with: String)", parameterMatchers: matchers))
         }
 
-        func selectDApp<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.ProtocolStubNoReturnFunction<String> where M1.MatchedType == String {
-            let matchers: [Cuckoo.ParameterMatcher<String>] = [wrap(matchable: id) { $0 }]
-            return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectDApp(with: String)", parameterMatchers: matchers))
+        func selectDApp<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(with id: M1, source: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(String, String)> where M1.MatchedType == String, M2.MatchedType == String {
+            let matchers: [Cuckoo.ParameterMatcher<(String, String)>] = [wrap(matchable: id) { $0.0 }, wrap(matchable: source) { $0.1 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectDApp(with: String, source: String)", parameterMatchers: matchers))
         }
     }
 
@@ -6244,9 +6244,9 @@ class MockDAppListPresenterProtocol: DAppListPresenterProtocol, Cuckoo.ProtocolM
         }
 
         @discardableResult
-        func selectDApp<M1: Cuckoo.Matchable>(with id: M1) -> Cuckoo.__DoNotUse<String, Void> where M1.MatchedType == String {
-            let matchers: [Cuckoo.ParameterMatcher<String>] = [wrap(matchable: id) { $0 }]
-            return cuckoo_manager.verify("selectDApp(with: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        func selectDApp<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(with id: M1, source: M2) -> Cuckoo.__DoNotUse<(String, String), Void> where M1.MatchedType == String, M2.MatchedType == String {
+            let matchers: [Cuckoo.ParameterMatcher<(String, String)>] = [wrap(matchable: id) { $0.0 }, wrap(matchable: source) { $0.1 }]
+            return cuckoo_manager.verify("selectDApp(with: String, source: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
     }
 }
@@ -6280,7 +6280,7 @@ class DAppListPresenterProtocolStub: DAppListPresenterProtocol {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 
-    func selectDApp(with _: String) {
+    func selectDApp(with _: String, source _: String) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }

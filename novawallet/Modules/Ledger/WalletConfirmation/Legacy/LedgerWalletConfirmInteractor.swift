@@ -64,6 +64,7 @@ extension LedgerWalletConfirmInteractor: LedgerWalletConfirmInteractorInputProto
                     self?.settings.setup()
                     self?.eventCenter.notify(with: SelectedWalletSwitched())
                     self?.eventCenter.notify(with: NewWalletCreated())
+                    PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: .importLedger))
                     self?.presenter?.didCreateWallet()
                 } catch {
                     self?.presenter?.didReceive(error: error)

@@ -2,7 +2,7 @@ import Foundation
 
 class WalletBaseManageWireframe: WalletsListWireframe {
     func showOnboarding(from _: WalletManageViewProtocol?) {
-        guard let onboarding = OnboardingMainViewFactory.createViewForOnboarding() else {
+        guard let onboarding = OnboardingMainViewFactory.createViewForAdding() else {
             return
         }
 
@@ -28,6 +28,9 @@ final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWirefr
     }
 
     func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?) {
+        PostHogAnalyticsService.shared.track(.onboardingStarted(source: .addWallet))
+        PostHogAnalyticsService.shared.track(.walletCreationMethodSelected(method: .create))
+
         guard let onboarding = UsernameSetupViewFactory.createViewForAdding() else {
             return
         }
@@ -38,6 +41,9 @@ final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWirefr
     }
 
     func showCreateWalletWithCloudBackup(from view: WalletManageViewProtocol?) {
+        PostHogAnalyticsService.shared.track(.onboardingStarted(source: .addWallet))
+        PostHogAnalyticsService.shared.track(.walletCreationMethodSelected(method: .cloudBackup))
+
         guard let onboarding = CloudBackupAddWalletViewFactory.createViewForAdding() else {
             return
         }
@@ -48,6 +54,9 @@ final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWirefr
     }
 
     func showImportWallet(from view: WalletManageViewProtocol?) {
+        PostHogAnalyticsService.shared.track(.onboardingStarted(source: .addWallet))
+        PostHogAnalyticsService.shared.track(.walletCreationMethodSelected(method: .importMnemonic))
+
         guard let importView = WalletImportOptionsViewFactory.createViewForAdding() else {
             return
         }

@@ -70,6 +70,7 @@ struct SwapSetupViewFactory {
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
+            analyticsService: PostHogAnalyticsService.shared,
             logger: Logger.shared
         )
 

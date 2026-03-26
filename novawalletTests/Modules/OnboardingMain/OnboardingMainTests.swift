@@ -141,6 +141,7 @@ class OnboardingMainTests: XCTestCase {
         _ wireframe: MockOnboardingMainWireframeProtocol,
         view: MockOnboardingMainViewProtocol,
         legal: LegalData,
+        onboardingSource: OnboardingSource = .freshInstall,
         secretImportService: SecretImportServiceProtocol = SecretImportService(logger: Logger.shared),
         migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
             localDeepLinkScheme: "novawallet",
@@ -157,6 +158,7 @@ class OnboardingMainTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legal,
+            onboardingSource: onboardingSource,
             locale: Locale.current
         )
 

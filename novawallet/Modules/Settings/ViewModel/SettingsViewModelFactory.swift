@@ -82,7 +82,12 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createCommonViewViewModel(row: .website, locale: locale),
                 createCommonViewViewModel(row: .github, locale: locale),
                 createCommonViewViewModel(row: .terms, locale: locale),
-                createCommonViewViewModel(row: .privacyPolicy, locale: locale)
+                createCommonViewViewModel(row: .privacyPolicy, locale: locale),
+                createSwitchViewModel(
+                    row: .analytics,
+                    isOn: parameters.isAnalyticsOn,
+                    locale: locale
+                )
             ])
         ]
     }

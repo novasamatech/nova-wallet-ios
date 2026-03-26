@@ -131,6 +131,8 @@ extension PVAddConfirmInteractor: PVAddConfirmInteractorInputProtocol {
                 self?.settings.setup()
                 self?.eventCenter.notify(with: SelectedWalletSwitched())
                 self?.eventCenter.notify(with: NewWalletCreated())
+                let method: WalletCreationMethod = self?.type == .legacy ? .importParitySigner : .importPolkadotVault
+                PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: method))
                 self?.presenter?.didCreateWallet()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)

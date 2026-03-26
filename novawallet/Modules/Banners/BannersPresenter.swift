@@ -11,6 +11,7 @@ final class BannersPresenter {
     private let viewModelFactory: BannerViewModelFactoryProtocol
 
     private let closeActionAvailable: Bool
+    private let screenName: String
 
     private var banners: [Banner]?
     private var closedBanners: ClosedBanners?
@@ -22,13 +23,15 @@ final class BannersPresenter {
         wireframe: BannersWireframeProtocol,
         viewModelFactory: BannerViewModelFactoryProtocol,
         locale: Locale,
-        closeActionAvailable: Bool
+        closeActionAvailable: Bool,
+        screenName: String
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.locale = locale
         self.closeActionAvailable = closeActionAvailable
+        self.screenName = screenName
     }
 
     private func provideBanners() {
@@ -65,6 +68,13 @@ extension BannersPresenter: BannersPresenterProtocol {
         else {
             return
         }
+
+        let bannerTitle = localizedResources?[bannerId]?.title ?? bannerId
+        PostHogAnalyticsService.shared.track(.bannerClicked(
+            bannerId: bannerId,
+            bannerTitle: bannerTitle,
+            screen: screenName
+        ))
 
         wireframe.openActionLink(urlString: actionLink)
     }

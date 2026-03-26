@@ -74,6 +74,7 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
+        PostHogAnalyticsService.lastDAppSource = "favorites"
         wireframe.openBrowser(with: id)
     }
 }

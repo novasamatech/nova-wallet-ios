@@ -12,6 +12,7 @@ class StartStakingConfirmPresenter {
     let selectedAccount: MetaChainAccountResponse
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    let analyticsService: AnalyticsServiceProtocol
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -30,6 +31,7 @@ class StartStakingConfirmPresenter {
         selectedAccount: MetaChainAccountResponse,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -40,6 +42,7 @@ class StartStakingConfirmPresenter {
         self.selectedAccount = selectedAccount
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
+        self.analyticsService = analyticsService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -115,6 +118,24 @@ class StartStakingConfirmPresenter {
         fatalError("Must be overriden by subsclass")
     }
 
+    func stakingTypeName() -> String {
+        guard let option = stakingOption() else { return "unknown" }
+        switch option {
+        case .direct:
+            return "relaychain"
+        case .pool:
+            return "nomination_pools"
+        }
+    }
+
+    private func computeAmountBucket() -> AmountBucket {
+        guard let priceString = price?.price,
+              let priceDecimal = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: amount * priceDecimal)
+    }
+
     private func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
@@ -186,8 +207,15 @@ extension StartStakingConfirmPresenter: StartStakingConfirmPresenterProtocol {
         let validations = createValidations()
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
-            self?.view?.didStartLoading()
-            self?.interactor.submit()
+            guard let self else { return }
+            let amountBucket = self.computeAmountBucket()
+            self.analyticsService.track(.stakingInitiated(
+                stakingType: self.stakingTypeName(),
+                network: self.chainAsset.chain.name,
+                amountBucket: amountBucket
+            ))
+            self.view?.didStartLoading()
+            self.interactor.submit()
         }
     }
 }
@@ -214,6 +242,12 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
 
     func didReceiveConfirmation(model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
+
+        analyticsService.track(.stakingConfirmed(
+            stakingType: stakingTypeName(),
+            network: chainAsset.chain.name,
+            amountBucket: computeAmountBucket()
+        ))
 
         wireframe.presentExtrinsicSubmission(
             from: view,
@@ -247,6 +281,22 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
             }
         case let .confirmation(internalError):
             view?.didStopLoading()
+
+            let reason: String
+            if internalError is NoKeysSigningWrapperError {
+                reason = "signing_unavailable"
+            } else if internalError.isSigningCancelled {
+                reason = "user_cancelled"
+            } else if internalError is URLError || (internalError as NSError).domain == NSURLErrorDomain {
+                reason = "network_error"
+            } else {
+                reason = "unknown"
+            }
+            analyticsService.track(.stakingFailed(
+                stakingType: stakingTypeName(),
+                network: chainAsset.chain.name,
+                reason: reason
+            ))
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 internalError,

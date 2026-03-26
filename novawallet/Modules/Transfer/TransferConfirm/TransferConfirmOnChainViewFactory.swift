@@ -103,6 +103,7 @@ struct TransferConfirmOnChainViewFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: localizationManager,
             transferCompletion: transferCompletion
         )

@@ -56,7 +56,8 @@ struct BannersViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             locale: locale,
-            closeActionAvailable: closeFeatureAvailability(for: domain)
+            closeActionAvailable: closeFeatureAvailability(for: domain),
+            screenName: domain.rawValue
         )
 
         let view = BannersViewController(presenter: presenter)

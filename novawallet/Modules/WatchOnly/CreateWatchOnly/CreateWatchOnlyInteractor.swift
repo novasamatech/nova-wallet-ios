@@ -61,6 +61,7 @@ extension CreateWatchOnlyInteractor: CreateWatchOnlyInteractorInputProtocol {
                     self?.settings.setup()
                     self?.eventCenter.notify(with: SelectedWalletSwitched())
                     self?.eventCenter.notify(with: NewWalletImported())
+                    PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: .importWatchOnly))
                     self?.presenter?.didCreateWallet()
                 } catch {
                     self?.presenter?.didFailWalletCreation(with: error)

@@ -65,6 +65,7 @@ extension CloudBackupAddWalletInteractor: CloudBackupAddWalletInteractorInputPro
                     self?.walletSettings.setup()
                     self?.eventCenter.notify(with: SelectedWalletSwitched())
                     self?.eventCenter.notify(with: NewWalletCreated())
+                    PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: .cloudBackup))
                     self?.presenter?.didCreateWallet()
 
                 case let .failure(error):

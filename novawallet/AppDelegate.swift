@@ -9,6 +9,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var urlHandlingFacade: URLHandlingServiceFacadeProtocol { URLHandlingServiceFacade.shared }
 
+    private var analyticsService: AnalyticsServiceProtocol { PostHogAnalyticsService.shared }
+
     var isUnitTesting: Bool {
         ProcessInfo.processInfo.arguments.contains("-UNITTEST")
     }
@@ -33,10 +35,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // setup the facade after dependencies are proper initialized by Root module
         setupUrlHandling()
 
+        // Initialize analytics -- reads persisted consent before enabling
         PostHogAnalyticsService.shared.initialize()
 
-        let isFirstLaunch = settings.isAppFirstLaunch
-        PostHogAnalyticsService.shared.track(.appOpened(isFirstLaunch: isFirstLaunch))
+        // Only fire appOpened if user has opted in to analytics
+        if settings.analyticsEnabled {
+            let isFirstLaunch = settings.isAppFirstLaunch
+            analyticsService.track(.appOpened(isFirstLaunch: isFirstLaunch))
+        }
 
         markAppFirstTimeLaunchIfNeeded()
 

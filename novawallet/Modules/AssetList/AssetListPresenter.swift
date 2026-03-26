@@ -4,6 +4,7 @@ import SubstrateSdk
 import Foundation_iOS
 import BigInt
 import UIKit
+import Keystore_iOS
 
 final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
@@ -531,6 +532,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         switch item {
         case .nfts:
+            PostHogAnalyticsService.shared.track(.nftSectionOpened(nftCount: model.nfts.count))
             wireframe.showNfts(from: view)
         case .pendingTransactions:
             wireframe.showMultisigOperations(from: view)
@@ -568,6 +570,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func presentCard() {
         guard let wallet else { return }
+
+        PostHogAnalyticsService.shared.track(.novaCardOpened)
 
         wireframe.showCard(
             from: view,

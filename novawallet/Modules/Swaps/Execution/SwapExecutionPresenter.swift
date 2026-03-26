@@ -6,6 +6,7 @@ final class SwapExecutionPresenter {
     let wireframe: SwapExecutionWireframeProtocol
     let interactor: SwapExecutionInteractorInputProtocol
 
+    private let executionStartTime = Date()
     let model: SwapExecutionModel
     let executionViewModelFactory: SwapExecutionViewModelFactoryProtocol
     let detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol
@@ -330,10 +331,51 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
 
     func didCompleteFullExecution(received _: Balance) {
         updateCompletedStateIfNeeded()
+
+        let priceDecimal = payAssetPrice?.decimalRate ?? 0
+        let amountDecimal = Decimal.fromSubstrateAmount(
+            model.quote.route.amountIn,
+            precision: Int16(chainAssetIn.asset.precision)
+        ) ?? 0
+        let amountBucket = AmountBucket.from(usdValue: amountDecimal * priceDecimal)
+        let slippageBucket: SlippageBucket = {
+            guard let slippageDecimal = model.fee.slippage.decimalValue else { return .custom }
+            return SlippageBucket.from(slippagePercent: slippageDecimal * 100)
+        }()
+        let durationBucket = DurationBucket.from(seconds: Date().timeIntervalSince(executionStartTime))
+
+        PostHogAnalyticsService.shared.track(.swapConfirmed(
+            amountBucket: amountBucket,
+            slippageBucket: slippageBucket,
+            assetIn: chainAssetIn.asset.symbol,
+            assetOut: chainAssetOut.asset.symbol,
+            networkIn: chainAssetIn.chain.name,
+            networkOut: chainAssetOut.chain.name
+        ))
+        PostHogAnalyticsService.shared.track(.swapCompleted(
+            amountBucket: amountBucket,
+            durationBucket: durationBucket,
+            assetIn: chainAssetIn.asset.symbol,
+            assetOut: chainAssetOut.asset.symbol,
+            networkIn: chainAssetIn.chain.name,
+            networkOut: chainAssetOut.chain.name
+        ))
     }
 
     func didFailExecution(with error: Error) {
         updateFailedStateIfNeeded(with: error)
+
+        let reason: SwapFailureReason
+        if error is NoKeysSigningWrapperError {
+            reason = .signingUnavailable
+        } else if error.isSigningCancelled {
+            reason = .userCancelled
+        } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+            reason = .networkError
+        } else {
+            reason = .unknown
+        }
+        PostHogAnalyticsService.shared.track(.swapFailed(reason: reason))
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(
             error,

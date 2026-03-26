@@ -1,6 +1,7 @@
 import Foundation
+import Keystore_iOS
 
-protocol AnalyticsOptOutManaging {
+protocol AnalyticsOptOutManaging: AnyObject {
     var isAnalyticsEnabled: Bool { get set }
 }
 
@@ -15,7 +16,7 @@ final class AnalyticsOptOutManager: AnalyticsOptOutManaging {
         self.settings = settings
         self.analyticsService = analyticsService
 
-        // Sync initial state
+        // Sync initial state from persisted settings
         analyticsService.isEnabled = settings.analyticsEnabled
     }
 

@@ -14,11 +14,15 @@ enum AmountBucket: String {
         case ..<1: return .under1
         case ..<10: return .from1To10
         case ..<100: return .from10To100
-        case ..<1_000: return .from100To1K
-        case ..<10_000: return .from1KTo10K
+        case ..<1000: return .from100To1K
+        case ..<10000: return .from1KTo10K
         case ..<100_000: return .from10KTo100K
         default: return .over100K
         }
+    }
+
+    static func from(usdValue: Decimal) -> AmountBucket {
+        from(usdAmount: usdValue)
     }
 }
 
@@ -41,6 +45,10 @@ enum DurationBucket: String {
         default: return .over5m
         }
     }
+
+    static func from(seconds: TimeInterval) -> DurationBucket {
+        from(milliseconds: Int64(seconds * 1000))
+    }
 }
 
 enum SlippageBucket: String {
@@ -56,5 +64,9 @@ enum SlippageBucket: String {
         case ...3.0: return .high
         default: return .custom
         }
+    }
+
+    static func from(slippagePercent: Decimal) -> SlippageBucket {
+        from(percentage: NSDecimalNumber(decimal: slippagePercent).doubleValue)
     }
 }

@@ -15,6 +15,7 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
         selectedAccount: MetaChainAccountResponse,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -28,6 +29,7 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
             selectedAccount: selectedAccount,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: analyticsService,
             localizationManager: localizationManager,
             logger: logger
         )

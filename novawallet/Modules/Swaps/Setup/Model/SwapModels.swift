@@ -8,19 +8,22 @@ struct SwapSetupInitState {
     let feeChainAsset: ChainAsset?
     let amount: Decimal?
     let direction: AssetConversion.Direction?
+    let source: SwapSource?
 
     init(
         payChainAsset: ChainAsset?,
         receiveChainAsset: ChainAsset? = nil,
         feeChainAsset: ChainAsset? = nil,
         amount: Decimal? = nil,
-        direction: AssetConversion.Direction? = nil
+        direction: AssetConversion.Direction? = nil,
+        source: SwapSource? = .mainScreen
     ) {
         self.payChainAsset = payChainAsset
         self.receiveChainAsset = receiveChainAsset
         self.feeChainAsset = feeChainAsset
         self.amount = amount
         self.direction = direction
+        self.source = source
     }
 }
 
