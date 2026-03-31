@@ -22,6 +22,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(focus: TextFieldFocus?)
     func didStartLoading()
     func didStopLoading()
+    func didReceiveNovaFeeDisclaimer(visible: Bool)
 }
 
 protocol SwapSetupPresenterProtocol: AnyObject {

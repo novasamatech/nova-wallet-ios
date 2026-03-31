@@ -1755,7 +1755,9 @@
 "sec.time.units" = "秒";
 "swaps.execution.dont.close.app" = "アプリを閉じないでください！";
 "swaps.details.exec.time" = "実行時間";
-"swaps.details.total.fee" = "合計手数料";
+"swaps.details.total.fee" = "ネットワーク手数料";
+"swaps.nova.fee.disclaimer" = "%@%%のNova手数料が含まれます。";
+"swaps.rate.with.fee.description" = "Nova Walletの%@%%手数料を含む、最良のレートです。";
 "swaps.label.transfer" = "転送";
 "swaps.label.swap" = "スワップ";
 "swap.route.details.subtitle" = "異なるネットワークを通じて希望するトークンを得るためにトークンが通る経路です。";

@@ -22,7 +22,7 @@ protocol SwapExecutionPresenterProtocol: AnyObject {
 }
 
 protocol SwapExecutionInteractorInputProtocol: AnyObject {
-    func submit(using estimation: AssetExchangeFee)
+    func submit(using model: SwapExecutionModel)
 }
 
 protocol SwapExecutionInteractorOutputProtocol: AnyObject {

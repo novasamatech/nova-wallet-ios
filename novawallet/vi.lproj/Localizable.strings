@@ -1755,7 +1755,9 @@
 "sec.time.units" = "giây";
 "swaps.execution.dont.close.app" = "Không đóng ứng dụng!";
 "swaps.details.exec.time" = "Thời gian thực hiện";
-"swaps.details.total.fee" = "Tổng phí";
+"swaps.details.total.fee" = "Phí mạng";
+"swaps.nova.fee.disclaimer" = "Bao gồm phí Nova %@%%.";
+"swaps.rate.with.fee.description" = "Tỷ giá tốt nhất tìm được, bao gồm phí Nova Wallet %@%%.";
 "swaps.label.transfer" = "Chuyển";
 "swaps.label.swap" = "Hoán đổi";
 "swap.route.details.subtitle" = "Cách mà token của bạn sẽ đi qua các mạng lưới khác nhau để có được token mong muốn.";

@@ -106,7 +106,7 @@ final class SwapExecutionPresenter {
     private func provideAssetOutViewModel() {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
-            amount: quote.route.amountOut,
+            amount: quote.displayAmountOut,
             priceData: receiveAssetPrice,
             locale: selectedLocale
         )
@@ -119,7 +119,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: model.quote.route.amountIn,
-            amountOut: model.quote.route.amountOut
+            amountOut: model.quote.displayAmountOut
         )
 
         let viewModel = detailsViewModelFactory.rateViewModel(from: params, locale: selectedLocale)
@@ -262,11 +262,11 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
 
         updateInProgressStateIfNeeded(for: 0)
 
-        interactor.submit(using: model.fee)
+        interactor.submit(using: model)
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(from: view, includesNovaFee: quote.willCollectCommission)
     }
 
     func showRouteDetails() {

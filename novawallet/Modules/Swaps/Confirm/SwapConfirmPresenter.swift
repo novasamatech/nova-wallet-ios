@@ -186,7 +186,7 @@ extension SwapConfirmPresenter {
         }
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
-            amount: quote.route.amountOut,
+            amount: quote.displayAmountOut,
             priceData: receiveAssetPriceData,
             locale: selectedLocale
         )
@@ -203,7 +203,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: quote.displayAmountOut
         )
         let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 
@@ -307,6 +307,10 @@ extension SwapConfirmPresenter {
         provideSlippageViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
+
+        if let quote {
+            view?.didReceiveNovaFeeDisclaimer(visible: quote.willCollectCommission)
+        }
     }
 
     private func submit() {
@@ -336,7 +340,7 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(from: view, includesNovaFee: quote?.willCollectCommission ?? false)
     }
 
     func showPriceDifferenceInfo() {

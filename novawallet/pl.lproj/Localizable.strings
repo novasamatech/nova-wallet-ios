@@ -1755,7 +1755,9 @@
 "sec.time.units" = "sek";
 "swaps.execution.dont.close.app" = "Nie zamykaj aplikacji!";
 "swaps.details.exec.time" = "Czas wykonania";
-"swaps.details.total.fee" = "Łączna opłata";
+"swaps.details.total.fee" = "Opłaty sieciowe";
+"swaps.nova.fee.disclaimer" = "Zawiera opłatę Nova w wysokości %@%%.";
+"swaps.rate.with.fee.description" = "Najlepszy znaleziony kurs, zawierający opłatę Nova Wallet w wysokości %@%%.";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Swap";
 "swap.route.details.subtitle" = "Droga, którą twoje tokeny przejdą przez różne sieci, aby uzyskać żądany token.";

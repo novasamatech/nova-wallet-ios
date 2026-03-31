@@ -62,7 +62,24 @@ extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
             return
         }
 
-        let wrapper = assetsExchangeService.submitSingleOperationWrapper(using: model.fee)
+        NovaSwapCommissionClosureFactory.resolveCommission(
+            for: model,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            logger: logger
+        ) { [weak self] commission in
+            self?.performSingleOperationSubmit(model: model, commission: commission)
+        }
+    }
+
+    private func performSingleOperationSubmit(
+        model: SwapExecutionModel,
+        commission: SwapCommissionResult?
+    ) {
+        let wrapper = assetsExchangeService.submitSingleOperationWrapper(
+            using: model.fee,
+            bundleExtraActions: commission?.builderClosure
+        )
 
         execute(
             wrapper: wrapper,

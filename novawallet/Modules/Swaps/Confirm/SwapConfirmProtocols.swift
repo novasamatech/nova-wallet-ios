@@ -14,6 +14,7 @@ protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveWarning(viewModel: String?)
     func didReceiveStartLoading()
     func didReceiveStopLoading()
+    func didReceiveNovaFeeDisclaimer(visible: Bool)
 }
 
 protocol SwapConfirmPresenterProtocol: AnyObject {

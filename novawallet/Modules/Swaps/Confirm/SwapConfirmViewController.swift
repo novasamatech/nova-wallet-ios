@@ -143,6 +143,10 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
     func didReceiveStopLoading() {
         rootView.loadableActionView.stopLoading()
     }
+
+    func didReceiveNovaFeeDisclaimer(visible: Bool) {
+        rootView.novaFeeDisclaimerLabel.isHidden = !visible
+    }
 }
 
 extension SwapConfirmViewController: Localizable {

@@ -9,7 +9,10 @@ extension TransactionHistoryLocalFilterFactory {
     ) -> TransactionHistoryLocalFilterFactory {
         TransactionHistoryLocalFilterFactory(
             providers: [
-                ConstantHistoryFiltersProvider(filters: [TransactionHistoryPhishingFilter()]),
+                ConstantHistoryFiltersProvider(filters: [
+                    TransactionHistoryPhishingFilter(),
+                    NovaFeeTransferFilter()
+                ]),
                 PoolStakingHistoryFiltersProvider(chainAsset: chainAsset, chainRegistry: chainRegistry),
                 MythosHistoryFiltersProvider(
                     chainAsset: chainAsset,

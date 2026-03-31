@@ -153,12 +153,20 @@ final class SwapSetupPresenter: SwapBasePresenter {
             }
 
             payAmountInput = payAmount.map { .absolute($0) }
+
+            if quote.willCollectCommission {
+                receiveAmountInput = receiveChainAsset.map {
+                    quote.displayAmountOut.decimal(assetInfo: $0.asset.displayInfo)
+                }
+                provideReceiveAmountInputViewModel()
+            }
+
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
             provideReceiveInputPriceViewModel()
         case .sell:
             receiveAmountInput = receiveChainAsset.map {
-                quote.route.quote.decimal(assetInfo: $0.asset.displayInfo)
+                quote.displayAmountOut.decimal(assetInfo: $0.asset.displayInfo)
             }
 
             provideReceiveAmountInputViewModel()
@@ -172,6 +180,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideButtonState()
         provideDetailsViewModel()
         estimateFee()
+
+        view?.didReceiveNovaFeeDisclaimer(visible: quote.willCollectCommission)
     }
 
     override func handleNewFee(
@@ -449,7 +459,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.route.amountOut
+                amountOut: quote.displayAmountOut
             ),
             locale: selectedLocale
         )
@@ -791,7 +801,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(from: view, includesNovaFee: quote?.willCollectCommission ?? false)
     }
 
     func showRouteDetails() {

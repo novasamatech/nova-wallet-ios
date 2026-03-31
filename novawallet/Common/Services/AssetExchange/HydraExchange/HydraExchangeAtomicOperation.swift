@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 enum HydraExchangeAtomicOperationError: Error {
     case noRoute
@@ -62,7 +63,26 @@ final class HydraExchangeAtomicOperation {
         }
     }
 
-    private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+    private func buildExtrinsic(
+        from params: HydraExchangeSwapParams,
+        builder: ExtrinsicBuilderProtocol,
+        bundleExtraActions: ExtrinsicBuilderClosure?
+    ) throws -> ExtrinsicBuilderProtocol {
+        var resultBuilder = try HydraExchangeExtrinsicConverter.addingOperation(
+            from: params,
+            builder: builder
+        )
+
+        if let bundleExtraActions {
+            resultBuilder = try bundleExtraActions(resultBuilder)
+        }
+
+        return resultBuilder
+    }
+
+    private func createFeeWrapper(
+        bundleExtraActions: ExtrinsicBuilderClosure?
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         let paramsWrapper = createExtrinsicParamsWrapper(for: operationArgs.swapLimit)
 
         let feeWrapper = OperationCombiningService<ExtrinsicFeeProtocol>.compoundNonOptionalWrapper(
@@ -71,10 +91,7 @@ final class HydraExchangeAtomicOperation {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
             let feeWrapper = self.host.extrinsicOperationFactory.estimateFeeOperation({ builder in
-                try HydraExchangeExtrinsicConverter.addingOperation(
-                    from: params,
-                    builder: builder
-                )
+                try self.buildExtrinsic(from: params, builder: builder, bundleExtraActions: bundleExtraActions)
             }, payingIn: self.operationArgs.feeAsset)
 
             return feeWrapper
@@ -86,8 +103,25 @@ final class HydraExchangeAtomicOperation {
     }
 }
 
-extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
+extension HydraExchangeAtomicOperation: BundleableAtomicSwapOperation {
     func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+        executeWrapper(for: swapLimit, bundleExtraActions: nil)
+    }
+
+    func submitWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        submitWrapper(for: swapLimit, bundleExtraActions: nil)
+    }
+
+    func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
+        estimateFee(bundleExtraActions: nil)
+    }
+
+    func executeWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        bundleExtraActions: ExtrinsicBuilderClosure?
+    ) -> CompoundOperationWrapper<Balance> {
         let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
 
         let executionWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
@@ -97,10 +131,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
 
             let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
                 extrinsicBuilderClosure: { builder in
-                    try HydraExchangeExtrinsicConverter.addingOperation(
-                        from: params,
-                        builder: builder
-                    )
+                    try self.buildExtrinsic(from: params, builder: builder, bundleExtraActions: bundleExtraActions)
                 },
                 payingIn: self.operationArgs.feeAsset,
                 signer: self.host.signingWrapper,
@@ -147,7 +178,10 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
     }
 
-    func submitWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+    func submitWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        bundleExtraActions: ExtrinsicBuilderClosure?
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
 
         let executionWrapper = OperationCombiningService<ExtrinsicSubmittedModel>.compoundNonOptionalWrapper(
@@ -157,10 +191,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
 
             let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
                 extrinsicBuilderClosure: { builder in
-                    try HydraExchangeExtrinsicConverter.addingOperation(
-                        from: params,
-                        builder: builder
-                    )
+                    try self.buildExtrinsic(from: params, builder: builder, bundleExtraActions: bundleExtraActions)
                 },
                 payingIn: self.operationArgs.feeAsset,
                 signer: self.host.signingWrapper,
@@ -182,8 +213,10 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
     }
 
-    func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
-        let feeWrapper = createFeeWrapper()
+    func estimateFee(
+        bundleExtraActions: ExtrinsicBuilderClosure?
+    ) -> CompoundOperationWrapper<AssetExchangeOperationFee> {
+        let feeWrapper = createFeeWrapper(bundleExtraActions: bundleExtraActions)
 
         let mappingOperation = ClosureOperation<AssetExchangeOperationFee> {
             let extrinsicFee = try feeWrapper.targetOperation.extractNoCancellableResultData()

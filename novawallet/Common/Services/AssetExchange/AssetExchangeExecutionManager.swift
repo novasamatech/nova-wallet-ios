@@ -16,6 +16,8 @@ final class AssetExchangeExecutionManager {
     let syncQueue: DispatchQueue
     let operationStartClosure: AssetExchangeOperationExecutionStartClosure
     let notificationQueue: DispatchQueue
+    let bundleExtraActions: ExtrinsicBuilderClosure?
+    let bundleExtraAmountDeducted: Balance
     let logger: LoggerProtocol
 
     private var completionClosure: ((Result<ResultType, Error>) -> Void)?
@@ -28,6 +30,8 @@ final class AssetExchangeExecutionManager {
         operationQueue: OperationQueue,
         operationStartClosure: @escaping AssetExchangeOperationExecutionStartClosure,
         notificationQueue: DispatchQueue,
+        bundleExtraActions: ExtrinsicBuilderClosure?,
+        bundleExtraAmountDeducted: Balance = 0,
         logger: LoggerProtocol
     ) {
         self.operations = operations
@@ -35,6 +39,8 @@ final class AssetExchangeExecutionManager {
         self.operationQueue = operationQueue
         self.operationStartClosure = operationStartClosure
         self.notificationQueue = notificationQueue
+        self.bundleExtraActions = bundleExtraActions
+        self.bundleExtraAmountDeducted = bundleExtraAmountDeducted
         self.logger = logger
 
         syncQueue = DispatchQueue(label: "io.novawallet.asset.exchange.exec.\(UUID().uuidString)")
@@ -69,11 +75,26 @@ final class AssetExchangeExecutionManager {
             shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
         )
 
-        let wrapper = operations[index].executeWrapper(for: swapLimit)
+        let wrapper: CompoundOperationWrapper<Balance>
+
+        // Bundle extra actions on the last bundleable operation (e.g., Hydra swap),
+        // not necessarily the last segment (which may be a cross-chain transfer)
+        let isLastBundleable = !operations.suffix(from: index + 1).contains { $0 is BundleableAtomicSwapOperation }
+
+        if let bundleableOp = operations[index] as? BundleableAtomicSwapOperation,
+           bundleExtraActions != nil,
+           isLastBundleable {
+            wrapper = bundleableOp.executeWrapper(for: swapLimit, bundleExtraActions: bundleExtraActions)
+        } else {
+            wrapper = operations[index].executeWrapper(for: swapLimit)
+        }
 
         notificationQueue.async { [weak self] in
             self?.operationStartClosure(index)
         }
+
+        let didBundleExtraActions = (operations[index] is BundleableAtomicSwapOperation)
+            && bundleExtraActions != nil && isLastBundleable
 
         executeCancellable(
             wrapper: wrapper,
@@ -84,7 +105,10 @@ final class AssetExchangeExecutionManager {
             switch result {
             case let .success(amountOut):
                 self?.logger.debug("Executed swap \(index): \(String(amountOut))")
-                self?.correctAmountAndExecuteNext(after: index, amountOut: amountOut)
+                let adjustedAmountOut = didBundleExtraActions
+                    ? amountOut.subtractOrZero(self?.bundleExtraAmountDeducted ?? 0)
+                    : amountOut
+                self?.correctAmountAndExecuteNext(after: index, amountOut: adjustedAmountOut)
             case let .failure(error):
                 self?.logger.error("Failed swap exec \(index): \(error)")
                 self?.complete(with: .failure(error))

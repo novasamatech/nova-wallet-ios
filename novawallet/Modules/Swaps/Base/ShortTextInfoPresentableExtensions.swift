@@ -15,12 +15,18 @@ extension ShortTextInfoPresentable {
         )
     }
 
-    func showRateInfo(from view: ControllerBackedProtocol?) {
+    func showRateInfo(from view: ControllerBackedProtocol?, includesNovaFee: Bool = false) {
         let title = LocalizableResource {
             R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupDetailsRate()
         }
         let details = LocalizableResource {
-            R.string(preferredLanguages: $0.rLanguages).localizable.swapsRateDescription()
+            if includesNovaFee {
+                return R.string(preferredLanguages: $0.rLanguages).localizable.swapsRateWithFeeDescription(
+                    HydraConstants.novaSwapFeePercentDisplay
+                )
+            } else {
+                return R.string(preferredLanguages: $0.rLanguages).localizable.swapsRateDescription()
+            }
         }
         showInfo(
             from: view,

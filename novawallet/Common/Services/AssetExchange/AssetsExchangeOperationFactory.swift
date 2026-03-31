@@ -8,11 +8,14 @@ protocol AssetsExchangeOperationFactoryProtocol {
     func createExecutionWrapper(
         for fee: AssetExchangeFee,
         notifyingIn queue: DispatchQueue,
-        operationStartClosure: @escaping (Int) -> Void
+        operationStartClosure: @escaping (Int) -> Void,
+        bundleExtraActions: ExtrinsicBuilderClosure?,
+        bundleExtraAmountDeducted: Balance
     ) -> CompoundOperationWrapper<Balance>
 
     func createSingleOperationSubmitWrapper(
-        for fee: AssetExchangeFee
+        for fee: AssetExchangeFee,
+        bundleExtraActions: ExtrinsicBuilderClosure?
     ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel>
 }
 
@@ -312,7 +315,9 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     func createExecutionWrapper(
         for fee: AssetExchangeFee,
         notifyingIn queue: DispatchQueue,
-        operationStartClosure: @escaping (Int) -> Void
+        operationStartClosure: @escaping (Int) -> Void,
+        bundleExtraActions: ExtrinsicBuilderClosure? = nil,
+        bundleExtraAmountDeducted: Balance = 0
     ) -> CompoundOperationWrapper<Balance> {
         do {
             let atomicOperations = try prepareAtomicOperations(
@@ -327,6 +332,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 operationQueue: operationQueue,
                 operationStartClosure: operationStartClosure,
                 notificationQueue: queue,
+                bundleExtraActions: bundleExtraActions,
+                bundleExtraAmountDeducted: bundleExtraAmountDeducted,
                 logger: logger
             )
 
@@ -339,7 +346,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createSingleOperationSubmitWrapper(
-        for fee: AssetExchangeFee
+        for fee: AssetExchangeFee,
+        bundleExtraActions: ExtrinsicBuilderClosure? = nil
     ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         do {
             let atomicOperations = try prepareAtomicOperations(
@@ -361,7 +369,12 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 shouldReplaceBuyWithSell: false
             )
 
-            return atomicOperation.submitWrapper(for: swapLimit)
+            if let bundleableOp = atomicOperation as? BundleableAtomicSwapOperation,
+               bundleExtraActions != nil {
+                return bundleableOp.submitWrapper(for: swapLimit, bundleExtraActions: bundleExtraActions)
+            } else {
+                return atomicOperation.submitWrapper(for: swapLimit)
+            }
         } catch {
             return .createWithError(error)
         }

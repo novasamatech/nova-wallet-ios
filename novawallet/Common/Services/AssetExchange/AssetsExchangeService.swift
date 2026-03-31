@@ -15,11 +15,14 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func submit(
         using estimation: AssetExchangeFee,
         notifyingIn queue: DispatchQueue,
-        operationStartClosure: @escaping (Int) -> Void
+        operationStartClosure: @escaping (Int) -> Void,
+        bundleExtraActions: ExtrinsicBuilderClosure?,
+        bundleExtraAmountDeducted: Balance
     ) -> CompoundOperationWrapper<Balance>
 
     func submitSingleOperationWrapper(
-        using estimation: AssetExchangeFee
+        using estimation: AssetExchangeFee,
+        bundleExtraActions: ExtrinsicBuilderClosure?
     ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel>
 
     func subscribeRequoteService(
@@ -164,22 +167,30 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
     func submit(
         using estimation: AssetExchangeFee,
         notifyingIn queue: DispatchQueue,
-        operationStartClosure: @escaping (Int) -> Void
+        operationStartClosure: @escaping (Int) -> Void,
+        bundleExtraActions: ExtrinsicBuilderClosure? = nil,
+        bundleExtraAmountDeducted: Balance = 0
     ) -> CompoundOperationWrapper<Balance> {
         prepareWrapper {
             $0.createExecutionWrapper(
                 for: estimation,
                 notifyingIn: queue,
-                operationStartClosure: operationStartClosure
+                operationStartClosure: operationStartClosure,
+                bundleExtraActions: bundleExtraActions,
+                bundleExtraAmountDeducted: bundleExtraAmountDeducted
             )
         }
     }
 
     func submitSingleOperationWrapper(
-        using estimation: AssetExchangeFee
+        using estimation: AssetExchangeFee,
+        bundleExtraActions: ExtrinsicBuilderClosure? = nil
     ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         prepareWrapper {
-            $0.createSingleOperationSubmitWrapper(for: estimation)
+            $0.createSingleOperationSubmitWrapper(
+                for: estimation,
+                bundleExtraActions: bundleExtraActions
+            )
         }
     }
 
@@ -214,5 +225,27 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
         })
 
         return CompoundOperationWrapper(targetOperation: operation)
+    }
+}
+
+extension AssetsExchangeServiceProtocol {
+    func submit(
+        using estimation: AssetExchangeFee,
+        notifyingIn queue: DispatchQueue,
+        operationStartClosure: @escaping (Int) -> Void
+    ) -> CompoundOperationWrapper<Balance> {
+        submit(
+            using: estimation,
+            notifyingIn: queue,
+            operationStartClosure: operationStartClosure,
+            bundleExtraActions: nil,
+            bundleExtraAmountDeducted: 0
+        )
+    }
+
+    func submitSingleOperationWrapper(
+        using estimation: AssetExchangeFee
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        submitSingleOperationWrapper(using: estimation, bundleExtraActions: nil)
     }
 }

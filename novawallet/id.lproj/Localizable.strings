@@ -1755,7 +1755,9 @@
 "sec.time.units" = "detik";
 "swaps.execution.dont.close.app" = "Jangan tutup aplikasinya!";
 "swaps.details.exec.time" = "Waktu eksekusi";
-"swaps.details.total.fee" = "Biaya total";
+"swaps.details.total.fee" = "Biaya jaringan";
+"swaps.nova.fee.disclaimer" = "Termasuk biaya Nova %@%%.";
+"swaps.rate.with.fee.description" = "Kurs terbaik yang ditemukan, termasuk biaya Nova Wallet %@%%.";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Tukar";
 "swap.route.details.subtitle" = "Jalur yang akan diambil token Anda melalui berbagai jaringan untuk mendapatkan token yang diinginkan.";

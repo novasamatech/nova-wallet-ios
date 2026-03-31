@@ -1755,7 +1755,9 @@
 "sec.time.units" = "초";
 "swaps.execution.dont.close.app" = "앱을 닫지 마세요!";
 "swaps.details.exec.time" = "실행 시간";
-"swaps.details.total.fee" = "총 수수료";
+"swaps.details.total.fee" = "네트워크 수수료";
+"swaps.nova.fee.disclaimer" = "%@%% Nova 수수료가 포함됩니다.";
+"swaps.rate.with.fee.description" = "%@%% Nova Wallet 수수료를 포함한 최적의 환율입니다.";
 "swaps.label.transfer" = "전송";
 "swaps.label.swap" = "스왑";
 "swap.route.details.subtitle" = "당신의 토큰이 원하는 토큰을 얻기 위해 다른 네트워크를 통해 이동하는 방식입니다.";

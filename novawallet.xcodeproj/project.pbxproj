@@ -2991,6 +2991,7 @@
 		73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367393F8CA6157A999F69573 /* AssetsSearchViewLayout.swift */; };
 		7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2956D0C69019DDCDAB2EB34 /* CustomValidatorListViewLayout.swift */; };
 		7489BDA1D23D8DF73E7EB9BC /* UsernameSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD15693E21C869DE1FDD17 /* UsernameSetupWireframe.swift */; };
+		749070E6212D99D620C0FC6A /* NovaSwapCommissionClosureFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38229B6F4B8F1EF607213E6 /* NovaSwapCommissionClosureFactory.swift */; };
 		74A93B3225BF8541B69F88EF /* CloudBackupAddWalletPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7F67ECE6129E9249F89202 /* CloudBackupAddWalletPresenter.swift */; };
 		74F470AE889B0E49D9808802 /* ReferendumFullDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369C65964F4D7E8D02EEC5EC /* ReferendumFullDetailsViewFactory.swift */; };
 		75249684C6F3EE4E553DABA1 /* GovernanceYourDelegationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21621DCC39234CC4B0A1433B /* GovernanceYourDelegationsPresenter.swift */; };
@@ -6419,6 +6420,7 @@
 		F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCC9E55522C1D33C353A9A08 /* PayCardWireframe.swift */; };
 		F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1113F43B2C2EA6CA128893 /* CrowdloanUnlockViewLayout.swift */; };
 		F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */; };
+		F27840247C1216839FB6BB84 /* AssetExchangeQuote+NovaFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54A7D4859AF479ABEB298D5 /* AssetExchangeQuote+NovaFee.swift */; };
 		F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA94E5B74194AABA482F2FD /* WalletConnectSessionDetailsProtocols.swift */; };
 		F35B520D7955A70588AB593C /* ReferendumVoteConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */; };
 		F3719F7C2AD0B75FC271DCE9 /* NPoolsRedeemViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B13FCAD745A663807219B1 /* NPoolsRedeemViewFactory.swift */; };
@@ -12494,6 +12496,7 @@
 		C2956D0C69019DDCDAB2EB34 /* CustomValidatorListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomValidatorListViewLayout.swift; sourceTree = "<group>"; };
 		C2CCB36A1265AA89D345B3CE /* TransactionHistoryProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransactionHistoryProtocols.swift; sourceTree = "<group>"; };
 		C2D8A1ACC06F8EA9CE6C982B /* BackupAttentionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewController.swift; sourceTree = "<group>"; };
+		C38229B6F4B8F1EF607213E6 /* NovaSwapCommissionClosureFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaSwapCommissionClosureFactory.swift; path = novawallet/Modules/Swaps/Base/NovaSwapCommissionClosureFactory.swift; sourceTree = "<group>"; };
 		C3971167D84B9FABEED47DE4 /* GenericLedgerWalletViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletViewFactory.swift; sourceTree = "<group>"; };
 		C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumDetailsProtocols.swift; sourceTree = "<group>"; };
 		C3E1250905B8D8E175316B0A /* SwapExecutionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapExecutionViewFactory.swift; sourceTree = "<group>"; };
@@ -12664,6 +12667,7 @@
 		E4E89B52CA0A12A4008756FB /* AppearanceSettingsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsWireframe.swift; sourceTree = "<group>"; };
 		E523B51AF0B8B1EB3FC28B56 /* GenericLedgerAccountSelectionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionViewController.swift; sourceTree = "<group>"; };
 		E54289A8A9354D5DDA15F0E1 /* ChangeWatchOnlyViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChangeWatchOnlyViewFactory.swift; sourceTree = "<group>"; };
+		E54A7D4859AF479ABEB298D5 /* AssetExchangeQuote+NovaFee.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AssetExchangeQuote+NovaFee.swift"; path = "novawallet/Modules/Swaps/Base/AssetExchangeQuote+NovaFee.swift"; sourceTree = "<group>"; };
 		E57E3EA5C070C64000ABCDC0 /* StakingRewardPayoutsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsWireframe.swift; sourceTree = "<group>"; };
 		E5ACCFD31E14AF4D30955288 /* StakingPayoutConfirmationWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationWireframe.swift; sourceTree = "<group>"; };
 		E5C144CEF4852B97149A1848 /* DAppAuthSettingsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsViewLayout.swift; sourceTree = "<group>"; };
@@ -23850,6 +23854,8 @@
 				8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */,
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
 				2D4FF13E2EE2F1C4005EC078 /* Frameworks */,
+				C38229B6F4B8F1EF607213E6 /* NovaSwapCommissionClosureFactory.swift */,
+				E54A7D4859AF479ABEB298D5 /* AssetExchangeQuote+NovaFee.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -30341,7 +30347,7 @@
 				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
 				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
 				0C8FCEA92E672C5500034ED3 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
-				0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */,
+				0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */,
 				0C8FCEAF2E672CFA00034ED3 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0C8FCEB22E672D3900034ED3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				0C8FCEB52E672D8100034ED3 /* XCRemoteSwiftPackageReference "SwiftDraw" */,
@@ -30353,7 +30359,7 @@
 				0C8FCEC72E6734E900034ED3 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
 				0C8FCECA2E6735F300034ED3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */,
-				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */,
+				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */,
 				0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */,
 				0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */,
 				0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */,
@@ -36845,6 +36851,8 @@
 				33096BCF84A6ABA8416678FF /* CrowdloanUnlockViewController.swift in Sources */,
 				F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */,
 				6B19F3A772108FBED12A7260 /* CrowdloanUnlockViewFactory.swift in Sources */,
+				749070E6212D99D620C0FC6A /* NovaSwapCommissionClosureFactory.swift in Sources */,
+				F27840247C1216839FB6BB84 /* AssetExchangeQuote+NovaFee.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37035,15 +37043,15 @@
 /* Begin PBXTargetDependency section */
 		0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C1995CA2E6B2DE600E0B909 /* RswiftGenerateInternalResources */;
+			productRef = 0C1995CA2E6B2DE600E0B909 /* plugin:RswiftGenerateInternalResources */;
 		};
 		0C1A0F502E69C04E00254E20 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C1A0F4F2E69C04E00254E20 /* CuckooPluginSingleFile */;
+			productRef = 0C1A0F4F2E69C04E00254E20 /* plugin:CuckooPluginSingleFile */;
 		};
 		0C6A9E2D2E6B1FC40088C2BA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 0C6A9E2C2E6B1FC40088C2BA /* RswiftGenerateInternalResources */;
+			productRef = 0C6A9E2C2E6B1FC40088C2BA /* plugin:RswiftGenerateInternalResources */;
 		};
 		77CAF4352B8E96A400E4297C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -38037,7 +38045,7 @@
 				version = 2.1.1;
 			};
 		};
-		0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */ = {
+		0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
 			requirement = {
@@ -38133,7 +38141,7 @@
 				version = 0.2.1;
 			};
 		};
-		0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */ = {
+		0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mac-cain13/R.swift";
 			requirement = {
@@ -38192,24 +38200,24 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0C1995CA2E6B2DE600E0B909 /* RswiftGenerateInternalResources */ = {
+		0C1995CA2E6B2DE600E0B909 /* plugin:RswiftGenerateInternalResources */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0C1A0F472E68E01C00254E20 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = RswiftLibrary;
 		};
-		0C1A0F4F2E69C04E00254E20 /* CuckooPluginSingleFile */ = {
+		0C1A0F4F2E69C04E00254E20 /* plugin:CuckooPluginSingleFile */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */;
 			productName = "plugin:CuckooPluginSingleFile";
 		};
 		0C1A0F562E69EC5C00254E20 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = RswiftLibrary;
 		};
 		0C2BAA1C2E677B6E008157E7 /* web3swift */ = {
@@ -38224,7 +38232,7 @@
 		};
 		0C2BAA332E67841C008157E7 /* RswiftLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = RswiftLibrary;
 		};
 		0C2BAA552E687BD0008157E7 /* HydraMathApi */ = {
@@ -38262,9 +38270,9 @@
 			package = 0C8FCE972E6725D700034ED3 /* XCRemoteSwiftPackageReference "web3swift" */;
 			productName = web3swift;
 		};
-		0C6A9E2C2E6B1FC40088C2BA /* RswiftGenerateInternalResources */ = {
+		0C6A9E2C2E6B1FC40088C2BA /* plugin:RswiftGenerateInternalResources */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */;
+			package = 0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R.swift" */;
 			productName = "plugin:RswiftGenerateInternalResources";
 		};
 		0C8FCE752E65ED3400034ED3 /* DGCharts */ = {
@@ -38309,7 +38317,7 @@
 		};
 		0C8FCEAD2E672CB000034ED3 /* Reachability */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability" */;
+			package = 0C8FCEAC2E672CB000034ED3 /* XCRemoteSwiftPackageReference "Reachability.swift" */;
 			productName = Reachability;
 		};
 		0C8FCEB02E672CFA00034ED3 /* SnapKit */ = {

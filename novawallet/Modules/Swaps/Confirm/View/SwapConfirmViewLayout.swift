@@ -51,6 +51,12 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
     }
 
+    let novaFeeDisclaimerLabel: UILabel = .create {
+        $0.apply(style: .caption1Secondary)
+        $0.textAlignment = .center
+        $0.isHidden = true
+    }
+
     private var warningView: InlineAlertView?
 
     let loadableActionView = LoadableActionView()
@@ -64,13 +70,15 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
 
         addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(detailsTableView, spacingAfter: 8)
+        addArrangedSubview(detailsTableView, spacingAfter: 4)
         detailsTableView.addArrangedSubview(rateCell)
         detailsTableView.addArrangedSubview(priceDifferenceCell)
         detailsTableView.addArrangedSubview(slippageCell)
         detailsTableView.addArrangedSubview(routeCell)
         detailsTableView.addArrangedSubview(execTimeCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
+
+        addArrangedSubview(novaFeeDisclaimerLabel, spacingAfter: 8)
 
         addArrangedSubview(walletTableView, spacingAfter: 8)
         walletTableView.addArrangedSubview(walletCell)
@@ -106,6 +114,10 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         networkFeeCell.titleButton.setTitle(
             R.string(preferredLanguages: locale.rLanguages).localizable.swapsDetailsTotalFee()
         )
+
+        novaFeeDisclaimerLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsNovaFeeDisclaimer(HydraConstants.novaSwapFeePercentDisplay)
 
         walletCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonWallet()
         accountCell.titleLabel.text = R.string(preferredLanguages: locale.rLanguages).localizable.commonAccount()

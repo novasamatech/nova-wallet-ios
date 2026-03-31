@@ -1755,7 +1755,9 @@
 "sec.time.units" = "seg";
 "swaps.execution.dont.close.app" = "Não feche o aplicativo!";
 "swaps.details.exec.time" = "Tempo de execução";
-"swaps.details.total.fee" = "Taxa total";
+"swaps.details.total.fee" = "Taxas de rede";
+"swaps.nova.fee.disclaimer" = "Inclui uma taxa Nova de %@%%.";
+"swaps.rate.with.fee.description" = "A melhor taxa encontrada, incluindo uma taxa Nova Wallet de %@%%.";
 "swaps.label.transfer" = "Transferência";
 "swaps.label.swap" = "Troca";
 "swap.route.details.subtitle" = "O caminho que seu token percorrerá através de diferentes redes para obter o token desejado.";

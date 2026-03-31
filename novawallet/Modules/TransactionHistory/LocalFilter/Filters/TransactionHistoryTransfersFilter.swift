@@ -1,5 +1,27 @@
 import Foundation
 
+final class NovaFeeTransferFilter: TransactionHistoryLocalFilterProtocol {
+    func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
+        guard model.callPath.isTransfer,
+              let receiverAddress = model.receiver else {
+            return true
+        }
+
+        // Try hex (raw accountId) and SS58 (any prefix) formats
+        if let recipient = try? Data(hexString: receiverAddress),
+           recipient == HydraConstants.novaFeeAccountId {
+            return false
+        }
+
+        if let recipient = try? receiverAddress.toAccountId(),
+           recipient == HydraConstants.novaFeeAccountId {
+            return false
+        }
+
+        return true
+    }
+}
+
 final class TransactionHistoryTransfersFilter {
     let ignoredSenders: Set<AccountId>
     let ignoredRecipients: Set<AccountId>

@@ -266,6 +266,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
+    func didReceiveNovaFeeDisclaimer(visible: Bool) {
+        rootView.setNovaFeeDisclaimerVisible(visible)
+    }
+
     func didReceiveSettingsState(isAvailable: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isAvailable
     }

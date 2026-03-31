@@ -1755,7 +1755,9 @@
 "sec.time.units" = "mp";
 "swaps.execution.dont.close.app" = "Ne zárja be az alkalmazást!";
 "swaps.details.exec.time" = "Végrehajtási idő";
-"swaps.details.total.fee" = "Teljes díj";
+"swaps.details.total.fee" = "Hálózati díjak";
+"swaps.nova.fee.disclaimer" = "%@%%-os Nova díjat tartalmaz.";
+"swaps.rate.with.fee.description" = "A legjobb megtalált árfolyam, beleértve a %@%%-os Nova Wallet díjat.";
 "swaps.label.transfer" = "Átutalás";
 "swaps.label.swap" = "Csere";
 "swap.route.details.subtitle" = "Az út, amelyen a tokenje különböző hálózatokon megy át, hogy megkapja a kívánt tokent.";

@@ -35,6 +35,12 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.setExpanded(false, animated: false)
     }
 
+    let novaFeeDisclaimerLabel: UILabel = .create {
+        $0.apply(style: .caption1Secondary)
+        $0.textAlignment = .center
+        $0.isHidden = true
+    }
+
     var rateCell: SwapInfoViewCell {
         detailsView.rateCell
     }
@@ -124,7 +130,8 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
             $0.height.equalTo(64)
         }
 
-        addArrangedSubview(detailsView, spacingAfter: 8)
+        addArrangedSubview(detailsView, spacingAfter: 4)
+        addArrangedSubview(novaFeeDisclaimerLabel, spacingAfter: 8)
 
         addSubview(switchButton)
         switchButton.snp.makeConstraints {
@@ -159,6 +166,14 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         routeCell.titleButton.invalidateLayout()
         execTimeCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
+
+        novaFeeDisclaimerLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsNovaFeeDisclaimer(HydraConstants.novaSwapFeePercentDisplay)
+    }
+
+    func setNovaFeeDisclaimerVisible(_ visible: Bool) {
+        novaFeeDisclaimerLabel.isHidden = !visible
     }
 
     func changeDepositTokenButtonVisibility(hidden: Bool) {
