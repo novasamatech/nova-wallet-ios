@@ -12,6 +12,7 @@ class WalletsListPresenter {
 
     var viewModels: [WalletsListSectionViewModel] = []
     private(set) var chains: [ChainModel.Id: ChainModel] = [:]
+    var searchQuery: String = ""
 
     let walletsList: ListDifferenceCalculator<ManagedMetaAccountModel> = {
         let calculator = ListDifferenceCalculator<ManagedMetaAccountModel>(
@@ -78,10 +79,27 @@ class WalletsListPresenter {
     }
 
     private func updateViewModels() {
-        if let balancesCalculator = balancesCalculator {
+        let trimmed = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty,
+           let factory = viewModelFactory as? WalletsListViewModelFactory {
+            let section = factory.createSearchResultsSection(
+                query: trimmed,
+                wallets: walletsList.allItems,
+                balancesCalculator: balancesCalculator,
+                chains: chains,
+                locale: selectedLocale
+            )
+            viewModels = [section]
+        } else if let balancesCalculator = balancesCalculator {
             viewModels = viewModelFactory.createSectionViewModels(
                 for: walletsList.allItems,
                 balancesCalculator: balancesCalculator,
+                chains: chains,
+                locale: selectedLocale
+            )
+        } else {
+            viewModels = viewModelFactory.createSectionViewModels(
+                for: walletsList.allItems,
                 chains: chains,
                 locale: selectedLocale
             )
@@ -106,6 +124,11 @@ extension WalletsListPresenter: WalletsListPresenterProtocol {
 
     func section(at index: Int) -> WalletsListSectionViewModel {
         viewModels[index]
+    }
+
+    func search(query: String) {
+        searchQuery = query
+        updateViewModels()
     }
 }
 

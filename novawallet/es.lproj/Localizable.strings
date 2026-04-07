@@ -2035,3 +2035,8 @@
 "create.watch.only.missing.any.address" = "Introduce al menos una dirección...";
 "asset.list.watch.only.balance" = "Saldo solo de visualización";
 "create.watch.only.subtitle" = "Sigue la actividad de la cartera sin una clave privada.\nNo podrás realizar ninguna transacción.";
+"common.favourites" = "Favoritos";
+"common.wallets" = "Billeteras";
+"common.search.results" = "Resultados de búsqueda";
+"common.search.wallets.placeholder" = "Buscar billeteras…";
+"common.proxy" = "Proxy";

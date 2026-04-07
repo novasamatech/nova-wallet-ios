@@ -78,8 +78,8 @@ class WalletsListViewController<
 
         switch section.type {
         case .secrets:
-            icon = nil
-            title = nil
+            icon = UIImage(systemName: "wallet.pass.fill")
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWallets().uppercased()
         case .watchOnly:
             icon = R.image.iconWatchOnlyHeader()
             title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWatchOnly().uppercased()
@@ -103,6 +103,15 @@ class WalletsListViewController<
         case .genericLedger:
             icon = R.image.iconLedgerHeader()
             title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonLedger().uppercased()
+        case .favourites:
+            icon = UIImage(systemName: "star.fill")?.withTintColor(
+                R.color.colorIconAccent() ?? .systemYellow,
+                renderingMode: .alwaysOriginal
+            )
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonFavourites().uppercased()
+        case .searchResults:
+            icon = UIImage(systemName: "magnifyingglass")
+            title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSearchResults().uppercased()
         }
 
         guard let title, let icon else { return nil }
@@ -123,15 +132,16 @@ class WalletsListViewController<
         let section = basePresenter.section(at: section)
 
         switch section.type {
-        case .secrets:
-            return 0.0
         case .watchOnly,
+             .secrets,
              .paritySigner,
              .polkadotVault,
              .ledger,
              .proxied,
              .genericLedger,
-             .multisig:
+             .multisig,
+             .favourites,
+             .searchResults:
             return 46.0
         }
     }

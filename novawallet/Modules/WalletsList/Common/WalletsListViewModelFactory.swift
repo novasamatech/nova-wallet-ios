@@ -71,7 +71,8 @@ class WalletsListViewModelFactory {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: walletViewModel,
-            isSelected: isSelected(wallet: wallet)
+            isSelected: isSelected(wallet: wallet),
+            isFavourite: wallet.isFavourite
         )
     }
 
@@ -92,7 +93,8 @@ class WalletsListViewModelFactory {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: walletViewModel,
-            isSelected: isSelected(wallet: wallet)
+            isSelected: isSelected(wallet: wallet),
+            isFavourite: wallet.isFavourite
         )
     }
 }
@@ -165,7 +167,8 @@ extension WalletsListViewModelFactory {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: viewModel,
-            isSelected: isSelected(wallet: wallet)
+            isSelected: isSelected(wallet: wallet),
+            isFavourite: wallet.isFavourite
         )
     }
 
@@ -215,7 +218,8 @@ extension WalletsListViewModelFactory {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: proxyModel,
-            isSelected: isSelected(wallet: wallet)
+            isSelected: isSelected(wallet: wallet),
+            isFavourite: wallet.isFavourite
         )
     }
 
@@ -229,7 +233,7 @@ extension WalletsListViewModelFactory {
 
 // MARK: - Private
 
-private extension WalletsListViewModelFactory {
+extension WalletsListViewModelFactory {
     func createSection(
         type: WalletsListSectionViewModel.SectionType,
         wallets: [ManagedMetaAccountModel],
@@ -303,6 +307,159 @@ private extension WalletsListViewModelFactory {
         }
     }
 
+    func createSingleItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        balancesCalculator: BalancesCalculating?,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListViewModel? {
+        switch WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) {
+        case .proxied:
+            return createProxyItemViewModel(for: wallet, wallets: wallets, chains: chains, locale: locale)
+        case .multisig:
+            return createMultisigItemViewModel(for: wallet, wallets: wallets, chains: chains, locale: locale)
+        default:
+            if let balancesCalculator = balancesCalculator {
+                return createItemViewModel(for: wallet, balancesCalculator: balancesCalculator, locale: locale)
+            } else {
+                return createItemViewModel(for: wallet)
+            }
+        }
+    }
+
+    func createFavouritesSection(
+        wallets: [ManagedMetaAccountModel],
+        balancesCalculator: BalancesCalculating?,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListSectionViewModel? {
+        let viewModels: [WalletsListViewModel] = wallets
+            .filter { $0.isFavourite }
+            .compactMap { wallet in
+                guard let base = createSingleItemViewModel(
+                    for: wallet,
+                    wallets: wallets,
+                    balancesCalculator: balancesCalculator,
+                    chains: chains,
+                    locale: locale
+                ) else { return nil }
+
+                // Multisig parity with Android: when a favourited multisig has
+                // no network-specific chain icon, surface the multisig pencils
+                // icon over its identicon so the type stays visible in the
+                // Favourites section.
+                guard wallet.info.type == .multisig,
+                      case let .multisig(info) = base.walletViewModel.type,
+                      info.networkIcon == nil,
+                      let multisigImage = R.image.iconMultisig()
+                else { return base }
+
+                let multisigIconViewModel = IdentifiableStaticImageViewModel(
+                    image: multisigImage,
+                    identifier: "favourites.multisig.\(wallet.identifier)"
+                )
+                let updatedInfo = WalletView.ViewModel.DelegatedAccountInfo(
+                    networkIcon: multisigIconViewModel,
+                    type: info.type,
+                    pairedAccountIcon: info.pairedAccountIcon,
+                    pairedAccountName: info.pairedAccountName,
+                    isNew: info.isNew
+                )
+                let updatedWalletViewModel = WalletView.ViewModel(
+                    wallet: base.walletViewModel.wallet,
+                    type: .multisig(updatedInfo)
+                )
+                return WalletsListViewModel(
+                    identifier: base.identifier,
+                    walletViewModel: updatedWalletViewModel,
+                    isSelected: base.isSelected,
+                    isSelectable: base.isSelectable,
+                    isFavourite: base.isFavourite,
+                    typeBadge: base.typeBadge
+                )
+            }
+        guard !viewModels.isEmpty else { return nil }
+        return WalletsListSectionViewModel(type: .favourites, items: viewModels)
+    }
+
+    func createSearchResultsSection(
+        query: String,
+        wallets: [ManagedMetaAccountModel],
+        balancesCalculator: BalancesCalculating?,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> WalletsListSectionViewModel {
+        let lowered = query.lowercased()
+        let normalizedQuery = lowered.replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: " ", with: "")
+
+        let proxyTypeKeywords: Set<String> = [
+            "any", "nontransfer", "governance", "staking",
+            "identityjudgement", "cancelproxy", "auction", "nominationpools"
+        ]
+        // Prefix-style match only: typing `gov` matches `governance`, but a
+        // longer query is never assumed to "be" a proxy keyword. This avoids
+        // pulling unrelated wallets in when the query happens to share a
+        // substring with a proxy type word.
+        let isProxyTypeQuery = !normalizedQuery.isEmpty
+            && proxyTypeKeywords.contains { $0.contains(normalizedQuery) }
+
+        let matched = wallets.filter { wallet in
+            // Strict proxy type query: only proxied wallets matching the type
+            if isProxyTypeQuery {
+                guard wallet.info.type == .proxied else { return false }
+                for chainAccount in wallet.info.chainAccounts {
+                    if let proxy = chainAccount.proxy {
+                        let proxyTypeName = "\(proxy.type)".lowercased()
+                        if proxyTypeName.contains(normalizedQuery) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+
+            if wallet.info.name.lowercased().contains(lowered) { return true }
+            for chainAccount in wallet.info.chainAccounts {
+                if let chain = chains[chainAccount.chainId],
+                   let addr = try? chainAccount.accountId.toAddress(using: chain.chainFormat),
+                   addr.lowercased().contains(lowered) {
+                    return true
+                }
+                if let chain = chains[chainAccount.chainId],
+                   chain.name.lowercased().contains(lowered) {
+                    return true
+                }
+            }
+            return false
+        }
+        let viewModels: [WalletsListViewModel] = matched.compactMap { wallet in
+            guard let base = createSingleItemViewModel(
+                for: wallet,
+                wallets: wallets,
+                balancesCalculator: balancesCalculator,
+                chains: chains,
+                locale: locale
+            ) else { return nil }
+            let badge: String?
+            switch WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) {
+            case .proxied: badge = R.string.localizable.commonProxy(preferredLanguages: locale.rLanguages)
+            case .multisig: badge = R.string.localizable.commonMultisig(preferredLanguages: locale.rLanguages)
+            default: badge = nil
+            }
+            return WalletsListViewModel(
+                identifier: base.identifier,
+                walletViewModel: base.walletViewModel,
+                isSelected: base.isSelected,
+                isSelectable: base.isSelectable,
+                isFavourite: base.isFavourite,
+                typeBadge: badge
+            )
+        }
+        return WalletsListSectionViewModel(type: .searchResults, items: viewModels)
+    }
+
     // swiftlint:disable:next function_body_length
     func internalCreateSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
@@ -311,6 +468,15 @@ private extension WalletsListViewModelFactory {
         locale: Locale
     ) -> [WalletsListSectionViewModel] {
         var sections: [WalletsListSectionViewModel] = []
+
+        if let favSection = createFavouritesSection(
+            wallets: wallets,
+            balancesCalculator: balancesCalculator,
+            chains: chains,
+            locale: locale
+        ) {
+            sections.append(favSection)
+        }
 
         if let secretsSection = createSection(
             type: .secrets,

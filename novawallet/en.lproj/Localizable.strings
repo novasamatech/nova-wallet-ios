@@ -1852,9 +1852,14 @@
 "wallet.migrate.accept.message" = "You’re almost there! 🎉\n Just tap below to complete the setup and start using your accounts seamlessly in both the Polkadot App and Nova Wallet";
 "wallet.migration.successful.alert.title" = "Accounts migrated successfully";
 "swap.failure.cannot.receive.insufficient.asset.out" = "You must have at least %@ on %@ to receive %@ token";
+"common.favourites" = "Favourites";
 "common.multisig" = "Multisig";
 "common.proxied" = "Proxied";
+"common.proxy" = "Proxy";
+"common.search.results" = "Search results";
+"common.search.wallets.placeholder" = "Search wallets...";
 "common.signatory" = "Signatory";
+"common.wallets" = "Wallets";
 "multisig.details.hint" = "Transactions from this wallet require approval from multiple signatories. Your account is one of the signatories:";
 "multisig.signing.title" = "Multisig transaction";
 "multisig.signing.message" = "The multisig transaction will be initiated by %@. The initiator pays the network fee and reserves a multisig deposit, which will be unreserved once the transaction is executed.";

@@ -2035,3 +2035,8 @@
 "create.watch.only.missing.any.address" = "Nhập ít nhất một địa chỉ...";
 "asset.list.watch.only.balance" = "Số dư chỉ theo dõi";
 "create.watch.only.subtitle" = "Theo dõi hoạt động ví mà không cần khóa riêng.\nBạn sẽ không thể thực hiện bất kỳ giao dịch nào.";
+"common.favourites" = "Yêu thích";
+"common.wallets" = "Ví";
+"common.search.results" = "Kết quả tìm kiếm";
+"common.search.wallets.placeholder" = "Tìm kiếm ví…";
+"common.proxy" = "Proxy";

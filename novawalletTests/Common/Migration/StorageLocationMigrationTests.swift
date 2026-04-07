@@ -22,6 +22,62 @@ final class StorageLocationMigrationTests: XCTestCase {
         sharedDatabaseDirectory.appendingPathComponent(databaseName)
     }
 
+    func testIsFavouriteDefaultsToFalseAfterV20ToV21Migration() {
+        do {
+            let oldSettings = CoreDataPersistentSettings(
+                databaseDirectory: deprecatedDatabaseDirectory,
+                databaseName: databaseName,
+                incompatibleModelStrategy: .ignore
+            )
+
+            let newSettings = CoreDataPersistentSettings(
+                databaseDirectory: sharedDatabaseDirectory,
+                databaseName: databaseName,
+                incompatibleModelStrategy: .ignore
+            )
+
+            let walletsCount = 3
+            let expectedMetaIds = try createOldEntities(
+                for: walletsCount,
+                version: .version21,
+                persistentSettings: oldSettings
+            )
+
+            let migrator = createMigrator()
+            try migrator.migrate()
+
+            let dbService = createCoreDataService(
+                for: .version22,
+                persistentSettings: newSettings
+            )
+            let semaphore = DispatchSemaphore(value: 0)
+            var favourites: [Bool] = []
+            var fetchedIds = Set<MetaAccountModel.Id>()
+
+            dbService.performAsync { context, _ in
+                defer { semaphore.signal() }
+                let request = NSFetchRequest<NSManagedObject>(entityName: "CDMetaAccount")
+                let results = try! context?.fetch(request)
+                results?.forEach { entity in
+                    if let metaId = entity.value(forKey: "metaId") as? MetaAccountModel.Id {
+                        fetchedIds.insert(metaId)
+                    }
+                    if let isFav = entity.value(forKey: "isFavourite") as? Bool {
+                        favourites.append(isFav)
+                    }
+                }
+            }
+            semaphore.wait()
+            try dbService.close()
+
+            XCTAssertEqual(fetchedIds, expectedMetaIds)
+            XCTAssertEqual(favourites.count, walletsCount)
+            XCTAssertTrue(favourites.allSatisfy { $0 == false })
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+
     func testMigrationFromSingleAppToGroup() {
         do {
             let oldSettings = CoreDataPersistentSettings(

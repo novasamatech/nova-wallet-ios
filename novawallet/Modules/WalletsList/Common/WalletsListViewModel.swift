@@ -6,22 +6,30 @@ struct WalletsListViewModel {
     let walletViewModel: WalletView.ViewModel
     let isSelected: Bool
     let isSelectable: Bool
+    let isFavourite: Bool
+    let typeBadge: String?
 
     init(
         identifier: String,
         walletViewModel: WalletView.ViewModel,
         isSelected: Bool,
-        isSelectable: Bool = true
+        isSelectable: Bool = true,
+        isFavourite: Bool = false,
+        typeBadge: String? = nil
     ) {
         self.identifier = identifier
         self.walletViewModel = walletViewModel
         self.isSelected = isSelected
         self.isSelectable = isSelectable
+        self.isFavourite = isFavourite
+        self.typeBadge = typeBadge
     }
 }
 
 struct WalletsListSectionViewModel {
     enum SectionType: Hashable {
+        case favourites
+        case searchResults
         case secrets
         case watchOnly
         case paritySigner
