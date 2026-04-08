@@ -4,6 +4,11 @@ import BigInt
 import Operation_iOS
 
 struct RuntimeApiInflationPrediction: Decodable, Equatable {
+    enum CodingKeys: String, CodingKey {
+        case inflation = "issuance"
+        case nextMint
+    }
+
     struct NextMint: Decodable, Equatable {
         let items: [BigUInt]
 

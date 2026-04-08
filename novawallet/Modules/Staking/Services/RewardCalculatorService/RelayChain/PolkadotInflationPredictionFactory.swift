@@ -49,7 +49,7 @@ private extension PolkadotInflationPredictionFactory {
 
             let runtimeApi = try codingFactory.metadata.getRuntimeApiMethodOrError(
                 for: "Inflation",
-                methodName: "experimental_inflation_prediction_info"
+                methodName: "experimental_issuance_prediction_info"
             )
 
             return stateCallFactory.createWrapper(
