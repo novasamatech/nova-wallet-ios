@@ -30,11 +30,13 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             return nil
         }
 
-        let applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared
-
+        // The consent banner uses dedicated novasama.io URLs (placeholder until
+        // the canonical pages land — see ConsentBannerConstants). The legacy
+        // ApplicationConfig.termsURL / privacyPolicyURL still point at the OLD
+        // novawallet.io documents and must NOT be reused here.
         let legalData = LegalData(
-            termsUrl: applicationConfig.termsURL,
-            privacyPolicyUrl: applicationConfig.privacyPolicyURL
+            termsUrl: ConsentBannerConstants.termsOfServiceURL,
+            privacyPolicyUrl: ConsentBannerConstants.privacyNoticeURL
         )
 
         let interactor = OnboardingMainInteractor(
@@ -46,6 +48,7 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
+            consentService: ConsentService(),
             locale: LocalizationManager.shared.selectedLocale
         )
 

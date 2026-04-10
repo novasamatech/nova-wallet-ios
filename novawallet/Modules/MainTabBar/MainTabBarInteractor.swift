@@ -20,11 +20,15 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
+    let consentService: ConsentServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     let onLaunchQueue = OnLaunchActionsQueue(
+        // ConsentBannerUpgrade is FIRST — legal compliance must be obtained
+        // before the user interacts with anything else.
         possibleActions: [
+            OnLaunchAction.ConsentBannerUpgrade(),
             OnLaunchAction.PushNotificationsSetup(),
             OnLaunchAction.AHMInfoSetup(),
             OnLaunchAction.MultisigNotificationsPromo()
@@ -49,6 +53,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol,
         settingsManager: SettingsManagerProtocol,
+        consentService: ConsentServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -65,6 +70,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
+        self.consentService = consentService
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -112,6 +118,17 @@ private extension MainTabBarInteractor {
             presenter?.didRequestImportAccount(source: .keystore)
         case .mnemonic:
             presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
+        }
+    }
+
+    func showConsentBannerUpgradeOrNextAction() {
+        guard !consentService.hasAcceptedCurrentVersion else {
+            onLaunchQueue.runNext()
+            return
+        }
+
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestConsentBannerUpgradeOpen()
         }
     }
 
@@ -348,6 +365,10 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 // MARK: - OnLaunchActionsQueueDelegate
 
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
+    func onLaunchProcessConsentBannerUpgrade(_: OnLaunchAction.ConsentBannerUpgrade) {
+        showConsentBannerUpgradeOrNextAction()
+    }
+
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
     }

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Foundation_iOS
 
 final class OnboardingMainPresenter {
@@ -7,6 +8,7 @@ final class OnboardingMainPresenter {
     let interactor: OnboardingMainInteractorInputProtocol
 
     let legalData: LegalData
+    let consentService: ConsentServiceProtocol
 
     let locale: Locale
 
@@ -14,11 +16,13 @@ final class OnboardingMainPresenter {
         interactor: OnboardingMainInteractorInputProtocol,
         wireframe: OnboardingMainWireframeProtocol,
         legalData: LegalData,
+        consentService: ConsentServiceProtocol,
         locale: Locale
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.legalData = legalData
+        self.consentService = consentService
         self.locale = locale
     }
 }
@@ -29,30 +33,29 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     }
 
     func activateTerms() {
-        if let view = view {
-            wireframe.showWeb(
-                url: legalData.termsUrl,
-                from: view,
-                style: .modal
-            )
-        }
+        // Per Aurum mandate, the consent banner ToS link opens in the system
+        // browser (not the in-app SFSafariViewController used elsewhere) so the
+        // user reads the document outside of the app's wallet creation flow.
+        UIApplication.shared.open(legalData.termsUrl)
     }
 
     func activatePrivacy() {
-        if let view = view {
-            wireframe.showWeb(
-                url: legalData.privacyPolicyUrl,
-                from: view,
-                style: .modal
-            )
-        }
+        // Per Aurum mandate, the consent banner Privacy Notice link opens in the
+        // system browser (not the in-app SFSafariViewController used elsewhere).
+        UIApplication.shared.open(legalData.privacyPolicyUrl)
     }
 
     func activateSignup() {
+        // The view enforces that the consent checkbox is checked before this
+        // method can be invoked. Persist the acceptance now so subsequent
+        // wallet operations and the existing-user upgrade modal both observe
+        // the recorded version.
+        consentService.acceptCurrentConsent()
         wireframe.showSignup(from: view)
     }
 
     func activateAccountRestore() {
+        consentService.acceptCurrentConsent()
         wireframe.showAccountRestore(from: view)
     }
 }

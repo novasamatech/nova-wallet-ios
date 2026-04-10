@@ -15,7 +15,15 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
     let termsLabel: UILabel = .create { label in
         label.isUserInteractionEnabled = true
         label.numberOfLines = 0
-        label.textAlignment = .center
+        label.textAlignment = .natural
+    }
+
+    let consentCheckbox: UIButton = .create { button in
+        button.setImage(R.image.iconCheckboxEmpty(), for: .normal)
+        button.setImage(R.image.iconCheckbox(), for: .selected)
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.accessibilityIdentifier = "consentCheckbox"
     }
 
     let createButton: TriangularedButton = .create { button in
@@ -54,15 +62,9 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
 
         logo.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
 
-        addSubview(termsLabel)
-        termsLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
-        }
-
         addSubview(importButton)
         importButton.snp.makeConstraints { make in
-            make.bottom.equalTo(termsLabel.snp.top).offset(-24)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -75,5 +77,28 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+
+        addSubview(termsLabel)
+        termsLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Constants.consentLeadingInset)
+            make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(createButton.snp.top).offset(-Constants.consentBottomGap)
+        }
+
+        addSubview(consentCheckbox)
+        consentCheckbox.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(20)
+            make.top.equalTo(termsLabel.snp.top)
+            make.width.height.equalTo(Constants.consentCheckboxSize)
+        }
+    }
+}
+
+private extension OnboardingMainViewLayout {
+    enum Constants {
+        static let consentCheckboxSize: CGFloat = 24
+        // 20 (screen inset) + 24 (checkbox) + 12 (gap) = 56
+        static let consentLeadingInset: CGFloat = 56
+        static let consentBottomGap: CGFloat = 20
     }
 }

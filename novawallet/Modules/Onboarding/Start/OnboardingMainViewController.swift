@@ -32,8 +32,15 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         setupHandlers()
+        applyConsentState()
 
         presenter.setup()
+    }
+
+    private func applyConsentState() {
+        let isAccepted = rootView.consentCheckbox.isSelected
+        rootView.createButton.isEnabled = isAccepted
+        rootView.importButton.isEnabled = isAccepted
     }
 
     private func setupLocalization() {
@@ -46,22 +53,31 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         rootView.importButton.imageWithTitleView?.title = importTitle
 
         let marker = AttributedReplacementStringDecorator.marker
-        let termsText = R.string(preferredLanguages: languages).localizable.onboardingTermsAndConditions1_v2_2_0(
+        let consentText = R.string(preferredLanguages: languages).localizable.consentBannerTextTemplate(
             marker,
             marker
         )
 
-        let termDecorator = CompoundAttributedStringDecorator.legal(for: selectedLocale, marker: marker)
-        let attributedText = NSAttributedString(string: termsText)
-        rootView.termsLabel.attributedText = termDecorator.decorate(attributedString: attributedText)
+        let consentDecorator = CompoundAttributedStringDecorator.consentBanner(
+            for: selectedLocale,
+            marker: marker
+        )
+        let attributedText = NSAttributedString(string: consentText)
+        rootView.termsLabel.attributedText = consentDecorator.decorate(attributedString: attributedText)
     }
 
     private func setupHandlers() {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(actionTerms(gestureRecognizer:)))
         rootView.termsLabel.addGestureRecognizer(tapRecognizer)
 
+        rootView.consentCheckbox.addTarget(self, action: #selector(actionToggleConsent), for: .touchUpInside)
         rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
         rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
+    }
+
+    @objc private func actionToggleConsent() {
+        rootView.consentCheckbox.isSelected.toggle()
+        applyConsentState()
     }
 
     @objc private func actionSignup() {
@@ -73,14 +89,19 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionTerms(gestureRecognizer: UITapGestureRecognizer) {
-        if gestureRecognizer.state == .ended {
-            let location = gestureRecognizer.location(in: rootView.termsLabel.superview)
+        guard gestureRecognizer.state == .ended else { return }
 
-            if location.x < rootView.termsLabel.center.x {
-                presenter.activateTerms()
-            } else {
-                presenter.activatePrivacy()
-            }
+        // The Aurum-mandated text wraps such that "Terms of Service" lands on the
+        // first line and "Privacy Notice" on the second. We detect which link the
+        // user tapped using vertical position. If the wording is ever revised so
+        // that wrapping changes, this heuristic must be revisited.
+        let location = gestureRecognizer.location(in: rootView.termsLabel)
+        let labelHeight = rootView.termsLabel.bounds.height
+
+        if location.y < labelHeight / 2 {
+            presenter.activateTerms()
+        } else {
+            presenter.activatePrivacy()
         }
     }
 }

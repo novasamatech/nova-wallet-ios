@@ -589,6 +589,12 @@
 "connection.error.message_v2_2_0" = "Please, check your connection or try again later";
 "common.invalid.derivation.path.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
 "onboarding.terms.and.conditions.1_v2_2_0" = "By continuing, you agree to our \n%@ and %@";
+"consent.banner.text.template" = "I agree to the %@, and acknowledge the %@.";
+"consent.banner.terms.of.service" = "Terms of Service";
+"consent.banner.privacy.notice" = "Privacy Notice";
+"consent.banner.upgrade.title" = "Updated Terms";
+"consent.banner.upgrade.description" = "We've updated our Terms of Service and Privacy Notice. Please review and accept the updated documents to continue using Nova Wallet.";
+"consent.banner.upgrade.accept" = "Accept and Continue";
 "wallet.receive.description_v2_2_0" = "Let sender scan this QR code";
 "wallet.receive.title.format" = "Receive %@";
 "wallet.receive.share.title" = "Share QR code";

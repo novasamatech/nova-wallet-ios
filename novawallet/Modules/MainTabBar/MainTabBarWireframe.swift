@@ -465,6 +465,27 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         )
     }
 
+    func presentConsentBannerUpgrade(
+        on view: MainTabBarViewProtocol?,
+        flowCompletion: @escaping () -> Void
+    ) {
+        guard let consentView = ConsentBannerUpgradeViewFactory.createView(
+            completion: flowCompletion
+        ) else {
+            return
+        }
+
+        // Block all dismissal paths (swipe, tap-outside) — the consent must
+        // be acquired via the explicit Accept button, never bypassed.
+        consentView.controller.isModalInPresentation = true
+
+        view?.controller.presentWithCardLayout(
+            consentView.controller,
+            animated: true,
+            completion: nil
+        )
+    }
+
     func presentCloudBackupUnsyncedChanges(
         from view: MainTabBarViewProtocol?,
         onReviewUpdates: @escaping () -> Void

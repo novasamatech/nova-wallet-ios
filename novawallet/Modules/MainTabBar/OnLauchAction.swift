@@ -5,6 +5,12 @@ protocol OnLaunchActionProtocol {
 }
 
 enum OnLaunchAction {
+    struct ConsentBannerUpgrade: OnLaunchActionProtocol {
+        func accept(visitor: OnLaunchActionsQueueDelegate) {
+            visitor.onLaunchProcessConsentBannerUpgrade(self)
+        }
+    }
+
     struct PushNotificationsSetup: OnLaunchActionProtocol {
         func accept(visitor: OnLaunchActionsQueueDelegate) {
             visitor.onLaunchProccessPushNotificationsSetup(self)

@@ -37,6 +37,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestPushNotificationsSetupOpen()
     func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams)
     func didRequestAHMInfoOpen(with info: [AHMRemoteData])
+    func didRequestConsentBannerUpgradeOpen()
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
@@ -89,6 +90,11 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     func presentAssetHubMigrationInfoScreen(
         in view: MainTabBarViewProtocol?,
         with info: [AHMRemoteData]
+    )
+
+    func presentConsentBannerUpgrade(
+        on view: MainTabBarViewProtocol?,
+        flowCompletion: @escaping () -> Void
     )
 }
 

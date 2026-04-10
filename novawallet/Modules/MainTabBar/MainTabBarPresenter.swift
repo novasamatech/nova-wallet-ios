@@ -134,6 +134,15 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         )
     }
 
+    func didRequestConsentBannerUpgradeOpen() {
+        wireframe.presentConsentBannerUpgrade(
+            on: view,
+            flowCompletion: { [weak self] in
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
+    }
+
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?) {
         switch status {
         case .noFile, .synced:
