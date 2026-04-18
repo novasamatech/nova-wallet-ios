@@ -177,8 +177,9 @@ class CustomValidatorCell: UITableViewCell {
             selectionImageView.tintColor = R.color.colorTextSecondary()
             selectionImageView.alpha = 1.0
         } else {
-            selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
-            selectionImageView.tintColor = nil
+            selectionImageView.image = (viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty())?
+                .withRenderingMode(.alwaysTemplate)
+            selectionImageView.tintColor = viewModel.isSelected ? R.color.colorIconAccent() : R.color.colorIconSecondary()
             selectionImageView.alpha = 1.0
         }
     }
@@ -208,8 +209,9 @@ class CustomValidatorCell: UITableViewCell {
             selectionImageView.tintColor = R.color.colorTextSecondary()
             selectionImageView.alpha = 1.0
         } else {
-            selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
-            selectionImageView.tintColor = nil
+            selectionImageView.image = (viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty())?
+                .withRenderingMode(.alwaysTemplate)
+            selectionImageView.tintColor = viewModel.isSelected ? R.color.colorIconAccent() : R.color.colorIconSecondary()
             selectionImageView.alpha = 1.0
         }
     }

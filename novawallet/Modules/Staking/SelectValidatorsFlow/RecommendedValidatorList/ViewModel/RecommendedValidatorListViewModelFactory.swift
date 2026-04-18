@@ -5,8 +5,7 @@ import Foundation_iOS
 protocol RecommendedValidatorListViewModelFactoryProtocol {
     func createViewModel(
         from validators: [SelectedValidatorInfo],
-        maxTargets: Int,
-        preferredAddresses: Set<String>
+        maxTargets: Int
     ) throws -> RecommendedValidatorListViewModelProtocol
 }
 
@@ -39,12 +38,9 @@ final class RecommendedValidatorListViewModelFactory {
 }
 
 extension RecommendedValidatorListViewModelFactory: RecommendedValidatorListViewModelFactoryProtocol {
-    // preferredAddresses is unused here: recommended validators are system-selected
-    // and don't display individual lock state.
     func createViewModel(
         from validators: [SelectedValidatorInfo],
-        maxTargets: Int,
-        preferredAddresses _: Set<String>
+        maxTargets: Int
     ) throws -> RecommendedValidatorListViewModelProtocol {
         let items: [LocalizableResource<RecommendedValidatorViewModelProtocol>] =
             try validators.map { validator in

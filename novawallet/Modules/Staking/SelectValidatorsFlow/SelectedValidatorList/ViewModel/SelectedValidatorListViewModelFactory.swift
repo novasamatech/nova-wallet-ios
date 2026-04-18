@@ -22,7 +22,7 @@ final class SelectedValidatorListViewModelFactory {
 
     private func createCellsViewModel(
         from validatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         locale: Locale
     ) -> [SelectedValidatorCellViewModel] {
         let apyFormatter = NumberFormatter.percent.localizableResource().value(for: locale)
@@ -51,7 +51,7 @@ extension SelectedValidatorListViewModelFactory: SelectedValidatorListViewModelF
     func createViewModel(
         from validatorList: [SelectedValidatorInfo],
         totalValidatorsCount: Int,
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         locale: Locale
     ) -> SelectedValidatorListViewModel {
         let headerViewModel = createHeaderViewModel(

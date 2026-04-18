@@ -53,7 +53,7 @@ extension ValidatorSearchViewFactory {
         for state: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String> = [],
+        preferredAddresses: Set<AccountAddress> = [],
         delegate: ValidatorSearchDelegate?
     ) -> ValidatorSearchViewProtocol? {
         guard let interactor = createInteractor(
@@ -96,7 +96,7 @@ extension ValidatorSearchViewFactory {
         startStakingState state: RelaychainStartStakingStateProtocol,
         validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String> = [],
+        preferredAddresses: Set<AccountAddress> = [],
         delegate: ValidatorSearchDelegate?
     ) -> ValidatorSearchViewProtocol? {
         guard let interactor = createInteractor(

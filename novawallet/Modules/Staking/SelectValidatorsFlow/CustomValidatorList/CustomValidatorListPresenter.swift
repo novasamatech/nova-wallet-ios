@@ -12,9 +12,9 @@ final class CustomValidatorListPresenter {
     let logger: LoggerProtocol?
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
-    private var fullValidatorList: CustomValidatorsFullList
+    private let fullValidatorList: CustomValidatorsFullList
 
-    private lazy var preferredAddresses: Set<String> = Set(fullValidatorList.preferredValidators.map(\.address))
+    private let preferredAddresses: Set<AccountAddress>
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
@@ -36,6 +36,7 @@ final class CustomValidatorListPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.fullValidatorList = fullValidatorList
+        preferredAddresses = Set(fullValidatorList.preferredValidators.map(\.address))
         self.recommendedValidatorList = recommendedValidatorList
         self.selectedValidatorList = selectedValidatorList
         self.validatorsSelectionParams = validatorsSelectionParams

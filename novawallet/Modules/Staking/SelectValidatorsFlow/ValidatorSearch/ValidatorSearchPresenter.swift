@@ -17,7 +17,7 @@ final class ValidatorSearchPresenter {
     private var viewModel: ValidatorSearchViewModel?
     private var searchString: String = ""
     private var isSearching: Bool = false
-    private let preferredAddresses: Set<String>
+    private let preferredAddresses: Set<AccountAddress>
 
     init(
         wireframe: ValidatorSearchWireframeProtocol,
@@ -25,7 +25,7 @@ final class ValidatorSearchPresenter {
         viewModelFactory: ValidatorSearchViewModelFactoryProtocol,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String> = [],
+        preferredAddresses: Set<AccountAddress> = [],
         localizationManager: LocalizationManager,
         logger: LoggerProtocol? = nil
     ) {

@@ -21,7 +21,7 @@ final class ValidatorSearchViewModelFactory {
     private func createCellsViewModel(
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         locale: Locale
     ) -> [ValidatorSearchCellViewModel] {
         let apyFormatter = NumberFormatter.percent.localizableResource().value(for: locale)
@@ -60,7 +60,7 @@ extension ValidatorSearchViewModelFactory: ValidatorSearchViewModelFactoryProtoc
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
         referenceValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         locale: Locale
     ) -> ValidatorSearchViewModel {
         guard !displayValidatorList.isEmpty else {

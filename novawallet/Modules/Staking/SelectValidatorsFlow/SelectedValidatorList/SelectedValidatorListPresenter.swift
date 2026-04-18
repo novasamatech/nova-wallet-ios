@@ -7,7 +7,7 @@ final class SelectedValidatorListPresenter {
     let wireframe: SelectedValidatorListWireframeProtocol
     let viewModelFactory: SelectedValidatorListViewModelFactory
     let maxTargets: Int
-    let preferredAddresses: Set<String>
+    let preferredAddresses: Set<AccountAddress>
 
     private var selectedValidatorList: [SelectedValidatorInfo]
 
@@ -17,7 +17,7 @@ final class SelectedValidatorListPresenter {
         localizationManager: LocalizationManagerProtocol,
         selectedValidatorList: [SelectedValidatorInfo],
         maxTargets: Int,
-        preferredAddresses: Set<String> = []
+        preferredAddresses: Set<AccountAddress> = []
     ) {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory

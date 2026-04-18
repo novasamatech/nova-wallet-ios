@@ -12,6 +12,7 @@ final class StakingTypePresenter {
     let chainAsset: ChainAsset
     let canChangeType: Bool
     let amount: BigUInt
+    let isPoolForced: Bool
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
@@ -26,6 +27,7 @@ final class StakingTypePresenter {
         chainAsset: ChainAsset,
         amount: BigUInt,
         canChangeType: Bool,
+        isPoolForced: Bool,
         initialMethod: StakingSelectionMethod,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -38,6 +40,7 @@ final class StakingTypePresenter {
         self.delegate = delegate
         self.amount = amount
         self.canChangeType = canChangeType
+        self.isPoolForced = isPoolForced
         self.initialMethod = initialMethod
         method = initialMethod
 
@@ -79,10 +82,6 @@ final class StakingTypePresenter {
         let available = selection == .direct || canChangeType && directStakingAvailable
 
         view?.didReceiveDirectStakingBanner(viewModel: viewModel, available: available)
-    }
-
-    private var isPoolForced: Bool {
-        StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId)
     }
 
     private func provideNominationPoolViewModel() {
@@ -246,7 +245,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             return
         }
 
-        if StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId) {
+        if isPoolForced {
             return
         }
 

@@ -38,7 +38,7 @@ final class CustomValidatorListViewModelFactory {
     private func createCellsViewModel(
         from validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         filter: CustomValidatorListFilter,
         priceData: PriceData?,
         locale: Locale
@@ -98,7 +98,7 @@ extension CustomValidatorListViewModelFactory: CustomValidatorListViewModelFacto
         selectedValidatorList: [SelectedValidatorInfo],
         totalValidatorsCount: Int,
         filter: CustomValidatorListFilter,
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         priceData: PriceData?,
         locale: Locale
     ) -> CustomValidatorListViewModel {

@@ -38,7 +38,7 @@ protocol ValidatorSearchViewModelFactoryProtocol {
         from displayValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
         referenceValidatorList: [SelectedValidatorInfo],
-        preferredAddresses: Set<String>,
+        preferredAddresses: Set<AccountAddress>,
         locale: Locale
     ) -> ValidatorSearchViewModel
 }
