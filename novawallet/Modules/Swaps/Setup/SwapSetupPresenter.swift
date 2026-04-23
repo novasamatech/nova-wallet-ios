@@ -156,7 +156,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
             if quote.willCollectCommission {
                 receiveAmountInput = receiveChainAsset.map {
-                    quote.displayAmountOut.decimal(assetInfo: $0.asset.displayInfo)
+                    quote.displayAmountOut(slippage: slippage).decimal(assetInfo: $0.asset.displayInfo)
                 }
                 provideReceiveAmountInputViewModel()
             }
@@ -166,7 +166,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
             provideReceiveInputPriceViewModel()
         case .sell:
             receiveAmountInput = receiveChainAsset.map {
-                quote.displayAmountOut.decimal(assetInfo: $0.asset.displayInfo)
+                quote.displayAmountOut(slippage: slippage).decimal(assetInfo: $0.asset.displayInfo)
             }
 
             provideReceiveAmountInputViewModel()
@@ -459,7 +459,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.displayAmountOut
+                amountOut: quote.displayAmountOut(slippage: slippage)
             ),
             locale: selectedLocale
         )

@@ -186,7 +186,7 @@ extension SwapConfirmPresenter {
         }
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
-            amount: quote.displayAmountOut,
+            amount: quote.displayAmountOut(slippage: initState.slippage),
             priceData: receiveAssetPriceData,
             locale: selectedLocale
         )
@@ -203,7 +203,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.displayAmountOut
+            amountOut: quote.displayAmountOut(slippage: initState.slippage)
         )
         let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 

@@ -106,7 +106,7 @@ final class SwapExecutionPresenter {
     private func provideAssetOutViewModel() {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
-            amount: quote.displayAmountOut,
+            amount: quote.displayAmountOut(slippage: model.fee.slippage),
             priceData: receiveAssetPrice,
             locale: selectedLocale
         )
@@ -119,7 +119,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: model.quote.route.amountIn,
-            amountOut: model.quote.displayAmountOut
+            amountOut: model.quote.displayAmountOut(slippage: model.fee.slippage)
         )
 
         let viewModel = detailsViewModelFactory.rateViewModel(from: params, locale: selectedLocale)

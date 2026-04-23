@@ -75,15 +75,17 @@ final class AssetExchangeExecutionManager {
             shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
         )
 
-        let wrapper: CompoundOperationWrapper<Balance>
-
         // Bundle extra actions on the last bundleable operation (e.g., Hydra swap),
         // not necessarily the last segment (which may be a cross-chain transfer)
         let isLastBundleable = !operations.suffix(from: index + 1).contains { $0 is BundleableAtomicSwapOperation }
 
-        if let bundleableOp = operations[index] as? BundleableAtomicSwapOperation,
-           bundleExtraActions != nil,
-           isLastBundleable {
+        let shouldBundleExtraActions = (operations[index] is BundleableAtomicSwapOperation)
+            && bundleExtraActions != nil
+            && isLastBundleable
+
+        let wrapper: CompoundOperationWrapper<Balance>
+        if shouldBundleExtraActions,
+           let bundleableOp = operations[index] as? BundleableAtomicSwapOperation {
             wrapper = bundleableOp.executeWrapper(for: swapLimit, bundleExtraActions: bundleExtraActions)
         } else {
             wrapper = operations[index].executeWrapper(for: swapLimit)
@@ -93,25 +95,24 @@ final class AssetExchangeExecutionManager {
             self?.operationStartClosure(index)
         }
 
-        let didBundleExtraActions = (operations[index] is BundleableAtomicSwapOperation)
-            && bundleExtraActions != nil && isLastBundleable
-
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: syncQueue
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(amountOut):
-                self?.logger.debug("Executed swap \(index): \(String(amountOut))")
-                let adjustedAmountOut = didBundleExtraActions
-                    ? amountOut.subtractOrZero(self?.bundleExtraAmountDeducted ?? 0)
+                self.logger.debug("Executed swap \(index): \(String(amountOut))")
+                let adjustedAmountOut = shouldBundleExtraActions
+                    ? amountOut.subtractOrZero(self.bundleExtraAmountDeducted)
                     : amountOut
-                self?.correctAmountAndExecuteNext(after: index, amountOut: adjustedAmountOut)
+                self.correctAmountAndExecuteNext(after: index, amountOut: adjustedAmountOut)
             case let .failure(error):
-                self?.logger.error("Failed swap exec \(index): \(error)")
-                self?.complete(with: .failure(error))
+                self.logger.error("Failed swap exec \(index): \(error)")
+                self.complete(with: .failure(error))
             }
         }
     }

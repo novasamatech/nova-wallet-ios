@@ -7,12 +7,17 @@ extension TransactionHistoryLocalFilterFactory {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> TransactionHistoryLocalFilterFactory {
-        TransactionHistoryLocalFilterFactory(
+        var constantFilters: [TransactionHistoryLocalFilterProtocol] = [
+            TransactionHistoryPhishingFilter()
+        ]
+
+        if chainAsset.chain.hasSwapHydra {
+            constantFilters.append(NovaFeeTransferFilter())
+        }
+
+        return TransactionHistoryLocalFilterFactory(
             providers: [
-                ConstantHistoryFiltersProvider(filters: [
-                    TransactionHistoryPhishingFilter(),
-                    NovaFeeTransferFilter()
-                ]),
+                ConstantHistoryFiltersProvider(filters: constantFilters),
                 PoolStakingHistoryFiltersProvider(chainAsset: chainAsset, chainRegistry: chainRegistry),
                 MythosHistoryFiltersProvider(
                     chainAsset: chainAsset,
