@@ -2035,3 +2035,10 @@
 "create.watch.only.missing.any.address" = "최소 하나의 주소를 입력하세요...";
 "asset.list.watch.only.balance" = "보기 전용 잔액";
 "create.watch.only.subtitle" = "비공개 키 없이 지갑 활동을 추적합니다.\n어떠한 거래도 수행할 수 없습니다.";
+"dapp.staking.warning.title" = "알림";
+"dapp.staking.warning.subtitle" = "외부 스테이킹 사이트는 종종 지원이 중단됩니다. Nova Wallet의 내장 스테이킹 기능 사용을 권장합니다.";
+"dapp.staking.warning.go.to.staking" = "스테이킹으로 이동";
+"dapp.staking.warning.advanced" = "고급";
+"dapp.staking.warning.continue" = "사이트로 계속 이동";
+"dapp.staking.search.banner.title" = "스테이킹을 하고 싶으신가요? Nova Wallet에는 스테이킹 기능이 내장되어 있습니다.";
+"dapp.staking.search.banner.action" = "스테이킹으로 이동";

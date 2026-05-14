@@ -2035,3 +2035,10 @@
 "create.watch.only.missing.any.address" = "Введите хотя бы один адрес...";
 "asset.list.watch.only.balance" = "Только просмотр баланса";
 "create.watch.only.subtitle" = "Отслеживание активности кошелька без приватного ключа.\nВы не сможете выполнить никакие транзакции.";
+"dapp.staking.warning.title" = "Уведомление";
+"dapp.staking.warning.subtitle" = "Сторонние сайты стейкинга часто перестают поддерживаться. Рекомендуем использовать встроенные функции стейкинга Nova Wallet.";
+"dapp.staking.warning.go.to.staking" = "Перейти к стейкингу";
+"dapp.staking.warning.advanced" = "Дополнительно";
+"dapp.staking.warning.continue" = "Перейти на сайт";
+"dapp.staking.search.banner.title" = "Хотите застейкать? В Nova Wallet встроен стейкинг.";
+"dapp.staking.search.banner.action" = "Перейти к стейкингу";

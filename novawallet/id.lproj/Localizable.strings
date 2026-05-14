@@ -2035,3 +2035,10 @@
 "create.watch.only.missing.any.address" = "Masukkan setidaknya satu alamat...";
 "asset.list.watch.only.balance" = "Saldo untuk dilihat saja";
 "create.watch.only.subtitle" = "Lacak aktivitas dompet tanpa kunci privat.\nAnda tidak akan dapat melakukan transaksi apapun.";
+"dapp.staking.warning.title" = "Pemberitahuan";
+"dapp.staking.warning.subtitle" = "Situs staking pihak ketiga sering kali menjadi usang. Kami menyarankan untuk menggunakan fitur staking bawaan Nova Wallet.";
+"dapp.staking.warning.go.to.staking" = "Buka Staking";
+"dapp.staking.warning.advanced" = "Lanjutan";
+"dapp.staking.warning.continue" = "Lanjutkan ke situs";
+"dapp.staking.search.banner.title" = "Ingin staking? Nova Wallet memiliki staking bawaan.";
+"dapp.staking.search.banner.action" = "Buka Staking";

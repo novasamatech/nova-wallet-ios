@@ -2035,3 +2035,10 @@
 "create.watch.only.missing.any.address" = "Nhập ít nhất một địa chỉ...";
 "asset.list.watch.only.balance" = "Số dư chỉ theo dõi";
 "create.watch.only.subtitle" = "Theo dõi hoạt động ví mà không cần khóa riêng.\nBạn sẽ không thể thực hiện bất kỳ giao dịch nào.";
+"dapp.staking.warning.title" = "Thông báo";
+"dapp.staking.warning.subtitle" = "Các trang staking bên thứ ba thường bị ngừng hỗ trợ. Chúng tôi khuyến nghị sử dụng các tính năng staking tích hợp sẵn của Nova Wallet.";
+"dapp.staking.warning.go.to.staking" = "Đi đến Staking";
+"dapp.staking.warning.advanced" = "Nâng cao";
+"dapp.staking.warning.continue" = "Tiếp tục đến trang";
+"dapp.staking.search.banner.title" = "Muốn staking? Nova Wallet đã tích hợp sẵn tính năng staking.";
+"dapp.staking.search.banner.action" = "Đi đến Staking";
