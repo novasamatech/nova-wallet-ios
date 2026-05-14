@@ -22,9 +22,20 @@ enum StakingKeywordMatcher {
             }
         }
 
-        // Check Latin/Cyrillic keywords (exact match or query starts with keyword+space)
-        for keyword in latinKeywords {
+        // Check English keywords (exact match or query starts with keyword+space).
+        // Strict matching avoids false positives like "stakeholder" without
+        // requiring every excluded form in the exclusion list.
+        for keyword in englishKeywords {
             if lowercased == keyword || lowercased.hasPrefix(keyword + " ") {
+                return true
+            }
+        }
+
+        // Check non-English Latin and Cyrillic keywords (substring match).
+        // Substring matching handles inflection (Russian declensions),
+        // agglutination (Turkish), and arbitrary keyword position.
+        for keyword in multilingualKeywords {
+            if lowercased.contains(keyword) {
                 return true
             }
         }
@@ -67,10 +78,7 @@ enum StakingKeywordMatcher {
         "\u{6536}\u{76CA}"
     ]
 
-    // Latin/Cyrillic keywords use exact or prefix match
-    // swiftlint:disable:next function_body_length
-    private static let latinKeywords: [String] = [
-        // Universal English
+    private static let englishKeywords: [String] = [
         "staking", "stake", "staked", "unstake", "unstaking",
         "restake", "restaking", "nominate", "nominator", "nomination",
         "nomination pool", "nom pool", "validator", "validators", "validate",
@@ -85,7 +93,10 @@ enum StakingKeywordMatcher {
         "earn rewards", "earn dot", "earn ksm", "passive income",
         "stake tokens", "stake dot", "stake ksm",
         "parachain staking", "dapp staking", "manage staking",
-        "my validators", "my nominations",
+        "my validators", "my nominations"
+    ]
+
+    private static let multilingualKeywords: [String] = [
         // Russian
         "\u{0441}\u{0442}\u{0435}\u{0439}\u{043A}\u{0438}\u{043D}\u{0433}",
         "\u{0441}\u{0442}\u{0435}\u{0439}\u{043A}\u{0430}\u{0442}\u{044C}",

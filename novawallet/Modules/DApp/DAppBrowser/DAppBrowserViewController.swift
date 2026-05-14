@@ -584,7 +584,6 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         } else if let url = navigationAction.request.url,
                   let bypassURL = bypassStakingWarningURL,
                   url.host == bypassURL.host {
-            bypassStakingWarningURL = nil
             decisionHandler(.allow)
         } else if let url = navigationAction.request.url,
                   presenter.checkStakingWarning(for: url) {
@@ -597,6 +596,13 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
     func webView(_ webView: WKWebView, didCommit _: WKNavigation) {
         guard let url = webView.url else {
             return
+        }
+
+        // Clear the bypass token only after the main-frame navigation has
+        // actually committed, so sub-resource and redirect navigations on the
+        // same host don't consume it before the user reaches the page.
+        if let bypassURL = bypassStakingWarningURL, url.host == bypassURL.host {
+            bypassStakingWarningURL = nil
         }
 
         didChangeUrl(url)
