@@ -30,7 +30,7 @@ final class ValidatorSearchViewModelFactory {
             let icon = try? self.iconGenerator.generateFromAddress(validator.address)
             let isPreferred = preferredAddresses.contains(validator.address)
 
-            let detailsText: String? = apyFormatter.string(
+            let detailsText = apyFormatter.string(
                 from: validator.stakeReturn as NSNumber
             )
 

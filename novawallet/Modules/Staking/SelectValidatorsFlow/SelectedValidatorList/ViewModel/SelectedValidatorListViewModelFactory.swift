@@ -30,8 +30,7 @@ final class SelectedValidatorListViewModelFactory {
         return validatorList.map { validator in
             let icon = try? self.iconGenerator.generateFromAddress(validator.address)
 
-            let detailsText: String?
-            detailsText = validator.stakeReturn > 0 ?
+            let detailsText = validator.stakeReturn > 0 ?
                 apyFormatter.string(from: validator.stakeReturn as NSNumber) : ""
 
             return SelectedValidatorCellViewModel(

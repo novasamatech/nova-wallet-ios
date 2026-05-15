@@ -47,8 +47,7 @@ extension RecommendedValidatorListViewModelFactory: RecommendedValidatorListView
                 let icon = try iconGenerator.generateFromAddress(validator.address)
                 let title = validator.identity?.displayName ?? validator.address
 
-                let details: LocalizableResource<String>
-                details = createStakeReturnString(from: validator.stakeInfo?.stakeReturn)
+                let details = createStakeReturnString(from: validator.stakeInfo?.stakeReturn)
 
                 return LocalizableResource { locale in
                     RecommendedValidatorViewModel(
