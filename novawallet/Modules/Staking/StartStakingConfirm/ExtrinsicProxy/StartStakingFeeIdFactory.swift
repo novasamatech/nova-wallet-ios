@@ -9,8 +9,8 @@ enum StartStakingFeeIdFactory {
         switch stakingOption {
         case let .direct(validators):
             return "direct" + "\(validators.targets.count)" + "\(amount)"
-        case let .pool(pool):
-            return "pool" + "\(pool.poolId)" + "\(amount)"
+        case let .pool(preparedPool):
+            return "pool" + "\(preparedPool.selectedPool.poolId)" + "\(amount)"
         }
     }
 }

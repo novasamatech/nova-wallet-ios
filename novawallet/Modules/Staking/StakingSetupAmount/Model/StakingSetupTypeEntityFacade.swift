@@ -58,8 +58,10 @@ extension StakingSetupTypeEntityFacade: StakingSelectPoolDelegate {
             return
         }
 
+        let preparedPool = NominationPools.PreparedPool(selectedPool: selectedPool, isForced: false)
+
         let method = StakingSelectionMethod.manual(.init(
-            staking: .pool(selectedPool),
+            staking: .pool(preparedPool),
             restrictions: restrictions,
             usedRecommendation: isRecommended
         ))

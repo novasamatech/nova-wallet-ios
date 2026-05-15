@@ -39,7 +39,6 @@ enum StakingTypeViewFactory {
             chainAsset: state.chainAsset,
             amount: amount,
             canChangeType: state.stakingType == nil,
-            isPoolForced: StakingConstants.forcedPoolChainIds.contains(state.chainAsset.chain.chainId),
             initialMethod: method,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,

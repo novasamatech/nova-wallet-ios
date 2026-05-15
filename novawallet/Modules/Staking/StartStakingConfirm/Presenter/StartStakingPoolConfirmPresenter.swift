@@ -2,12 +2,12 @@ import Foundation
 import Foundation_iOS
 
 final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
-    let model: NominationPools.SelectedPool
+    let model: NominationPools.PreparedPool
 
     private lazy var addressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        model: NominationPools.SelectedPool,
+        model: NominationPools.PreparedPool,
         interactor: StartStakingConfirmInteractorInputProtocol,
         wireframe: StartStakingConfirmWireframeProtocol,
         amount: Decimal,
@@ -44,13 +44,13 @@ final class StartStakingPoolConfirmPresenter: StartStakingConfirmPresenter {
     override func provideStakingDetails() {
         let title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.stakingPool()
 
-        let viewModel = addressViewModelFactory.createViewModel(from: model, chainAsset: chainAsset)
+        let viewModel = addressViewModelFactory.createViewModel(from: model.selectedPool, chainAsset: chainAsset)
 
         view?.didReceiveStakingDetails(title: title, info: viewModel)
     }
 
     override func showStakingDetails() {
-        if let address = model.bondedAddress(for: chainAsset.chain.chainFormat) {
+        if let address = model.selectedPool.bondedAddress(for: chainAsset.chain.chainFormat) {
             showDetails(for: address)
         }
     }

@@ -228,9 +228,9 @@ final class StakingSetupAmountPresenter {
             )
 
             innerViewModel = .direct(validatorViewModel)
-        case let .pool(selectedPool):
+        case let .pool(preparedPool):
             let poolViewModel = stakingTypeViewModelFactory.createPool(
-                for: selectedPool,
+                for: preparedPool.selectedPool,
                 chainAsset: chainAsset,
                 displaysRecommended: model.usedRecommendation,
                 locale: selectedLocale

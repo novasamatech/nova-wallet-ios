@@ -144,8 +144,8 @@ final class RelaychainStakingValidatorFacade {
         locale: Locale
     ) -> [DataValidating] {
         switch recommendation.staking {
-        case let .pool(selectedPool):
-            return createPoolValidations(for: selectedPool, params: params, locale: locale)
+        case let .pool(preparedPool):
+            return createPoolValidations(for: preparedPool.selectedPool, params: params, locale: locale)
         case .direct:
             return createDirectStakingValidations(
                 for: recommendation.restrictions,
@@ -161,8 +161,8 @@ final class RelaychainStakingValidatorFacade {
         locale: Locale
     ) -> [DataValidating] {
         switch manual.staking {
-        case let .pool(pool):
-            return createPoolValidations(for: pool, params: params, locale: locale)
+        case let .pool(preparedPool):
+            return createPoolValidations(for: preparedPool.selectedPool, params: params, locale: locale)
         case .direct:
             return createDirectStakingValidations(
                 for: manual.restrictions,

@@ -147,10 +147,10 @@ extension StakingSelectPoolInteractor: RelaychainStakingRecommendationDelegate {
         recommendation: RelaychainStakingRecommendation,
         amount _: BigUInt
     ) {
-        guard case let .pool(recommendedPool) = recommendation.staking else {
+        guard case let .pool(preparedPool) = recommendation.staking else {
             return
         }
-        presenter?.didReceive(recommendedPool: recommendedPool)
+        presenter?.didReceive(recommendedPool: preparedPool.selectedPool)
     }
 
     func didReceiveRecommendation(error: Error) {

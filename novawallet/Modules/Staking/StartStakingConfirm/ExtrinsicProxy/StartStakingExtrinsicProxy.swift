@@ -47,7 +47,7 @@ final class StartStakingExtrinsicProxy {
     }
 
     struct PoolStakingParams {
-        let pool: NominationPools.SelectedPool
+        let pool: NominationPools.PreparedPool
         let amount: BigUInt
     }
 
@@ -90,7 +90,7 @@ final class StartStakingExtrinsicProxy {
         for params: PoolStakingParams
     ) -> ExtrinsicBuilderClosure {
         { builder in
-            let call = NominationPools.JoinCall(amount: params.amount, poolId: params.pool.poolId)
+            let call = NominationPools.JoinCall(amount: params.amount, poolId: params.pool.selectedPool.poolId)
 
             return try builder.adding(call: call.runtimeCall())
         }
@@ -214,11 +214,11 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
                     feeProxy.delegate?.didReceiveFee(result: .failure(error), for: feeId)
                 }
             )
-        case let .pool(selectedPool):
+        case let .pool(preparedPool):
             estimatePoolStakingFee(
                 service: service,
                 feeProxy: feeProxy,
-                params: .init(pool: selectedPool, amount: amount),
+                params: .init(pool: preparedPool, amount: amount),
                 feeId: feeId
             )
         }
@@ -253,11 +253,11 @@ extension StartStakingExtrinsicProxy: StartStakingExtrinsicProxyProtocol {
                     closure(.failure(error))
                 }
             )
-        case let .pool(selectedPool):
+        case let .pool(preparedPool):
             submitPoolStaking(
                 submissionMonitor: submissionMonitor,
                 signer: signer,
-                params: .init(pool: selectedPool, amount: amount),
+                params: .init(pool: preparedPool, amount: amount),
                 closure: closure
             )
         }

@@ -2,7 +2,7 @@ import Foundation
 
 enum SelectedStakingOption: Equatable {
     case direct(PreparedValidators)
-    case pool(NominationPools.SelectedPool)
+    case pool(NominationPools.PreparedPool)
 
     var maxApy: Decimal? {
         switch self {
@@ -10,8 +10,8 @@ enum SelectedStakingOption: Equatable {
             return preparedValidators.targets
                 .map(\.stakeReturn)
                 .max()
-        case let .pool(selectedPool):
-            return selectedPool.maxApy
+        case let .pool(preparedPool):
+            return preparedPool.selectedPool.maxApy
         }
     }
 }

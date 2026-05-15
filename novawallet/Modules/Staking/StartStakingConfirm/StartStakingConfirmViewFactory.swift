@@ -25,9 +25,9 @@ struct StartStakingConfirmViewFactory {
                 selectedAccount: selectedAccount,
                 currencyManager: currencyManager
             )
-        case let .pool(selectedPool):
+        case let .pool(preparedPool):
             return createPoolStakingView(
-                for: selectedPool,
+                for: preparedPool,
                 amount: amount,
                 state: state,
                 selectedAccount: selectedAccount,
@@ -93,7 +93,7 @@ struct StartStakingConfirmViewFactory {
     }
 
     private static func createPoolStakingView(
-        for pool: NominationPools.SelectedPool,
+        for preparedPool: NominationPools.PreparedPool,
         amount: Decimal,
         state: RelaychainStartStakingStateProtocol,
         selectedAccount: MetaChainAccountResponse,
@@ -101,7 +101,7 @@ struct StartStakingConfirmViewFactory {
     ) -> StartStakingConfirmViewProtocol? {
         guard
             let interactor = createInteractor(
-                for: .pool(pool),
+                for: .pool(preparedPool),
                 amount: amount,
                 state: state,
                 selectedAccount: selectedAccount,
@@ -123,7 +123,7 @@ struct StartStakingConfirmViewFactory {
         )
 
         let presenter = StartStakingPoolConfirmPresenter(
-            model: pool,
+            model: preparedPool,
             interactor: interactor,
             wireframe: wireframe,
             amount: amount,

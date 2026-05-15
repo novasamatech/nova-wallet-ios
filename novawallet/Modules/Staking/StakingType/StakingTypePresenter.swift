@@ -12,7 +12,10 @@ final class StakingTypePresenter {
     let chainAsset: ChainAsset
     let canChangeType: Bool
     let amount: BigUInt
-    let isPoolForced: Bool
+
+    private var isPoolForcedChain: Bool {
+        StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId)
+    }
 
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
@@ -27,7 +30,6 @@ final class StakingTypePresenter {
         chainAsset: ChainAsset,
         amount: BigUInt,
         canChangeType: Bool,
-        isPoolForced: Bool,
         initialMethod: StakingSelectionMethod,
         viewModelFactory: StakingTypeViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -40,7 +42,6 @@ final class StakingTypePresenter {
         self.delegate = delegate
         self.amount = amount
         self.canChangeType = canChangeType
-        self.isPoolForced = isPoolForced
         self.initialMethod = initialMethod
         method = initialMethod
 
@@ -98,7 +99,7 @@ final class StakingTypePresenter {
 
         let available = selection == .nominationPool || canChangeType
 
-        view?.didReceivePoolBanner(viewModel: viewModel, available: available, canChangePool: !isPoolForced)
+        view?.didReceivePoolBanner(viewModel: viewModel, available: available, canChangePool: !isPoolForcedChain)
     }
 
     private func updateView() {
@@ -241,11 +242,11 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
     }
 
     func selectNominationPool() {
-        guard let method = method, case let .pool(selectedPool) = method.selectedStakingOption else {
+        guard let method = method, case let .pool(preparedPool) = method.selectedStakingOption else {
             return
         }
 
-        if isPoolForced {
+        if preparedPool.isForced {
             return
         }
 
@@ -258,7 +259,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             from: view,
             amount: amount,
             delegate: delegateFacade,
-            selectedPool: selectedPool
+            selectedPool: preparedPool.selectedPool
         )
     }
 

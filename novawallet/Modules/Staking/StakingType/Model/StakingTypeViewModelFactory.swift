@@ -108,12 +108,12 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
 
         guard
             let method = method,
-            case let .pool(selectedPool) = method.selectedStakingOption else {
+            case let .pool(preparedPool) = method.selectedStakingOption else {
             return .init(title: title, subtile: subtitle, poolAccount: nil)
         }
 
         let poolViewModel = stakingViewModelFactory.createPool(
-            for: selectedPool,
+            for: preparedPool.selectedPool,
             chainAsset: chainAsset,
             displaysRecommended: method.shouldUseRecommendationStyle,
             locale: locale

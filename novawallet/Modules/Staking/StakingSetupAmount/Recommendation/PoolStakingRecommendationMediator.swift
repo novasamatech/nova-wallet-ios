@@ -44,8 +44,11 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
             return
         }
 
+        let isForced = StakingConstants.forcedPoolChainIds.contains(chainAsset.chain.chainId)
+        let preparedPool = NominationPools.PreparedPool(selectedPool: pool, isForced: isForced)
+
         let recommendation = RelaychainStakingRecommendation(
-            staking: .pool(pool),
+            staking: .pool(preparedPool),
             restrictions: restrictions,
             validationFactory: validationFactory
         )
