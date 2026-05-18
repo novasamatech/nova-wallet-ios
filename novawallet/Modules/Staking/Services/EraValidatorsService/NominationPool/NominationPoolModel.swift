@@ -72,6 +72,5 @@ extension NominationPools {
 
     struct PreparedPool: Equatable {
         let selectedPool: SelectedPool
-        let isForced: Bool
     }
 }
