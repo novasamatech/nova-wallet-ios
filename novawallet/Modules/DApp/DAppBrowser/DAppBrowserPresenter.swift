@@ -324,10 +324,6 @@ extension DAppBrowserPresenter: DAppStakingWarningViewDelegate {
     }
 
     func dappStakingWarningDidSelectContinue(to url: URL) {
-        // User chose to continue - the VC will allow navigation by loading the URL directly
-        if let browserView = view as? DAppBrowserViewController {
-            let request = URLRequest(url: url)
-            browserView.loadBypassingStakingWarning(request)
-        }
+        interactor.process(newQuery: .query(string: url.absoluteString))
     }
 }
