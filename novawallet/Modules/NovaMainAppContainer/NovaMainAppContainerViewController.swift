@@ -269,6 +269,11 @@ extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {
     func openBrowser(with tab: DAppBrowserTab?) {
         browserWidget?.openBrowser(with: tab)
     }
+
+    func closeBrowserAndShowStaking() {
+        browserWidget?.closeBrowser()
+        (tabBar as? MainTabBarViewController)?.selectedIndex = MainTabBarIndex.staking
+    }
 }
 
 // MARK: Constants

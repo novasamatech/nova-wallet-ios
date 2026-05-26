@@ -7,11 +7,15 @@ enum BrowserNavigationFactory {
         for mainContainer: NovaMainAppContainerViewProtocol
     ) -> BrowserNavigationProtocol? {
         let interactor = createInteractor()
-        let navigationTaskFactory = BrowserNavigationTaskFactory(mainAppContainer: mainContainer)
+        let navigationTaskFactory = BrowserNavigationTaskFactory()
         let presenter = BrowserNavigationPresenter(
             interactor: interactor,
             browserNavigationTaskFactory: navigationTaskFactory
         )
+
+        presenter.mainAppContainer = mainContainer
+        navigationTaskFactory.router = presenter
+
         interactor.presenter = presenter
 
         return presenter

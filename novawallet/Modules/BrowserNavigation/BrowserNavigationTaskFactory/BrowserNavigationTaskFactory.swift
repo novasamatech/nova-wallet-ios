@@ -1,6 +1,9 @@
 import Foundation
 import UIKit
-import UIKit_iOS
+
+protocol BrowserNavigationTaskRouting: AnyObject {
+    func route(tab: DAppBrowserTab)
+}
 
 protocol BrowserNavigationTaskFactoryProtocol {
     func createDAppNavigationTaskById(
@@ -22,59 +25,11 @@ protocol BrowserNavigationTaskFactoryProtocol {
     ) -> BrowserNavigationTask
 }
 
-final class BrowserNavigationTaskFactory {
-    weak var mainAppContainer: NovaMainAppContainerViewProtocol?
+final class BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
+    weak var router: BrowserNavigationTaskRouting?
 
-    init(mainAppContainer: NovaMainAppContainerViewProtocol) {
-        self.mainAppContainer = mainAppContainer
-    }
+    init() {}
 
-    private func routeTab(_ tab: DAppBrowserTab) {
-        guard let mainAppContainer else { return }
-
-        if ThirdPartyStakingDomainMatcher.isBlocked(url: tab.url) {
-            presentStakingWarning(for: tab.url, on: mainAppContainer)
-        } else {
-            mainAppContainer.openBrowser(with: tab)
-        }
-    }
-
-    private func presentStakingWarning(
-        for url: URL,
-        on container: NovaMainAppContainerViewProtocol
-    ) {
-        let delegate = PreBrowserStakingWarningDelegate(
-            url: url,
-            container: container
-        )
-
-        guard let warningView = DAppStakingWarningViewFactory.createView(
-            for: url,
-            delegate: delegate
-        ) else {
-            return
-        }
-
-        // Keep a strong reference to the delegate until the warning is dismissed
-        warningView.controller.stakingWarningDelegate = delegate
-
-        let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.novaManual
-        )
-        warningView.controller.modalTransitioningFactory = factory
-        warningView.controller.modalPresentationStyle = .custom
-
-        container.controller.topModalViewController.present(
-            warningView.controller,
-            animated: true,
-            completion: nil
-        )
-    }
-}
-
-// MARK: BrowserNavigationTaskFactoryProtocol
-
-extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
     func createDAppNavigationTaskById(
         _ dAppId: String,
         wallet: MetaAccountModel?,
@@ -99,7 +54,7 @@ extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
                 return tab
             },
             routingClosure: { [weak self] tab in
-                self?.routeTab(tab)
+                self?.router?.route(tab: tab)
             }
         )
     }
@@ -117,9 +72,7 @@ extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
                     let dApp = dAppList.dApps.first(
                         where: { URL.hostsEqual($0.url, model.url) }
                     )
-                else {
-                    return nil
-                }
+                else { return nil }
 
                 let searchResult: DAppSearchResult = if dApp.url == model.url {
                     .dApp(model: dApp)
@@ -130,7 +83,7 @@ extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
                 return DAppBrowserTab(from: searchResult, metaId: wallet.metaId)
             },
             routingClosure: { [weak self] tab in
-                self?.routeTab(tab)
+                self?.router?.route(tab: tab)
             }
         )
     }
@@ -144,61 +97,8 @@ extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
                 DAppBrowserTab(from: result, metaId: wallet.metaId)
             },
             routingClosure: { [weak self] tab in
-                self?.routeTab(tab)
+                self?.router?.route(tab: tab)
             }
         )
-    }
-}
-
-// MARK: - PreBrowserStakingWarningDelegate
-
-/// Handles the staking warning that appears BEFORE the browser opens.
-/// When user navigates to a blocked staking domain, this delegate is used
-/// to either open the browser (continue) or switch to the staking tab (go to stake).
-final class PreBrowserStakingWarningDelegate: DAppStakingWarningViewDelegate {
-    let url: URL
-    weak var container: NovaMainAppContainerViewProtocol?
-
-    init(url: URL, container: NovaMainAppContainerViewProtocol) {
-        self.url = url
-        self.container = container
-    }
-
-    func dappStakingWarningDidSelectGoToStake() {
-        UIApplication.shared.rootContainer?.browserWidget?.closeBrowser()
-        UIApplication.shared.tabBarController?.selectedIndex = MainTabBarIndex.staking
-    }
-
-    func dappStakingWarningDidSelectContinue(to url: URL) {
-        guard let container else { return }
-
-        let tab = DAppBrowserTab(
-            uuid: UUID(),
-            name: nil,
-            url: url,
-            metaId: SelectedWalletSettings.shared.value.metaId,
-            createdAt: Date(),
-            renderModifiedAt: nil,
-            transportStates: nil,
-            desktopOnly: nil,
-            icon: nil
-        )
-
-        container.openBrowser(with: tab)
-    }
-}
-
-// MARK: - Associated object for delegate retention
-
-private var stakingWarningDelegateKey: UInt8 = 0
-
-extension UIViewController {
-    var stakingWarningDelegate: PreBrowserStakingWarningDelegate? {
-        get {
-            objc_getAssociatedObject(self, &stakingWarningDelegateKey) as? PreBrowserStakingWarningDelegate
-        }
-        set {
-            objc_setAssociatedObject(self, &stakingWarningDelegateKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
     }
 }
