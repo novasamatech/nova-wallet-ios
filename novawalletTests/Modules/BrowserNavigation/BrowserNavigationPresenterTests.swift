@@ -2,6 +2,18 @@ import XCTest
 @testable import novawallet
 
 final class BrowserNavigationPresenterTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        // Seed the singleton so the routing path believes staking.polkadot.cloud is blocked.
+        // The provider exposes a test seam (see StakingCompetitorsRemoteProvider).
+        StakingCompetitorsRemoteProvider.shared.injectDomainsForTesting(["staking.polkadot.cloud"])
+    }
+
+    override func tearDown() {
+        StakingCompetitorsRemoteProvider.shared.injectDomainsForTesting([])
+        super.tearDown()
+    }
+
     // MARK: - Test doubles
 
     final class MainAppContainerSpy: NovaMainAppContainerViewProtocol {

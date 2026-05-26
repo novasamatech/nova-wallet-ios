@@ -1,39 +1,17 @@
 import Foundation
 
+/// Thin facade over `StakingCompetitorsRemoteProvider`. Existing call sites
+/// (`BrowserNavigationPresenter.routeOrWarn`, `DAppBrowserPresenter.checkStakingWarning`,
+/// `DAppSearchPresenter.didReceive...`) keep the existing sync API; the domain list
+/// itself is now runtime-fetched from nova-utils.
 enum ThirdPartyStakingDomainMatcher {
-    private static let blockedDomains: Set<String> = [
-        "staking.polkadot.cloud",
-        "polkadot.cloud",
-        "app.bifrost.io",
-        "omni.ls",
-        "portal.invarch.network",
-        "capitaldex.exchange",
-        "unique.network",
-        "apps.karura.network",
-        "apps.acala.network",
-        "farm.acala.network",
-        "hub.ternoa.network",
-        "mentatminds.com",
-        "dash.taostats.io",
-        "tensorwallet.ca",
-        "staking.polkadot.network"
-    ]
-
     static func isBlocked(url: URL) -> Bool {
-        guard let host = url.host?.lowercased() else { return false }
-
-        return isBlocked(host: host)
+        StakingCompetitorsRemoteProvider.shared.isStakingCompetitor(url: url)
     }
 
     static func isBlocked(host: String) -> Bool {
-        let lowercasedHost = host.lowercased()
-
-        for domain in blockedDomains {
-            if lowercasedHost == domain || lowercasedHost.hasSuffix("." + domain) {
-                return true
-            }
-        }
-
-        return false
+        // Reconstruct as a URL to reuse the host-aware matching in the provider.
+        guard let url = URL(string: "https://\(host)") else { return false }
+        return isBlocked(url: url)
     }
 }

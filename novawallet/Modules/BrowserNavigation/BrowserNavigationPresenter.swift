@@ -21,6 +21,8 @@ final class BrowserNavigationPresenter {
     ) {
         self.interactor = interactor
         self.browserNavigationTaskFactory = browserNavigationTaskFactory
+
+        Task { await StakingCompetitorsRemoteProvider.shared.sync() }
     }
 
     // MARK: Pre-browser routing

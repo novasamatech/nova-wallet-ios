@@ -6204,6 +6204,7 @@
 		C644308270C29AC6F90CFEA6 /* ReferendumDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2EB9EE4A87BD4A74040784 /* ReferendumDetailsWireframe.swift */; };
 		C6690465F36BA78F6C68E43F /* StakingKeywordMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F5F71C17B4BC89D58C7D92 /* StakingKeywordMatcherTests.swift */; };
 		A1B2C3D4E5F600000001 /* BrowserNavigationPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000002 /* BrowserNavigationPresenterTests.swift */; };
+		A1B2C3D4E5F600000004 /* StakingCompetitorsRemoteProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000005 /* StakingCompetitorsRemoteProviderTests.swift */; };
 		C6A2D4CAEE2E6444507EEDDF /* TokensManageAddWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182E3BCA71937085FBCBDD1D /* TokensManageAddWireframe.swift */; };
 		C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3D49E5A3BB8ABFA1448BF43 /* GovernanceDelegateSearchPresenter.swift */; };
 		C6E220DA6AD9A938083179CB /* AddDelegationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A5AB0D58B70774D1350AF9 /* AddDelegationInteractor.swift */; };
@@ -6431,6 +6432,8 @@
 		F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1113F43B2C2EA6CA128893 /* CrowdloanUnlockViewLayout.swift */; };
 		F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */; };
 		F2D0E9F3CAB72E7A3EFBE2A7 /* StakingKeywordMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C172FA3A495DC14CC3DE8CD1 /* StakingKeywordMatcher.swift */; };
+		A1B2C3D4E5F600000006 /* StakingCompetitorsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000007 /* StakingCompetitorsResponse.swift */; };
+		A1B2C3D4E5F600000008 /* StakingCompetitorsRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000009 /* StakingCompetitorsRemoteProvider.swift */; };
 		F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA94E5B74194AABA482F2FD /* WalletConnectSessionDetailsProtocols.swift */; };
 		F35B520D7955A70588AB593C /* ReferendumVoteConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */; };
 		F3719F7C2AD0B75FC271DCE9 /* NPoolsRedeemViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B13FCAD745A663807219B1 /* NPoolsRedeemViewFactory.swift */; };
@@ -12136,6 +12139,7 @@
 		91C760EDD8CDD8073063D76D /* NominationPoolBondMoreSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupViewFactory.swift; sourceTree = "<group>"; };
 		91F5F71C17B4BC89D58C7D92 /* StakingKeywordMatcherTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingKeywordMatcherTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000002 /* BrowserNavigationPresenterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BrowserNavigationPresenterTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000005 /* StakingCompetitorsRemoteProviderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingCompetitorsRemoteProviderTests.swift; sourceTree = "<group>"; };
 		92381CBE193B3317F477D377 /* GovernanceRevokeDelegationConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmViewController.swift; sourceTree = "<group>"; };
 		92C421F2837A9F70C467AB47 /* GiftPrepareShareInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GiftPrepareShareInteractor.swift; sourceTree = "<group>"; };
 		932EBC486896C9ECB60977C4 /* NetworksListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListWireframe.swift; sourceTree = "<group>"; };
@@ -12504,6 +12508,8 @@
 		C0A2F34329579E12A2836E77 /* MessageSheetViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetViewController.swift; sourceTree = "<group>"; };
 		C14D67CF87B74766CBA219B5 /* MythosStkUnstakeSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeSetupViewFactory.swift; sourceTree = "<group>"; };
 		C172FA3A495DC14CC3DE8CD1 /* StakingKeywordMatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StakingKeywordMatcher.swift; path = novawallet/Common/Helpers/StakingKeywordMatcher.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000007 /* StakingCompetitorsResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StakingCompetitorsResponse.swift; path = novawallet/Common/Helpers/StakingCompetitorsResponse.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000009 /* StakingCompetitorsRemoteProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StakingCompetitorsRemoteProvider.swift; path = novawallet/Common/Helpers/StakingCompetitorsRemoteProvider.swift; sourceTree = "<group>"; };
 		C18417408E26CB3B36E57B5A /* SwipeGovViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovViewFactory.swift; sourceTree = "<group>"; };
 		C191A3875F3255B72E01FA92 /* CrowdloanListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListWireframe.swift; sourceTree = "<group>"; };
 		C197897ED8B6E5547C64CD2D /* GovernanceDelegateSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSearchViewFactory.swift; sourceTree = "<group>"; };
@@ -23875,6 +23881,8 @@
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
 				2D4FF13E2EE2F1C4005EC078 /* Frameworks */,
 				C172FA3A495DC14CC3DE8CD1 /* StakingKeywordMatcher.swift */,
+				A1B2C3D4E5F600000007 /* StakingCompetitorsResponse.swift */,
+				A1B2C3D4E5F600000009 /* StakingCompetitorsRemoteProvider.swift */,
 				E0CC9002F9EDC53755568AC7 /* ThirdPartyStakingDomainMatcher.swift */,
 				BB20A7D64B1C99A4E481D97E /* StakingSearchBannerView.swift */,
 				7453138272D0B093040AA973 /* DAppStakingWarningProtocols.swift */,
@@ -27384,6 +27392,7 @@
 				840D627029CB3FD900D5E894 /* URLBuilderTests.swift */,
 				0C6FE8092D507AB100E5B651 /* URLOriginTests.swift */,
 				91F5F71C17B4BC89D58C7D92 /* StakingKeywordMatcherTests.swift */,
+				A1B2C3D4E5F600000005 /* StakingCompetitorsRemoteProviderTests.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -36890,6 +36899,8 @@
 				F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */,
 				6B19F3A772108FBED12A7260 /* CrowdloanUnlockViewFactory.swift in Sources */,
 				F2D0E9F3CAB72E7A3EFBE2A7 /* StakingKeywordMatcher.swift in Sources */,
+				A1B2C3D4E5F600000006 /* StakingCompetitorsResponse.swift in Sources */,
+				A1B2C3D4E5F600000008 /* StakingCompetitorsRemoteProvider.swift in Sources */,
 				281D1A16AB050F259056AEF7 /* ThirdPartyStakingDomainMatcher.swift in Sources */,
 				8209195390CE6BC9F0AD4968 /* StakingSearchBannerView.swift in Sources */,
 				62CF533F5F241536FEEA1B5E /* DAppStakingWarningProtocols.swift in Sources */,
@@ -37083,6 +37094,7 @@
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 				C6690465F36BA78F6C68E43F /* StakingKeywordMatcherTests.swift in Sources */,
 				A1B2C3D4E5F600000001 /* BrowserNavigationPresenterTests.swift in Sources */,
+				A1B2C3D4E5F600000004 /* StakingCompetitorsRemoteProviderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
