@@ -1,7 +1,7 @@
 import Foundation
 import UIKit_iOS
 
-class BaseDAppBrowserWireframe {
+class BaseDAppBrowserWireframe: StakingWarningPresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
@@ -117,20 +117,11 @@ class BaseDAppBrowserWireframe {
         url: URL,
         delegate: DAppStakingWarningViewDelegate
     ) {
-        guard let warningView = DAppStakingWarningViewFactory.createView(
+        presentStakingWarning(
             for: url,
+            from: view?.controller,
             delegate: delegate
-        ) else {
-            return
-        }
-
-        let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.novaManual
         )
-        warningView.controller.modalTransitioningFactory = factory
-        warningView.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(warningView.controller, animated: true, completion: nil)
     }
 
     func showTabs(from view: DAppBrowserViewProtocol?) {

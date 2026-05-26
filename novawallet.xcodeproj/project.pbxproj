@@ -2814,6 +2814,7 @@
 		520808D271471385FF7E3FDA /* GenericLedgerAddEvmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2501054499E73D89D5BFEB8E /* GenericLedgerAddEvmPresenter.swift */; };
 		52326E49B049C54434C95132 /* ParaStkCollatorsSearchWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C2612BBF75CF0FBD91764E /* ParaStkCollatorsSearchWireframe.swift */; };
 		5292C864A8EF5930CA1C397A /* DAppStakingWarningViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89EDCB291C18D959EBBB416 /* DAppStakingWarningViewFactory.swift */; };
+		73953CD045FAE532E26C2C00 /* StakingWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C0D1EA5BD6D2379FDC1C6B /* StakingWarningPresentable.swift */; };
 		529B87AC9E500CC2A503A859 /* LedgerInstructionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BF275FC06E8B06FA4D4719 /* LedgerInstructionsViewController.swift */; };
 		52C427F2C572B99D63EB9C21 /* StartStakingInfoBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4D3F275296975CA39280D5 /* StartStakingInfoBasePresenter.swift */; };
 		535E9CD08FCA2DA52D37A134 /* ParitySignerTxQrWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA14E9659FC44A438FFEEB5 /* ParitySignerTxQrWireframe.swift */; };
@@ -12458,6 +12459,7 @@
 		B83190FF854A4C7603B47601 /* DelegatedSignFeeValidationProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegatedSignFeeValidationProtocols.swift; sourceTree = "<group>"; };
 		B845CBF81C61BB7EBFA845EE /* NetworkManageNodeViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeViewFactory.swift; sourceTree = "<group>"; };
 		B89EDCB291C18D959EBBB416 /* DAppStakingWarningViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DAppStakingWarningViewFactory.swift; path = novawallet/Modules/DApp/DAppStakingWarning/DAppStakingWarningViewFactory.swift; sourceTree = "<group>"; };
+		D6C0D1EA5BD6D2379FDC1C6B /* StakingWarningPresentable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StakingWarningPresentable.swift; path = novawallet/Modules/DApp/DAppStakingWarning/StakingWarningPresentable.swift; sourceTree = "<group>"; };
 		B8A6C6207095F63972E14618 /* DAppPhishingProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppPhishingProtocols.swift; sourceTree = "<group>"; };
 		B8B0A8174A9FFB8422A70D83 /* PVWelcomeWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PVWelcomeWireframe.swift; sourceTree = "<group>"; };
 		B8B263D5668F1C91E2CF61D9 /* GovernanceRevokeDelegationConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -23879,6 +23881,7 @@
 				85050F9D2BD224C5D6AB5B18 /* DAppStakingWarningViewLayout.swift */,
 				FAFE90093B204F6D87E1BD14 /* DAppStakingWarningWireframe.swift */,
 				B89EDCB291C18D959EBBB416 /* DAppStakingWarningViewFactory.swift */,
+				D6C0D1EA5BD6D2379FDC1C6B /* StakingWarningPresentable.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -36884,6 +36887,7 @@
 				7AD196C6DFE8A62CC5D89651 /* DAppStakingWarningViewLayout.swift in Sources */,
 				551A28455236A7252F7BB2F5 /* DAppStakingWarningWireframe.swift in Sources */,
 				5292C864A8EF5930CA1C397A /* DAppStakingWarningViewFactory.swift in Sources */,
+				73953CD045FAE532E26C2C00 /* StakingWarningPresentable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
