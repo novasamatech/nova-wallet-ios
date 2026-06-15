@@ -154,13 +154,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
             payAmountInput = payAmount.map { .absolute($0) }
 
-            if quote.willCollectCommission {
-                receiveAmountInput = receiveChainAsset.map {
-                    quote.displayAmountOut(slippage: slippage).decimal(assetInfo: $0.asset.displayInfo)
-                }
-                provideReceiveAmountInputViewModel()
-            }
-
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
             provideReceiveInputPriceViewModel()
