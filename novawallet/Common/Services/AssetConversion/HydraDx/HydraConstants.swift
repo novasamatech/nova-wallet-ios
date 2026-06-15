@@ -20,6 +20,17 @@ enum HydraConstants {
         0x51, 0x40, 0x9B, 0xD6, 0xD7, 0x1A, 0x88, 0x41
     ])
 
+    // Hydration Router pallet's derived account ("modlrouterex" + zero padding).
+    // The router holds assets transiently during swap execution, so user <-> router
+    // transfers are implementation details of a swap rather than user-meaningful operations.
+    // SS58 (prefix 0): 13UVJyLnzJK7QHxrrjLxwr58Lds4GR6Z37LxLtYrDm3qa5Je
+    static let hydraRouterAccountId: AccountId = Data([
+        0x6D, 0x6F, 0x64, 0x6C, 0x72, 0x6F, 0x75, 0x74,
+        0x65, 0x72, 0x65, 0x78, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ])
+
     static func novaSwapFeeAmount(from amountOut: BigUInt) -> BigUInt {
         amountOut * novaSwapFeeNumerator / novaSwapFeeDenominator
     }

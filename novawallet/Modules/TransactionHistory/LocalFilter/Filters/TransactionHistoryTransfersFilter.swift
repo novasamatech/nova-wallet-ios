@@ -1,24 +1,34 @@
 import Foundation
 
-final class NovaFeeTransferFilter: TransactionHistoryLocalFilterProtocol {
+final class HydrationSwapAccountsFilter: TransactionHistoryLocalFilterProtocol {
+    let systemAccounts: Set<AccountId> = [
+        HydraConstants.novaFeeAccountId,
+        HydraConstants.hydraRouterAccountId
+    ]
+
     func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
-        guard model.callPath.isTransfer,
-              let receiverAddress = model.receiver else {
+        guard model.callPath.isTransfer else {
             return true
         }
 
-        // Try hex (raw accountId) and SS58 (any prefix) formats
-        if let recipient = try? Data(hexString: receiverAddress),
-           recipient == HydraConstants.novaFeeAccountId {
+        return !matchesSystemAccount(model.sender) && !matchesSystemAccount(model.receiver)
+    }
+
+    private func matchesSystemAccount(_ address: AccountAddress?) -> Bool {
+        guard let address else {
             return false
         }
 
-        if let recipient = try? receiverAddress.toAccountId(),
-           recipient == HydraConstants.novaFeeAccountId {
-            return false
+        // Addresses may arrive as raw hex (accountId) or SS58 (any prefix)
+        if let accountId = try? Data(hexString: address), systemAccounts.contains(accountId) {
+            return true
         }
 
-        return true
+        if let accountId = try? address.toAccountId(), systemAccounts.contains(accountId) {
+            return true
+        }
+
+        return false
     }
 }
 

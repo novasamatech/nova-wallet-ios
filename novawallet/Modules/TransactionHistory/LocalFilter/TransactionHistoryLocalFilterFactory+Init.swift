@@ -12,7 +12,7 @@ extension TransactionHistoryLocalFilterFactory {
         ]
 
         if chainAsset.chain.hasSwapHydra {
-            constantFilters.append(NovaFeeTransferFilter())
+            constantFilters.append(HydrationSwapAccountsFilter())
         }
 
         return TransactionHistoryLocalFilterFactory(
