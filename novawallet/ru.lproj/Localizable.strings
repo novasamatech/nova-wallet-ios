@@ -1755,9 +1755,7 @@
 "sec.time.units" = "сек";
 "swaps.execution.dont.close.app" = "Не закрывайте приложение!";
 "swaps.details.exec.time" = "Время выполнения";
-"swaps.details.total.fee" = "Комиссии сети";
-"swaps.nova.fee.disclaimer" = "Включает комиссию Nova %@%%.";
-"swaps.rate.with.fee.description" = "Лучший найденный курс, включая комиссию Nova Wallet %@%%.";
+"swaps.details.total.fee" = "Общая комиссия";
 "swaps.label.transfer" = "Перевод";
 "swaps.label.swap" = "Обмен";
 "swap.route.details.subtitle" = "Путь, по которому ваш токен пройдет через разные сети, чтобы получить желаемый токен.";

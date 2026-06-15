@@ -1755,9 +1755,7 @@
 "sec.time.units" = "sec";
 "swaps.execution.dont.close.app" = "Ne fermez pas l'application!";
 "swaps.details.exec.time" = "Temps d'exécution";
-"swaps.details.total.fee" = "Frais de réseau";
-"swaps.nova.fee.disclaimer" = "Inclut des frais Nova de %@%%.";
-"swaps.rate.with.fee.description" = "Le meilleur taux trouvé, incluant des frais Nova Wallet de %@%%.";
+"swaps.details.total.fee" = "Frais totaux";
 "swaps.label.transfer" = "Transfert";
 "swaps.label.swap" = "Échange";
 "swap.route.details.subtitle" = "La voie que prendra votre jeton à travers différents réseaux pour obtenir le jeton souhaité.";

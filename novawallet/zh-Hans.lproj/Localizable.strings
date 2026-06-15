@@ -1755,9 +1755,7 @@
 "sec.time.units" = "秒";
 "swaps.execution.dont.close.app" = "不要关闭应用程序!";
 "swaps.details.exec.time" = "执行时间";
-"swaps.details.total.fee" = "网络费用";
-"swaps.nova.fee.disclaimer" = "含 %@%% Nova 费用。";
-"swaps.rate.with.fee.description" = "找到的最佳汇率，含 %@%% Nova Wallet 费用。";
+"swaps.details.total.fee" = "总费用";
 "swaps.label.transfer" = "转移";
 "swaps.label.swap" = "交换";
 "swap.route.details.subtitle" = "你的代币通过不同网络到达所需代币的路径。";

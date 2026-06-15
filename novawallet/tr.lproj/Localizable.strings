@@ -1755,9 +1755,7 @@
 "sec.time.units" = "sn";
 "swaps.execution.dont.close.app" = "Uygulamayı kapatmayın!";
 "swaps.details.exec.time" = "Gerçekleşme süresi";
-"swaps.details.total.fee" = "Ağ ücretleri";
-"swaps.nova.fee.disclaimer" = "%%%@ Nova ücreti dahildir.";
-"swaps.rate.with.fee.description" = "%%%@ Nova Wallet ücreti dahil, bulunan en iyi kur.";
+"swaps.details.total.fee" = "Toplam Ücret";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Takas";
 "swap.route.details.subtitle" = "Token'ınızın farklı ağlardan geçerek istenen token'a ulaşmak için alacağı yol.";
