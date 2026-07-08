@@ -17,6 +17,8 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
     private lazy var walletIconGenerator = NovaIconGenerator()
     let transferCompletion: TransferCompletionClosure?
 
+    private let analyticsService: AnalyticsServiceProtocol
+
     init(
         interactor: TransferConfirmCrossChainInteractorInputProtocol,
         wireframe: TransferConfirmWireframeProtocol,
@@ -30,6 +32,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         transferCompletion: TransferCompletionClosure?,
         logger: LoggerProtocol? = nil
@@ -41,6 +44,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.transferCompletion = transferCompletion
+        self.analyticsService = analyticsService
 
         super.init(
             originChainAsset: originChainAsset,
@@ -156,6 +160,16 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         )
     }
 
+    // MARK: - Analytics helpers
+
+    private func computeAmountBucket() -> AmountBucket {
+        guard let priceString = sendingAssetPrice?.price,
+              let price = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: amount * price)
+    }
+
     // MARK: Subsclass
 
     override func getSendingAmount() -> Decimal? {
@@ -252,6 +266,23 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
 
+        let reason: String
+        if error is NoKeysSigningWrapperError || wallet.type == .watchOnly {
+            reason = "signing_unavailable"
+        } else if error.isSigningCancelled {
+            reason = "user_cancelled"
+        } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+            reason = "network_error"
+        } else {
+            reason = "unknown"
+        }
+        analyticsService.track(.sendFailed(
+            asset: originChainAsset.asset.symbol,
+            network: originChainAsset.chain.name,
+            reason: reason,
+            destinationNetwork: destinationChainAsset.chain.name
+        ))
+
         view?.didStopLoading()
 
         let isHandledError = wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
@@ -304,6 +335,16 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
                 return
             }
 
+            let amountBucket = strongSelf.computeAmountBucket()
+            strongSelf.analyticsService.track(.sendInitiated(
+                asset: strongSelf.originChainAsset.asset.symbol,
+                network: strongSelf.originChainAsset.chain.name,
+                destinationNetwork: strongSelf.destinationChainAsset.chain.name,
+                assetCategory: AssetCategory.classify(strongSelf.originChainAsset),
+                amountBucket: amountBucket,
+                isCrossChain: true
+            ))
+
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
@@ -330,6 +371,14 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
     func didCompleteSubmition(by sender: ExtrinsicSenderResolution) {
         view?.didStopLoading()
+
+        let amountBucket = computeAmountBucket()
+        analyticsService.track(.sendCompleted(
+            asset: originChainAsset.asset.symbol,
+            network: originChainAsset.chain.name,
+            amountBucket: amountBucket,
+            destinationNetwork: destinationChainAsset.chain.name
+        ))
 
         // Note: that transferCompletion is not called for delayed transfers
         wireframe.presentExtrinsicSubmission(

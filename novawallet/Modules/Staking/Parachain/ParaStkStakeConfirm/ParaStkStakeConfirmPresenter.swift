@@ -13,6 +13,7 @@ final class ParaStkStakeConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let collator: DisplayAddress
     let amount: Decimal
+    let analyticsService: AnalyticsServiceProtocol
     let logger: LoggerProtocol
 
     private(set) var balance: AssetBalance?
@@ -39,6 +40,7 @@ final class ParaStkStakeConfirmPresenter {
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -51,6 +53,7 @@ final class ParaStkStakeConfirmPresenter {
         delegator = initialDelegator
         self.collator = collator
         self.amount = amount
+        self.analyticsService = analyticsService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -176,6 +179,12 @@ final class ParaStkStakeConfirmPresenter {
 
         let delegationsCount = delegator?.delegations.count ?? 0
 
+        analyticsService.track(.stakingInitiated(
+            stakingType: "parachain",
+            network: chainAsset.chain.name,
+            amountBucket: computeAmountBucket()
+        ))
+
         view?.didStartLoading()
 
         let callWrapper = DelegationCallWrapper(
@@ -187,6 +196,14 @@ final class ParaStkStakeConfirmPresenter {
         )
 
         interactor.confirm(with: callWrapper)
+    }
+
+    private func computeAmountBucket() -> AmountBucket {
+        guard let priceString = price?.price,
+              let priceDecimal = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: amount * priceDecimal)
     }
 
     private func applyCurrentState() {
@@ -298,12 +315,34 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
 
         switch result {
         case let .success(model):
+            analyticsService.track(.stakingConfirmed(
+                stakingType: "parachain",
+                network: chainAsset.chain.name,
+                amountBucket: computeAmountBucket()
+            ))
+
             wireframe.complete(
                 on: view,
                 sender: model.sender,
                 locale: selectedLocale
             )
         case let .failure(error):
+            let reason: String
+            if error is NoKeysSigningWrapperError {
+                reason = "signing_unavailable"
+            } else if error.isSigningCancelled {
+                reason = "user_cancelled"
+            } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+                reason = "network_error"
+            } else {
+                reason = "unknown"
+            }
+            analyticsService.track(.stakingFailed(
+                stakingType: "parachain",
+                network: chainAsset.chain.name,
+                reason: reason
+            ))
+
             applyCurrentState()
             refreshFee()
 

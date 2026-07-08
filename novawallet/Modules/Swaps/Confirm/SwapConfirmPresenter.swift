@@ -17,6 +17,10 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
+    private let analyticsService: AnalyticsServiceProtocol
+    private let confirmStartTime = Date()
+    private var hasTrackedSwapFailure = false
+
     init(
         interactor: SwapConfirmInteractorInputProtocol,
         wireframe: SwapConfirmWireframeProtocol,
@@ -27,6 +31,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         priceStore: AssetExchangePriceStoring,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -35,6 +40,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         self.viewModelFactory = viewModelFactory
         self.slippageBounds = slippageBounds
         self.initState = initState
+        self.analyticsService = analyticsService
         quoteArgs = initState.quoteArgs
 
         super.init(
@@ -161,6 +167,24 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         if initState.feeChainAsset.asset.priceId == priceId {
             provideFeeViewModel()
         }
+    }
+
+    // MARK: - Analytics helpers
+
+    private func computeAmountBucket() -> AmountBucket {
+        guard let amount = getSpendingInputAmount(),
+              let priceString = payAssetPriceData?.price,
+              let price = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: amount * price)
+    }
+
+    private func computeSlippageBucket() -> SlippageBucket {
+        guard let slippageDecimal = initState.slippage.decimalValue else {
+            return .custom
+        }
+        return SlippageBucket.from(slippagePercent: slippageDecimal * 100)
     }
 }
 
@@ -413,8 +437,13 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
             notifyingOnSuccess: { [weak self] in
                 self?.submit()
             },
-            notifyingOnStop: { [weak self] _ in
+            notifyingOnStop: { [weak self] problem in
                 self?.view?.didReceiveStopLoading()
+                guard case .error = problem else { return }
+                guard let self, !self.hasTrackedSwapFailure else { return }
+                self.hasTrackedSwapFailure = true
+                let reason: SwapFailureReason = self.selectedWallet.type == .watchOnly ? .signingUnavailable : .userCancelled
+                self.analyticsService.track(.swapFailed(reason: reason))
             },
             notifyingOnResume: { [weak self] _ in
                 self?.view?.didReceiveStartLoading()
@@ -427,6 +456,27 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
     func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>) {
         switch result {
         case let .success(model):
+            let amountBucket = computeAmountBucket()
+            let slippageBucket = computeSlippageBucket()
+            analyticsService.track(.swapConfirmed(
+                amountBucket: amountBucket,
+                slippageBucket: slippageBucket,
+                assetIn: initState.chainAssetIn.asset.symbol,
+                assetOut: initState.chainAssetOut.asset.symbol,
+                networkIn: initState.chainAssetIn.chain.name,
+                networkOut: initState.chainAssetOut.chain.name
+            ))
+
+            let durationSeconds = Date().timeIntervalSince(confirmStartTime)
+            let durationBucket = DurationBucket.from(seconds: durationSeconds)
+            analyticsService.track(.swapCompleted(
+                amountBucket: amountBucket,
+                durationBucket: durationBucket,
+                assetIn: initState.chainAssetIn.asset.symbol,
+                assetOut: initState.chainAssetOut.asset.symbol,
+                networkIn: initState.chainAssetIn.chain.name,
+                networkOut: initState.chainAssetOut.chain.name
+            ))
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -434,6 +484,20 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
                 locale: selectedLocale
             )
         case let .failure(error):
+            if !hasTrackedSwapFailure {
+                let reason: SwapFailureReason
+                if error is NoKeysSigningWrapperError {
+                    reason = .signingUnavailable
+                } else if error.isSigningCancelled {
+                    reason = .userCancelled
+                } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+                    reason = .networkError
+                } else {
+                    reason = .unknown
+                }
+                hasTrackedSwapFailure = true
+                analyticsService.track(.swapFailed(reason: reason))
+            }
             view?.didReceiveStopLoading()
 
             logger.error("Swap failed: \(error)")

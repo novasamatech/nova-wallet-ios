@@ -15,6 +15,7 @@ class BaseReferendumVoteConfirmPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
+    let analyticsService: AnalyticsServiceProtocol
     let logger: LoggerProtocol
 
     private(set) var assetBalance: AssetBalance?
@@ -40,6 +41,7 @@ class BaseReferendumVoteConfirmPresenter {
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
         interactor: ReferendumVoteInteractorInputProtocol,
         wireframe: BaseReferendumVoteConfirmWireframeProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -56,6 +58,7 @@ class BaseReferendumVoteConfirmPresenter {
         self.lockChangeViewModelFactory = lockChangeViewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
+        self.analyticsService = analyticsService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -197,6 +200,43 @@ class BaseReferendumVoteConfirmPresenter {
         }
 
         updateAndRefreshClosure()
+    }
+
+    func trackGovernanceVoteCast(voteAction: ReferendumVoteAction) {
+        let voteDirection: String
+        switch voteAction {
+        case .aye:
+            voteDirection = "aye"
+        case .nay:
+            voteDirection = "nay"
+        case .abstain:
+            voteDirection = "abstain"
+        }
+
+        let convictionLevel = String(describing: voteAction.conviction())
+
+        let amountBucket: AmountBucket
+        if let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
+           let decimalAmount = Decimal.fromSubstrateAmount(voteAction.amount(), precision: precision),
+           let priceString = priceData?.price,
+           let price = Decimal(string: priceString) {
+            amountBucket = AmountBucket.from(usdAmount: decimalAmount * price)
+        } else {
+            amountBucket = .under1
+        }
+
+        let event: AnalyticsEvent = .governanceVoteCast(
+            voteDirection: voteDirection,
+            network: chain.name,
+            amountBucket: amountBucket,
+            convictionLevel: convictionLevel
+        )
+
+        #if F_DEV
+            logger.debug("ANALYTICS_DEBUG: governance_vote_cast direction=\(voteDirection) network=\(chain.name) bucket=\(amountBucket.rawValue) conviction=\(convictionLevel)")
+        #endif
+
+        analyticsService.track(event)
     }
 }
 

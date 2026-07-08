@@ -5,6 +5,7 @@ final class MainTabBarViewController: UITabBarController {
     let presenter: MainTabBarPresenterProtocol
 
     private var viewAppeared: Bool = false
+    private var previousSelectedIndex: Int = 0
 
     private let sharedStatusBarPresenter = SharedStatusPresenter()
 
@@ -85,6 +86,36 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
         }
 
         return true
+    }
+
+    func tabBarController(
+        _: UITabBarController,
+        didSelect viewController: UIViewController
+    ) {
+        guard let index = viewControllers?.firstIndex(of: viewController),
+              index != previousSelectedIndex else {
+            return
+        }
+
+        previousSelectedIndex = index
+
+        let tabName: String
+        switch index {
+        case MainTabBarIndex.wallet:
+            tabName = "assets"
+        case MainTabBarIndex.vote:
+            tabName = "vote"
+        case MainTabBarIndex.dapps:
+            tabName = "dapps"
+        case MainTabBarIndex.staking:
+            tabName = "staking"
+        case MainTabBarIndex.settings:
+            tabName = "settings"
+        default:
+            tabName = "unknown"
+        }
+
+        PostHogAnalyticsService.shared.track(.tabSwitched(tab: tabName))
     }
 }
 

@@ -86,6 +86,12 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             return
         }
 
+        if let categoryId = selectedCategoryId {
+            PostHogAnalyticsService.lastDAppSource = "catalog_\(categoryId)"
+        } else {
+            PostHogAnalyticsService.lastDAppSource = "search"
+        }
+
         if let dApp = dAppList.dApps.first(where: { $0.identifier == viewModel.identifier }) {
             delegate?.didCompleteDAppSearchResult(.dApp(model: dApp))
         } else {
@@ -96,6 +102,8 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func selectSearchQuery() {
+        PostHogAnalyticsService.lastDAppSource = "address_bar"
+
         let proceedClosure: () -> Void = { [weak self] in
             self?.delegate?.didCompleteDAppSearchResult(
                 .query(string: self?.query ?? "")

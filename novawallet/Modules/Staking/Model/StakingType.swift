@@ -21,6 +21,28 @@ enum StakingType: String, Codable, Equatable, Hashable {
     func isMorePreferred(than stakingType: StakingType) -> Bool {
         StakingClass(stakingType: self).preferringRating < StakingClass(stakingType: stakingType).preferringRating
     }
+
+    /// Analytics-friendly name matching Android StakingType enum (lowercase, underscores).
+    var analyticsName: String {
+        switch self {
+        case .relaychain:
+            return "relaychain"
+        case .parachain:
+            return "parachain"
+        case .azero:
+            return "aleph_zero"
+        case .auraRelaychain:
+            return "relaychain_aura"
+        case .turing:
+            return "turing"
+        case .nominationPools:
+            return "nomination_pools"
+        case .mythos:
+            return "mythos"
+        case .unsupported:
+            return "unsupported"
+        }
+    }
 }
 
 enum StakingClass {

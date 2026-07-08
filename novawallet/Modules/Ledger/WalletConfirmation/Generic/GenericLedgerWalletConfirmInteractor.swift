@@ -56,6 +56,7 @@ extension GenericLedgerWalletConfirmInteractor: LedgerWalletConfirmInteractorInp
             case .success:
                 self.eventCenter.notify(with: SelectedWalletSwitched())
                 self.eventCenter.notify(with: NewWalletCreated())
+                PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: .importLedger))
 
                 self.presenter?.didCreateWallet()
             case let .failure(error):

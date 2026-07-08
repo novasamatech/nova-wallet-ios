@@ -39,6 +39,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestAHMInfoOpen(with info: [AHMRemoteData])
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
+    func showAnalyticsConsentOrNext()
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable,

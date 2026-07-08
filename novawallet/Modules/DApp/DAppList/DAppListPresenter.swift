@@ -97,7 +97,8 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         )
     }
 
-    func selectDApp(with id: String) {
+    func selectDApp(with id: String, source: String) {
+        PostHogAnalyticsService.lastDAppSource = source
         wireframe.openBrowser(with: id)
     }
 

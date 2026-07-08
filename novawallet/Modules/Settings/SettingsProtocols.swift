@@ -12,6 +12,7 @@ protocol SettingsPresenterProtocol: AnyObject {
     func actionRow(_ row: SettingsRow)
     func handleWalletAction()
     func handleSwitchAction()
+    func changeAnalytics()
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {

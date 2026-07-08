@@ -77,6 +77,7 @@ struct TransferConfirmCrossChainViewFactory {
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: localizationManager,
             transferCompletion: transferCompletion,
             logger: Logger.shared

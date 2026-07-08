@@ -27,7 +27,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         possibleActions: [
             OnLaunchAction.PushNotificationsSetup(),
             OnLaunchAction.AHMInfoSetup(),
-            OnLaunchAction.MultisigNotificationsPromo()
+            OnLaunchAction.MultisigNotificationsPromo(),
+            OnLaunchAction.AnalyticsConsent()
         ]
     )
 
@@ -358,6 +359,10 @@ extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
 
     func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
         showAhmInfoOrNextAction()
+    }
+
+    func onLaunchProcessAnalyticsConsent(_: OnLaunchAction.AnalyticsConsent) {
+        presenter?.showAnalyticsConsentOrNext()
     }
 }
 

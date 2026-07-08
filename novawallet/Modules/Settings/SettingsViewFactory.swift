@@ -42,11 +42,19 @@ struct SettingsViewFactory {
 
         let view = SettingsViewController()
 
+        let analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared
+        let analyticsOptOutManager: AnalyticsOptOutManaging = AnalyticsOptOutManager(
+            settings: SettingsManager.shared,
+            analyticsService: analyticsService
+        )
+
         let presenter = SettingsPresenter(
             viewModelFactory: profileViewModelFactory,
             config: ApplicationConfig.shared,
             interactor: interactor,
             wireframe: wireframe,
+            analyticsOptOutManager: analyticsOptOutManager,
+            analyticsService: analyticsService,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

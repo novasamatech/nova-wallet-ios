@@ -15,6 +15,7 @@ final class StakingSetupAmountPresenter {
     let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
     let accountId: AccountId
+    let analyticsService: AnalyticsServiceProtocol
     let logger: LoggerProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
@@ -52,6 +53,7 @@ final class StakingSetupAmountPresenter {
         accountId: AccountId,
         chainAsset: ChainAsset,
         recommendsMultipleStakings: Bool,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -66,6 +68,7 @@ final class StakingSetupAmountPresenter {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.recommendsMultipleStakings = recommendsMultipleStakings
+        self.analyticsService = analyticsService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -510,6 +513,20 @@ extension StakingSetupAmountPresenter: StakingTypeDelegate {
         pendingRecommendationAmount = nil
 
         setupMethod = method
+
+        if let stakingOption = method.selectedStakingOption {
+            let typeName: String
+            switch stakingOption {
+            case .direct:
+                typeName = "relaychain"
+            case .pool:
+                typeName = "nomination_pools"
+            }
+            analyticsService.track(.stakingTypeSelected(
+                stakingType: typeName,
+                network: chainAsset.chain.name
+            ))
+        }
 
         provideBalanceModel()
         provideStakingTypeViewModel()

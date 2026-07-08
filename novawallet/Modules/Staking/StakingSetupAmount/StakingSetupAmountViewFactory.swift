@@ -47,6 +47,7 @@ struct StakingSetupAmountViewFactory {
             accountId: selectedAccount.accountId,
             chainAsset: state.chainAsset,
             recommendsMultipleStakings: state.recommendsMultipleStakings,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

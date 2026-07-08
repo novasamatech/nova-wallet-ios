@@ -51,6 +51,7 @@ struct ParaStkStakeConfirmViewFactory {
             collator: collator,
             amount: amount,
             initialDelegator: initialDelegator,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

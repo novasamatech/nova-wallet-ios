@@ -19,6 +19,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter>,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -33,6 +34,7 @@ final class StartStakingDirectConfirmPresenter: StartStakingConfirmPresenter {
             selectedAccount: selectedAccount,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: analyticsService,
             localizationManager: localizationManager,
             logger: logger
         )

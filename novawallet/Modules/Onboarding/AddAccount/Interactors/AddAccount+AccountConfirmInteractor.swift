@@ -61,6 +61,7 @@ extension AddAccount {
                     self?.settings.setup()
                     self?.eventCenter.notify(with: SelectedWalletSwitched())
                     self?.eventCenter.notify(with: NewWalletCreated())
+                    PostHogAnalyticsService.shared.track(.walletCreationCompleted(method: .create))
                     self?.presenter?.didCompleteConfirmation()
                 case let .failure(error):
                     self?.presenter?.didReceive(error: error)

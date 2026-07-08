@@ -379,6 +379,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         locale: Locale
     ) {
         if case let .dApp(model) = screen {
+            PostHogAnalyticsService.lastDAppSource = "deep_link"
             openBrowser(with: model)
         } else {
             guard

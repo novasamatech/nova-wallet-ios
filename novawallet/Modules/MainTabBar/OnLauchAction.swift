@@ -22,4 +22,10 @@ enum OnLaunchAction {
             visitor.onLaunchProcessAHMInfoSetup(self)
         }
     }
+
+    struct AnalyticsConsent: OnLaunchActionProtocol {
+        func accept(visitor: OnLaunchActionsQueueDelegate) {
+            visitor.onLaunchProcessAnalyticsConsent(self)
+        }
+    }
 }

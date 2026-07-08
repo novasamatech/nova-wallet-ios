@@ -15,7 +15,7 @@ protocol DAppListPresenterProtocol: AnyObject {
     func activateSettings()
 
     func selectCategory(with id: String)
-    func selectDApp(with id: String)
+    func selectDApp(with id: String, source: String)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {

@@ -36,6 +36,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
      */
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
+    private let analyticsService: AnalyticsServiceProtocol
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -47,6 +49,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         logger: LoggerProtocol
     ) {
         self.initState = initState
@@ -57,6 +60,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.analyticsService = analyticsService
         slippage = slippageConfig.defaultSlippage
 
         super.init(
@@ -639,6 +643,8 @@ extension SwapSetupPresenter {
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
+        analyticsService.track(.swapScreenOpened(source: initState.source ?? .mainScreen))
+
         updateViews()
 
         interactor.setup()
@@ -831,6 +837,36 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     quote: quote,
                     quoteArgs: quoteArgs
                 )
+
+                let payAmount = self?.getSpendingInputAmount() ?? 0
+                let payPriceData = self?.payAssetPriceData
+                let usdValue: Decimal = {
+                    guard let priceString = payPriceData?.price,
+                          let price = Decimal(string: priceString) else {
+                        return 0
+                    }
+                    return payAmount * price
+                }()
+                let amountBucket = AmountBucket.from(usdValue: usdValue)
+                let assetInCategory: AssetCategory = {
+                    guard let chainAsset = self?.payChainAsset else { return .other }
+                    return AssetCategory.classify(chainAsset)
+                }()
+                let assetOutCategory: AssetCategory = {
+                    guard let chainAsset = self?.receiveChainAsset else { return .other }
+                    return AssetCategory.classify(chainAsset)
+                }()
+
+                self?.analyticsService.track(.swapInitiated(
+                    source: self?.initState.source ?? .mainScreen,
+                    assetInCategory: assetInCategory,
+                    assetOutCategory: assetOutCategory,
+                    assetIn: self?.payChainAsset?.asset.symbol ?? "",
+                    assetOut: self?.receiveChainAsset?.asset.symbol ?? "",
+                    networkIn: self?.payChainAsset?.chain.name ?? "",
+                    networkOut: self?.receiveChainAsset?.chain.name ?? "",
+                    amountBucket: amountBucket
+                ))
 
                 self?.wireframe.showConfirmation(
                     from: self?.view,

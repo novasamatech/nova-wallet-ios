@@ -19,11 +19,16 @@ final class SettingsPresenter {
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
 
+    private let analyticsOptOutManager: AnalyticsOptOutManaging
+    private let analyticsService: AnalyticsServiceProtocol
+
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
         interactor: SettingsInteractorInputProtocol,
         wireframe: SettingsWireframeProtocol,
+        analyticsOptOutManager: AnalyticsOptOutManaging = AnalyticsOptOutManager(),
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol?,
         logger: LoggerProtocol? = nil
     ) {
@@ -31,6 +36,8 @@ final class SettingsPresenter {
         self.config = config
         self.interactor = interactor
         self.wireframe = wireframe
+        self.analyticsOptOutManager = analyticsOptOutManager
+        self.analyticsService = analyticsService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -47,7 +54,8 @@ private extension SettingsPresenter {
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
             isNotificationsOn: pushNotificationsStatus == .active,
-            isHideBalancesOn: hideBalances ?? false
+            isHideBalancesOn: hideBalances ?? false,
+            isAnalyticsOn: analyticsOptOutManager.isAnalyticsEnabled
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -228,6 +236,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showBackup(from: view)
         case .networks:
             wireframe.showNetworks(from: view)
+        case .analytics:
+            changeAnalytics()
         }
     }
 
@@ -239,6 +249,11 @@ extension SettingsPresenter: SettingsPresenterProtocol {
 
     func handleSwitchAction() {
         wireframe.showWalletSwitch(from: view)
+    }
+
+    func changeAnalytics() {
+        analyticsOptOutManager.isAnalyticsEnabled.toggle()
+        updateView()
     }
 }
 

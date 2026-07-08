@@ -34,6 +34,8 @@ enum SettingsKey: String {
     case ahmAssetDetailsAlertClosedChains
     case ahmStakingAlertClosedChains
     case privacyModeSettings
+    case analyticsEnabled
+    case hasSeenAnalyticsPrompt
 }
 
 extension SettingsManagerProtocol {
@@ -408,6 +410,26 @@ extension SettingsManagerProtocol {
                 value: newValue,
                 for: SettingsKey.ahmAssetDetailsAlertClosedChains.rawValue
             )
+        }
+    }
+
+    var analyticsEnabled: Bool {
+        get {
+            bool(for: SettingsKey.analyticsEnabled.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.analyticsEnabled.rawValue)
+        }
+    }
+
+    var hasSeenAnalyticsPrompt: Bool {
+        get {
+            bool(for: SettingsKey.hasSeenAnalyticsPrompt.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.hasSeenAnalyticsPrompt.rawValue)
         }
     }
 

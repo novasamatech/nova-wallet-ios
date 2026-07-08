@@ -42,6 +42,7 @@ struct MythosStakingConfirmViewFactory {
             model: model,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

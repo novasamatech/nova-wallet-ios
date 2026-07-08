@@ -141,6 +141,7 @@ private extension DAppListViewModelFactory {
 
         return DAppListSection(
             title: name,
+            sectionId: "favorites",
             cells: favoritesDApps.map { .favorites(model: $0, categoryName: name) }
         )
     }
@@ -165,6 +166,7 @@ private extension DAppListViewModelFactory {
 
         return createCategorySection(
             categoryName: categoryName,
+            sectionId: "catalog_popular",
             dApps: popularDApps,
             allCaregories: categoriesById,
             favorites: favorites
@@ -214,6 +216,7 @@ private extension DAppListViewModelFactory {
 
             return createCategorySection(
                 categoryName: category.name,
+                sectionId: "catalog_\(category.identifier)",
                 dApps: finalDApps,
                 allCaregories: categoriesById,
                 favorites: favorites
@@ -234,6 +237,7 @@ private extension DAppListViewModelFactory {
 
     func createCategorySection(
         categoryName: String,
+        sectionId: String,
         dApps: [DApp],
         allCaregories: [String: DAppCategory],
         favorites: [String: DAppFavorite]
@@ -254,6 +258,7 @@ private extension DAppListViewModelFactory {
 
         return DAppListSection(
             title: categoryName,
+            sectionId: sectionId,
             cells: dAppViewModels.map { .category(model: $0, categoryName: categoryName) }
         )
     }
@@ -265,6 +270,7 @@ private extension DAppListViewModelFactory {
 
         return DAppListSection(
             title: nil,
+            sectionId: nil,
             cells: [.categorySelect(categoryViewModels)]
         )
     }
@@ -282,6 +288,7 @@ private extension DAppListViewModelFactory {
 
         return DAppListSection(
             title: nil,
+            sectionId: nil,
             cells: [.header(headerViewModel)]
         )
     }
@@ -384,6 +391,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         .error(
             DAppListSection(
                 title: nil,
+                sectionId: nil,
                 cells: [.error]
             )
         )
@@ -412,6 +420,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
                 .notLoaded(
                     DAppListSection(
                         title: nil,
+                        sectionId: nil,
                         cells: [.notLoaded]
                     )
                 )
@@ -426,6 +435,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         if bannersState == .available || bannersState == .loading {
             let bannersSection = DAppListSection(
                 title: nil,
+                sectionId: nil,
                 cells: [.banner]
             )
             viewModels.append(.banners(bannersSection))

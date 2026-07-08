@@ -49,6 +49,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
             return
         }
 
+        PostHogAnalyticsService.lastDAppSource = "tab"
         wireframe.showTab(
             selectedTab,
             from: view

@@ -9,6 +9,7 @@ final class MythosStakingConfirmPresenter {
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let model: MythosStakeModel
+    let analyticsService: AnalyticsServiceProtocol
     let logger: LoggerProtocol
     let collator: DisplayAddress
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -35,6 +36,7 @@ final class MythosStakingConfirmPresenter {
         model: MythosStakingConfirmModel,
         dataValidationFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        analyticsService: AnalyticsServiceProtocol = PostHogAnalyticsService.shared,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -44,6 +46,7 @@ final class MythosStakingConfirmPresenter {
         self.chainAsset = chainAsset
         self.model = model.stakeModel
         self.dataValidationFactory = dataValidationFactory
+        self.analyticsService = analyticsService
         stakingDetails = model.stakingDetails
         collator = model.collator
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -53,6 +56,15 @@ final class MythosStakingConfirmPresenter {
 }
 
 private extension MythosStakingConfirmPresenter {
+    func computeAmountBucket() -> AmountBucket {
+        let stakeAmount = model.amount.toStake.decimal(assetInfo: chainAsset.assetDisplayInfo)
+        guard let priceString = price?.price,
+              let priceDecimal = Decimal(string: priceString) else {
+            return .under1
+        }
+        return AmountBucket.from(usdValue: stakeAmount * priceDecimal)
+    }
+
     func getTransactionModel() -> MythosStakeTransactionModel? {
         guard let claimableRewards else {
             return nil
@@ -152,6 +164,12 @@ private extension MythosStakingConfirmPresenter {
             return
         }
 
+        analyticsService.track(.stakingInitiated(
+            stakingType: "mythos",
+            network: chainAsset.chain.name,
+            amountBucket: computeAmountBucket()
+        ))
+
         view?.didStartLoading()
 
         interactor.submit(model: transactionModel)
@@ -241,9 +259,31 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
 
         switch result {
         case let .success(model):
+            analyticsService.track(.stakingConfirmed(
+                stakingType: "mythos",
+                network: chainAsset.chain.name,
+                amountBucket: computeAmountBucket()
+            ))
+
             wireframe.complete(on: view, sender: model.sender, locale: selectedLocale)
         case let .failure(error):
             logger.error("Submission error: \(error)")
+
+            let reason: String
+            if error is NoKeysSigningWrapperError {
+                reason = "signing_unavailable"
+            } else if error.isSigningCancelled {
+                reason = "user_cancelled"
+            } else if error is URLError || (error as NSError).domain == NSURLErrorDomain {
+                reason = "network_error"
+            } else {
+                reason = "unknown"
+            }
+            analyticsService.track(.stakingFailed(
+                stakingType: "mythos",
+                network: chainAsset.chain.name,
+                reason: reason
+            ))
 
             applyCurrentState()
             refreshFee()

@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Keystore_iOS
 
 final class MainTabBarPresenter {
     weak var view: MainTabBarViewProtocol?
@@ -132,6 +133,61 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
                 self?.interactor.requestNextOnLaunchAction()
             }
         )
+    }
+
+    func showAnalyticsConsentOrNext() {
+        let settings = SettingsManager.shared
+
+        guard !settings.hasSeenAnalyticsPrompt else {
+            interactor.requestNextOnLaunchAction()
+            return
+        }
+
+        let title = R.string.localizable.analyticsConsentTitle(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let body = R.string.localizable.analyticsConsentBody(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let bullet1 = R.string.localizable.analyticsConsentBullet1(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let bullet2 = R.string.localizable.analyticsConsentBullet2(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let bullet3 = R.string.localizable.analyticsConsentBullet3(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let enableTitle = R.string.localizable.analyticsConsentEnable(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+        let laterTitle = R.string.localizable.analyticsConsentLater(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        )
+
+        let message = "\(body)\n\n• \(bullet1)\n• \(bullet2)\n• \(bullet3)"
+
+        let enableAction = AlertPresentableAction(title: enableTitle, style: .normal) { [weak self] in
+            settings.hasSeenAnalyticsPrompt = true
+            settings.analyticsEnabled = true
+            PostHogAnalyticsService.shared.isEnabled = true
+            PostHogAnalyticsService.shared.track(.appOpened(isFirstLaunch: true))
+            self?.interactor.requestNextOnLaunchAction()
+        }
+
+        let laterAction = AlertPresentableAction(title: laterTitle, style: .cancel) { [weak self] in
+            settings.hasSeenAnalyticsPrompt = true
+            self?.interactor.requestNextOnLaunchAction()
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [enableAction, laterAction],
+            closeAction: nil
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?) {

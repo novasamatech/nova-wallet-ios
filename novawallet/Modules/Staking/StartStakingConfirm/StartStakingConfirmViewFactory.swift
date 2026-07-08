@@ -76,6 +76,7 @@ struct StartStakingConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -131,6 +132,7 @@ struct StartStakingConfirmViewFactory {
             selectedAccount: selectedAccount,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            analyticsService: PostHogAnalyticsService.shared,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
