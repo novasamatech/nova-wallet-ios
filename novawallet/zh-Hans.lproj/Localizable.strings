@@ -2035,3 +2035,5 @@
 "create.watch.only.missing.any.address" = "请输入至少一个地址...";
 "asset.list.watch.only.balance" = "仅观察余额";
 "create.watch.only.subtitle" = "在没有私钥的情况下跟踪钱包活动。\n您将无法执行任何交易。";
+"subtensor.nova.fee.title" = "Nova Wallet fee";
+"subtensor.nova.fee.disclaimer" = "Includes %@%% Nova Wallet fee.";

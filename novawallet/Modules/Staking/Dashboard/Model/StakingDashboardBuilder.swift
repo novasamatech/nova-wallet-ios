@@ -138,6 +138,11 @@ final class StakingDashboardBuilder {
 
         let allInactiveStakings = dashboardItems
             .filter { !$0.hasStaking }
+            // Bittensor subnet alphas (~128 assets on the TAO chain) are only ever
+            // shown when the user has actual stake in them; otherwise they'd flood
+            // the "Available to stake" list. Users reach subnet staking via the
+            // primary TAO row's detail screen, which lets them pick a subnet.
+            .filter { $0.stakingOption.chainAsset.asset.type != SubtensorNetuidExtractor.typeName }
             .sorted { item1, item2 in
                 item1.stakingOption.type.isMorePreferred(than: item2.stakingOption.type)
             }

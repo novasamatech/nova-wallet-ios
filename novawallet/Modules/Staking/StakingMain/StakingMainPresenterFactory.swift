@@ -33,6 +33,10 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createNominationPoolsPresenter(for: stakingOption.chainAsset, view: view)
         case .mythos:
             return createMythosPresenter(for: stakingOption, view: view)
+        case .subtensor:
+            // v1 TODO(integration): Subtensor main-view integration deferred — mirrors .unsupported. Module is
+            // reached via SubtensorStakingViewFactory directly during manual QA (Task 26).
+            return nil
         case .unsupported:
             return nil
         }

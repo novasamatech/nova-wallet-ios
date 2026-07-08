@@ -2035,3 +2035,5 @@
 "create.watch.only.missing.any.address" = "少なくとも1つのアドレスを入力してください...";
 "asset.list.watch.only.balance" = "ウォッチオンリーバランス";
 "create.watch.only.subtitle" = "秘密鍵を使わずにウォレットのアクティビティを追跡することができます。\nトランザクションを実行することはできません。";
+"subtensor.nova.fee.title" = "Nova Wallet fee";
+"subtensor.nova.fee.disclaimer" = "Includes %@%% Nova Wallet fee.";

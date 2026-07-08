@@ -2035,3 +2035,5 @@
 "create.watch.only.missing.any.address" = "En az bir adres girin...";
 "asset.list.watch.only.balance" = "Sadece-izleme bakiyesi";
 "create.watch.only.subtitle" = "Cüzdan aktivitesini özel anahtar olmadan izleyin.\nHerhangi bir işlem gerçekleştiremezsiniz.";
+"subtensor.nova.fee.title" = "Nova Wallet fee";
+"subtensor.nova.fee.disclaimer" = "Includes %@%% Nova Wallet fee.";

@@ -14,7 +14,8 @@ extension MultistakingOffchainOperationFactoryProtocol {
         defaultAccountResponse: ChainAccountResponse
     ) -> AccountId? {
         switch option.type {
-        case .relaychain, .auraRelaychain, .azero, .parachain, .turing, .mythos, .unsupported:
+        case .relaychain, .auraRelaychain, .azero, .parachain, .turing, .mythos, .subtensor, .unsupported:
+            // v1 TODO(integration): .subtensor uses default account resolution — no dedicated bonded/reward key.
             return accounts[option] ?? defaultAccountResponse.accountId
         case .nominationPools:
             // we don't want to use default account as it might be connected to direct staking

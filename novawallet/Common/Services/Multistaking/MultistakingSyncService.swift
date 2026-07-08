@@ -208,6 +208,11 @@ final class MultistakingSyncService {
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
             )
+        case .subtensor:
+            createSubtensorStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            )
         case .unsupported:
             nil
         }
@@ -375,6 +380,31 @@ final class MultistakingSyncService {
             runtimeService: runtimeService,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createSubtensorStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard let account = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
+            return nil
+        }
+
+        // netuid comes from the ChainAsset's typeExtras.netuid in nova-utils.
+        // TAO (native asset) has no typeExtras → defaults to netuid=0 (root).
+        // Subnet alpha assets carry typeExtras.netuid ∈ 1…128.
+        let netuid = SubtensorNetuidExtractor.extract(from: chainAsset.asset) ?? 0
+
+        return SubtensorMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            netuid: netuid,
+            dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
+            operationQueue: operationQueue,
             logger: logger
         )
     }

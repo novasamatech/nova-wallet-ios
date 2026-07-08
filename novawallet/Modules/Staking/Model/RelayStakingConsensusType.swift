@@ -13,7 +13,8 @@ enum RelayStkConsensusType {
             self = .auraGeneral
         case .azero:
             self = .auraAzero
-        case .parachain, .turing, .mythos, .unsupported, .nominationPools:
+        case .parachain, .turing, .mythos, .subtensor, .unsupported, .nominationPools:
+            // v1 TODO(integration): Subtensor is not a relaychain-consensus staking type — return nil.
             return nil
         }
     }

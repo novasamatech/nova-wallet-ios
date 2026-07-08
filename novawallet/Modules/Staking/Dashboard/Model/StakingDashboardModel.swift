@@ -45,7 +45,26 @@ enum StakingDashboardItemModel: Equatable {
         }
 
         var maxApy: Decimal? {
-            dashboardItem?.maxApy
+            if let dbValue = dashboardItem?.maxApy {
+                return dbValue
+            }
+            #if DEBUG
+                // [TEMP-TAOSTATS] Until Nova's offchain indexer supports
+                // Subtensor staking, the dashboard row for Bittensor
+                // receives no maxApy update and the estimated-earnings
+                // label stalls on its loading skeleton. Returning the
+                // same hardcoded fallback the Start Staking info screen
+                // uses keeps the list visually consistent with other
+                // chains. The value is intentionally duplicated rather
+                // than imported from the presenter layer to avoid
+                // coupling the dashboard model to a Start Staking module
+                // — matches `StartStakingInfoSubtensorPresenter
+                // .fallbackMaxApy`.
+                if stakingOption.type == .subtensor {
+                    return 0.18
+                }
+            #endif
+            return nil
         }
 
         func stakeValue() -> Decimal {
@@ -87,7 +106,10 @@ enum StakingDashboardItemModel: Equatable {
         init(concrete: Concrete, availableBalance: BigUInt?) {
             self.init(
                 chainAsset: concrete.chainAsset,
-                maxApy: concrete.dashboardItem?.maxApy,
+                // Use the Concrete's computed `maxApy` so staking-type
+                // specific fallbacks (e.g. [TEMP-TAOSTATS] Subtensor)
+                // propagate into the Combined path too.
+                maxApy: concrete.maxApy,
                 accountId: concrete.accountId,
                 availableBalance: availableBalance,
                 price: concrete.price,

@@ -8,6 +8,7 @@ enum StakingType: String, Codable, Equatable, Hashable {
     case turing
     case nominationPools = "nomination-pools"
     case mythos
+    case subtensor
     case unsupported
 
     init(rawType: String?) {
@@ -47,7 +48,7 @@ enum StakingClass {
         switch stakingType {
         case .relaychain, .azero, .auraRelaychain:
             self = .relaychain
-        case .parachain, .turing, .mythos:
+        case .parachain, .turing, .mythos, .subtensor:
             self = .parachain
         case .nominationPools:
             self = .nominationPools

@@ -2035,3 +2035,5 @@
 "create.watch.only.missing.any.address" = "Nhập ít nhất một địa chỉ...";
 "asset.list.watch.only.balance" = "Số dư chỉ theo dõi";
 "create.watch.only.subtitle" = "Theo dõi hoạt động ví mà không cần khóa riêng.\nBạn sẽ không thể thực hiện bất kỳ giao dịch nào.";
+"subtensor.nova.fee.title" = "Nova Wallet fee";
+"subtensor.nova.fee.disclaimer" = "Includes %@%% Nova Wallet fee.";

@@ -107,6 +107,18 @@ struct StartStakingViewModelFactory: StartStakingViewModelFactoryProtocol {
         unstakePeriod: TimeInterval,
         locale: Locale
     ) -> ParagraphView.Model {
+        // Chains with no unbonding queue (today: Subtensor) get a dedicated
+        // string. The default `staking.start.unstake` template tacks on
+        // "No rewards are earned while unstaking", which is misleading when
+        // there is no unstaking period at all.
+        if unstakePeriod <= 0 {
+            let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingStartUnstakeInstant()
+            return .init(
+                image: R.image.clock(),
+                text: AccentTextModel(text: text, accents: [])
+            )
+        }
+
         let separator = R.string(preferredLanguages: locale.rLanguages).localizable.commonAnd()
         let preposition = R.string(preferredLanguages: locale.rLanguages).localizable.commonTimePeriodAfter()
         let unstakePeriodString = unstakePeriod.localizedDaysHoursOrFallbackMinutes(

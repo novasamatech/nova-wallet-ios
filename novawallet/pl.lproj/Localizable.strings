@@ -2035,3 +2035,5 @@
 "create.watch.only.missing.any.address" = "Wprowadź co najmniej jeden adres...";
 "asset.list.watch.only.balance" = "Saldo tylko do obserwacji";
 "create.watch.only.subtitle" = "Śledź aktywność portfela bez klucza prywatnego.\nNie będziesz w stanie przeprowadzać żadnych transakcji.";
+"subtensor.nova.fee.title" = "Nova Wallet fee";
+"subtensor.nova.fee.disclaimer" = "Includes %@%% Nova Wallet fee.";

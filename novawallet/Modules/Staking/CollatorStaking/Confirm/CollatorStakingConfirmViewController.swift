@@ -7,14 +7,19 @@ final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
     let presenter: CollatorStakingConfirmPresenterProtocol
 
     let localizableTitle: LocalizableResource<String>
+    let localizableCollatorLabel: LocalizableResource<String>
 
     init(
         presenter: CollatorStakingConfirmPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
+        localizableCollatorLabel: LocalizableResource<String> = LocalizableResource { locale in
+            R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollator()
+        },
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localizableTitle = localizableTitle
+        self.localizableCollatorLabel = localizableCollatorLabel
 
         super.init(nibName: nil, bundle: nil)
 
@@ -56,9 +61,7 @@ final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.parachainStakingCollator()
+        rootView.collatorCell.titleLabel.text = localizableCollatorLabel.value(for: selectedLocale)
     }
 
     private func setupHandlers() {

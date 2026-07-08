@@ -83,9 +83,15 @@ final class StakingDashboardViewModelFactory {
             formatterFactory: assetFormatterFactory
         )
 
+        // Pass priceData through unchanged: when an asset has no priceId (e.g.
+        // Bittensor subnet alpha tokens, whose TAO value comes from an on-chain
+        // AMM pool not a CoinGecko feed), priceData will be nil here and the
+        // BalanceViewModel omits the fiat price line entirely. The previous
+        // `?? PriceData.zero()` fallback rendered a misleading "$0.00" for
+        // those rows.
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             decimalValue,
-            priceData: priceData ?? PriceData.zero()
+            priceData: priceData
         ).value(for: locale)
 
         return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)
@@ -145,7 +151,9 @@ final class StakingDashboardViewModelFactory {
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingPool().uppercased(),
                 icon: R.image.iconStakingPool()
             )
-        case .parachain, .turing, .mythos, .unsupported:
+        case .parachain, .turing, .mythos, .subtensor, .unsupported:
+            // v1 TODO(integration): .subtensor has a single staking type per chain — the multi-type picker
+            // is never reached for Bittensor, so returning nil matches the intended UX.
             return nil
         }
     }
