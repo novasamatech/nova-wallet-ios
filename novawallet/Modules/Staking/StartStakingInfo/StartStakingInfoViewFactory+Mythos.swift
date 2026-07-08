@@ -24,7 +24,13 @@ extension StartStakingInfoViewFactory {
             return nil
         }
 
-        let interactor = createMythosInteractor(state: state, currencyManager: currencyManager)
+        let noticesProvider = StakingNoticesFacade.sharedProvider
+
+        let interactor = createMythosInteractor(
+            state: state,
+            noticesProvider: noticesProvider,
+            currencyManager: currencyManager
+        )
 
         let wireframe = StartStakingInfoMythosWireframe(state: state)
 
@@ -46,6 +52,7 @@ extension StartStakingInfoViewFactory {
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
+            noticesProvider: noticesProvider,
             logger: Logger.shared
         )
 
@@ -63,6 +70,7 @@ extension StartStakingInfoViewFactory {
 
     private static func createMythosInteractor(
         state: MythosStakingSharedStateProtocol,
+        noticesProvider: StakingNoticesProviding,
         currencyManager: CurrencyManagerProtocol
     ) -> StartStakingInfoMythosInteractor {
         let selectedWalletSettings = SelectedWalletSettings.shared
@@ -87,6 +95,7 @@ extension StartStakingInfoViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            noticesProvider: noticesProvider,
             durationOperationFactory: durationOperationFactory,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),

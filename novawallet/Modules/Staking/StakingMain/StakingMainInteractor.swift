@@ -11,6 +11,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     let settingsManager: SettingsManagerProtocol
     let selectedWalletSettings: SelectedWalletSettings
     let stakingOption: Multistaking.ChainAssetOption
+    let noticesProvider: StakingNoticesProviding
     let stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
@@ -24,6 +25,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         ahmInfoFactory: AHMFullInfoFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         stakingOption: Multistaking.ChainAssetOption,
+        noticesProvider: StakingNoticesProviding,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         stakingRewardsFilterRepository: AnyDataProviderRepository<StakingRewardsFilter>,
@@ -33,6 +35,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         self.ahmInfoFactory = ahmInfoFactory
         self.settingsManager = settingsManager
         self.stakingOption = stakingOption
+        self.noticesProvider = noticesProvider
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
         self.stakingRewardsFilterRepository = stakingRewardsFilterRepository
@@ -77,6 +80,17 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         return info.destinationChain.chainId == chainAsset.chain.chainId
     }
 
+    func setupNoticesSubscription() {
+        noticesProvider.subscribe(self) { [weak self] in
+            self?.handleNoticesChanged()
+        }
+        noticesProvider.refresh()
+    }
+
+    private func handleNoticesChanged() {
+        presenter?.didReceiveNoticesUpdate()
+    }
+
     func provideAHMInfo() {
         guard let parentChainId = chainAsset.chain.parentId else {
             return
@@ -111,6 +125,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
         provideAHMInfo()
         provideStakingRewardsFilter()
+        setupNoticesSubscription()
 
         eventCenter.add(observer: self, dispatchIn: .main)
     }

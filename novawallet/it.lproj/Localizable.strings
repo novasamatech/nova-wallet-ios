@@ -2035,3 +2035,4 @@
 "create.watch.only.missing.any.address" = "Inserisci almeno un indirizzo...";
 "asset.list.watch.only.balance" = "Saldo solo visualizzazione";
 "create.watch.only.subtitle" = "Tieni traccia dell’attività del portafoglio senza una chiave privata.\nNon potrai eseguire alcuna transazione.";
+"staking.notice.chip" = "Avviso";

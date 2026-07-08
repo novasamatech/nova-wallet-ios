@@ -1,6 +1,22 @@
 import UIKit
 import UIKit_iOS
 
+private final class PaddedLabel: UILabel {
+    var textInsets = UIEdgeInsets(top: 2, left: 7, bottom: 2, right: 7)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: textInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(
+            width: size.width + textInsets.left + textInsets.right,
+            height: size.height + textInsets.top + textInsets.bottom
+        )
+    }
+}
+
 final class StakingDashboardInactiveCell: BlurredCollectionViewCell<StakingDashboardInactiveCellView> {
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -19,6 +35,17 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
     >,
     IconDetailsGenericView<GenericPairValueView<ShimmerLabel, UILabel>>
 > {
+    private let noticeChip: PaddedLabel = {
+        let label = PaddedLabel()
+        label.font = .systemFont(ofSize: 10, weight: .semibold)
+        label.textAlignment = .center
+        label.layer.cornerRadius = 5
+        label.layer.masksToBounds = true
+        label.isHidden = true
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        return label
+    }()
+
     private enum Constants {
         static let iconSize = CGSize(width: 44, height: 44)
     }
@@ -64,6 +91,20 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
             stakingTypeView.bind(viewModel: stakingTypeViewModel)
         } else {
             stakingTypeView.isHidden = true
+        }
+
+        if let notice = viewModel.notice {
+            noticeChip.isHidden = false
+            noticeChip.text = R.string.localizable.stakingNoticeChip(
+                preferredLanguages: locale.rLanguages
+            )
+            let (background, foreground): (UIColor, UIColor) = notice.severity == .critical
+                ? (R.color.colorErrorBlockBackground()!, R.color.colorTextNegative()!)
+                : (R.color.colorWarningBlockBackground()!, R.color.colorTextWarning()!)
+            noticeChip.backgroundColor = background
+            noticeChip.textColor = foreground
+        } else {
+            noticeChip.isHidden = true
         }
 
         estimatedEarningsLabel.bind(viewModel: viewModel.estimatedEarnings.map(with: { $0 ?? "" }))
@@ -165,6 +206,11 @@ final class StakingDashboardInactiveCellView: GenericTitleValueView<
 
         titleView.sView.fView.makeHorizontal()
         titleView.sView.fView.spacing = 4
+
+        titleView.sView.fView.stackView.addArrangedSubview(noticeChip)
+        titleView.sView.fView.stackView.setCustomSpacing(6, after: titleView.sView.fView.fView)
+        titleView.sView.fView.stackView.setCustomSpacing(6, after: titleView.sView.fView.sView)
+        titleView.sView.fView.stackView.alignment = .center
 
         titleView.sView.sView.makeHorizontal()
         titleView.sView.sView.spacing = 6

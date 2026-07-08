@@ -17,6 +17,7 @@ protocol StakingMoreOptionsInteractorInputProtocol: AnyObject {
 protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {
     func didReceive(dAppsResult: Result<DAppList, Error>?)
     func didReceive(moreOptions: [StakingDashboardItemModel])
+    func didReceiveNoticesUpdate()
 }
 
 protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable,

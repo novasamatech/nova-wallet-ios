@@ -3,6 +3,15 @@ import XCTest
 import Operation_iOS
 import Cuckoo
 
+// No-op stub for tests that don't care about staking-notices behavior.
+private final class NoOpStakingNoticesProvider: StakingNoticesProviding {
+    var allNotices: [ChainModel.Id: StakingNotice] { [:] }
+    func notice(for _: ChainModel.Id) -> StakingNotice? { nil }
+    func refresh() {}
+    func subscribe(_: AnyObject, callback _: @escaping () -> Void) {}
+    func unsubscribe(_: AnyObject) {}
+}
+
 class ChainRegistryTests: XCTestCase {
     func testSetupCompletionWhenAllChainsFullySynced() throws {
         // given
@@ -139,6 +148,7 @@ class ChainRegistryTests: XCTestCase {
             chainSyncService: chainSyncService,
             runtimeSyncService: runtimeSyncService,
             commonTypesSyncService: commonTypesSyncService,
+            stakingNoticesProvider: NoOpStakingNoticesProvider(),
             chainProvider: chainProvider,
             specVersionSubscriptionFactory: specVersionSubscriptionFactory,
             logger: Logger.shared

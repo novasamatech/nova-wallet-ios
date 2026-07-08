@@ -24,6 +24,7 @@ enum KnowChainId {
     static let polkadex = "3920bcb4960a1eef5580cd5367ff3f430eef052774f78468852f7b9cb39f8a3c"
     static let calamari = "4ac80c99289841dd946ef92765bf659a307d39189b3ce374a92b5f0415ee17a1"
     static let zeitgeist = "1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060"
+    static let mantaAtlantic = "f3c7ad88f6a80f366c4be216691411ef0622e8b809b1046ea297ef106058d4eb"
     static let ethereum = "eip155:1"
     static let rococo = "a84b46a3e602245284bb9a72c4abd58ee979aa7a5d7f8c4dfdddfaaf0665a4ae"
     static let westend = "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"

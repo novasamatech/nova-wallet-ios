@@ -11,6 +11,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
     let selectedWalletSettings: SelectedWalletSettings
     let selectedStakingType: StakingType?
     let sharedOperation: SharedOperationStatusProtocol
+    let noticesProvider: StakingNoticesProviding
 
     private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
@@ -26,6 +27,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
+        noticesProvider: StakingNoticesProviding,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -36,6 +38,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingDashboardProviderFactory = stakingDashboardProviderFactory
+        self.noticesProvider = noticesProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -92,12 +95,24 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         )
     }
 
+    private func setupNoticesSubscription() {
+        noticesProvider.subscribe(self) { [weak self] in
+            self?.handleNoticesChanged()
+        }
+        noticesProvider.refresh()
+    }
+
+    private func handleNoticesChanged() {
+        basePresenter?.didReceiveNoticesUpdate()
+    }
+
     func setup() {
         setupSelectedAccount()
 
         performAssetBalanceSubscription()
         performPriceSubscription()
         performStakingStateSubscription()
+        setupNoticesSubscription()
     }
 
     func remakeSubscriptions() {

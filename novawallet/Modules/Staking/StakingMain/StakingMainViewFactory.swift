@@ -11,9 +11,12 @@ enum StakingMainViewFactory {
     ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 
+        let noticesProvider = StakingNoticesFacade.sharedProvider
+
         let interactor = createInteractor(
             with: settings,
-            stakingOption: stakingOption
+            stakingOption: stakingOption,
+            noticesProvider: noticesProvider
         )
         let wireframe = StakingMainWireframe()
 
@@ -42,6 +45,7 @@ enum StakingMainViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             stakingOption: stakingOption,
+            noticesProvider: noticesProvider,
             childPresenterFactory: childPresenterFactory,
             viewModelFactory: StakingMainViewModelFactory(),
             ahmViewModelFactory: AHMInfoViewModelFactory(),
@@ -62,7 +66,8 @@ enum StakingMainViewFactory {
 
     private static func createInteractor(
         with settings: SettingsManagerProtocol,
-        stakingOption: Multistaking.ChainAssetOption
+        stakingOption: Multistaking.ChainAssetOption,
+        noticesProvider: StakingNoticesProviding
     ) -> StakingMainInteractor {
         let mapper = AnyCoreDataMapper(StakingRewardsFilterMapper())
         let facade = UserDataStorageFacade.shared
@@ -74,6 +79,7 @@ enum StakingMainViewFactory {
             ahmInfoFactory: ahmInfoFactory,
             settingsManager: settings,
             stakingOption: stakingOption,
+            noticesProvider: noticesProvider,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             stakingRewardsFilterRepository: stakingRewardsFilterRepository,

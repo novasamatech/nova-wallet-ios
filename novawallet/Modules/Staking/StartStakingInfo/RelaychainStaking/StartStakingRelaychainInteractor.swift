@@ -39,6 +39,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
+        noticesProvider: StakingNoticesProviding,
         currencyManager: CurrencyManagerProtocol,
         networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
         eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol,
@@ -60,6 +61,7 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            noticesProvider: noticesProvider,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

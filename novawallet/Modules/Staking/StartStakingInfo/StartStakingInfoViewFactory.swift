@@ -79,8 +79,11 @@ struct StartStakingInfoViewFactory {
             return nil
         }
 
+        let noticesProvider = StakingNoticesFacade.sharedProvider
+
         let interactor = createRelaychainInteractor(
             state: state,
+            noticesProvider: noticesProvider,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -104,6 +107,7 @@ struct StartStakingInfoViewFactory {
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: state.stakingType),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
+            noticesProvider: noticesProvider,
             logger: Logger.shared
         )
 
@@ -121,6 +125,7 @@ struct StartStakingInfoViewFactory {
 
     private static func createRelaychainInteractor(
         state: RelaychainStartStakingStateProtocol,
+        noticesProvider: StakingNoticesProviding,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) -> StartStakingRelaychainInteractor {
@@ -145,6 +150,7 @@ struct StartStakingInfoViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            noticesProvider: noticesProvider,
             currencyManager: currencyManager,
             networkInfoOperationFactory: networkOperationFactory,
             eraCoundownOperationFactory: eraCountdownFactory,
@@ -176,7 +182,13 @@ struct StartStakingInfoViewFactory {
             return nil
         }
 
-        let interactor = createParachainInteractor(state: state, currencyManager: currencyManager)
+        let noticesProvider = StakingNoticesFacade.sharedProvider
+
+        let interactor = createParachainInteractor(
+            state: state,
+            noticesProvider: noticesProvider,
+            currencyManager: currencyManager
+        )
 
         let wireframe = StartStakingInfoParachainWireframe(state: state)
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -196,6 +208,7 @@ struct StartStakingInfoViewFactory {
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
+            noticesProvider: noticesProvider,
             logger: Logger.shared
         )
 
@@ -213,6 +226,7 @@ struct StartStakingInfoViewFactory {
 
     private static func createParachainInteractor(
         state: ParachainStakingSharedStateProtocol,
+        noticesProvider: StakingNoticesProviding,
         currencyManager: CurrencyManagerProtocol
     ) -> StartStakingParachainInteractor {
         let selectedWalletSettings = SelectedWalletSettings.shared
@@ -244,6 +258,7 @@ struct StartStakingInfoViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            noticesProvider: noticesProvider,
             currencyManager: currencyManager,
             networkInfoFactory: ParaStkNetworkInfoOperationFactory(),
             durationOperationFactory: stakingDurationFactory,

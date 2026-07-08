@@ -12,9 +12,11 @@ struct StakingMoreOptionsViewFactory {
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
             for: dAppsUrl
         )
+        let noticesProvider = StakingNoticesFacade.sharedProvider
         let interactor = StakingMoreOptionsInteractor(
             dAppProvider: dAppProvider,
             stakingStateObserver: stateObserver,
+            noticesProvider: noticesProvider,
             operationQueue: OperationQueue()
         )
         let wireframe = StakingMoreOptionsWireframe()
@@ -24,7 +26,8 @@ struct StakingMoreOptionsViewFactory {
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             chainAssetViewModelFactory: ChainAssetViewModelFactory(),
-            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource(),
+            noticesProvider: noticesProvider
         )
 
         let wallet: MetaAccountModel = SelectedWalletSettings.shared.value

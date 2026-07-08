@@ -2035,3 +2035,4 @@
 "create.watch.only.missing.any.address" = "최소 하나의 주소를 입력하세요...";
 "asset.list.watch.only.balance" = "보기 전용 잔액";
 "create.watch.only.subtitle" = "비공개 키 없이 지갑 활동을 추적합니다.\n어떠한 거래도 수행할 수 없습니다.";
+"staking.notice.chip" = "안내";

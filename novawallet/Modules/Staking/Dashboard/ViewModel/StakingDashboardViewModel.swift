@@ -1,5 +1,12 @@
 import Foundation
 
+struct StakingNoticeBanner: Equatable {
+    enum Severity: Equatable { case info; case critical }
+    let severity: Severity
+    /// Short text shown on the banner strip.
+    let text: String
+}
+
 struct StakingDashboardEnabledViewModel {
     enum Status {
         case active
@@ -29,6 +36,7 @@ struct StakingDashboardEnabledViewModel {
     let yourStake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let estimatedEarnings: LoadableViewModelState<String?>
     let stakingType: TitleIconViewModel?
+    let notice: StakingNoticeBanner?
 }
 
 struct StakingDashboardDisabledViewModel {
@@ -36,6 +44,7 @@ struct StakingDashboardDisabledViewModel {
     let estimatedEarnings: LoadableViewModelState<String?>
     let balance: SecuredViewModel<BalanceViewModelProtocol?>
     let stakingType: TitleIconViewModel?
+    let notice: StakingNoticeBanner?
 }
 
 struct StakingDashboardViewModel {

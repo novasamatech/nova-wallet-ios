@@ -54,6 +54,7 @@ final class ChainRegistry {
     let chainSyncService: ChainSyncServiceProtocol
     let runtimeSyncService: RuntimeSyncServiceProtocol
     let commonTypesSyncService: CommonTypesSyncServiceProtocol
+    let stakingNoticesProvider: StakingNoticesProviding
     let chainProvider: StreamableProvider<ChainModel>
     let specVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol
     let logger: LoggerProtocol?
@@ -71,6 +72,7 @@ final class ChainRegistry {
         chainSyncService: ChainSyncServiceProtocol,
         runtimeSyncService: RuntimeSyncServiceProtocol,
         commonTypesSyncService: CommonTypesSyncServiceProtocol,
+        stakingNoticesProvider: StakingNoticesProviding,
         chainProvider: StreamableProvider<ChainModel>,
         specVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol,
         logger: LoggerProtocol? = nil
@@ -80,6 +82,7 @@ final class ChainRegistry {
         self.chainSyncService = chainSyncService
         self.runtimeSyncService = runtimeSyncService
         self.commonTypesSyncService = commonTypesSyncService
+        self.stakingNoticesProvider = stakingNoticesProvider
         self.chainProvider = chainProvider
         self.specVersionSubscriptionFactory = specVersionSubscriptionFactory
         self.logger = logger
@@ -220,6 +223,7 @@ final class ChainRegistry {
     private func syncUpServices() {
         chainSyncService.syncUp()
         commonTypesSyncService.syncUp()
+        stakingNoticesProvider.refresh()
     }
 
     private func internalSwitchSync(mode: ChainSyncMode, chainId: ChainModel.Id) throws {

@@ -208,7 +208,14 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let height = StakingDashboardSection(rawValue: indexPath.section)?.rowHeight ?? 0
+        var height = StakingDashboardSection(rawValue: indexPath.section)?.rowHeight ?? 0
+
+        if
+            StakingDashboardSection(rawValue: indexPath.section) == .activeStakings,
+            activeItems.indices.contains(indexPath.row),
+            activeItems[indexPath.row].notice != nil {
+            height += NoticeStripView.stripHeight
+        }
 
         return CGSize(width: collectionView.frame.width, height: height)
     }

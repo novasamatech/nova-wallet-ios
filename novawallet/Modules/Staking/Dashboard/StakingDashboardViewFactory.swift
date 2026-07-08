@@ -8,10 +8,13 @@ struct StakingDashboardViewFactory {
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
+        let noticesProvider = StakingNoticesFacade.sharedProvider
+
         guard
             let interactor = createInteractor(
                 for: stateObserver,
-                walletNotificationService: walletNotificationService
+                walletNotificationService: walletNotificationService,
+                noticesProvider: noticesProvider
             ),
             let currencyManager = CurrencyManager.shared else {
             return nil
@@ -28,7 +31,8 @@ struct StakingDashboardViewFactory {
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             chainAssetViewModelFactory: ChainAssetViewModelFactory(),
-            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource(),
+            noticesProvider: noticesProvider
         )
 
         let presenter = StakingDashboardPresenter(
@@ -54,7 +58,8 @@ struct StakingDashboardViewFactory {
 
     private static func createInteractor(
         for stateObserver: Observable<StakingDashboardModel>,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        noticesProvider: StakingNoticesProviding
     ) -> StakingDashboardInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -88,7 +93,8 @@ struct StakingDashboardViewFactory {
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
             walletNotificationService: walletNotificationService,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            noticesProvider: noticesProvider
         )
     }
 }

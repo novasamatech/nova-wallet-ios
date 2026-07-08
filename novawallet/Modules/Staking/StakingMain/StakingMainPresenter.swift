@@ -10,6 +10,7 @@ final class StakingMainPresenter {
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
     let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
+    let noticesProvider: StakingNoticesProviding
     let stakingOption: Multistaking.ChainAssetOption
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
@@ -22,6 +23,7 @@ final class StakingMainPresenter {
         interactor: StakingMainInteractorInputProtocol,
         wireframe: StakingMainWireframeProtocol,
         stakingOption: Multistaking.ChainAssetOption,
+        noticesProvider: StakingNoticesProviding,
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
         ahmViewModelFactory: AHMInfoViewModelFactoryProtocol,
@@ -31,6 +33,7 @@ final class StakingMainPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.stakingOption = stakingOption
+        self.noticesProvider = noticesProvider
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
         self.ahmViewModelFactory = ahmViewModelFactory
@@ -46,6 +49,18 @@ private extension StakingMainPresenter {
         let viewModel = viewModelFactory.createMainViewModel(chainAsset: stakingOption.chainAsset)
 
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func provideNoticeModel() {
+        let chainId = stakingOption.chainAsset.chain.chainId
+        let noticeModel: StakingNoticeBlockView.Model? = noticesProvider.notice(for: chainId).map {
+            StakingNoticeBlockView.Model(
+                severity: $0.severity == .critical ? .critical : .info,
+                title: $0.shortText,
+                body: $0.longText
+            )
+        }
+        view?.didReceiveNotice(noticeModel)
     }
 
     func provideAHMAlertModel() {
@@ -70,6 +85,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         view?.didReceiveStakingState(viewModel: .undefined)
 
         provideMainViewModel()
+        provideNoticeModel()
 
         if childPresenter == nil, let view = view {
             childPresenter = childPresenterFactory.createPresenter(
@@ -150,6 +166,10 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         self.ahmInfo = ahmInfo
 
         provideAHMAlertModel()
+    }
+
+    func didReceiveNoticesUpdate() {
+        provideNoticeModel()
     }
 }
 

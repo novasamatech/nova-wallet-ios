@@ -6,6 +6,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     let paragraphStyle: MultiColorTextStyle
     var skeletonView: SkrullableView?
 
+    let noticeBlock = StakingNoticeBlockView()
+
     var header: StackTableHeaderCell = .create {
         $0.titleLabel.textAlignment = .center
     }
@@ -96,6 +98,10 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         }
     }
 
+    func bindNotice(_ model: StakingNoticeBlockView.Model?) {
+        noticeBlock.bind(model)
+    }
+
     func updateContent(
         title: AccentTextModel,
         paragraphs: [ParagraphView.Model],
@@ -111,6 +117,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
         stackView.spacing = Constants.containerSpacing
 
+        setNotice()
         set(title: title)
         set(paragraphs: paragraphs)
         setWiki(urlModel: wikiUrl)
@@ -122,6 +129,11 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         actionView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.stakingStartTitle()
+    }
+
+    private func setNotice() {
+        stackView.addArrangedSubview(noticeBlock)
+        stackView.setCustomSpacing(Constants.noticeSpacing, after: noticeBlock)
     }
 
     private func set(title: AccentTextModel) {
@@ -293,6 +305,7 @@ extension StartStakingInfoViewLayout {
             right: 16
         )
         static let containerSpacing: CGFloat = 32
+        static let noticeSpacing: CGFloat = 16
         static let wikiAndTermsSpacing: CGFloat = 16
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
         static let footerBorderWidth: CGFloat = 1

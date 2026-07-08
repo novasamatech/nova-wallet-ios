@@ -20,6 +20,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        noticesProvider: StakingNoticesProviding,
         logger: LoggerProtocol
     ) {
         state = .init(stakingType: selectedStakingType, chainAsset: chainAsset)
@@ -33,6 +34,7 @@ final class StartStakingInfoRelaychainPresenter: StartStakingInfoBasePresenter {
             balanceDerivationFactory: balanceDerivationFactory,
             localizationManager: localizationManager,
             applicationConfig: applicationConfig,
+            noticesProvider: noticesProvider,
             logger: logger
         )
     }

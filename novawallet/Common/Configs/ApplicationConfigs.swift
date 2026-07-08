@@ -48,6 +48,7 @@ protocol ApplicationConfigProtocol {
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
+    var stakingNoticesURL: URL { get }
     var wikiURL: URL { get }
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
@@ -320,6 +321,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var slip44URL: URL {
         URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/slip44.json")!
+    }
+
+    var stakingNoticesURL: URL {
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/notices/staking_notices.json")!
     }
 
     var wikiURL: URL {

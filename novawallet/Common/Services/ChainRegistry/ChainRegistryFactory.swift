@@ -113,6 +113,7 @@ final class ChainRegistryFactory {
             chainSyncService: chainSyncService,
             runtimeSyncService: runtimeSyncService,
             commonTypesSyncService: commonTypesSyncService,
+            stakingNoticesProvider: StakingNoticesFacade.sharedProvider,
             chainProvider: chainProvider,
             specVersionSubscriptionFactory: specVersionSubscriptionFactory,
             logger: Logger.shared

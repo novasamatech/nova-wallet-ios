@@ -15,6 +15,7 @@ final class StakingDashboardInteractor {
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
     let walletNotificationService: WalletNotificationServiceProtocol
+    let noticesProvider: StakingNoticesProviding
 
     private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
@@ -38,7 +39,8 @@ final class StakingDashboardInteractor {
         stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        noticesProvider: StakingNoticesProviding
     ) {
         self.syncServiceFactory = syncServiceFactory
         self.walletSettings = walletSettings
@@ -50,6 +52,7 @@ final class StakingDashboardInteractor {
         self.applicationHandler = applicationHandler
         self.stateObserver = stateObserver
         self.walletNotificationService = walletNotificationService
+        self.noticesProvider = noticesProvider
         self.currencyManager = currencyManager
     }
 
@@ -68,6 +71,17 @@ final class StakingDashboardInteractor {
         syncService?.subscribeSyncState(self, queue: .main) { [weak self] _, state in
             self?.modelBuilder?.applySync(state: state)
         }
+    }
+
+    private func setupNoticesSubscription() {
+        noticesProvider.subscribe(self) { [weak self] in
+            self?.handleNoticesChanged()
+        }
+        noticesProvider.refresh()
+    }
+
+    private func handleNoticesChanged() {
+        presenter?.didReceiveNoticesUpdate()
     }
 
     private func resetBalanceSubscription() {
@@ -167,6 +181,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         setupChainsStore()
         setupDashboardItemsSubscription()
         setupSyncStateSubscription()
+        setupNoticesSubscription()
 
         eventCenter.add(observer: self, dispatchIn: .main)
         applicationHandler.delegate = self

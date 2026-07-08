@@ -2042,3 +2042,4 @@ Do you want to continue?";
 "inlinable.alert.wo.message" = "Beware of scammers. No one can unlock a watch-only wallet or its funds";
 "create.watch.only.missing.any.address" = "Enter at least one address...";
 "asset.list.watch.only.balance" = "Watch-only balance";
+"staking.notice.chip" = "Notice";

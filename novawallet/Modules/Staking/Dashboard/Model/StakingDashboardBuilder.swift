@@ -146,6 +146,7 @@ final class StakingDashboardBuilder {
          * We allow staking to be in inactive set if:
          * - there is no active staking for the asset
          * - the asset is not in the testnet
+         * - the chain is not demoted (see StakingDashboardTierConfig)
          *
          * Otherwise staking goes to the More Options
          */
@@ -160,7 +161,7 @@ final class StakingDashboardBuilder {
 
             if activeStakingAssets.contains(stakingOption.chainAssetId) {
                 moreOptionsConcrete.append(dashboardItem)
-            } else if chain.isTestnet {
+            } else if chain.isTestnet || StakingDashboardTierConfig.demotedChainIds.contains(chain.chainId) {
                 updateCombined(store: &moreOptionsCombined, item: dashboardItem)
             } else {
                 updateCombined(store: &inactiveStakings, item: dashboardItem)

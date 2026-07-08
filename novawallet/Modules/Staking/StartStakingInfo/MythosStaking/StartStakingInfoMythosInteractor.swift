@@ -44,6 +44,7 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
+        noticesProvider: StakingNoticesProviding,
         durationOperationFactory: MythosStkDurationOperationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
@@ -64,6 +65,7 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            noticesProvider: noticesProvider,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

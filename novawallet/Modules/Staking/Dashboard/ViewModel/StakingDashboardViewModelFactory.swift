@@ -35,17 +35,20 @@ final class StakingDashboardViewModelFactory {
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
+    let noticesProvider: StakingNoticesProviding
 
     init(
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
-        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
+        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>,
+        noticesProvider: StakingNoticesProviding
     ) {
         self.assetFormatterFactory = assetFormatterFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.estimatedEarningsFormatter = estimatedEarningsFormatter
+        self.noticesProvider = noticesProvider
     }
 
     private func createEstimatedEarnings(
@@ -193,13 +196,23 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             locale: locale
         )
 
+        let notice: StakingNoticeBanner? = noticesProvider.notice(
+            for: chainAsset.chain.chainId
+        ).map { stakingNotice in
+            StakingNoticeBanner(
+                severity: stakingNotice.severity == .critical ? .critical : .info,
+                text: stakingNotice.shortText
+            )
+        }
+
         return .init(
             chainAssetViewModel: chainAssetViewModel,
             totalRewards: .wrapped(totalRewards, with: privacyModeEnabled),
             status: status,
             yourStake: .wrapped(yourStake, with: privacyModeEnabled),
             estimatedEarnings: estimatedEarnings,
-            stakingType: stakingType
+            stakingType: stakingType,
+            notice: notice
         )
     }
 
@@ -233,11 +246,21 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         let stakingType = createStakingType(for: model, locale: locale)
 
+        let notice: StakingNoticeBanner? = noticesProvider.notice(
+            for: chainAsset.chain.chainId
+        ).map { stakingNotice in
+            StakingNoticeBanner(
+                severity: stakingNotice.severity == .critical ? .critical : .info,
+                text: stakingNotice.shortText
+            )
+        }
+
         return .init(
             chainAssetViewModel: loadableChainAsset,
             estimatedEarnings: estimatedEarnings,
             balance: .wrapped(balance, with: privacyModeEnabled),
-            stakingType: stakingType
+            stakingType: stakingType,
+            notice: notice
         )
     }
 

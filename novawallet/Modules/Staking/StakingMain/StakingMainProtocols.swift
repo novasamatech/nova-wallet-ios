@@ -11,6 +11,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol {
     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
     func didReceiveSelectedEntity(_ entity: StakingSelectedEntityViewModel)
     func didReceiveAHMAlert(viewModel: InlinableAlertView.Model?)
+    func didReceiveNotice(_ model: StakingNoticeBlockView.Model?)
     func didEditRewardFilters()
 }
 
@@ -38,6 +39,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
     func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)
     func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?)
+    func didReceiveNoticesUpdate()
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable, WebPresentable {

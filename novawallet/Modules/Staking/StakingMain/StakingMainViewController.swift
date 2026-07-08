@@ -257,6 +257,10 @@ extension StakingMainViewController: StakingMainViewProtocol {
     func didReceiveAHMAlert(viewModel: InlinableAlertView.Model?) {
         rootView.setAHMAlert(with: viewModel)
     }
+
+    func didReceiveNotice(_ model: StakingNoticeBlockView.Model?) {
+        rootView.bindNotice(model)
+    }
 }
 
 // MARK: - NetworkInfoViewDelegate

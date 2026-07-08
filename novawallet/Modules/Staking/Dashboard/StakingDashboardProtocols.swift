@@ -30,6 +30,7 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
     func didReceive(result: StakingDashboardBuilderResult)
     func didReceive(error: StakingDashboardInteractorError)
     func didReceiveWalletsState(hasUpdates: Bool)
+    func didReceiveNoticesUpdate()
 }
 
 protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,

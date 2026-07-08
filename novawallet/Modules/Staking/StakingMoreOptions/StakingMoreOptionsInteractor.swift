@@ -6,15 +6,18 @@ final class StakingMoreOptionsInteractor {
 
     let dAppProvider: AnySingleValueProvider<DAppList>
     let stakingStateObserver: Observable<StakingDashboardModel>
+    let noticesProvider: StakingNoticesProviding
     private let operationQueue: OperationQueue
 
     init(
         dAppProvider: AnySingleValueProvider<DAppList>,
         stakingStateObserver: Observable<StakingDashboardModel>,
+        noticesProvider: StakingNoticesProviding,
         operationQueue: OperationQueue
     ) {
         self.dAppProvider = dAppProvider
         self.stakingStateObserver = stakingStateObserver
+        self.noticesProvider = noticesProvider
         self.operationQueue = operationQueue
     }
 
@@ -61,12 +64,24 @@ final class StakingMoreOptionsInteractor {
             }
         }
     }
+
+    private func setupNoticesSubscription() {
+        noticesProvider.subscribe(self) { [weak self] in
+            self?.handleNoticesChanged()
+        }
+        noticesProvider.refresh()
+    }
+
+    private func handleNoticesChanged() {
+        presenter?.didReceiveNoticesUpdate()
+    }
 }
 
 extension StakingMoreOptionsInteractor: StakingMoreOptionsInteractorInputProtocol {
     func setup() {
         subscribeStakingState()
         subscribeDApps()
+        setupNoticesSubscription()
     }
 
     func remakeDAppsSubscription() {

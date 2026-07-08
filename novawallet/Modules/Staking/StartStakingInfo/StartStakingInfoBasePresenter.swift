@@ -12,6 +12,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let noticesProvider: StakingNoticesProviding
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
@@ -26,6 +27,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        noticesProvider: StakingNoticesProviding,
         accountManagementFilter: AccountManagementFilterProtocol = AccountManagementFilter(),
         logger: LoggerProtocol
     ) {
@@ -35,9 +37,22 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.startStakingViewModelFactory = startStakingViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.applicationConfig = applicationConfig
+        self.noticesProvider = noticesProvider
         self.accountManagementFilter = accountManagementFilter
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    func provideNoticeModel() {
+        let notice = noticesProvider.notice(for: chainAsset.chain.chainId)
+        let model: StakingNoticeBlockView.Model? = notice.map { stakingNotice in
+            StakingNoticeBlockView.Model(
+                severity: stakingNotice.severity == .critical ? .critical : .info,
+                title: stakingNotice.shortText,
+                body: stakingNotice.longText
+            )
+        }
+        view?.didReceiveNotice(model)
     }
 
     func provideBalanceModel() {
@@ -193,6 +208,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
     func setup() {
         baseInteractor.setup()
+        provideNoticeModel()
+    }
+
+    func didReceiveNoticesUpdate() {
+        provideNoticeModel()
     }
 
     func showNoAccountAlert() {
@@ -225,6 +245,23 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func startStaking() {
+        if let notice = noticesProvider.notice(for: chainAsset.chain.chainId),
+           notice.severity == .critical {
+            wireframe.presentCriticalNoticeSheet(
+                from: view,
+                title: notice.shortText,
+                body: notice.longText,
+                onCancel: {},
+                onContinue: { [weak self] in
+                    self?.proceedToStakingSetup()
+                }
+            )
+        } else {
+            proceedToStakingSetup()
+        }
+    }
+
+    private func proceedToStakingSetup() {
         guard let view = view,
               let accountExistense = accountExistense else {
             return

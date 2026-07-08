@@ -23,6 +23,7 @@ final class StartStakingInfoMythosPresenter: StartStakingInfoBasePresenter {
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        noticesProvider: StakingNoticesProviding,
         logger: LoggerProtocol
     ) {
         state = .init(chainAsset: chainAsset, minStake: nil)
@@ -35,6 +36,7 @@ final class StartStakingInfoMythosPresenter: StartStakingInfoBasePresenter {
             balanceDerivationFactory: balanceDerivationFactory,
             localizationManager: localizationManager,
             applicationConfig: applicationConfig,
+            noticesProvider: noticesProvider,
             logger: logger
         )
     }

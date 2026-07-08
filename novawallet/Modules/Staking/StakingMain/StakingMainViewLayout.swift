@@ -30,6 +30,12 @@ final class StakingMainViewLayout: UIView {
     var scrollView: UIScrollView { containerView.scrollView }
     var stackView: UIStackView { containerView.stackView }
 
+    let noticeBlockView: StakingNoticeBlockView = {
+        let view = StakingNoticeBlockView()
+        view.isHidden = true
+        return view
+    }()
+
     var networkInfoContainerView: UIView = .create { view in
         view.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -108,6 +114,7 @@ private extension StakingMainViewLayout {
         }
 
         setupScrollView()
+        setupNoticeBlockView()
         setupNetworkInfoView()
         setupAlertsView()
     }
@@ -160,6 +167,14 @@ private extension StakingMainViewLayout {
 
     func setupScrollView() {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
+
+    func setupNoticeBlockView() {
+        stackView.addArrangedSubview(noticeBlockView)
+        noticeBlockView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+        }
+        stackView.setCustomSpacing(8, after: noticeBlockView)
     }
 
     func setupNetworkInfoView() {
@@ -231,6 +246,10 @@ private extension StakingMainViewLayout {
 // MARK: - Internal
 
 extension StakingMainViewLayout {
+    func bindNotice(_ model: StakingNoticeBlockView.Model?) {
+        noticeBlockView.bind(model)
+    }
+
     func setupEntityView(for viewModel: StakingSelectedEntityViewModel) {
         let entityView: StackTableView
 

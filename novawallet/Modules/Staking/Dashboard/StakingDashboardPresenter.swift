@@ -173,6 +173,11 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
         hasWalletsListUpdates = hasUpdates
         updateWalletView()
     }
+
+    func didReceiveNoticesUpdate() {
+        guard let result = lastResult else { return }
+        reloadStakingView(using: result.model)
+    }
 }
 
 // MARK: - Localizable

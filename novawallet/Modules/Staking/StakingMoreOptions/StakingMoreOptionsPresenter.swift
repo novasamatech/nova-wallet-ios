@@ -98,6 +98,10 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsInteractorOutputProtoco
         self.moreOptions = moreOptions
         provideMoreOptionsViewModel(moreOptions: moreOptions)
     }
+
+    func didReceiveNoticesUpdate() {
+        provideMoreOptionsViewModel(moreOptions: moreOptions)
+    }
 }
 
 extension StakingMoreOptionsPresenter: Localizable {
