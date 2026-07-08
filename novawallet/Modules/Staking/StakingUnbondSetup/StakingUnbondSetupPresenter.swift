@@ -274,12 +274,9 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         switch result {
         case let .success(variant):
             unstakingVariant = variant
+            provideBondingDuration()
         case let .failure(error):
-            // full duration is the safe display when the role can't be resolved
-            unstakingVariant = .full
             logger?.error("Unstaking variant error: \(error)")
         }
-
-        provideBondingDuration()
     }
 }
