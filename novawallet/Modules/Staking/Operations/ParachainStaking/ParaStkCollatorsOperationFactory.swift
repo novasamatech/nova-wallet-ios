@@ -185,12 +185,19 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         identityWrapper.addDependency(operations: [selectedCollatorsOperation])
 
         let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
-            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
+            oneOfPaths: [
+                ParachainStaking.minDelegatorStk,
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             dependingOn: codingFactoryOperation
         )
 
         let maxRewardedDelegationsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
-            for: ParachainStaking.maxTopDelegationsPerCandidate,
+            oneOfPaths: [
+                ParachainStaking.maxTopDelegationsPerCandidate,
+                ParachainAvn.maxTopNominationsPerCandidate
+            ],
             dependingOn: codingFactoryOperation
         )
 
@@ -242,12 +249,19 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         )
 
         let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
-            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
+            oneOfPaths: [
+                ParachainStaking.minDelegatorStk,
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             dependingOn: codingFactoryOperation
         )
 
         let maxRewardedDelegationsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
-            for: ParachainStaking.maxTopDelegationsPerCandidate,
+            oneOfPaths: [
+                ParachainStaking.maxTopDelegationsPerCandidate,
+                ParachainAvn.maxTopNominationsPerCandidate
+            ],
             dependingOn: codingFactoryOperation
         )
 

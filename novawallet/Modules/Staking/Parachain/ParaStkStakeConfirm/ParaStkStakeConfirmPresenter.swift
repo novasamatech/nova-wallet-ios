@@ -169,10 +169,11 @@ final class ParaStkStakeConfirmPresenter {
     func submitExtrinsic() {
         guard
             let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
-            let collatorId = try? collator.address.toAccountId(),
-            let collatorDelegationsCount = collatorMetadata?.delegationCount else {
+            let collatorId = try? collator.address.toAccountId() else {
             return
         }
+
+        let collatorDelegationsCount = collatorMetadata?.delegationCount ?? 0
 
         let delegationsCount = delegator?.delegations.count ?? 0
 

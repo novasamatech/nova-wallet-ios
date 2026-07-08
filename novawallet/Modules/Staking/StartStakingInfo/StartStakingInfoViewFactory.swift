@@ -39,6 +39,13 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
+        case .parachainAvn:
+            return createParachainAvnView(
+                for: .init(
+                    chainAsset: chainAsset,
+                    type: selectedStakingType ?? mainStakingType
+                )
+            )
         case .mythos:
             return createMythosView(
                 for: .init(

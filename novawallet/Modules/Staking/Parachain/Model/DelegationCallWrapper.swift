@@ -21,7 +21,7 @@ struct DelegationCallWrapper {
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         if existingBond != nil {
-            return try acceptForStakeMore(builder: builder)
+            return try acceptForStakeMore(builder: builder, codingFactory: codingFactory)
         } else {
             return try acceptForStartStaking(
                 builder: builder,
@@ -36,10 +36,20 @@ private extension DelegationCallWrapper {
         builder: ExtrinsicBuilderProtocol,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        if codingFactory.hasCall(
+        // EWX (AvN fork) uses "nominate" with nomination-count params
+        if codingFactory.hasCall(for: ParachainAvn.NominateCall.callCodingPath) {
+            let call = ParachainAvn.NominateCall(
+                candidate: collator,
+                amount: amount,
+                candidateNominationCount: collatorDelegationsCount,
+                nominationCount: delegationsCount
+            )
+
+            return try builder.adding(call: call.runtimeCall)
+        } else if codingFactory.hasCall(
             for: ParachainStaking.DelegateWithAutocompoundCall.callCodingPath
         ) {
-            // we currently don't support auto compound in ui
+            // Moonbeam with auto-compound
             let call = ParachainStaking.DelegateWithAutocompoundCall(
                 candidate: collator,
                 amount: amount,
@@ -51,6 +61,7 @@ private extension DelegationCallWrapper {
 
             return try builder.adding(call: call.runtimeCall)
         } else {
+            // Moonbeam legacy delegate
             let call = ParachainStaking.DelegateCall(
                 candidate: collator,
                 amount: amount,
@@ -63,13 +74,24 @@ private extension DelegationCallWrapper {
     }
 
     func acceptForStakeMore(
-        builder: ExtrinsicBuilderProtocol
+        builder: ExtrinsicBuilderProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        let call = ParachainStaking.DelegatorBondMoreCall(
-            candidate: collator,
-            more: amount
-        )
+        // EWX (AvN fork) uses "bond_extra"
+        if codingFactory.hasCall(for: ParachainAvn.BondExtraCall.callCodingPath) {
+            let call = ParachainAvn.BondExtraCall(
+                candidate: collator,
+                more: amount
+            )
 
-        return try builder.adding(call: call.runtimeCall)
+            return try builder.adding(call: call.runtimeCall)
+        } else {
+            let call = ParachainStaking.DelegatorBondMoreCall(
+                candidate: collator,
+                more: amount
+            )
+
+            return try builder.adding(call: call.runtimeCall)
+        }
     }
 }

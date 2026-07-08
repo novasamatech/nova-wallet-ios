@@ -61,8 +61,23 @@ final class ParaStkUnstakeConfirmInteractor: ParaStkBaseUnstakeInteractor {
 
 extension ParaStkUnstakeConfirmInteractor: ParaStkUnstakeConfirmInteractorInputProtocol {
     func confirm(for callWrapper: UnstakeCallWrapper) {
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationQueue,
+            completion: { [weak self] codingFactory in
+                self?.doConfirmExtrinsic(for: callWrapper, codingFactory: codingFactory)
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
+            }
+        )
+    }
+
+    private func doConfirmExtrinsic(
+        for callWrapper: UnstakeCallWrapper,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) {
         let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            try callWrapper.accept(builder: builder)
+            try callWrapper.accept(builder: builder, codingFactory: codingFactory)
         }
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in

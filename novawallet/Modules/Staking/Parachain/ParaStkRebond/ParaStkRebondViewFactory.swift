@@ -115,6 +115,7 @@ struct ParaStkRebondViewFactory {
             signer: signer,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             identityProxyFactory: identityProxyFactory,
+            runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

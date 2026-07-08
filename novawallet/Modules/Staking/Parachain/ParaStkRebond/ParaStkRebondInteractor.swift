@@ -14,6 +14,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
     let signer: SigningWrapperProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
+    let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -33,6 +34,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         signer: SigningWrapperProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -45,6 +47,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         self.signer = signer
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.identityProxyFactory = identityProxyFactory
+        self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -62,7 +65,18 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func prepareExtrisicBuilderClosure(for collator: AccountId) -> ExtrinsicBuilderClosure {
+    private func prepareExtrisicBuilderClosure(
+        for collator: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ExtrinsicBuilderClosure {
+        // EWX (AvN fork) uses "cancel_nomination_request"
+        if codingFactory.hasCall(for: ParachainAvn.CancelNominationRequestCall.callCodingPath) {
+            let call = ParachainAvn.CancelNominationRequestCall(candidate: collator)
+            return { builder in
+                try builder.adding(call: call.runtimeCall)
+            }
+        }
+
         let call = ParachainStaking.CancelDelegatorRequest(candidate: collator)
 
         return { builder in
@@ -94,17 +108,40 @@ extension ParaStkRebondInteractor: ParaStkRebondInteractorInputProtocol {
     }
 
     func estimateFee(for collator: AccountId) {
-        let extrinsicBuilderClosure = prepareExtrisicBuilderClosure(for: collator)
-
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: collator.toHex(),
-            setupBy: extrinsicBuilderClosure
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationQueue,
+            completion: { [weak self] codingFactory in
+                guard let self else { return }
+                let closure = self.prepareExtrisicBuilderClosure(for: collator, codingFactory: codingFactory)
+                self.feeProxy.estimateFee(
+                    using: self.extrinsicService,
+                    reuseIdentifier: collator.toHex(),
+                    setupBy: closure
+                )
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didReceiveFee(.failure(error))
+            }
         )
     }
 
     func submit(for collator: AccountId) {
-        let builderClosure = prepareExtrisicBuilderClosure(for: collator)
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationQueue,
+            completion: { [weak self] codingFactory in
+                self?.doSubmit(for: collator, codingFactory: codingFactory)
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
+            }
+        )
+    }
+
+    private func doSubmit(
+        for collator: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) {
+        let builderClosure = prepareExtrisicBuilderClosure(for: collator, codingFactory: codingFactory)
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
             self?.extrinsicSubscriptionId = subscriptionId

@@ -95,6 +95,8 @@ struct ParaStkRedeemViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             signer: signer,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            runtimeProvider: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

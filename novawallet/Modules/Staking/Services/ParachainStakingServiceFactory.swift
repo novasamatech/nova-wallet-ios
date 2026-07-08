@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 import Operation_iOS
 
 protocol ParachainStakingServiceFactoryProtocol {
@@ -18,6 +19,7 @@ protocol ParachainStakingServiceFactoryProtocol {
 
 final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
     let stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let defaultCollatorCommission: BigUInt?
 
     init(
         stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
@@ -25,9 +27,11 @@ final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, Parac
         storageFacade: StorageFacadeProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        defaultCollatorCommission: BigUInt? = nil
     ) {
         self.stakingProviderFactory = stakingProviderFactory
+        self.defaultCollatorCommission = defaultCollatorCommission
 
         super.init(
             chainRegisty: chainRegisty,
@@ -57,7 +61,8 @@ final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, Parac
             providerFactory: stakingProviderFactory,
             operationQueue: operationQueue,
             eventCenter: eventCenter,
-            logger: logger
+            logger: logger,
+            defaultCommission: defaultCollatorCommission
         )
     }
 
@@ -87,6 +92,17 @@ final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, Parac
                 connection: connection,
                 runtimeCodingService: runtimeService,
                 repositoryFactory: repositoryFactory,
+                operationQueue: operationQueue,
+                assetPrecision: assetPrecision,
+                eventCenter: eventCenter,
+                logger: logger
+            )
+        case .parachainAvn:
+            return ParachainAvnRewardCalculatorService(
+                chainId: chainId,
+                collatorsService: collatorService,
+                connection: connection,
+                runtimeCodingService: runtimeService,
                 operationQueue: operationQueue,
                 assetPrecision: assetPrecision,
                 eventCenter: eventCenter,

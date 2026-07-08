@@ -113,7 +113,11 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
 
     private func provideMinTechStake() {
         fetchConstant(
-            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
+            oneOfPaths: [
+                ParachainStaking.minDelegatorStk,
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             runtimeCodingService: runtimeProvider,
             operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
@@ -128,7 +132,10 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
 
     private func provideMinDelegationAmount() {
         fetchConstant(
-            for: ParachainStaking.minDelegation,
+            oneOfPaths: [
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             runtimeCodingService: runtimeProvider,
             operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
@@ -143,7 +150,10 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
 
     private func provideMaxDelegationsPerDelegator() {
         fetchConstant(
-            for: ParachainStaking.maxDelegations,
+            oneOfPaths: [
+                ParachainStaking.maxDelegations,
+                ParachainAvn.maxNominationsPerNominator
+            ],
             runtimeCodingService: runtimeProvider,
             operationQueue: operationQueue
         ) { [weak self] (result: Result<UInt32, Error>) in

@@ -198,6 +198,11 @@ final class MultistakingSyncService {
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
             )
+        case .parachainAvn:
+            createParachainAvnStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            )
         case .nominationPools:
             createPoolsStaking(
                 for: chainAssetOption.chainAsset,
@@ -299,10 +304,11 @@ final class MultistakingSyncService {
         for chainAsset: ChainAsset,
         stakingType: StakingType
     ) -> OnchainSyncServiceProtocol? {
-        guard
-            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+        let account = wallet.fetch(for: chainAsset.chain.accountRequest())
+        let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+        let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
+
+        guard let account, let connection, let runtimeService else {
             return nil
         }
 
@@ -331,6 +337,58 @@ final class MultistakingSyncService {
         )
 
         return ParachainMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: multistakingRepositoryFactory.createParachainRepository(),
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createParachainAvnStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        let account = wallet.fetch(for: chainAsset.chain.accountRequest())
+        let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+        let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
+
+        guard let account, let connection, let runtimeService else {
+            return nil
+        }
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let identityFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityFactory
+        )
+
+        let operationFactory = ParaStkCollatorsOperationFactory(
+            requestFactory: requestFactory,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            identityFactory: identityProxyFactory,
+            chainFormat: chainAsset.chain.chainFormat
+        )
+
+        return ParachainAvnMultistakingUpdateService(
             walletId: wallet.metaId,
             accountId: account.accountId,
             chainAsset: chainAsset,

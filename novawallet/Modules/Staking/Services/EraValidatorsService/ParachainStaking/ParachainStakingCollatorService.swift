@@ -48,7 +48,8 @@ final class ParachainStakingCollatorService {
         providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        defaultCommission: BigUInt? = nil
     ) {
         self.chainId = chainId
         self.storageFacade = storageFacade
@@ -58,6 +59,7 @@ final class ParachainStakingCollatorService {
         self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.logger = logger
+        collatorCommission = defaultCommission
     }
 
     func didReceiveSnapshot(_ snapshot: SelectedRoundCollators) {
@@ -165,13 +167,18 @@ final class ParachainStakingCollatorService {
         updateClosure = { [weak self] changes in
             let value = changes.reduceToLastChange()
 
-            let oldCollatorCommission = self?.collatorCommission
-            self?.collatorCommission = value?.item?.value
+            // Only update if decoded value is non-nil. On chains where the
+            // storage type doesn't match (e.g. EWX CommissionSetting struct),
+            // the decoder returns nil — keep the existing/default value.
+            guard let newCommission = value?.item?.value else {
+                return
+            }
 
-            if
-                let collatorCommission = self?.collatorCommission,
-                oldCollatorCommission != collatorCommission {
-                self?.didUpdateCollatorCommission(collatorCommission)
+            let oldCollatorCommission = self?.collatorCommission
+            self?.collatorCommission = newCommission
+
+            if oldCollatorCommission != newCommission {
+                self?.didUpdateCollatorCommission(newCommission)
             }
         }
 

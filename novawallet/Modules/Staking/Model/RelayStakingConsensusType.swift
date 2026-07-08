@@ -13,7 +13,7 @@ enum RelayStkConsensusType {
             self = .auraGeneral
         case .azero:
             self = .auraAzero
-        case .parachain, .turing, .mythos, .unsupported, .nominationPools:
+        case .parachain, .turing, .mythos, .parachainAvn, .unsupported, .nominationPools:
             return nil
         }
     }

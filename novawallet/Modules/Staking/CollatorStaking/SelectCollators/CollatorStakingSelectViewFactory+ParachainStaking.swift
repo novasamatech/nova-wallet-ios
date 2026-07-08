@@ -58,7 +58,13 @@ extension CollatorStakingSelectViewFactory {
             operationManager: operationManager
         )
 
-        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        // EWX has no `pallet-identity` in its runtime; without this flag the
+        // operation factory throws when the storage isn't found. The flag is
+        // a no-op on chains where the pallet exists (Moonbeam, Turing).
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,

@@ -155,7 +155,19 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
+            // Plan 05 EWT iOS manual QA override: in dev builds, point at a
+            // local HTTP server (python3 -m http.server 8787) serving an
+            // EWT-staking-enabled chains_dev.json fixture from ~/Desktop/tao-ewt-staking.
+            // This gives Energy Web X the "staking":["parachain-avn"] array that
+            // nova-utils upstream doesn't have yet (Plan 04 not merged).
+            // Remove this override before any PR to novasamatech.
+            #if F_DEV
+                return URL(string: "http://127.0.0.1:8787/chains_dev_ewt.json")!
+            #else
+                return URL(
+                    string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json"
+                )!
+            #endif
         #endif
     }
 

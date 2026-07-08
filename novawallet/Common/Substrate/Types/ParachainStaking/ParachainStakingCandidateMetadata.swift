@@ -62,12 +62,12 @@ extension ParachainStaking {
         }
     }
 
-    struct CandidateMetadata: Decodable, Equatable {
-        @StringCodable var delegationCount: UInt32
-        @StringCodable var lowestTopDelegationAmount: BigUInt
-        @StringCodable var lowestBottomDelegationAmount: BigUInt
-        @StringCodable var totalCounted: BigUInt
-        @StringCodable var bond: BigUInt
+    struct CandidateMetadata: Equatable {
+        let delegationCount: UInt32
+        let lowestTopDelegationAmount: BigUInt
+        let lowestBottomDelegationAmount: BigUInt
+        let totalCounted: BigUInt
+        let bond: BigUInt
 
         let topCapacity: CapacityStatus
         let bottomCapacity: CapacityStatus
@@ -93,6 +93,65 @@ extension ParachainStaking {
 
         func isStakeShouldBeActive(for stake: BigUInt) -> Bool {
             !topCapacity.isFull || stake > lowestTopDelegationAmount
+        }
+    }
+}
+
+// MARK: - Decodable (handles both Moonbeam and EWX field names)
+
+extension ParachainStaking.CandidateMetadata: Decodable {
+    /// Moonbeam uses `delegation_count`, `lowest_top_delegation_amount`, etc.
+    /// EWX (AvN fork) uses `nomination_count`, `lowest_top_nomination_amount`, etc.
+    /// The struct layout is identical — only field names differ.
+    private enum CodingKeys: String, CodingKey {
+        case bond
+        case totalCounted
+        case topCapacity
+        case bottomCapacity
+        case status
+
+        // Moonbeam field names
+        case delegationCount
+        case lowestTopDelegationAmount
+        case lowestBottomDelegationAmount
+
+        // EWX (AvN) field names
+        case nominationCount
+        case lowestTopNominationAmount
+        case lowestBottomNominationAmount
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        bond = try container.decode(StringScaleMapper<BigUInt>.self, forKey: .bond).value
+        totalCounted = try container.decode(StringScaleMapper<BigUInt>.self, forKey: .totalCounted).value
+        topCapacity = try container.decode(ParachainStaking.CapacityStatus.self, forKey: .topCapacity)
+        bottomCapacity = try container.decode(ParachainStaking.CapacityStatus.self, forKey: .bottomCapacity)
+        status = try container.decode(ParachainStaking.CollatorStatus.self, forKey: .status)
+
+        if let count = try? container.decode(StringScaleMapper<UInt32>.self, forKey: .delegationCount) {
+            delegationCount = count.value
+        } else {
+            delegationCount = try container.decode(
+                StringScaleMapper<UInt32>.self, forKey: .nominationCount
+            ).value
+        }
+
+        if let amount = try? container.decode(StringScaleMapper<BigUInt>.self, forKey: .lowestTopDelegationAmount) {
+            lowestTopDelegationAmount = amount.value
+        } else {
+            lowestTopDelegationAmount = try container.decode(
+                StringScaleMapper<BigUInt>.self, forKey: .lowestTopNominationAmount
+            ).value
+        }
+
+        if let amount = try? container.decode(StringScaleMapper<BigUInt>.self, forKey: .lowestBottomDelegationAmount) {
+            lowestBottomDelegationAmount = amount.value
+        } else {
+            lowestBottomDelegationAmount = try container.decode(
+                StringScaleMapper<BigUInt>.self, forKey: .lowestBottomNominationAmount
+            ).value
         }
     }
 }

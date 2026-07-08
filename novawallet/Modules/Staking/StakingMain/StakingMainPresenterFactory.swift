@@ -29,6 +29,8 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createRelaychainPresenter(for: stakingOption, view: view)
         case .parachain, .turing:
             return createParachainPresenter(for: stakingOption, view: view)
+        case .parachainAvn:
+            return createParachainAvnPresenter(for: stakingOption, view: view)
         case .nominationPools:
             return createNominationPoolsPresenter(for: stakingOption.chainAsset, view: view)
         case .mythos:

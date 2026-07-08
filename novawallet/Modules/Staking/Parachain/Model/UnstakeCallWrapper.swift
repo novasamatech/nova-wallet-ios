@@ -20,15 +20,30 @@ struct UnstakeCallWrapper {
         }
     }
 
-    func accept(builder: ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol {
+    func accept(
+        builder: ExtrinsicBuilderProtocol,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        // Probe each EWX (AvN-fork) call independently — mirrors the per-call
+        // pattern in `DelegationCallWrapper`. If a future runtime renames or
+        // splits the two calls we don't want to silently dispatch a missing one.
         switch action {
         case let .bondLess(amount):
+            if codingFactory.hasCall(for: ParachainAvn.ScheduleNominatorUnbondCall.callCodingPath) {
+                let call = ParachainAvn.ScheduleNominatorUnbondCall(candidate: collator, less: amount)
+                return try builder.adding(call: call.runtimeCall)
+            }
+
             let call = ParachainStaking.ScheduleBondLessCall(candidate: collator, less: amount)
-
             return try builder.adding(call: call.runtimeCall)
-        case .revoke:
-            let call = ParachainStaking.ScheduleRevokeCall(collator: collator)
 
+        case .revoke:
+            if codingFactory.hasCall(for: ParachainAvn.ScheduleRevokeNominationCall.callCodingPath) {
+                let call = ParachainAvn.ScheduleRevokeNominationCall(collator: collator)
+                return try builder.adding(call: call.runtimeCall)
+            }
+
+            let call = ParachainStaking.ScheduleRevokeCall(collator: collator)
             return try builder.adding(call: call.runtimeCall)
         }
     }

@@ -118,12 +118,24 @@ class ParaStkBaseUnstakeInteractor {
 
 extension ParaStkBaseUnstakeInteractor: ParaStkBaseUnstakeInteractorInputProtocol {
     func estimateFee(for callWrapper: UnstakeCallWrapper) {
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: callWrapper.extrinsicId()
-        ) { builder in
-            try callWrapper.accept(builder: builder)
-        }
+        let identifier = callWrapper.extrinsicId()
+
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationQueue,
+            completion: { [weak self] codingFactory in
+                guard let self else { return }
+
+                self.feeProxy.estimateFee(
+                    using: self.extrinsicService,
+                    reuseIdentifier: identifier
+                ) { builder in
+                    try callWrapper.accept(builder: builder, codingFactory: codingFactory)
+                }
+            },
+            errorClosure: { [weak self] error in
+                self?.basePresenter?.didReceiveError(error)
+            }
+        )
     }
 }
 

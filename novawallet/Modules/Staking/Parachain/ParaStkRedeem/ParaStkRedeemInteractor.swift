@@ -13,6 +13,8 @@ final class ParaStkRedeemInteractor {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let signer: SigningWrapperProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let runtimeProvider: RuntimeCodingServiceProtocol
+    let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -31,6 +33,8 @@ final class ParaStkRedeemInteractor {
         feeProxy: ExtrinsicFeeProxyProtocol,
         signer: SigningWrapperProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -41,6 +45,8 @@ final class ParaStkRedeemInteractor {
         self.feeProxy = feeProxy
         self.signer = signer
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.runtimeProvider = runtimeProvider
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -85,22 +91,33 @@ extension ParaStkRedeemInteractor: ParaStkRedeemInteractorInputProtocol {
         feeProxy.delegate = self
     }
 
-    private func prepareCalls(for collatorIds: Set<AccountId>) -> [ParachainStaking.ExecuteDelegatorRequest] {
+    private func prepareExtrisicBuilderClosure(
+        for collatorIds: Set<AccountId>,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ExtrinsicBuilderClosure {
         let delegator = selectedAccount.chainAccount.accountId
-
-        return collatorIds.map { collator in
-            ParachainStaking.ExecuteDelegatorRequest(delegator: delegator, candidate: collator)
-        }
-    }
-
-    private func prepareExtrisicBuilderClosure(for collatorIds: Set<AccountId>) -> ExtrinsicBuilderClosure {
-        let calls = prepareCalls(for: collatorIds)
+        // EWX (AvN fork) uses "execute_nomination_request" with named args.
+        let useAvnCall = codingFactory.hasCall(
+            for: ParachainAvn.ExecuteNominationRequestCall.callCodingPath
+        )
 
         return { builder in
             var newBuilder = builder
 
-            for call in calls {
-                newBuilder = try newBuilder.adding(call: call.runtimeCall)
+            for collator in collatorIds {
+                if useAvnCall {
+                    let call = ParachainAvn.ExecuteNominationRequestCall(
+                        nominator: delegator,
+                        candidate: collator
+                    )
+                    newBuilder = try newBuilder.adding(call: call.runtimeCall)
+                } else {
+                    let call = ParachainStaking.ExecuteDelegatorRequest(
+                        delegator: delegator,
+                        candidate: collator
+                    )
+                    newBuilder = try newBuilder.adding(call: call.runtimeCall)
+                }
             }
 
             return newBuilder
@@ -115,21 +132,46 @@ extension ParaStkRedeemInteractor: ParaStkRedeemInteractorInputProtocol {
 
             let extrinsicId = try Data(compoundId).blake2b16().toHex()
 
-            let extrinsicBuilderClosure = prepareExtrisicBuilderClosure(for: collatorIds)
-
-            feeProxy.estimateFee(
-                using: extrinsicService,
-                reuseIdentifier: extrinsicId,
-                setupBy: extrinsicBuilderClosure
+            runtimeProvider.fetchCoderFactory(
+                runningIn: operationQueue,
+                completion: { [weak self] codingFactory in
+                    guard let self else { return }
+                    let extrinsicBuilderClosure = self.prepareExtrisicBuilderClosure(
+                        for: collatorIds,
+                        codingFactory: codingFactory
+                    )
+                    self.feeProxy.estimateFee(
+                        using: self.extrinsicService,
+                        reuseIdentifier: extrinsicId,
+                        setupBy: extrinsicBuilderClosure
+                    )
+                },
+                errorClosure: { [weak self] error in
+                    self?.presenter?.didReceiveFee(.failure(error))
+                }
             )
-
         } catch {
             presenter?.didReceiveFee(.failure(error))
         }
     }
 
     func submit(for collatorIds: Set<AccountId>) {
-        let builderClosure = prepareExtrisicBuilderClosure(for: collatorIds)
+        runtimeProvider.fetchCoderFactory(
+            runningIn: operationQueue,
+            completion: { [weak self] codingFactory in
+                self?.doSubmit(for: collatorIds, codingFactory: codingFactory)
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
+            }
+        )
+    }
+
+    private func doSubmit(
+        for collatorIds: Set<AccountId>,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) {
+        let builderClosure = prepareExtrisicBuilderClosure(for: collatorIds, codingFactory: codingFactory)
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
             self?.extrinsicSubscriptionId = subscriptionId

@@ -65,8 +65,14 @@ extension ParachainStaking.ValidatorFactory {
                 locale: locale
             )
         }, preservesCondition: {
-            guard let collator = collator, let newDelegationAmount = optAmountInPlank else {
+            guard let newDelegationAmount = optAmountInPlank else {
                 return false
+            }
+
+            // When metadata can't be decoded (e.g. EWX CandidateInfo
+            // differs from Moonbeam), skip capacity checks.
+            guard let collator = collator else {
+                return true
             }
 
             let totalAmountAfterStake = newDelegationAmount + (existingBond ?? 0)
@@ -107,8 +113,12 @@ extension ParachainStaking.ValidatorFactory {
                 locale: locale
             )
         }, preservesCondition: {
-            guard let collator = collator, let newDelegationAmount = optAmountInPlank else {
+            guard let newDelegationAmount = optAmountInPlank else {
                 return false
+            }
+
+            guard let collator = collator else {
+                return true
             }
 
             let totalAmountAfterStake = newDelegationAmount + (existingBond ?? 0)
@@ -337,11 +347,14 @@ extension ParachainStaking.ValidatorFactory {
             self?.presentable.presentCantStakeInactiveCollator(view, locale: locale)
 
         }, preservesCondition: {
-            if let metadata = metadata, metadata.isActive {
+            // Treat nil/undecoded metadata as active — on EWX the
+            // CandidateInfo struct layout differs from Moonbeam and
+            // may fail to decode via the shared type.
+            guard let metadata = metadata else {
                 return true
-            } else {
-                return false
             }
+
+            return metadata.isActive
         })
     }
 }

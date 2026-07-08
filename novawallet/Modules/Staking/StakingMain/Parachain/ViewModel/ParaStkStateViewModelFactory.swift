@@ -252,7 +252,16 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             commonData: state.commonData
         )
 
-        let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
+        // Suppress the rewards card on chains that don't expose a
+        // staking-rewards subquery (e.g. EWX). Without an indexer the
+        // total-rewards query never resolves and the card spins forever.
+        // The view treats nil reward as "hide the card".
+        let reward: LocalizableResource<StakingRewardViewModel>?
+        if chainAsset.chain.externalApis?.stakingRewards() != nil {
+            reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
+        } else {
+            reward = nil
+        }
 
         let actions = createDelegatorStateManageOptions(for: state)
 

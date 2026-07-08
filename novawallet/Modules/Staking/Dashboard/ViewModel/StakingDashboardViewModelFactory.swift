@@ -145,7 +145,7 @@ final class StakingDashboardViewModelFactory {
                 title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingPool().uppercased(),
                 icon: R.image.iconStakingPool()
             )
-        case .parachain, .turing, .mythos, .unsupported:
+        case .parachain, .turing, .mythos, .parachainAvn, .unsupported:
             return nil
         }
     }

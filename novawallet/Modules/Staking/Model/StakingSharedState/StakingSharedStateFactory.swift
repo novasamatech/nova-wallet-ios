@@ -25,6 +25,10 @@ protocol StakingSharedStateFactoryProtocol {
     func createMythosStaking(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> MythosStakingSharedStateProtocol
+
+    func createParachainAvn(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> ParachainStakingSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {
@@ -556,6 +560,103 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             ),
             preferredCollatorsProvider: preferredValidatorsProvider,
             operationQueue: syncOperationQueue,
+            logger: logger
+        )
+    }
+
+    // swiftlint:disable:next function_body_length
+    func createParachainAvn(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> ParachainStakingSharedStateProtocol {
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        // EWX-specific account subscription that queries NominatorState +
+        // NominationScheduledRequests (Moonbeam's class subscribes to
+        // DelegatorState / DelegationScheduledRequests, which don't exist
+        // in EWX runtime metadata).
+        let stakingAccountService = ParachainAvn.AccountSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+            repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        // Use EWX-specific remote subscription (Era, DefaultCollatorCommission)
+        let stakingAssetService = ParachainAvn.StakingRemoteSubscriptionService(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+            repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        // Use EWX-specific local subscription factory (Era, DefaultCollatorCommission paths)
+        let localSubscriptionFactory = ParachainAvnLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let rewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        // Use the EWX local subscription factory for the service factory too.
+        // EWX DefaultCollatorCommission is a struct (CommissionSetting), not a
+        // bare Perbill, so the normal subscription can't decode it.  Pre-set
+        // the known mainnet value (10% = 100_000_000 Perbill) as a fallback.
+        let serviceFactory = ParachainStakingServiceFactory(
+            stakingProviderFactory: localSubscriptionFactory,
+            chainRegisty: chainRegistry,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: syncOperationQueue,
+            logger: logger,
+            defaultCollatorCommission: 100_000_000
+        )
+
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        let collatorService = try serviceFactory.createSelectedCollatorsService(for: chainId)
+
+        let timelineChain = try chainRegistry.getTimelineChainOrError(for: chainId)
+        let blockTimeService = try serviceFactory.createBlockTimeService(for: timelineChain.chainId)
+        let rewardService = try serviceFactory.createRewardCalculatorService(
+            for: chainId,
+            stakingType: stakingOption.type,
+            assetPrecision: stakingOption.chainAsset.asset.decimalPrecision,
+            collatorService: collatorService
+        )
+
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
+        return ParachainStakingSharedState(
+            stakingOption: stakingOption,
+            chainRegistry: chainRegistry,
+            globalRemoteSubscriptionService: stakingAssetService,
+            accountRemoteSubscriptionService: stakingAccountService,
+            collatorService: collatorService,
+            rewardCalculationService: rewardService,
+            blockTimeService: blockTimeService,
+            stakingLocalSubscriptionFactory: localSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: rewardsSubscriptionFactory,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
+            preferredCollatorsProvider: preferredValidatorsProvider,
             logger: logger
         )
     }

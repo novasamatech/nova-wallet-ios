@@ -99,7 +99,11 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
 
     private func provideMinTechStake() {
         fetchConstant(
-            oneOfPaths: [ParachainStaking.minDelegatorStk, ParachainStaking.minDelegation],
+            oneOfPaths: [
+                ParachainStaking.minDelegatorStk,
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             runtimeCodingService: runtimeProvider,
             operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
@@ -114,7 +118,10 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
 
     private func provideMinDelegationAmount() {
         fetchConstant(
-            for: ParachainStaking.minDelegation,
+            oneOfPaths: [
+                ParachainStaking.minDelegation,
+                ParachainAvn.minNominationPerCollator
+            ],
             runtimeCodingService: runtimeProvider,
             operationQueue: operationQueue
         ) { [weak self] (result: Result<BigUInt, Error>) in
