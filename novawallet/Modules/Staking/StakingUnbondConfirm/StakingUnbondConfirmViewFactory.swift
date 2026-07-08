@@ -88,7 +88,9 @@ struct StakingUnbondConfirmViewFactory {
             return nil
         }
 
-        let stakingDurationFactory = state.createStakingDurationOperationFactory()
+        let stakingDurationFactory = state.createStakingDurationOperationFactory(
+            for: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
@@ -108,6 +110,10 @@ struct StakingUnbondConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDurationOperationFactory: stakingDurationFactory,
+            unstakingDurationFactory: UnstakingDurationOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ),
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,

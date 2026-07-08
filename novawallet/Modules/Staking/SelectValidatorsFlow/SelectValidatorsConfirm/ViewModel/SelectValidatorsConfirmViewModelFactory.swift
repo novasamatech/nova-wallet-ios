@@ -22,7 +22,7 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
                 preferredLanguages: locale.rLanguages
             ).localizable.commonHoursFormat(format: duration.era.hoursFromSeconds)
 
-            let unlockingDurationString = duration.unlocking.localizedDaysHours(for: locale)
+            let unlockingDurationString = duration.unlocking.nominator.localizedDaysHours(for: locale)
 
             return [
                 R.string(

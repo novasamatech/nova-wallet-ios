@@ -5,25 +5,42 @@ final class BabeStakingDurationFactory {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
     let eraLengthOperationFactory: EraLengthOperationFactoryProtocol
+    let unstakingDurationFactory: UnstakingDurationOperationMaking
 
-    init(chainId: ChainModel.Id, chainRegistry: ChainRegistryProtocol) {
+    convenience init(
+        chainId: ChainModel.Id,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
+    ) {
+        self.init(
+            chainId: chainId,
+            chainRegistry: chainRegistry,
+            unstakingDurationFactory: UnstakingDurationOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            )
+        )
+    }
+
+    init(
+        chainId: ChainModel.Id,
+        chainRegistry: ChainRegistryProtocol,
+        unstakingDurationFactory: UnstakingDurationOperationMaking
+    ) {
         self.chainId = chainId
         self.chainRegistry = chainRegistry
         eraLengthOperationFactory = EraLengthOperationFactory(chainRegistry: chainRegistry)
+        self.unstakingDurationFactory = unstakingDurationFactory
     }
 }
 
 extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
     func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
         do {
-            let stakingRuntimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
             let timelineChain = try chainRegistry.getTimelineChainOrError(for: chainId)
             let timelineRuntimeService = try chainRegistry.getRuntimeProviderOrError(for: timelineChain.chainId)
 
-            let unlockingWrapper: CompoundOperationWrapper<UInt32> = PrimitiveConstantOperation.wrapper(
-                for: Staking.lockUpPeriodPath,
-                runtimeService: stakingRuntimeService
-            )
+            let unstakingWrapper = unstakingDurationFactory.createUnstakingDurationWrapper(for: chainId)
 
             let eraLengthWrapper = try eraLengthOperationFactory.createEraLengthWrapper(for: chainId)
 
@@ -41,28 +58,31 @@ extension BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
                 let sessionLength = try sessionLengthWrapper.targetOperation.extractNoCancellableResultData()
                 let eraLength = try eraLengthWrapper.targetOperation.extractNoCancellableResultData()
                 let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-                let unlocking = try unlockingWrapper.targetOperation.extractNoCancellableResultData()
+                let unstaking = try unstakingWrapper.targetOperation.extractNoCancellableResultData()
 
                 let sessionDuration = TimeInterval(sessionLength * blockTime).seconds
                 let eraDuration = TimeInterval(eraLength) * sessionDuration
-                let unlockingDuration = TimeInterval(unlocking) * eraDuration
+                let unlocking = UnlockingDuration(
+                    validator: TimeInterval(unstaking.validator) * eraDuration,
+                    nominator: TimeInterval(unstaking.nominator) * eraDuration
+                )
 
                 return StakingDuration(
                     session: sessionDuration,
                     era: eraDuration,
-                    unlocking: unlockingDuration
+                    unlocking: unlocking
                 )
             }
 
             mergeOperation.addDependency(sessionLengthWrapper.targetOperation)
             mergeOperation.addDependency(eraLengthWrapper.targetOperation)
             mergeOperation.addDependency(blockTimeWrapper.targetOperation)
-            mergeOperation.addDependency(unlockingWrapper.targetOperation)
+            mergeOperation.addDependency(unstakingWrapper.targetOperation)
 
             return blockTimeWrapper
                 .insertingHead(operations: sessionLengthWrapper.allOperations)
                 .insertingHead(operations: eraLengthWrapper.allOperations)
-                .insertingHead(operations: unlockingWrapper.allOperations)
+                .insertingHead(operations: unstakingWrapper.allOperations)
                 .insertingTail(operation: mergeOperation)
         } catch {
             return .createWithError(error)

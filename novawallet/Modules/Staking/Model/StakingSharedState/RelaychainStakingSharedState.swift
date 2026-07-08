@@ -22,7 +22,9 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
     ) -> NetworkStakingInfoOperationFactoryProtocol
 
     func createEraCountdownOperationFactory(for operationQueue: OperationQueue) -> EraCountdownOperationFactoryProtocol
-    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol
+    func createStakingDurationOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> StakingDurationOperationFactoryProtocol
 }
 
 final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
@@ -146,7 +148,8 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     ) -> NetworkStakingInfoOperationFactoryProtocol {
         let durationFactory = consensusDependingFactory.createStakingDurationOperationFactory(
             for: stakingOption.chainAsset.chain,
-            timeModel: timeModel
+            timeModel: timeModel,
+            operationQueue: operationQueue
         )
 
         return consensusDependingFactory.createNetworkInfoOperationFactory(
@@ -166,10 +169,13 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         )
     }
 
-    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
+    func createStakingDurationOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> StakingDurationOperationFactoryProtocol {
         consensusDependingFactory.createStakingDurationOperationFactory(
             for: stakingOption.chainAsset.chain,
-            timeModel: timeModel
+            timeModel: timeModel,
+            operationQueue: operationQueue
         )
     }
 }

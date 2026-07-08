@@ -170,7 +170,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
     func provideStakingDuration() {
         clear(cancellable: &durationCancellable)
 
-        let stakingDurationFactory = state.createStakingDurationOperationFactory()
+        let stakingDurationFactory = state.createStakingDurationOperationFactory(for: operationQueue)
 
         let wrapper = stakingDurationFactory.createDurationOperation()
 

@@ -1,5 +1,6 @@
 import XCTest
 @testable import novawallet
+import Operation_iOS
 
 class StakingDurationOperationFactoryTests: XCTestCase {
     func testWestend() {
@@ -15,9 +16,16 @@ class StakingDurationOperationFactoryTests: XCTestCase {
 
             let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
 
+            // Use split values (validator: 28, nominator: 2) so both durations
+            // flow independently through the era-duration multiplication.
+            let unstakingMock = UnstakingDurationOperationFactoryMock(
+                unstakingDuration: UnstakingDuration(validator: 28, nominator: 2)
+            )
+
             let operationFactory = BabeStakingDurationFactory(
                 chainId: chain.chainId,
-                chainRegistry: chainRegistry
+                chainRegistry: chainRegistry,
+                unstakingDurationFactory: unstakingMock
             )
 
             // when
@@ -28,8 +36,11 @@ class StakingDurationOperationFactoryTests: XCTestCase {
 
             let duration = try operationWrapper.targetOperation.extractNoCancellableResultData()
 
+            // then
+
             XCTAssertEqual(duration.era, 6 * 3600)
-            XCTAssertEqual(duration.unlocking, 2 * 6 * 3600)
+            XCTAssertEqual(duration.unlocking.validator, 28 * 6 * 3600)
+            XCTAssertEqual(duration.unlocking.nominator, 2 * 6 * 3600)
         } catch {
             XCTFail("Unexpected error \(error)")
         }

@@ -96,7 +96,7 @@ struct NPoolsUnstakeConfirmViewFactory {
         let extrinsicMonitorFactory = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(with: extrinsicService)
 
         let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)
-        let durationOperationFactory = state.createStakingDurationOperationFactory()
+        let durationOperationFactory = state.createStakingDurationOperationFactory(for: operationQueue)
 
         let npoolsOperationFactory = NominationPoolsOperationFactory(operationQueue: operationQueue)
 
@@ -118,7 +118,12 @@ struct NPoolsUnstakeConfirmViewFactory {
             eraCountdownOperationFactory: eraCountdownOperationFactory,
             durationFactory: durationOperationFactory,
             npoolsOperationFactory: npoolsOperationFactory,
-            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(),
+            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(
+                unstakingDurationFactory: UnstakingDurationOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                )
+            ),
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue
