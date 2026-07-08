@@ -2,6 +2,7 @@ import UIKit
 
 class AssetListFlowLayout: UICollectionViewFlowLayout {
     var animatingTransition: Bool = false
+    var hasLoadMoreSection: Bool = false
 
     private var layoutStyle: AssetListGroupsStyle = .tokens
 
@@ -145,11 +146,15 @@ private extension AssetListFlowLayout {
 
         let initialY = calculateInitialY(for: collectionView)
 
+        let totalSections = collectionView.numberOfSections
+        let assetGroupCount = totalSections - SectionType.assetsStartingSection - (hasLoadMoreSection ? 1 : 0)
+
         let attributes = attributesFactory.createItemsBackgroundAttributes(
             for: layoutStyle,
             collectionView,
             using: sectionsExpandableState,
             assetsStartingSection: SectionType.assetsStartingSection,
+            assetGroupCount: max(assetGroupCount, 0),
             from: initialY
         )
 
@@ -333,6 +338,8 @@ extension AssetListFlowLayout {
             AssetListMeasurement.emptyStateCellHeight
         case .asset:
             assetCellHeight(for: indexPath)
+        case .loadMore:
+            AssetListMeasurement.loadMoreHeight
         }
     }
 

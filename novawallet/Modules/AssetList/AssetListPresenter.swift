@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 import Foundation
 import Operation_iOS
 import SubstrateSdk
@@ -34,6 +35,8 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private var name: String?
 
     private var hidesZeroBalances: Bool?
+    private var dustFilterEnabled: Bool = false
+    private var dustFilterThreshold: Decimal = 1.0
     private var hasWalletsUpdates: Bool = false
 
     private var organizerViewModel: AssetListOrganizerViewModel?
@@ -43,6 +46,10 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private(set) var assetListStyle: AssetListGroupsStyle?
 
     private(set) var model: AssetListBuilderResult.Model = .init()
+
+    private var defaultTokenIds: Set<ChainAssetId>?
+    private var userAddedTokenIds: Set<ChainAssetId> = []
+    private var isDefaultFilteringActive: Bool = false
 
     init(
         interactor: AssetListInteractorInputProtocol,
@@ -145,13 +152,15 @@ private extension AssetListPresenter {
             .init(
                 isFiltered: isFilterOn,
                 listState: .empty,
-                listGroupStyle: assetListStyle
+                listGroupStyle: assetListStyle,
+                showsLoadMore: isDefaultFilteringActive
             )
         } else {
             .init(
                 isFiltered: isFilterOn,
                 listState: .list(groups: viewModels),
-                listGroupStyle: assetListStyle
+                listGroupStyle: assetListStyle,
+                showsLoadMore: isDefaultFilteringActive
             )
         }
     }
@@ -335,10 +344,73 @@ private extension AssetListPresenter {
         }
     }
 
+    func computeDefaultFilteringActive() {
+        // Refresh user-added tokens in case the user just returned from manage screen
+        userAddedTokenIds = interactor.getUserAddedTokens()
+
+        guard let defaultTokenIds, !defaultTokenIds.isEmpty else {
+            isDefaultFilteringActive = false
+            return
+        }
+
+        // If no chains loaded yet, don't filter
+        guard !model.allChains.isEmpty else {
+            isDefaultFilteringActive = false
+            return
+        }
+
+        // Check if the wallet has any non-zero balances
+        let hasAnyBalance = model.balanceResults.contains { _, result in
+            if case let .success(balance) = result, balance > 0 {
+                return true
+            }
+            return false
+        }
+
+        // If the user has used Show All, disable default filtering permanently
+        if interactor.hasUsedLoadMore() {
+            isDefaultFilteringActive = false
+            return
+        }
+
+        // Apply default filtering for wallets with no balances (new wallets)
+        // This includes the initial state when balances haven't loaded yet
+        isDefaultFilteringActive = !hasAnyBalance
+    }
+
+    func filterDefaultTokens(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
+        guard let defaultTokenIds, isDefaultFilteringActive else {
+            return assets
+        }
+
+        return assets.filter { asset in
+            let chainAssetId = asset.chainAssetModel.chainAssetId
+
+            // Keep if it's a default token
+            if defaultTokenIds.contains(chainAssetId) {
+                return true
+            }
+
+            // Keep if user explicitly added it via manage screen
+            if userAddedTokenIds.contains(chainAssetId) {
+                return true
+            }
+
+            // Keep if it has non-zero balance
+            if let balance = try? asset.balanceResult?.get(), balance > 0 {
+                return true
+            }
+
+            return false
+        }
+    }
+
     func createGroupViewModels() -> [AssetListGroupType] {
         guard let hidesZeroBalances, let assetListStyle else {
             return []
         }
+
+        computeDefaultFilteringActive()
 
         let maybePrices = try? model.priceResult?.get()
 
@@ -362,6 +434,32 @@ private extension AssetListPresenter {
         }
     }
 
+    func filterDustBalances(
+        _ assets: [AssetListAssetModel],
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> [AssetListAssetModel] {
+        assets.filter { asset in
+            let chainAssetId = asset.chainAssetModel.chainAssetId
+
+            // If no price data available for this asset, hide it (likely spam/dust)
+            guard let prices = maybePrices, let priceData = prices[chainAssetId] else {
+                return false
+            }
+
+            // If price rate is unavailable or zero, hide the token
+            guard let decimalRate = priceData.decimalRate, decimalRate > 0 else {
+                return false
+            }
+
+            guard let totalAmountDecimal = asset.totalAmountDecimal else {
+                return true
+            }
+
+            let fiatValue = totalAmountDecimal * decimalRate
+            return fiatValue >= dustFilterThreshold
+        }
+    }
+
     func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
         let filteredAssets: [AssetListAssetModel]
 
@@ -381,11 +479,19 @@ private extension AssetListPresenter {
         maybePrices: [ChainAssetId: PriceData]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupType? {
-        let assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
+        var assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
 
-        let filteredAssets = hidesZeroBalances
+        // Apply default token filtering before zero-balance filtering
+        assets = filterDefaultTokens(assets)
+
+        var filteredAssets = hidesZeroBalances
             ? filterZeroBalances(assets)
             : assets
+
+        // Apply dust filter only when zero-balance filter is also ON
+        if hidesZeroBalances, dustFilterEnabled {
+            filteredAssets = filterDustBalances(filteredAssets, maybePrices: maybePrices)
+        }
 
         guard !filteredAssets.isEmpty else {
             return nil
@@ -415,11 +521,19 @@ private extension AssetListPresenter {
     ) -> AssetListGroupType? {
         let chain = groupModel.chain
 
-        let assets = model.groupListsByChain[chain.chainId] ?? []
+        var assets = model.groupListsByChain[chain.chainId] ?? []
 
-        let filteredAssets = hidesZeroBalances
+        // Apply default token filtering before zero-balance filtering
+        assets = filterDefaultTokens(assets)
+
+        var filteredAssets = hidesZeroBalances
             ? filterZeroBalances(assets)
             : assets
+
+        // Apply dust filter only when zero-balance filter is also ON
+        if hidesZeroBalances, dustFilterEnabled {
+            filteredAssets = filterDustBalances(filteredAssets, maybePrices: maybePrices)
+        }
 
         guard !filteredAssets.isEmpty else {
             return nil
@@ -697,6 +811,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         createHapticFeedback(style: .light)
         privacyStateManager?.privacyModeEnabled.toggle()
     }
+
+    func presentLoadMoreTokens() {
+        wireframe.showTokensManage(from: view)
+    }
+
+    func reloadAssets() {
+        updateAssetsView()
+    }
 }
 
 // MARK: AssetListInteractorOutputProtocol
@@ -742,6 +864,13 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         updateAssetsView()
     }
 
+    func didReceive(dustFilterEnabled: Bool, threshold: Decimal) {
+        self.dustFilterEnabled = dustFilterEnabled
+        dustFilterThreshold = threshold
+
+        updateAssetsView()
+    }
+
     func didReceiveWalletConnect(error: WalletConnectSessionsError) {
         switch error {
         case let .connectionFailed(internalError):
@@ -771,6 +900,19 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         assetListStyle = style
 
         view?.didReceiveAssetListStyle(style)
+    }
+
+    func didReceive(defaultTokenIds: Set<ChainAssetId>?) {
+        self.defaultTokenIds = defaultTokenIds
+        userAddedTokenIds = interactor.getUserAddedTokens()
+
+        updateAssetsView()
+    }
+
+    func didReceive(userAddedTokenIds: Set<ChainAssetId>) {
+        self.userAddedTokenIds = userAddedTokenIds
+
+        updateAssetsView()
     }
 }
 

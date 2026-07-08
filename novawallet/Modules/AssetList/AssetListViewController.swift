@@ -60,6 +60,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         collectionViewManager.updateLoadingState()
+        presenter.reloadAssets()
     }
 }
 
@@ -273,6 +274,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func actionTogglePrivacy() {
         presenter.togglePrivacyMode()
+    }
+
+    func actionLoadMore() {
+        presenter.presentLoadMoreTokens()
     }
 }
 

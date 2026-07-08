@@ -10,6 +10,7 @@ final class TokensManageInteractor {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
+    let defaultTokensService: DefaultTokensServiceProtocol
 
     private var settingsManager: SettingsManagerProtocol
 
@@ -21,7 +22,8 @@ final class TokensManageInteractor {
         settingsManager: SettingsManagerProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        defaultTokensService: DefaultTokensServiceProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.eventCenter = eventCenter
@@ -29,6 +31,7 @@ final class TokensManageInteractor {
         self.repository = repository
         self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
+        self.defaultTokensService = defaultTokensService
     }
 
     private func subscribeChains() {
@@ -75,12 +78,20 @@ final class TokensManageInteractor {
 
         presenter?.didReceive(hideZeroBalances: hidesZeroBalances)
     }
+
+    private func provideDustFilterSettings() {
+        let enabled = settingsManager.dustFilterEnabled
+        let threshold = settingsManager.dustFilterThreshold
+
+        presenter?.didReceive(dustFilterEnabled: enabled, threshold: threshold)
+    }
 }
 
 extension TokensManageInteractor: TokensManageInteractorInputProtocol {
     func setup() {
         subscribeChains()
         provideHidesZeroBalances()
+        provideDustFilterSettings()
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
@@ -146,6 +157,78 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
 
         if shouldNotify {
             eventCenter.notify(with: HideZeroBalancesChanged())
+        }
+    }
+
+    func save(dustFilterEnabled: Bool) {
+        let shouldNotify = dustFilterEnabled != settingsManager.dustFilterEnabled
+
+        settingsManager.dustFilterEnabled = dustFilterEnabled
+
+        provideDustFilterSettings()
+
+        if shouldNotify {
+            eventCenter.notify(with: DustFilterChanged())
+        }
+    }
+
+    func save(dustFilterThreshold: Decimal) {
+        let shouldNotify = dustFilterThreshold != settingsManager.dustFilterThreshold
+
+        settingsManager.dustFilterThreshold = dustFilterThreshold
+
+        provideDustFilterSettings()
+
+        if shouldNotify {
+            eventCenter.notify(with: DustFilterChanged())
+        }
+    }
+
+    func getDefaultTokenIds() -> Set<ChainAssetId>? {
+        defaultTokensService.defaultTokenIds
+    }
+
+    func getUserAddedTokens() -> Set<ChainAssetId> {
+        settingsManager.userAddedTokens
+    }
+
+    func addUserAddedToken(_ chainAssetId: ChainAssetId) {
+        settingsManager.addUserAddedToken(chainAssetId)
+        eventCenter.notify(with: UserAddedTokensChanged())
+    }
+
+    func removeUserAddedToken(_ chainAssetId: ChainAssetId) {
+        settingsManager.removeUserAddedToken(chainAssetId)
+        eventCenter.notify(with: UserAddedTokensChanged())
+    }
+
+    func isDefaultFilterActive() -> Bool {
+        guard let defaultTokenIds = defaultTokensService.defaultTokenIds, !defaultTokenIds.isEmpty else {
+            return false
+        }
+
+        if settingsManager.hasUsedLoadMoreTokens {
+            return false
+        }
+
+        return true
+    }
+
+    func fetchDefaultFilterState(completion: @escaping (Bool, Set<ChainAssetId>, Set<ChainAssetId>) -> Void) {
+        defaultTokensService.fetch { [weak self] defaultIds in
+            guard let self else { return }
+
+            let defaults = defaultIds ?? []
+            let userAdded = self.settingsManager.userAddedTokens
+
+            guard !defaults.isEmpty, !self.settingsManager.hasUsedLoadMoreTokens else {
+                completion(false, defaults, userAdded)
+                return
+            }
+
+            // The filter is active for new wallets — we always assume active here
+            // since the asset list presenter does the balance check
+            completion(true, defaults, userAdded)
         }
     }
 }

@@ -80,6 +80,7 @@ final class AssetListCollectionManager {
 
         collectionViewDataSource.groupsViewModel = newViewModel
         collectionViewDelegate.groupsViewModel = newViewModel
+        collectionViewLayout?.hasLoadMoreSection = newViewModel.showsLoadMore
     }
 }
 
@@ -98,6 +99,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListMultisigOperationsCell.self)
         viewController?.rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListLoadMoreCell.self)
         viewController?.rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -134,8 +136,13 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             section >= AssetListFlowLayout.SectionType.assetsStartingSection
         }
 
-        let insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
+        var insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
             AssetListFlowLayout.SectionType.assetsStartingSection + index
+        }
+
+        if newViewModel.showsLoadMore {
+            let loadMoreSection = AssetListFlowLayout.SectionType.assetsStartingSection + newViewModel.listState.groups.count
+            insertingIndexes.append(loadMoreSection)
         }
 
         replaceViewModel(newViewModel)

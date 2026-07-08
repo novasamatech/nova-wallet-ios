@@ -7,6 +7,7 @@ class AssetDecorationAttributesFactory {
         _ collectionView: UICollectionView,
         using sectionsExpandableState: [Int: Bool],
         assetsStartingSection: Int,
+        assetGroupCount: Int? = nil,
         from initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
         var attributes: [UICollectionViewLayoutAttributes] = []
@@ -16,18 +17,21 @@ class AssetDecorationAttributesFactory {
         attributes.append(contentsOf: organizerAttributes)
 
         // Add asset group decorations
+        let groupCount = assetGroupCount ?? (collectionView.numberOfSections - assetsStartingSection)
         let assetAttributes = switch style {
         case .tokens:
             createAttributesForTokenGroups(
                 for: collectionView,
                 using: sectionsExpandableState,
                 assetsStartingSection: assetsStartingSection,
+                groupCount: groupCount,
                 initialY: initialY
             )
         case .networks:
             createAttributesForNetworkGroups(
                 for: collectionView,
                 assetsStartingSection: assetsStartingSection,
+                groupCount: groupCount,
                 initialY: initialY
             )
         }
@@ -81,9 +85,10 @@ private extension AssetDecorationAttributesFactory {
         for collectionView: UICollectionView,
         using sectionsExpandableState: [Int: Bool],
         assetsStartingSection: Int,
+        groupCount: Int,
         initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
-        let groupsCount = collectionView.numberOfSections - assetsStartingSection
+        let groupsCount = groupCount
 
         let initAttributes = [UICollectionViewLayoutAttributes]()
         let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, initialY)) { result, groupIndex in
@@ -136,9 +141,10 @@ private extension AssetDecorationAttributesFactory {
     func createAttributesForNetworkGroups(
         for collectionView: UICollectionView,
         assetsStartingSection: Int,
+        groupCount: Int,
         initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
-        let groupsCount = collectionView.numberOfSections - assetsStartingSection
+        let groupsCount = groupCount
 
         let initAttributes = [UICollectionViewLayoutAttributes]()
         let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, initialY)) { result, groupIndex in

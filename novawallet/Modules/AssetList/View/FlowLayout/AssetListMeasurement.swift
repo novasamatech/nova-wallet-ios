@@ -22,6 +22,7 @@ enum AssetListMeasurement {
     static let settingsInsets = UIEdgeInsets.zero
     static let assetGroupInsets = UIEdgeInsets(top: 0.0, left: 0, bottom: 16.0, right: 0)
 
+    static let loadMoreHeight: CGFloat = 44.0
     static let underneathViewHeight: CGFloat = 4
     static let decorationContentInset: CGFloat = 4
 }

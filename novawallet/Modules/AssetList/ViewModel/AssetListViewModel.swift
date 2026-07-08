@@ -128,6 +128,19 @@ struct AssetListViewModel {
     let isFiltered: Bool
     let listState: AssetListGroupState
     let listGroupStyle: AssetListGroupsStyle
+    let showsLoadMore: Bool
+
+    init(
+        isFiltered: Bool,
+        listState: AssetListGroupState,
+        listGroupStyle: AssetListGroupsStyle,
+        showsLoadMore: Bool = false
+    ) {
+        self.isFiltered = isFiltered
+        self.listState = listState
+        self.listGroupStyle = listGroupStyle
+        self.showsLoadMore = showsLoadMore
+    }
 }
 
 // MARK: Group

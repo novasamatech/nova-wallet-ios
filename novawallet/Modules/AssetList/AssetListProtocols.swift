@@ -44,6 +44,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionCardOpen()
     func actionTogglePrivacy()
     func actionAlertLearnMore(_ alertType: InlinableAlertView.Model.AlertType)
+    func actionLoadMore()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
@@ -100,6 +101,8 @@ protocol AssetListPresenterProtocol: AnyObject {
     func toggleAssetListStyle()
     func togglePrivacyMode()
     func presentLearnMore(_ alertType: InlinableAlertView.Model.AlertType)
+    func presentLoadMoreTokens()
+    func reloadAssets()
 }
 
 // MARK: Interactor
@@ -111,6 +114,9 @@ protocol AssetListInteractorInputProtocol {
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
     func setAssetListGroupsStyle(_ style: AssetListGroupsStyle)
+    func markLoadMoreUsed()
+    func hasUsedLoadMore() -> Bool
+    func getUserAddedTokens() -> Set<ChainAssetId>
 }
 
 protocol AssetListInteractorOutputProtocol {
@@ -118,12 +124,15 @@ protocol AssetListInteractorOutputProtocol {
 
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
+    func didReceive(dustFilterEnabled: Bool, threshold: Decimal)
     func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
     func didCompleteRefreshing()
     func didReceiveWalletsState(hasUpdates: Bool)
     func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle)
+    func didReceive(defaultTokenIds: Set<ChainAssetId>?)
+    func didReceive(userAddedTokenIds: Set<ChainAssetId>)
 }
 
 // MARK: Wireframe

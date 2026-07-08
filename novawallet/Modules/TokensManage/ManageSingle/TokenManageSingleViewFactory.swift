@@ -51,7 +51,10 @@ struct TokenManageSingleViewFactory {
             settingsManager: settingsManager,
             repository: repository,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            defaultTokensService: DefaultTokensService(
+                remoteUrl: ApplicationConfig.shared.defaultTokensURL
+            )
         )
     }
 }

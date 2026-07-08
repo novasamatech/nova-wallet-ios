@@ -34,6 +34,10 @@ enum SettingsKey: String {
     case ahmAssetDetailsAlertClosedChains
     case ahmStakingAlertClosedChains
     case privacyModeSettings
+    case hasUsedLoadMoreTokens
+    case dustFilterEnabled
+    case dustFilterThreshold
+    case userAddedTokens
 }
 
 extension SettingsManagerProtocol {
@@ -425,4 +429,72 @@ extension SettingsManagerProtocol {
             )
         }
     }
+
+    var hasUsedLoadMoreTokens: Bool {
+        get {
+            bool(for: SettingsKey.hasUsedLoadMoreTokens.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.hasUsedLoadMoreTokens.rawValue)
+        }
+    }
+
+    var dustFilterEnabled: Bool {
+        get {
+            bool(for: SettingsKey.dustFilterEnabled.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.dustFilterEnabled.rawValue)
+        }
+    }
+
+    var dustFilterThreshold: Decimal {
+        get {
+            if let storedValue = double(for: SettingsKey.dustFilterThreshold.rawValue) {
+                return Decimal(storedValue)
+            }
+            return 1.0
+        }
+
+        set {
+            set(value: NSDecimalNumber(decimal: newValue).doubleValue, for: SettingsKey.dustFilterThreshold.rawValue)
+        }
+    }
+
+    var userAddedTokens: Set<ChainAssetId> {
+        get {
+            value(
+                of: UserAddedTokensStore.self,
+                for: SettingsKey.userAddedTokens.rawValue
+            )?.ids ?? Set()
+        }
+        set {
+            set(
+                value: UserAddedTokensStore(ids: newValue),
+                for: SettingsKey.userAddedTokens.rawValue
+            )
+        }
+    }
+
+    func addUserAddedToken(_ chainAssetId: ChainAssetId) {
+        var tokens = userAddedTokens
+        tokens.insert(chainAssetId)
+        userAddedTokens = tokens
+    }
+
+    func removeUserAddedToken(_ chainAssetId: ChainAssetId) {
+        var tokens = userAddedTokens
+        tokens.remove(chainAssetId)
+        userAddedTokens = tokens
+    }
+
+    func isUserAddedToken(_ chainAssetId: ChainAssetId) -> Bool {
+        userAddedTokens.contains(chainAssetId)
+    }
+}
+
+private struct UserAddedTokensStore: Codable {
+    let ids: Set<ChainAssetId>
 }

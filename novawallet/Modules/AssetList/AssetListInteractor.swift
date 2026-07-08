@@ -24,6 +24,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let walletConnect: WalletConnectDelegateInputProtocol
     let assetListModelObservable: AssetListModelObservable
     let walletNotificationService: WalletNotificationServiceProtocol
+    let defaultTokensService: DefaultTokensServiceProtocol
 
     private var multisigOperationsSubscription: StreamableProvider<Multisig.PendingOperation>?
 
@@ -50,6 +51,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         settingsManager: SettingsManagerProtocol,
         currencyManager: CurrencyManagerProtocol,
         walletConnect: WalletConnectDelegateInputProtocol,
+        defaultTokensService: DefaultTokensServiceProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
@@ -59,6 +61,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.settingsManager = settingsManager
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
+        self.defaultTokensService = defaultTokensService
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: chainRegistry,
@@ -120,7 +123,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
         walletConnect.add(delegate: self)
 
         provideHidesZeroBalances()
+        provideDustFilterSettings()
         provideWalletConnectSessionsCount()
+        fetchDefaultTokens()
 
         subscribeMultisigOperationsIfNeeded()
         subscribeChains()
@@ -200,6 +205,23 @@ private extension AssetListInteractor {
     func provideHidesZeroBalances() {
         let value = settingsManager.hidesZeroBalances
         presenter?.didReceive(hidesZeroBalances: value)
+    }
+
+    func provideDustFilterSettings() {
+        let enabled = settingsManager.dustFilterEnabled
+        let threshold = settingsManager.dustFilterThreshold
+        presenter?.didReceive(dustFilterEnabled: enabled, threshold: threshold)
+    }
+
+    func provideUserAddedTokens() {
+        let tokens = settingsManager.userAddedTokens
+        presenter?.didReceive(userAddedTokenIds: tokens)
+    }
+
+    func fetchDefaultTokens() {
+        defaultTokensService.fetch { [weak self] ids in
+            self?.presenter?.didReceive(defaultTokenIds: ids)
+        }
     }
 
     func clearNftSubscription() {
@@ -375,6 +397,18 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
     func setAssetListGroupsStyle(_ style: AssetListGroupsStyle) {
         settingsManager.assetListGroupStyle = style
     }
+
+    func markLoadMoreUsed() {
+        settingsManager.hasUsedLoadMoreTokens = true
+    }
+
+    func hasUsedLoadMore() -> Bool {
+        settingsManager.hasUsedLoadMoreTokens
+    }
+
+    func getUserAddedTokens() -> Set<ChainAssetId> {
+        settingsManager.userAddedTokens
+    }
 }
 
 // MARK: - NftLocalStorageSubscriber
@@ -433,6 +467,14 @@ extension AssetListInteractor: EventVisitorProtocol {
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
         provideHidesZeroBalances()
+    }
+
+    func processDustFilterChanged(event _: DustFilterChanged) {
+        provideDustFilterSettings()
+    }
+
+    func processUserAddedTokensChanged(event _: UserAddedTokensChanged) {
+        provideUserAddedTokens()
     }
 }
 
