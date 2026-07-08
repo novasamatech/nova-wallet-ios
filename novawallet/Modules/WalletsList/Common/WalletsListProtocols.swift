@@ -12,6 +12,7 @@ protocol WalletsListPresenterProtocol: AnyObject {
     func numberOfItems(in section: Int) -> Int
     func item(at index: Int, in section: Int) -> WalletsListViewModel
     func section(at index: Int) -> WalletsListSectionViewModel
+    func search(query: String)
 }
 
 protocol WalletsListInteractorInputProtocol: AnyObject {

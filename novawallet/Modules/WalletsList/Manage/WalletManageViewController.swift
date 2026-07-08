@@ -20,10 +20,15 @@ final class WalletManageViewController: WalletsListViewController<
     }
 
     override func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.profileWalletsTitle()
+        let languages = selectedLocale.rLanguages
+        title = R.string(preferredLanguages: languages).localizable.profileWalletsTitle()
+
+        rootView.searchTextField.placeholder = R.string(
+            preferredLanguages: languages
+        ).localizable.commonSearchWalletsPlaceholder()
 
         rootView.addWalletButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
         ).localizable.walletAddButtonTitle()
 
         rootView.addWalletButton.invalidateLayout()
@@ -49,6 +54,11 @@ final class WalletManageViewController: WalletsListViewController<
 
     private func setupHandlers() {
         rootView.addWalletButton.addTarget(self, action: #selector(actionAddWallet), for: .touchUpInside)
+        rootView.searchTextField.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
+    }
+
+    @objc private func searchChanged() {
+        presenter?.search(query: rootView.searchTextField.text ?? "")
     }
 
     @objc private func actionAddWallet() {
@@ -71,7 +81,15 @@ final class WalletManageViewController: WalletsListViewController<
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
-        (cell as? WalletManageTableViewCell<WalletView>)?.setReordering(tableView.isEditing, animated: false)
+        if let walletCell = cell as? WalletManageTableViewCell<WalletView> {
+            walletCell.setReordering(tableView.isEditing, animated: false)
+            walletCell.onFavouriteTapped = { [weak self, weak tableView, weak walletCell] in
+                guard let tableView = tableView,
+                      let walletCell = walletCell,
+                      let path = tableView.indexPath(for: walletCell) else { return }
+                self?.presenter?.toggleFavourite(at: path.row, section: path.section)
+            }
+        }
 
         return cell
     }

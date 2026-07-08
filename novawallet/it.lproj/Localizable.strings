@@ -2035,3 +2035,8 @@
 "create.watch.only.missing.any.address" = "Inserisci almeno un indirizzo...";
 "asset.list.watch.only.balance" = "Saldo solo visualizzazione";
 "create.watch.only.subtitle" = "Tieni traccia dell’attività del portafoglio senza una chiave privata.\nNon potrai eseguire alcuna transazione.";
+"common.favourites" = "Preferiti";
+"common.wallets" = "Portafogli";
+"common.search.results" = "Risultati di ricerca";
+"common.search.wallets.placeholder" = "Cerca portafogli…";
+"common.proxy" = "Proxy";

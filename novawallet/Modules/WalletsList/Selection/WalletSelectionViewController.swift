@@ -15,6 +15,16 @@ final class WalletSelectionViewController: WalletsListViewController<
         setupSettingsItems()
 
         super.viewDidLoad()
+
+        rootView.searchTextField.addTarget(
+            self,
+            action: #selector(searchChanged),
+            for: .editingChanged
+        )
+    }
+
+    @objc private func searchChanged() {
+        presenter?.search(query: rootView.searchTextField.text ?? "")
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -24,7 +34,11 @@ final class WalletSelectionViewController: WalletsListViewController<
     }
 
     override func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonSelectWallet()
+        let languages = selectedLocale.rLanguages
+        title = R.string(preferredLanguages: languages).localizable.commonSelectWallet()
+        rootView.searchTextField.placeholder = R.string(
+            preferredLanguages: languages
+        ).localizable.commonSearchWalletsPlaceholder()
     }
 
     private func setupSettingsItems() {

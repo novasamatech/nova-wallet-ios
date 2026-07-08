@@ -7,11 +7,18 @@ struct ManagedMetaAccountModel: Equatable, Hashable {
     let info: MetaAccountModel
     let isSelected: Bool
     let order: UInt32
+    let isFavourite: Bool
 
-    init(info: MetaAccountModel, isSelected: Bool = false, order: UInt32 = Self.noOrder) {
+    init(
+        info: MetaAccountModel,
+        isSelected: Bool = false,
+        order: UInt32 = Self.noOrder,
+        isFavourite: Bool = false
+    ) {
         self.info = info
         self.isSelected = isSelected
         self.order = order
+        self.isFavourite = isFavourite
     }
 }
 
@@ -21,15 +28,19 @@ extension ManagedMetaAccountModel: Identifiable {
 
 extension ManagedMetaAccountModel {
     func replacingOrder(_ newOrder: UInt32) -> ManagedMetaAccountModel {
-        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: newOrder)
+        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: newOrder, isFavourite: isFavourite)
     }
 
     func replacingInfo(_ newInfo: MetaAccountModel) -> ManagedMetaAccountModel {
-        ManagedMetaAccountModel(info: newInfo, isSelected: isSelected, order: order)
+        ManagedMetaAccountModel(info: newInfo, isSelected: isSelected, order: order, isFavourite: isFavourite)
     }
 
     func replacingSelection(_ isSelected: Bool) -> ManagedMetaAccountModel {
-        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order)
+        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order, isFavourite: isFavourite)
+    }
+
+    func replacingFavourite(_ isFavourite: Bool) -> ManagedMetaAccountModel {
+        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order, isFavourite: isFavourite)
     }
 }
 

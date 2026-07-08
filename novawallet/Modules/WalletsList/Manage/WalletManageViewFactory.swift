@@ -66,11 +66,14 @@ final class WalletManageViewFactory {
             operationQueue: operationQueue
         )
 
+        let walletFavouriteRepository = WalletFavouriteRepository(repository: repository)
+
         return WalletManageInteractor(
             cloudBackupSyncService: CloudBackupSyncMediatorFacade.sharedMediator.syncService,
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             walletUpdateMediator: walletUpdateMediator,
+            walletFavouriteRepository: walletFavouriteRepository,
             eventCenter: EventCenter.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared

@@ -2035,3 +2035,8 @@
 "create.watch.only.missing.any.address" = "Adjon meg legalább egy címet...";
 "asset.list.watch.only.balance" = "Csak-figyelési egyenleg";
 "create.watch.only.subtitle" = "Pénztárca aktivitás nyomon követése privát kulcs nélkül.\nNem lesz képes tranzakciók végrehajtására.";
+"common.favourites" = "Kedvencek";
+"common.wallets" = "Tárcák";
+"common.search.results" = "Találatok";
+"common.search.wallets.placeholder" = "Tárcák keresése…";
+"common.proxy" = "Proxy";

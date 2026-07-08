@@ -138,6 +138,12 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconLedger()
+        case .favourites, .searchResults:
+            controlBackgroundView.fillColor = .clear
+            controlBackgroundView.highlightedFillColor = .clear
+            controlBackgroundView.strokeColor = .clear
+            controlBackgroundView.highlightedStrokeColor = .clear
+            typeImageView.image = nil
         }
 
         controlContentView.badgeView.isHidden = !viewModel.hasNotification

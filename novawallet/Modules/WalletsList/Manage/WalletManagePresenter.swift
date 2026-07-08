@@ -176,6 +176,15 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
         }
     }
 
+    func toggleFavourite(at index: Int, section: Int) {
+        guard viewModels.count > section, viewModels[section].items.count > index else { return }
+        let identifier = viewModels[section].items[index].identifier
+        guard let wallet = walletsList.allItems.first(where: { $0.identifier == identifier }) else { return }
+        // Goes through the dedicated favourite repository (not WalletUpdateMediator)
+        // so the cloud backup pipeline is not triggered for a local-only flag.
+        interactor?.toggleFavourite(metaId: wallet.info.metaId)
+    }
+
     func activateAddWallet() {
         guard let view = view else {
             return

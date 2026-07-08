@@ -18,7 +18,8 @@ extension ManagedMetaAccountMapper: CoreDataMapperProtocol {
         return ManagedMetaAccountModel(
             info: metaAccount,
             isSelected: entity.isSelected,
-            order: UInt32(bitPattern: entity.order)
+            order: UInt32(bitPattern: entity.order),
+            isFavourite: entity.isFavourite
         )
     }
 
@@ -32,6 +33,7 @@ extension ManagedMetaAccountMapper: CoreDataMapperProtocol {
         try metaAccountMapper.populate(entity: entity, from: model.info, using: context)
 
         entity.isSelected = model.isSelected
+        entity.isFavourite = model.isFavourite
 
         let order: Int32
 

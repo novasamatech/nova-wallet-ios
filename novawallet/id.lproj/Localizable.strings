@@ -2035,3 +2035,8 @@
 "create.watch.only.missing.any.address" = "Masukkan setidaknya satu alamat...";
 "asset.list.watch.only.balance" = "Saldo untuk dilihat saja";
 "create.watch.only.subtitle" = "Lacak aktivitas dompet tanpa kunci privat.\nAnda tidak akan dapat melakukan transaksi apapun.";
+"common.favourites" = "Favorit";
+"common.wallets" = "Dompet";
+"common.search.results" = "Hasil pencarian";
+"common.search.wallets.placeholder" = "Cari dompet…";
+"common.proxy" = "Proxy";

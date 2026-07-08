@@ -9,12 +9,14 @@ protocol WalletManagePresenterProtocol: WalletsListPresenterProtocol {
     func moveItem(at startIndex: Int, to finalIndex: Int, section: Int)
     func canDeleteItem(at index: Int, section: Int) -> Bool
     func removeItem(at index: Int, section: Int)
+    func toggleFavourite(at index: Int, section: Int)
     func activateAddWallet()
 }
 
 protocol WalletManageInteractorInputProtocol: WalletsListInteractorInputProtocol {
     func save(items: [ManagedMetaAccountModel])
     func remove(item: ManagedMetaAccountModel)
+    func toggleFavourite(metaId: MetaAccountModel.Id)
 }
 
 protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
