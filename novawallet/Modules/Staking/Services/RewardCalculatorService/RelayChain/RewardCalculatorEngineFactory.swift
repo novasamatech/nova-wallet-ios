@@ -39,11 +39,11 @@ final class RewardCalculatorEngineFactory {
                 config: config,
                 parachainsCount: params.parachainsCount ?? 0
             )
-        case let .polkadot(inflationPrediction):
+        case let .polkadot(stakersEraReward):
             return PolkadotRewardEngine(
                 chainId: chainId,
                 assetPrecision: assetPrecision,
-                inflationPrediction: inflationPrediction,
+                stakersEraReward: stakersEraReward,
                 totalIssuance: totalIssuance,
                 validators: validators,
                 eraDurationInSeconds: eraDurationInSeconds
