@@ -31,7 +31,7 @@ extension NPoolsUnstakeHintsFactory: NPoolsUnstakeHintsFactoryProtocol {
         var hints: [String] = []
 
         if let stakingDuration = stakingDuration {
-            let duration = stakingDuration.localizableUnlockingString.value(for: locale)
+            let duration = stakingDuration.localizableNominatorUnlockingString.value(for: locale)
             let hint = R.string(
                 preferredLanguages: locale.rLanguages
             ).localizable.stakingHintUnstakeFormat_v2_2_0(duration)

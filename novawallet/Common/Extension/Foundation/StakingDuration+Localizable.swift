@@ -2,10 +2,14 @@ import Foundation
 import Foundation_iOS
 
 extension StakingDuration {
-    var localizableUnlockingString: LocalizableResource<String> {
+    func localizableUnlockingString(for variant: UnstakingDurationVariant) -> LocalizableResource<String> {
         LocalizableResource { locale in
-            let string = unlocking.localizedDaysHours(for: locale)
+            let string = self.unlocking.value(for: variant).localizedDaysHours(for: locale)
             return "~\(string)"
         }
+    }
+
+    var localizableNominatorUnlockingString: LocalizableResource<String> {
+        localizableUnlockingString(for: .nominator)
     }
 }

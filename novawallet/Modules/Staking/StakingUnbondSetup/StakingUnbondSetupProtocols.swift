@@ -32,6 +32,7 @@ protocol StakingUnbondSetupInteractorOutputProtocol: AnyObject {
     func didReceiveController(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
+    func didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)
 }
 
 protocol StakingUnbondSetupWireframeProtocol: AlertPresentable, ErrorPresentable,

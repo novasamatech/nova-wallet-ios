@@ -115,7 +115,8 @@ final class NominationPoolsApyTests: XCTestCase {
             ),
             stakingDurationFactory: BabeStakingDurationFactory(
                 chainId: chainId,
-                chainRegistry: chainRegistry
+                chainRegistry: chainRegistry,
+                operationQueue: OperationQueue()
             ),
             validatorService: eraValidatorService
         )
