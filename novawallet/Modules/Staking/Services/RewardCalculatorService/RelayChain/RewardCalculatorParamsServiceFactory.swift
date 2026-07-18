@@ -39,7 +39,6 @@ final class RewardCalculatorParamsServiceFactory {
             PolkadotRewardParamsService(
                 connection: connection,
                 runtimeCodingService: runtimeService,
-                stateCallFactory: StateCallRequestFactory(),
                 operationQueue: operationQueue
             )
         default:

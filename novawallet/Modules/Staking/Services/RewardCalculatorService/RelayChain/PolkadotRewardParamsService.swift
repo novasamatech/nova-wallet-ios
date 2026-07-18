@@ -3,55 +3,31 @@ import SubstrateSdk
 import BigInt
 import Operation_iOS
 
-struct RuntimeApiInflationPrediction: Decodable, Equatable {
-    enum CodingKeys: String, CodingKey {
-        case inflation = "issuance"
-        case nextMint
-    }
-
-    struct NextMint: Decodable, Equatable {
-        let items: [BigUInt]
-
-        init(from decoder: any Decoder) throws {
-            let container = try decoder.singleValueContainer()
-
-            items = try container.decode([StringScaleMapper<BigUInt>].self).map(\.value)
-        }
-    }
-
-    @StringCodable var inflation: BigUInt
-    let nextMint: NextMint
-}
-
 final class PolkadotRewardParamsService: BaseSyncService {
     let connection: JSONRPCEngine
     let runtimeCodingService: RuntimeCodingServiceProtocol
-    let inflationFetchFactory: PolkadotInflationPredictionFactoryProtocol
+    let stakersRewardFactory: PolkadotStakersRewardFactoryProtocol
     let operationQueue: OperationQueue
 
     private var cancellableStore = CancellableCallStore()
 
-    private var stateObserver = Observable<RuntimeApiInflationPrediction?>(state: nil)
+    private var stateObserver = Observable<BigUInt?>(state: nil)
 
     init(
         connection: JSONRPCEngine,
         runtimeCodingService: RuntimeCodingServiceProtocol,
-        stateCallFactory: StateCallRequestFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.connection = connection
         self.runtimeCodingService = runtimeCodingService
-        inflationFetchFactory = PolkadotInflationPredictionFactory(
-            stateCallFactory: stateCallFactory,
-            operationQueue: operationQueue
-        )
+        stakersRewardFactory = PolkadotStakersRewardFactory(operationQueue: operationQueue)
         self.operationQueue = operationQueue
     }
 
     override func performSyncUp() {
         cancellableStore.cancel()
 
-        let wrapper = inflationFetchFactory.createPredictionWrapper(
+        let wrapper = stakersRewardFactory.createStakersRewardWrapper(
             for: connection,
             runtimeProvider: runtimeCodingService
         )
@@ -64,9 +40,9 @@ final class PolkadotRewardParamsService: BaseSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(model):
+            case let .success(reward):
                 self?.completeImmediate(nil)
-                self?.stateObserver.state = model
+                self?.stateObserver.state = reward
             case let .failure(error):
                 self?.completeImmediate(error)
             }
@@ -85,12 +61,12 @@ extension PolkadotRewardParamsService: RewardCalculatorParamsServiceProtocol {
     ) {
         mutex.lock()
 
-        stateObserver.addObserver(with: self, queue: notificationQueue) { _, newPrediction in
-            guard let newPrediction else {
+        stateObserver.addObserver(with: self, queue: notificationQueue) { _, newReward in
+            guard let newReward else {
                 return
             }
 
-            notificationClosure(.success(.polkadot(inflationPrediction: newPrediction)))
+            notificationClosure(.success(.polkadot(stakersEraReward: newReward)))
         }
 
         mutex.unlock()
