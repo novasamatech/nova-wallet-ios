@@ -35,11 +35,10 @@ final class RewardCalculatorParamsServiceFactory {
                 runtimeCodingService: runtimeService,
                 operationQueue: operationQueue
             )
-        case KnowChainId.polkadot:
+        case KnowChainId.polkadotAssetHub:
             PolkadotRewardParamsService(
                 connection: connection,
                 runtimeCodingService: runtimeService,
-                stateCallFactory: StateCallRequestFactory(),
                 operationQueue: operationQueue
             )
         default:

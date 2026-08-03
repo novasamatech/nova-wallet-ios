@@ -21,7 +21,9 @@ protocol NPoolsStakingSharedStateProtocol: AnyObject {
         for operationQueue: OperationQueue
     ) -> EraCountdownOperationFactoryProtocol
 
-    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol
+    func createStakingDurationOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> StakingDurationOperationFactoryProtocol
 }
 
 final class NPoolsStakingSharedState {
@@ -164,10 +166,13 @@ extension NPoolsStakingSharedState: NPoolsStakingSharedStateProtocol {
         )
     }
 
-    func createStakingDurationOperationFactory() -> StakingDurationOperationFactoryProtocol {
+    func createStakingDurationOperationFactory(
+        for operationQueue: OperationQueue
+    ) -> StakingDurationOperationFactoryProtocol {
         consensusDependingFactory.createStakingDurationOperationFactory(
             for: chainAsset.chain,
-            timeModel: timeModel
+            timeModel: timeModel,
+            operationQueue: operationQueue
         )
     }
 }

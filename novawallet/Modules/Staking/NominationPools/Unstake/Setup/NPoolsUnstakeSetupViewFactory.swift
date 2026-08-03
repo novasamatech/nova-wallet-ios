@@ -84,7 +84,7 @@ struct NPoolsUnstakeSetupViewFactory {
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)
-        let durationOperationFactory = state.createStakingDurationOperationFactory()
+        let durationOperationFactory = state.createStakingDurationOperationFactory(for: operationQueue)
 
         let npoolsOperationFactory = NominationPoolsOperationFactory(operationQueue: operationQueue)
 
@@ -102,7 +102,12 @@ struct NPoolsUnstakeSetupViewFactory {
             eraCountdownOperationFactory: eraCountdownOperationFactory,
             durationFactory: durationOperationFactory,
             npoolsOperationFactory: npoolsOperationFactory,
-            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(),
+            unstakeLimitsFactory: NPoolsUnstakeOperationFactory(
+                unstakingDurationFactory: UnstakingDurationOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                )
+            ),
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue

@@ -85,7 +85,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             runtimeService: runtimeService,
             durationOperationFactory: BabeStakingDurationFactory(
                 chainId: chain.chainId,
-                chainRegistry: chainRegistry
+                chainRegistry: chainRegistry,
+                unstakingDurationFactory: UnstakingDurationOperationFactoryMock()
             ),
             operationQueue: OperationQueue(),
             signer: signer,

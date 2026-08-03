@@ -12,14 +12,20 @@ protocol NetworkStakingInfoOperationFactoryProtocol {
 final class NetworkStakingInfoOperationFactory {
     // MARK: - Private functions
 
+    let chainId: ChainModel.Id
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
+    let unstakingDurationFactory: UnstakingDurationOperationMaking
     let votersOperationFactory: VotersInfoOperationFactoryProtocol
 
     init(
+        chainId: ChainModel.Id,
         durationFactory: StakingDurationOperationFactoryProtocol,
+        unstakingDurationFactory: UnstakingDurationOperationMaking,
         votersOperationFactory: VotersInfoOperationFactoryProtocol
     ) {
+        self.chainId = chainId
         durationOperationFactory = durationFactory
+        self.unstakingDurationFactory = unstakingDurationFactory
         self.votersOperationFactory = votersOperationFactory
     }
 
@@ -94,7 +100,7 @@ final class NetworkStakingInfoOperationFactory {
     private func createMapOperation(
         dependingOn eraValidatorsOperation: BaseOperation<EraStakersInfo>,
         maxNominatorsOperation: BaseOperation<UInt32?>,
-        lockUpPeriodOperation: BaseOperation<UInt32>,
+        unstakingDurationOperation: BaseOperation<UnstakingDuration>,
         minBalanceOperation: BaseOperation<BigUInt>,
         durationOperation: BaseOperation<StakingDuration>,
         votersOperation: BaseOperation<VotersStakingInfo?>
@@ -102,7 +108,7 @@ final class NetworkStakingInfoOperationFactory {
         ClosureOperation<NetworkStakingInfo> {
             let eraStakersInfo = try eraValidatorsOperation.extractNoCancellableResultData()
             let maxNominators = try maxNominatorsOperation.extractNoCancellableResultData()
-            let lockUpPeriod = try lockUpPeriodOperation.extractNoCancellableResultData()
+            let lockUpPeriod = try unstakingDurationOperation.extractNoCancellableResultData().nominator
             let minBalance = try minBalanceOperation.extractNoCancellableResultData()
 
             let totalStake = self.deriveTotalStake(from: eraStakersInfo)
@@ -148,30 +154,25 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
             runtimeService: runtimeService
         )
 
-        let lockUpPeriodOperation: BaseOperation<UInt32> =
-            createConstOperation(
-                dependingOn: runtimeOperation,
-                path: Staking.lockUpPeriodPath
-            )
-
         let existentialDepositOperation: BaseOperation<BigUInt> = createConstOperation(
             dependingOn: runtimeOperation,
             path: .existentialDeposit
         )
 
-        lockUpPeriodOperation.addDependency(runtimeOperation)
         existentialDepositOperation.addDependency(runtimeOperation)
 
         let eraValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
         let stakingDurationWrapper = durationOperationFactory.createDurationOperation()
 
+        let unstakingDurationWrapper = unstakingDurationFactory.createUnstakingDurationWrapper(for: chainId)
+
         let votersWrapper = votersOperationFactory.createVotersInfoWrapper(for: runtimeService)
 
         let mapOperation = createMapOperation(
             dependingOn: eraValidatorsOperation,
             maxNominatorsOperation: maxNominatorsWrapper.targetOperation,
-            lockUpPeriodOperation: lockUpPeriodOperation,
+            unstakingDurationOperation: unstakingDurationWrapper.targetOperation,
             minBalanceOperation: existentialDepositOperation,
             durationOperation: stakingDurationWrapper.targetOperation,
             votersOperation: votersWrapper.targetOperation
@@ -179,7 +180,7 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
 
         mapOperation.addDependency(eraValidatorsOperation)
         mapOperation.addDependency(maxNominatorsWrapper.targetOperation)
-        mapOperation.addDependency(lockUpPeriodOperation)
+        mapOperation.addDependency(unstakingDurationWrapper.targetOperation)
         mapOperation.addDependency(existentialDepositOperation)
         mapOperation.addDependency(stakingDurationWrapper.targetOperation)
         mapOperation.addDependency(votersWrapper.targetOperation)
@@ -187,9 +188,9 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
         let dependencies = [
             runtimeOperation,
             eraValidatorsOperation,
-            lockUpPeriodOperation,
             existentialDepositOperation
-        ] + maxNominatorsWrapper.allOperations + stakingDurationWrapper.allOperations + votersWrapper.allOperations
+        ] + maxNominatorsWrapper.allOperations + stakingDurationWrapper.allOperations +
+            unstakingDurationWrapper.allOperations + votersWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }

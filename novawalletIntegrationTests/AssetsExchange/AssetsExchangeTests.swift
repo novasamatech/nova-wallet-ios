@@ -227,7 +227,31 @@ final class AssetsExchangeTests: XCTestCase {
             return
         }
 
-        let route = graph.fetchPaths(from: usdtAH, to: dotPolkadot, maxTopPaths: 4)
+        let route = graph.fetchPaths(from: usdtAH, to: dotPolkadot, maxTopPaths: 10)
+        for path in route {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+    }
+
+    func testRouteUSDTDOTHydration() throws {
+        let params = buildCommonParams()
+
+        let hydrationChain = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let usdt = try hydrationChain.chainAssetForSymbolOrError("USDT").chainAssetId
+        let dot = try hydrationChain.chainAssetForSymbolOrError("DOT").chainAssetId
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let route = graph.fetchPaths(from: usdt, to: dot, maxTopPaths: 10)
         for path in route {
             let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
                 edges: path,

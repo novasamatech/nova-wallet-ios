@@ -41023,6 +41023,19 @@ class MockStakingUnbondConfirmInteractorOutputProtocol: StakingUnbondConfirmInte
         )
     }
 
+    func didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>) {
+        cuckoo_manager.call(
+            "didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)",
+            parameters: result,
+            escapingParameters: result,
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.didReceiveUnstakingVariant(result: result)
+        )
+    }
+
     func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>) {
         cuckoo_manager.call(
             "didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)",
@@ -41096,6 +41109,11 @@ class MockStakingUnbondConfirmInteractorOutputProtocol: StakingUnbondConfirmInte
         func didReceiveStakingDuration<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Result<StakingDuration, Error>> where M1.MatchedType == Result<StakingDuration, Error> {
             let matchers: [Cuckoo.ParameterMatcher<Result<StakingDuration, Error>>] = [wrap(matchable: result) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveStakingDuration(result: Result<StakingDuration, Error>)", parameterMatchers: matchers))
+        }
+
+        func didReceiveUnstakingVariant<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Result<UnstakingDurationVariant, Error>> where M1.MatchedType == Result<UnstakingDurationVariant, Error> {
+            let matchers: [Cuckoo.ParameterMatcher<Result<UnstakingDurationVariant, Error>>] = [wrap(matchable: result) { $0 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmInteractorOutputProtocol.self, method: "didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)", parameterMatchers: matchers))
         }
 
         func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Result<ExtrinsicSubmittedModel, Error>> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
@@ -41182,6 +41200,12 @@ class MockStakingUnbondConfirmInteractorOutputProtocol: StakingUnbondConfirmInte
         }
 
         @discardableResult
+        func didReceiveUnstakingVariant<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<Result<UnstakingDurationVariant, Error>, Void> where M1.MatchedType == Result<UnstakingDurationVariant, Error> {
+            let matchers: [Cuckoo.ParameterMatcher<Result<UnstakingDurationVariant, Error>>] = [wrap(matchable: result) { $0 }]
+            return cuckoo_manager.verify("didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
+
+        @discardableResult
         func didSubmitUnbonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<Result<ExtrinsicSubmittedModel, Error>, Void> where M1.MatchedType == Result<ExtrinsicSubmittedModel, Error> {
             let matchers: [Cuckoo.ParameterMatcher<Result<ExtrinsicSubmittedModel, Error>>] = [wrap(matchable: result) { $0 }]
             return cuckoo_manager.verify("didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -41231,6 +41255,10 @@ class StakingUnbondConfirmInteractorOutputProtocolStub: StakingUnbondConfirmInte
     }
 
     func didReceiveStakingDuration(result _: Result<StakingDuration, Error>) {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func didReceiveUnstakingVariant(result _: Result<UnstakingDurationVariant, Error>) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 
@@ -42131,6 +42159,19 @@ class MockStakingUnbondSetupInteractorOutputProtocol: StakingUnbondSetupInteract
         )
     }
 
+    func didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>) {
+        cuckoo_manager.call(
+            "didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)",
+            parameters: result,
+            escapingParameters: result,
+            superclassCall:
+
+            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
+
+            defaultCall: __defaultImplStub!.didReceiveUnstakingVariant(result: result)
+        )
+    }
+
     struct __StubbingProxy_StakingUnbondSetupInteractorOutputProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -42176,6 +42217,11 @@ class MockStakingUnbondSetupInteractorOutputProtocol: StakingUnbondSetupInteract
         func didReceiveStakingDuration<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Result<StakingDuration, Error>> where M1.MatchedType == Result<StakingDuration, Error> {
             let matchers: [Cuckoo.ParameterMatcher<Result<StakingDuration, Error>>] = [wrap(matchable: result) { $0 }]
             return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondSetupInteractorOutputProtocol.self, method: "didReceiveStakingDuration(result: Result<StakingDuration, Error>)", parameterMatchers: matchers))
+        }
+
+        func didReceiveUnstakingVariant<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<Result<UnstakingDurationVariant, Error>> where M1.MatchedType == Result<UnstakingDurationVariant, Error> {
+            let matchers: [Cuckoo.ParameterMatcher<Result<UnstakingDurationVariant, Error>>] = [wrap(matchable: result) { $0 }]
+            return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondSetupInteractorOutputProtocol.self, method: "didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)", parameterMatchers: matchers))
         }
     }
 
@@ -42237,6 +42283,12 @@ class MockStakingUnbondSetupInteractorOutputProtocol: StakingUnbondSetupInteract
             let matchers: [Cuckoo.ParameterMatcher<Result<StakingDuration, Error>>] = [wrap(matchable: result) { $0 }]
             return cuckoo_manager.verify("didReceiveStakingDuration(result: Result<StakingDuration, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
+
+        @discardableResult
+        func didReceiveUnstakingVariant<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<Result<UnstakingDurationVariant, Error>, Void> where M1.MatchedType == Result<UnstakingDurationVariant, Error> {
+            let matchers: [Cuckoo.ParameterMatcher<Result<UnstakingDurationVariant, Error>>] = [wrap(matchable: result) { $0 }]
+            return cuckoo_manager.verify("didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+        }
     }
 }
 
@@ -42270,6 +42322,10 @@ class StakingUnbondSetupInteractorOutputProtocolStub: StakingUnbondSetupInteract
     }
 
     func didReceiveStakingDuration(result _: Result<StakingDuration, Error>) {
+        DefaultValueRegistry.defaultValue(for: Void.self)
+    }
+
+    func didReceiveUnstakingVariant(result _: Result<UnstakingDurationVariant, Error>) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }

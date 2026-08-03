@@ -3,17 +3,26 @@ import BigInt
 import SubstrateSdk
 
 final class PolkadotRewardEngine: RewardCalculatorEngine {
-    let inflationPrediction: RuntimeApiInflationPrediction
+    // Amount allocated to stakers in the last completed era, as reported by the staking
+    // pallet's `era_reward_allocation` view function (mirrors `Staking.ErasValidatorReward`).
+    //
+    // After the Dynamic Allocation Pool (DAP) reform the network no longer mints the whole
+    // period issuance to stakers: of the ~153,132 DOT minted per day only the staker allocation
+    // (currently 45.2% ≈ 69,216 DOT/day) is paid out to stakers — the rest goes to the
+    // validator incentive and the DAP buffer. Reading the recorded era allocation keeps the APY
+    // correct without hardcoding the split: it tracks both the issuance curve (ref 1710) and any
+    // future governance re-allocation of the DAP budget.
+    let stakersEraReward: BigUInt
 
     init(
         chainId: ChainModel.Id,
         assetPrecision: Int16,
-        inflationPrediction: RuntimeApiInflationPrediction,
+        stakersEraReward: BigUInt,
         totalIssuance: BigUInt,
         validators: [EraValidatorInfo],
         eraDurationInSeconds: TimeInterval
     ) {
-        self.inflationPrediction = inflationPrediction
+        self.stakersEraReward = stakersEraReward
 
         super.init(
             chainId: chainId,
@@ -25,21 +34,25 @@ final class PolkadotRewardEngine: RewardCalculatorEngine {
     }
 
     override func calculateAnnualInflation() -> Decimal {
-        guard let validatorsMint = inflationPrediction.nextMint.items.first else {
-            return 0
-        }
-
-        let validatorsMintDecimal = Decimal.fromSubstrateAmount(
-            validatorsMint,
+        let eraStakersReward = Decimal.fromSubstrateAmount(
+            stakersEraReward,
             precision: assetPrecision
         ) ?? 0
+
+        guard totalIssuance > 0, eraDurationInSeconds > 0 else {
+            return 0
+        }
 
         let daysInYear = TimeInterval(CalculationPeriod.year.inDays)
         let erasInYear = daysInYear * TimeInterval.secondsInDay / eraDurationInSeconds
 
-        let inflationPerMint = validatorsMintDecimal / totalIssuance
+        // Expressed relative to total issuance because the base engine divides the result by
+        // `stakedPortion` (= totalStake / totalIssuance) in `calculateReturnForStake`. Issuance
+        // therefore cancels and the effective staker return reduces to
+        // `stakersEraReward * erasInYear / totalStake`.
+        let inflationPerEra = eraStakersReward / totalIssuance
 
-        return inflationPerMint * Decimal(erasInYear)
+        return inflationPerEra * Decimal(erasInYear)
     }
 
     override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {

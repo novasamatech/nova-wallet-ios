@@ -24,6 +24,7 @@ final class StakingUnbondSetupPresenter {
     private var controller: ChainAccountResponse?
     private var stashItem: StashItem?
     private var stakingDuration: StakingDuration?
+    private var unstakingVariant: UnstakingDurationVariant?
 
     init(
         interactor: StakingUnbondSetupInteractorInputProtocol,
@@ -80,11 +81,11 @@ final class StakingUnbondSetupPresenter {
     }
 
     private func provideBondingDuration() {
-        guard let stakingDuration = stakingDuration else {
+        guard let stakingDuration, let unstakingVariant else {
             return
         }
 
-        view?.didReceiveBonding(duration: stakingDuration.localizableUnlockingString)
+        view?.didReceiveBonding(duration: stakingDuration.localizableUnlockingString(for: unstakingVariant))
     }
 }
 
@@ -266,6 +267,16 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             provideBondingDuration()
         case let .failure(error):
             logger?.error("Did receive stash item error: \(error)")
+        }
+    }
+
+    func didReceiveUnstakingVariant(result: Result<UnstakingDurationVariant, Error>) {
+        switch result {
+        case let .success(variant):
+            unstakingVariant = variant
+            provideBondingDuration()
+        case let .failure(error):
+            logger?.error("Unstaking variant error: \(error)")
         }
     }
 }

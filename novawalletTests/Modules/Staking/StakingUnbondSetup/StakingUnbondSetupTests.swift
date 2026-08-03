@@ -117,10 +117,8 @@ class StakingUnbondSetupTests: XCTestCase {
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingDurationOperationFactory: BabeStakingDurationFactory(
-                chainId: chain.chainId,
-                chainRegistry: chainRegistry
-            ),
+            stakingDurationOperationFactory: StakingDurationOperationFactoryStub(),
+            unstakingDurationFactory: UnstakingDurationOperationFactoryMock(),
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
@@ -194,5 +192,16 @@ class StakingUnbondSetupTests: XCTestCase {
         ], timeout: 10)
 
         return presenter
+    }
+}
+
+// MARK: - Private stubs
+
+private struct StakingDurationOperationFactoryStub: StakingDurationOperationFactoryProtocol {
+    func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
+        let unlockingSeconds: TimeInterval = 28.0 * 24.0 * 3600.0
+        let unlocking = UnlockingDuration(validator: unlockingSeconds, nominator: unlockingSeconds)
+        let duration = StakingDuration(session: 3600.0, era: 3600.0 * 6.0, unlocking: unlocking)
+        return CompoundOperationWrapper.createWithResult(duration)
     }
 }

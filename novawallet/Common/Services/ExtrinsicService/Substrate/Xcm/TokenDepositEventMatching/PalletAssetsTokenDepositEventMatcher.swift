@@ -16,10 +16,14 @@ extension PalletAssetsTokenDepositEventMatcher: TokenDepositEventMatching {
         using codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
         do {
-            guard codingFactory.metadata.eventMatches(
-                event,
-                path: PalletAssets.issuedPath(for: extras.palletName)
-            ) else {
+            guard
+                codingFactory.metadata.eventMatches(
+                    event,
+                    oneOf: [
+                        PalletAssets.issuedPath(for: extras.palletName),
+                        PalletAssets.depositedPath(for: extras.palletName)
+                    ]
+                ) else {
                 return nil
             }
 

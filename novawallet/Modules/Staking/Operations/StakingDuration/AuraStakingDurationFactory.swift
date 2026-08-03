@@ -8,13 +8,15 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
     let eraLengthOperationFactory: EraLengthOperationFactoryProtocol
+    let unstakingDurationFactory: UnstakingDurationOperationMaking
 
     init(
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
-        sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol
+        sessionPeriodOperationFactory: StakingSessionPeriodOperationFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chainId = chainId
         self.chainRegistry = chainRegistry
@@ -22,6 +24,10 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
         self.blockTimeOperationFactory = blockTimeOperationFactory
         self.sessionPeriodOperationFactory = sessionPeriodOperationFactory
         eraLengthOperationFactory = EraLengthOperationFactory(chainRegistry: chainRegistry)
+        unstakingDurationFactory = UnstakingDurationOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 
     func createDurationOperation() -> CompoundOperationWrapper<StakingDuration> {
@@ -30,10 +36,7 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
 
             let runtimeFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-            let unlockingOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
-                for: Staking.lockUpPeriodPath,
-                dependingOn: runtimeFactoryOperation
-            )
+            let unstakingWrapper = unstakingDurationFactory.createUnstakingDurationWrapper(for: chainId)
 
             let eraLengthWrapper = eraLengthOperationFactory.createEraLengthWrapper(for: chainId)
 
@@ -48,20 +51,23 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
                 let sessionLength = try sessionLengthOperation.extractNoCancellableResultData()
                 let eraLength = try eraLengthWrapper.targetOperation.extractNoCancellableResultData()
                 let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-                let unlocking = try unlockingOperation.extractNoCancellableResultData()
+                let unstaking = try unstakingWrapper.targetOperation.extractNoCancellableResultData()
 
                 let sessionDuration = TimeInterval(sessionLength * Moment(blockTime)).seconds
                 let eraDuration = TimeInterval(eraLength) * sessionDuration
-                let unlockingDuration = TimeInterval(unlocking) * eraDuration
+                let unlocking = UnlockingDuration(
+                    validator: TimeInterval(unstaking.validator) * eraDuration,
+                    nominator: TimeInterval(unstaking.nominator) * eraDuration
+                )
 
                 return StakingDuration(
                     session: sessionDuration,
                     era: eraDuration,
-                    unlocking: unlockingDuration
+                    unlocking: unlocking
                 )
             }
 
-            let constOperations = [unlockingOperation, sessionLengthOperation] + eraLengthWrapper.allOperations
+            let constOperations = [sessionLengthOperation] + eraLengthWrapper.allOperations
 
             constOperations.forEach { constOperation in
                 constOperation.addDependency(runtimeFactoryOperation)
@@ -69,9 +75,11 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
                 mergeOperation.addDependency(blockTimeWrapper.targetOperation)
             }
 
+            mergeOperation.addDependency(unstakingWrapper.targetOperation)
+
             return CompoundOperationWrapper(
                 targetOperation: mergeOperation,
-                dependencies: [runtimeFactoryOperation] + constOperations + blockTimeWrapper.allOperations
+                dependencies: [runtimeFactoryOperation] + constOperations + blockTimeWrapper.allOperations + unstakingWrapper.allOperations
             )
         } catch {
             return .createWithError(error)
