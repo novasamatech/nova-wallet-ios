@@ -172,7 +172,7 @@ class CustomValidatorCell: UITableViewCell {
             detailsLabel.isHidden = true
         }
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        applyCheckbox(isSelected: viewModel.isSelected, isLocked: viewModel.isLocked)
     }
 
     func bind(viewModel: ValidatorSearchCellViewModel) {
@@ -195,7 +195,20 @@ class CustomValidatorCell: UITableViewCell {
 
         detailsAuxLabel.text = viewModel.details
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        applyCheckbox(isSelected: viewModel.isSelected, isLocked: viewModel.isLocked)
+    }
+
+    private func applyCheckbox(isSelected: Bool, isLocked: Bool) {
+        let image = isSelected || isLocked ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        selectionImageView.image = image?.withRenderingMode(.alwaysTemplate)
+
+        if isLocked {
+            selectionImageView.tintColor = R.color.colorIconInactive()
+        } else {
+            selectionImageView.tintColor = isSelected
+                ? R.color.colorIconAccent()
+                : R.color.colorIconSecondary()
+        }
     }
 
     private func clearStatusView() {

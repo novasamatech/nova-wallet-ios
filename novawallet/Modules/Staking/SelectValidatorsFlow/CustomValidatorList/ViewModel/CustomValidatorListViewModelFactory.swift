@@ -5,12 +5,22 @@ import Foundation_iOS
 final class CustomValidatorListViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
+    private let selectionCounter: ValidatorSelectionCounter
+    private let lockedAddresses: Set<AccountAddress>
+
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        lockedAddresses: Set<AccountAddress>,
+        maxNominations: Int
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.lockedAddresses = lockedAddresses
+        selectionCounter = ValidatorSelectionCounter(
+            lockedAddresses: lockedAddresses,
+            maxNominations: maxNominations
+        )
     }
 
     private func createHeaderViewModel(
@@ -83,7 +93,8 @@ final class CustomValidatorListViewModelFactory {
                 auxDetails: auxDetailsText,
                 shouldShowWarning: validator.oversubscribed,
                 shouldShowError: validator.hasSlashes,
-                isSelected: selectedValidatorList.contains(validator)
+                isSelected: selectedValidatorList.contains(validator),
+                isLocked: lockedAddresses.contains(validator.address)
             )
         }
     }
@@ -116,7 +127,7 @@ extension CustomValidatorListViewModelFactory: CustomValidatorListViewModelFacto
         return CustomValidatorListViewModel(
             headerViewModel: headerViewModel,
             cellViewModels: cellsViewModel,
-            selectedValidatorsCount: selectedValidatorList.count
+            selection: selectionCounter.state(for: selectedValidatorList)
         )
     }
 }

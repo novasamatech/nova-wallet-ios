@@ -26,7 +26,9 @@ enum CustomValidatorListViewFactory {
         )
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses,
+            maxNominations: validatorsSelectionParams.maxNominations
         )
 
         let presenter = CustomValidatorListPresenter(
@@ -43,7 +45,6 @@ enum CustomValidatorListViewFactory {
 
         let view = CustomValidatorListViewController(
             presenter: presenter,
-            selectedValidatorsLimit: validatorsSelectionParams.maxNominations,
             localizationManager: LocalizationManager.shared
         )
 

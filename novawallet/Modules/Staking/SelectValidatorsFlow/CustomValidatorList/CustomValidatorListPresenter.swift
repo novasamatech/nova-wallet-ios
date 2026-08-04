@@ -12,7 +12,9 @@ final class CustomValidatorListPresenter {
     let logger: LoggerProtocol?
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
-    private var fullValidatorList: CustomValidatorsFullList
+    private let fullValidatorList: CustomValidatorsFullList
+    private let lockedAddresses: Set<AccountAddress>
+    private let selectionCounter: ValidatorSelectionCounter
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
@@ -38,6 +40,11 @@ final class CustomValidatorListPresenter {
         self.selectedValidatorList = selectedValidatorList
         self.validatorsSelectionParams = validatorsSelectionParams
         self.logger = logger
+        lockedAddresses = fullValidatorList.lockedAddresses
+        selectionCounter = ValidatorSelectionCounter(
+            lockedAddresses: fullValidatorList.lockedAddresses,
+            maxNominations: validatorsSelectionParams.maxNominations
+        )
         filter = CustomValidatorListFilter.recommendedFilter(
             havingIdentity: validatorsSelectionParams.hasIdentity
         )
@@ -91,22 +98,23 @@ final class CustomValidatorListPresenter {
 
         let changedModels: [CustomValidatorCellViewModel] = viewModel.cellViewModels.map {
             var newItem = $0
-            newItem.isSelected = false
+            newItem.isSelected = newItem.isLocked && newItem.isSelected
             return newItem
         }
 
         let indices = viewModel.cellViewModels
             .enumerated()
-            .filter {
-                $1.isSelected
-            }.map { index, _ in
-                index
-            }
+            .filter { $1.isSelected && !$1.isLocked }
+            .map { index, _ in index }
 
-        selectedValidatorList.set([])
+        let keptValidators = selectedValidatorList.items.filter {
+            lockedAddresses.contains($0.address)
+        }
+
+        selectedValidatorList.set(keptValidators)
 
         viewModel.cellViewModels = changedModels
-        viewModel.selectedValidatorsCount = 0
+        viewModel.selection = selectionCounter.state(for: selectedValidatorList.items)
         self.viewModel = viewModel
 
         view?.reload(viewModel, at: indices)
@@ -124,9 +132,12 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
     // MARK: - Header actions
 
     func fillWithRecommended() {
+        let selection = selectionCounter.state(for: selectedValidatorList.items)
+        let freeSlots = max(selection.communityLimit - selection.communitySelected, 0)
+
         let recommendedToFill = recommendedValidatorList
             .filter { !selectedValidatorList.contains($0) }
-            .prefix(validatorsSelectionParams.maxNominations - selectedValidatorList.count)
+            .prefix(freeSlots)
 
         guard !recommendedToFill.isEmpty else { return }
 
@@ -156,6 +167,18 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
 
         let changedValidator = filteredValidatorList[index]
 
+        guard !lockedAddresses.contains(changedValidator.address) else {
+            wireframe.present(
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingCustomBlockedWarning(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
+                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
+                from: view
+            )
+            return
+        }
+
         guard !changedValidator.blocked else {
             wireframe.present(
                 message: R.string(
@@ -170,14 +193,12 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
 
         if let selectedIndex = selectedValidatorList.firstIndex(of: changedValidator) {
             selectedValidatorList.remove(at: selectedIndex)
-            viewModel.selectedValidatorsCount -= 1
         } else {
             selectedValidatorList.append(changedValidator)
-            viewModel.selectedValidatorsCount += 1
         }
 
         viewModel.cellViewModels[index].isSelected = !viewModel.cellViewModels[index].isSelected
-        viewModel.selectedValidatorsCount = selectedValidatorList.count
+        viewModel.selection = selectionCounter.state(for: selectedValidatorList.items)
         self.viewModel = viewModel
 
         view?.reload(viewModel, at: [index])
@@ -237,6 +258,10 @@ extension CustomValidatorListPresenter: CustomValidatorListInteractorOutputProto
 
 extension CustomValidatorListPresenter: SelectedValidatorListDelegate {
     func didRemove(_ validator: SelectedValidatorInfo) {
+        guard !lockedAddresses.contains(validator.address) else {
+            return
+        }
+
         if let displayedIndex = filteredValidatorList.firstIndex(of: validator) {
             changeValidatorSelection(at: displayedIndex)
         } else if let selectedIndex = selectedValidatorList.firstIndex(of: validator) {

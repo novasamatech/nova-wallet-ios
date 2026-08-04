@@ -8,6 +8,7 @@ struct ValidatorSearchCellViewModel {
     let shouldShowWarning: Bool
     let shouldShowError: Bool
     var isSelected: Bool = false
+    var isLocked: Bool = false
 }
 
 struct ValidatorSearchViewModel {

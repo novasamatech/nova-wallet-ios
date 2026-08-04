@@ -27,7 +27,9 @@ class CustomValidatorListTests: XCTestCase {
         )
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            lockedAddresses: [],
+            maxNominations: 16
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
@@ -90,5 +92,279 @@ class CustomValidatorListTests: XCTestCase {
         // then
 
         wait(for: [reloadExpectation, filterExpectation], timeout: Constants.defaultExpectationDuration)
+    }
+
+    private func makeLockedPresenter(
+        wireframe: MockCustomValidatorListWireframeProtocol,
+        selected: [SelectedValidatorInfo],
+        locked: [SelectedValidatorInfo],
+        community: [SelectedValidatorInfo]
+    ) -> CustomValidatorListPresenter {
+        let selectedChain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
+        let chainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
+
+        let fullValidatorList = CustomValidatorsFullList(
+            allValidators: community,
+            preferredValidators: locked
+        )
+
+        let viewModelFactory = CustomValidatorListViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory,
+            lockedAddresses: fullValidatorList.lockedAddresses,
+            maxNominations: 16
+        )
+
+        let interactor = CustomValidatorListInteractor(
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: PriceProviderFactoryStub(priceData: nil),
+            currencyManager: CurrencyManagerStub()
+        )
+
+        let presenter = CustomValidatorListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            fullValidatorList: fullValidatorList,
+            recommendedValidatorList: community,
+            selectedValidatorList: SharedList<SelectedValidatorInfo>(items: selected),
+            validatorsSelectionParams: ValidatorsSelectionParams(maxNominations: 16, hasIdentity: true)
+        )
+
+        interactor.presenter = presenter
+
+        return presenter
+    }
+
+    func testLockedValidatorCannotBeDeselectedByTap() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: community + locked,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        var lastViewModel: CustomValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).then { viewModel, _ in
+                lastViewModel = viewModel
+            }
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        stub(wireframe) { stub in
+            when(stub.present(message: any(), title: any(), closeAction: any(), from: any()))
+                .thenDoNothing()
+        }
+
+        presenter.setup()
+
+        // when: the locked validator is the last row of the composed list
+
+        let lockedIndex = (lastViewModel?.cellViewModels.count ?? 1) - 1
+        presenter.changeValidatorSelection(at: lockedIndex)
+
+        // then
+
+        XCTAssertTrue(lastViewModel?.cellViewModels[lockedIndex].isLocked ?? false)
+        XCTAssertTrue(lastViewModel?.cellViewModels[lockedIndex].isSelected ?? false)
+        XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
+    }
+
+    func testDeselectAllKeepsLockedValidators() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: community + locked,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        var lastViewModel: CustomValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).then { viewModel, _ in
+                lastViewModel = viewModel
+            }
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        // presentDeselectValidatorsWarning has a protocol-extension default implementation, so
+        // Cuckoo cannot stub it; confirming through the alert view model exercises the real path
+        stub(wireframe) { stub in
+            when(stub.present(viewModel: any(), style: any(), from: any())).then { viewModel, _, _ in
+                viewModel.actions.first?.handler?()
+            }
+        }
+
+        presenter.setup()
+
+        // when
+
+        presenter.deselectAll()
+
+        // then
+
+        XCTAssertEqual(lastViewModel?.selection.communitySelected, 0)
+        XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
+        XCTAssertEqual(lastViewModel?.selection.communityLimit, 15)
+    }
+
+    func testSetupDoesNotGrowTheSelection() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: community,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        var lastViewModel: CustomValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).then { viewModel, _ in
+                lastViewModel = viewModel
+            }
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        // when
+
+        presenter.setup()
+
+        // then: seeding is the caller's job, setup() must not add anything
+
+        XCTAssertEqual(lastViewModel?.selection.communitySelected, community.count)
+        XCTAssertEqual(lastViewModel?.selection.lockedSelected, 0)
+    }
+
+    func testCountersDoNotChangeWhenAFilterHidesALockedValidator() {
+        // given: the locked validator is slashed, so the recommended filter would hide it
+        // if the filter were applied to locked validators
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+        let locked = generator.createSelectedValidators(from: [generator.slashedValidator])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: community + locked,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        var lastViewModel: CustomValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).then { viewModel, _ in
+                lastViewModel = viewModel
+            }
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        presenter.setup()
+
+        let stateBefore = lastViewModel?.selection
+
+        // when
+
+        presenter.didUpdate(CustomValidatorListFilter.defaultFilter())
+
+        // then
+
+        XCTAssertEqual(lastViewModel?.selection, stateBefore)
+        XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
+    }
+
+    func testFillWithRecommendedRespectsTheCommunityLimit() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(
+            from: generator.goodValidators + generator.badValidators
+        )
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: locked,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        var lastViewModel: CustomValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).then { viewModel, _ in
+                lastViewModel = viewModel
+            }
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        presenter.setup()
+
+        // when
+
+        presenter.fillWithRecommended()
+
+        // then
+
+        let selection = lastViewModel?.selection
+        XCTAssertEqual(selection?.lockedSelected, 1)
+        XCTAssertEqual(selection?.communityLimit, 15)
+        XCTAssertLessThanOrEqual(selection?.communitySelected ?? .max, 15)
     }
 }
