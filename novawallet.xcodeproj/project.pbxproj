@@ -6570,6 +6570,7 @@
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
 		000000000221A08C3F7043E1 /* StakingConstantsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002AB6934466869B04 /* StakingConstantsTests.swift */; };
+		0000000023A420E90D2B6A19 /* ValidatorLockSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000562DA90DDCF03EFD /* ValidatorLockSetTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12881,6 +12882,7 @@
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
 		FFF5B66ACB3DFA32DD43BD75 /* TokenManageSingleViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenManageSingleViewLayout.swift; sourceTree = "<group>"; };
 		000000002AB6934466869B04 /* StakingConstantsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingConstantsTests.swift; sourceTree = "<group>"; };
+		00000000562DA90DDCF03EFD /* ValidatorLockSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorLockSetTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25862,6 +25864,7 @@
 				84B7C6D3289BFA79001A3566 /* CustomValidatorListTestDataGenerator.swift */,
 				84B7C6D4289BFA79001A3566 /* CustomValidatorListComposerTests.swift */,
 				84B7C6D5289BFA79001A3566 /* CustomValidatorListTests.swift */,
+				00000000562DA90DDCF03EFD /* ValidatorLockSetTests.swift */,
 			);
 			path = CustomValidators;
 			sourceTree = "<group>";
@@ -37063,6 +37066,7 @@
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000000221A08C3F7043E1 /* StakingConstantsTests.swift in Sources */,
+				0000000023A420E90D2B6A19 /* ValidatorLockSetTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

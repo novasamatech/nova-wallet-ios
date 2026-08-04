@@ -56,7 +56,7 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
     ) {
         let fullValidatorList = CustomValidatorsFullList(
             allValidators: selectedValidators.electedAndPrefValidators.allElectedToSelectedValidators(),
-            preferredValidators: selectedValidators.electedAndPrefValidators.preferredValidators
+            preferredValidators: selectedValidators.electedAndPrefValidators.lockedValidators
         )
 
         let selectionValidatorGroups = SelectionValidatorGroups(

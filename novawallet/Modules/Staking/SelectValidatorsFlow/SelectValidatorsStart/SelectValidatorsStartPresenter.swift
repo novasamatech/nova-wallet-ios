@@ -137,7 +137,7 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
 
         let customValidatorList = CustomValidatorsFullList(
             allValidators: electedAndPrefValidators.allElectedToSelectedValidators(for: existingStashAddress),
-            preferredValidators: electedAndPrefValidators.preferredValidators
+            preferredValidators: electedAndPrefValidators.lockedValidators
         )
 
         let recommendedValidatorList = recommendedValidators ?? []
