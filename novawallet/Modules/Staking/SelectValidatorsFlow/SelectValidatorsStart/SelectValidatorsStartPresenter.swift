@@ -41,18 +41,23 @@ final class SelectValidatorsStartPresenter {
     private func updateSelectedValidatorsIfNeeded() {
         guard
             let electedValidators = electedValidators,
+            let electedAndPrefValidators = electedAndPrefValidators,
             let maxNominations = maxNominations,
             selectedValidators == nil else {
             return
         }
 
-        let selectedValidatorList = initialTargets?.map { target in
+        let initialTargets = initialTargets?.map { target in
             electedValidators[target.address]?.toSelected(for: existingStashAddress) ?? target
-        }
-        .sorted { $0.stakeReturn > $1.stakeReturn }
-        .prefix(maxNominations) ?? []
+        } ?? []
 
-        selectedValidators = SharedList(items: selectedValidatorList)
+        let seeded = ValidatorSelectionSeeder.seed(
+            initialTargets: initialTargets,
+            lockedValidators: electedAndPrefValidators.lockedValidators,
+            maxNominations: maxNominations
+        )
+
+        selectedValidators = SharedList(items: seeded)
     }
 
     private func updateRecommendedValidators() {
