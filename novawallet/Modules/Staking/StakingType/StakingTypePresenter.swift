@@ -290,6 +290,11 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
                 return
             }
         case .nominationPool:
+            // banner is non-interactive when forced; ignore taps leaking through hit-testing
+            if isPoolForced, selection == .nominationPool {
+                return
+            }
+
             selection = .nominationPool
             method = nil
 
