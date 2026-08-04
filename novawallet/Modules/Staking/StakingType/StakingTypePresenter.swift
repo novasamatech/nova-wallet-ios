@@ -91,6 +91,7 @@ final class StakingTypePresenter {
             minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
             method: method,
+            canChangePool: !isPoolForced,
             locale: selectedLocale
         )
 

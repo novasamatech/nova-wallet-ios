@@ -33,6 +33,7 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
         )
 
         if let accountModel = viewModel.poolAccount {
+            poolStakingBannerView.accountView.canProceed = viewModel.canChangePool
             poolStakingBannerView.setAction(viewModel: .init(
                 imageViewModel: accountModel.icon,
                 title: accountModel.title,
