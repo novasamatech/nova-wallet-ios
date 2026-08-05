@@ -56,8 +56,6 @@ private extension CustomValidatorListComposer {
 extension CustomValidatorListComposer: RecommendationsComposing {
     typealias RecommendableType = SelectedValidatorInfo
 
-    // Preferred validators are pinned to the bottom and bypass the user's filters: they are
-    // permanently selected, so hiding one would make the list disagree with the selection.
     func compose(
         from recommendables: [RecommendableType],
         preferrences: [RecommendableType]

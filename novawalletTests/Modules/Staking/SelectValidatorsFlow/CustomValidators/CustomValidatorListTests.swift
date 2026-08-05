@@ -183,8 +183,6 @@ class CustomValidatorListTests: XCTestCase {
 
         presenter.setup()
 
-        // when: the locked validator is the last row of the composed list
-
         let lockedIndex = (lastViewModel?.cellViewModels.count ?? 1) - 1
         presenter.changeValidatorSelection(at: lockedIndex)
 
@@ -234,8 +232,6 @@ class CustomValidatorListTests: XCTestCase {
             when(stub.setFilterAppliedState(to: any())).thenDoNothing()
         }
 
-        // presentDeselectValidatorsWarning has a protocol-extension default implementation, so
-        // Cuckoo cannot stub it; confirming through the alert view model exercises the real path
         stub(wireframe) { stub in
             when(stub.present(viewModel: any(), style: any(), from: any())).then { viewModel, _, _ in
                 viewModel.actions.first?.handler?()
@@ -287,16 +283,11 @@ class CustomValidatorListTests: XCTestCase {
 
         presenter.setup()
 
-        // then: seeding is the caller's job, setup() must not add anything
-
         XCTAssertEqual(lastViewModel?.selection.communitySelected, community.count)
         XCTAssertEqual(lastViewModel?.selection.lockedSelected, 0)
     }
 
     func testCountersDoNotChangeWhenAFilterHidesALockedValidator() {
-        // given: the locked validator is slashed, so the recommended filter would hide it
-        // if the filter were applied to locked validators
-
         let generator = CustomValidatorListTestDataGenerator.self
         let community = generator.createSelectedValidators(from: generator.goodValidators)
         let locked = generator.createSelectedValidators(from: [generator.slashedValidator])
@@ -334,6 +325,45 @@ class CustomValidatorListTests: XCTestCase {
 
         XCTAssertEqual(lastViewModel?.selection, stateBefore)
         XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
+
+        XCTAssertEqual(lastViewModel?.cellViewModels.filter(\.isLocked).count, 1)
+        XCTAssertEqual(lastViewModel?.cellViewModels.last?.isLocked, true)
+    }
+
+    func testDidRemoveIgnoresLockedValidator() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+
+        let view = MockCustomValidatorListViewProtocol()
+        let wireframe = MockCustomValidatorListWireframeProtocol()
+
+        let presenter = makeLockedPresenter(
+            wireframe: wireframe,
+            selected: community + locked,
+            locked: locked,
+            community: community
+        )
+
+        presenter.view = view
+
+        stub(view) { stub in
+            when(stub.reload(any(), at: any())).thenDoNothing()
+            when(stub.setFilterAppliedState(to: any())).thenDoNothing()
+        }
+
+        presenter.setup()
+
+        // when
+
+        presenter.didRemove(locked[0])
+
+        // then
+
+        XCTAssertTrue(presenter.selectedValidatorList.items.contains { $0.address == locked[0].address })
+        XCTAssertEqual(presenter.selectedValidatorList.items.count, community.count + locked.count)
     }
 
     func testFillWithRecommendedRespectsTheCommunityLimit() {
@@ -372,9 +402,6 @@ class CustomValidatorListTests: XCTestCase {
         // when
 
         presenter.fillWithRecommended()
-
-        // then: maxNominations: 3 with 1 locked validator binds communityLimit to 2,
-        // fewer than the 6 available recommended candidates
 
         let selection = lastViewModel?.selection
         XCTAssertEqual(selection?.lockedSelected, 1)

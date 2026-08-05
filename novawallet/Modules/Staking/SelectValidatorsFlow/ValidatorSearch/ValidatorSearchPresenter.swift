@@ -118,14 +118,7 @@ extension ValidatorSearchPresenter: ValidatorSearchPresenterProtocol {
         let changedValidator = filteredValidatorList[index]
 
         guard !lockedAddresses.contains(changedValidator.address) else {
-            wireframe.present(
-                message: R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.stakingCustomLockedValidatorMessage(),
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
-                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
-                from: view
-            )
+            wireframe.presentLockedValidatorWarning(from: view, locale: selectedLocale)
             return
         }
 

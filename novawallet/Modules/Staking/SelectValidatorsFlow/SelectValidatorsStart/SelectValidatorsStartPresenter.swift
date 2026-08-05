@@ -51,13 +51,12 @@ final class SelectValidatorsStartPresenter {
             electedValidators[target.address]?.toSelected(for: existingStashAddress) ?? target
         } ?? []
 
-        let seeded = ValidatorSelectionSeeder.seed(
-            initialTargets: initialTargets,
+        let selectionComposer = ValidatorSelectionComposer(
             lockedValidators: electedAndPrefValidators.lockedValidators,
             maxNominations: maxNominations
         )
 
-        selectedValidators = SharedList(items: seeded)
+        selectedValidators = SharedList(items: selectionComposer.compose(from: initialTargets))
     }
 
     private func updateRecommendedValidators() {
@@ -73,7 +72,7 @@ final class SelectValidatorsStartPresenter {
             clusterSizeLimit: StakingConstants.targetsClusterLimit
         ).compose(
             from: electedAndPrefValidators.notExcludedElectedToSelectedValidators(for: existingStashAddress),
-            preferrences: electedAndPrefValidators.preferredValidators
+            preferrences: electedAndPrefValidators.lockedValidators
         )
 
         recommendedValidators = recomendedValidators

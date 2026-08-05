@@ -14,6 +14,8 @@ enum CustomValidatorListViewFactory {
             return nil
         }
 
+        let lockedAddresses = selectionValidatorGroups.fullValidatorList.lockedAddresses
+
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -27,7 +29,7 @@ enum CustomValidatorListViewFactory {
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses,
+            lockedAddresses: lockedAddresses,
             maxNominations: validatorsSelectionParams.maxNominations
         )
 

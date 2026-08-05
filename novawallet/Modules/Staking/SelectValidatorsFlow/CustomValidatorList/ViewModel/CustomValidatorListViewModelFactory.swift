@@ -6,7 +6,8 @@ final class CustomValidatorListViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private let selectionCounter: ValidatorSelectionCounter
-    private let lockedAddresses: Set<AccountAddress>
+
+    private var lockedAddresses: Set<AccountAddress> { selectionCounter.lockedAddresses }
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -16,7 +17,6 @@ final class CustomValidatorListViewModelFactory {
         maxNominations: Int
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.lockedAddresses = lockedAddresses
         selectionCounter = ValidatorSelectionCounter(
             lockedAddresses: lockedAddresses,
             maxNominations: maxNominations

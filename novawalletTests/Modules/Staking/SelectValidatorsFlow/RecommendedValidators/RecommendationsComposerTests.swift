@@ -204,28 +204,28 @@ class RecommendationsComposerTests: XCTestCase {
         XCTAssertEqual(recommendations, [preferred])
     }
 
-    func testOnlyPreferredWithAvailableRecommendedValidators() {
+    func testRepeatedPreferredValidatorCollapsesAndFreesACommunitySlot() {
         // given
 
         let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
 
         let generator = CustomValidatorListTestDataGenerator.self
 
-        let recommended1 = generator.goodValidator.toSelected(for: nil)
-        let preferred1 = generator.clusterValidatorChild1.toSelected(for: nil)
-        let preferred2 = generator.clusterValidatorChild1.toSelected(for: nil)
-        let preferred3 = generator.clusterValidatorChild1.toSelected(for: nil)
+        let recommended = generator.goodValidator.toSelected(for: nil)
+        let preferred = generator.clusterValidatorChild1.toSelected(for: nil)
 
-        let preferredList = [preferred1, preferred2, preferred3]
-        let recommendations = composer.compose(from: [recommended1], preferrences: preferredList)
+        // when
 
-        let expectedList = [preferred1, preferred2]
+        let recommendations = composer.compose(
+            from: [recommended],
+            preferrences: [preferred, preferred, preferred]
+        )
 
-        XCTAssertEqual(recommendations, expectedList)
+        // then
+
+        XCTAssertEqual(recommendations.map(\.address), [recommended, preferred].map(\.address))
     }
 
-    // A preferred validator that also ranks into the recommendation list must keep its slot:
-    // it sits at the tail by stakeReturn, exactly where truncation used to silently drop it.
     func testPreferredInsideRecommendationListSurvivesTruncation() {
         // given
 
@@ -276,17 +276,9 @@ class RecommendationsComposerTests: XCTestCase {
 
 private extension RecommendationsComposerTests {
     static func makeValidator(suffix: String, stakeReturn: Decimal) -> SelectedValidatorInfo {
-        ElectedValidatorInfo(
+        CustomValidatorListTestDataGenerator.makeSelectedValidator(
             address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr" + suffix,
-            nominators: [],
-            totalStake: 10,
-            ownStake: 10,
-            comission: 0.0,
-            identity: AccountIdentity(name: "Validator " + suffix),
-            stakeReturn: stakeReturn,
-            hasSlashes: false,
-            maxNominatorsRewarded: 128,
-            blocked: false
-        ).toSelected(for: nil)
+            stakeReturn: stakeReturn
+        )
     }
 }

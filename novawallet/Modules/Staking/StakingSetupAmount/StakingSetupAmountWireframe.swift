@@ -70,10 +70,7 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             hasIdentity: hasIdentity
         )
 
-        // Seed rather than pass targets directly: targets may be a manual selection made
-        // before the lock rule applied, leaving a validator locked but unselected.
-        let seededValidators = ValidatorSelectionSeeder.seed(
-            initialTargets: selectedValidators.targets,
+        let selectionComposer = ValidatorSelectionComposer(
             lockedValidators: selectedValidators.electedAndPrefValidators.lockedValidators,
             maxNominations: selectedValidators.maxTargets
         )
@@ -81,7 +78,7 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
         guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
             for: state,
             selectionValidatorGroups: selectionValidatorGroups,
-            selectedValidatorList: SharedList(items: seededValidators),
+            selectedValidatorList: SharedList(items: selectionComposer.compose(from: selectedValidators.targets)),
             validatorsSelectionParams: validatorsSelectionParams,
             delegate: delegate
         ) else {

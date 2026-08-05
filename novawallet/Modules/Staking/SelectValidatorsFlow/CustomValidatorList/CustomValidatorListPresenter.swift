@@ -13,8 +13,9 @@ final class CustomValidatorListPresenter {
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
     private let fullValidatorList: CustomValidatorsFullList
-    private let lockedAddresses: Set<AccountAddress>
     private let selectionCounter: ValidatorSelectionCounter
+
+    private var lockedAddresses: Set<AccountAddress> { selectionCounter.lockedAddresses }
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
@@ -40,7 +41,6 @@ final class CustomValidatorListPresenter {
         self.selectedValidatorList = selectedValidatorList
         self.validatorsSelectionParams = validatorsSelectionParams
         self.logger = logger
-        lockedAddresses = fullValidatorList.lockedAddresses
         selectionCounter = ValidatorSelectionCounter(
             lockedAddresses: fullValidatorList.lockedAddresses,
             maxNominations: validatorsSelectionParams.maxNominations
@@ -98,7 +98,11 @@ final class CustomValidatorListPresenter {
 
         let changedModels: [CustomValidatorCellViewModel] = viewModel.cellViewModels.map {
             var newItem = $0
-            newItem.isSelected = newItem.isLocked && newItem.isSelected
+
+            if !newItem.isLocked {
+                newItem.isSelected = false
+            }
+
             return newItem
         }
 
@@ -168,14 +172,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
         let changedValidator = filteredValidatorList[index]
 
         guard !lockedAddresses.contains(changedValidator.address) else {
-            wireframe.present(
-                message: R.string(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).localizable.stakingCustomLockedValidatorMessage(),
-                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
-                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
-                from: view
-            )
+            wireframe.presentLockedValidatorWarning(from: view, locale: selectedLocale)
             return
         }
 

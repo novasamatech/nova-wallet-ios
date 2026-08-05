@@ -1,7 +1,5 @@
 import Foundation
 
-// Counts are always expressed in community terms: locked validators are permanently
-// selected, so the user only manages the remaining slots.
 struct ValidatorSelectionState: Equatable {
     let communitySelected: Int
     let communityLimit: Int
@@ -23,7 +21,7 @@ struct ValidatorSelectionCounter {
 
         return .init(
             communitySelected: selected.count - lockedSelected,
-            communityLimit: max(maxNominations - lockedSelected, 0),
+            communityLimit: max(maxNominations - lockedAddresses.count, 0),
             lockedSelected: lockedSelected
         )
     }

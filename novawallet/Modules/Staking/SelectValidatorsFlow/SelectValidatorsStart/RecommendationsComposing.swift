@@ -12,6 +12,31 @@ protocol Recommendable {
     var blocked: Bool { get }
 }
 
+extension Recommendable {
+    var isLockEligible: Bool { !blocked && !oversubscribed }
+}
+
+extension Array where Element: Recommendable {
+    func reservingSlots(for reserved: [Element], limit: Int) -> [Element] {
+        var seen = Set<AccountAddress>()
+        let cappedReserved = reserved
+            .filter { seen.insert($0.address).inserted }
+            .prefix(limit)
+
+        let reservedAddresses = Set(cappedReserved.map(\.address))
+        let communityLimit = limit - cappedReserved.count
+
+        guard communityLimit > 0 else {
+            return Array(cappedReserved)
+        }
+
+        let community = filter { !reservedAddresses.contains($0.address) }
+            .prefix(communityLimit)
+
+        return Array(community) + Array(cappedReserved)
+    }
+}
+
 protocol RecommendationsComposing {
     associatedtype RecommendableType: Recommendable
 
@@ -86,9 +111,6 @@ final class RecommendationsComposer {
 }
 
 extension RecommendationsComposer: RecommendationsComposing {
-    // Preferred validators occupy reserved slots inside resultSize, mirroring ValidatorSelectionSeeder:
-    // community picks are dropped from the tail to make room, so a preference is never truncated away
-    // even when it also ranks into the recommendation list.
     func compose(
         from recommendables: [RecommendableType],
         preferrences: [RecommendableType]
@@ -101,19 +123,9 @@ extension RecommendationsComposer: RecommendationsComposing {
             recommendationList = composeWithoutIdentities(from: recommendables)
         }
 
-        let reserved = Array(
-            preferrences
-                .filter { !$0.oversubscribed && !$0.blocked }
-                .prefix(resultSize)
+        return recommendationList.reservingSlots(
+            for: preferrences.filter { $0.isLockEligible },
+            limit: resultSize
         )
-
-        let reservedAddresses = Set(reserved.map(\.address))
-        let communityLimit = max(resultSize - reserved.count, 0)
-
-        let community = recommendationList
-            .filter { !reservedAddresses.contains($0.address) }
-            .prefix(communityLimit)
-
-        return Array(community) + reserved
     }
 }

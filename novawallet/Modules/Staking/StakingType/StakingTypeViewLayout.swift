@@ -26,6 +26,8 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
     func bind(poolStakingTypeViewModel viewModel: PoolStakingTypeViewModel) {
         poolStakingBannerView.accountView.stopLoadingIfNeeded()
 
+        poolStakingBannerView.allowsAccountView = viewModel.canChangePool
+
         poolStakingBannerView.titleLabel.text = viewModel.title
         poolStakingBannerView.detailsLabel.attributedText = NSAttributedString(
             string: viewModel.subtile,
@@ -40,7 +42,7 @@ final class StakingTypeViewLayout: ScrollableContainerLayoutView {
                 subtitle: accountModel.subtitle,
                 isRecommended: accountModel.subtitle != nil
             ))
-        } else {
+        } else if viewModel.canChangePool {
             poolStakingBannerView.accountView.startLoadingIfNeeded()
         }
     }

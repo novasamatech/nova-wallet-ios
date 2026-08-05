@@ -199,7 +199,7 @@ class CustomValidatorCell: UITableViewCell {
     }
 
     private func applyCheckbox(isSelected: Bool, isLocked: Bool) {
-        let image = isSelected || isLocked ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+        let image = isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
 
         if isLocked {
             selectionImageView.image = image?.withRenderingMode(.alwaysTemplate)

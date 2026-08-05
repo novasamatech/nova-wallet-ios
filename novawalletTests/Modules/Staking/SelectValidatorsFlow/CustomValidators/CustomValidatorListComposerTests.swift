@@ -168,7 +168,6 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let preferences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
 
-        // preferred validators are pinned after the community ones, never merged into the sort
         let expectedResult = allValidators.sorted {
             $0.stakeReturn >= $1.stakeReturn
         } + preferences
@@ -219,7 +218,6 @@ class CustomValidatorListComposerTests: XCTestCase {
         let generator = CustomValidatorListTestDataGenerator.self
         let allValidators = generator.createSelectedValidators(from: generator.goodValidators)
 
-        // slashed + no identity: rejected by the recommended filter if it were applied to preferences
         let preferrences = generator.createSelectedValidators(
             from: [generator.slashedValidator, generator.noIdentityValidator]
         )
@@ -233,8 +231,6 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         // then
 
-        // recommendedFilter(havingIdentity: true) sorts by .estimatedReward (stakeReturn) descending:
-        // noIdentityValidator (0.2) outranks slashedValidator (0.1), opposite of the caller's order.
         let expectedOrder = [generator.noIdentityValidator.address, generator.slashedValidator.address]
         XCTAssertEqual(result.suffix(2).map(\.address), expectedOrder)
     }

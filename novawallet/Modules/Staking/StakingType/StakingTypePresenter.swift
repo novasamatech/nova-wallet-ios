@@ -230,10 +230,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             delegate: delegate
         )
 
-        // Seed rather than pass targets directly: targets may be a manual selection made
-        // before the lock rule applied, leaving a validator locked but unselected.
-        let seededValidators = ValidatorSelectionSeeder.seed(
-            initialTargets: validators.targets,
+        let selectionComposer = ValidatorSelectionComposer(
             lockedValidators: validators.electedAndPrefValidators.lockedValidators,
             maxNominations: validators.maxTargets
         )
@@ -241,7 +238,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         wireframe.showValidators(
             from: view,
             selectionValidatorGroups: groups,
-            selectedValidatorList: SharedList(items: seededValidators),
+            selectedValidatorList: SharedList(items: selectionComposer.compose(from: validators.targets)),
             validatorsSelectionParams: selectionParams,
             delegate: delegateFacade
         )
@@ -298,7 +295,6 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
                 return
             }
         case .nominationPool:
-            // banner is non-interactive when forced; ignore taps leaking through hit-testing
             if isPoolForced, selection == .nominationPool {
                 return
             }

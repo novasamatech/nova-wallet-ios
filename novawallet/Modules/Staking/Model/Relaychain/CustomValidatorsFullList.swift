@@ -16,8 +16,6 @@ struct CustomValidatorsFullList {
 }
 
 extension CustomValidatorsFullList {
-    // Within the selection flow preferredValidators is already the eligible lock set,
-    // built from ElectedAndPrefValidators.lockedValidators.
     var lockedAddresses: Set<AccountAddress> {
         Set(preferredValidators.map(\.address))
     }

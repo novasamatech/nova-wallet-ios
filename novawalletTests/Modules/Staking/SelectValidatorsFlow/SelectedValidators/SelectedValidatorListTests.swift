@@ -105,8 +105,6 @@ class SelectedValidatorListTests: XCTestCase {
 
         presenter.setup()
 
-        // when: the locked validator is the last row
-
         let lockedIndex = community.count
         presenter.removeItem(at: lockedIndex)
 

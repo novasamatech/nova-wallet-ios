@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-protocol ValidatorSearchWireframeProtocol: AlertPresentable {
+protocol ValidatorSearchWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
     func present(
         _ validatorInfo: ValidatorInfoProtocol,
         from view: ControllerBackedProtocol?
