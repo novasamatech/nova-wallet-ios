@@ -17,6 +17,7 @@ final class ValidatorSearchPresenter {
     private var viewModel: ValidatorSearchViewModel?
     private var searchString: String = ""
     private var isSearching: Bool = false
+    private let lockedAddresses: Set<AccountAddress>
 
     init(
         wireframe: ValidatorSearchWireframeProtocol,
@@ -24,6 +25,7 @@ final class ValidatorSearchPresenter {
         viewModelFactory: ValidatorSearchViewModelFactoryProtocol,
         fullValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        lockedAddresses: Set<AccountAddress>,
         localizationManager: LocalizationManager,
         logger: LoggerProtocol? = nil
     ) {
@@ -33,6 +35,7 @@ final class ValidatorSearchPresenter {
         self.fullValidatorList = fullValidatorList
         self.selectedValidatorList = selectedValidatorList
         referenceValidatorList = selectedValidatorList
+        self.lockedAddresses = lockedAddresses
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -113,6 +116,18 @@ extension ValidatorSearchPresenter: ValidatorSearchPresenterProtocol {
         guard var viewModel = viewModel else { return }
 
         let changedValidator = filteredValidatorList[index]
+
+        guard !lockedAddresses.contains(changedValidator.address) else {
+            wireframe.present(
+                message: R.string(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).localizable.stakingCustomBlockedWarning(),
+                title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
+                closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
+                from: view
+            )
+            return
+        }
 
         guard !changedValidator.blocked else {
             wireframe.present(

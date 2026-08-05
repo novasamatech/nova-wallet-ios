@@ -53,6 +53,7 @@ extension ValidatorSearchViewFactory {
         for state: RelaychainStakingSharedStateProtocol,
         validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        lockedAddresses: Set<AccountAddress>,
         delegate: ValidatorSearchDelegate?
     ) -> ValidatorSearchViewProtocol? {
         guard let interactor = createInteractor(
@@ -65,7 +66,7 @@ extension ValidatorSearchViewFactory {
 
         let wireframe = ValidatorSearchWireframe(chainAsset: state.stakingOption.chainAsset)
 
-        let viewModelFactory = ValidatorSearchViewModelFactory()
+        let viewModelFactory = ValidatorSearchViewModelFactory(lockedAddresses: lockedAddresses)
 
         let presenter = ValidatorSearchPresenter(
             wireframe: wireframe,
@@ -73,6 +74,7 @@ extension ValidatorSearchViewFactory {
             viewModelFactory: viewModelFactory,
             fullValidatorList: validatorList,
             selectedValidatorList: selectedValidatorList,
+            lockedAddresses: lockedAddresses,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -94,6 +96,7 @@ extension ValidatorSearchViewFactory {
         startStakingState state: RelaychainStartStakingStateProtocol,
         validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
+        lockedAddresses: Set<AccountAddress>,
         delegate: ValidatorSearchDelegate?
     ) -> ValidatorSearchViewProtocol? {
         guard let interactor = createInteractor(
@@ -106,7 +109,7 @@ extension ValidatorSearchViewFactory {
 
         let wireframe = ValidatorSearchWireframe(chainAsset: state.chainAsset)
 
-        let viewModelFactory = ValidatorSearchViewModelFactory()
+        let viewModelFactory = ValidatorSearchViewModelFactory(lockedAddresses: lockedAddresses)
 
         let presenter = ValidatorSearchPresenter(
             wireframe: wireframe,
@@ -114,6 +117,7 @@ extension ValidatorSearchViewFactory {
             viewModelFactory: viewModelFactory,
             fullValidatorList: validatorList,
             selectedValidatorList: selectedValidatorList,
+            lockedAddresses: lockedAddresses,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

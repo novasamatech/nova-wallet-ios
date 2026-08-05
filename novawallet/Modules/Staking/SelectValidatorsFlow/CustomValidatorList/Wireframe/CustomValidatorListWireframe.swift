@@ -2,9 +2,14 @@ import Foundation
 
 class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
     let stakingState: RelaychainStakingSharedStateProtocol
+    let lockedAddresses: Set<AccountAddress>
 
-    init(stakingState: RelaychainStakingSharedStateProtocol) {
+    init(
+        stakingState: RelaychainStakingSharedStateProtocol,
+        lockedAddresses: Set<AccountAddress>
+    ) {
         self.stakingState = stakingState
+        self.lockedAddresses = lockedAddresses
     }
 
     func present(
@@ -53,6 +58,7 @@ class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
             for: stakingState,
             validatorList: fullValidatorList,
             selectedValidatorList: selectedValidatorList,
+            lockedAddresses: lockedAddresses,
             delegate: delegate
         ) else { return }
 

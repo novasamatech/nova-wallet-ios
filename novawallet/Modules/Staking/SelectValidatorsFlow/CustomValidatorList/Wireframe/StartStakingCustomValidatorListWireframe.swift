@@ -1,12 +1,15 @@
 final class StartStakingCustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
     private let stakingState: RelaychainStartStakingStateProtocol
+    private let lockedAddresses: Set<AccountAddress>
     weak var stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?
 
     init(
         stakingState: RelaychainStartStakingStateProtocol,
+        lockedAddresses: Set<AccountAddress>,
         delegate: StakingSelectValidatorsDelegateProtocol?
     ) {
         self.stakingState = stakingState
+        self.lockedAddresses = lockedAddresses
         stakingSelectValidatorsDelegate = delegate
     }
 
@@ -56,6 +59,7 @@ final class StartStakingCustomValidatorListWireframe: CustomValidatorListWirefra
             startStakingState: stakingState,
             validatorList: fullValidatorList,
             selectedValidatorList: selectedValidatorList,
+            lockedAddresses: lockedAddresses,
             delegate: delegate
         ) else { return }
 

@@ -1,10 +1,14 @@
 final class ChangeTargetsCustomValidatorListWireframe: CustomValidatorListWireframe {
     let state: ExistingBonding
 
-    init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
+    init(
+        state: ExistingBonding,
+        stakingState: RelaychainStakingSharedStateProtocol,
+        lockedAddresses: Set<AccountAddress>
+    ) {
         self.state = state
 
-        super.init(stakingState: stakingState)
+        super.init(stakingState: stakingState, lockedAddresses: lockedAddresses)
     }
 
     override func proceed(
