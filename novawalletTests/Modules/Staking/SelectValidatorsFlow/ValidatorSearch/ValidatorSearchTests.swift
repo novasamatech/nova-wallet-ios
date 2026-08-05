@@ -112,5 +112,16 @@ class ValidatorSearchTests: XCTestCase {
 
         XCTAssertEqual(lastViewModel?.cellViewModels.first?.isLocked, true)
         XCTAssertEqual(lastViewModel?.cellViewModels.first?.isSelected, true)
+
+        let expectedMessage = R.string(
+            preferredLanguages: LocalizationManager.shared.selectedLocale.rLanguages
+        ).localizable.stakingCustomLockedValidatorMessage()
+
+        verify(wireframe, times(1)).present(
+            message: equal(to: expectedMessage),
+            title: any(),
+            closeAction: any(),
+            from: any()
+        )
     }
 }

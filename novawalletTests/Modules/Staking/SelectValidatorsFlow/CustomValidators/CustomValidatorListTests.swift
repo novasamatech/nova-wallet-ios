@@ -193,6 +193,17 @@ class CustomValidatorListTests: XCTestCase {
         XCTAssertTrue(lastViewModel?.cellViewModels[lockedIndex].isLocked ?? false)
         XCTAssertTrue(lastViewModel?.cellViewModels[lockedIndex].isSelected ?? false)
         XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
+
+        let expectedMessage = R.string(
+            preferredLanguages: LocalizationManager.shared.selectedLocale.rLanguages
+        ).localizable.stakingCustomLockedValidatorMessage()
+
+        verify(wireframe, times(1)).present(
+            message: equal(to: expectedMessage),
+            title: any(),
+            closeAction: any(),
+            from: any()
+        )
     }
 
     func testDeselectAllKeepsLockedValidators() {

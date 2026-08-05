@@ -6575,6 +6575,7 @@
 		000000004958CD20ECC518C7 /* ValidatorSelectionSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionSeeder.swift */; };
 		000000005E8049BC8036426E /* ValidatorSelectionCounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000051C3A32E88782D04 /* ValidatorSelectionCounterTests.swift */; };
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
+		67EB88738AD5F2F9C34E93F1 /* StakingTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E981FFB08B07D7A31BCB2C39 /* StakingTypeTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12891,6 +12892,7 @@
 		000000002039A870BA4A216E /* ValidatorSelectionSeeder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionSeeder.swift; sourceTree = "<group>"; };
 		0000000051C3A32E88782D04 /* ValidatorSelectionCounterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounterTests.swift; sourceTree = "<group>"; };
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
+		E981FFB08B07D7A31BCB2C39 /* StakingTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25797,6 +25799,7 @@
 				84B7C6EF289BFA79001A3566 /* StakingRebondConfirmation */,
 				1E7AD3FFE4E4669F8179C490 /* RewardCalculator */,
 				000000002AB6934466869B04 /* StakingConstantsTests.swift */,
+				056DE29F4E34113DF00300D5 /* StakingType */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -30250,6 +30253,14 @@
 				95E4AF529B896F7E58671A74 /* GovernanceUnlockSetupViewFactory.swift */,
 			);
 			path = GovernanceUnlockSetup;
+			sourceTree = "<group>";
+		};
+		056DE29F4E34113DF00300D5 /* StakingType */ = {
+			isa = PBXGroup;
+			children = (
+				E981FFB08B07D7A31BCB2C39 /* StakingTypeTests.swift */,
+			);
+			path = StakingType;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -36902,6 +36913,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				67EB88738AD5F2F9C34E93F1 /* StakingTypeTests.swift in Sources */,
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
 				0CF00D012BE48998000EBFC2 /* UnstakingDurationOperationFactoryMock.swift in Sources */,
 				2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */,
