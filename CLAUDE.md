@@ -36,3 +36,20 @@ anything else. Docs live in `.claude/docs/`.
 | Build commands, configurations, flags, codegen, CI, dependencies  | `.claude/docs/code/build-and-tooling.md`                |
 | Reviewing a PR — structure and mechanism                          | `.claude/docs/review/architecture-checklist.md`         |
 | Reviewing a PR — line by line                                     | `.claude/docs/review/code-checklist.md`                 |
+
+## How To Work
+
+The table above routes knowledge. This one routes process — invoke these, don't reimplement them.
+
+| Situation                                                      | Invoke          |
+|----------------------------------------------------------------|-----------------|
+| Non-trivial feature, or extending an existing one               | `/nova-feature` |
+| Reviewing a diff or PR before merge                             | `/nova-review`  |
+| Signing, extrinsics, fees, keystore, migrations, XCM            | `/nova-review` — not optional |
+
+**Never review your own diff in the session that wrote it.** Review runs in a fresh context that
+sees the diff and the checklists, not the reasoning that produced the diff. The reasoning is what
+made the bug look right in the first place.
+
+A review finding must name a concrete failure scenario — inputs, and the wrong result they produce.
+A finding that cannot do that is a preference, not a defect; drop it.
