@@ -13,6 +13,8 @@ final class DAppBrowserPresenter {
     private(set) var tabs: [DAppBrowserTab] = []
     private(set) var browserPage: DAppBrowserPage?
 
+    private var pendingStakingSearchResult: DAppSearchResult?
+
     init(
         interactor: DAppBrowserInteractorInputProtocol,
         wireframe: DAppBrowserWireframeProtocol,
@@ -265,6 +267,25 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
 
 extension DAppBrowserPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
+        if DAppStakingDetection.isThirdPartyStakingSite(result: result, dAppList: nil) {
+            pendingStakingSearchResult = result
+            wireframe.presentStakingNotice(from: view, delegate: self)
+        } else {
+            interactor.process(newQuery: result)
+        }
+    }
+}
+
+// MARK: DAppStakingNoticeDelegate
+
+extension DAppBrowserPresenter: DAppStakingNoticeDelegate {
+    func dappStakingNoticeDidSelectContinue() {
+        guard let result = pendingStakingSearchResult else {
+            return
+        }
+
+        pendingStakingSearchResult = nil
+
         interactor.process(newQuery: result)
     }
 }

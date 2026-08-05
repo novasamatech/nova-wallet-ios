@@ -57,6 +57,10 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
             view?.didReceive(viewModel: nil)
         }
     }
+
+    private func provideStakingBanner() {
+        view?.didReceive(stakingBannerVisible: DAppStakingDetection.isStakingQuery(query))
+    }
 }
 
 // MARK: DAppSearchPresenterProtocol
@@ -72,6 +76,8 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             view?.didReceive(initialQuery: query)
         }
 
+        provideStakingBanner()
+
         interactor.setup()
     }
 
@@ -79,6 +85,11 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
         self.query = query
 
         provideViewModel()
+        provideStakingBanner()
+    }
+
+    func activateStaking() {
+        wireframe.redirectToStaking(from: view)
     }
 
     func selectDApp(viewModel: DAppViewModel) {
@@ -86,21 +97,28 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             return
         }
 
-        if let dApp = dAppList.dApps.first(where: { $0.identifier == viewModel.identifier }) {
-            delegate?.didCompleteDAppSearchResult(.dApp(model: dApp))
+        let result: DAppSearchResult = if let dApp = dAppList.dApps.first(
+            where: { $0.identifier == viewModel.identifier }
+        ) {
+            .dApp(model: dApp)
         } else {
-            delegate?.didCompleteDAppSearchResult(.query(string: viewModel.identifier))
+            .query(string: viewModel.identifier)
         }
 
-        wireframe.close(from: view)
+        // the delegate might present a screen from the underlying view,
+        // so it must be notified only after the search is dismissed
+        wireframe.close(from: view) { [weak self] in
+            self?.delegate?.didCompleteDAppSearchResult(result)
+        }
     }
 
     func selectSearchQuery() {
         let proceedClosure: () -> Void = { [weak self] in
-            self?.delegate?.didCompleteDAppSearchResult(
-                .query(string: self?.query ?? "")
-            )
-            self?.wireframe.close(from: self?.view)
+            self?.wireframe.close(from: self?.view) {
+                self?.delegate?.didCompleteDAppSearchResult(
+                    .query(string: self?.query ?? "")
+                )
+            }
         }
 
         guard search(by: query, in: dAppList).isEmpty else {

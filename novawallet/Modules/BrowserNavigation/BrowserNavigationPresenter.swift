@@ -2,6 +2,8 @@ import Foundation
 import Operation_iOS
 
 final class BrowserNavigationPresenter {
+    weak var mainAppContainer: NovaMainAppContainerViewProtocol?
+
     let interactor: BrowserNavigationInteractorInputProtocol
     let browserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol
 
@@ -51,6 +53,10 @@ extension BrowserNavigationPresenter: BrowserNavigationProtocol {
             wallet: wallet
         )
         browserNavigationTask?(cleaner: self)
+    }
+
+    func minimizeBrowser() {
+        mainAppContainer?.minimizeBrowser()
     }
 }
 

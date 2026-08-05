@@ -116,6 +116,14 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
             transitionBuilder: transitionBuilder
         )
     }
+
+    func minimizeBrowser() {
+        // external minimize request must not affect a widget that is not fullscreen:
+        // the presenter also handles the closed state which restores the miniature on launch
+        guard state == .fullBrowser else { return }
+
+        minimize()
+    }
 }
 
 // MARK: DAppBrowserParentViewProtocol

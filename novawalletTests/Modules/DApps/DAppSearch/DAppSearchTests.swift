@@ -62,6 +62,8 @@ class DAppSearchTests: XCTestCase {
                     dAppSetupExpectatation.fulfill()
                 }
             }
+
+            when(stub.didReceive(stakingBannerVisible: any())).thenDoNothing()
         }
 
         presenter.setup()
@@ -109,8 +111,9 @@ class DAppSearchTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub.close(from: any())).then { _ in
+            when(stub.close(from: any(), completion: any())).then { _, completion in
                 dAppSelectionCloseExpectation.fulfill()
+                completion?()
             }
         }
 
