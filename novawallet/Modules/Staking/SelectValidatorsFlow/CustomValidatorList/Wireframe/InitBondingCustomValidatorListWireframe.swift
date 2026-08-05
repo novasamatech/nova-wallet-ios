@@ -22,7 +22,8 @@ final class InitBondingCustomValidatorListWireframe: CustomValidatorListWirefram
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            state: state
+            state: state,
+            lockedAddresses: lockedAddresses
         ) else { return }
 
         view?.controller.navigationController?.pushViewController(

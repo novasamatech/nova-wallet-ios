@@ -80,7 +80,8 @@ final class StartStakingCustomValidatorListWireframe: CustomValidatorListWirefra
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            stakingSelectValidatorsDelegate: stakingSelectValidatorsDelegate
+            stakingSelectValidatorsDelegate: stakingSelectValidatorsDelegate,
+            lockedAddresses: lockedAddresses
         ) else {
             return
         }
