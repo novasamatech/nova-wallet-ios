@@ -4,6 +4,7 @@ import UIKit_iOS
 final class DAppStakingNoticeViewLayout: UIView {
     let iconView: DAppIconView = .create { view in
         view.backgroundView.cornerRadius = Constants.iconCornerRadius
+        view.contentInsets = Constants.iconInsets
 
         let viewModel = StaticImageViewModel(image: R.image.iconInfoFilled()!)
         view.bind(viewModel: viewModel, size: Constants.displayIconSize)

@@ -103,7 +103,7 @@ class DAppSearchTests: XCTestCase {
         let dAppSelectionCloseExpectation = XCTestExpectation()
 
         stub(delegate) { stub in
-            when(stub.didCompleteDAppSearchResult(any())).then { result in
+            when(stub.didCompleteDAppSearchResult(any(), isThirdPartyStaking: any())).then { result, _ in
                 if case .dApp = result {
                     dAppSelectionExpectation.fulfill()
                 }

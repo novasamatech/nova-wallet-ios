@@ -266,8 +266,11 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
 // MARK: DAppSearchDelegate
 
 extension DAppBrowserPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        if DAppStakingDetection.isThirdPartyStakingSite(result: result, dAppList: nil) {
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    ) {
+        if isThirdPartyStaking {
             pendingStakingSearchResult = result
             wireframe.presentStakingNotice(from: view, delegate: self)
         } else {

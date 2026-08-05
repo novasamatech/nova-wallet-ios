@@ -156,12 +156,10 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 // MARK: DAppSearchDelegate
 
 extension DAppListPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        let isThirdPartyStaking = DAppStakingDetection.isThirdPartyStakingSite(
-            result: result,
-            dAppList: try? dAppsResult?.get()
-        )
-
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    ) {
         if isThirdPartyStaking {
             pendingStakingSearchResult = result
             wireframe.presentStakingNotice(from: view, delegate: self)

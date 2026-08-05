@@ -129,8 +129,11 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
 // MARK: DAppSearchDelegate
 
 extension DAppBrowserTabListPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        if DAppStakingDetection.isThirdPartyStakingSite(result: result, dAppList: nil) {
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    ) {
+        if isThirdPartyStaking {
             pendingStakingSearchResult = result
             wireframe.presentStakingNotice(from: view, delegate: self)
         } else {

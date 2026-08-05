@@ -61,6 +61,23 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     private func provideStakingBanner() {
         view?.didReceive(stakingBannerVisible: DAppStakingDetection.isStakingQuery(query))
     }
+
+    // the classification happens here because this is the only delegate-independent
+    // place that has the curated dApp list; the delegate might present a screen from
+    // the underlying view, so it is notified only after the search is dismissed
+    private func completeSearch(with result: DAppSearchResult) {
+        let isThirdPartyStaking = DAppStakingDetection.isThirdPartyStakingSite(
+            result: result,
+            dAppList: dAppList
+        )
+
+        wireframe.close(from: view) { [weak self] in
+            self?.delegate?.didCompleteDAppSearchResult(
+                result,
+                isThirdPartyStaking: isThirdPartyStaking
+            )
+        }
+    }
 }
 
 // MARK: DAppSearchPresenterProtocol
@@ -105,20 +122,12 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             .query(string: viewModel.identifier)
         }
 
-        // the delegate might present a screen from the underlying view,
-        // so it must be notified only after the search is dismissed
-        wireframe.close(from: view) { [weak self] in
-            self?.delegate?.didCompleteDAppSearchResult(result)
-        }
+        completeSearch(with: result)
     }
 
     func selectSearchQuery() {
         let proceedClosure: () -> Void = { [weak self] in
-            self?.wireframe.close(from: self?.view) {
-                self?.delegate?.didCompleteDAppSearchResult(
-                    .query(string: self?.query ?? "")
-                )
-            }
+            self?.completeSearch(with: .query(string: self?.query ?? ""))
         }
 
         guard search(by: query, in: dAppList).isEmpty else {

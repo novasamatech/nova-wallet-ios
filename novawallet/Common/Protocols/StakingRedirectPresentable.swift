@@ -11,17 +11,15 @@ extension StakingRedirectPresentable {
             // for the staking tab to become visible
             BrowserNavigationFactory.createNavigation()?.minimizeBrowser()
 
-            guard
-                let tabBarController = UIApplication.shared.tabBarController,
-                tabBarController.selectedIndex != MainTabBarIndex.staking
-            else {
+            guard let tabBarController = UIApplication.shared.tabBarController else {
                 return
             }
 
-            let navigationController = tabBarController.selectedViewController as? UINavigationController
-            navigationController?.popToRootViewController(animated: false)
-
             tabBarController.selectedIndex = MainTabBarIndex.staking
+
+            let navigationController = tabBarController
+                .viewControllers?[safe: MainTabBarIndex.staking] as? UINavigationController
+            navigationController?.popToRootViewController(animated: false)
         }
 
         if let presentingController = view?.controller.presentingViewController {

@@ -36,5 +36,8 @@ extension DAppSearchWireframeProtocol {
 }
 
 protocol DAppSearchDelegate: AnyObject {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult)
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    )
 }
