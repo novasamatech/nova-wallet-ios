@@ -122,7 +122,15 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
         // the presenter also handles the closed state which restores the miniature on launch
         guard state == .fullBrowser else { return }
 
-        minimize()
+        let navigationController = children.first as? UINavigationController
+
+        if let browserController = navigationController?.topViewController as? DAppBrowserMinimizing {
+            // the browser must run its own close sequence so that the tab state
+            // is persisted and the landscape support is reverted
+            browserController.minimizeFromParent()
+        } else {
+            minimize()
+        }
     }
 }
 

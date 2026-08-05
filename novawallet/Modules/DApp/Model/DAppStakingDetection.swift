@@ -73,11 +73,19 @@ private extension DAppStakingDetection {
             return false
         }
 
-        let normalizedHost = host.lowercased()
+        let normalizedHost = normalized(host: host)
 
         return dAppList.dApps.contains { dApp in
-            isStakingDApp(dApp) && dApp.url.host?.lowercased() == normalizedHost
+            isStakingDApp(dApp) && dApp.url.host.map { normalized(host: $0) } == normalizedHost
         }
+    }
+
+    static func normalized(host: String) -> String {
+        let lowercasedHost = host.lowercased()
+
+        return lowercasedHost.hasPrefix("www.")
+            ? String(lowercasedHost.dropFirst("www.".count))
+            : lowercasedHost
     }
 
     static func resolveHost(for query: String) -> String? {

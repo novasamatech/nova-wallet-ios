@@ -6,6 +6,12 @@ import UIKit
 typealias DAppBrowserParentWidgetViewProtocol = DAppBrowserWidgetViewProtocol
     & DAppBrowserParentViewProtocol
 
+// MARK: WIDGET -> CHILD
+
+protocol DAppBrowserMinimizing: AnyObject {
+    func minimizeFromParent()
+}
+
 // MARK: CONTAINER -> WIDGET
 
 protocol DAppBrowserWidgetProtocol {

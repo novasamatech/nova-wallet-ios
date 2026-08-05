@@ -76,6 +76,21 @@ final class DAppStakingDetectionTests: XCTestCase {
                 dAppList: dAppList
             )
         )
+
+        // the www spelling of a curated host is the same site
+        XCTAssertTrue(
+            DAppStakingDetection.isThirdPartyStakingSite(
+                result: .query(string: "www.omni.ls"),
+                dAppList: dAppList
+            )
+        )
+
+        XCTAssertTrue(
+            DAppStakingDetection.isThirdPartyStakingSite(
+                result: .query(string: "https://www.omni.ls/app"),
+                dAppList: dAppList
+            )
+        )
     }
 
     func testNonStakingQueryResultsIgnored() {
