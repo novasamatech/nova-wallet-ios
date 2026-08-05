@@ -98,7 +98,8 @@ class CustomValidatorListTests: XCTestCase {
         wireframe: MockCustomValidatorListWireframeProtocol,
         selected: [SelectedValidatorInfo],
         locked: [SelectedValidatorInfo],
-        community: [SelectedValidatorInfo]
+        community: [SelectedValidatorInfo],
+        maxNominations: Int = 16
     ) -> CustomValidatorListPresenter {
         let selectedChain = ChainModelGenerator.generateChain(
             generatingAssets: 2,
@@ -122,7 +123,7 @@ class CustomValidatorListTests: XCTestCase {
         let viewModelFactory = CustomValidatorListViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
             lockedAddresses: fullValidatorList.lockedAddresses,
-            maxNominations: 16
+            maxNominations: maxNominations
         )
 
         let interactor = CustomValidatorListInteractor(
@@ -139,7 +140,7 @@ class CustomValidatorListTests: XCTestCase {
             fullValidatorList: fullValidatorList,
             recommendedValidatorList: community,
             selectedValidatorList: SharedList<SelectedValidatorInfo>(items: selected),
-            validatorsSelectionParams: ValidatorsSelectionParams(maxNominations: 16, hasIdentity: true)
+            validatorsSelectionParams: ValidatorsSelectionParams(maxNominations: maxNominations, hasIdentity: true)
         )
 
         interactor.presenter = presenter
@@ -340,7 +341,8 @@ class CustomValidatorListTests: XCTestCase {
             wireframe: wireframe,
             selected: locked,
             locked: locked,
-            community: community
+            community: community,
+            maxNominations: 3
         )
 
         presenter.view = view
@@ -360,11 +362,12 @@ class CustomValidatorListTests: XCTestCase {
 
         presenter.fillWithRecommended()
 
-        // then
+        // then: maxNominations: 3 with 1 locked validator binds communityLimit to 2,
+        // fewer than the 6 available recommended candidates
 
         let selection = lastViewModel?.selection
         XCTAssertEqual(selection?.lockedSelected, 1)
-        XCTAssertEqual(selection?.communityLimit, 15)
-        XCTAssertLessThanOrEqual(selection?.communitySelected ?? .max, 15)
+        XCTAssertEqual(selection?.communityLimit, 2)
+        XCTAssertEqual(selection?.communitySelected, 2)
     }
 }
