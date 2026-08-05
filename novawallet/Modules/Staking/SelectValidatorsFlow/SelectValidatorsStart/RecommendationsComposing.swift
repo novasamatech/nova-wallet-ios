@@ -86,6 +86,9 @@ final class RecommendationsComposer {
 }
 
 extension RecommendationsComposer: RecommendationsComposing {
+    // Preferred validators occupy reserved slots inside resultSize, mirroring ValidatorSelectionSeeder:
+    // community picks are dropped from the tail to make room, so a preference is never truncated away
+    // even when it also ranks into the recommendation list.
     func compose(
         from recommendables: [RecommendableType],
         preferrences: [RecommendableType]
@@ -98,22 +101,19 @@ extension RecommendationsComposer: RecommendationsComposing {
             recommendationList = composeWithoutIdentities(from: recommendables)
         }
 
-        let allIncludedAddresses = Set(recommendationList.map(\.address))
-        let validPreferences = preferrences
-            .filter { !allIncludedAddresses.contains($0.address) && !$0.oversubscribed && !$0.blocked }
+        let reserved = Array(
+            preferrences
+                .filter { !$0.oversubscribed && !$0.blocked }
+                .prefix(resultSize)
+        )
 
-        let finalSize = recommendationList.count + validPreferences.count
+        let reservedAddresses = Set(reserved.map(\.address))
+        let communityLimit = max(resultSize - reserved.count, 0)
 
-        let recommendationsWithPrefs: [RecommendableType]
+        let community = recommendationList
+            .filter { !reservedAddresses.contains($0.address) }
+            .prefix(communityLimit)
 
-        if finalSize > resultSize {
-            let dropSize = finalSize - resultSize
-            recommendationsWithPrefs = recommendationList.dropLast(dropSize) + validPreferences
-        } else {
-            recommendationsWithPrefs = recommendationList + validPreferences
-        }
-
-        // make sure we don't overload the result with prefs
-        return Array(recommendationsWithPrefs.prefix(resultSize))
+        return Array(community) + reserved
     }
 }

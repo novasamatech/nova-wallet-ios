@@ -223,4 +223,70 @@ class RecommendationsComposerTests: XCTestCase {
 
         XCTAssertEqual(recommendations, expectedList)
     }
+
+    // A preferred validator that also ranks into the recommendation list must keep its slot:
+    // it sits at the tail by stakeReturn, exactly where truncation used to silently drop it.
+    func testPreferredInsideRecommendationListSurvivesTruncation() {
+        // given
+
+        let composer = RecommendationsComposer(resultSize: 3, clusterSizeLimit: 1)
+
+        let topCommunity = Self.makeValidator(suffix: "A", stakeReturn: 0.9)
+        let midCommunity = Self.makeValidator(suffix: "B", stakeReturn: 0.7)
+        let preferredInside = Self.makeValidator(suffix: "C", stakeReturn: 0.05)
+        let preferredOutside = Self.makeValidator(suffix: "D", stakeReturn: 0.5)
+
+        // when
+
+        let recommendations = composer.compose(
+            from: [preferredInside, topCommunity, midCommunity],
+            preferrences: [preferredInside, preferredOutside]
+        )
+
+        // then
+
+        XCTAssertEqual(recommendations.count, composer.resultSize)
+        XCTAssertTrue(recommendations.contains(where: { $0.address == preferredInside.address }))
+        XCTAssertTrue(recommendations.contains(where: { $0.address == preferredOutside.address }))
+        XCTAssertEqual(
+            recommendations.map(\.address),
+            [topCommunity, preferredInside, preferredOutside].map(\.address)
+        )
+    }
+
+    func testEmptyPreferencesKeepRecommendationListUnchanged() {
+        // given
+
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+
+        let best = Self.makeValidator(suffix: "A", stakeReturn: 0.9)
+        let second = Self.makeValidator(suffix: "B", stakeReturn: 0.7)
+        let third = Self.makeValidator(suffix: "C", stakeReturn: 0.5)
+        let worst = Self.makeValidator(suffix: "D", stakeReturn: 0.05)
+
+        // when
+
+        let recommendations = composer.compose(from: [worst, second, best, third], preferrences: [])
+
+        // then
+
+        XCTAssertEqual(recommendations.map(\.address), [best, second].map(\.address))
+    }
+}
+
+private extension RecommendationsComposerTests {
+    static func makeValidator(suffix: String, stakeReturn: Decimal) -> SelectedValidatorInfo {
+        ElectedValidatorInfo(
+            address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr" + suffix,
+            nominators: [],
+            totalStake: 10,
+            ownStake: 10,
+            comission: 0.0,
+            identity: AccountIdentity(name: "Validator " + suffix),
+            stakeReturn: stakeReturn,
+            hasSlashes: false,
+            maxNominatorsRewarded: 128,
+            blocked: false
+        ).toSelected(for: nil)
+    }
 }
