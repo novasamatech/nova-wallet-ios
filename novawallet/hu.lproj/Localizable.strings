@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Nincsenek kiválasztva validátorok";
 "staking.max.nominators.reached.message" = "A nominátorok száma elérte a maximumot. Próbáld újra később";
 "staking.custom.blocked.warning" = "A validátor nem fogad további nominálást jelenleg. Kérlek, próbáld meg a következő korszakban.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Kérlek, várd meg a következő korszak kezdetét";
 "staking.custom.proceed.button.disabled.title" = "Validátorok kiválasztása (max. %li)";
 "staking.custom.proceed.button.enabled.title" = "Kijelöltek mutatása: %li (max %li )";

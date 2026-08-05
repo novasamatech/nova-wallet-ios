@@ -171,7 +171,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
             wireframe.present(
                 message: R.string(
                     preferredLanguages: selectedLocale.rLanguages
-                ).localizable.stakingCustomBlockedWarning(),
+                ).localizable.stakingCustomLockedValidatorMessage(),
                 title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonWarning(),
                 closeAction: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.commonClose(),
                 from: view

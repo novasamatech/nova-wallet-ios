@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Các Validators chưa được chọn";
 "staking.max.nominators.reached.message" = "Đã đạt tối đa số lượng người đề cử. Thử lại sau";
 "staking.custom.blocked.warning" = "Người xác thực này hiện không chấp nhận đề cử. Vui lòng thử lại vào kỷ nguyên tiếp theo.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Vui lòng đợi bắt đầu kỷ nguyên tiếp theo.";
 "staking.custom.proceed.button.disabled.title" = "Chọn trình xác thực (tối đa %li)";
 "staking.custom.proceed.button.enabled.title" = "Hiển thị đã chọn: %li (tối đa %li)";

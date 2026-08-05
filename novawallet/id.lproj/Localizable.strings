@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Validator tidak dipilih";
 "staking.max.nominators.reached.message" = "Jumlah maksimum nominator telah tercapai. Coba lagi nanti";
 "staking.custom.blocked.warning" = "Validator ini tidak menerima nominasi saat ini. Silakan coba lagi di era berikutnya.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Silakan tunggu era berikutnya untuk dimulai.";
 "staking.custom.proceed.button.disabled.title" = "Pilih validator (maks %li)";
 "staking.custom.proceed.button.enabled.title" = "Tampilkan yang dipilih: %li (maks %li)";
