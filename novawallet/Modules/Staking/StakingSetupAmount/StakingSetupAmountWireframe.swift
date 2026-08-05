@@ -70,10 +70,18 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             hasIdentity: hasIdentity
         )
 
+        // Seed rather than pass targets directly: RecommendationsComposer can drop an
+        // already-included preferred validator, leaving it locked but unselected.
+        let seededValidators = ValidatorSelectionSeeder.seed(
+            initialTargets: selectedValidators.targets,
+            lockedValidators: selectedValidators.electedAndPrefValidators.lockedValidators,
+            maxNominations: selectedValidators.maxTargets
+        )
+
         guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
             for: state,
             selectionValidatorGroups: selectionValidatorGroups,
-            selectedValidatorList: SharedList(items: selectedValidators.targets),
+            selectedValidatorList: SharedList(items: seededValidators),
             validatorsSelectionParams: validatorsSelectionParams,
             delegate: delegate
         ) else {

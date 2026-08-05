@@ -230,10 +230,18 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             delegate: delegate
         )
 
+        // Seed rather than pass targets directly: RecommendationsComposer can drop an
+        // already-included preferred validator, leaving it locked but unselected.
+        let seededValidators = ValidatorSelectionSeeder.seed(
+            initialTargets: validators.targets,
+            lockedValidators: validators.electedAndPrefValidators.lockedValidators,
+            maxNominations: validators.maxTargets
+        )
+
         wireframe.showValidators(
             from: view,
             selectionValidatorGroups: groups,
-            selectedValidatorList: SharedList(items: validators.targets),
+            selectedValidatorList: SharedList(items: seededValidators),
             validatorsSelectionParams: selectionParams,
             delegate: delegateFacade
         )
