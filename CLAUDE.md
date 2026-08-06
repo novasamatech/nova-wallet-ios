@@ -36,6 +36,7 @@ anything else. Docs live in `.claude/docs/`.
 | Build commands, configurations, flags, codegen, CI, dependencies  | `.claude/docs/code/build-and-tooling.md`                |
 | Reviewing a PR — structure and mechanism                          | `.claude/docs/review/architecture-checklist.md`         |
 | Reviewing a PR — line by line                                     | `.claude/docs/review/code-checklist.md`                 |
+| How the design agents talk, argue, and escalate                   | `.claude/docs/process/design-loop.md`                   |
 
 ## How To Work
 
@@ -43,13 +44,21 @@ The table above routes knowledge. This one routes process — invoke these, don'
 
 | Situation                                                      | Invoke          |
 |----------------------------------------------------------------|-----------------|
-| Non-trivial feature, or extending an existing one               | `/nova-feature` |
+| Designing a non-trivial feature — requirements, contracts, edge cases | `/nova-spec` |
+| Turning an approved spec into an implementation plan            | `/nova-plan`    |
 | Reviewing a diff or PR before merge                             | `/nova-review`  |
 | Signing, extrinsics, fees, keystore, migrations, XCM            | `/nova-review` — not optional |
 
+`/nova-spec` → **you approve** → `/nova-plan` → **you approve** → implement → `/nova-review`. The two
+approval gates are hard: neither command proceeds past its own artefact. The protocol the design
+agents follow is [.claude/docs/process/design-loop.md](.claude/docs/process/design-loop.md).
+
 **Never review your own diff in the session that wrote it.** Review runs in a fresh context that
 sees the diff and the checklists, not the reasoning that produced the diff. The reasoning is what
-made the bug look right in the first place.
+made the bug look right in the first place. For the same reason the diff reviewers never read
+`.claude/SPEC.md`, `.claude/PLAN.md`, `.claude/REVIEW-LOG.md`, or `.claude/design.excalidraw.json` —
+that reasoning, written down. All four are gitignored so they cannot reach a reviewer through the
+diff itself.
 
 A review finding must name a concrete failure scenario — inputs, and the wrong result they produce.
 A finding that cannot do that is a preference, not a defect; drop it.

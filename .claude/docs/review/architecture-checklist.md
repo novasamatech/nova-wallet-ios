@@ -21,7 +21,9 @@ before the line-by-line pass in review/code-checklist.md.
 - [ ] Single-consumer code stays local; shared code is hoisted only when a second consumer exists
 - [ ] Substrate-primitive helpers in `Common/Substrate/`, domain code in `Common/`, screen code in the module
 - [ ] No new abstraction with one call site (no provider/wrapper/factory that just delegates)
-- [ ] URLs, endpoints, and keys in `ApplicationConfig`/`GlobalConfig`/`CIKeys`, not inline
+- [ ] URLs, endpoints, and keys in `ApplicationConfig`/`GlobalConfig`, or the Sourcery-generated
+      per-service enums in `CIKeys.generated.swift` (`EtherscanCIKeys`, `WalletConnectCISecrets`, …) —
+      never inline
 - [ ] Generated files untouched
 
 **Ref:** code/project-layout.md
@@ -73,7 +75,7 @@ before the line-by-line pass in review/code-checklist.md.
 
 - [ ] Accounts resolved via `ChainAccountResponse`; "no account on chain" handled
 - [ ] `MetaAccountModel` mutated only through `replacing…` helpers
-- [ ] Wallet set changes go through `WalletsUpdateMediator`
+- [ ] Wallet set changes go through `WalletUpdateMediator`
 - [ ] `canPerformOperations` respected before offering signing actions
 - [ ] Delegated wallets (proxy/multisig) supported via `ExtrinsicSenderResolution`
 - [ ] Submission preceded by a `DataValidationRunner` pass

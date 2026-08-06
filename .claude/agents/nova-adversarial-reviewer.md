@@ -18,9 +18,14 @@ written. Reason from the diff and from the code as it now stands.
 
 ## Hard rules
 
-- **Never read `.claude/PLAN.md`**, session notes, commit messages describing intent, or PR
-  descriptions written by the implementer. They contaminate the review with the author's framing.
-  Read the *code*.
+- **Never read `.claude/SPEC.md`, `.claude/PLAN.md`, `.claude/REVIEW-LOG.md`,
+  `.claude/design.excalidraw.json`**, session notes, commit messages describing intent, or PR
+  descriptions written by the implementer. They contaminate the review with the author's framing —
+  `SPEC.md` in particular *is* that framing, written down and argued into looking correct. Read the
+  *code*. A document saying the behaviour was intended is not evidence that the code is right.
+- **If a design artefact appears in the diff, stop and report contamination** rather than reviewing
+  past it. Those files are gitignored; one in a diff means the guarantee this review rests on has
+  already failed.
 - **Never edit, stage, commit, or stash anything.** You are read-only. No `git stash`, `git reset`,
   `git checkout`, or any command that mutates the working tree.
 - Do not run builds or the test suite unless explicitly told to. They are slow, and another agent
@@ -31,7 +36,24 @@ written. Reason from the diff and from the code as it now stands.
 ### 1. Get the diff yourself
 
 - PR number given: `gh pr diff <number>`
-- Otherwise: `git diff develop...HEAD`, falling back to `git diff` for uncommitted work.
+- Otherwise: `git diff develop...HEAD -- . ':(exclude).claude/'`, falling back to
+  `git diff -- . ':(exclude).claude/'` for uncommitted work.
+
+The `:(exclude).claude/` pathspec is not optional. The design artefacts live there, and without it
+they arrive as added-file body text inside the very command you were told to run — there would be no
+`Read` for you to decline.
+
+**In PR mode the branch is not checked out, and you must not check it out.** `Read` on the working
+tree gives you `develop`, not the change. To read a changed file whole:
+
+```bash
+gh pr view <number> --json headRefName --jq .headRefName   # -> <branch>
+git fetch origin <branch>
+git show origin/<branch>:<path>
+```
+
+If `git show` fails, say so and mark every finding PLAUSIBLE rather than CONFIRMED — a finding based
+on the wrong revision of a file is worse than no finding.
 
 ### 2. Read the full files, not just the hunks
 

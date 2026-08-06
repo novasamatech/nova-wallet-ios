@@ -19,10 +19,45 @@ export const meta = {
 
 const opts = args || {}
 const target = opts.target || 'local'
+// EVERY diff command excludes .claude/ — the design artefacts live there, and a
+// reviewer that receives SPEC.md/PLAN.md inside a mandated command cannot decline
+// them. .gitignore is layer 1; this is layer 2; the assertion below is layer 3.
+const PATHSPEC = "-- . ':(exclude).claude/'"
 const diffCmd =
   target === 'local'
-    ? 'git diff develop...HEAD (fall back to `git diff` if that is empty)'
-    : `gh pr diff ${target}`
+    ? `git diff develop...HEAD ${PATHSPEC} (fall back to \`git diff ${PATHSPEC}\` if that is empty)`
+    : `gh pr diff ${target} | grep -v '^+++ b/\\.claude/'  # and skip any .claude/ file section`
+
+// The contamination prohibition, verbatim in every prompt that fetches or reads.
+// It is not enough to put this in one agent definition: skeptics, scope and fixer
+// are spawned by bare agent() calls that load no definition at all.
+const NO_DESIGN_DOCS = `
+NEVER read \`.claude/SPEC.md\`, \`.claude/PLAN.md\`, \`.claude/REVIEW-LOG.md\`,
+\`.claude/design.excalidraw.json\`, the PR description, or commit messages describing intent.
+Those are the author's reasoning, and it is exactly what made any bug in this diff look correct
+while it was being written. A document stating that the behaviour was intended is NOT evidence that
+the code is correct, and is NOT grounds to refute a finding. Read the code, the tests, and the
+checklists under \`.claude/docs/review/\`.
+
+If the diff you fetch contains any of those files, STOP and report contamination instead of
+reviewing — do not attempt to read past them.`
+
+// PR mode: the branch is not checked out and must not be. Reading the working
+// tree there reviews the wrong code.
+const PR_TREE_NOTE =
+  target === 'local'
+    ? ''
+    : `
+
+IMPORTANT — this is a PR review and the PR branch is NOT checked out. You must not check it out.
+\`Read\` on the working tree gives you develop, not the change. To read a file whole as it stands
+AFTER the change:
+
+  gh pr view ${target} --json headRefName --jq .headRefName     # -> <branch>
+  git fetch origin <branch>
+  git show origin/<branch>:<path>
+
+If \`git show\` fails, say so and mark every finding PLAUSIBLE rather than CONFIRMED.`
 
 // Paths where a wrong-but-compiling change costs users money. The model may
 // escalate the tier; it may never lower it below what these patterns imply.
@@ -89,9 +124,44 @@ const VERDICT_SCHEMA = {
   },
 }
 
-// --- Phase 1: scope -------------------------------------------------------
+// --- Phase 0: contamination assertion -------------------------------------
+// Layers 1 and 2 prevent the leak; this is what stops it failing SILENTLY, which
+// is the difference between a bug and a false guarantee.
 
 phase('Scope')
+
+const GUARD_SCHEMA = {
+  type: 'object',
+  required: ['contaminated', 'evidence'],
+  properties: {
+    contaminated: { type: 'boolean', description: 'true if any design artefact appears in the diff' },
+    evidence: { type: 'string', description: 'the offending paths, or a statement that none appeared' },
+  },
+}
+
+const guard = await agent(
+  `Run exactly this and report what it lists — do not read the file contents:
+
+    ${target === 'local' ? "git diff develop...HEAD --name-only" : `gh pr diff ${target} --name-only`}
+
+Set contaminated=true if ANY of these appear: .claude/SPEC.md, .claude/PLAN.md,
+.claude/REVIEW-LOG.md, .claude/design.excalidraw.json — or any other file under .claude/ that
+carries design reasoning. Otherwise contaminated=false. List the paths you saw under .claude/.`,
+  { label: 'contamination-guard', schema: GUARD_SCHEMA, effort: 'low' },
+)
+
+if (guard && guard.contaminated) {
+  log(`ABORTED — design artefacts are present in this diff: ${guard.evidence}`)
+  return {
+    error: 'contaminated-diff',
+    detail: guard.evidence,
+    remedy:
+      'The design artefacts were committed on this branch. A blind review is impossible while they ' +
+      'are in the diff. Remove them from the branch (they belong in .gitignore — see ' +
+      '.claude/docs/process/design-loop.md > Files), then re-run. Do NOT proceed by asking the ' +
+      'reviewers to ignore them; that is the guarantee this check exists to stop being notional.',
+  }
+}
 
 const scope = await agent(
   `Get the Nova Wallet diff with: ${diffCmd}
@@ -99,6 +169,8 @@ const scope = await agent(
 List every repo-relative file path it changes. Summarise what the change does MECHANICALLY — which
 types, layers, and call paths move — not what it is trying to achieve. Do not read .claude/PLAN.md
 or the PR description; describe only what the code does.
+
+${NO_DESIGN_DOCS}
 
 Classify the risk tier:
 - critical — touches signing, extrinsic construction, fee or amount arithmetic, keystore/secrets,
@@ -108,7 +180,7 @@ Classify the risk tier:
 - low — layout, copy, localization, assets, comments, tests only.
 
 Name which feature areas are touched (staking, governance, swaps, dapp, push, wallets, none).`,
-  { label: 'scope', schema: SCOPE_SCHEMA, effort: 'low' },
+  { label: 'scope', schema: SCOPE_SCHEMA, agentType: 'nova-adversarial-reviewer', effort: 'low' },
 )
 
 if (!scope) {
@@ -116,12 +188,24 @@ if (!scope) {
   return { error: 'scope-failed', target }
 }
 
+const RANK = { low: 0, standard: 1, critical: 2 }
 const pathFloor = (scope.files || []).some((f) => CRITICAL_PATTERNS.some((p) => p.test(f)))
   ? 'critical'
   : null
-const RANK = { low: 0, standard: 1, critical: 2 }
-let tier = opts.tier || scope.tier || 'standard'
+// --tier can only RAISE. A caller-supplied tier that is lower than the derived one
+// is ignored — /nova-review documents the tier as "can only be raised, never
+// lowered", and that has to be true in the code, not just in the prose.
+const derivedTier = scope.tier || 'standard'
+let tier = derivedTier
 let tierReason = scope.tierReason
+if (opts.tier) {
+  if (RANK[opts.tier] > RANK[derivedTier]) {
+    tier = opts.tier
+    tierReason = `raised to ${opts.tier} by --tier (derived: ${derivedTier}, "${scope.tierReason}")`
+  } else if (RANK[opts.tier] < RANK[derivedTier]) {
+    log(`--tier ${opts.tier} IGNORED: below the derived tier ${derivedTier}. The tier can only be raised.`)
+  }
+}
 if (pathFloor && RANK[tier] < RANK.critical) {
   const hit = scope.files.find((f) => CRITICAL_PATTERNS.some((p) => p.test(f)))
   log(`Tier raised ${tier} -> critical by path floor: ${hit}`)
@@ -152,7 +236,7 @@ const reviewed = await pipeline(
     agent(
       `Review the Nova Wallet diff under the "${lens.key}" lens (${lens.why}).
 
-Fetch the diff yourself: ${diffCmd}
+Fetch the diff yourself: ${diffCmd}${PR_TREE_NOTE}
 
 You are the nova-adversarial-reviewer. Follow that agent definition exactly: assume the code is
 wrong and prove it, read whole files rather than hunks, never read .claude/PLAN.md or the PR
@@ -168,8 +252,12 @@ Also list what you examined under this lens and found sound, so coverage can be 
 
   // Stage 2 — refute. Skeptics are independent and default to refuted.
   (review, lens) => {
-    if (!review || !review.findings || review.findings.length === 0) {
-      return { lens: lens.key, verified: [], minor: [], clean: (review && review.readButClean) || [] }
+    if (!review) {
+      log(`[${lens.key}] reviewer returned nothing — THIS LENS DID NOT RUN. Not a clean result.`)
+      return { lens: lens.key, failed: true, verified: [], killed: [], unverified: [], minor: [], clean: [] }
+    }
+    if (!review.findings || review.findings.length === 0) {
+      return { lens: lens.key, verified: [], minor: [], clean: review.readButClean || [] }
     }
 
     const worthVerifying = review.findings.filter((f) => f.severity !== 'minor')
@@ -206,22 +294,27 @@ finding HOLDS or is REFUTED. Refute it if any of these are true:
 
 Do NOT refute merely because the defect is unlikely, cosmetic in most cases, or "probably fine in
 practice". Reachable-but-rare still holds — this is a wallet.
+${NO_DESIGN_DOCS}${PR_TREE_NOTE}
 
 Default to refuted=true when you genuinely cannot verify the claim from the code. State what you
 read. If it holds but the severity is wrong, set correctedSeverity.`,
-              { label: `refute:${f.file.split('/').pop()}#${i + 1}`, phase: 'Refute', schema: VERDICT_SCHEMA },
+              { label: `refute:${f.file.split('/').pop()}#${i + 1}`, phase: 'Refute', agentType: 'nova-adversarial-reviewer', schema: VERDICT_SCHEMA },
             ),
           ),
         ).then((votes) => {
           const real = votes.filter(Boolean)
           const holds = real.filter((v) => !v.refuted).length
-          const survives = real.length > 0 && holds * 2 >= real.length
+          // No surviving skeptic is NOT a refutation — nobody looked. Carry the
+          // finding through as unverified rather than silently killing it.
+          const unjudged = real.length === 0
+          const survives = unjudged ? true : holds * 2 >= real.length
           const corrected = real.map((v) => v.correctedSeverity).filter((s) => s && s !== 'none')
           return {
             ...f,
             severity: corrected.length ? corrected[0] : f.severity,
             survives,
-            votes: `${holds}/${real.length} hold`,
+            unjudged,
+            votes: unjudged ? 'NOT VERIFIED — every skeptic failed' : `${holds}/${real.length} hold`,
             refutations: real.filter((v) => v.refuted).map((v) => v.reasoning),
           }
         }),
@@ -271,8 +364,9 @@ Rules:
 - Do NOT run the full test suite; it is slow. Targeted tests only, if any apply.
 
 Report per finding: fixed / skipped (with the reason) / no change needed.`,
-    { label: 'fixer', phase: 'Fix' },
+    { label: 'fixer', phase: 'Fix', agentType: 'nova-adversarial-reviewer' },
   )
+  log('Fixer edits are UNREVIEWED. Re-run this workflow without fix over the new working tree before merge.')
 }
 
 return {
@@ -287,5 +381,7 @@ return {
   unverified,
   minor,
   coverage: results.flatMap((r) => r.clean || []),
+  failedLenses: results.filter((r) => r.failed).map((r) => r.lens),
   fixReport,
+  needsRereview: Boolean(fixReport),
 }

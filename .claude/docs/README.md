@@ -33,6 +33,7 @@
 | Build commands, configurations, flags, codegen, CI, fastlane   | code/build-and-tooling.md                                     |
 | Reviewing a PR (architecture)                                  | review/architecture-checklist.md                              |
 | Reviewing a PR (code)                                          | review/code-checklist.md                                      |
+| Spec/plan agent protocol: names, rounds, escalation            | process/design-loop.md                                        |
 
 ## Glossary of Load-Bearing Terms
 

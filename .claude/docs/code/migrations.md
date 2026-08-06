@@ -74,7 +74,7 @@ would lose the user's keys.
 - `SharedSettingsMigrator` — one-shot copy of `SharedSettingsKey` values into the app-group settings
   so the notification extension can read them. Guarded by its own `DidMigrateToAppGroups` flag.
 - `SelectedLanguageMigrator` — language preference format changes.
-- `UserDefaultMigrator` / `StorePathMigrator` — move the store files from the old app-local location
+- `StorePathMigrator` — move the store files from the old app-local location
   to the shared app-group container.
 
 ## App-Level Migrations

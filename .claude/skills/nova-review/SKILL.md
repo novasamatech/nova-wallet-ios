@@ -18,9 +18,13 @@ skill** — that is the whole point of the command.
 | `--fix`               | Also apply confirmed findings (single fixer agent)  |
 | `--tier critical`     | Force the top tier — 3 lenses, 2 skeptics per finding |
 
-The tier is derived automatically and can only be raised, never lowered, by the path floor in the
-workflow script. A diff touching signing, fees, keystore, migrations, XCM, or swaps is always
-`critical` regardless of what anything else says.
+The tier is derived automatically. `--tier` **can only raise it** — a lower value is logged and
+ignored — and the path floor raises it again on top of that. A diff whose *paths* match signing,
+fees, keystore, migrations, XCM, or swaps is always `critical`.
+
+The floor matches on **file paths, not content**. Funds-critical logic living in an ordinarily-named
+file is not caught by it, so pass `--tier critical` yourself when you know the change touches money
+and the filenames do not say so.
 
 ## Procedure
 
@@ -46,16 +50,30 @@ The workflow returns confirmed findings, refuted ones, unverified ones, and cove
   severe first. These survived independent refutation.
 - **Refuted** — one line each with the panel's reason. Show these; a reviewer that cried wolf is
   signal about the review, and occasionally the panel is the one that is wrong.
-- **Unverified** — findings past the per-lens verification cap. Flag them as unverified rather than
-  quietly dropping them.
+- **Unverified** — findings past the per-lens verification cap, plus any whose skeptics all failed
+  (`votes: NOT VERIFIED`). Flag them as unverified rather than quietly dropping them.
+- **Minor** — one line each. These are never sent to the refutation panel, so present them as
+  unrefuted reviewer opinion, not as confirmed defects.
+- **Failed lenses** — anything in `failedLenses` did not run at all. Say so plainly; a lens that
+  crashed is not a lens that found nothing.
 - **Coverage** — what was examined and found sound, and which lenses did *not* run at this tier.
 
 State the tier and the reviewer count plainly, so the strength of the pass is visible.
 
-### 4. Do not auto-fix without being asked
+### 4. Fixing
 
-Unless `--fix` was passed, stop at the report. Findings are the deliverable; the decision to apply
-them is the user's.
+**Unless `--fix` was passed, stop at the report.** Findings are the deliverable; the decision to
+apply them is the user's.
+
+**When `--fix` ran**, the workflow returns `needsRereview: true`. Say plainly that the fixer's own
+changes have not been reviewed by anything — the panel reviewed the diff as it stood *before* the fix
+phase, and the working tree is now a different artefact. For any run whose tier was `critical`,
+re-invoke without `--fix` over the new tree before merge. A fix on a signing, fee, keystore,
+migration or XCM path is itself a change to those paths, and CLAUDE.md's "not optional" does not
+exempt it.
+
+When you state the tier and reviewer count, also state **which artefact was reviewed** — the pre-fix
+diff, or the current tree.
 
 ## When this is not enough
 

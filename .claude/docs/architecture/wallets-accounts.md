@@ -72,7 +72,7 @@ A `nil` response means "this wallet has no account on this chain" — a normal s
 `SelectedWalletSwitched` on the `EventCenter` and drives
 `ServiceCoordinator.updateOnWalletSelectionChange()`.
 
-Wallet list mutations go through `WalletsUpdateMediator` (`Common/Storage/WalletsUpdateMediator.swift`),
+Wallet list mutations go through `WalletUpdateMediator` (`Common/Storage/WalletsUpdateMediator.swift`),
 which persists the change, keeps the selection valid, and runs `WalletStorageCleaning` to purge
 dependent data (balances, settings, browser sessions) for removed wallets. **Never delete a wallet by
 writing to the repository directly** — the cleaners will not run.
@@ -152,7 +152,7 @@ transitions them.
 | Wallet migration    | `Modules/WalletMigration`                         |
 
 Cloud backup encrypts with a user password stored under `KeystoreTagV2.cloudBackupPasswordTag`;
-changes to the wallet set must go through `WalletsUpdateMediator` so backup and push wallet sync stay
+changes to the wallet set must go through `WalletUpdateMediator` so backup and push wallet sync stay
 consistent (`WalletsChangeSource.byCloudBackup`).
 
 ## Hard Rules
@@ -160,7 +160,7 @@ consistent (`WalletsChangeSource.byCloudBackup`).
 1. **Resolve accounts, don't assume them.** Always go through `ChainAccountResponse` resolution; a
    wallet may have no account on the chain you are working with.
 2. **Never mutate `MetaAccountModel` inline.** Use/add a `replacing…` helper.
-3. **Never persist wallet changes directly.** Use `WalletsUpdateMediator`.
+3. **Never persist wallet changes directly.** Use `WalletUpdateMediator`.
 4. **Check `canPerformOperations`** before offering any signing action; watch-only must degrade to a
    read-only UI, not fail at signing time.
 5. **Secrets never leave the keystore→signer path.** No secrets in logs, view models, analytics, or
