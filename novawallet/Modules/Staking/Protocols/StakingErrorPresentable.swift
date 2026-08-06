@@ -40,6 +40,8 @@ protocol StakingErrorPresentable: StakingBaseErrorPresentable {
         locale: Locale?
     )
 
+    func presentLockedValidatorWarning(from view: ControllerBackedProtocol?, locale: Locale?)
+
     func presentMaxNumberOfNominatorsReached(
         from view: ControllerBackedProtocol?,
         stakingType: String,
@@ -187,6 +189,15 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
     func presentControllerIsAlreadyUsed(from view: ControllerBackedProtocol?, locale: Locale?) {
         let message = R.string(preferredLanguages: locale.rLanguages).localizable.stakingAccountIsUsedAsController()
         let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonErrorGeneralTitle()
+        let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentLockedValidatorWarning(from view: ControllerBackedProtocol?, locale: Locale?) {
+        let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonWarning()
+        let message = R.string(preferredLanguages: locale.rLanguages)
+            .localizable.stakingCustomLockedValidatorMessage()
         let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
 
         present(message: message, title: title, closeAction: closeAction, from: view)

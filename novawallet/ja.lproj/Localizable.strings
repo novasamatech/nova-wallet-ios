@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "バリデーターが選択されていません";
 "staking.max.nominators.reached.message" = "ノミネーターの最大数に達しました。後でもう一度お試しください";
 "staking.custom.blocked.warning" = "このバリデーターは現在、指名を受け付けていません。次のエラで再試行してください。";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "次の時代が始まるのをお待ちください。";
 "staking.custom.proceed.button.disabled.title" = "バリデーターを選択 (最大 %li)";
 "staking.custom.proceed.button.enabled.title" = "選択したものを表示: %li (最大 %li)";

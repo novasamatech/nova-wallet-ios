@@ -6569,6 +6569,8 @@
 		FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
+		000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */; };
+		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12879,6 +12881,8 @@
 		FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsInteractor.swift; sourceTree = "<group>"; };
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
 		FFF5B66ACB3DFA32DD43BD75 /* TokenManageSingleViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenManageSingleViewLayout.swift; sourceTree = "<group>"; };
+		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
+		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25336,6 +25340,7 @@
 				0C79C8912A7BD9BB00B171E3 /* SelectedStakingOption.swift */,
 				0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */,
 				0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */,
+				000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */,
 			);
 			path = Relaychain;
 			sourceTree = "<group>";
@@ -28795,6 +28800,7 @@
 				AE8B8836267351E300AB0AA9 /* CustomValidatorListComposer.swift */,
 				84333BD6285682EC00C76A4F /* ValidatorsSelectionParams.swift */,
 				84333BD82856840E00C76A4F /* SelectionValidatorGroups.swift */,
+				000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -36875,6 +36881,8 @@
 				F170C0900DB942030B2107C7 /* CrowdloanUnlockViewLayout.swift in Sources */,
 				6B19F3A772108FBED12A7260 /* CrowdloanUnlockViewFactory.swift in Sources */,
 				83B444CA61F7FF236635414E /* PolkadotStakersRewardFactory.swift in Sources */,
+				000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */,
+				000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

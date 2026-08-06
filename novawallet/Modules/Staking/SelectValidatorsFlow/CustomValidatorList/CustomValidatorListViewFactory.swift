@@ -14,6 +14,8 @@ enum CustomValidatorListViewFactory {
             return nil
         }
 
+        let lockedAddresses = selectionValidatorGroups.fullValidatorList.lockedAddresses
+
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -26,7 +28,9 @@ enum CustomValidatorListViewFactory {
         )
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            lockedAddresses: lockedAddresses,
+            maxNominations: validatorsSelectionParams.maxNominations
         )
 
         let presenter = CustomValidatorListPresenter(
@@ -43,7 +47,6 @@ enum CustomValidatorListViewFactory {
 
         let view = CustomValidatorListViewController(
             presenter: presenter,
-            selectedValidatorsLimit: validatorsSelectionParams.maxNominations,
             localizationManager: LocalizationManager.shared
         )
 
@@ -62,7 +65,11 @@ extension CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         state: InitiatedBonding
     ) -> CustomValidatorListViewProtocol? {
-        let wireframe = InitBondingCustomValidatorListWireframe(state: state, stakingState: stakingState)
+        let wireframe = InitBondingCustomValidatorListWireframe(
+            state: state,
+            stakingState: stakingState,
+            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses
+        )
         return createView(
             chainAsset: stakingState.stakingOption.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
@@ -81,6 +88,7 @@ extension CustomValidatorListViewFactory {
     ) -> CustomValidatorListViewProtocol? {
         let wireframe = StartStakingCustomValidatorListWireframe(
             stakingState: stakingState,
+            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses,
             delegate: delegate
         )
         return createView(
@@ -99,7 +107,11 @@ extension CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         state: ExistingBonding
     ) -> CustomValidatorListViewProtocol? {
-        let wireframe = ChangeTargetsCustomValidatorListWireframe(state: state, stakingState: stakingState)
+        let wireframe = ChangeTargetsCustomValidatorListWireframe(
+            state: state,
+            stakingState: stakingState,
+            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses
+        )
         return createView(
             chainAsset: stakingState.stakingOption.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,
@@ -116,7 +128,11 @@ extension CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         state: ExistingBonding
     ) -> CustomValidatorListViewProtocol? {
-        let wireframe = YourValidatorList.CustomListWireframe(state: state, stakingState: stakingState)
+        let wireframe = YourValidatorList.CustomListWireframe(
+            state: state,
+            stakingState: stakingState,
+            lockedAddresses: selectionValidatorGroups.fullValidatorList.lockedAddresses
+        )
         return createView(
             chainAsset: stakingState.stakingOption.chainAsset,
             selectionValidatorGroups: selectionValidatorGroups,

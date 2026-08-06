@@ -13,6 +13,7 @@ final class StakingTypePresenter {
     let canChangeType: Bool
     let amount: BigUInt
 
+    private var isPoolForced: Bool = false
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
     private var directStakingRestrictions: RelaychainStakingRestrictions?
     private var directStakingAvailable: Bool = false
@@ -90,6 +91,7 @@ final class StakingTypePresenter {
             minStake: restrictions.minRewardableStake ?? restrictions.minJoinStake,
             chainAsset: chainAsset,
             method: method,
+            canChangePool: !isPoolForced,
             locale: selectedLocale
         )
 
@@ -207,7 +209,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
 
         let fullValidatorList = CustomValidatorsFullList(
             allValidators: validators.electedAndPrefValidators.allElectedToSelectedValidators(),
-            preferredValidators: validators.electedAndPrefValidators.preferredValidators
+            preferredValidators: validators.electedAndPrefValidators.lockedValidators
         )
 
         let recommendedValidatorList = validators.recommendedValidators
@@ -228,16 +230,25 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
             delegate: delegate
         )
 
+        let selectionComposer = ValidatorSelectionComposer(
+            lockedValidators: validators.electedAndPrefValidators.lockedValidators,
+            maxNominations: validators.maxTargets
+        )
+
         wireframe.showValidators(
             from: view,
             selectionValidatorGroups: groups,
-            selectedValidatorList: SharedList(items: validators.targets),
+            selectedValidatorList: SharedList(items: selectionComposer.compose(from: validators.targets)),
             validatorsSelectionParams: selectionParams,
             delegate: delegateFacade
         )
     }
 
     func selectNominationPool() {
+        guard !isPoolForced else {
+            return
+        }
+
         guard let method = method, case let .pool(selectedPool) = method.selectedStakingOption else {
             return
         }
@@ -284,6 +295,10 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
                 return
             }
         case .nominationPool:
+            if isPoolForced, selection == .nominationPool {
+                return
+            }
+
             selection = .nominationPool
             method = nil
 
@@ -327,6 +342,12 @@ extension StakingTypePresenter: StakingTypeInteractorOutputProtocol {
     func didReceive(method: StakingSelectionMethod) {
         self.method = method
         updateView()
+    }
+
+    func didReceive(isPoolForced: Bool) {
+        self.isPoolForced = isPoolForced
+
+        provideNominationPoolViewModel()
     }
 
     func didReceive(error: StakingTypeError) {

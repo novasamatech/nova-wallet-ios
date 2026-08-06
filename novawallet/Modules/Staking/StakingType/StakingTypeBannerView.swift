@@ -26,6 +26,23 @@ final class StakingTypeBannerView<ActionView: BindableView>: StakingTypeBaseBann
         }
     }
 
+    var allowsAccountView: Bool = true {
+        didSet {
+            updateAccountViewVisibility()
+        }
+    }
+
+    private var isAccountViewRequested = false
+
+    func setAccountViewRequested(_ requested: Bool) {
+        isAccountViewRequested = requested
+        updateAccountViewVisibility()
+    }
+
+    private func updateAccountViewVisibility() {
+        accountView.isHidden = !(isAccountViewRequested && allowsAccountView)
+    }
+
     func setEnabledStyle(_ isEnabled: Bool) {
         if isEnabled {
             stackView.alpha = 1.0

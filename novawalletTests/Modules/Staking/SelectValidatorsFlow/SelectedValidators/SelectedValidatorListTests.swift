@@ -10,7 +10,7 @@ class SelectedValidatorListTests: XCTestCase {
 
         let view = MockSelectedValidatorListViewProtocol()
         let wireframe = MockSelectedValidatorListWireframeProtocol()
-        let viewModelFactory = SelectedValidatorListViewModelFactory()
+        let viewModelFactory = SelectedValidatorListViewModelFactory(lockedAddresses: [])
 
         let generator = CustomValidatorListTestDataGenerator.self
 
@@ -23,7 +23,8 @@ class SelectedValidatorListTests: XCTestCase {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedValidatorList: selectedvalidatorList,
-            maxTargets: 16
+            maxTargets: 16,
+            lockedAddresses: []
         )
 
         presenter.view = view
@@ -62,5 +63,55 @@ class SelectedValidatorListTests: XCTestCase {
             for: [reloadExpectation, removeLastExpectation],
             timeout: Constants.defaultExpectationDuration
         )
+    }
+
+    func testLockedValidatorCannotBeRemoved() {
+        // given
+
+        let generator = CustomValidatorListTestDataGenerator.self
+        let locked = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
+        let community = generator.createSelectedValidators(from: generator.goodValidators)
+
+        let view = MockSelectedValidatorListViewProtocol()
+        let wireframe = MockSelectedValidatorListWireframeProtocol()
+        let delegate = MockSelectedValidatorListDelegate()
+
+        let presenter = SelectedValidatorListPresenter(
+            wireframe: wireframe,
+            viewModelFactory: SelectedValidatorListViewModelFactory(
+                lockedAddresses: Set(locked.map(\.address))
+            ),
+            localizationManager: LocalizationManager.shared,
+            selectedValidatorList: community + locked,
+            maxTargets: 16,
+            lockedAddresses: Set(locked.map(\.address))
+        )
+
+        presenter.view = view
+        presenter.delegate = delegate
+
+        var lastViewModel: SelectedValidatorListViewModel?
+
+        stub(view) { stub in
+            when(stub.didReload(any())).then { viewModel in
+                lastViewModel = viewModel
+            }
+            when(stub.didChangeViewModel(any(), byRemovingItemAt: any())).thenDoNothing()
+        }
+
+        stub(delegate) { stub in
+            when(stub.didRemove(any())).thenDoNothing()
+        }
+
+        presenter.setup()
+
+        let lockedIndex = community.count
+        presenter.removeItem(at: lockedIndex)
+
+        // then
+
+        XCTAssertEqual(lastViewModel?.cellViewModels[lockedIndex].isLocked, true)
+        XCTAssertEqual(lastViewModel?.cellViewModels.count, community.count + locked.count)
+        verify(delegate, never()).didRemove(any())
     }
 }

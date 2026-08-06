@@ -3,7 +3,13 @@ import SubstrateSdk
 import Foundation_iOS
 
 final class ValidatorSearchViewModelFactory {
+    private let lockedAddresses: Set<AccountAddress>
+
     private lazy var iconGenerator = PolkadotIconGenerator()
+
+    init(lockedAddresses: Set<AccountAddress>) {
+        self.lockedAddresses = lockedAddresses
+    }
 
     private func createHeaderViewModel(
         displayValidatorsCount: Int,
@@ -39,7 +45,8 @@ final class ValidatorSearchViewModelFactory {
                 details: detailsText,
                 shouldShowWarning: validator.oversubscribed,
                 shouldShowError: validator.hasSlashes,
-                isSelected: selectedValidatorList.contains(validator)
+                isSelected: selectedValidatorList.contains(validator),
+                isLocked: lockedAddresses.contains(validator.address)
             )
         }
     }

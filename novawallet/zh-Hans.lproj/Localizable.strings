@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "验证人未被选择";
 "staking.max.nominators.reached.message" = "已达到提名人最大数量。请稍后再试";
 "staking.custom.blocked.warning" = "这个验证者目前不接受提名。请在下一个纪元再试。";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "请等待下一个时代的开始。";
 "staking.custom.proceed.button.disabled.title" = "选择验证器（最多 %li）";
 "staking.custom.proceed.button.enabled.title" = "显示所选：%li（最多 %li）";

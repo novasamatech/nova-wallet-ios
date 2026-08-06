@@ -10,6 +10,49 @@ class CustomValidatorListComposer {
     }
 }
 
+private extension CustomValidatorListComposer {
+    func applyingFilters(to validators: [SelectedValidatorInfo]) -> [SelectedValidatorInfo] {
+        var filtered = validators
+
+        if !filter.allowsNoIdentity {
+            filtered = filtered.filter { $0.hasIdentity }
+        }
+
+        if !filter.allowsOversubscribed {
+            filtered = filtered.filter { !$0.oversubscribed }
+        }
+
+        if !filter.allowsSlashed {
+            filtered = filtered.filter { !$0.hasSlashes }
+        }
+
+        return filtered
+    }
+
+    func sorted(_ validators: [SelectedValidatorInfo]) -> [SelectedValidatorInfo] {
+        switch filter.sortedBy {
+        case .estimatedReward:
+            return validators.sorted(by: { $0.stakeReturn >= $1.stakeReturn })
+        case .totalStake:
+            return validators.sorted(by: { $0.totalStake >= $1.totalStake })
+        case .ownStake:
+            return validators.sorted(by: { $0.ownStake >= $1.ownStake })
+        }
+    }
+
+    func applyingClusters(to validators: [SelectedValidatorInfo]) -> [SelectedValidatorInfo] {
+        guard case let .limited(clusterSizeLimit) = filter.allowsClusters else {
+            return validators
+        }
+
+        return processClusters(
+            items: validators,
+            clusterSizeLimit: clusterSizeLimit,
+            resultSize: validators.count
+        )
+    }
+}
+
 extension CustomValidatorListComposer: RecommendationsComposing {
     typealias RecommendableType = SelectedValidatorInfo
 
@@ -18,43 +61,10 @@ extension CustomValidatorListComposer: RecommendationsComposing {
         preferrences: [RecommendableType]
     ) -> [RecommendableType] {
         let preferredAddresses = Set(preferrences.map(\.address))
-        var filtered = preferrences + recommendables.filter { !preferredAddresses.contains($0.address) }
+        let community = recommendables.filter { !preferredAddresses.contains($0.address) }
 
-        if !filter.allowsNoIdentity {
-            filtered = filtered.filter {
-                $0.hasIdentity
-            }
-        }
+        let processedCommunity = applyingClusters(to: sorted(applyingFilters(to: community)))
 
-        if !filter.allowsOversubscribed {
-            filtered = filtered.filter {
-                !$0.oversubscribed
-            }
-        }
-
-        if !filter.allowsSlashed {
-            filtered = filtered.filter {
-                !$0.hasSlashes
-            }
-        }
-
-        let sorted: [RecommendableType]
-
-        switch filter.sortedBy {
-        case .estimatedReward:
-            sorted = filtered.sorted(by: { $0.stakeReturn >= $1.stakeReturn })
-        case .totalStake:
-            sorted = filtered.sorted(by: { $0.totalStake >= $1.totalStake })
-        case .ownStake:
-            sorted = filtered.sorted(by: { $0.ownStake >= $1.ownStake })
-        }
-
-        guard case let .limited(clusterSizeLimit) = filter.allowsClusters else { return sorted }
-
-        return processClusters(
-            items: sorted,
-            clusterSizeLimit: clusterSizeLimit,
-            resultSize: sorted.count
-        )
+        return processedCommunity + sorted(preferrences)
     }
 }

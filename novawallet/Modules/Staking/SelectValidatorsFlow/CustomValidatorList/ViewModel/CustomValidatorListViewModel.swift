@@ -9,10 +9,11 @@ struct CustomValidatorCellViewModel {
     let shouldShowWarning: Bool
     let shouldShowError: Bool
     var isSelected: Bool = false
+    var isLocked: Bool = false
 }
 
 struct CustomValidatorListViewModel {
     var headerViewModel: TitleWithSubtitleViewModel
     var cellViewModels: [CustomValidatorCellViewModel]
-    var selectedValidatorsCount: Int
+    var selection: ValidatorSelectionState
 }
