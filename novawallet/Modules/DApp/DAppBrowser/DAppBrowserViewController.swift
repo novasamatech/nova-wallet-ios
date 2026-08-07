@@ -405,10 +405,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionClose() {
-        snapshotWebView { [weak self] image in
-            let stateRender = DAppBrowserTabRender(for: image)
-            self?.presenter.close(stateRender: stateRender)
-        }
+        minimizeFromParent()
     }
 
     @objc private func actionTabs() {
@@ -424,6 +421,17 @@ private extension DAppBrowserViewController {
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         presenter.process(message: message.body, transport: message.name)
+    }
+}
+
+// MARK: DAppBrowserMinimizing
+
+extension DAppBrowserViewController: DAppBrowserMinimizing {
+    func minimizeFromParent() {
+        snapshotWebView { [weak self] image in
+            let stateRender = DAppBrowserTabRender(for: image)
+            self?.presenter.close(stateRender: stateRender)
+        }
     }
 }
 

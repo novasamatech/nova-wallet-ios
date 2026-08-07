@@ -44,6 +44,9 @@ give a concrete fix.
 - [ ] `.failure` branches handled, not ignored
 - [ ] Remote subscription ids detached
 - [ ] `EventCenter` observers removed on teardown
+- [ ] Process-wide state acquired in a lifecycle hook (e.g. `DeviceOrientationManager.enableLandscape()`
+      in `viewWillAppear`) is released on **every** teardown route — including routes added later that
+      bypass the screen's own close action
 
 **Ref:** architecture/data-flow.md
 

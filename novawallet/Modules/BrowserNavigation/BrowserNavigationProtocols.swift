@@ -9,6 +9,7 @@ protocol BrowserNavigationProtocol {
     func openBrowser(with dAppId: String)
     func openBrowser(with model: DAppNavigation)
     func openBrowser(with result: DAppSearchResult)
+    func minimizeBrowser()
 }
 
 protocol BrowserNavigationInteractorInputProtocol {
