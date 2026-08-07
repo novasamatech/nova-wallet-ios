@@ -7,6 +7,7 @@ struct SelectedValidatorCellViewModel {
     let details: String?
     let shouldShowWarning: Bool
     let shouldShowError: Bool
+    let isLocked: Bool
 }
 
 struct SelectedValidatorListViewModel {

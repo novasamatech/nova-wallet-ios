@@ -54,7 +54,7 @@ final class DirectStakingRecommendationFactory {
                 clusterSizeLimit: clusterLimit
             ).compose(
                 from: validators.notExcludedElectedToSelectedValidators(),
-                preferrences: validators.preferredValidators
+                preferrences: validators.lockedValidators
             )
 
             return PreparedValidators(

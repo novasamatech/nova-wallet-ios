@@ -15,6 +15,7 @@ protocol StakingTypeViewModelFactoryProtocol {
         minStake: BigUInt?,
         chainAsset: ChainAsset,
         method: StakingSelectionMethod?,
+        canChangePool: Bool,
         locale: Locale
     ) -> PoolStakingTypeViewModel
 
@@ -86,6 +87,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         minStake: BigUInt?,
         chainAsset: ChainAsset,
         method: StakingSelectionMethod?,
+        canChangePool: Bool,
         locale: Locale
     ) -> PoolStakingTypeViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable.self
@@ -109,7 +111,7 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
         guard
             let method = method,
             case let .pool(selectedPool) = method.selectedStakingOption else {
-            return .init(title: title, subtile: subtitle, poolAccount: nil)
+            return .init(title: title, subtile: subtitle, poolAccount: nil, canChangePool: canChangePool)
         }
 
         let poolViewModel = stakingViewModelFactory.createPool(
@@ -119,7 +121,12 @@ final class StakingTypeViewModelFactory: StakingTypeViewModelFactoryProtocol {
             locale: locale
         )
 
-        return .init(title: title, subtile: subtitle, poolAccount: poolViewModel)
+        return .init(
+            title: title,
+            subtile: subtitle,
+            poolAccount: poolViewModel,
+            canChangePool: canChangePool
+        )
     }
 
     func minStake(

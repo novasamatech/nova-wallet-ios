@@ -6,7 +6,7 @@ struct StaticValidatorListViewFactory {
         validatorList: PreparedValidators,
         stakingState: RelaychainStartStakingStateProtocol
     ) -> StaticValidatorListViewProtocol? {
-        let viewModelFactory = SelectedValidatorListViewModelFactory()
+        let viewModelFactory = SelectedValidatorListViewModelFactory(lockedAddresses: [])
         let wireframe = StaticValidatorListWireframe(stakingState: stakingState)
 
         let selectedValidators = validatorList.targets

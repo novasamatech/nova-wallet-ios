@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Validators are not selected";
 "staking.max.nominators.reached.message" = "The maximum number of nominators has been reached. Try again later";
 "staking.custom.blocked.warning" = "This validator is not accepting nominations at this moment. Please, try again in the next era.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Please wait for the next era to start.";
 "staking.custom.proceed.button.disabled.title" = "Select validators (max %li)";
 "staking.custom.proceed.button.enabled.title" = "Show selected: %li (max %li)";
@@ -2042,3 +2043,8 @@ Do you want to continue?";
 "inlinable.alert.wo.message" = "Beware of scammers. No one can unlock a watch-only wallet or its funds";
 "create.watch.only.missing.any.address" = "Enter at least one address...";
 "asset.list.watch.only.balance" = "Watch-only balance";
+"common.go.to.staking" = "Go to Staking";
+"dapp.staking.banner.message" = "Looking to stake? Nova Wallet has built-in staking.";
+"dapp.staking.notice.title" = "Notice";
+"dapp.staking.notice.message" = "Third-party staking sites often become deprecated. We recommend using Nova Wallet's built-in staking features.";
+"dapp.staking.notice.continue" = "Continue to site";

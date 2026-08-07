@@ -12,6 +12,7 @@ enum BrowserNavigationFactory {
             interactor: interactor,
             browserNavigationTaskFactory: navigationTaskFactory
         )
+        presenter.mainAppContainer = mainContainer
         interactor.presenter = presenter
 
         return presenter

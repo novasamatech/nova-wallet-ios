@@ -18,6 +18,7 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
+    private var pendingStakingSearchResult: DAppSearchResult?
 
     private lazy var iconGenerator = NovaIconGenerator()
 
@@ -155,7 +156,29 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 // MARK: DAppSearchDelegate
 
 extension DAppListPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    ) {
+        if isThirdPartyStaking {
+            pendingStakingSearchResult = result
+            wireframe.presentStakingNotice(from: view, delegate: self)
+        } else {
+            wireframe.openBrowser(with: result)
+        }
+    }
+}
+
+// MARK: DAppStakingNoticeDelegate
+
+extension DAppListPresenter: DAppStakingNoticeDelegate {
+    func dappStakingNoticeDidSelectContinue() {
+        guard let result = pendingStakingSearchResult else {
+            return
+        }
+
+        pendingStakingSearchResult = nil
+
         wireframe.openBrowser(with: result)
     }
 }

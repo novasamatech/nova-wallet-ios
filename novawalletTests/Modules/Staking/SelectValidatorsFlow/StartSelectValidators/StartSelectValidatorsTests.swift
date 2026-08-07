@@ -39,16 +39,87 @@ class SelectValidatorsStartTests: XCTestCase {
         )
     }
 
-    private func performTest(
-        for chain: ChainModel,
-        selectedTargets: [SelectedValidatorInfo]?,
-        allValidators: [ElectedValidatorInfo],
-        expectedRecommendedValidators: [ElectedValidatorInfo],
-        expectedViewModel: SelectValidatorsStartViewModel,
-        expectedCustomValidators: [SelectedValidatorInfo]
-    ) throws {
+    func testChangeValidatorsSeedsLockedValidatorsIntoAFullSelection() throws {
         // given
 
+        let allValidators = WestendStub.allValidators
+        let generator = CustomValidatorListTestDataGenerator.self
+
+        let initialTargets = (0 ..< 16).map {
+            generator.makeSelectedValidator(
+                address: "community\($0)",
+                stakeReturn: Decimal($0) / 100
+            )
+        }
+
+        let locked = [
+            generator.makeSelectedValidator(address: "nova1", stakeReturn: 0.9),
+            generator.makeSelectedValidator(address: "nova2", stakeReturn: 0.8)
+        ]
+
+        let module = try makeModule(
+            chain: ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42),
+            initialTargets: initialTargets,
+            allValidators: allValidators,
+            preferredValidators: locked
+        )
+
+        let setupExpectation = XCTestExpectation()
+
+        stub(module.view) { stub in
+            when(stub.didReceive(viewModel: any())).then { _ in
+                setupExpectation.fulfill()
+            }
+        }
+
+        var capturedSelection: [SelectedValidatorInfo]?
+
+        stub(module.wireframe) { stub in
+            when(
+                stub.proceedToCustomList(
+                    from: any(),
+                    selectionValidatorGroups: any(),
+                    selectedValidatorList: any(),
+                    validatorsSelectionParams: any()
+                )
+            ).then { _, _, selectedValidatorList, _ in
+                capturedSelection = selectedValidatorList.items
+            }
+        }
+
+        // when
+
+        module.presenter.setup()
+
+        wait(for: [setupExpectation], timeout: 10)
+
+        module.presenter.selectCustomValidators()
+
+        // then
+
+        let selectedAddresses = capturedSelection?.map(\.address) ?? []
+
+        XCTAssertEqual(selectedAddresses.count, 16)
+        XCTAssertTrue(selectedAddresses.contains("nova1"))
+        XCTAssertTrue(selectedAddresses.contains("nova2"))
+        XCTAssertEqual(Set(selectedAddresses).count, selectedAddresses.count)
+
+        XCTAssertFalse(selectedAddresses.contains("community0"))
+        XCTAssertFalse(selectedAddresses.contains("community1"))
+    }
+
+    private struct Module {
+        let presenter: SelectValidatorsStartPresenter
+        let view: MockSelectValidatorsStartViewProtocol
+        let wireframe: MockSelectValidatorsStartWireframeProtocol
+    }
+
+    private func makeModule(
+        chain: ChainModel,
+        initialTargets: [SelectedValidatorInfo]?,
+        allValidators: [ElectedValidatorInfo],
+        preferredValidators: [SelectedValidatorInfo]
+    ) throws -> Module {
         let view = MockSelectValidatorsStartViewProtocol()
         let wireframe = MockSelectValidatorsStartWireframeProtocol()
         let operationFactory = MockValidatorOperationFactoryProtocol()
@@ -72,7 +143,7 @@ class SelectValidatorsStartTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             existingStashAddress: nil,
-            initialTargets: selectedTargets,
+            initialTargets: initialTargets,
             applicationConfig: ApplicationConfig.shared,
             localizationManager: LocalizationManager.shared
         )
@@ -80,19 +151,41 @@ class SelectValidatorsStartTests: XCTestCase {
         presenter.view = view
         interactor.presenter = presenter
 
-        // when
-
         stub(operationFactory) { stub in
             when(stub.allPreferred(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(
                     .init(
                         allElectedValidators: allValidators,
                         notExcludedElectedValidators: allValidators,
-                        preferredValidators: []
+                        preferredValidators: preferredValidators
                     )
                 )
             }
         }
+
+        return Module(presenter: presenter, view: view, wireframe: wireframe)
+    }
+
+    private func performTest(
+        for chain: ChainModel,
+        selectedTargets: [SelectedValidatorInfo]?,
+        allValidators: [ElectedValidatorInfo],
+        expectedRecommendedValidators: [ElectedValidatorInfo],
+        expectedViewModel: SelectValidatorsStartViewModel,
+        expectedCustomValidators: [SelectedValidatorInfo]
+    ) throws {
+        // given
+
+        let module = try makeModule(
+            chain: chain,
+            initialTargets: selectedTargets,
+            allValidators: allValidators,
+            preferredValidators: []
+        )
+
+        let view = module.view
+        let wireframe = module.wireframe
+        let presenter = module.presenter
 
         let setupExpectation = XCTestExpectation()
 

@@ -269,6 +269,10 @@ extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {
     func openBrowser(with tab: DAppBrowserTab?) {
         browserWidget?.openBrowser(with: tab)
     }
+
+    func minimizeBrowser() {
+        browserWidget?.minimizeBrowser()
+    }
 }
 
 // MARK: Constants

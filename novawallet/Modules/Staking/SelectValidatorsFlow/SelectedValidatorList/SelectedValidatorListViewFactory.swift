@@ -7,14 +7,16 @@ struct SelectedValidatorListViewFactory {
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        state: InitiatedBonding
+        state: InitiatedBonding,
+        lockedAddresses: Set<AccountAddress>
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = InitiatedBondingSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            wireframe: wireframe
+            wireframe: wireframe,
+            lockedAddresses: lockedAddresses
         )
     }
 
@@ -23,14 +25,16 @@ struct SelectedValidatorListViewFactory {
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        state: ExistingBonding
+        state: ExistingBonding,
+        lockedAddresses: Set<AccountAddress>
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = ChangeTargetsSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            wireframe: wireframe
+            wireframe: wireframe,
+            lockedAddresses: lockedAddresses
         )
     }
 
@@ -39,14 +43,16 @@ struct SelectedValidatorListViewFactory {
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        state: ExistingBonding
+        state: ExistingBonding,
+        lockedAddresses: Set<AccountAddress>
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = YourValidatorList.SelectedListWireframe(state: state, stakingState: stakingState)
         return createView(
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            wireframe: wireframe
+            wireframe: wireframe,
+            lockedAddresses: lockedAddresses
         )
     }
 
@@ -54,16 +60,18 @@ struct SelectedValidatorListViewFactory {
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        wireframe: SelectedValidatorListWireframeProtocol
+        wireframe: SelectedValidatorListWireframeProtocol,
+        lockedAddresses: Set<AccountAddress>
     ) -> SelectedValidatorListViewProtocol? {
-        let viewModelFactory = SelectedValidatorListViewModelFactory()
+        let viewModelFactory = SelectedValidatorListViewModelFactory(lockedAddresses: lockedAddresses)
 
         let presenter = SelectedValidatorListPresenter(
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedValidatorList: validatorList,
-            maxTargets: maxTargets
+            maxTargets: maxTargets,
+            lockedAddresses: lockedAddresses
         )
 
         presenter.delegate = delegate
@@ -84,7 +92,8 @@ struct SelectedValidatorListViewFactory {
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?
+        stakingSelectValidatorsDelegate: StakingSelectValidatorsDelegateProtocol?,
+        lockedAddresses: Set<AccountAddress>
     ) -> SelectedValidatorListViewProtocol? {
         let wireframe = StartStakingSelectedValidatorsListWireframe(
             state: startStakingState,
@@ -94,7 +103,8 @@ struct SelectedValidatorListViewFactory {
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            wireframe: wireframe
+            wireframe: wireframe,
+            lockedAddresses: lockedAddresses
         )
     }
 }

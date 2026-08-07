@@ -204,23 +204,81 @@ class RecommendationsComposerTests: XCTestCase {
         XCTAssertEqual(recommendations, [preferred])
     }
 
-    func testOnlyPreferredWithAvailableRecommendedValidators() {
+    func testRepeatedPreferredValidatorCollapsesAndFreesACommunitySlot() {
         // given
 
         let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
 
         let generator = CustomValidatorListTestDataGenerator.self
 
-        let recommended1 = generator.goodValidator.toSelected(for: nil)
-        let preferred1 = generator.clusterValidatorChild1.toSelected(for: nil)
-        let preferred2 = generator.clusterValidatorChild1.toSelected(for: nil)
-        let preferred3 = generator.clusterValidatorChild1.toSelected(for: nil)
+        let recommended = generator.goodValidator.toSelected(for: nil)
+        let preferred = generator.clusterValidatorChild1.toSelected(for: nil)
 
-        let preferredList = [preferred1, preferred2, preferred3]
-        let recommendations = composer.compose(from: [recommended1], preferrences: preferredList)
+        // when
 
-        let expectedList = [preferred1, preferred2]
+        let recommendations = composer.compose(
+            from: [recommended],
+            preferrences: [preferred, preferred, preferred]
+        )
 
-        XCTAssertEqual(recommendations, expectedList)
+        // then
+
+        XCTAssertEqual(recommendations.map(\.address), [recommended, preferred].map(\.address))
+    }
+
+    func testPreferredInsideRecommendationListSurvivesTruncation() {
+        // given
+
+        let composer = RecommendationsComposer(resultSize: 3, clusterSizeLimit: 1)
+
+        let topCommunity = Self.makeValidator(suffix: "A", stakeReturn: 0.9)
+        let midCommunity = Self.makeValidator(suffix: "B", stakeReturn: 0.7)
+        let preferredInside = Self.makeValidator(suffix: "C", stakeReturn: 0.05)
+        let preferredOutside = Self.makeValidator(suffix: "D", stakeReturn: 0.5)
+
+        // when
+
+        let recommendations = composer.compose(
+            from: [preferredInside, topCommunity, midCommunity],
+            preferrences: [preferredInside, preferredOutside]
+        )
+
+        // then
+
+        XCTAssertEqual(recommendations.count, composer.resultSize)
+        XCTAssertTrue(recommendations.contains(where: { $0.address == preferredInside.address }))
+        XCTAssertTrue(recommendations.contains(where: { $0.address == preferredOutside.address }))
+        XCTAssertEqual(
+            recommendations.map(\.address),
+            [topCommunity, preferredInside, preferredOutside].map(\.address)
+        )
+    }
+
+    func testEmptyPreferencesKeepRecommendationListUnchanged() {
+        // given
+
+        let composer = RecommendationsComposer(resultSize: 2, clusterSizeLimit: 1)
+
+        let best = Self.makeValidator(suffix: "A", stakeReturn: 0.9)
+        let second = Self.makeValidator(suffix: "B", stakeReturn: 0.7)
+        let third = Self.makeValidator(suffix: "C", stakeReturn: 0.5)
+        let worst = Self.makeValidator(suffix: "D", stakeReturn: 0.05)
+
+        // when
+
+        let recommendations = composer.compose(from: [worst, second, best, third], preferrences: [])
+
+        // then
+
+        XCTAssertEqual(recommendations.map(\.address), [best, second].map(\.address))
+    }
+}
+
+private extension RecommendationsComposerTests {
+    static func makeValidator(suffix: String, stakeReturn: Decimal) -> SelectedValidatorInfo {
+        CustomValidatorListTestDataGenerator.makeSelectedValidator(
+            address: "5EJQtTE1ZS9cBdqiuUdjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr" + suffix,
+            stakeReturn: stakeReturn
+        )
     }
 }

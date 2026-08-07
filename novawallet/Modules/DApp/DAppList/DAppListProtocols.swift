@@ -32,6 +32,7 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
 
 protocol DAppListWireframeProtocol: DAppAlertPresentable,
     DAppBrowserSearchPresentable,
+    DAppStakingNoticePresentable,
     ErrorPresentable,
     WebPresentable,
     WalletSwitchPresentable,
