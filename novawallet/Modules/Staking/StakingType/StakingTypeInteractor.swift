@@ -59,6 +59,10 @@ final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
 extension StakingTypeInteractor: StakingTypeInteractorInputProtocol {
     func setup() {
+        presenter?.didReceive(
+            isPoolForced: StakingConstants.isPoolForced(for: chainAsset.chain.chainId)
+        )
+
         [
             directStakingRestrictionsBuilder,
             nominationPoolsRestrictionsBuilder

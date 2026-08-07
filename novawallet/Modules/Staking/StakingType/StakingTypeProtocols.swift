@@ -25,6 +25,7 @@ protocol StakingTypeInteractorOutputProtocol: AnyObject {
     func didReceive(nominationPoolRestrictions: RelaychainStakingRestrictions)
     func didReceive(directStakingRestrictions: RelaychainStakingRestrictions)
     func didReceive(method: StakingSelectionMethod)
+    func didReceive(isPoolForced: Bool)
     func didReceive(error: StakingTypeError)
 }
 

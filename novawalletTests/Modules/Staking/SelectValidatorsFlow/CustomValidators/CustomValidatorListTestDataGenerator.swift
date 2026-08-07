@@ -162,6 +162,32 @@ struct CustomValidatorListTestDataGenerator {
         [clusterValidatorParent, clusterValidatorChild1, clusterValidatorChild2]
     }()
 
+    static func makeSelectedValidator(
+        address: AccountAddress,
+        stakeReturn: Decimal = 0.1,
+        blocked: Bool = false,
+        oversubscribed: Bool = false
+    ) -> SelectedValidatorInfo {
+        let stakeInfo = ValidatorStakeInfo(
+            nominators: oversubscribed
+                ? [
+                    NominatorInfo(address: "\(address)-nominator1", stake: 1),
+                    NominatorInfo(address: "\(address)-nominator2", stake: 1)
+                ]
+                : [],
+            totalStake: 10,
+            stakeReturn: stakeReturn,
+            maxNominatorsRewarded: 1
+        )
+
+        return SelectedValidatorInfo(
+            address: address,
+            identity: AccountIdentity(name: address),
+            stakeInfo: stakeInfo,
+            blocked: blocked
+        )
+    }
+
     static func createSelectedValidators(from validators: [ElectedValidatorInfo]) -> [SelectedValidatorInfo] {
         validators.map {
             SelectedValidatorInfo(

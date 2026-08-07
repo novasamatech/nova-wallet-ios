@@ -6,11 +6,10 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     typealias RootViewType = CustomValidatorListViewLayout
 
     let presenter: CustomValidatorListPresenterProtocol
-    let selectedValidatorsLimit: Int
 
     private var cellViewModels: [CustomValidatorCellViewModel] = []
     private var headerViewModel: TitleWithSubtitleViewModel?
-    private var selectedValidatorsCount: Int = 0
+    private var selection: ValidatorSelectionState = .empty
     private var electedValidatorsCount: Int = 0
 
     private var filterIsApplied: Bool = true
@@ -31,11 +30,9 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
 
     init(
         presenter: CustomValidatorListPresenterProtocol,
-        selectedValidatorsLimit: Int,
         localizationManager: LocalizationManagerProtocol? = nil
     ) {
         self.presenter = presenter
-        self.selectedValidatorsLimit = selectedValidatorsLimit
 
         super.init(nibName: nil, bundle: nil)
 
@@ -99,7 +96,7 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     }
 
     private func updateFillRestButton() {
-        let isEnabled = selectedValidatorsCount < selectedValidatorsLimit
+        let isEnabled = selection.communitySelected < selection.communityLimit
         rootView.fillRestButton.isEnabled = isEnabled
 
         if isEnabled {
@@ -118,7 +115,7 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
     }
 
     private func updateDeselectButton() {
-        let isEnabled = selectedValidatorsCount > 0
+        let isEnabled = selection.communitySelected > 0
         rootView.deselectButton.isEnabled = isEnabled
 
         applyDarkButtonStyle(rootView.deselectButton, isEnabled: isEnabled)
@@ -136,17 +133,20 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         let buttonTitle: String
         let isEnabled: Bool
 
-        if selectedValidatorsCount == 0 {
+        if selection.communitySelected == 0, selection.lockedSelected == 0 {
             isEnabled = false
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingCustomProceedButtonDisabledTitle(selectedValidatorsLimit)
+            ).localizable.stakingCustomProceedButtonDisabledTitle(selection.communityLimit)
 
         } else {
             isEnabled = true
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingCustomProceedButtonEnabledTitle(selectedValidatorsCount, selectedValidatorsLimit)
+            ).localizable.stakingCustomProceedButtonEnabledTitle(
+                selection.communitySelected,
+                selection.communityLimit
+            )
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle
@@ -214,7 +214,7 @@ extension CustomValidatorListViewController: CustomValidatorListViewProtocol {
     func reload(_ viewModel: CustomValidatorListViewModel, at indexes: [Int]? = nil) {
         cellViewModels = viewModel.cellViewModels
         headerViewModel = viewModel.headerViewModel
-        selectedValidatorsCount = viewModel.selectedValidatorsCount
+        selection = viewModel.selection
 
         if let indexes = indexes {
             let indexPaths = indexes.map {

@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "검증자가 선택되지 않았습니다";
 "staking.max.nominators.reached.message" = "노미네이터의 최대 수에 도달했습니다. 나중에 다시 시도하십시오";
 "staking.custom.blocked.warning" = "이 밸리데이터는 현재 지명을 수락하지 않습니다. 다음 시대에 다시 시도하십시오.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "다음 시대가 시작되기를 기다려주세요.";
 "staking.custom.proceed.button.disabled.title" = "검증자 선택 (최대 %li)";
 "staking.custom.proceed.button.enabled.title" = "선택된 검증자 보기: %li (최대 %li)";

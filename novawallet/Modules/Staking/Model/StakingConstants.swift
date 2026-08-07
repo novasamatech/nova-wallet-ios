@@ -12,4 +12,13 @@ struct StakingConstants {
         KnowChainId.vara: 65,
         KnowChainId.avail: 3
     ]
+
+    static let forcedPoolChainIds: Set<ChainModel.Id> = [
+        KnowChainId.polkadotAssetHub,
+        KnowChainId.kusamaAssetHub
+    ]
+
+    static func isPoolForced(for chainId: ChainModel.Id) -> Bool {
+        forcedPoolChainIds.contains(chainId)
+    }
 }

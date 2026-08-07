@@ -13,3 +13,13 @@ struct ElectedAndPrefValidators: Equatable {
         allElectedValidators.map { $0.toSelected(for: address) }
     }
 }
+
+extension ElectedAndPrefValidators {
+    var lockedValidators: [SelectedValidatorInfo] {
+        var seen = Set<AccountAddress>()
+
+        return preferredValidators.filter { validator in
+            validator.isLockEligible && seen.insert(validator.address).inserted
+        }
+    }
+}

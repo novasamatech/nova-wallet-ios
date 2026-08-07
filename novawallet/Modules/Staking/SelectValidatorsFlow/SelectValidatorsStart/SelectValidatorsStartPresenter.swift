@@ -41,18 +41,22 @@ final class SelectValidatorsStartPresenter {
     private func updateSelectedValidatorsIfNeeded() {
         guard
             let electedValidators = electedValidators,
+            let electedAndPrefValidators = electedAndPrefValidators,
             let maxNominations = maxNominations,
             selectedValidators == nil else {
             return
         }
 
-        let selectedValidatorList = initialTargets?.map { target in
+        let initialTargets = initialTargets?.map { target in
             electedValidators[target.address]?.toSelected(for: existingStashAddress) ?? target
-        }
-        .sorted { $0.stakeReturn > $1.stakeReturn }
-        .prefix(maxNominations) ?? []
+        } ?? []
 
-        selectedValidators = SharedList(items: selectedValidatorList)
+        let selectionComposer = ValidatorSelectionComposer(
+            lockedValidators: electedAndPrefValidators.lockedValidators,
+            maxNominations: maxNominations
+        )
+
+        selectedValidators = SharedList(items: selectionComposer.compose(from: initialTargets))
     }
 
     private func updateRecommendedValidators() {
@@ -68,7 +72,7 @@ final class SelectValidatorsStartPresenter {
             clusterSizeLimit: StakingConstants.targetsClusterLimit
         ).compose(
             from: electedAndPrefValidators.notExcludedElectedToSelectedValidators(for: existingStashAddress),
-            preferrences: electedAndPrefValidators.preferredValidators
+            preferrences: electedAndPrefValidators.lockedValidators
         )
 
         recommendedValidators = recomendedValidators
@@ -137,7 +141,7 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
 
         let customValidatorList = CustomValidatorsFullList(
             allValidators: electedAndPrefValidators.allElectedToSelectedValidators(for: existingStashAddress),
-            preferredValidators: electedAndPrefValidators.preferredValidators
+            preferredValidators: electedAndPrefValidators.lockedValidators
         )
 
         let recommendedValidatorList = recommendedValidators ?? []

@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Doğrulayıcılar seçilmedi";
 "staking.max.nominators.reached.message" = "Maksimum aday sayısına ulaşıldı. Daha sonra tekrar deneyin";
 "staking.custom.blocked.warning" = "Bu doğrulayıcı şu anda adaylık kabul etmiyor. Lütfen, bir sonraki era'da tekrar deneyin.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Lütfen bir sonraki devrin başlamasını bekleyin.";
 "staking.custom.proceed.button.disabled.title" = "Doğrulayıcı seç (%li maks.)";
 "staking.custom.proceed.button.enabled.title" = "Seçilenleri göster: %li (%li maks.)";

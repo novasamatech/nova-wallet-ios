@@ -56,7 +56,7 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
     ) {
         let fullValidatorList = CustomValidatorsFullList(
             allValidators: selectedValidators.electedAndPrefValidators.allElectedToSelectedValidators(),
-            preferredValidators: selectedValidators.electedAndPrefValidators.preferredValidators
+            preferredValidators: selectedValidators.electedAndPrefValidators.lockedValidators
         )
 
         let selectionValidatorGroups = SelectionValidatorGroups(
@@ -70,10 +70,15 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
             hasIdentity: hasIdentity
         )
 
+        let selectionComposer = ValidatorSelectionComposer(
+            lockedValidators: selectedValidators.electedAndPrefValidators.lockedValidators,
+            maxNominations: selectedValidators.maxTargets
+        )
+
         guard let validatorsView = CustomValidatorListViewFactory.createValidatorListView(
             for: state,
             selectionValidatorGroups: selectionValidatorGroups,
-            selectedValidatorList: SharedList(items: selectedValidators.targets),
+            selectedValidatorList: SharedList(items: selectionComposer.compose(from: selectedValidators.targets)),
             validatorsSelectionParams: validatorsSelectionParams,
             delegate: delegate
         ) else {

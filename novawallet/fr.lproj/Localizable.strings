@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Les validateurs ne sont pas sélectionnés";
 "staking.max.nominators.reached.message" = "Le nombre maximum de nominateurs a été atteint";
 "staking.custom.blocked.warning" = "Ce validateur n'accepte pas de nominations pour le moment. Veuillez réessayer dans la prochaine ère.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Veuillez attendre que la prochaine ère commence.";
 "staking.custom.proceed.button.disabled.title" = "Sélectionnez les validateurs (max %li)";
 "staking.custom.proceed.button.enabled.title" = "Afficher la sélection : %li (max %li)";

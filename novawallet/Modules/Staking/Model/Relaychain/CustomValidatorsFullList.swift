@@ -14,3 +14,9 @@ struct CustomValidatorsFullList {
         return allValidators + preferredValidators.filter { !allValidatorAddresses.contains($0.address) }
     }
 }
+
+extension CustomValidatorsFullList {
+    var lockedAddresses: Set<AccountAddress> {
+        Set(preferredValidators.map(\.address))
+    }
+}
