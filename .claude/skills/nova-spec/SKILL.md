@@ -23,8 +23,10 @@ design before spawning anything.
 instead of writing one from scratch. `/nova-plan` sends people here when a plan-phase finding turns
 out to be about the spec. Differences from a normal run, and only these:
 
-- Skip the "clear the artefacts" half of §1. `SPEC.md` is the input, not stale state. `PLAN.md` and
-  the plan-phase tasks stay exactly where they are.
+- Skip the "clear the artefacts" half of §1 **and its approved-unexecuted-plan guard**. `SPEC.md` is
+  the input, not stale state; `PLAN.md` and the plan-phase tasks stay exactly where they are. That
+  guard exists to stop a *fresh* run deleting the contracts an approved plan depends on — an
+  amendment is the sanctioned way to change them, so it does not apply here.
 - Task subjects are `amend:` / `amend rN:` rather than `spec:` / `spec rN:`.
 - The architect's task is *this defect*, not the whole spec. It skips Stage 1 discovery except where
   the defect needs it, and it must not redesign sections the defect does not reach — an amendment
@@ -32,7 +34,20 @@ out to be about the spec. Differences from a normal run, and only these:
 - Reviewers are scoped: "review the sections that changed, plus anything that cites them." They still
   read the whole document — a contradiction lives across a boundary — but findings on untouched
   sections are out of scope and must be reported to the human rather than argued.
-- Same 3-round cap, same independent read at §5½, same gate.
+- Same per-lens 3-round cap, same independent read at §5½, same gate.
+
+**Amending a spec written before contracts moved to their own file.** If `.claude/SPEC.md` exists
+and `.claude/CONTRACTS.md` does not, the spec predates the split and must be migrated before any
+plan can be built from it — `/nova-plan` halts on the missing file. Say so to the architect as part
+of the defect, and hold it to two things:
+
+- `CONTRACTS.md` must **stand alone**. Every `§N` reference that survives into it is a defect, not a
+  convenience: `plan-exec`, the cold `executability` reader and the executor get that file and never
+  `SPEC.md`, so a contract that says "see §7.1" is a dead end for the only readers who matter. The
+  binding rule is **moved** into the contract, not pointed at and not copied.
+- Nothing else changes. A migration that also improves a requirement is no longer a migration, and
+  the human cannot tell the two apart in the diff. If the architect finds a real defect while
+  moving text, it escalates rather than fixing it in passing.
 
 After the gate, tell the human plainly that `PLAN.md` was written against the *previous* spec and
 `/nova-plan` must re-run before the plan is trustworthy.
@@ -55,12 +70,19 @@ to it.
 ## 1. Preflight
 
 ```bash
-ls -la .claude/SPEC.md .claude/PLAN.md .claude/design.excalidraw.json .claude/REVIEW-LOG.md 2>/dev/null
+ls -la .claude/SPEC.md .claude/CONTRACTS.md .claude/PLAN.md .claude/design.excalidraw.json .claude/REVIEW-LOG.md 2>/dev/null
 ```
 
 If any exist, they belong to a previous feature. Show the human what is there and ask before
 clearing — a stale `SPEC.md` silently merged with a new one is the worst outcome available. Only one
 design is in flight at a time.
+
+**On a fresh run, if `.claude/PLAN.md` exists, stop and ask explicitly whether it has been
+implemented.** A plan resolves its contracts through `.claude/CONTRACTS.md` at execution time, so
+clearing the artefacts invalidates any approved-but-unexecuted plan — the signatures it was written
+against simply disappear, and the executor's hash check will halt on the next attempt. Do not clear
+until the human says that plan is abandoned or already built. (`--amend` skips this: it preserves
+`PLAN.md` by design.)
 
 Call `TaskList`. Delete leftover `spec:`/`spec rN:` tasks from an earlier run; a stale task with the
 wrong `blockedBy` will wedge the loop. Start `.claude/REVIEW-LOG.md` with the request verbatim.
@@ -69,10 +91,15 @@ Confirm the artefacts are ignored — the diff-stage guarantee depends on it, an
 surfaces three stages later as a silently contaminated review:
 
 ```bash
-git check-ignore -q .claude/SPEC.md .claude/PLAN.md .claude/REVIEW-LOG.md .claude/design.excalidraw.json && echo ok
+git check-ignore -q .claude/SPEC.md .claude/CONTRACTS.md .claude/PLAN.md .claude/REVIEW-LOG.md .claude/design.excalidraw.json && echo ok
 ```
 
-If that does not print `ok`, add the missing paths to `.gitignore` before spawning anyone.
+If that does not print `ok`, add the missing paths **to `.git/info/exclude`**, not only to
+`.gitignore`. `.gitignore` lives on a branch: a worktree cut from `origin/develop` does not carry
+it, and the artefacts then sit there untracked-and-not-ignored where an ordinary `git add -A`
+commits them into a branch `/nova-review` must abort on. `.git/info/exclude` is per-repository and
+every worktree inherits it. Both files should carry the paths; the check above is what tells you
+whether they do, here, on this branch.
 
 ## 2. Seed the list, then spawn the roster
 
@@ -166,8 +193,9 @@ SendMessage({ to: 'spec-contract', summary: 'round 1 unblocked',
 …and the same for `spec-reality`. Then observe. Findings go to the architect, the architect rebuts
 and revises, the reviewers answer and re-read.
 
-**A round closes** when every review task for that round is `completed`. One `TaskList` shows you
-the whole round — each reviewer rewrites its task subject to carry the verdict as it completes:
+**A round closes** when every review task **you assigned** for that round is `completed` — not every
+task that exists, since lenses now retire and revive independently. One `TaskList` shows you the
+whole round — each reviewer rewrites its task subject to carry the verdict as it completes:
 
 ```
 spec r1: review — contract  [open 0B/2M/1m]     [completed]
@@ -177,17 +205,49 @@ spec r1: review — reality   [clean]             [completed]
 Read the verdict off the **subject**. Do not look in `metadata` — it is write-only in this harness
 and returns nothing, which is why the protocol does not use it.
 
-- **Every subject reads `[clean]`** → go to step 5½.
+**A round converges when nothing above `minor` is open** — every subject `[clean]`, or `[open …]`
+with only minors in it. Minors do not buy another pass over the whole spec; they ride to the gate
+under `Minor, unfixed` and the human decides. See
+[design-loop.md](../../docs/process/design-loop.md) §Round accounting.
+
+- **Converged** → go to step 5½.
 - **Otherwise** → create the next round:
 
 ```
 TaskCreate({ subject: 'spec r1: resolve findings', … })  → T4, owner architect, blockedBy [T2, T3]
-TaskCreate({ subject: 'spec r2: review — contract', … }) → T5, owner spec-contract, blockedBy [T4]
-TaskCreate({ subject: 'spec r2: review — reality',  … }) → T6, owner spec-reality,  blockedBy [T4]
 ```
 
-Then `SendMessage` the architect that T4 is open, and the reviewers when T4 closes. Nobody is
-re-spawned — names survive completion, and a send resumes a teammate with its context intact.
+**That is the only task you create now.** Which lenses round 2 needs is decided by a changelog that
+does not exist until T4 closes, so creating `spec r2: review — …` here means creating a task you may
+never assign — and a `pending` task nobody owns is exactly what the gate's "confirm no task is left
+open" cannot be satisfied with. Create a review task when you are about to assign it, not before.
+
+`SendMessage` the architect that T4 is open. When T4 closes, `TaskGet` it for the changelog, then
+create and assign one review task per in-scope lens. Nobody is re-spawned — names survive
+completion, and a send resumes a teammate with its context intact.
+
+**Assign only the lens the revision is in scope for.** The architect writes a `## Changed in rN`
+table naming every section it touched into the `description` of its resolve-findings task — `TaskGet`
+it. It is deliberately not in `SPEC.md`: the cold reader at step 5½ must not be able to tell which
+sections were argued over.
+
+**Always re-assign the lens that raised a finding this revision answers**, whatever it touched — it
+is the only party that can judge whether its own finding was met. Beyond that, a reviewer that
+closed `[clean]` and whose sections have not changed is not re-assigned; create its next-round task
+only if the changelog puts something in its scope, and say which lens you dropped and why when you
+log the round.
+
+**The scopes are the section ownership in [review-lenses.md](../../docs/process/review-lenses.md),
+and nothing else — do not paraphrase them from memory:**
+
+| Lens | Owns |
+|------|------|
+| `contract` | §2 Scope, §3 FR, §4 NFR, `CONTRACTS.md`, §10 Verification, §11 Open Questions — and traceability across the whole document |
+| `reality` | §1 Problem, §6 High-Level Design, §7 Low-Level Design, §8 Edge Cases, §9 Migration — and every factual claim about existing code, anywhere |
+
+Between them these cover every section. If a revision touches something you cannot place in either
+row, that is a defect in this table, not a licence to assign nobody — assign both and say so. The
+same goes for a missing or untrusted changelog: an unreliable changelog is worse than none.
 
 Append each closed round to `.claude/REVIEW-LOG.md` from the task metadata: findings per lens,
 accepted, rebutted, conceded.
@@ -196,7 +256,10 @@ accepted, rebutted, conceded.
 
 Two triggers. Both mean the same thing: the team will not settle this, so stop spending rounds.
 
-**Round cap.** Round 3 closed with any finding open. Before creating round 4:
+**Round cap — three *assigned* rounds per lens.** Lenses retire and revive independently, so count
+the `spec rN: review — <lens>` tasks owned by that lens rather than looking for a global round
+number. When a lens closes its third assigned round with anything **above `minor`** open — open
+minors go to the gate and never trigger this — before assigning it a fourth:
 
 1. `TaskStop` each teammate by name — `architect`, `spec-contract`, `spec-reality`.
 2. Present to the human: each open finding, the architect's position, the reviewer's position, and
@@ -214,6 +277,13 @@ that could not agree.
 
 ## 5½. Independent first read
 
+**Stand the architect down first.** Convergence can carry open minors, and the architect must not be
+editing while the cold reader reads or while the human is at the gate — both must see the document
+the reviewers signed off. Send `architect` a `KIND: ASSIGNMENT` reading "no further edits to
+`SPEC.md` or `CONTRACTS.md`", confirm nothing is in flight, and only then spawn the reader. If you
+want a minor fixed first, open a `spec rN: minor repairs` task and stand the architect down after it
+closes.
+
 The team has converged. Before the gate, commission one **fresh** read of the final spec from an
 agent that has none of the history:
 
@@ -221,8 +291,8 @@ agent that has none of the history:
 Agent({ subagent_type: 'nova-cold-reader',
         description: 'independent read of the spec',
         run_in_background: false,
-        prompt: `Review .claude/SPEC.md. Your lenses are \`contract\` and \`reality\`; the criteria
-are in .claude/docs/process/review-lenses.md.` })
+        prompt: `Review .claude/SPEC.md and .claude/CONTRACTS.md. Your lenses are \`contract\` and
+\`reality\`; the criteria are in .claude/docs/process/review-lenses.md.` })
 ```
 
 That is the entire prompt. **Give it nothing else** — not that anyone else reviewed this, not what
@@ -241,11 +311,24 @@ on your own authority:
   contradicting a converged team is exactly what wants the human's judgement.
 - **major** — present it in the gate under its own heading.
 
-Append the result to `.claude/REVIEW-LOG.md` under its own section.
+**Log the result under a structural heading, always — including when it found nothing.** The cold
+pass is the most expensive terminal spend in the framework and its yield has never once been
+recorded, which is exactly why nobody can judge whether it could be narrowed. A trailing sentence in
+prose does not count:
+
+```markdown
+## Independent read — spec
+
+| Reader | Lenses | Findings | Severity | Would the team's own lenses have caught it? |
+|--------|--------|----------|----------|---------------------------------------------|
+| cold   | contract, reality | 0 | — | — |
+```
+
+Zero findings is the most useful row this table can have, and the one most likely to go unwritten.
 
 ## 6. The gate
 
-All reviewers clean and the cold pass reported.
+Converged — nothing above `minor` open — and the cold pass reported.
 
 1. **Render the diagram.** The architect wrote mermaid into SPEC §6.1 and could not author the
    Excalidraw form — MCP tools are not reachable from its allowlist, and JSON written blind does not
@@ -261,7 +344,7 @@ All reviewers clean and the cold pass reported.
 ```
 ## Spec ready for your review — <feature>
 
-[.claude/SPEC.md](.claude/SPEC.md) · risk tier: <tier> · clean after <N> rounds
+[.claude/SPEC.md](.claude/SPEC.md) · risk tier: <tier> · <N> lines · converged after <N> rounds
 
 **Requirements:** X functional, Y non-functional
 **Contracts:** N new, M modified
@@ -272,8 +355,14 @@ All reviewers clean and the cold pass reported.
 
 **Survived review:** <findings the architect refuted, and on what grounds — one line each>
 **Changed in review:** <findings it accepted — one line each>
+
+**Minor, unfixed:** <every open minor, one line each — none warranted a round.
+                    Say "fix these" for one repair pass; otherwise they stand.>
+                    — or: none
+
 **Assumptions you should check:** <SPEC §11>
 **Still open:** <anything escalated and unresolved, or: none>
+**Review economy:** <N> rounds · lenses assigned: r1 <n> / r2 <n> / r3 <n>
 
 Next step is yours. When the spec is approved, run /nova-plan.
 ```

@@ -25,7 +25,7 @@ flavours, two governance versions. A design that ignores that shape is not a des
 ## Hard rules
 
 - **No implementation.** You write no feature code, edit no source file, and create nothing under
-  `novawallet/`. You write exactly one file: `.claude/SPEC.md`.
+  `novawallet/`. You write exactly two files: `.claude/SPEC.md` and `.claude/CONTRACTS.md`.
 - **No inventing APIs.** Every type, protocol, service, and field you name must either exist (cite
   `file:line`) or be marked **NEW**. If you are unsure it exists, `Grep` for it. A spec built on a
   type that does not exist wastes the whole downstream chain.
@@ -132,23 +132,12 @@ An NFR with no acceptance criterion is decoration. Delete it or give it one.
 
 ## 5. Contracts
 
-The minimal set of boundaries that define the behaviour. For each:
+> The contracts live in `.claude/CONTRACTS.md`, `C-1`…`C-N`. This section is a pointer and an index,
+> never a copy — a second copy drifts from the first.
 
-**`ProtocolOrTypeName`** — NEW | MODIFIED | REMOVED — `path/to/file.swift`
-
-```swift
-protocol SomethingProtocol: AnyObject {
-    func doTheThing(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Result>
-}
-```
-
-- **Semantics** — what a conforming implementation guarantees.
-- **Errors** — every failure it can surface, and what the caller must do with each.
-- **Threading** — which queue calls it, which queue it calls back on.
-- **Ownership** — who holds it, who cancels it, when it is torn down.
-- **Satisfies** — FR/NFR ids.
-
-Signatures are the contract; write them. Implementation bodies are not, and must not appear here.
+| Ref | Type | NEW/MODIFIED | Satisfies |
+|-----|------|--------------|-----------|
+| C-1 | `AssetExchangeCommission` | NEW | FR-4, FR-5 |
 
 ## 6. High-Level Design
 
@@ -175,10 +164,20 @@ reviewable — a design with no rejected alternatives was not designed, it was a
 
 ## 7. Low-Level Design
 
-One subsection per component from §6.2. For each: internal state it holds, the sequence of
-operations it runs, what it subscribes to and when it unsubscribes, how it cancels, what it
-persists, and which existing type it mirrors (naming the closest precedent in the codebase is worth
-more than a paragraph of description).
+**Binding decisions only.** The planner owns *how*, with this section as the exception: whatever
+§7 states, the plan is not free to decide differently, and `spec-fidelity` holds the plan to it. So
+§7 must contain **only** the decisions where a different-but-reasonable choice would be wrong —
+typically: the algorithm where a naive one gives a wrong amount, the ordering where a different one
+double-charges or drops a subscription, the placement of state where the wrong owner leaks it,
+cancellation and teardown on a re-triggerable path, and what persists.
+
+For each such decision: state it, and state what goes wrong if it is made otherwise. One or two
+sentences. Name the closest precedent in the codebase rather than describing the shape.
+
+**Do not write a narrative of every component.** A §7 subsection that merely describes what a class
+will contain is neither binding nor useful: the planner will write it better with the code open, and
+every reviewer downstream pays to read it. If you cannot say what breaks when a decision goes the
+other way, it is not a §7 decision — leave it out and let the planner decide.
 
 ## 8. Edge Cases & Failure Modes
 
@@ -224,6 +223,46 @@ rows are what `spec-reality` looks for first.
 | Governance                | Both `governanceV1` and `governanceV2`. |
 | Swaps or XCM              | Route unavailable. Slippage bound. Quote expiry. Origin and destination fees. Partial failure on the destination chain. |
 | Anything user-visible     | Longest plausible string. RTL. Plural forms. Missing localization key. |
+
+## Stage 3½ — Write `.claude/CONTRACTS.md`
+
+The contracts are their own file because the plan cites them instead of copying them, and because
+the agents that must see them and must *not* see your design rationale — `plan-exec`, the cold
+`executability` reader, and the engineer who implements this — can only be held to a **file**
+boundary. "Read §5 and no further" is not enforceable: `SPEC.md` is well under the `Read` tool's
+line cap, so one ordinary call returns your whole design.
+
+So this file must **stand alone**. Nothing in it may cite `SPEC.md` — not §7 for an algorithm, not
+§8 for an edge case, not §2 for scope. If a contract's semantics depend on something you wrote
+elsewhere, restate it here in the words a caller needs. A contract that says "see §7.1" is a defect;
+the only reader who matters cannot open §7.1.
+
+````markdown
+# <Feature> — Contracts
+
+Companion to `.claude/PLAN.md`. Self-contained: implement against this file and the plan, and open
+nothing else.
+
+## C-1 — `SomethingProtocol` — NEW — `novawallet/Common/.../Something.swift`
+
+```swift
+protocol SomethingProtocol: AnyObject {
+    func doTheThing(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Result>
+}
+```
+
+- **Semantics** — what a conforming implementation guarantees.
+- **Errors** — every failure it can surface, and what the caller must do with each.
+- **Threading** — which queue calls it, which queue it calls back on.
+- **Ownership** — who holds it, who cancels it, when it is torn down.
+- **Satisfies** — FR/NFR ids.
+
+## C-2 — …
+````
+
+Signatures are the contract; write them. Implementation bodies are not, and must not appear here.
+Number contracts `C-1`…`C-N` and never renumber them — the plan cites these ids, and a renumber
+silently re-points every citation.
 
 ## Stage 4 — The diagram
 
@@ -275,19 +314,40 @@ For every finding, in one message back to that reviewer:
   `TO: main` with `KIND: ESCALATION`, naming the two options and their consequences.
 
 When the round's revisions are in: complete your resolve-findings task with a subject carrying the
-tally, and tell both reviewers the new version is ready.
+tally and a `description` carrying the **changelog**, then tell both reviewers the new version is
+ready and repeat the changelog in that `KIND: REVISION` message.
 
 ```
 TaskUpdate({ taskId: '<id>', status: 'completed',
-             subject: 'spec r1: resolve findings [3 accepted / 1 rebutted / 0 escalated]' })
+             subject: 'spec r1: resolve findings [3 accepted / 1 rebutted / 0 escalated]',
+             description: `## Changed in r2
+
+| Section | What changed | Answering |
+|---------|--------------|-----------|
+| C-3 | \`AssetExchangeFee\` gains \`commission\` | contract B1 |
+| §8 | EC-41…EC-44 added for the trailing-XCM case | reality M2 |
+| §11 | assumption A3 retired | contract m1 |
+
+**Unchanged:** §1, §2, §4, §6, §7, §9, §10.` })
 ```
 
-The tally goes in the **subject**, not in `metadata` — metadata is write-only in this harness and
-cannot be read back by anyone. The round number lives on the task list, which is why it is no longer
-carried in the spec header: a later reader of `SPEC.md` must not be able to infer how much argument
-it survived.
+The changelog is how the next round stays affordable: reviewers re-read only the sections it names,
+and the orchestrator uses it to decide which lens still has anything to look at. A section you
+changed and did not list will not be re-reviewed by anyone, so listing is not optional — and
+"wording only" must be true where you write it.
+
+The tally and the changelog go in **`subject` and `description`**, never in `metadata` — metadata is
+write-only in this harness and cannot be read back by anyone. Neither goes in `SPEC.md`. The round
+number lives on the task list, which is why it is not carried in the spec header: a later reader of
+`SPEC.md` — including the independent reader at the end of this phase — must not be able to infer
+how much argument it survived, or which sections attracted it.
 
 Answer every finding; ignoring one is how it comes back in round three.
+
+**Minors are not yours to fix off-book.** A round converges with minors still open, and they go to
+the human at the gate. Do not quietly repair one after convergence — the cold reader and the human
+must see the document the reviewers signed off. If a minor is worth fixing, the orchestrator opens a
+`spec rN: minor repairs` task for it.
 
 You get three rounds. If you find yourself relitigating the same point in round three, escalate it
 instead — that is the round cap doing its job early.

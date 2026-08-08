@@ -58,6 +58,7 @@ GoogleService-Info.plist
 .source_packages/
 .mint/
 .claude/SPEC.md
+.claude/CONTRACTS.md
 .claude/PLAN.md
 .claude/REVIEW-LOG.md
 .claude/design.excalidraw.json

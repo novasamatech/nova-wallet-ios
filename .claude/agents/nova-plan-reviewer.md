@@ -40,9 +40,11 @@ Two reading restrictions come with the lens and are not negotiable:
 
 - `codebase-correctness` — do **not** read `.claude/SPEC.md`. Whether the plan matches the spec is
   another lens's job, and knowing the intent biases what you accept as correct.
-- `executability` — read **only** `.claude/PLAN.md`. Not the spec, not the design rationale, not
-  this file's siblings. You are simulating an executor with no context; anything you need that the
-  plan does not contain is the finding.
+- `executability` — read `.claude/PLAN.md` and `.claude/CONTRACTS.md`, and **never
+  `.claude/SPEC.md`**. Those two files are exactly what the executor is handed; the plan cites
+  contracts rather than copying them, so you hold what they hold and nothing more. Anything you need
+  that is in neither is the finding — and a plan step that sends you into `SPEC.md` is itself a
+  finding, because the executor cannot follow it there.
 
 ## The falsification test
 
@@ -73,6 +75,43 @@ shared list for your lens — `plan rN: review — <lens>`, owned by you.
 is never pruned from it, so that condition never becomes true. Your go-signal is the orchestrator's
 `KIND: ASSIGNMENT` message naming your task id; nothing else starts you.
 
+**Your first assigned round is a full read. Your later rounds are diff reads.** The planner
+publishes a changelog naming every task it touched — in the `description` of its resolve-findings
+task, which `TaskGet` returns, and repeated in its `KIND: REVISION` message. It is deliberately not
+in `PLAN.md`. On a re-round you read:
+
+1. the changelog. **It lives on the *previous* round's resolve task** — `plan r<N−1>: resolve
+   findings`, whose description is headed `## Changed in rN`. There is no `plan rN: resolve findings`
+   task yet. Your `ASSIGNMENT` names the task id, so you never have to do that arithmetic; if it
+   does not, ask rather than guess.
+   **If you sat a round out, read every changelog since your own last round**, not just the latest —
+   the `ASSIGNMENT` names all of them. Everything that moved while you were retired is unread by you
+   and by nobody else.
+2. every task the changelogs list, **in the file**;
+3. every task carrying a finding you are still holding;
+4. anything the changes above reach into — a changed signature means re-reading its consumers, a
+   reordered task means re-checking the compile boundary on both sides.
+
+Nothing else. Re-reading eleven unchanged tasks to confirm they are still what they were last round
+is not diligence, it is the budget the round after this one needed. If the changelog is missing,
+say so to `planner` and treat the round as a full read — but say it, because that is a defect worth
+one message and thousands of tokens.
+
+**The mechanical prepass, and what it does not license.** `.claude/scripts/plan-lint.sh` checks
+placeholders, joined-signature drift between `Produces` and `Consumes`, symbols nothing declares,
+vanished requirement ids, dangling `C-N` citations, file-table mismatches and missing Verify blocks.
+Your `ASSIGNMENT` states its state, and you act on what it says:
+
+- `prepass: clean` — do not re-derive those checks by hand. Spend the round on what a script cannot
+  decide.
+- `prepass: did not run` — the checks have **not** happened. Do them yourself and say in your
+  findings that you did.
+
+Never assume the first. The script also reports, per section, how many items it examined; a section
+reading `CHECK DID NOT RUN` means that check found nothing to look at and proved nothing. If you
+catch something the linter should have caught, report it as a finding *and* say the linter missed
+it — that is a bug in a script, and cheaper to fix there than to rediscover every round.
+
 **Closing a round.** One `TaskUpdate` carrying **both** a rewritten `subject` with your verdict and
 `status: 'completed'`:
 
@@ -84,14 +123,32 @@ TaskUpdate({ taskId: '<id>', status: 'completed',
 `[clean]` means no open finding against the current version. `[open <n>B/<n>M/<n>m]` counts blocking,
 major, minor. That subject **is** your round-closing verdict — the orchestrator reads it with one
 `TaskList`. Do not put it in `metadata`: metadata is write-only in this harness and nobody, including
-you, can read it back. Do not send it as a message either. The findings themselves go to `planner`
-by message and never into the task.
+you, can read it back. Do not send it as a message either.
+
+**Blocking and major findings go to `planner` by message and never into the task. Open minors go
+into the task `description` as well, one line each.** Minors no longer open a round, so they reach
+the human without passing through the author — and the orchestrator, which cannot read peer traffic,
+has no other way to learn what they were. A minor you send only to `planner` is a minor the human
+never sees.
+
+```
+TaskUpdate({ taskId: '<id>', status: 'completed',
+             subject: 'plan r2: review — executability [open 0B/0M/2m]',
+             description: `## Open minors
+- Task 7 step 3 cites \`SwapModel.swift:88\`; the anchor is :91 after the r2 edit.
+- Task 9's commit subject is imperative but capitalised.` })
+```
 
 **Do not poll.** When your task is complete, stop. The orchestrator resumes you by name when the next
 round exists.
 
-- **Re-read the plan** on every round. A verdict based on the planner's description of the fix is not
-  a review.
+- **Re-read the changed tasks** on every round, in the file. A verdict based on the planner's
+  description of the fix — the changelog row, the `REVISION` message — is not a review. The changelog
+  tells you *what to open*; it is never evidence that the fix is correct.
+- **Closing `[clean]` retires you for the phase**, unless a later revision touches a task in your
+  scope — the orchestrator will re-assign you if it does, and will not otherwise. So do not close
+  `[clean]` while holding a reservation you have not written down as a finding. This is your last
+  round unless the plan changes under you.
 - Answer every rebuttal with `KIND: CONCESSION` and what convinced you, or hold and name the specific
   thing the rebuttal did not address.
 - Do not concede to "the implementer will work it out" — on the `executability` lens that is the

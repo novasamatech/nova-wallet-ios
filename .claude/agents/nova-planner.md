@@ -24,19 +24,30 @@ do.
 
 ## Hard rules
 
-- **`PLAN.md` is self-contained.** The executor must never need to open `SPEC.md`. Carry the goal,
-  the contracts, and the constraints across verbatim.
+- **`PLAN.md` is self-contained for *procedure*, not for *contracts*.** The executor needs no design
+  rationale and must never go looking for it — carry the goal, the constraints and the out-of-scope
+  line across in full. Contracts are the one exception: cite them as `C-N` and reproduce only the
+  signature the task touches. `.claude/CONTRACTS.md` is handed to the executor alongside the plan;
+  `SPEC.md` is not, and neither you nor the executor may make the plan depend on it. Copying the
+  contracts into the plan doubles the corpus that three lenses re-read on every round, and creates a
+  second copy that drifts from the first.
 - **No placeholders.** No "TBD", no "add error handling here", no "similar to Task 3", no `...` in a
   code block, no function body left as a comment. If a step shows code, it is the code.
 - **Signatures are identical across tasks.** A type declared in Task 2 and used in Task 5 must match
   character for character. Mismatched signatures are the defect this plan format exists to prevent.
 - **Every task ends with the project building.** No task may leave the tree uncompilable. This is
   what makes the plan reviewable, bisectable, and abandonable half-way.
+- **The plan has a size budget.** 3200 lines total, 450 lines per task — derived in Stage 2 from
+  what the reduction rules actually deliver, not picked.
 - **You write one file:** `.claude/PLAN.md`. You do not implement anything.
 
 ## Stage 1 — Read for real
 
-1. `.claude/SPEC.md` in full. It is the authority on *what*; you own *how*.
+1. `.claude/SPEC.md` and `.claude/CONTRACTS.md` in full. SPEC is the authority on *what*; contracts
+   are the authority on the boundaries. You own *how* — **except** where SPEC §7 Low-Level Design
+   names a decision, which is binding on you. §7 is written to contain only decisions the plan is
+   not free to make differently; if it contains anything else, escalate that rather than treating it
+   as advice.
 2. Every doc `CLAUDE.md` routes to for the spec's feature areas — plus
    [architecture/viper.md](../docs/architecture/viper.md),
    [code/project-layout.md](../docs/code/project-layout.md),
@@ -45,7 +56,16 @@ do.
 3. **The closest existing precedent in the codebase.** Find the module or service that most
    resembles what you are about to add and read it end to end. Your plan should produce code that
    looks like it was written by whoever wrote that file. Name it in the plan header.
-4. Every file the plan will modify — whole, not the region you expect to touch.
+4. Every **source** file the plan will modify — whole, not the region you expect to touch.
+
+   **Never read whole:** `project.pbxproj`, any `*.strings`, `R.generated.swift`,
+   `CIKeys.generated.swift`. These are registries, not code: on this repo `project.pbxproj` is
+   ~38,000 lines and the fourteen `Localizable.strings` are ~570k tokens between them — more than a
+   context window, and several times the entire re-reading cost this framework is built to control.
+   From each you need one fact, and `Grep` gets it: where a sibling file's `PBXBuildFile` /
+   `PBXFileReference` pair sits, whether a string key already exists, what the generated accessor
+   for it is called. Quote the lines you found in the plan so the executor does not have to look
+   again.
 
 If the spec turns out to be wrong or under-specified once you are in the code, **stop and say so**
 via `TO: main` with `KIND: ESCALATION`. Do not patch the gap silently in the plan; the spec is the
@@ -76,12 +96,51 @@ they review separately.
 
 **Scope check:** if the spec describes two independent subsystems, produce two plans and say so.
 
+### The size budget
+
+**3200 lines for the whole plan; 450 lines for any one task.** These are not style preferences —
+three lenses re-read every line on every round, so a 5000-line plan costs more to review three times
+than it cost to write, and the reviewers run out of attention before they run out of document.
+
+The numbers are derived, not chosen. Measured on a real 4956-line plan for a funds-critical feature:
+contracts-by-reference removes ~350 lines, test case tables remove ~1450, landing it at ~3150 with
+its largest non-test task at 488. A budget below what the rules can reach is not a budget, it is an
+escalation that fires every run and carries no information. If you find the rules routinely
+overshooting these numbers, say so — the budget is wrong and should be re-derived, not quietly
+exceeded.
+
+Check with `.claude/scripts/plan-lint.sh` before you hand off. If you are over:
+
+1. **Test bodies are the usual culprit.** See Stage 3 — they become case tables.
+2. **Then boilerplate — under a rule that does not collide with "if a step shows code, it is the
+   code".** The two are reconciled by what *decision content* the code carries:
+
+   > Boilerplate you may replace with a precedent is code where **every token is determined by the
+   > members you list**: an `init` assigning named properties in order, a conformance forwarding to
+   > an already-specified method, a `ViewFactory` wiring dependencies you have named. Replace it
+   > with a `file:line` precedent **and** the explicit member list — both halves, or it is a
+   > placeholder and `executability` will report it as one.
+   >
+   > If cutting it leaves the executor a choice about a call, a flag, an amount, an ordering, a
+   > queue, or a keep-alive, it is not boilerplate. Paste it. This test is about decisions, not
+   > about arithmetic — a `Bool` argument with no obvious value is as dangerous as a number.
+
+3. **Still over → that is a scope finding, not a formatting one.** Escalate `TO: main` with
+   `KIND: ESCALATION` proposing the split, before the reviewers are assigned. A plan that needs
+   5000 lines is usually two plans, and the human should decide that rather than absorb it.
+
 ## Stage 3 — Write `.claude/PLAN.md`
 
 ````markdown
 # <Feature> — Implementation Plan
 
-**Spec:** `.claude/SPEC.md` (approved)
+**Your reading list:** this file and `.claude/CONTRACTS.md`. Those two, and nothing else — not
+`.claude/SPEC.md`. If you find yourself needing the spec to execute a step, that step is
+under-specified: stop and say so rather than going to look.
+**Contracts pinned at:** `<sha256 of .claude/CONTRACTS.md>`
+> Before Task 1, run `shasum -a 256 .claude/CONTRACTS.md`. If it does not match, **stop** — the
+> contracts have moved since this plan was written, and every signature below is suspect. The
+> artefacts are gitignored and single-slot, so this happens whenever a new feature was started.
 **Risk tier:** critical | standard | low
 **Precedent:** `path/to/TheClosestExistingThing.swift` — match its structure and idiom.
 
@@ -91,8 +150,19 @@ One paragraph, from the user's point of view, carried from SPEC §1.
 
 ## Contracts
 
-Every contract from SPEC §5, verbatim, with its file path. The executor implements against these
-and never opens the spec.
+One row per contract this plan touches. The executor opens `.claude/CONTRACTS.md` at that id for the
+full declaration, its semantics, errors, threading and ownership.
+
+| Ref | Type | File | Touched by |
+|-----|------|------|------------|
+| C-1 | `AssetExchangeCommission` — NEW | `novawallet/…/AssetExchangeCommission.swift` | Task 1, 3 |
+| C-3 | `AssetExchangeFee` — MODIFIED | `novawallet/…/AssetExchangeFee.swift:13` | Task 3 |
+
+Every `C-N` here must exist in `CONTRACTS.md`, and every contract in `CONTRACTS.md` must appear
+here — `plan-lint.sh` checks both directions.
+
+Where a task's code depends on the exact shape of a contract, the signature goes in that task's
+**Interface** block — not here, and not twice.
 
 ## Constraints
 
@@ -206,6 +276,29 @@ sits after.
 real `file:line`. "Produces" is copied verbatim into the consuming task's "Consumes". If you cannot
 fill this in for a task, the decomposition is wrong.
 
+**Test tasks are case tables, not test bodies.** A test is the one thing in this plan the executor
+can write correctly from a specification of its inputs and its expected output, because the compiler
+and the assertion tell them immediately when they got it wrong. Paste-ready XCTest bodies are the
+single largest and least useful thing a plan can carry — they are bulk that three lenses re-read
+every round to check arithmetic they could check in one table.
+
+So a test task states, per case: the test class, the method name, the fixture, the inputs, the
+expected value, and the requirement it discharges. **The table carries all six** — a row that does
+not name the type and method under test leaves the executor to pick one, and a test that passes
+against a helper while the shipped path is wrong is the exact defect a test exists to prevent.
+
+| Test class | Method | Fixture | Given | Expect | Discharges |
+|---|---|---|---|---|---|
+| `AssetExchangeCommissionPolicyTests` | `testChargingIndexForRouteShapes` | `createPath(_:)` | edge sequence `[h,h,x,h]` | charging index `2` | FR-1, EC-1 |
+| `AssetExchangeCommissionPolicyTests` | `testChargingIndexForRouteShapes` | `createPath(_:)` | `[h,h,x,a,x,h]` | charging index `4` | FR-1, EC-3 |
+| `AssetExchangeCommissionTests` | `testNetAmountRoundsDown` | — | gross `1_000_000_007`, rate `0.85%` | `991_500_006` — floor, never round | FR-4, NFR-9 |
+
+Write out the **fixture builders** in full — every helper the `Fixture` column names — and the
+**derivation of any expected value the executor could not reproduce**. A number nobody can re-derive
+is a number that will be copied wrongly and then asserted forever. Everything else is the table. If
+a case needs a paragraph to explain what it is asserting, that paragraph is the value; the
+`XCTAssertEqual` around it is not.
+
 **Verify.** A command the executor can paste, plus the expected result. Build for most tasks; a
 targeted test where the spec's §10 named one. The full suite belongs once, at the end. Never
 `bundle exec fastlane run_unit_tests` mid-plan — it is slow enough that it will be skipped, and a
@@ -240,20 +333,30 @@ tight iteration loops only, and never for the final verification of the last tas
 
 ## Stage 4 — Self-review before handoff
 
-1. **Spec coverage.** Walk SPEC §3, §4, §5, §8. Every FR, NFR, contract, and edge case appears in
-   some task's **Implements**. List anything that does not — it is either a missing task or a spec
-   item you decided silently to drop.
-2. **No inventions.** Walk the other way: every task implements something the spec asked for. A task
-   with no requirement behind it is scope creep and will be caught by `plan-fidelity`.
-3. **Signature sweep.** Diff every "Produces" against the "Consumes" that cites it. Character for
-   character.
-4. **Placeholder sweep.** Search your own draft for `TBD`, `...`, `similar to`, `as needed`,
-   `appropriate`, `etc`. Every hit is a defect.
-5. **Symbol reality check.** `Grep` every existing symbol your code snippets reference. Wrong
+**First, run the linter.** It does the mechanical half — size budget, placeholders, Produces/Consumes
+drift, symbols consumed but declared nowhere, requirement ids that vanished, file-table mismatches,
+tasks missing a Verify:
+
+```bash
+.claude/scripts/plan-lint.sh
+```
+
+Fix everything it reports before you hand off. A finding a script could have caught, reaching an
+Opus reviewer, is a round wasted at the most expensive rate in the pipeline. Do not hand off a plan
+the linter still fails, and do not argue with it — its checks are textual and it does not have
+opinions.
+
+Then the half a script cannot do:
+
+1. **Coverage is real, not nominal.** The linter proves each requirement id appears somewhere. You
+   check the task it appears in actually discharges it, and that no task implements something no
+   requirement asked for.
+2. **Symbol reality check.** `Grep` every existing symbol your code snippets reference. Wrong
    argument labels and renamed types are the most common way a ready-to-paste plan fails to paste.
-6. **Compile order.** Read the tasks in order and ask at each boundary whether the tree builds. If a
+   The linter only checks that the identifier exists somewhere; you check the signature.
+3. **Compile order.** Read the tasks in order and ask at each boundary whether the tree builds. If a
    task references something a later task creates, reorder.
-7. **Peer files.** For every new or changed protocol, view, service, or entity, check the peer table
+4. **Peer files.** For every new or changed protocol, view, service, or entity, check the peer table
    above. Missing peers are the most common blocking finding on this codebase.
 
 ## Stage 5 — The review loop
@@ -285,8 +388,54 @@ When a finding shows the *spec* is wrong rather than the plan, do not fix it in 
 `TO: main` with `KIND: ESCALATION` — that is a decision for the human, and possibly another spec
 round.
 
-Bump the `round` marker, re-run the Stage 4 sweeps on changed tasks, and tell all three reviewers the
-new version is ready. Three rounds, then the orchestrator escalates.
+### Publishing a revision
+
+**Order matters here, and getting it wrong makes the changelog lie.** Run `plan-lint.sh` and the
+Stage 4 checks, fix everything they report, and *then* write the changelog and close the task. If
+you close first and lint second, the lint fixes land in tasks your changelog has already listed as
+**Unchanged**, and no reviewer will ever read them. Lint-clean is a precondition of completing a
+resolve task, not a step after it.
+
+If lint reports something you cannot fix without a decision the human has already made — an accepted
+over-budget plan is the usual case — say so in the changelog rather than silently leaving it open.
+
+**Every revision comes with a changelog, and the changelog is what makes round 2 affordable.**
+Reviewers re-read only the tasks you name, so a task you changed and did not list will not be
+re-reviewed by anyone.
+
+It goes in the **`description` of your resolve-findings task** — not in `PLAN.md`. `TaskGet` returns
+`description`, so the orchestrator reads it to decide which lenses to re-assign and the reviewers
+read it to scope their round. Nothing about the argument belongs in the plan itself; the independent
+reader at the end of the phase must not be able to tell which tasks were fought over.
+
+```
+TaskUpdate({ taskId: '<id>', status: 'completed',
+             subject: 'plan r2: resolve findings [4 accepted / 2 rebutted / 1 escalated]',
+             description: `## Changed in r3
+
+| Task | What changed | Answering |
+|------|--------------|-----------|
+| 5 | \`commissionBaseAmount\` now floors instead of rounding | plan-correctness B1 |
+| 6 | new step 4 — gross-up applied before the ED check | plan-fidelity M2 |
+| 9 | wording only | plan-exec m1 |
+| — | Contracts table: §5.11 row added | plan-fidelity M3 |
+
+**Unchanged:** Tasks 1–4, 7, 8, 10–12.` })
+```
+
+Repeat it in your `KIND: REVISION` message to the reviewers.
+
+Say **"wording only"** where that is true, and mean it — a reviewer who re-reads a task on that
+promise and finds a behaviour change will stop believing the changelog, and then every round costs
+full price again.
+
+**Minors are not yours to fix off-book.** Under the severity gate a round converges with minors
+still open, and they go to the human at the gate. Do not quietly repair one after convergence: the
+cold readers and the human must see the document the reviewers signed off. If a minor is worth
+fixing, the orchestrator opens a `plan rN: minor repairs` task for it and the prepass re-runs on
+completion.
+
+Three assigned rounds per lens, then the orchestrator escalates that lens.
 
 ## Reporting
 

@@ -20,7 +20,7 @@ export const meta = {
 const opts = args || {}
 const target = opts.target || 'local'
 // EVERY diff command excludes .claude/ — the design artefacts live there, and a
-// reviewer that receives SPEC.md/PLAN.md inside a mandated command cannot decline
+// reviewer that receives SPEC.md/CONTRACTS.md/PLAN.md inside a mandated command cannot decline
 // them. .gitignore is layer 1; this is layer 2; the assertion below is layer 3.
 const PATHSPEC = "-- . ':(exclude).claude/'"
 const diffCmd =
@@ -32,7 +32,7 @@ const diffCmd =
 // It is not enough to put this in one agent definition: skeptics, scope and fixer
 // are spawned by bare agent() calls that load no definition at all.
 const NO_DESIGN_DOCS = `
-NEVER read \`.claude/SPEC.md\`, \`.claude/PLAN.md\`, \`.claude/REVIEW-LOG.md\`,
+NEVER read \`.claude/SPEC.md\`, \`.claude/CONTRACTS.md\`, \`.claude/PLAN.md\`, \`.claude/REVIEW-LOG.md\`,
 \`.claude/design.excalidraw.json\`, the PR description, or commit messages describing intent.
 Those are the author's reasoning, and it is exactly what made any bug in this diff look correct
 while it was being written. A document stating that the behaviour was intended is NOT evidence that
@@ -144,7 +144,7 @@ const guard = await agent(
 
     ${target === 'local' ? "git diff develop...HEAD --name-only" : `gh pr diff ${target} --name-only`}
 
-Set contaminated=true if ANY of these appear: .claude/SPEC.md, .claude/PLAN.md,
+Set contaminated=true if ANY of these appear: .claude/SPEC.md, .claude/CONTRACTS.md, .claude/PLAN.md,
 .claude/REVIEW-LOG.md, .claude/design.excalidraw.json — or any other file under .claude/ that
 carries design reasoning. Otherwise contaminated=false. List the paths you saw under .claude/.`,
   { label: 'contamination-guard', schema: GUARD_SCHEMA, effort: 'low' },

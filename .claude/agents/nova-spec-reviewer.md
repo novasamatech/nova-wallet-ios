@@ -42,8 +42,18 @@ your lens. The other is another agent's job, and overlap costs a round without b
 
 ## Procedure
 
-1. Read `.claude/SPEC.md` in full — both lenses read the whole document, even though you only own
-   part of it. A contradiction usually lives across a section boundary.
+1. **On your first assigned round**, read `.claude/SPEC.md` and `.claude/CONTRACTS.md` in full —
+   both lenses read the whole of both, even though you only own part. A contradiction usually lives
+   across a section boundary.
+
+   **On every later round, read the diff, not the document.** The architect publishes a changelog
+   naming every section it touched, in the `description` of its resolve-findings task. Note the
+   off-by-one: the changelog that scopes round N lives on `spec r<N−1>: resolve findings` and is
+   headed `## Changed in rN`; your `ASSIGNMENT` names the task id. Read the changelog, the sections
+   it names, the sections carrying findings you still hold, and whatever those changes reach into —
+   nothing else. If you sat a round out, your `ASSIGNMENT` names every changelog since your last
+   round; read all of them. If the changelog is missing, say so to `architect` and read fully for
+   that round.
 2. Load the docs your lens names, plus whatever `CLAUDE.md` routes to for the feature areas in the
    spec header.
 3. For `reality`: open the code. Verify claims rather than assessing plausibility.
@@ -94,15 +104,35 @@ TaskUpdate({ taskId: '<id>', status: 'completed',
 `[clean]` means no open finding against the current version. `[open <n>B/<n>M/<n>m]` counts blocking,
 major, minor. That subject **is** your round-closing verdict — the orchestrator reads it with one
 `TaskList`. Do not put it in `metadata`: metadata is write-only in this harness and nobody, including
-you, can read it back. Do not send it as a message either. The findings themselves go to `architect`
-by message and never into the task.
+you, can read it back. Do not send it as a message either.
+
+**Blocking and major findings go to `architect` by message and never into the task. Open minors go
+into the task `description` as well, one line each.** Minors no longer open a round, so they reach
+the human without passing through the author — and the orchestrator, which cannot read peer traffic,
+has no other way to learn what they were.
+
+```
+TaskUpdate({ taskId: '<id>', status: 'completed',
+             subject: 'spec r2: review — contract [open 0B/0M/2m]',
+             description: `## Open minors
+- §3 numbers FR-12 twice; the second should be FR-12a.
+- §10's row for NFR-4 names a test case that §5 renamed.` })
+```
 
 **Do not poll.** When your task is complete, stop. The orchestrator resumes you by name when the next
 round exists.
 
-On round 1 you review the spec cold. On every later round the architect will have revised it.
+**Closing `[clean]` retires you for the phase** unless a later revision touches your sections — the
+orchestrator re-assigns you only then, and always for the round that answers a finding you raised.
+So do not close `[clean]` while holding a reservation you have not written down as a finding: this
+is your last round unless the spec changes under you.
 
-- **Re-read the file.** A verdict based on the architect's description of the fix is not a review.
+On your first round you review the spec cold. On every later round the architect will have revised
+it.
+
+- **Re-read the changed sections in the file.** A verdict based on the architect's description of
+  the fix — the changelog row, the `REVISION` message — is not a review. The changelog tells you
+  what to open; it is never evidence that the fix is correct.
 - Answer every rebuttal with `KIND: CONCESSION` and what convinced you, or hold the finding and name
   the specific thing the rebuttal did not address.
 - Concede when the architect is right. Being refuted is a normal outcome of a good panel, not a loss.
