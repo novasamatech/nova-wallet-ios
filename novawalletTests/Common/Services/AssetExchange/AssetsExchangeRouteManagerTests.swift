@@ -166,7 +166,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         let commission = try XCTUnwrap(try resolveWrapper.targetOperation.extractNoCancellableResultData())
 
-        XCTAssertEqual(commission.estimatedAmount, 8_500)
+        XCTAssertEqual(commission.estimatedAmount, 8500)
 
         let correctedLimit = AssetExchangeSwapLimit(
             direction: .sell,
@@ -184,7 +184,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         let derivedAmount = HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs)
 
-        XCTAssertEqual(derivedAmount, 4_250)
+        XCTAssertEqual(derivedAmount, 4250)
         XCTAssertNotEqual(derivedAmount, commission.estimatedAmount)
     }
 }
@@ -211,7 +211,7 @@ private extension AssetsExchangeRouteManagerTests {
         let commission = AssetExchangeCommission(
             chargingOperationIndex: 0,
             asset: CommissionTestFixtures.asset(1),
-            estimatedAmount: 8_500,
+            estimatedAmount: 8500,
             beneficiary: CommissionTestFixtures.beneficiary,
             rate: AssetExchangeCommissionConstants.rate
         )

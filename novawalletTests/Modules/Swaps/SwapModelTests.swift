@@ -211,7 +211,7 @@ private extension SwapModelTests {
             AssetExchangeCommission(
                 chargingOperationIndex: $0,
                 asset: CommissionTestFixtures.asset(2),
-                estimatedAmount: 8_500,
+                estimatedAmount: 8500,
                 beneficiary: CommissionTestFixtures.beneficiary,
                 rate: AssetExchangeCommissionConstants.rate
             )

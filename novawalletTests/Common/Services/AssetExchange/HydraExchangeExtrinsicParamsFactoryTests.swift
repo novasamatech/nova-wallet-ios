@@ -8,25 +8,25 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             direction: .sell,
             amountOut: 1_000_000,
             slippage: BigRational(numerator: 0, denominator: 1000),
-            expected: 8_500
+            expected: 8500
         )
         assertCommissionAmount(
             direction: .sell,
             amountOut: 1_000_000,
             slippage: BigRational(numerator: 5, denominator: 1000),
-            expected: 8_457
+            expected: 8457
         )
         assertCommissionAmount(
             direction: .sell,
             amountOut: 1_000_000,
             slippage: BigRational(numerator: 5, denominator: 100),
-            expected: 8_075
+            expected: 8075
         )
         assertCommissionAmount(
             direction: .buy,
             amountOut: 1_000_000,
             slippage: BigRational(numerator: 5, denominator: 100),
-            expected: 8_500
+            expected: 8500
         )
         assertCommissionAmount(
             direction: .buy,
@@ -51,7 +51,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: originalCallArgs
         )
 
-        XCTAssertEqual(originalAmount, 8_415)
+        XCTAssertEqual(originalAmount, 8415)
         assertMatchesBoundFormula(amount: originalAmount, callArgs: originalCallArgs, commission: commission)
 
         let correctedLimit = originalLimit.replacingAmountIn(500_000, shouldReplaceBuyWithSell: false)
@@ -61,7 +61,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: correctedCallArgs
         )
 
-        XCTAssertEqual(correctedAmount, 4_207)
+        XCTAssertEqual(correctedAmount, 4207)
         assertMatchesBoundFormula(amount: correctedAmount, callArgs: correctedCallArgs, commission: commission)
     }
 

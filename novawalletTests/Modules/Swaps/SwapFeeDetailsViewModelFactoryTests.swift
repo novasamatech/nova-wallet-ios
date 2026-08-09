@@ -32,8 +32,8 @@ final class SwapFeeDetailsViewModelFactoryTests: XCTestCase {
         let operations = [try makeOperation()]
         let locale = LocalizationManager.shared.selectedLocale
 
-        let firstFee = makeFee(submissionAmount: 12_345, commission: nil)
-        let secondFee = makeFee(submissionAmount: 54_321, commission: nil)
+        let firstFee = makeFee(submissionAmount: 12345, commission: nil)
+        let secondFee = makeFee(submissionAmount: 54321, commission: nil)
 
         let firstViewModel = factory.createViewModel(from: operations, fee: firstFee, locale: locale)
         let secondViewModel = factory.createViewModel(from: operations, fee: secondFee, locale: locale)
@@ -61,7 +61,7 @@ private extension SwapFeeDetailsViewModelFactoryTests {
         )
     }
 
-    func makeFee(submissionAmount: Balance = 12_345, commission: AssetExchangeCommission?) -> AssetExchangeFee {
+    func makeFee(submissionAmount: Balance = 12345, commission: AssetExchangeCommission?) -> AssetExchangeFee {
         let operationFee = AssetExchangeOperationFee(
             submissionFee: .init(
                 amountWithAsset: .init(amount: submissionAmount, asset: CommissionTestFixtures.asset(0)),

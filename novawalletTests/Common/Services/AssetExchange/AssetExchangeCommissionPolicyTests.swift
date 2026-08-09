@@ -90,7 +90,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
         let withSlippageAmount = try XCTUnwrap(withSlippage?.estimatedAmount)
 
-        XCTAssertEqual(withSlippageAmount, 8_415)
+        XCTAssertEqual(withSlippageAmount, 8415)
         XCTAssertLessThanOrEqual(withSlippageAmount, AssetExchangeCommissionConstants.rate.mul(value: 1_000_000))
 
         let noSlippage = try resolveCommission(
@@ -99,7 +99,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             slippage: BigRational(numerator: 0, denominator: 100)
         )
 
-        XCTAssertEqual(noSlippage?.estimatedAmount, 8_500)
+        XCTAssertEqual(noSlippage?.estimatedAmount, 8500)
     }
 
     func testBaseComesFromLastEdgeOfRun() throws {
@@ -113,7 +113,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
 
         XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
-        XCTAssertEqual(commission?.estimatedAmount, 59_500)
+        XCTAssertEqual(commission?.estimatedAmount, 59500)
     }
 
     func testCommissionAssetIsChargingSegmentAssetOut() throws {
