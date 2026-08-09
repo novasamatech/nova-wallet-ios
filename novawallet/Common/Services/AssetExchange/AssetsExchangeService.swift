@@ -41,6 +41,7 @@ final class AssetsExchangeService {
     let graphProvider: AssetsExchangeGraphProviding
     let feeSupportProvider: AssetsExchangeFeeSupportProviding
     let pathCostEstimator: AssetsExchangePathCostEstimating
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -49,6 +50,7 @@ final class AssetsExchangeService {
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateManaging,
         pathCostEstimator: AssetsExchangePathCostEstimating,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -56,6 +58,7 @@ final class AssetsExchangeService {
         self.feeSupportProvider = feeSupportProvider
         self.exchangesStateMediator = exchangesStateMediator
         self.pathCostEstimator = pathCostEstimator
+        self.commissionPolicy = commissionPolicy
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -73,7 +76,7 @@ final class AssetsExchangeService {
             let operationFactory = AssetsExchangeOperationFactory(
                 graph: graph,
                 pathCostEstimator: self.pathCostEstimator,
-                commissionPolicy: AssetExchangeNoCommissionPolicy(),
+                commissionPolicy: self.commissionPolicy,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             )

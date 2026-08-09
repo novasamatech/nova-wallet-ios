@@ -44,9 +44,14 @@ extension AssetExchangeGraphProxy: AssetQuoteFactoryProtocol {
             maxTopPaths: maxQuotePaths
         )
 
+        // This manager prices a network fee being converted into a non-native fee asset, always
+        // with direction == .buy — the exact branch the gross-up modifies. A policy here would
+        // multiply every fee routed through a Hydration path by 1/(1 - 0.85%), inflating a fee the
+        // user actually pays over a route on which no commission is ever taken.
         let routeManager = AssetsExchangeRouteManager(
             possiblePaths: possiblePaths,
             pathCostEstimator: pathCostEstimator,
+            commissionPolicy: nil,
             operationQueue: operationQueue,
             logger: logger
         )

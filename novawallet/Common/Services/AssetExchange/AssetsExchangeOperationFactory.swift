@@ -232,6 +232,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let routeWrapper = AssetsExchangeRouteManager(
                 possiblePaths: paths,
                 pathCostEstimator: self.pathCostEstimator,
+                commissionPolicy: self.commissionPolicy,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)
@@ -274,52 +275,22 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
-        do {
-            let atomicOperations = try prepareAtomicOperations(
-                for: args.route,
-                slippage: args.slippage,
-                feeAssetId: args.feeAssetId,
-                commission: nil
-            )
+        let commissionWrapper = commissionPolicy.resolveCommissionWrapper(
+            for: args.route,
+            slippage: args.slippage
+        )
 
-            let feeWrappers = atomicOperations.map { $0.estimateFee() }
+        let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
 
-            let intermediateFeesWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
-                operationQueue: operationQueue
-            ) {
-                let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
-
-                return self.calculateIntermediateFeesInAssetIn(for: atomicOperations, operationFees: operationFees)
-            }
-
-            feeWrappers.forEach { intermediateFeesWrapper.addDependency(wrapper: $0) }
-
-            let mappingOperation = ClosureOperation<AssetExchangeFee> {
-                let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
-
-                let intermediateFees = try intermediateFeesWrapper.targetOperation.extractNoCancellableResultData()
-
-                return AssetExchangeFee(
-                    route: args.route,
-                    operationFees: operationFees,
-                    intermediateFeesInAssetIn: intermediateFees,
-                    slippage: args.slippage,
-                    feeAssetId: args.feeAssetId,
-                    commission: nil
-                )
-            }
-
-            feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-            mappingOperation.addDependency(intermediateFeesWrapper.targetOperation)
-
-            let dependencies = feeWrappers.flatMap(\.allOperations)
-
-            return intermediateFeesWrapper
-                .insertingHead(operations: dependencies)
-                .insertingTail(operation: mappingOperation)
-        } catch {
-            return .createWithError(error)
+            return self.createFeeWrapper(for: args, commission: commission)
         }
+
+        feeWrapper.addDependency(wrapper: commissionWrapper)
+
+        return feeWrapper.insertingHead(operations: commissionWrapper.allOperations)
     }
 
     func createExecutionWrapper(
@@ -332,7 +303,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 for: fee.route,
                 slippage: fee.slippage,
                 feeAssetId: fee.feeAssetId,
-                commission: nil
+                commission: fee.commission
             )
 
             let executionManager = AssetExchangeExecutionManager(
@@ -360,7 +331,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 for: fee.route,
                 slippage: fee.slippage,
                 feeAssetId: fee.feeAssetId,
-                commission: nil
+                commission: fee.commission
             )
 
             guard
@@ -377,6 +348,60 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             )
 
             return atomicOperation.submitWrapper(for: swapLimit)
+        } catch {
+            return .createWithError(error)
+        }
+    }
+}
+
+private extension AssetsExchangeOperationFactory {
+    func createFeeWrapper(
+        for args: AssetExchangeFeeArgs,
+        commission: AssetExchangeCommission?
+    ) -> CompoundOperationWrapper<AssetExchangeFee> {
+        do {
+            let atomicOperations = try prepareAtomicOperations(
+                for: args.route,
+                slippage: args.slippage,
+                feeAssetId: args.feeAssetId,
+                commission: commission
+            )
+
+            let feeWrappers = atomicOperations.map { $0.estimateFee() }
+
+            let intermediateFeesWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+
+                return self.calculateIntermediateFeesInAssetIn(for: atomicOperations, operationFees: operationFees)
+            }
+
+            feeWrappers.forEach { intermediateFeesWrapper.addDependency(wrapper: $0) }
+
+            let mappingOperation = ClosureOperation<AssetExchangeFee> {
+                let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+
+                let intermediateFees = try intermediateFeesWrapper.targetOperation.extractNoCancellableResultData()
+
+                return AssetExchangeFee(
+                    route: args.route,
+                    operationFees: operationFees,
+                    intermediateFeesInAssetIn: intermediateFees,
+                    slippage: args.slippage,
+                    feeAssetId: args.feeAssetId,
+                    commission: commission
+                )
+            }
+
+            feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+            mappingOperation.addDependency(intermediateFeesWrapper.targetOperation)
+
+            let dependencies = feeWrappers.flatMap(\.allOperations)
+
+            return intermediateFeesWrapper
+                .insertingHead(operations: dependencies)
+                .insertingTail(operation: mappingOperation)
         } catch {
             return .createWithError(error)
         }

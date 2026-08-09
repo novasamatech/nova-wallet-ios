@@ -256,6 +256,36 @@ final class StubExchangePathCostEstimator: AssetsExchangePathCostEstimating {
     }
 }
 
+final class CountingCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
+    let wrapped: AssetExchangeCommissionPolicy
+
+    private(set) var resolveCallCount = 0
+
+    init(wrapped: AssetExchangeCommissionPolicy) {
+        self.wrapped = wrapped
+    }
+
+    func chargingOperationIndex(in path: AssetExchangeGraphPath) -> Int? {
+        wrapped.chargingOperationIndex(in: path)
+    }
+
+    func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
+        wrapped.grossingUpAmountOut(netAmountOut, for: path)
+    }
+
+    func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance {
+        wrapped.netAmount(from: grossAmount, willCharge: willCharge)
+    }
+
+    func resolveCommissionWrapper(
+        for route: AssetExchangeRoute,
+        slippage: BigRational
+    ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
+        resolveCallCount += 1
+        return wrapped.resolveCommissionWrapper(for: route, slippage: slippage)
+    }
+}
+
 final class StubExchangeGraph: AssetsExchangeGraphProtocol {
     let paths: [AssetExchangeGraphPath]
 

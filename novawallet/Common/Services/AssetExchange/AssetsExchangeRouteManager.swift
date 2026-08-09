@@ -9,26 +9,36 @@ final class AssetsExchangeRouteManager {
 
     let possiblePaths: [AssetExchangeGraphPath]
     let pathCostEstimator: AssetsExchangePathCostEstimating
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol?
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         possiblePaths: [AssetExchangeGraphPath],
         pathCostEstimator: AssetsExchangePathCostEstimating,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol?,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.possiblePaths = possiblePaths
         self.pathCostEstimator = pathCostEstimator
+        self.commissionPolicy = commissionPolicy
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
-    private func createQuote(
+    func createQuote(
         for path: AssetExchangeGraphPath,
         amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute> {
+        let seedAmount: Balance = switch direction {
+        case .sell:
+            amount
+        case .buy:
+            commissionPolicy?.grossingUpAmountOut(amount, for: path) ?? amount
+        }
+
         let wrappers: [CompoundOperationWrapper<AssetExchangeRouteItem>]
         wrappers = path.quoteIteration(for: direction).reduce([]) { prevWrappers, item in
             let prevWrapper = prevWrappers.last
@@ -38,7 +48,7 @@ final class AssetsExchangeRouteManager {
             ) {
                 let prevRouteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
-                let wrapper = item.quote(amount: prevRouteItem?.quote ?? amount, direction: direction)
+                let wrapper = item.quote(amount: prevRouteItem?.quote ?? seedAmount, direction: direction)
 
                 return wrapper
             }
@@ -53,7 +63,7 @@ final class AssetsExchangeRouteManager {
 
                 return AssetExchangeRouteItem(
                     edge: item,
-                    amount: prevQuoteItem?.quote ?? amount,
+                    amount: prevQuoteItem?.quote ?? seedAmount,
                     quote: quote
                 )
             }
@@ -66,7 +76,7 @@ final class AssetsExchangeRouteManager {
         }
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute> {
-            let initRoute = AssetExchangeRoute(items: [], amount: amount, direction: direction)
+            let initRoute = AssetExchangeRoute(items: [], amount: seedAmount, direction: direction)
 
             return try wrappers.reduce(initRoute) { route, wrapper in
                 let item = try wrapper.targetOperation.extractNoCancellableResultData()
