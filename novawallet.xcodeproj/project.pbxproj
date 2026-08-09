@@ -425,6 +425,7 @@
 		0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */; };
 		0C27F3842DA6CF2C00191FFF /* BlockWeight+Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */; };
 		0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */; };
+		AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC76E87DCFF3D7B4CE5B0906 /* SubstrateTransferCommandFactoryTests.swift */; };
 		0C27F38C2DA8162A00191FFF /* WeightPropertyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F38B2DA8162A00191FFF /* WeightPropertyWrappers.swift */; };
 		0C27F38E2DA81B5E00191FFF /* JSON+BigUInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F38D2DA81B5E00191FFF /* JSON+BigUInt.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
@@ -7045,6 +7046,7 @@
 		0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystePallet+ConstantPath.swift"; sourceTree = "<group>"; };
 		0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockWeight+Operation.swift"; sourceTree = "<group>"; };
 		0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateWeightTest.swift; sourceTree = "<group>"; };
+		BC76E87DCFF3D7B4CE5B0906 /* SubstrateTransferCommandFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateTransferCommandFactoryTests.swift; sourceTree = "<group>"; };
 		0C27F38B2DA8162A00191FFF /* WeightPropertyWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightPropertyWrappers.swift; sourceTree = "<group>"; };
 		0C27F38D2DA81B5E00191FFF /* JSON+BigUInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+BigUInt.swift"; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
@@ -14189,6 +14191,7 @@
 			isa = PBXGroup;
 			children = (
 				0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */,
+				BC76E87DCFF3D7B4CE5B0906 /* SubstrateTransferCommandFactoryTests.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -36978,6 +36981,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */,
 				084A55D813829148011F4361 /* StubAssetExchangeEdge.swift in Sources */,
 				4B1233664B97FD871610C205 /* CommissionTestFixtures.swift in Sources */,
 				3185E9401279423ECA14DC29 /* AssetExchangeCommissionPolicyTests.swift in Sources */,

@@ -19,6 +19,22 @@ final class SubstrateTransferCommandFactory {
         recipient: AccountId,
         assetStorageInfo: AssetStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        try addingTransferCommand(
+            to: builder,
+            amount: amount,
+            recipient: recipient,
+            assetStorageInfo: assetStorageInfo,
+            keepingSenderAlive: false
+        )
+    }
+
+    func addingTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recipient: AccountId,
+        assetStorageInfo: AssetStorageInfo,
+        keepingSenderAlive: Bool
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch assetStorageInfo {
         case let .orml(info), let .ormlHydrationEvm(info):
             return try addingOrmlTransferCommand(
@@ -39,7 +55,8 @@ final class SubstrateTransferCommandFactory {
                 to: builder,
                 amount: amount,
                 recipient: recipient,
-                info: info
+                info: info,
+                keepingSenderAlive: keepingSenderAlive
             )
         case let .equilibrium(extras):
             return try addingEquilibriumTransferCommand(
@@ -126,25 +143,28 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recipient: AccountId,
-        info: NativeTokenStorageInfo
+        info: NativeTokenStorageInfo,
+        keepingSenderAlive: Bool
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let callPath: CallCodingPath = keepingSenderAlive ? .transferKeepAlive : info.transferCallPath
+
         switch amount {
         case let .concrete(value):
             return try addingNativeTransferValueCommand(
                 to: builder,
                 recipient: recipient,
                 value: value,
-                callPath: info.transferCallPath
+                callPath: callPath
             )
         case let .all(value):
-            if info.canTransferAll {
+            if info.canTransferAll, !keepingSenderAlive {
                 return try addingNativeTransferAllCommand(to: builder, recipient: recipient)
             } else {
                 return try addingNativeTransferValueCommand(
                     to: builder,
                     recipient: recipient,
                     value: value,
-                    callPath: info.transferCallPath
+                    callPath: callPath
                 )
             }
         }
