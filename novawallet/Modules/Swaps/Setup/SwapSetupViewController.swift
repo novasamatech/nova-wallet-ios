@@ -266,6 +266,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
+    func didReceiveCommissionDisclosure(viewModel: String?) {
+        rootView.setCommissionDisclosure(viewModel)
+    }
+
     func didReceiveSettingsState(isAvailable: Bool) {
         navigationItem.rightBarButtonItem?.isEnabled = isAvailable
     }

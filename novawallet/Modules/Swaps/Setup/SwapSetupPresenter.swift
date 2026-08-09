@@ -44,6 +44,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         priceDiffModelFactory: SwapPriceDifferenceModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
@@ -64,6 +65,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
             dataValidatingFactory: dataValidatingFactory,
             priceDiffFactory: priceDiffModelFactory,
             priceStore: priceStore,
+            commissionPolicy: commissionPolicy,
             logger: logger
         )
 
@@ -157,16 +159,12 @@ final class SwapSetupPresenter: SwapBasePresenter {
             providePayInputPriceViewModel()
             provideReceiveInputPriceViewModel()
         case .sell:
-            receiveAmountInput = receiveChainAsset.map {
-                quote.route.quote.decimal(assetInfo: $0.asset.displayInfo)
-            }
-
-            provideReceiveAmountInputViewModel()
-            provideReceiveInputPriceViewModel()
+            updateReceiveAmountFromQuote()
             providePayInputPriceViewModel()
         }
 
         provideRateViewModel()
+        provideCommissionDisclosureViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideButtonState()
@@ -179,6 +177,9 @@ final class SwapSetupPresenter: SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
+        updateReceiveAmountFromQuote()
+        provideRateViewModel()
 
         if case .rate = payAmountInput {
             providePayAmountInputViewModel()
@@ -409,6 +410,23 @@ extension SwapSetupPresenter {
         providePayAmountInputViewModel()
     }
 
+    private func updateReceiveAmountFromQuote() {
+        guard
+            let quote,
+            let receiveChainAsset,
+            quoteArgs?.direction == .sell else {
+            return
+        }
+
+        receiveAmountInput = commissionPolicy.netAmount(
+            from: quote.route.quote,
+            willCharge: chargesCommission
+        ).decimal(assetInfo: receiveChainAsset.asset.displayInfo)
+
+        provideReceiveAmountInputViewModel()
+        provideReceiveInputPriceViewModel()
+    }
+
     private func provideReceiveAssetViews() {
         provideReceiveTitle()
         provideReceiveAssetViewModel()
@@ -449,7 +467,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.route.amountOut
+                amountOut: netAmountOut
             ),
             locale: selectedLocale
         )
@@ -487,6 +505,17 @@ extension SwapSetupPresenter {
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
+    }
+
+    private func provideCommissionDisclosureViewModel() {
+        let viewModel = chargesCommission
+            ? viewModelFactory.commissionDisclosureViewModel(
+                rate: AssetExchangeCommissionConstants.rate,
+                locale: selectedLocale
+            )
+            : nil
+
+        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
     }
 
     private func provideExecutionTimeViewModel() {
@@ -535,6 +564,7 @@ extension SwapSetupPresenter {
         }
 
         provideRateViewModel()
+        provideCommissionDisclosureViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideFeeViewModel()
@@ -612,6 +642,7 @@ extension SwapSetupPresenter {
         provideButtonState()
         provideSettingsState()
         provideIssues()
+        provideCommissionDisclosureViewModel()
     }
 
     private func switchFeeChainAssetIfNecessary() {

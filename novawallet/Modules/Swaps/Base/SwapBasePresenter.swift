@@ -6,6 +6,7 @@ class SwapBasePresenter {
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol
     let priceStore: AssetExchangePriceStoring
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
@@ -80,6 +81,35 @@ class SwapBasePresenter {
         }
     }
 
+    /// Whether the disclosure is shown and the receive figure is netted. Driven by the quote-time
+    /// path predicate, which is I/O-free, so it is true from the moment the quote lands and does
+    /// not wait for the fee. A fee that resolves `commission == nil` on a charging path withdraws
+    /// it; a fee that *failed* does not, because `fee` is then still nil and the path still charges.
+    var chargesCommission: Bool {
+        guard let quote else {
+            return false
+        }
+
+        guard commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil else {
+            return false
+        }
+
+        guard let fee else {
+            return true
+        }
+
+        return fee.commission != nil
+    }
+
+    /// The receive amount as displayed: gross when nothing is charged.
+    var netAmountOut: Balance {
+        guard let quote else {
+            return 0
+        }
+
+        return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
+    }
+
     var originAccountInfo: AccountInfo? {
         getFeeChainAsset()?.chain.utilityChainAsset().flatMap {
             accountInfoDict[$0.chain.chainId]
@@ -97,12 +127,14 @@ class SwapBasePresenter {
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.dataValidatingFactory = dataValidatingFactory
         self.priceDiffFactory = priceDiffFactory
         self.priceStore = priceStore
+        self.commissionPolicy = commissionPolicy
         self.logger = logger
     }
 
