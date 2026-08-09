@@ -81,10 +81,6 @@ class SwapBasePresenter {
         }
     }
 
-    /// Whether the disclosure is shown and the receive figure is netted. Driven by the quote-time
-    /// path predicate, which is I/O-free, so it is true from the moment the quote lands and does
-    /// not wait for the fee. A fee that resolves `commission == nil` on a charging path withdraws
-    /// it; a fee that *failed* does not, because `fee` is then still nil and the path still charges.
     var chargesCommission: Bool {
         guard let quote else {
             return false
@@ -101,7 +97,6 @@ class SwapBasePresenter {
         return fee.commission != nil
     }
 
-    /// The receive amount as displayed: gross when nothing is charged.
     var netAmountOut: Balance {
         guard let quote else {
             return 0
@@ -110,18 +105,10 @@ class SwapBasePresenter {
         return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
-    /// Set when a fee withdraws a commission the quote-time predicate promised, on a `.buy` route
-    /// that was therefore quoted grossed-up. While set, quotes are requested un-inflated so the
-    /// chain cannot execute above the typed amount.
     var suppressCommissionGrossUp = false
 
-    /// Bounds the correction cycle: a balance crossing the deposit repeatedly between fee
-    /// estimates would otherwise flip the flag forever. Same helper and bound as the max-amount
-    /// correction (`SwapSetupPresenter.swift:37`, `MaxCounter.swift:27-31`, maxCount 2).
     var grossUpCorrectionCounter = MaxCounter.feeCorrection()
 
-    /// A `.buy` route on a path the quote-time predicate says charges, with a fee in hand.
-    /// Both transitions below are refinements of this state.
     private var isBuyChargingRouteWithFee: Bool {
         guard getQuoteArgs()?.direction == .buy, let quote, fee != nil else {
             return false
@@ -130,15 +117,10 @@ class SwapBasePresenter {
         return commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil
     }
 
-    /// The fee withdrew the commission: the grossed-up route has nothing to consume the
-    /// difference, so it must be re-quoted un-inflated or the chain executes above the typed amount.
     var needsGrossUpSuppression: Bool {
         !suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission == nil
     }
 
-    /// The mirror. Suppression is in force but the beneficiary has since been funded, so the
-    /// un-inflated route *will* be charged and the user would receive `t − rate·t`. Restoring the
-    /// gross-up is what keeps the exposure to one fee cycle instead of the whole session.
     var needsGrossUpRestoration: Bool {
         suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission != nil
     }

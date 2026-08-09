@@ -105,13 +105,10 @@ struct SwapModel {
         spendingAmount?.toSubstrateAmount(precision: payChainAsset.assetDisplayInfo.assetPrecision)
     }
 
-    /// Gross amount out as quoted. Unchanged meaning.
     var grossAmountOut: Balance {
         quote?.route.amountOut ?? 0
     }
 
-    /// Gross minus commission. Equals `grossAmountOut` when nothing is charged, so before the fee
-    /// arrives no validation is loosened.
     var netAmountOut: Balance {
         guard let commission = feeModel?.commission else {
             return grossAmountOut

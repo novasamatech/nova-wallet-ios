@@ -6,8 +6,6 @@ import BigInt
 import Cuckoo
 
 enum CommissionTestFixtures {
-    // `addressPrefix` is `ChainModel.AddressPrefix`, a typealias for `UInt64`
-    // (`ChainModel.swift:10`), so the integer literal binds without a conversion.
     static let chain = ChainModelGenerator.generateChain(
         defaultChainId: KnowChainId.hydra,
         generatingAssets: 8,
@@ -18,7 +16,6 @@ enum CommissionTestFixtures {
         ChainAssetId(chainId: chain.chainId, assetId: id)
     }
 
-    /// Path whose i-th edge has the given type and connects asset i to asset i+1.
     static func createPath(_ types: [AssetExchangeEdgeType]) -> AssetExchangeGraphPath {
         types.enumerated().map { index, type in
             AnyAssetExchangeEdge(
@@ -32,8 +29,6 @@ enum CommissionTestFixtures {
         }
     }
 
-    /// Route over `createPath(types)`. `amounts` gives each item's quote in path order, so
-    /// `items[i].amountOut(for: .sell)` is `amounts[i]`. Precondition: counts are equal.
     static func createRoute(
         _ types: [AssetExchangeEdgeType],
         amounts: [Balance],
@@ -46,7 +41,6 @@ enum CommissionTestFixtures {
         return AssetExchangeRoute(items: items, amount: amounts.first ?? 0, direction: direction)
     }
 
-    /// Every item carries the same amount.
     static func createRoute(
         _ types: [AssetExchangeEdgeType],
         amount: Balance,
@@ -148,8 +142,6 @@ enum CommissionTestFixtures {
         let balanceQueryFactory: CountingBalanceQueryFactory
     }
 
-    /// The stubs are returned alongside the policy because three rows assert on their counters,
-    /// and the policy stores them behind protocol types.
     static func createPolicy(
         beneficiaryFree: Balance,
         minBalance: Balance,

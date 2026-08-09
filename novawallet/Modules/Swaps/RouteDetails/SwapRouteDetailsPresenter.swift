@@ -32,8 +32,6 @@ final class SwapRouteDetailsPresenter {
         let viewModel = quote.metaOperations.enumerated().map { index, operation in
             let operationFee = fee.operationFees[index]
 
-            // the commission comes out of the charging operation's OUTPUT, so that operation's
-            // own input is unreduced — hence `>` for the input and `>=` for the output
             let outputCharged = chargingIndex.map { index >= $0 } ?? false
             let inputCharged = chargingIndex.map { index > $0 } ?? false
 

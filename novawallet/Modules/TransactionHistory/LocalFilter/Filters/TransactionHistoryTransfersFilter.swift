@@ -23,8 +23,6 @@ final class TransactionHistoryTransfersFilter {
 
 extension TransactionHistoryTransfersFilter: TransactionHistoryLocalFilterProtocol {
     func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
-        // every transfer flavour, not just Balances: on chains with ORML assets the transfer to a
-        // system account is a Tokens/Currencies call, which a Balances-only guard lets through
         guard model.callPath.isTransfer else {
             return true
         }

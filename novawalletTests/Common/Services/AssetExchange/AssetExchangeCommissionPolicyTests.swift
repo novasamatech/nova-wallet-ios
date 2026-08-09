@@ -60,9 +60,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         XCTAssertNil(policy.chargingOperationIndex(in: CommissionTestFixtures.createPath([])))
     }
 
-    /// The fee-time estimate is the rate applied to the charging segment's undiscounted output —
-    /// the same quantity `HydraExchangeExtrinsicParamsFactory.commissionAmount` charges and the
-    /// display nets, so estimate, disclosure and transfer cannot drift apart.
     func testEstimatedAmountIsRateOfChargingSegmentOutput() throws {
         let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
@@ -90,9 +87,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let expectedBeneficiary = try AssetExchangeCommissionConstants.hydrationBeneficiaryAddress.toAccountId()
         XCTAssertEqual(expectedBeneficiary.count, 32)
 
-        // Same account the Android client pays to (NovaSwapCommission.FEE_ACCOUNT_HEX). A typo in
-        // the SS58 constant makes the factory fall back to AssetExchangeNoCommissionPolicy and
-        // revenue silently stops, so pin the decoded bytes rather than just the length.
         XCTAssertEqual(
             expectedBeneficiary.toHex(),
             "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"

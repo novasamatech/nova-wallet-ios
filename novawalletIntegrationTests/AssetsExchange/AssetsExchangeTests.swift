@@ -501,9 +501,6 @@ final class AssetsExchangeTests: XCTestCase {
             XCTAssertEqual(commission.asset.chainId, KnowChainId.hydra)
             XCTAssertLessThan(commission.chargingOperationIndex, quote.metaOperations.count - 1)
 
-            // does not submit anything, so it cannot observe what the trailing XCM carries — it
-            // only checks that the route quoted for the charging policy stays gross, exactly as it
-            // does for a never-charging one
             let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 
             XCTAssertEqual(fee.route.amountOut, noCommissionFee.route.amountOut)

@@ -16,8 +16,6 @@ extension ShortTextInfoPresentable {
         )
     }
 
-    /// - Parameter commissionRate: non-nil only when the quoted route actually charges, in which
-    /// case the rate already has the commission baked in and the sheet has to say so.
     func showRateInfo(from view: ControllerBackedProtocol?, commissionRate: BigRational?) {
         let title = LocalizableResource {
             R.string(preferredLanguages: $0.rLanguages).localizable.swapsSetupDetailsRate()

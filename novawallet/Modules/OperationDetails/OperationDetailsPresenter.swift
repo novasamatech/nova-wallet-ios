@@ -176,8 +176,6 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
     }
 
     func showRateInfo() {
-        // a settled operation carries no commission record, so the generic wording is all we can
-        // honestly show here — same choice the Android client makes on swap details
         wireframe.showRateInfo(from: view, commissionRate: nil)
     }
 

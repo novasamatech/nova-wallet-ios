@@ -68,9 +68,6 @@ private extension AssetExchangeCommissionPolicy {
         return result
     }
 
-    /// Same base as `HydraExchangeExtrinsicParamsFactory.commissionAmount` — the charging segment's
-    /// own `amountOut`, undiscounted — so the fee-time estimate, the netted display and the
-    /// submitted transfer are all the rate applied to the same quantity.
     func feeTimeOutputBound(for route: AssetExchangeRoute, run: ChargingRun) -> Balance {
         route.items[run.lastEdgeIndex].amountOut(for: route.direction)
     }

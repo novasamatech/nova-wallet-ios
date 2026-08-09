@@ -32,10 +32,6 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
-    /// `SwapExecutionModel` is captured at confirmation and never refreshed, which is correct
-    /// rather than stale: the value applied is the *rate* against the gross route, not the amount
-    /// finally transferred. The transferred amount is bounded above by the rate applied to the
-    /// bound the chain enforces, so what lands is always at least the figure displayed.
     var chargesCommission: Bool {
         model.fee.commission != nil
     }

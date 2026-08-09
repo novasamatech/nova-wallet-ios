@@ -4,9 +4,6 @@ import SubstrateSdk
 enum HydraRouter {
     static let moduleName = "Router"
 
-    /// The Router pallet's own account: `"modl"` followed by its `routerex` PalletId, zero-padded.
-    /// The router custodies the funds while a swap executes, so the indexer reports the
-    /// user <-> router legs as standalone transfers alongside the swap itself.
     static func getPalletAccountId(for size: Int) throws -> AccountId {
         guard let accountIdPrefix = "modlrouterex".data(using: .utf8) else {
             throw CommonError.dataCorruption

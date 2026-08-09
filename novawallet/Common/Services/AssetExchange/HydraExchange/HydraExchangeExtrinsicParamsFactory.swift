@@ -55,14 +55,6 @@ final class HydraExchangeExtrinsicParamsFactory {
         self.assetStorageInfoFactory = assetStorageInfoFactory
     }
 
-    /// The rate applied to the call's own `amountOut`, in both directions, so the amount charged is
-    /// exactly the amount disclosed — the display nets the same `rate * amountOut`. `callArgs` comes
-    /// from the limit the extrinsic is built from, so on a rescaled segment this tracks the
-    /// corrected amount rather than the fee-time estimate.
-    ///
-    /// Deliberately NOT discounted by slippage: doing so charged less than was displayed. The
-    /// residual exposure is that an execution landing at the slippage floor pays
-    /// `rate / (1 - slippage)` of what actually arrived.
     static func commissionAmount(
         for commission: AssetExchangeCommission,
         callArgs: AssetConversion.CallArgs
@@ -81,8 +73,6 @@ final class HydraExchangeExtrinsicParamsFactory {
 
         let amount = commissionAmount(for: commission, callArgs: callArgs)
 
-        // BigRational.mul floors, so a small enough bound derives 0. Emit no call in that case
-        // rather than a zero-value transfer.
         guard amount > 0 else {
             return nil
         }

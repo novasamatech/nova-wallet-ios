@@ -3,9 +3,6 @@ import XCTest
 import BigInt
 
 final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
-    /// The charged amount is the rate applied to the call's `amountOut` and nothing else, so it
-    /// equals the deduction the UI displays. Slippage must not enter: discounting by it charged
-    /// less than was disclosed.
     func testTransferAmountIsRateOfCallAmountOut() {
         let slippages = [
             BigRational(numerator: 0, denominator: 1000),
