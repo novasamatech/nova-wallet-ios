@@ -569,6 +569,8 @@
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
 		8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9C6892F10913B65D01751A /* SwapModelTests.swift */; };
 		4ED4DE8F6E9949F56D1218FA /* SwapExecutionPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAEEEAAF4A2AAF2E5256EA4 /* SwapExecutionPresenterTests.swift */; };
+		673D321774585173B49B5C3A /* SwapBasePresenterCommissionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD335A26382CBEFA963F87A6 /* SwapBasePresenterCommissionTests.swift */; };
+		09D995D4B5096B31D6A065BD /* SwapFeeDetailsViewModelFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43222F1A82E1C728D132DE16 /* SwapFeeDetailsViewModelFactoryTests.swift */; };
 		E73946BF20393AF327032E89 /* SwapRouteDetailsPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C744085D7E9A8FFB9939BB5 /* SwapRouteDetailsPresenterTests.swift */; };
 		3F16039715B26E3045D47B15 /* AssetExchangeFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9355FFB28C6A4CB0D3CFE7E2 /* AssetExchangeFeeTests.swift */; };
 		0C3AD3082DF04D3500387C0E /* AssetTypeExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */; };
@@ -7197,6 +7199,8 @@
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
 		5A9C6892F10913B65D01751A /* SwapModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapModelTests.swift; sourceTree = "<group>"; };
 		9DAEEEAAF4A2AAF2E5256EA4 /* SwapExecutionPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapExecutionPresenterTests.swift; sourceTree = "<group>"; };
+		FD335A26382CBEFA963F87A6 /* SwapBasePresenterCommissionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapBasePresenterCommissionTests.swift; sourceTree = "<group>"; };
+		43222F1A82E1C728D132DE16 /* SwapFeeDetailsViewModelFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsViewModelFactoryTests.swift; sourceTree = "<group>"; };
 		1C744085D7E9A8FFB9939BB5 /* SwapRouteDetailsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteDetailsPresenterTests.swift; sourceTree = "<group>"; };
 		9355FFB28C6A4CB0D3CFE7E2 /* AssetExchangeFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeTests.swift; sourceTree = "<group>"; };
 		0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTypeExtras.swift; sourceTree = "<group>"; };
@@ -20106,6 +20110,8 @@
 				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
 				9DAEEEAAF4A2AAF2E5256EA4 /* SwapExecutionPresenterTests.swift */,
 				1C744085D7E9A8FFB9939BB5 /* SwapRouteDetailsPresenterTests.swift */,
+				FD335A26382CBEFA963F87A6 /* SwapBasePresenterCommissionTests.swift */,
+				43222F1A82E1C728D132DE16 /* SwapFeeDetailsViewModelFactoryTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -37015,6 +37021,8 @@
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
 				4ED4DE8F6E9949F56D1218FA /* SwapExecutionPresenterTests.swift in Sources */,
+				673D321774585173B49B5C3A /* SwapBasePresenterCommissionTests.swift in Sources */,
+				09D995D4B5096B31D6A065BD /* SwapFeeDetailsViewModelFactoryTests.swift in Sources */,
 				E73946BF20393AF327032E89 /* SwapRouteDetailsPresenterTests.swift in Sources */,
 				3F16039715B26E3045D47B15 /* AssetExchangeFeeTests.swift in Sources */,
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
