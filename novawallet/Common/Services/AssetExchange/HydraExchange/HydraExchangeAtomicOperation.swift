@@ -35,6 +35,18 @@ final class HydraExchangeAtomicOperation {
         self.edges = edges
     }
 
+    /// The amount left in the account as a result of this operation: what the swap event reported,
+    /// minus what the transfer call in the same extrinsic actually moved. `params` is the value the
+    /// submitted extrinsic was built from, so this is never
+    /// `AssetExchangeCommission.estimatedAmount` — a fee-time figure the execution-time rescale can
+    /// have superseded.
+    static func netAmountOut(
+        from measuredAmountOut: Balance,
+        params: HydraExchangeSwapParams
+    ) -> Balance {
+        measuredAmountOut.subtractOrZero(params.commission?.amount ?? 0)
+    }
+
     private func createExtrinsicParamsWrapper(
         for swapLimit: AssetExchangeSwapLimit
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
@@ -130,9 +142,13 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                         throw HydraExchangeAtomicOperationError.noEventsInResult
                     }
 
-                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
+                    let netAmountOut = Self.netAmountOut(from: amountOut, params: params)
 
-                    return amountOut
+                    self.host.logger.debug(
+                        "Arrived amount: \(String(amountOut)), net: \(String(netAmountOut))"
+                    )
+
+                    return netAmountOut
                 case let .failure(executionFailure):
                     throw executionFailure.error
                 }
