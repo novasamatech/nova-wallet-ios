@@ -1325,6 +1325,8 @@
 		0CE94FF22D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */; };
 		0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */; };
 		0CE94FF62D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */; };
+		4BB841884CC45C5B87FFC0A9 /* AssetExchangeCommissionConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0486E553D2D1FE5DCA179EB0 /* AssetExchangeCommissionConstants.swift */; };
+		D01BBD0A69D8750BA7DF3ECF /* AssetExchangeCommission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAF8BA982CFE8EBB858800A /* AssetExchangeCommission.swift */; };
 		0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */; };
 		0CE9B7102DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B70F2DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift */; };
 		0CE9B7122DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7112DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift */; };
@@ -7934,6 +7936,8 @@
 		0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeePayerMatcher.swift; sourceTree = "<group>"; };
 		0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInterEDNotMet.swift; sourceTree = "<group>"; };
 		0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangePathCostEstimator.swift; sourceTree = "<group>"; };
+		0486E553D2D1FE5DCA179EB0 /* AssetExchangeCommissionConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionConstants.swift; sourceTree = "<group>"; };
+		7FAF8BA982CFE8EBB858800A /* AssetExchangeCommission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommission.swift; sourceTree = "<group>"; };
 		0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationPrototypeFactory.swift; sourceTree = "<group>"; };
 		0CE9B70F2DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountStackCell.swift; sourceTree = "<group>"; };
 		0CE9B7112DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerFoundAddressContentView.swift; sourceTree = "<group>"; };
@@ -13944,8 +13948,17 @@
 				0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */,
 				0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */,
 				0CB4B1A32F6414A600158374 /* AssetExchangeQuoteDescription.swift */,
+				7FAF8BA982CFE8EBB858800A /* AssetExchangeCommission.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		CC7AD0C73DED774E9E1AC99D /* Commission */ = {
+			isa = PBXGroup;
+			children = (
+				0486E553D2D1FE5DCA179EB0 /* AssetExchangeCommissionConstants.swift */,
+			);
+			path = Commission;
 			sourceTree = "<group>";
 		};
 		0C19CCA62CC6F121007F8ED8 /* HydraExchange */ = {
@@ -15092,6 +15105,7 @@
 				0C423AB92CDBAE7300A64941 /* Facade */,
 				0C61083F2CD74D5600909928 /* FeeEstimating */,
 				0C19CCA32CC6ED9D007F8ED8 /* Common */,
+				CC7AD0C73DED774E9E1AC99D /* Commission */,
 				0C19CCA62CC6F121007F8ED8 /* HydraExchange */,
 				0C19CCA02CC6EC36007F8ED8 /* AssetHubExchange */,
 				0C19CC9D2CC6EB82007F8ED8 /* CrosschainExchange */,
@@ -31112,6 +31126,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BB841884CC45C5B87FFC0A9 /* AssetExchangeCommissionConstants.swift in Sources */,
+				D01BBD0A69D8750BA7DF3ECF /* AssetExchangeCommission.swift in Sources */,
 				84A9ECC429129FF10094C763 /* GovernanceRemainedLockViewModel.swift in Sources */,
 				F4C2009C2727ED1C00B0F3D0 /* SystemRemarkCall.swift in Sources */,
 				AEF505102616769F0098574D /* InitiatedBonding.swift in Sources */,
