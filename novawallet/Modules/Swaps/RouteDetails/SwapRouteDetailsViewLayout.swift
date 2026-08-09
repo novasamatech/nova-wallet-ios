@@ -12,6 +12,17 @@ final class SwapRouteDetailsViewLayout: ScrollableContainerLayoutView {
 
     let routeDetailsView = SwapRouteDetailsView()
 
+    private var commissionDisclosureView: InlineAlertView?
+
+    func setCommissionDisclosure(_ text: String?) {
+        applyInfo(
+            on: &commissionDisclosureView,
+            after: routeDetailsView,
+            text: text,
+            spacing: 8
+        )
+    }
+
     override func setupLayout() {
         super.setupLayout()
 

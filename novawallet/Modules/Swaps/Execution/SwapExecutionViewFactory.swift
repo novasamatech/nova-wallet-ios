@@ -41,6 +41,7 @@ struct SwapExecutionViewFactory {
             executionViewModelFactory: SwapExecutionViewModelFactory(),
             detailsViewModelFactory: detailsViewModelFactory,
             priceStore: flowState.priceStore,
+            commissionPolicy: flowState.commissionPolicy,
             localizationManager: LocalizationManager.shared
         )
 

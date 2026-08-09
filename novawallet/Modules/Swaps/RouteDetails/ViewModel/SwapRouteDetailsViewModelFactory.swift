@@ -1,11 +1,16 @@
 import Foundation
+import Foundation_iOS
 
 protocol SwapRouteDetailsViewModelFactoryProtocol {
     func createViewModel(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
+        netAmountIn: Balance,
+        netAmountOut: Balance,
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel
+
+    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String
 }
 
 final class SwapRouteDetailsViewModelFactory {
@@ -13,16 +18,19 @@ final class SwapRouteDetailsViewModelFactory {
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let priceStore: AssetExchangePriceStoring
+    let percentFormatter: LocalizableResource<NumberFormatter>
 
     init(
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        priceStore: AssetExchangePriceStoring
+        priceStore: AssetExchangePriceStoring,
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
         balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         self.assetIconViewModelFactory = assetIconViewModelFactory
         self.priceStore = priceStore
+        self.percentFormatter = percentFormatter
     }
 }
 
@@ -60,6 +68,8 @@ private extension SwapRouteDetailsViewModelFactory {
 
     func createAmountItems(
         from operation: AssetExchangeMetaOperationProtocol,
+        netAmountIn: Balance,
+        netAmountOut: Balance,
         locale: Locale
     ) -> [AssetAmountRouteItemView.ViewModel] {
         switch operation.label {
@@ -67,12 +77,12 @@ private extension SwapRouteDetailsViewModelFactory {
             [
                 createAmountItem(
                     from: operation.assetIn,
-                    amount: operation.amountIn,
+                    amount: netAmountIn,
                     locale: locale
                 ),
                 createAmountItem(
                     from: operation.assetOut,
-                    amount: operation.amountOut,
+                    amount: netAmountOut,
                     locale: locale
                 )
             ]
@@ -80,7 +90,7 @@ private extension SwapRouteDetailsViewModelFactory {
             [
                 createAmountItem(
                     from: operation.assetOut,
-                    amount: operation.amountOut,
+                    amount: netAmountOut,
                     locale: locale
                 )
             ]
@@ -121,6 +131,8 @@ extension SwapRouteDetailsViewModelFactory: SwapRouteDetailsViewModelFactoryProt
     func createViewModel(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
+        netAmountIn: Balance,
+        netAmountOut: Balance,
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel {
         let fee = createFee(
@@ -131,9 +143,22 @@ extension SwapRouteDetailsViewModelFactory: SwapRouteDetailsViewModelFactoryProt
 
         return SwapRouteDetailsItemContent.ViewModel(
             type: createType(from: operation, locale: locale),
-            amountItems: createAmountItems(from: operation, locale: locale),
+            amountItems: createAmountItems(
+                from: operation,
+                netAmountIn: netAmountIn,
+                netAmountOut: netAmountOut,
+                locale: locale
+            ),
             fee: fee,
             networkItems: createNetworkItems(from: operation)
+        )
+    }
+
+    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String {
+        SwapBaseViewModelFactory.commissionDisclosure(
+            rate: rate,
+            percentFormatter: percentFormatter,
+            locale: locale
         )
     }
 }

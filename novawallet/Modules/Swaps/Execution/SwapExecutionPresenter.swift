@@ -10,6 +10,7 @@ final class SwapExecutionPresenter {
     let executionViewModelFactory: SwapExecutionViewModelFactoryProtocol
     let detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol
     let priceStore: AssetExchangePriceStoring
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
 
     var quote: AssetExchangeQuote {
         model.quote
@@ -31,6 +32,18 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
+    /// `SwapExecutionModel` is captured at confirmation and never refreshed, which is correct
+    /// rather than stale: the value applied is the *rate* against the gross route, not the amount
+    /// finally transferred. The transferred amount is bounded above by the rate applied to the
+    /// bound the chain enforces, so what lands is always at least the figure displayed.
+    var chargesCommission: Bool {
+        model.fee.commission != nil
+    }
+
+    var netAmountOut: Balance {
+        commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
+    }
+
     var feeAssetPrice: PriceData? {
         priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
     }
@@ -45,6 +58,7 @@ final class SwapExecutionPresenter {
         executionViewModelFactory: SwapExecutionViewModelFactoryProtocol,
         detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.model = model
@@ -53,6 +67,7 @@ final class SwapExecutionPresenter {
         self.executionViewModelFactory = executionViewModelFactory
         self.detailsViewModelFactory = detailsViewModelFactory
         self.priceStore = priceStore
+        self.commissionPolicy = commissionPolicy
         self.localizationManager = localizationManager
     }
 
@@ -106,7 +121,7 @@ final class SwapExecutionPresenter {
     private func provideAssetOutViewModel() {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
-            amount: quote.route.amountOut,
+            amount: netAmountOut,
             priceData: receiveAssetPrice,
             locale: selectedLocale
         )
@@ -119,7 +134,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: model.quote.route.amountIn,
-            amountOut: model.quote.route.amountOut
+            amountOut: netAmountOut
         )
 
         let viewModel = detailsViewModelFactory.rateViewModel(from: params, locale: selectedLocale)
@@ -174,12 +189,24 @@ final class SwapExecutionPresenter {
         view?.didReceiveTotalFee(viewModel: .loaded(value: viewModel))
     }
 
+    private func provideCommissionDisclosureViewModel() {
+        let viewModel = chargesCommission
+            ? detailsViewModelFactory.commissionDisclosureViewModel(
+                rate: AssetExchangeCommissionConstants.rate,
+                locale: selectedLocale
+            )
+            : nil
+
+        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
+    }
+
     private func updateSwapDetails() {
         provideRateViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
         provideRouteViewModel()
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
     }
 
     private func updateSwapAssets() {

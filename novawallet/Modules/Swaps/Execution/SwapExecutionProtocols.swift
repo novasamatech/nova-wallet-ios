@@ -8,6 +8,7 @@ protocol SwapExecutionViewProtocol: ControllerBackedProtocol {
     func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?)
     func didReceiveSlippage(viewModel: String)
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveCommissionDisclosure(viewModel: String?)
 }
 
 protocol SwapExecutionPresenterProtocol: AnyObject {
