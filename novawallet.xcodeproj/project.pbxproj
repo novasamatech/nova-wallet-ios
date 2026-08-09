@@ -567,6 +567,8 @@
 		0C3976AF2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */; };
 		0C3976B12C33ABA600998DD6 /* HydraXYKFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */; };
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
+		8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9C6892F10913B65D01751A /* SwapModelTests.swift */; };
+		3F16039715B26E3045D47B15 /* AssetExchangeFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9355FFB28C6A4CB0D3CFE7E2 /* AssetExchangeFeeTests.swift */; };
 		0C3AD3082DF04D3500387C0E /* AssetTypeExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */; };
 		0C3AD3092DF04D3500387C0E /* AssetTypeExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */; };
 		0C3AD30B2DF0767900387C0E /* EvmBalanceUpdateHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD30A2DF0767900387C0E /* EvmBalanceUpdateHandling.swift */; };
@@ -7191,6 +7193,8 @@
 		0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKQuoteRemoteState.swift; sourceTree = "<group>"; };
 		0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKFlowState.swift; sourceTree = "<group>"; };
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
+		5A9C6892F10913B65D01751A /* SwapModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapModelTests.swift; sourceTree = "<group>"; };
+		9355FFB28C6A4CB0D3CFE7E2 /* AssetExchangeFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeTests.swift; sourceTree = "<group>"; };
 		0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTypeExtras.swift; sourceTree = "<group>"; };
 		0C3AD30A2DF0767900387C0E /* EvmBalanceUpdateHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateHandling.swift; sourceTree = "<group>"; };
 		0C3AD30C2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdatePersistentHandler.swift; sourceTree = "<group>"; };
@@ -20095,6 +20099,7 @@
 			isa = PBXGroup;
 			children = (
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
+				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -22368,6 +22373,7 @@
 				15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */,
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
 				95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */,
+				9355FFB28C6A4CB0D3CFE7E2 /* AssetExchangeFeeTests.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -37001,6 +37007,8 @@
 				3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
+				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
+				3F16039715B26E3045D47B15 /* AssetExchangeFeeTests.swift in Sources */,
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
 				0CF00D012BE48998000EBFC2 /* UnstakingDurationOperationFactoryMock.swift in Sources */,
 				2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */,

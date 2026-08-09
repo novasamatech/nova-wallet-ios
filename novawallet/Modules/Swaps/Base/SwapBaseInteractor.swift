@@ -6,6 +6,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
 
     let assetsExchangeService: AssetsExchangeServiceProtocol
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
     let chainRegistry: ChainRegistryProtocol
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -34,6 +35,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         logger: LoggerProtocol
     ) {
         assetsExchangeService = state.setupAssetExchangeService()
+        commissionPolicy = state.commissionPolicy
         self.chainRegistry = chainRegistry
         self.assetStorageFactory = assetStorageFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -342,6 +344,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
+        commission: AssetExchangeCommission?,
         completion: @escaping SwapInterEDCheckClosure
     ) {
         guard !operations.isEmpty else {
@@ -351,15 +354,27 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         let assetOutIds = operations.map(\.assetOut.chainAssetId)
 
-        fetchAssetBalanceExistence(for: Set(assetOutIds)) { result in
+        fetchAssetBalanceExistence(for: Set(assetOutIds)) { [weak self] result in
+            guard let self else {
+                return
+            }
+
             switch result {
             case let .success(edMapping):
                 for (index, operation) in operations.enumerated() {
                     let minBalance = edMapping[operation.assetOut.chainAssetId]?.minBalance ?? 0
 
-                    if operation.amountOut < minBalance {
+                    let willCharge = commission.map { index >= $0.chargingOperationIndex } ?? false
+
+                    let amountOut = commissionPolicy.netAmount(
+                        from: operation.amountOut,
+                        willCharge: willCharge
+                    )
+
+                    if amountOut < minBalance {
                         let checkValue = SwapInterEDNotMet(
                             operationIndex: index,
+                            comparedAmount: amountOut,
                             minBalanceResult: .success(minBalance)
                         )
 
@@ -372,6 +387,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .failure(error):
                 let checkValue = SwapInterEDNotMet(
                     operationIndex: 0,
+                    comparedAmount: operations.first?.amountOut ?? 0,
                     minBalanceResult: .failure(error)
                 )
 

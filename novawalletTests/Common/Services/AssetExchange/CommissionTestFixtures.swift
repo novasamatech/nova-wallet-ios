@@ -419,3 +419,165 @@ extension CommissionTestFixtures {
         ]
     }
 }
+
+final class StubExchangePriceStore: AssetExchangePriceStoring {
+    let prices: [ChainAssetId: PriceData]
+
+    init(prices: [ChainAssetId: PriceData]) {
+        self.prices = prices
+    }
+
+    func fetchPrice(for chainAssetId: ChainAssetId) -> PriceData? {
+        prices[chainAssetId]
+    }
+
+    func getCurrencyId() -> Int? {
+        prices.values.first?.currencyId
+    }
+}
+
+final class StubAssetsExchangeService: AssetsExchangeServiceProtocol {
+    let feeWrappers: [CompoundOperationWrapper<AssetExchangeFee>]
+
+    private(set) var estimateFeeCallCount = 0
+
+    init(feeWrappers: [CompoundOperationWrapper<AssetExchangeFee>]) {
+        self.feeWrappers = feeWrappers
+    }
+
+    func setup() {}
+    func throttle() {}
+
+    func subscribeUpdates(for _: AnyObject, notifyingIn _: DispatchQueue, closure _: @escaping () -> Void) {}
+    func unsubscribeUpdates(for _: AnyObject) {}
+
+    func fetchAssetsInWrapper(given _: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        fatalError("unused")
+    }
+
+    func fetchAssetsOutWrapper(given _: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>> {
+        fatalError("unused")
+    }
+
+    func fetchQuoteWrapper(for _: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
+        fatalError("unused")
+    }
+
+    func estimateFee(for _: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
+        estimateFeeCallCount += 1
+
+        guard !feeWrappers.isEmpty else {
+            return .createWithError(StubAssetExchangeEdgeError.notSupported)
+        }
+
+        let index = min(estimateFeeCallCount - 1, feeWrappers.count - 1)
+
+        return feeWrappers[index]
+    }
+
+    func canPayFee(in _: ChainAsset) -> CompoundOperationWrapper<Bool> {
+        fatalError("unused")
+    }
+
+    func submit(
+        using _: AssetExchangeFee,
+        notifyingIn _: DispatchQueue,
+        operationStartClosure _: @escaping (Int) -> Void
+    ) -> CompoundOperationWrapper<Balance> {
+        fatalError("unused")
+    }
+
+    func submitSingleOperationWrapper(
+        using _: AssetExchangeFee
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        fatalError("unused")
+    }
+
+    func subscribeRequoteService(
+        for _: AnyObject,
+        ignoreIfAlreadyAdded _: Bool,
+        notifyingIn _: DispatchQueue,
+        closure _: @escaping () -> Void
+    ) {}
+
+    func throttleRequoteService() {}
+}
+
+final class StubGeneralStorageSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+    func getBlockNumberProvider(for _: ChainModel.Id) throws -> AnyDataProvider<DecodedBlockNumber> {
+        fatalError("unused")
+    }
+
+    func getAccountInfoProvider(
+        for _: AccountId,
+        chainId _: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedAccountInfo> {
+        fatalError("unused")
+    }
+}
+
+final class StubSwapTokensFlowState: SwapTokensFlowStateProtocol {
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
+    let exchangeService: AssetsExchangeServiceProtocol
+
+    init(commissionPolicy: AssetExchangeCommissionPolicyProtocol, exchangeService: AssetsExchangeServiceProtocol) {
+        self.commissionPolicy = commissionPolicy
+        self.exchangeService = exchangeService
+    }
+
+    var assetListObservable: AssetListModelObservable {
+        fatalError("unused")
+    }
+
+    var priceStore: AssetExchangePriceStoring {
+        StubExchangePriceStore(prices: [:])
+    }
+
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        StubGeneralStorageSubscriptionFactory()
+    }
+
+    func setupAssetExchangeService() -> AssetsExchangeServiceProtocol {
+        exchangeService
+    }
+
+    func setupWalletDelayedCallExecProvider() -> WalletDelayedExecutionProviding {
+        fatalError("unused")
+    }
+}
+
+extension CommissionTestFixtures {
+    static func neverFinishingFeeWrapper() -> CompoundOperationWrapper<AssetExchangeFee> {
+        CompoundOperationWrapper(targetOperation: AsyncClosureOperation<AssetExchangeFee> { _ in })
+    }
+
+    static func makeInteractor(
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol = CountingAssetStorageInfoFactory(
+            storageInfoResult: .success(ormlInfo(existentialDeposit: 1)),
+            minBalance: 1
+        ),
+        exchangeService: StubAssetsExchangeService = StubAssetsExchangeService(
+            feeWrappers: [neverFinishingFeeWrapper()]
+        )
+    ) -> SwapBaseInteractor {
+        let registry = MockChainRegistryProtocol().applyDefault(for: [chain])
+        let policy = createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let state = StubSwapTokensFlowState(commissionPolicy: policy, exchangeService: exchangeService)
+
+        return SwapBaseInteractor(
+            state: state,
+            chainRegistry: registry,
+            assetStorageFactory: assetStorageFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory(
+                chainRegistry: registry,
+                storageFacade: SubstrateStorageTestFacade(),
+                operationManager: OperationManager(operationQueue: OperationQueue()),
+                logger: Logger.shared
+            ),
+            currencyManager: CurrencyManagerStub(),
+            selectedWallet: AccountGenerator.generateMetaAccount(generatingChainAccounts: 1),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+    }
+}

@@ -266,6 +266,7 @@ class SwapBasePresenter {
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
                         for: closureParams.operations.dropLast(),
+                        commission: swapModel.feeModel?.commission,
                         completion: closureParams.completionClosure
                     )
                 },

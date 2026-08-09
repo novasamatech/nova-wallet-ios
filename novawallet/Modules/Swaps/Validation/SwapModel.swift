@@ -105,6 +105,21 @@ struct SwapModel {
         spendingAmount?.toSubstrateAmount(precision: payChainAsset.assetDisplayInfo.assetPrecision)
     }
 
+    /// Gross amount out as quoted. Unchanged meaning.
+    var grossAmountOut: Balance {
+        quote?.route.amountOut ?? 0
+    }
+
+    /// Gross minus commission. Equals `grossAmountOut` when nothing is charged, so before the fee
+    /// arrives no validation is loosened.
+    var netAmountOut: Balance {
+        guard let commission = feeModel?.commission else {
+            return grossAmountOut
+        }
+
+        return grossAmountOut - commission.rate.mul(value: grossAmountOut)
+    }
+
     var payAssetTotalBalanceAfterSwap: BigUInt {
         let balance = payAssetBalance?.balanceCountingEd ?? 0
         let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
@@ -297,7 +312,7 @@ struct SwapModel {
     }
 
     func checkReceiveBalanceAboveMin() -> CannotReceiveReason? {
-        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + (quote?.route.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + netAmountOut
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
         if amountAfterSwap < minBalance {

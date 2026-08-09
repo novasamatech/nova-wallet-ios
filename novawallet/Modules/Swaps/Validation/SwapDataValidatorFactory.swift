@@ -403,8 +403,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     return
                 }
 
-                let operation = operations[reason.operationIndex]
-                let amount = operation.amountOut
+                let amount = reason.comparedAmount
                 let outAssetDisplayInfo = operations[reason.operationIndex].assetOut.assetDisplayInfo
 
                 let amountString = viewModelFactory.amountFromValue(
