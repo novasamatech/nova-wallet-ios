@@ -208,6 +208,106 @@ final class SwapBasePresenterCommissionTests: XCTestCase {
         XCTAssertNil(view.commissionDisclosureViewModel)
     }
 
+    func testBuyGrossUpIsWithdrawnWhenFeeSkipsCommission() throws {
+        let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let (presenter, _, interactor, _) = makeSetupPresenter(payAsset: payAsset, receiveAsset: receiveAsset)
+        presenter.updateReceiveAmount(1_000_000_000)
+
+        let grossQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuote.route, commission: nil)
+
+        XCTAssertTrue(presenter.suppressCommissionGrossUp)
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 2)
+        XCTAssertEqual(interactor.calculateQuoteCalls.last?.grossingUpForCommission, false)
+    }
+
+    func testBuyGrossUpWithdrawalDoesNotLoop() throws {
+        let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let (presenter, _, interactor, _) = makeSetupPresenter(payAsset: payAsset, receiveAsset: receiveAsset)
+        presenter.updateReceiveAmount(1_000_000_000)
+
+        let grossQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuote.route, commission: nil)
+
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 2)
+
+        let netQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_000_000_000)
+        deliverFee(to: presenter, route: netQuote.route, commission: nil)
+
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 2)
+    }
+
+    func testBuyGrossUpIsRestoredWhenFeeCarriesCommission() throws {
+        let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let (presenter, _, interactor, _) = makeSetupPresenter(payAsset: payAsset, receiveAsset: receiveAsset)
+        presenter.updateReceiveAmount(1_000_000_000)
+
+        let grossQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuote.route, commission: nil)
+
+        XCTAssertTrue(presenter.suppressCommissionGrossUp)
+
+        let netQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_000_000_000)
+        deliverFee(to: presenter, route: netQuote.route, commission: CommissionTestFixtures.makeCommission())
+
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 3)
+        XCTAssertEqual(interactor.calculateQuoteCalls.last?.grossingUpForCommission, true)
+        XCTAssertFalse(presenter.suppressCommissionGrossUp)
+    }
+
+    func testBuyGrossUpCorrectionsAreBounded() throws {
+        let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let (presenter, _, interactor, _) = makeSetupPresenter(payAsset: payAsset, receiveAsset: receiveAsset)
+        presenter.updateReceiveAmount(1_000_000_000)
+
+        let grossQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuote.route, commission: nil)
+
+        let netQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_000_000_000)
+        deliverFee(to: presenter, route: netQuote.route, commission: CommissionTestFixtures.makeCommission())
+
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 3)
+
+        // a third crossing: the counter is spent at 2, so the alternation terminates here
+        let grossQuoteAgain = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuoteAgain.route, commission: nil)
+
+        XCTAssertEqual(interactor.calculateQuoteCalls.count, 3)
+    }
+
+    func testBuyGrossUpSuppressionClearsOnInputChange() throws {
+        let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
+        let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
+
+        let (presenter, _, interactor, _) = makeSetupPresenter(payAsset: payAsset, receiveAsset: receiveAsset)
+        presenter.updateReceiveAmount(1_000_000_000)
+
+        let grossQuote = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 1_008_572_870)
+        deliverFee(to: presenter, route: grossQuote.route, commission: nil)
+
+        XCTAssertTrue(presenter.suppressCommissionGrossUp)
+
+        presenter.updateReceiveAmount(2)
+
+        XCTAssertFalse(presenter.suppressCommissionGrossUp)
+        XCTAssertEqual(interactor.calculateQuoteCalls.last?.grossingUpForCommission, true)
+
+        // the counter was reset (not merely left spent), so a fresh suppression/restoration pair
+        // can still fire on this new input
+        let quoteAfterReset = try deliverQuote(to: presenter, edgeTypes: [.hydraSwap], amountOut: 2)
+        deliverFee(to: presenter, route: quoteAfterReset.route, commission: nil)
+
+        XCTAssertTrue(presenter.suppressCommissionGrossUp)
+    }
+
     func testConfirmReceiveAndRateUseNetAmount() throws {
         let payAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
         let receiveAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
@@ -750,13 +850,13 @@ private final class RecordingSwapSetupWireframe: SwapSetupWireframeProtocol {
 }
 
 private final class RecordingSwapSetupInteractor: SwapSetupInteractorInputProtocol {
-    private(set) var calculateQuoteArgs: [AssetConversion.QuoteArgs] = []
+    private(set) var calculateQuoteCalls: [(args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool)] = []
     private(set) var calculateFeeArgs: [(route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset)] = []
 
     func setup() {}
 
-    func calculateQuote(for args: AssetConversion.QuoteArgs) {
-        calculateQuoteArgs.append(args)
+    func calculateQuote(for args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool) {
+        calculateQuoteCalls.append((args, grossingUpForCommission))
     }
 
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
@@ -767,6 +867,7 @@ private final class RecordingSwapSetupInteractor: SwapSetupInteractorInputProtoc
 
     func requestValidatingQuote(
         for _: AssetConversion.QuoteArgs,
+        grossingUpForCommission _: Bool,
         completion _: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     ) {}
 
@@ -865,12 +966,13 @@ private final class RecordingSwapConfirmWireframe: SwapConfirmWireframeProtocol 
 
 private final class RecordingSwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
     func setup() {}
-    func calculateQuote(for _: AssetConversion.QuoteArgs) {}
+    func calculateQuote(for _: AssetConversion.QuoteArgs, grossingUpForCommission _: Bool) {}
     func calculateFee(for _: AssetExchangeRoute, slippage _: BigRational, feeAsset _: ChainAsset) {}
     func retryAssetBalanceExistenseFetch(for _: ChainAsset) {}
 
     func requestValidatingQuote(
         for _: AssetConversion.QuoteArgs,
+        grossingUpForCommission _: Bool,
         completion _: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     ) {}
 

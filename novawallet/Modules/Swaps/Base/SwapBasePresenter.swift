@@ -110,6 +110,39 @@ class SwapBasePresenter {
         return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
+    /// Set when a fee withdraws a commission the quote-time predicate promised, on a `.buy` route
+    /// that was therefore quoted grossed-up. While set, quotes are requested un-inflated so the
+    /// chain cannot execute above the typed amount.
+    var suppressCommissionGrossUp = false
+
+    /// Bounds the correction cycle: a balance crossing the deposit repeatedly between fee
+    /// estimates would otherwise flip the flag forever. Same helper and bound as the max-amount
+    /// correction (`SwapSetupPresenter.swift:37`, `MaxCounter.swift:27-31`, maxCount 2).
+    var grossUpCorrectionCounter = MaxCounter.feeCorrection()
+
+    /// A `.buy` route on a path the quote-time predicate says charges, with a fee in hand.
+    /// Both transitions below are refinements of this state.
+    private var isBuyChargingRouteWithFee: Bool {
+        guard getQuoteArgs()?.direction == .buy, let quote, fee != nil else {
+            return false
+        }
+
+        return commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil
+    }
+
+    /// The fee withdrew the commission: the grossed-up route has nothing to consume the
+    /// difference, so it must be re-quoted un-inflated or the chain executes above the typed amount.
+    var needsGrossUpSuppression: Bool {
+        !suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission == nil
+    }
+
+    /// The mirror. Suppression is in force but the beneficiary has since been funded, so the
+    /// un-inflated route *will* be charged and the user would receive `t − rate·t`. Restoring the
+    /// gross-up is what keeps the exposure to one fee cycle instead of the whole session.
+    var needsGrossUpRestoration: Bool {
+        suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission != nil
+    }
+
     var originAccountInfo: AccountInfo? {
         getFeeChainAsset()?.chain.utilityChainAsset().flatMap {
             accountInfoDict[$0.chain.chainId]
@@ -316,8 +349,12 @@ class SwapBasePresenter {
     ) -> DataValidating {
         dataValidatingFactory.passesRealtimeQuoteValidation(
             params: swapModel,
-            remoteValidatingClosure: { args, completion in
-                interactor.requestValidatingQuote(for: args, completion: completion)
+            remoteValidatingClosure: { [weak self] args, completion in
+                interactor.requestValidatingQuote(
+                    for: args,
+                    grossingUpForCommission: !(self?.suppressCommissionGrossUp ?? false),
+                    completion: completion
+                )
             },
             onQuoteUpdate: { [weak self] quote in
                 self?.quoteResult = .success(quote)

@@ -198,10 +198,13 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         )
     }
 
-    func quote(args: AssetConversion.QuoteArgs) {
+    func quote(args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool) {
         quoteCallStore.cancel()
 
-        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(
+            for: args,
+            grossingUpForCommission: grossingUpForCommission
+        )
 
         executeCancellable(
             wrapper: wrapper,
@@ -320,8 +323,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         }
     }
 
-    func calculateQuote(for args: AssetConversion.QuoteArgs) {
-        quote(args: args)
+    func calculateQuote(for args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool) {
+        quote(args: args, grossingUpForCommission: grossingUpForCommission)
     }
 
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
@@ -330,9 +333,13 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     ) {
-        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(
+            for: args,
+            grossingUpForCommission: grossingUpForCommission
+        )
 
         execute(
             wrapper: wrapper,

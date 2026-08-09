@@ -114,7 +114,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
         view?.didReceiveStartLoading()
 
-        interactor.calculateQuote(for: quoteArgs)
+        interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: !suppressCommissionGrossUp)
     }
 
     override func handleBaseError(_ error: SwapBaseError) {
@@ -145,6 +145,18 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
+        if needsGrossUpSuppression, grossUpCorrectionCounter.incrementCounterIfPossible() {
+            suppressCommissionGrossUp = true
+            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: false)
+            return
+        }
+
+        if needsGrossUpRestoration, grossUpCorrectionCounter.incrementCounterIfPossible() {
+            suppressCommissionGrossUp = false
+            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: true)
+            return
+        }
+
         provideRouteViewModel()
         provideFeeViewModel()
         provideAssetOutViewModel()

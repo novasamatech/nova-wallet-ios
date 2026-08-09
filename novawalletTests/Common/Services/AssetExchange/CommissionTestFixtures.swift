@@ -459,7 +459,10 @@ final class StubAssetsExchangeService: AssetsExchangeServiceProtocol {
         fatalError("unused")
     }
 
-    func fetchQuoteWrapper(for _: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
+    func fetchQuoteWrapper(
+        for _: AssetConversion.QuoteArgs,
+        grossingUpForCommission _: Bool
+    ) -> CompoundOperationWrapper<AssetExchangeQuote> {
         fatalError("unused")
     }
 

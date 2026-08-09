@@ -8,7 +8,10 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func fetchAssetsInWrapper(given assetOutId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
     func fetchAssetsOutWrapper(given assetInId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
 
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
+    func fetchQuoteWrapper(
+        for args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool
+    ) -> CompoundOperationWrapper<AssetExchangeQuote>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func canPayFee(in asset: ChainAsset) -> CompoundOperationWrapper<Bool>
 
@@ -155,9 +158,12 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
         return graphWrapper.insertingTail(operation: directionsOperation)
     }
 
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
+    func fetchQuoteWrapper(
+        for args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool
+    ) -> CompoundOperationWrapper<AssetExchangeQuote> {
         prepareWrapper { operationFactory in
-            operationFactory.createQuoteWrapper(args: args)
+            operationFactory.createQuoteWrapper(args: args, grossingUpForCommission: grossingUpForCommission)
         }
     }
 

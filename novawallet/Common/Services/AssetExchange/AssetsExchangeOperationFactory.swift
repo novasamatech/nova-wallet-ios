@@ -2,7 +2,10 @@ import Foundation
 import Operation_iOS
 
 protocol AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
+    func createQuoteWrapper(
+        args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool
+    ) -> CompoundOperationWrapper<AssetExchangeQuote>
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
 
     func createExecutionWrapper(
@@ -215,7 +218,10 @@ final class AssetsExchangeOperationFactory {
 }
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
+    func createQuoteWrapper(
+        args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool
+    ) -> CompoundOperationWrapper<AssetExchangeQuote> {
         let routeWrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
@@ -232,7 +238,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let routeWrapper = AssetsExchangeRouteManager(
                 possiblePaths: paths,
                 pathCostEstimator: self.pathCostEstimator,
-                commissionPolicy: self.commissionPolicy,
+                commissionPolicy: grossingUpForCommission ? self.commissionPolicy : nil,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)

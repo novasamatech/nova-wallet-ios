@@ -2,12 +2,13 @@ import BigInt
 
 protocol SwapBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func calculateQuote(for args: AssetConversion.QuoteArgs)
+    func calculateQuote(for args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool)
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset)
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
 
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
+        grossingUpForCommission: Bool,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     )
 

@@ -437,7 +437,7 @@ final class AssetsExchangeTests: XCTestCase {
             throw CommonError.undefined
         }
 
-        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs, grossingUpForCommission: true)
 
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
 
@@ -464,7 +464,7 @@ final class AssetsExchangeTests: XCTestCase {
             return nil
         }
 
-        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs, grossingUpForCommission: true)
 
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
 

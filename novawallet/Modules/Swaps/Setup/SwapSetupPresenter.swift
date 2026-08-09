@@ -119,6 +119,9 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func applySwapMax() {
+        suppressCommissionGrossUp = false
+        grossUpCorrectionCounter.resetCounter()
+
         payAmountInput = .rate(1)
         providePayAssetViews()
         refreshQuote(direction: .sell)
@@ -176,6 +179,18 @@ final class SwapSetupPresenter: SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
+        if needsGrossUpSuppression, grossUpCorrectionCounter.incrementCounterIfPossible() {
+            suppressCommissionGrossUp = true
+            refreshQuote(direction: .buy, forceUpdate: false)
+            return
+        }
+
+        if needsGrossUpRestoration, grossUpCorrectionCounter.incrementCounterIfPossible() {
+            suppressCommissionGrossUp = false
+            refreshQuote(direction: .buy, forceUpdate: false)
+            return
+        }
+
         provideFeeViewModel()
         provideCommissionDisclosureViewModel()
         updateReceiveAmountFromQuote()
@@ -583,7 +598,7 @@ extension SwapSetupPresenter {
                 direction: .buy
             )
             self.quoteArgs = quoteArgs
-            interactor.calculateQuote(for: quoteArgs)
+            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: !suppressCommissionGrossUp)
         } else {
             quoteArgs = nil
 
@@ -608,7 +623,7 @@ extension SwapSetupPresenter {
                 direction: .sell
             )
             self.quoteArgs = quoteArgs
-            interactor.calculateQuote(for: quoteArgs)
+            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: !suppressCommissionGrossUp)
         } else {
             quoteArgs = nil
 
@@ -691,6 +706,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func selectPayToken() {
         wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
+            self?.suppressCommissionGrossUp = false
+            self?.grossUpCorrectionCounter.resetCounter()
+
             self?.payChainAsset = chainAsset
             let feeChainAsset = chainAsset.chain.utilityChainAsset()
 
@@ -719,6 +737,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
+            self?.suppressCommissionGrossUp = false
+            self?.grossUpCorrectionCounter.resetCounter()
+
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
@@ -737,6 +758,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func updatePayAmount(_ amount: Decimal?) {
+        suppressCommissionGrossUp = false
+        grossUpCorrectionCounter.resetCounter()
+
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
         providePayInputPriceViewModel()
@@ -746,6 +770,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
+        suppressCommissionGrossUp = false
+        grossUpCorrectionCounter.resetCounter()
+
         receiveAmountInput = amount
         refreshQuote(direction: .buy)
         provideReceiveInputPriceViewModel()
@@ -755,6 +782,9 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func flip(currentFocus: TextFieldFocus?) {
+        suppressCommissionGrossUp = false
+        grossUpCorrectionCounter.resetCounter()
+
         let payAmount = getPayAmount(for: payAmountInput)
         let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
 
