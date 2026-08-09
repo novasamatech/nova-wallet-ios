@@ -10,6 +10,12 @@ struct HydraExchangeSwapParams {
         }
     }
 
+    struct Commission {
+        let amount: Balance
+        let beneficiary: AccountId
+        let assetStorageInfo: AssetStorageInfo
+    }
+
     enum Operation {
         case omniSell(HydraOmnipool.SellCall)
         case omniBuy(HydraOmnipool.BuyCall)
@@ -20,12 +26,14 @@ struct HydraExchangeSwapParams {
     let params: Params
     let updateReferral: HydraDx.LinkReferralCodeCall?
     let swap: Operation
+    let commission: Commission?
 }
 
 protocol HydraExchangeExtrinsicParamsFactoryProtocol {
     func createOperationWrapper(
         for route: HydraDx.RemoteSwapRoute,
-        callArgs: AssetConversion.CallArgs
+        callArgs: AssetConversion.CallArgs,
+        commission: AssetExchangeCommission?
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams>
 }
 
@@ -33,15 +41,59 @@ final class HydraExchangeExtrinsicParamsFactory {
     let chain: ChainModel
     let swapService: HydraSwapParamsService
     let runtimeProvider: RuntimeCodingServiceProtocol
+    let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
 
     init(
         chain: ChainModel,
         swapService: HydraSwapParamsService,
-        runtimeProvider: RuntimeCodingServiceProtocol
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
     ) {
         self.chain = chain
         self.swapService = swapService
         self.runtimeProvider = runtimeProvider
+        self.assetStorageInfoFactory = assetStorageInfoFactory
+    }
+
+    static func commissionAmount(
+        for commission: AssetExchangeCommission,
+        callArgs: AssetConversion.CallArgs
+    ) -> Balance {
+        let bound: Balance
+
+        switch callArgs.direction {
+        case .sell:
+            bound = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
+        case .buy:
+            // the output is exact in this direction; slippage bounds the input instead
+            bound = callArgs.amountOut
+        }
+
+        return commission.rate.mul(value: bound)
+    }
+
+    static func commissionParams(
+        for commission: AssetExchangeCommission?,
+        storageInfo: AssetStorageInfo?,
+        callArgs: AssetConversion.CallArgs
+    ) -> HydraExchangeSwapParams.Commission? {
+        guard let commission, let storageInfo else {
+            return nil
+        }
+
+        let amount = commissionAmount(for: commission, callArgs: callArgs)
+
+        // BigRational.mul floors, so a small enough bound derives 0. Emit no call in that case
+        // rather than a zero-value transfer.
+        guard amount > 0 else {
+            return nil
+        }
+
+        return .init(
+            amount: amount,
+            beneficiary: commission.beneficiary,
+            assetStorageInfo: storageInfo
+        )
     }
 
     private func createOperation(
@@ -100,12 +152,41 @@ final class HydraExchangeExtrinsicParamsFactory {
         }
     }
 
+    private func createCommissionStorageInfoWrapper(
+        for commission: AssetExchangeCommission?
+    ) -> CompoundOperationWrapper<AssetStorageInfo?> {
+        guard let commission else {
+            return .createWithResult(nil)
+        }
+
+        guard let asset = chain.asset(for: commission.asset.assetId) else {
+            return .createWithError(
+                ChainModelFetchError.noAsset(assetId: commission.asset.assetId)
+            )
+        }
+
+        let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: asset,
+            runtimeProvider: runtimeProvider
+        )
+
+        let mappingOperation = ClosureOperation<AssetStorageInfo?> {
+            try wrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mappingOperation)
+    }
+
     private func createSwapParams(
         from params: HydraExchangeSwapParams.Params,
         remoteAssetIn: HydraDx.AssetId,
         remoteAssetOut: HydraDx.AssetId,
         route: HydraDx.RemoteSwapRoute,
-        callArgs: AssetConversion.CallArgs
+        callArgs: AssetConversion.CallArgs,
+        commission: AssetExchangeCommission?,
+        commissionStorageInfo: AssetStorageInfo?
     ) throws -> HydraExchangeSwapParams {
         let referralCall: HydraDx.LinkReferralCodeCall?
 
@@ -127,7 +208,12 @@ final class HydraExchangeExtrinsicParamsFactory {
         return HydraExchangeSwapParams(
             params: params,
             updateReferral: referralCall,
-            swap: operation
+            swap: operation,
+            commission: Self.commissionParams(
+                for: commission,
+                storageInfo: commissionStorageInfo,
+                callArgs: callArgs
+            )
         )
     }
 
@@ -135,15 +221,19 @@ final class HydraExchangeExtrinsicParamsFactory {
         assetIn: ChainAsset,
         assetOut: ChainAsset,
         route: HydraDx.RemoteSwapRoute,
-        callArgs: AssetConversion.CallArgs
+        callArgs: AssetConversion.CallArgs,
+        commission: AssetExchangeCommission?
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let swapParamsOperation = swapService.createFetchOperation()
 
+        let storageInfoWrapper = createCommissionStorageInfoWrapper(for: commission)
+
         let mergeOperation = ClosureOperation<HydraExchangeSwapParams> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let swapParams = try swapParamsOperation.extractNoCancellableResultData()
+            let commissionStorageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
 
             let remoteAssetIn = try HydraDxTokenConverter.convertToRemote(
                 chainAsset: assetIn,
@@ -162,16 +252,19 @@ final class HydraExchangeExtrinsicParamsFactory {
                 remoteAssetIn: remoteAssetIn,
                 remoteAssetOut: remoteAssetOut,
                 route: route,
-                callArgs: callArgs
+                callArgs: callArgs,
+                commission: commission,
+                commissionStorageInfo: commissionStorageInfo
             )
         }
 
         mergeOperation.addDependency(codingFactoryOperation)
         mergeOperation.addDependency(swapParamsOperation)
+        mergeOperation.addDependency(storageInfoWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [codingFactoryOperation, swapParamsOperation]
+            dependencies: [codingFactoryOperation, swapParamsOperation] + storageInfoWrapper.allOperations
         )
     }
 }
@@ -179,7 +272,8 @@ final class HydraExchangeExtrinsicParamsFactory {
 extension HydraExchangeExtrinsicParamsFactory: HydraExchangeExtrinsicParamsFactoryProtocol {
     func createOperationWrapper(
         for route: HydraDx.RemoteSwapRoute,
-        callArgs: AssetConversion.CallArgs
+        callArgs: AssetConversion.CallArgs,
+        commission: AssetExchangeCommission?
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
         guard let assetIn = chain.asset(for: callArgs.assetIn.assetId) else {
             return .createWithError(
@@ -197,7 +291,8 @@ extension HydraExchangeExtrinsicParamsFactory: HydraExchangeExtrinsicParamsFacto
             assetIn: .init(chain: chain, asset: assetIn),
             assetOut: .init(chain: chain, asset: assetOut),
             route: route,
-            callArgs: callArgs
+            callArgs: callArgs,
+            commission: commission
         )
     }
 }

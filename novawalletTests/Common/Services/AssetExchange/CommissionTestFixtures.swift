@@ -67,6 +67,79 @@ enum CommissionTestFixtures {
         )
     }
 
+    static func ormlInfo(module: String) -> AssetStorageInfo {
+        .orml(
+            info: OrmlTokenStorageInfo(
+                currencyId: .stringValue("0"),
+                currencyData: Data(),
+                module: module,
+                existentialDeposit: 1,
+                canTransferAll: true
+            )
+        )
+    }
+
+    static func nativeInfo() -> AssetStorageInfo {
+        .native(info: NativeTokenStorageInfo(canTransferAll: true, transferCallPath: .transferAllowDeath))
+    }
+
+    static func makeCallArgs(
+        direction: AssetConversion.Direction,
+        amountIn: Balance,
+        amountOut: Balance,
+        slippage: BigRational
+    ) -> AssetConversion.CallArgs {
+        AssetConversion.CallArgs(
+            assetIn: ChainAssetId(chainId: KnowChainId.hydra, assetId: 0),
+            amountIn: amountIn,
+            assetOut: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            amountOut: amountOut,
+            receiver: Data(repeating: 2, count: 32),
+            direction: direction,
+            slippage: slippage
+        )
+    }
+
+    static func makeCommission(rate: BigRational = AssetExchangeCommissionConstants.rate) -> AssetExchangeCommission {
+        AssetExchangeCommission(
+            chargingOperationIndex: 0,
+            asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            estimatedAmount: 999_999_999,
+            beneficiary: Data(repeating: 3, count: 32),
+            rate: rate
+        )
+    }
+
+    static func makeSwapParams(
+        commission: AssetExchangeCommission?,
+        storageInfo: AssetStorageInfo?,
+        callArgs: AssetConversion.CallArgs
+    ) -> HydraExchangeSwapParams {
+        HydraExchangeSwapParams(
+            params: .init(referral: Data(repeating: 9, count: 32)),
+            updateReferral: nil,
+            swap: .omniSell(
+                HydraOmnipool.SellCall(
+                    assetIn: 0,
+                    assetOut: 1,
+                    amount: callArgs.amountIn,
+                    minBuyAmount: callArgs.amountOut
+                )
+            ),
+            commission: HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: storageInfo,
+                callArgs: callArgs
+            )
+        )
+    }
+
+    static func makeRecordedCalls(_ params: HydraExchangeSwapParams) throws -> [CallCodingPath] {
+        let builder = RecordingExtrinsicBuilder()
+        _ = try HydraExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
+        return builder.addedCalls
+    }
+
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
     struct PolicyUnderTest {

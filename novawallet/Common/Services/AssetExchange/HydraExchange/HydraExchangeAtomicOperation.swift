@@ -58,7 +58,11 @@ final class HydraExchangeAtomicOperation {
             let routeComponents = self.edges.map(\.routeComponent)
             let route = HydraDx.RemoteSwapRoute(components: routeComponents)
 
-            return self.host.extrinsicParamsFactory.createOperationWrapper(for: route, callArgs: callArgs)
+            return self.host.extrinsicParamsFactory.createOperationWrapper(
+                for: route,
+                callArgs: callArgs,
+                commission: self.operationArgs.commission
+            )
         }
     }
 

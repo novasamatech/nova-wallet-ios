@@ -23,6 +23,16 @@ enum HydraExchangeExtrinsicConverter {
             currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         }
 
+        if let commission = params.commission {
+            (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
+                to: currentBuilder,
+                amount: .concrete(value: commission.amount),
+                recipient: commission.beneficiary,
+                assetStorageInfo: commission.assetStorageInfo,
+                keepingSenderAlive: true
+            )
+        }
+
         return currentBuilder
     }
 
