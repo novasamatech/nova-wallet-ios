@@ -162,7 +162,8 @@ private extension AssetExchangeAtomicOperationArgs {
                 amountOut: newOperationArgs.swapLimit.amountOut,
                 slippage: newOperationArgs.swapLimit.slippage
             ),
-            feeAsset: feeAsset
+            feeAsset: feeAsset,
+            commission: newOperationArgs.commission ?? commission
         )
     }
 }

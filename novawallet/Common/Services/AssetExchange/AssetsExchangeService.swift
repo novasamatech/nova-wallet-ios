@@ -73,6 +73,7 @@ final class AssetsExchangeService {
             let operationFactory = AssetsExchangeOperationFactory(
                 graph: graph,
                 pathCostEstimator: self.pathCostEstimator,
+                commissionPolicy: AssetExchangeNoCommissionPolicy(),
                 operationQueue: self.operationQueue,
                 logger: self.logger
             )

@@ -479,6 +479,7 @@ final class AssetsExchangeTests: XCTestCase {
         return AssetsExchangeOperationFactory(
             graph: graph,
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: AssetExchangeNoCommissionPolicy(),
             operationQueue: params.operationQueue,
             logger: params.logger
         )

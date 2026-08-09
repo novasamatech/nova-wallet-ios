@@ -26,18 +26,21 @@ final class AssetsExchangeOperationFactory {
     let graph: AssetsExchangeGraphProtocol
     let operationQueue: OperationQueue
     let pathCostEstimator: AssetsExchangePathCostEstimating
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
     let maxQuotePaths: Int
     let logger: LoggerProtocol
 
     init(
         graph: AssetsExchangeGraphProtocol,
         pathCostEstimator: AssetsExchangePathCostEstimating,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         maxQuotePaths: Int = AssetsExchange.maxQuotePaths,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graph = graph
         self.pathCostEstimator = pathCostEstimator
+        self.commissionPolicy = commissionPolicy
         self.operationQueue = operationQueue
         self.maxQuotePaths = maxQuotePaths
         self.logger = logger
@@ -48,7 +51,8 @@ final class AssetsExchangeOperationFactory {
         routeDirection: AssetConversion.Direction,
         slippage: BigRational,
         feeAssetId: ChainAssetId,
-        isFirst: Bool
+        isFirst: Bool,
+        commission: AssetExchangeCommission?
     ) -> AssetExchangeAtomicOperationArgs {
         // on the first segment fee paid in configurable asset and further only in assetIn
         let feeAssetId = isFirst ? feeAssetId : segment.edge.origin
@@ -60,33 +64,40 @@ final class AssetsExchangeOperationFactory {
                 amountOut: segment.amountOut(for: routeDirection),
                 slippage: slippage
             ),
-            feeAsset: feeAssetId
+            feeAsset: feeAssetId,
+            commission: commission
         )
     }
 
-    private func prepareAtomicOperations(
+    func prepareAtomicOperations(
         for route: AssetExchangeRoute,
         slippage: BigRational,
-        feeAssetId: ChainAssetId
+        feeAssetId: ChainAssetId,
+        commission: AssetExchangeCommission?
     ) throws -> [AssetExchangeAtomicOperationProtocol] {
         try route.items.reduce([]) { curOperations, segment in
-            let args = createOperationArgs(
-                for: segment,
-                routeDirection: route.direction,
-                slippage: slippage,
-                feeAssetId: feeAssetId,
-                isFirst: curOperations.isEmpty
-            )
+            let argsForOrdinal: (Int) -> AssetExchangeAtomicOperationArgs = { ordinal in
+                self.createOperationArgs(
+                    for: segment,
+                    routeDirection: route.direction,
+                    slippage: slippage,
+                    feeAssetId: feeAssetId,
+                    isFirst: curOperations.isEmpty,
+                    commission: commission?.chargingOperationIndex == ordinal ? commission : nil
+                )
+            }
 
             if
                 let lastOperation = curOperations.last,
                 let newOperation = segment.edge.appendToOperation(
                     lastOperation,
-                    args: args
+                    args: argsForOrdinal(curOperations.count - 1)
                 ) {
                 return curOperations.dropLast() + [newOperation]
             } else {
-                let newOperation = try segment.edge.beginOperation(for: args)
+                let newOperation = try segment.edge.beginOperation(
+                    for: argsForOrdinal(curOperations.count)
+                )
                 return curOperations + [newOperation]
             }
         }
@@ -174,7 +185,7 @@ final class AssetsExchangeOperationFactory {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependecies)
     }
 
-    private func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
+    func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
         try route.items.reduce([]) { curOperations, segment in
             let amountIn = segment.amountIn(for: route.direction)
             let amountOut = segment.amountOut(for: route.direction)
@@ -267,7 +278,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let atomicOperations = try prepareAtomicOperations(
                 for: args.route,
                 slippage: args.slippage,
-                feeAssetId: args.feeAssetId
+                feeAssetId: args.feeAssetId,
+                commission: nil
             )
 
             let feeWrappers = atomicOperations.map { $0.estimateFee() }
@@ -292,7 +304,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                     operationFees: operationFees,
                     intermediateFeesInAssetIn: intermediateFees,
                     slippage: args.slippage,
-                    feeAssetId: args.feeAssetId
+                    feeAssetId: args.feeAssetId,
+                    commission: nil
                 )
             }
 
@@ -318,7 +331,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let atomicOperations = try prepareAtomicOperations(
                 for: fee.route,
                 slippage: fee.slippage,
-                feeAssetId: fee.feeAssetId
+                feeAssetId: fee.feeAssetId,
+                commission: nil
             )
 
             let executionManager = AssetExchangeExecutionManager(
@@ -345,7 +359,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let atomicOperations = try prepareAtomicOperations(
                 for: fee.route,
                 slippage: fee.slippage,
-                feeAssetId: fee.feeAssetId
+                feeAssetId: fee.feeAssetId,
+                commission: nil
             )
 
             guard
