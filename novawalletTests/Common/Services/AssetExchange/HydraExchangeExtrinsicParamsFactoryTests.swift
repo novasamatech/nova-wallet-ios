@@ -3,31 +3,27 @@ import XCTest
 import BigInt
 
 final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
-    func testTransferAmountIsRateOfCallBound() {
-        assertCommissionAmount(
-            direction: .sell,
-            amountOut: 1_000_000,
-            slippage: BigRational(numerator: 0, denominator: 1000),
-            expected: 8500
-        )
-        assertCommissionAmount(
-            direction: .sell,
-            amountOut: 1_000_000,
-            slippage: BigRational(numerator: 5, denominator: 1000),
-            expected: 8457
-        )
-        assertCommissionAmount(
-            direction: .sell,
-            amountOut: 1_000_000,
-            slippage: BigRational(numerator: 5, denominator: 100),
-            expected: 8075
-        )
-        assertCommissionAmount(
-            direction: .buy,
-            amountOut: 1_000_000,
-            slippage: BigRational(numerator: 5, denominator: 100),
-            expected: 8500
-        )
+    /// The charged amount is the rate applied to the call's `amountOut` and nothing else, so it
+    /// equals the deduction the UI displays. Slippage must not enter: discounting by it charged
+    /// less than was disclosed.
+    func testTransferAmountIsRateOfCallAmountOut() {
+        let slippages = [
+            BigRational(numerator: 0, denominator: 1000),
+            BigRational(numerator: 5, denominator: 1000),
+            BigRational(numerator: 5, denominator: 100)
+        ]
+
+        for direction in [AssetConversion.Direction.sell, .buy] {
+            for slippage in slippages {
+                assertCommissionAmount(
+                    direction: direction,
+                    amountOut: 1_000_000,
+                    slippage: slippage,
+                    expected: 8500
+                )
+            }
+        }
+
         assertCommissionAmount(
             direction: .buy,
             amountOut: 1_008_572_870,
@@ -51,7 +47,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: originalCallArgs
         )
 
-        XCTAssertEqual(originalAmount, 8415)
+        XCTAssertEqual(originalAmount, 8500)
         assertMatchesBoundFormula(amount: originalAmount, callArgs: originalCallArgs, commission: commission)
 
         let correctedLimit = originalLimit.replacingAmountIn(500_000, shouldReplaceBuyWithSell: false)
@@ -61,7 +57,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: correctedCallArgs
         )
 
-        XCTAssertEqual(correctedAmount, 4207)
+        XCTAssertEqual(correctedAmount, 4250)
         assertMatchesBoundFormula(amount: correctedAmount, callArgs: correctedCallArgs, commission: commission)
     }
 
@@ -91,36 +87,6 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         let calls = try CommissionTestFixtures.makeRecordedCalls(params)
 
         XCTAssertEqual(calls, [CallCodingPath(moduleName: "Omnipool", callName: "sell")])
-    }
-
-    func testTinyAmountStillTransferred() throws {
-        let callArgs = CommissionTestFixtures.makeCallArgs(
-            direction: .sell,
-            amountIn: 200,
-            amountOut: 200,
-            slippage: BigRational(numerator: 0, denominator: 100)
-        )
-        let commission = CommissionTestFixtures.makeCommission()
-        let storageInfo = CommissionTestFixtures.ormlInfo(module: "Tokens")
-
-        let commissionParams = try XCTUnwrap(
-            HydraExchangeExtrinsicParamsFactory.commissionParams(
-                for: commission,
-                storageInfo: storageInfo,
-                callArgs: callArgs
-            )
-        )
-
-        XCTAssertEqual(commissionParams.amount, 1)
-
-        let params = CommissionTestFixtures.makeSwapParams(
-            commission: commission,
-            storageInfo: storageInfo,
-            callArgs: callArgs
-        )
-        let calls = try CommissionTestFixtures.makeRecordedCalls(params)
-
-        XCTAssertEqual(calls.count, 2)
     }
 
     func testNoCommissionMeansNoTransferCall() throws {
@@ -270,7 +236,6 @@ private extension HydraExchangeExtrinsicParamsFactoryTests {
         callArgs: AssetConversion.CallArgs,
         commission: AssetExchangeCommission
     ) {
-        let bound = callArgs.amountOut - callArgs.slippage.mul(value: callArgs.amountOut)
-        XCTAssertEqual(amount, commission.rate.mul(value: bound))
+        XCTAssertEqual(amount, commission.rate.mul(value: callArgs.amountOut))
     }
 }

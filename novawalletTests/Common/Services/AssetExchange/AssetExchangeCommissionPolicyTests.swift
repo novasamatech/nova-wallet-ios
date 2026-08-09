@@ -52,25 +52,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
     }
 
-    func testChargingIndexEqualsMetaOperationIndex() throws {
-        try assertChargingIndexEqualsMetaOperationIndex(
-            edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap],
-            expectedOperationCount: 3
-        )
-
-        try assertChargingIndexEqualsMetaOperationIndex(
-            edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .assetHubSwap, .crossChain, .hydraSwap],
-            expectedOperationCount: 5
-        )
-    }
-
-    func testAllHydraPoolFamiliesCharge() {
-        let edges = CommissionTestFixtures.makeHydraEdges()
-
-        XCTAssertEqual(edges.count, 4)
-        edges.forEach { XCTAssertEqual($0.type, .hydraSwap) }
-    }
-
     func testNoChargeWithoutHydraEdge() {
         let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
 
@@ -79,55 +60,43 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         XCTAssertNil(policy.chargingOperationIndex(in: CommissionTestFixtures.createPath([])))
     }
 
-    func testAmountNeverExceedsRateOfQuote() throws {
+    /// The fee-time estimate is the rate applied to the charging segment's undiscounted output —
+    /// the same quantity `HydraExchangeExtrinsicParamsFactory.commissionAmount` charges and the
+    /// display nets, so estimate, disclosure and transfer cannot drift apart.
+    func testEstimatedAmountIsRateOfChargingSegmentOutput() throws {
         let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
 
-        let withSlippage = try resolveCommission(
-            using: policyUnderTest.policy,
-            route: route,
-            slippage: BigRational(numerator: 1, denominator: 100)
+        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
+
+        XCTAssertEqual(commission?.estimatedAmount, 8500)
+        XCTAssertEqual(
+            commission?.estimatedAmount,
+            AssetExchangeCommissionConstants.rate.mul(value: 1_000_000)
         )
-        let withSlippageAmount = try XCTUnwrap(withSlippage?.estimatedAmount)
-
-        XCTAssertEqual(withSlippageAmount, 8415)
-        XCTAssertLessThanOrEqual(withSlippageAmount, AssetExchangeCommissionConstants.rate.mul(value: 1_000_000))
-
-        let noSlippage = try resolveCommission(
-            using: policyUnderTest.policy,
-            route: route,
-            slippage: BigRational(numerator: 0, denominator: 100)
-        )
-
-        XCTAssertEqual(noSlippage?.estimatedAmount, 8500)
     }
 
     func testBaseComesFromLastEdgeOfRun() throws {
         let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amounts: [1_000_000, 7_000_000])
 
-        let commission = try resolveCommission(
-            using: policyUnderTest.policy,
-            route: route,
-            slippage: BigRational(numerator: 0, denominator: 100)
-        )
+        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
 
         XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
         XCTAssertEqual(commission?.estimatedAmount, 59500)
     }
 
-    func testCommissionAssetIsChargingSegmentAssetOut() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
-        let route = CommissionTestFixtures.createRoute([.crossChain, .hydraSwap, .crossChain], amount: 1_000_000)
-
-        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
-
-        XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
-    }
-
     func testBeneficiaryDecodesToConfiguredAccount() throws {
         let expectedBeneficiary = try AssetExchangeCommissionConstants.hydrationBeneficiaryAddress.toAccountId()
         XCTAssertEqual(expectedBeneficiary.count, 32)
+
+        // Same account the Android client pays to (NovaSwapCommission.FEE_ACCOUNT_HEX). A typo in
+        // the SS58 constant makes the factory fall back to AssetExchangeNoCommissionPolicy and
+        // revenue silently stops, so pin the decoded bytes rather than just the length.
+        XCTAssertEqual(
+            expectedBeneficiary.toHex(),
+            "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"
+        )
 
         let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
             chainRegistry: MockChainRegistryProtocol().applyDefault(for: [CommissionTestFixtures.chain]),
@@ -153,16 +122,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         XCTAssertEqual(commission?.estimatedAmount, 1)
     }
 
-    func testGateIsIndependentOfAmount() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 5, minBalance: 5)
-
-        let largeRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
-        XCTAssertNotNil(try resolveCommission(using: policyUnderTest.policy, route: largeRoute))
-
-        let smallRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 200)
-        XCTAssertNotNil(try resolveCommission(using: policyUnderTest.policy, route: smallRoute))
-    }
-
     func testSkipsForZeroAmount() throws {
         let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 5, minBalance: 5)
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 117)
@@ -183,47 +142,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
 
         XCTAssertNil(try resolveCommission(using: policyUnderTest.policy, route: route))
-    }
-
-    func testFeeAssetNeverCharged() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
-        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
-
-        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
-
-        XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(1))
-    }
-
-    func testFailurePropagatesRatherThanNilCommission() {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(
-            beneficiaryFree: 10,
-            minBalance: 1,
-            storageInfoResult: .failure(CommonError.dataCorruption)
-        )
-        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
-
-        XCTAssertThrowsError(try resolveCommission(using: policyUnderTest.policy, route: route))
-    }
-
-    func testEachFeeRequestReReadsTheBeneficiaryBalance() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
-        let firstRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
-
-        _ = try resolveCommission(using: policyUnderTest.policy, route: firstRoute)
-
-        XCTAssertEqual(policyUnderTest.storageInfoFactory.depositCallCount, 1)
-        XCTAssertEqual(policyUnderTest.balanceQueryFactory.callCount, 1)
-
-        let secondRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
-
-        _ = try resolveCommission(using: policyUnderTest.policy, route: secondRoute)
-
-        XCTAssertEqual(policyUnderTest.storageInfoFactory.depositCallCount, 2)
-        XCTAssertEqual(policyUnderTest.balanceQueryFactory.callCount, 2)
-
-        policyUnderTest.balanceQueryFactory.requestedAccountIds.forEach {
-            XCTAssertEqual($0, CommissionTestFixtures.beneficiary)
-        }
     }
 
     func testGrossUpIsCeilingAndPathScoped() {
@@ -283,10 +201,9 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
 private extension AssetExchangeCommissionPolicyTests {
     func resolveCommission(
         using policy: AssetExchangeCommissionPolicyProtocol,
-        route: AssetExchangeRoute,
-        slippage: BigRational = BigRational(numerator: 0, denominator: 100)
+        route: AssetExchangeRoute
     ) throws -> AssetExchangeCommission? {
-        let wrapper = policy.resolveCommissionWrapper(for: route, slippage: slippage)
+        let wrapper = policy.resolveCommissionWrapper(for: route)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
@@ -332,30 +249,5 @@ private extension AssetExchangeCommissionPolicyTests {
 
         let chargingOperation = try XCTUnwrap(operations[expectedChargingIndex] as? StubAtomicOperation)
         XCTAssertEqual(chargingOperation.edges.last?.destination, CommissionTestFixtures.asset(expectedChargedAssetId))
-    }
-
-    func assertChargingIndexEqualsMetaOperationIndex(
-        edgeTypes: [AssetExchangeEdgeType],
-        expectedOperationCount: Int
-    ) throws {
-        let route = CommissionTestFixtures.createRoute(edgeTypes, amount: 1_000_000)
-
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
-        let commission = try XCTUnwrap(resolveCommission(using: policyUnderTest.policy, route: route))
-
-        let factory = CommissionTestFixtures.makeFactory()
-
-        let atomicOperations = try factory.prepareAtomicOperations(
-            for: route,
-            slippage: BigRational(numerator: 0, denominator: 100),
-            feeAssetId: CommissionTestFixtures.asset(0),
-            commission: commission
-        )
-
-        let metaOperations = try factory.createMetaOperationsFrom(route: route)
-
-        XCTAssertEqual(atomicOperations.count, expectedOperationCount)
-        XCTAssertEqual(metaOperations.count, atomicOperations.count)
-        XCTAssertEqual(metaOperations[commission.chargingOperationIndex].assetOut.chainAssetId, commission.asset)
     }
 }

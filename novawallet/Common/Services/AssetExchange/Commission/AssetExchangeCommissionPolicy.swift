@@ -10,8 +10,7 @@ protocol AssetExchangeCommissionPolicyProtocol {
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
 
     func resolveCommissionWrapper(
-        for route: AssetExchangeRoute,
-        slippage: BigRational
+        for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?>
 }
 
@@ -69,19 +68,11 @@ private extension AssetExchangeCommissionPolicy {
         return result
     }
 
-    func feeTimeOutputBound(
-        for route: AssetExchangeRoute,
-        run: ChargingRun,
-        slippage: BigRational
-    ) -> Balance {
-        let amountOut = route.items[run.lastEdgeIndex].amountOut(for: route.direction)
-
-        switch route.direction {
-        case .sell:
-            return amountOut - slippage.mul(value: amountOut)
-        case .buy:
-            return amountOut
-        }
+    /// Same base as `HydraExchangeExtrinsicParamsFactory.commissionAmount` — the charging segment's
+    /// own `amountOut`, undiscounted — so the fee-time estimate, the netted display and the
+    /// submitted transfer are all the rate applied to the same quantity.
+    func feeTimeOutputBound(for route: AssetExchangeRoute, run: ChargingRun) -> Balance {
+        route.items[run.lastEdgeIndex].amountOut(for: route.direction)
     }
 
     func createGateWrapper(
@@ -167,8 +158,7 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
     }
 
     func resolveCommissionWrapper(
-        for route: AssetExchangeRoute,
-        slippage: BigRational
+        for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
         let path = route.items.map(\.edge)
 
@@ -176,7 +166,7 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return .createWithResult(nil)
         }
 
-        let bound = feeTimeOutputBound(for: route, run: run, slippage: slippage)
+        let bound = feeTimeOutputBound(for: route, run: run)
         let estimatedAmount = rate.mul(value: bound)
 
         guard estimatedAmount > 0 else {
@@ -236,8 +226,7 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
     }
 
     func resolveCommissionWrapper(
-        for _: AssetExchangeRoute,
-        slippage _: BigRational
+        for _: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
         .createWithResult(nil)
     }

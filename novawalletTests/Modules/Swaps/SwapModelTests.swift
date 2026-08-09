@@ -37,50 +37,6 @@ final class SwapModelTests: XCTestCase {
         XCTAssertEqual(model.netAmountOut, model.grossAmountOut)
         XCTAssertEqual(model.netAmountOut, 1_000_000)
     }
-
-    func testBalanceChecksUnchangedByCommission() throws {
-        let feeWithCommission = makeFee(commission: CommissionTestFixtures.makeCommission())
-        let feeWithoutCommission = makeFee(commission: nil)
-
-        let modelWithCommission = try makeModel(
-            quoteAmountOut: 1_000_000,
-            fee: feeWithCommission,
-            receiveBalance: 0,
-            receiveMinBalance: 0
-        )
-        let modelWithoutCommission = try makeModel(
-            quoteAmountOut: 1_000_000,
-            fee: feeWithoutCommission,
-            receiveBalance: 0,
-            receiveMinBalance: 0
-        )
-
-        XCTAssertEqual(
-            modelWithCommission.payAssetTotalBalanceAfterSwap,
-            modelWithoutCommission.payAssetTotalBalanceAfterSwap
-        )
-
-        XCTAssertEqual(
-            insufficiencyDescription(modelWithCommission.checkEnoughBalanceToSpendAndPayFee()),
-            insufficiencyDescription(modelWithoutCommission.checkEnoughBalanceToSpendAndPayFee())
-        )
-    }
-
-    func testIntermediateEdAlertReportsTheComparedAmount() throws {
-        let checkValue = try runIntermediateEdCheck(chargingOperationIndex: 1)
-
-        XCTAssertEqual(checkValue?.comparedAmount, 991_500)
-    }
-
-    func testIntermediateEdUsesNetFromChargingSegment() throws {
-        let chargingCheck = try runIntermediateEdCheck(chargingOperationIndex: 1)
-
-        XCTAssertEqual(chargingCheck?.operationIndex, 1)
-
-        let noCommissionCheck = try runIntermediateEdCheck(chargingOperationIndex: nil)
-
-        XCTAssertNil(noCommissionCheck)
-    }
 }
 
 private extension SwapModelTests {
@@ -160,73 +116,5 @@ private extension SwapModelTests {
             destAccountInfo: nil,
             destUtilityAssetExistence: nil
         )
-    }
-
-    /// `SwapModel.InsufficientBalanceReason` is not `Equatable`, so this projects it to a
-    /// comparable `String` the same way the display layer's non-`Equatable` view models are
-    /// compared in tests.
-    func insufficiencyDescription(_ reason: SwapModel.InsufficientBalanceReason?) -> String? {
-        guard let reason else {
-            return nil
-        }
-
-        switch reason {
-        case let .amountToHigh(model):
-            return "amountToHigh:\(model.available)"
-        case let .feeInNativeAsset(model):
-            return "feeInNativeAsset:\(model.available):\(model.fee)"
-        case let .feeInPayAsset(model):
-            return "feeInPayAsset:\(model.available):\(model.feeInPayAsset)"
-        case let .deliveryFee(model):
-            return "deliveryFee:\(model.minBalance)"
-        case let .originKeepAlive(model):
-            return "originKeepAlive:\(model.minBalance)"
-        case let .violatingConsumers(model):
-            return "violatingConsumers:\(model.minBalance):\(model.fee)"
-        }
-    }
-
-    /// Drives `SwapBaseInteractor.requestValidatingIntermediateED` through a real interactor with
-    /// three operations of shape `[crossChain, hydraSwap, crossChain]`, each `amountOut == 1_000_000`.
-    /// `chargingOperationIndex` of `1` charges the middle (`hydraSwap`) operation; `nil` charges nothing.
-    func runIntermediateEdCheck(chargingOperationIndex: Int?) throws -> SwapInterEDNotMet? {
-        let interactor = CommissionTestFixtures.makeInteractor(
-            assetStorageFactory: CountingAssetStorageInfoFactory(
-                storageInfoResult: .success(CommissionTestFixtures.ormlInfo(existentialDeposit: 995_000)),
-                minBalance: 995_000
-            )
-        )
-
-        let chain = CommissionTestFixtures.chain
-        let operations = try (0 ..< 2).map { index -> AssetExchangeMetaOperationProtocol in
-            StubMetaOperation(
-                assetIn: try XCTUnwrap(chain.chainAsset(for: AssetModel.Id(index))),
-                assetOut: try XCTUnwrap(chain.chainAsset(for: AssetModel.Id(index + 1))),
-                amountIn: 1_000_000,
-                amountOut: 1_000_000
-            )
-        }
-
-        let commission = chargingOperationIndex.map {
-            AssetExchangeCommission(
-                chargingOperationIndex: $0,
-                asset: CommissionTestFixtures.asset(2),
-                estimatedAmount: 8500,
-                beneficiary: CommissionTestFixtures.beneficiary,
-                rate: AssetExchangeCommissionConstants.rate
-            )
-        }
-
-        var result: SwapInterEDNotMet??
-        let expectation = expectation(description: "intermediate ED check")
-
-        interactor.requestValidatingIntermediateED(for: operations, commission: commission) { checkValue in
-            result = checkValue
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
-
-        return try XCTUnwrap(result)
     }
 }

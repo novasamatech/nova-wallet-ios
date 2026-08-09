@@ -365,7 +365,10 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(
+            from: view,
+            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
+        )
     }
 
     func showPriceDifferenceInfo() {

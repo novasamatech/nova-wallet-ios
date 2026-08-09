@@ -55,14 +55,24 @@ class SwapBaseViewModelFactory {
         percentFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 
+    /// Single source for the percentage the user is shown, so the inline disclosure and the rate
+    /// info sheet can never quote different numbers for the same rate.
+    static func commissionPercent(
+        rate: BigRational,
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        locale: Locale
+    ) -> String {
+        rate.decimalValue.map {
+            percentFormatter.value(for: locale).stringFromDecimal($0) ?? ""
+        } ?? ""
+    }
+
     static func commissionDisclosure(
         rate: BigRational,
         percentFormatter: LocalizableResource<NumberFormatter>,
         locale: Locale
     ) -> String {
-        let percent = rate.decimalValue.map {
-            percentFormatter.value(for: locale).stringFromDecimal($0) ?? ""
-        } ?? ""
+        let percent = commissionPercent(rate: rate, percentFormatter: percentFormatter, locale: locale)
 
         return R.string(
             preferredLanguages: locale.rLanguages

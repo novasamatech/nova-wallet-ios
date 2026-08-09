@@ -281,10 +281,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
-        let commissionWrapper = commissionPolicy.resolveCommissionWrapper(
-            for: args.route,
-            slippage: args.slippage
-        )
+        let commissionWrapper = commissionPolicy.resolveCommissionWrapper(for: args.route)
 
         let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
             operationQueue: operationQueue

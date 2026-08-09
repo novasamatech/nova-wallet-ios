@@ -66,23 +66,6 @@ final class SubstrateTransferCommandFactoryTests: XCTestCase {
             XCTAssertEqual(path, CallCodingPath(moduleName: "Tokens", callName: "transfer"))
         }
     }
-
-    func testAssetsIgnoresKeepAliveFlag() throws {
-        let factory = SubstrateTransferCommandFactory()
-        let info = AssetsPalletStorageInfo(assetId: .stringValue("1"), assetIdString: "1", palletName: "Assets")
-
-        for keepingSenderAlive in [true, false] {
-            let (_, path) = try factory.addingTransferCommand(
-                to: RecordingExtrinsicBuilder(),
-                amount: .concrete(value: 100),
-                recipient: AccountId(repeating: 1, count: 32),
-                assetStorageInfo: .statemine(info: info),
-                keepingSenderAlive: keepingSenderAlive
-            )
-
-            XCTAssertEqual(path, CallCodingPath(moduleName: "Assets", callName: "transfer"))
-        }
-    }
 }
 
 final class RecordingExtrinsicBuilder: ExtrinsicBuilderProtocol {

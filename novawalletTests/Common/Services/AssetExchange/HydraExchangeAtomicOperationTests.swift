@@ -21,7 +21,7 @@ final class HydraExchangeAtomicOperationTests: XCTestCase {
 
         XCTAssertEqual(
             HydraExchangeAtomicOperation.netAmountOut(from: 5_829_600, params: chargingParams),
-            5_780_544
+            5_780_049
         )
 
         let noCommissionParams = CommissionTestFixtures.makeSwapParams(
