@@ -123,8 +123,13 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
 
         XCTAssertNil(commission)
-        XCTAssertEqual(policyUnderTest.balanceQueryFactory.callCount, 0)
-        XCTAssertEqual(policyUnderTest.storageInfoFactory.depositCallCount, 0)
+
+        verify(policyUnderTest.balanceQueryFactory, never()).queryBalance(for: any(), chainAsset: any())
+        verify(policyUnderTest.storageInfoFactory, never()).createAssetBalanceExistenceOperation(
+            for: any(),
+            chainId: any(),
+            asset: any()
+        )
     }
 
     func testSkipsForEvmChargedAsset() throws {

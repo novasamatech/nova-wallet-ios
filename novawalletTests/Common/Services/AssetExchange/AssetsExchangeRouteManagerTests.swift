@@ -6,8 +6,8 @@ import BigInt
 final class AssetsExchangeRouteManagerTests: XCTestCase {
     func testBuyQuoteIsGrossedUpAtSwapSite() throws {
         let factory = AssetsExchangeOperationFactory(
-            graph: StubExchangeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            graph: CommissionTestFixtures.makeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
             operationQueue: OperationQueue(),
             logger: Logger.shared
@@ -32,8 +32,8 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
     func testBuyQuoteIsNotGrossedUpWhenSuppressed() throws {
         let factory = AssetsExchangeOperationFactory(
-            graph: StubExchangeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            graph: CommissionTestFixtures.makeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
             operationQueue: OperationQueue(),
             logger: Logger.shared
@@ -61,7 +61,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [path],
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
             operationQueue: OperationQueue(),
             logger: Logger.shared
@@ -81,7 +81,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [path],
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
             operationQueue: OperationQueue(),
             logger: Logger.shared

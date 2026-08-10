@@ -1,0 +1,128 @@
+import BigInt
+import Foundation
+@testable import novawallet
+import SubstrateSdk
+
+final class RecordingExtrinsicBuilder: ExtrinsicBuilderProtocol {
+    private(set) var addedCalls: [CallCodingPath] = []
+
+    func with<A: Codable>(address _: A) throws -> Self {
+        self
+    }
+
+    func with(nonce _: UInt32) -> Self {
+        self
+    }
+
+    func getNonce() -> UInt32? {
+        nil
+    }
+
+    func with(era _: Era, blockHash _: String) -> Self {
+        self
+    }
+
+    func with(tip _: BigUInt) -> Self {
+        self
+    }
+
+    func with(metadataHash _: Data) -> Self {
+        self
+    }
+
+    func with(batchType _: ExtrinsicBatch) -> Self {
+        self
+    }
+
+    func with(signaturePayloadFormat _: ExtrinsicSignaturePayloadFormat) -> Self {
+        self
+    }
+
+    func adding<T: RuntimeCallable>(call: T) throws -> Self {
+        addedCalls.append(CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        return self
+    }
+
+    func adding<T: RuntimeCallable>(call: T, at _: Int) throws -> Self {
+        addedCalls.append(CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        return self
+    }
+
+    func adding(rawCall _: Data) throws -> Self {
+        self
+    }
+
+    func adding(transactionExtension _: TransactionExtending) -> Self {
+        self
+    }
+
+    func with(runtimeJsonContext _: RuntimeJsonContext) -> Self {
+        self
+    }
+
+    func wrappingCalls(for _: (JSON) throws -> JSON) throws -> Self {
+        self
+    }
+
+    func batchingCalls(with _: RuntimeMetadataProtocol) throws -> Self {
+        self
+    }
+
+    func getCalls() -> [JSON] {
+        []
+    }
+
+    func resetCalls() -> Self {
+        self
+    }
+
+    func signing(
+        by _: @escaping (Data) throws -> Data,
+        of _: CryptoType,
+        using _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> Self {
+        throw CommonError.dataCorruption
+    }
+
+    func signing(
+        by _: @escaping (Data) throws -> JSON,
+        using _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> Self {
+        throw CommonError.dataCorruption
+    }
+
+    func buildRawSignature(
+        using _: @escaping (Data) throws -> Data,
+        encodingFactory _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> Data {
+        throw CommonError.dataCorruption
+    }
+
+    func buildExtrinsicSignatureParams(
+        encodingFactory _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> ExtrinsicSignatureParams {
+        throw CommonError.dataCorruption
+    }
+
+    func buildSignaturePayload(
+        encodingFactory _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> Data {
+        throw CommonError.dataCorruption
+    }
+
+    func build(
+        using _: DynamicScaleEncodingFactoryProtocol,
+        metadata _: RuntimeMetadataProtocol
+    ) throws -> Data {
+        throw CommonError.dataCorruption
+    }
+
+    func makeMemo() -> ExtrinsicBuilderMemoProtocol {
+        fatalError("unused")
+    }
+}

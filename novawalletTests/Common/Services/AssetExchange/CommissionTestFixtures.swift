@@ -138,8 +138,8 @@ enum CommissionTestFixtures {
 
     struct PolicyUnderTest {
         let policy: AssetExchangeCommissionPolicy
-        let storageInfoFactory: CountingAssetStorageInfoFactory
-        let balanceQueryFactory: CountingBalanceQueryFactory
+        let storageInfoFactory: MockAssetStorageInfoOperationFactoryProtocol
+        let balanceQueryFactory: MockWalletRemoteQueryWrapperFactoryProtocol
     }
 
     static func createPolicy(
@@ -147,12 +147,11 @@ enum CommissionTestFixtures {
         minBalance: Balance,
         storageInfoResult: Result<AssetStorageInfo, Error> = .success(ormlInfo(existentialDeposit: 1))
     ) -> PolicyUnderTest {
-        let storageInfoFactory = CountingAssetStorageInfoFactory(
-            storageInfoResult: storageInfoResult,
-            minBalance: minBalance
-        )
+        let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
+            .applyDefault(storageInfoResult: storageInfoResult, minBalance: minBalance)
 
-        let balanceQueryFactory = CountingBalanceQueryFactory(free: beneficiaryFree)
+        let balanceQueryFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
+            .applyDefault(free: beneficiaryFree)
 
         let policy = AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
@@ -171,116 +170,74 @@ enum CommissionTestFixtures {
     }
 }
 
-final class CountingAssetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol {
-    let storageInfoResult: Result<AssetStorageInfo, Error>
-    let minBalance: Balance
+extension MockAssetStorageInfoOperationFactoryProtocol {
+    func applyDefault(
+        storageInfoResult: Result<AssetStorageInfo, Error>,
+        minBalance: Balance
+    ) -> MockAssetStorageInfoOperationFactoryProtocol {
+        stub(self) { stub in
+            stub.createStorageInfoWrapper(from: any(), runtimeProvider: any()).then { _, _ in
+                switch storageInfoResult {
+                case let .success(info):
+                    return .createWithResult(info)
+                case let .failure(error):
+                    return .createWithError(error)
+                }
+            }
 
-    private(set) var storageInfoCallCount = 0
-    private(set) var depositCallCount = 0
-
-    init(storageInfoResult: Result<AssetStorageInfo, Error>, minBalance: Balance) {
-        self.storageInfoResult = storageInfoResult
-        self.minBalance = minBalance
-    }
-
-    func createStorageInfoWrapper(
-        from _: AssetModel,
-        runtimeProvider _: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<AssetStorageInfo> {
-        storageInfoCallCount += 1
-
-        switch storageInfoResult {
-        case let .success(info):
-            return .createWithResult(info)
-        case let .failure(error):
-            return .createWithError(error)
+            stub.createAssetBalanceExistenceOperation(for: any(), chainId: any(), asset: any()).then { _, _, _ in
+                .createWithResult(AssetBalanceExistence(minBalance: minBalance, isSelfSufficient: true))
+            }
         }
-    }
 
-    func createAssetBalanceExistenceOperation(
-        for _: AssetStorageInfo,
-        chainId _: ChainModel.Id,
-        asset _: AssetModel
-    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
-        depositCallCount += 1
-
-        return .createWithResult(AssetBalanceExistence(minBalance: minBalance, isSelfSufficient: true))
+        return self
     }
 }
 
-final class CountingBalanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol {
-    let free: Balance
+extension MockWalletRemoteQueryWrapperFactoryProtocol {
+    func applyDefault(free: Balance) -> MockWalletRemoteQueryWrapperFactoryProtocol {
+        stub(self) { stub in
+            stub.queryBalance(for: any(), chainAsset: any()).then { accountId, chainAsset in
+                .createWithResult(
+                    AssetBalance(
+                        chainAssetId: chainAsset.chainAssetId,
+                        accountId: accountId,
+                        freeInPlank: free,
+                        reservedInPlank: 0,
+                        frozenInPlank: 0,
+                        edCountMode: .basedOnFree,
+                        transferrableMode: .regular,
+                        blocked: false
+                    )
+                )
+            }
+        }
 
-    private(set) var callCount = 0
-    private(set) var requestedAccountIds: [AccountId] = []
-
-    init(free: Balance) {
-        self.free = free
-    }
-
-    func queryBalance(
-        for accountId: AccountId,
-        chainAsset: ChainAsset
-    ) -> CompoundOperationWrapper<AssetBalance> {
-        callCount += 1
-        requestedAccountIds.append(accountId)
-
-        return .createWithResult(
-            AssetBalance(
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId,
-                freeInPlank: free,
-                reservedInPlank: 0,
-                frozenInPlank: 0,
-                edCountMode: .basedOnFree,
-                transferrableMode: .regular,
-                blocked: false
-            )
-        )
+        return self
     }
 }
 
-final class StubExchangePathCostEstimator: AssetsExchangePathCostEstimating {
-    func costEstimationWrapper(
-        for _: AssetExchangeGraphPath
-    ) -> CompoundOperationWrapper<AssetsExchangePathCost> {
-        CompoundOperationWrapper.createWithResult(.zero)
-    }
-}
+extension MockAssetsExchangeGraphProtocol {
+    func applyDefault(paths: [AssetExchangeGraphPath]) -> MockAssetsExchangeGraphProtocol {
+        stub(self) { stub in
+            stub.fetchPaths(from: any(), to: any(), maxTopPaths: any()).thenReturn(paths)
+            stub.fetchAssetsIn(given: any()).thenReturn([])
+            stub.fetchAssetsOut(given: any()).thenReturn([])
+        }
 
-final class StubExchangeGraph: AssetsExchangeGraphProtocol {
-    let paths: [AssetExchangeGraphPath]
-
-    init(paths: [AssetExchangeGraphPath]) {
-        self.paths = paths
-    }
-
-    func fetchPaths(
-        from _: ChainAssetId,
-        to _: ChainAssetId,
-        maxTopPaths _: Int
-    ) -> [AssetExchangeGraphPath] {
-        paths
-    }
-
-    func fetchReachability() -> AssetsExchageGraphReachabilityProtocol {
-        fatalError("unused")
-    }
-
-    func fetchAssetsIn(given _: ChainAssetId?) -> Set<ChainAssetId> {
-        []
-    }
-
-    func fetchAssetsOut(given _: ChainAssetId?) -> Set<ChainAssetId> {
-        []
+        return self
     }
 }
 
 extension CommissionTestFixtures {
+    static func makeGraph(paths: [AssetExchangeGraphPath] = []) -> MockAssetsExchangeGraphProtocol {
+        MockAssetsExchangeGraphProtocol().applyDefault(paths: paths)
+    }
+
     static func makeFactory() -> AssetsExchangeOperationFactory {
         AssetsExchangeOperationFactory(
-            graph: StubExchangeGraph(paths: []),
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            graph: makeGraph(),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             commissionPolicy: createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
             operationQueue: OperationQueue(),
             logger: Logger.shared

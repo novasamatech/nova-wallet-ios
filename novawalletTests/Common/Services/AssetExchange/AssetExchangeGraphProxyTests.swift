@@ -5,10 +5,10 @@ import BigInt
 
 final class AssetExchangeGraphProxyTests: XCTestCase {
     func testFeeConversionQuoteIsNotGrossedUp() throws {
-        let graph = StubExchangeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])])
+        let graph = CommissionTestFixtures.makeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])])
 
         let proxy = AssetExchangeGraphProxy(
-            pathCostEstimator: StubExchangePathCostEstimator(),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
