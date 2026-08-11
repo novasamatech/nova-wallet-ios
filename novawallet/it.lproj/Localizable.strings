@@ -2036,3 +2036,8 @@
 "create.watch.only.missing.any.address" = "Inserisci almeno un indirizzo...";
 "asset.list.watch.only.balance" = "Saldo solo visualizzazione";
 "create.watch.only.subtitle" = "Tieni traccia dell’attività del portafoglio senza una chiave privata.\nNon potrai eseguire alcuna transazione.";
+"common.go.to.staking" = "Vai allo staking";
+"dapp.staking.banner.message" = "Vuoi fare staking? Nova Wallet offre lo staking integrato.";
+"dapp.staking.notice.continue" = "Continua al sito";
+"dapp.staking.notice.message" = "I siti di staking di terze parti spesso diventano obsoleti. Ti consigliamo di utilizzare le funzionalità di staking integrate di Nova Wallet.";
+"dapp.staking.notice.title" = "Avviso";

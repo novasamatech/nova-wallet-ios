@@ -2036,3 +2036,8 @@
 "create.watch.only.missing.any.address" = "En az bir adres girin...";
 "asset.list.watch.only.balance" = "Sadece-izleme bakiyesi";
 "create.watch.only.subtitle" = "Cüzdan aktivitesini özel anahtar olmadan izleyin.\nHerhangi bir işlem gerçekleştiremezsiniz.";
+"common.go.to.staking" = "Staking'e Git";
+"dapp.staking.banner.message" = "Stake etmek mi istiyorsunuz? Nova Wallet'ta yerleşik staking özelliği bulunur.";
+"dapp.staking.notice.continue" = "Siteye devam et";
+"dapp.staking.notice.message" = "Üçüncü taraf staking siteleri çoğu zaman kullanımdan kaldırılır. Nova Wallet'ın yerleşik staking özelliklerini kullanmanızı öneririz.";
+"dapp.staking.notice.title" = "Bildirim";
