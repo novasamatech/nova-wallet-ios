@@ -249,6 +249,8 @@ class CustomValidatorListTests: XCTestCase {
         XCTAssertEqual(lastViewModel?.selection.communitySelected, 0)
         XCTAssertEqual(lastViewModel?.selection.lockedSelected, 1)
         XCTAssertEqual(lastViewModel?.selection.communityLimit, 15)
+        XCTAssertEqual(lastViewModel?.selection.totalSelected, 1)
+        XCTAssertEqual(lastViewModel?.selection.totalLimit, 16)
     }
 
     func testSetupDoesNotGrowTheSelection() {
@@ -407,5 +409,7 @@ class CustomValidatorListTests: XCTestCase {
         XCTAssertEqual(selection?.lockedSelected, 1)
         XCTAssertEqual(selection?.communityLimit, 2)
         XCTAssertEqual(selection?.communitySelected, 2)
+        XCTAssertEqual(selection?.totalSelected, 3)
+        XCTAssertEqual(selection?.totalLimit, 3)
     }
 }
