@@ -20,27 +20,17 @@ final class AssetExchangeCommissionPolicy {
         let lastEdgeIndex: Int
     }
 
+    /// Share of the amount the user receives — the advertised 0.85%.
     let rate: BigRational
-    let beneficiary: AccountId
-    let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
-    let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
-    let chainRegistry: ChainRegistryProtocol
-    let operationQueue: OperationQueue
 
-    init(
-        rate: BigRational,
-        beneficiary: AccountId,
-        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
-        balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
-        chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue
-    ) {
+    /// The same commission as a share of the pool output, which is what every deduction is applied to.
+    var rateOfGross: BigRational { rate.asShareOfGross }
+
+    let beneficiary: AccountId
+
+    init(rate: BigRational, beneficiary: AccountId) {
         self.rate = rate
         self.beneficiary = beneficiary
-        self.assetStorageInfoFactory = assetStorageInfoFactory
-        self.balanceQueryFactory = balanceQueryFactory
-        self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
     }
 }
 
@@ -71,60 +61,6 @@ private extension AssetExchangeCommissionPolicy {
     func feeTimeOutputBound(for route: AssetExchangeRoute, run: ChargingRun) -> Balance {
         route.items[run.lastEdgeIndex].amountOut(for: route.direction)
     }
-
-    func createGateWrapper(
-        for chainAsset: ChainAsset,
-        runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<Bool> {
-        let storageInfoWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: chainAsset.asset,
-            runtimeProvider: runtimeProvider
-        )
-
-        let depositWrapper = OperationCombiningService<AssetBalanceExistence>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) {
-            let storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
-
-            return self.assetStorageInfoFactory.createAssetBalanceExistenceOperation(
-                for: storageInfo,
-                chainId: chainAsset.chain.chainId,
-                asset: chainAsset.asset
-            )
-        }
-
-        depositWrapper.addDependency(wrapper: storageInfoWrapper)
-
-        let balanceWrapper = balanceQueryFactory.queryBalance(
-            for: beneficiary,
-            chainAsset: chainAsset
-        )
-
-        let mappingOperation = ClosureOperation<Bool> {
-            let storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
-
-            switch storageInfo {
-            case .erc20, .evmNative:
-                return false
-            case .native, .statemine, .orml, .ormlHydrationEvm, .equilibrium:
-                break
-            }
-
-            let deposit = try depositWrapper.targetOperation.extractNoCancellableResultData()
-            let balance = try balanceWrapper.targetOperation.extractNoCancellableResultData()
-
-            return balance.freeInPlank >= deposit.minBalance
-        }
-
-        mappingOperation.addDependency(depositWrapper.targetOperation)
-        mappingOperation.addDependency(balanceWrapper.targetOperation)
-
-        let dependencies = storageInfoWrapper.allOperations
-            + depositWrapper.allOperations
-            + balanceWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
-    }
 }
 
 extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
@@ -132,18 +68,14 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         findChargingRun(in: path)?.operationIndex
     }
 
+    /// Adds the commission on top of the amount the user asked to receive, so that after the deduction
+    /// they are left with exactly what they entered.
     func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
         guard chargingOperationIndex(in: path) != nil else {
             return netAmountOut
         }
 
-        guard rate.denominator > rate.numerator else {
-            return netAmountOut
-        }
-
-        let divisor = rate.denominator - rate.numerator
-
-        return (netAmountOut * rate.denominator + divisor - 1) / divisor
+        return netAmountOut + rate.mul(value: netAmountOut)
     }
 
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance {
@@ -151,61 +83,39 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return grossAmount
         }
 
-        return grossAmount - rate.mul(value: grossAmount)
+        return grossAmount - rateOfGross.mul(value: grossAmount)
     }
 
     func resolveCommissionWrapper(
         for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
+        .createWithResult(resolveCommission(for: route))
+    }
+
+    /// Deliberately synchronous and total: the decision depends only on the route, so the amount shown at
+    /// quote time and the amount charged at submission can never disagree. Nova controls the beneficiary
+    /// account, so there is no need to probe its balance before charging.
+    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
         guard let run = findChargingRun(in: path) else {
-            return .createWithResult(nil)
+            return nil
         }
 
         let bound = feeTimeOutputBound(for: route, run: run)
-        let estimatedAmount = rate.mul(value: bound)
+        let estimatedAmount = rateOfGross.mul(value: bound)
 
         guard estimatedAmount > 0 else {
-            return .createWithResult(nil)
+            return nil
         }
 
-        let chargedAssetId = route.items[run.lastEdgeIndex].edge.destination
-
-        do {
-            let chain = try chainRegistry.getChainOrError(for: chargedAssetId.chainId)
-            let chainAsset = try chain.chainAssetOrError(for: chargedAssetId.assetId)
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: chargedAssetId.chainId
-            )
-
-            let gateWrapper = createGateWrapper(
-                for: chainAsset,
-                runtimeProvider: runtimeProvider
-            )
-
-            let mappingOperation = ClosureOperation<AssetExchangeCommission?> {
-                let canCharge = try gateWrapper.targetOperation.extractNoCancellableResultData()
-
-                guard canCharge else {
-                    return nil
-                }
-
-                return AssetExchangeCommission(
-                    chargingOperationIndex: run.operationIndex,
-                    asset: chargedAssetId,
-                    estimatedAmount: estimatedAmount,
-                    beneficiary: self.beneficiary,
-                    rate: self.rate
-                )
-            }
-
-            mappingOperation.addDependency(gateWrapper.targetOperation)
-
-            return gateWrapper.insertingTail(operation: mappingOperation)
-        } catch {
-            return .createWithError(error)
-        }
+        return AssetExchangeCommission(
+            chargingOperationIndex: run.operationIndex,
+            asset: route.items[run.lastEdgeIndex].edge.destination,
+            estimatedAmount: estimatedAmount,
+            beneficiary: beneficiary,
+            rateOfGross: rateOfGross
+        )
     }
 }
 
@@ -231,8 +141,6 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
 
 enum AssetExchangeCommissionPolicyFactory {
     static func createHydrationPolicy(
-        chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> AssetExchangeCommissionPolicyProtocol {
         do {
@@ -242,17 +150,7 @@ enum AssetExchangeCommissionPolicyFactory {
 
             return AssetExchangeCommissionPolicy(
                 rate: AssetExchangeCommissionConstants.rate,
-                beneficiary: beneficiary,
-                assetStorageInfoFactory: AssetStorageInfoOperationFactory(
-                    chainRegistry: chainRegistry,
-                    operationQueue: operationQueue
-                ),
-                balanceQueryFactory: WalletRemoteQueryWrapperFactory(
-                    chainRegistry: chainRegistry,
-                    operationQueue: operationQueue
-                ),
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue
+                beneficiary: beneficiary
             )
         } catch {
             logger.error("Invalid commission beneficiary address: \(error)")

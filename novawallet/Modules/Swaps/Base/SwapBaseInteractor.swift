@@ -198,13 +198,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         )
     }
 
-    func quote(args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool) {
+    func quote(args: AssetConversion.QuoteArgs) {
         quoteCallStore.cancel()
 
-        let wrapper = assetsExchangeService.fetchQuoteWrapper(
-            for: args,
-            grossingUpForCommission: grossingUpForCommission
-        )
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
 
         executeCancellable(
             wrapper: wrapper,
@@ -323,8 +320,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         }
     }
 
-    func calculateQuote(for args: AssetConversion.QuoteArgs, grossingUpForCommission: Bool) {
-        quote(args: args, grossingUpForCommission: grossingUpForCommission)
+    func calculateQuote(for args: AssetConversion.QuoteArgs) {
+        quote(args: args)
     }
 
     func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
@@ -333,13 +330,9 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
-        grossingUpForCommission: Bool,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     ) {
-        let wrapper = assetsExchangeService.fetchQuoteWrapper(
-            for: args,
-            grossingUpForCommission: grossingUpForCommission
-        )
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
 
         execute(
             wrapper: wrapper,
@@ -352,6 +345,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
         commission: AssetExchangeCommission?,
+        slippage: BigRational,
         completion: @escaping SwapInterEDCheckClosure
     ) {
         guard !operations.isEmpty else {
@@ -373,8 +367,14 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
                     let willCharge = commission.map { index >= $0.chargingOperationIndex } ?? false
 
+                    // Compare against the slippage floor, not the quote: the intermediate deposit that has
+                    // to clear ED is what actually arrives on chain, which can be up to the slippage lower.
+                    let worstCaseAmountOut = operation.amountOut.subtractOrZero(
+                        slippage.mul(value: operation.amountOut)
+                    )
+
                     let amountOut = commissionPolicy.netAmount(
-                        from: operation.amountOut,
+                        from: worstCaseAmountOut,
                         willCharge: willCharge
                     )
 

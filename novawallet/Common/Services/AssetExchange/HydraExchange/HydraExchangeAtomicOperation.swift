@@ -84,7 +84,8 @@ final class HydraExchangeAtomicOperation {
             let feeWrapper = self.host.extrinsicOperationFactory.estimateFeeOperation({ builder in
                 try HydraExchangeExtrinsicConverter.addingOperation(
                     from: params,
-                    builder: builder
+                    builder: builder,
+                    logger: self.host.logger
                 )
             }, payingIn: self.operationArgs.feeAsset)
 
@@ -110,7 +111,8 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 extrinsicBuilderClosure: { builder in
                     try HydraExchangeExtrinsicConverter.addingOperation(
                         from: params,
-                        builder: builder
+                        builder: builder,
+                        logger: self.host.logger
                     )
                 },
                 payingIn: self.operationArgs.feeAsset,
@@ -174,7 +176,8 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 extrinsicBuilderClosure: { builder in
                     try HydraExchangeExtrinsicConverter.addingOperation(
                         from: params,
-                        builder: builder
+                        builder: builder,
+                        logger: self.host.logger
                     )
                 },
                 payingIn: self.operationArgs.feeAsset,

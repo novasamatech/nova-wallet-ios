@@ -61,6 +61,18 @@ enum CommissionTestFixtures {
         )
     }
 
+    static func ormlHydrationEvmInfo(module: String = "Currencies") -> AssetStorageInfo {
+        .ormlHydrationEvm(
+            info: OrmlTokenStorageInfo(
+                currencyId: .stringValue("0"),
+                currencyData: Data(),
+                module: module,
+                existentialDeposit: 1,
+                canTransferAll: true
+            )
+        )
+    }
+
     static func ormlInfo(module: String) -> AssetStorageInfo {
         .orml(
             info: OrmlTokenStorageInfo(
@@ -100,7 +112,7 @@ enum CommissionTestFixtures {
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
             estimatedAmount: 999_999_999,
             beneficiary: Data(repeating: 3, count: 32),
-            rate: rate
+            rateOfGross: rate.asShareOfGross
         )
     }
 
@@ -129,91 +141,22 @@ enum CommissionTestFixtures {
     }
 
     static func makeRecordedCalls(_ params: HydraExchangeSwapParams) throws -> [CallCodingPath] {
+        try record(params).addedCalls
+    }
+
+    static func record(_ params: HydraExchangeSwapParams) throws -> RecordingExtrinsicBuilder {
         let builder = RecordingExtrinsicBuilder()
         _ = try HydraExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
-        return builder.addedCalls
+        return builder
     }
 
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
-    struct PolicyUnderTest {
-        let policy: AssetExchangeCommissionPolicy
-        let storageInfoFactory: MockAssetStorageInfoOperationFactoryProtocol
-        let balanceQueryFactory: MockWalletRemoteQueryWrapperFactoryProtocol
-    }
-
-    static func createPolicy(
-        beneficiaryFree: Balance,
-        minBalance: Balance,
-        storageInfoResult: Result<AssetStorageInfo, Error> = .success(ormlInfo(existentialDeposit: 1))
-    ) -> PolicyUnderTest {
-        let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
-            .applyDefault(storageInfoResult: storageInfoResult, minBalance: minBalance)
-
-        let balanceQueryFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
-            .applyDefault(free: beneficiaryFree)
-
-        let policy = AssetExchangeCommissionPolicy(
+    static func createPolicy() -> AssetExchangeCommissionPolicy {
+        AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
-            beneficiary: beneficiary,
-            assetStorageInfoFactory: storageInfoFactory,
-            balanceQueryFactory: balanceQueryFactory,
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chain]),
-            operationQueue: OperationQueue()
+            beneficiary: beneficiary
         )
-
-        return PolicyUnderTest(
-            policy: policy,
-            storageInfoFactory: storageInfoFactory,
-            balanceQueryFactory: balanceQueryFactory
-        )
-    }
-}
-
-extension MockAssetStorageInfoOperationFactoryProtocol {
-    func applyDefault(
-        storageInfoResult: Result<AssetStorageInfo, Error>,
-        minBalance: Balance
-    ) -> MockAssetStorageInfoOperationFactoryProtocol {
-        stub(self) { stub in
-            stub.createStorageInfoWrapper(from: any(), runtimeProvider: any()).then { _, _ in
-                switch storageInfoResult {
-                case let .success(info):
-                    return .createWithResult(info)
-                case let .failure(error):
-                    return .createWithError(error)
-                }
-            }
-
-            stub.createAssetBalanceExistenceOperation(for: any(), chainId: any(), asset: any()).then { _, _, _ in
-                .createWithResult(AssetBalanceExistence(minBalance: minBalance, isSelfSufficient: true))
-            }
-        }
-
-        return self
-    }
-}
-
-extension MockWalletRemoteQueryWrapperFactoryProtocol {
-    func applyDefault(free: Balance) -> MockWalletRemoteQueryWrapperFactoryProtocol {
-        stub(self) { stub in
-            stub.queryBalance(for: any(), chainAsset: any()).then { accountId, chainAsset in
-                .createWithResult(
-                    AssetBalance(
-                        chainAssetId: chainAsset.chainAssetId,
-                        accountId: accountId,
-                        freeInPlank: free,
-                        reservedInPlank: 0,
-                        frozenInPlank: 0,
-                        edCountMode: .basedOnFree,
-                        transferrableMode: .regular,
-                        blocked: false
-                    )
-                )
-            }
-        }
-
-        return self
     }
 }
 
@@ -238,7 +181,7 @@ extension CommissionTestFixtures {
         AssetsExchangeOperationFactory(
             graph: makeGraph(),
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            commissionPolicy: createPolicy(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )

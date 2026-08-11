@@ -1771,7 +1771,7 @@
 "assets.search.token.hint" = "Search by token";
 "swaps.details.exec.time" = "Execution time";
 "swaps.details.route" = "Route";
-"swaps.details.total.fee" = "Total fee";
+"swaps.details.total.fee" = "Network fees";
 "swaps.execution.dont.close.app" = "Do not close the app!";
 "sec.time.units" = "sec";
 "swaps.execution.transfer.details" = "Transferring %@ to %@";

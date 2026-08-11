@@ -16,16 +16,16 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
                     direction: direction,
                     amountOut: 1_000_000,
                     slippage: slippage,
-                    expected: 8500
+                    expected: 8428
                 )
             }
         }
 
         assertCommissionAmount(
             direction: .buy,
-            amountOut: 1_008_572_870,
+            amountOut: 1_008_500_000,
             slippage: BigRational(numerator: 5, denominator: 100),
-            expected: 8_572_869
+            expected: 8_500_000
         )
     }
 
@@ -44,8 +44,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: originalCallArgs
         )
 
-        XCTAssertEqual(originalAmount, 8500)
-        assertMatchesBoundFormula(amount: originalAmount, callArgs: originalCallArgs, commission: commission)
+        XCTAssertEqual(originalAmount, 8428)
 
         let correctedLimit = originalLimit.replacingAmountIn(500_000, shouldReplaceBuyWithSell: false)
         let correctedCallArgs = callArgs(from: correctedLimit)
@@ -54,8 +53,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             callArgs: correctedCallArgs
         )
 
-        XCTAssertEqual(correctedAmount, 4250)
-        assertMatchesBoundFormula(amount: correctedAmount, callArgs: correctedCallArgs, commission: commission)
+        XCTAssertEqual(correctedAmount, 4214)
     }
 
     func testZeroDerivedAmountOmitsTransfer() throws {
@@ -140,7 +138,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             ormlCalls,
             [
                 CallCodingPath(moduleName: "Omnipool", callName: "sell"),
-                .tokensTransferKeepAlive
+                .tokensTransfer
             ]
         )
 
@@ -151,27 +149,28 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         )
         let nativeCalls = try CommissionTestFixtures.makeRecordedCalls(nativeParams)
 
-        XCTAssertEqual(nativeCalls.last, .transferKeepAlive)
+        XCTAssertEqual(nativeCalls.last, .transferAllowDeath)
     }
 
     func testBuyCommissionIgnoresDownstreamFeeTopUp() throws {
-        let grossedTarget: Balance = 10_085_728_694
-        let estimatedAmount = AssetExchangeCommissionConstants.rate.mul(value: grossedTarget)
+        // User asked to receive 10_000_000_000; the route was grossed up by 0.85% of that.
+        let grossedTarget: Balance = 10_085_000_000
+        let estimatedAmount = AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: grossedTarget)
 
-        XCTAssertEqual(estimatedAmount, 85_728_693)
+        XCTAssertEqual(estimatedAmount, 85_000_000)
 
         let commission = AssetExchangeCommission(
             chargingOperationIndex: 0,
             asset: CommissionTestFixtures.asset(1),
             estimatedAmount: estimatedAmount,
             beneficiary: CommissionTestFixtures.beneficiary,
-            rate: AssetExchangeCommissionConstants.rate
+            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
 
         let inflatedCallArgs = CommissionTestFixtures.makeCallArgs(
             direction: .buy,
             amountIn: 1_001_982_999_999,
-            amountOut: 10_105_728_693,
+            amountOut: 10_125_000_000,
             slippage: BigRational(numerator: 0, denominator: 100)
         )
 
@@ -196,7 +195,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
 
         XCTAssertEqual(
             HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs),
-            5_950_000
+            5_899_851
         )
     }
 
@@ -220,7 +219,10 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertEqual(commissionParams.beneficiary, commission.beneficiary)
     }
 
-    func testFeeAndSubmissionClosuresMatch() throws {
+    func testCommissionTransferIsNotKeepAliveAndBatchIsAtomic() throws {
+        // Regression guard for the Hydration commission transfer. Currencies.transfer_keep_alive does not
+        // exist in Hydration's runtime, and a keep-alive failure would revert the whole atomic batch, so
+        // the commission must always use the plain transfer call.
         let callArgs = CommissionTestFixtures.makeCallArgs(
             direction: .sell,
             amountIn: 1_000_000,
@@ -228,19 +230,58 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             slippage: BigRational(numerator: 0, denominator: 100)
         )
         let commission = CommissionTestFixtures.makeCommission()
-        let params = CommissionTestFixtures.makeSwapParams(
-            commission: commission,
-            storageInfo: CommissionTestFixtures.ormlInfo(module: "Tokens"),
-            callArgs: callArgs
+
+        for storageInfo in [
+            CommissionTestFixtures.ormlInfo(module: "Tokens"),
+            CommissionTestFixtures.ormlHydrationEvmInfo(module: "Currencies")
+        ] {
+            let params = CommissionTestFixtures.makeSwapParams(
+                commission: commission,
+                storageInfo: storageInfo,
+                callArgs: callArgs
+            )
+
+            let builder = try CommissionTestFixtures.record(params)
+            let transferCall = try XCTUnwrap(builder.addedCalls.last)
+
+            XCTAssertEqual(transferCall.callName, "transfer")
+            XCTAssertEqual(builder.batchType, .atomic)
+
+            let args = try XCTUnwrap(
+                builder.addedCallArgs.compactMap { $0 as? OrmlTokensPallet.TransferCall }.last
+            )
+
+            XCTAssertEqual(args.amount, 8428)
+            XCTAssertEqual(args.dest.accountId, commission.beneficiary)
+        }
+    }
+
+    func testSellCommissionIsCappedByTheEstimate() {
+        // The estimate is what the user was shown; a corrected execution-time limit must never push the
+        // charge above it, in either direction.
+        let commission = CommissionTestFixtures.makeCommission()
+        let cappedCommission = AssetExchangeCommission(
+            chargingOperationIndex: commission.chargingOperationIndex,
+            asset: commission.asset,
+            estimatedAmount: 1000,
+            beneficiary: commission.beneficiary,
+            rateOfGross: commission.rateOfGross
         )
 
-        let feeBuilder = RecordingExtrinsicBuilder()
-        let submissionBuilder = RecordingExtrinsicBuilder()
+        let inflatedCallArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000,
+            amountOut: 1_000_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
 
-        _ = try HydraExchangeExtrinsicConverter.addingOperation(from: params, builder: feeBuilder)
-        _ = try HydraExchangeExtrinsicConverter.addingOperation(from: params, builder: submissionBuilder)
-
-        XCTAssertEqual(feeBuilder.addedCalls, submissionBuilder.addedCalls)
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(
+                for: cappedCommission,
+                callArgs: inflatedCallArgs
+            ),
+            1000
+        )
     }
 }
 
@@ -272,13 +313,5 @@ private extension HydraExchangeExtrinsicParamsFactoryTests {
 
         XCTAssertEqual(amount, expected)
         XCTAssertNotEqual(amount, commission.estimatedAmount)
-    }
-
-    func assertMatchesBoundFormula(
-        amount: Balance,
-        callArgs: AssetConversion.CallArgs,
-        commission: AssetExchangeCommission
-    ) {
-        XCTAssertEqual(amount, commission.rate.mul(value: callArgs.amountOut))
     }
 }

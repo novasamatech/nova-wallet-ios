@@ -40,6 +40,11 @@ final class SwapExecutionPresenter {
         commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
+    /// Pool output before the Nova commission — see SwapBasePresenter.grossAmountOut.
+    var grossAmountOut: Balance {
+        quote.route.amountOut
+    }
+
     var feeAssetPrice: PriceData? {
         priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
     }
@@ -149,7 +154,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: netAmountOut
+            amountOut: grossAmountOut
         )
 
         if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(

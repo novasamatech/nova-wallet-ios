@@ -118,18 +118,16 @@ struct SwapModel {
             return grossAmount
         }
 
-        return grossAmount - commission.rate.mul(value: grossAmount)
+        return grossAmount - commission.rateOfGross.mul(value: grossAmount)
     }
 
+    /// Applies the slippage haircut in both directions: every operation after the first is rewritten from
+    /// .buy to .sell (AssetExchangeSwapLimit.getNewDirection), so a multi-operation buy settles as a market
+    /// sell that only guarantees the slippage floor.
     var worstCaseNetAmountOut: Balance {
-        switch quoteArgs.direction {
-        case .buy:
-            return netAmountOut
-        case .sell:
-            let worstCaseGross = grossAmountOut.subtractOrZero(slippage.mul(value: grossAmountOut))
+        let worstCaseGross = grossAmountOut.subtractOrZero(slippage.mul(value: grossAmountOut))
 
-            return netAmountOut(forGross: worstCaseGross)
-        }
+        return netAmountOut(forGross: worstCaseGross)
     }
 
     var payAssetTotalBalanceAfterSwap: BigUInt {

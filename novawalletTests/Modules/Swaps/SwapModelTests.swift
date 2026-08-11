@@ -56,7 +56,7 @@ final class SwapModelTests: XCTestCase {
             slippage: BigRational(numerator: 1, denominator: 100)
         )
 
-        XCTAssertEqual(slippageModel.worstCaseNetAmountOut, 991_401)
+        XCTAssertEqual(slippageModel.worstCaseNetAmountOut, 991_473)
 
         guard case .existense = slippageModel.checkReceiveBalanceAboveMin() else {
             XCTFail("expected .existense when the worst case fill lands below the minimum")

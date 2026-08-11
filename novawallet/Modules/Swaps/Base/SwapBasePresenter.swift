@@ -81,24 +81,14 @@ class SwapBasePresenter {
         }
     }
 
+    /// Derived from the route alone, so it holds the same value before and after the fee resolves and the
+    /// displayed receive amount never jumps once the estimate lands.
     var chargesCommission: Bool {
         guard let quote else {
             return false
         }
 
-        guard commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil else {
-            return false
-        }
-
-        guard !suppressCommissionGrossUp else {
-            return false
-        }
-
-        guard let fee else {
-            return true
-        }
-
-        return fee.commission != nil
+        return commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil
     }
 
     var netAmountOut: Balance {
@@ -109,29 +99,10 @@ class SwapBasePresenter {
         return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
-    var suppressCommissionGrossUp = false
-
-    var grossUpCorrectionCounter = MaxCounter.feeCorrection()
-
-    func resetGrossUpCorrection() {
-        suppressCommissionGrossUp = false
-        grossUpCorrectionCounter.resetCounter()
-    }
-
-    private var isBuyChargingRouteWithFee: Bool {
-        guard getQuoteArgs()?.direction == .buy, let quote, fee != nil else {
-            return false
-        }
-
-        return commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil
-    }
-
-    var needsGrossUpSuppression: Bool {
-        !suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission == nil
-    }
-
-    var needsGrossUpRestoration: Bool {
-        suppressCommissionGrossUp && isBuyChargingRouteWithFee && fee?.commission != nil
+    /// Output of the pools before the Nova commission is taken. Price difference is measured against this so
+    /// our own commission is not counted as pool price impact (it is already reflected in the rate).
+    var grossAmountOut: Balance {
+        quote?.route.amountOut ?? 0
     }
 
     var originAccountInfo: AccountInfo? {
@@ -220,7 +191,7 @@ class SwapBasePresenter {
             assetDisplayInfoIn: assetInfoIn,
             assetDisplayInfoOut: assetInfoOut,
             amountIn: quote.route.amountIn,
-            amountOut: netAmountOut
+            amountOut: grossAmountOut
         )
 
         return priceDiffFactory.createModel(
@@ -323,6 +294,7 @@ class SwapBasePresenter {
                     interactor.requestValidatingIntermediateED(
                         for: closureParams.operations.dropLast(),
                         commission: swapModel.feeModel?.commission,
+                        slippage: swapModel.slippage,
                         completion: closureParams.completionClosure
                     )
                 },
@@ -340,10 +312,9 @@ class SwapBasePresenter {
     ) -> DataValidating {
         dataValidatingFactory.passesRealtimeQuoteValidation(
             params: swapModel,
-            remoteValidatingClosure: { [weak self] args, completion in
+            remoteValidatingClosure: { args, completion in
                 interactor.requestValidatingQuote(
                     for: args,
-                    grossingUpForCommission: !(self?.suppressCommissionGrossUp ?? false),
                     completion: completion
                 )
             },

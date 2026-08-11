@@ -25,13 +25,6 @@ protocol SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<OrmlTokensPallet.TransferCall>
 
-    func ormlTransferKeepAlive(
-        in moduleName: String,
-        currencyId: JSON,
-        receiverId: AccountId,
-        amount: BigUInt
-    ) -> RuntimeCall<OrmlTokensPallet.TransferCall>
-
     func ormlTransferAll(
         in moduleName: String,
         currencyId: JSON,
@@ -164,21 +157,6 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         )
 
         return RuntimeCall(moduleName: moduleName, callName: "transfer", args: args)
-    }
-
-    func ormlTransferKeepAlive(
-        in moduleName: String,
-        currencyId: JSON,
-        receiverId: AccountId,
-        amount: BigUInt
-    ) -> RuntimeCall<OrmlTokensPallet.TransferCall> {
-        let args = OrmlTokensPallet.TransferCall(
-            dest: .accoundId(receiverId),
-            currencyId: currencyId,
-            amount: amount
-        )
-
-        return RuntimeCall(moduleName: moduleName, callName: "transfer_keep_alive", args: args)
     }
 
     func ormlTransferAll(

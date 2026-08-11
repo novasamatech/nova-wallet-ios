@@ -3,10 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-enum SubstrateTransferCommandFactoryError: Error {
-    case keepAliveNotSupported(assetStorageInfo: AssetStorageInfo)
-}
-
 final class SubstrateTransferCommandFactory {
     private lazy var callFactory = SubstrateCallFactory()
 
@@ -23,38 +19,15 @@ final class SubstrateTransferCommandFactory {
         recipient: AccountId,
         assetStorageInfo: AssetStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        try addingTransferCommand(
-            to: builder,
-            amount: amount,
-            recipient: recipient,
-            assetStorageInfo: assetStorageInfo,
-            keepingSenderAlive: false
-        )
-    }
-
-    func addingTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: OnChainTransferAmount<BigUInt>,
-        recipient: AccountId,
-        assetStorageInfo: AssetStorageInfo,
-        keepingSenderAlive: Bool
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch assetStorageInfo {
         case let .orml(info), let .ormlHydrationEvm(info):
             return try addingOrmlTransferCommand(
                 to: builder,
                 amount: amount,
                 recipient: recipient,
-                tokenStorageInfo: info,
-                keepingSenderAlive: keepingSenderAlive
+                tokenStorageInfo: info
             )
         case let .statemine(info):
-            guard !keepingSenderAlive else {
-                throw SubstrateTransferCommandFactoryError.keepAliveNotSupported(
-                    assetStorageInfo: assetStorageInfo
-                )
-            }
-
             return try addingAssetsTransferCommand(
                 to: builder,
                 amount: amount,
@@ -66,16 +39,9 @@ final class SubstrateTransferCommandFactory {
                 to: builder,
                 amount: amount,
                 recipient: recipient,
-                info: info,
-                keepingSenderAlive: keepingSenderAlive
+                info: info
             )
         case let .equilibrium(extras):
-            guard !keepingSenderAlive else {
-                throw SubstrateTransferCommandFactoryError.keepAliveNotSupported(
-                    assetStorageInfo: assetStorageInfo
-                )
-            }
-
             return try addingEquilibriumTransferCommand(
                 to: builder,
                 amount: amount,
@@ -96,8 +62,7 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recipient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo,
-        keepingSenderAlive: Bool
+        tokenStorageInfo: OrmlTokenStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch amount {
         case let .concrete(value):
@@ -105,11 +70,10 @@ private extension SubstrateTransferCommandFactory {
                 to: builder,
                 recipient: recipient,
                 tokenStorageInfo: tokenStorageInfo,
-                value: value,
-                keepingSenderAlive: keepingSenderAlive
+                value: value
             )
         case let .all(value):
-            if tokenStorageInfo.canTransferAll, !keepingSenderAlive {
+            if tokenStorageInfo.canTransferAll {
                 return try addingOrmlTransferAllCommand(
                     to: builder,
                     recipient: recipient,
@@ -120,8 +84,7 @@ private extension SubstrateTransferCommandFactory {
                     to: builder,
                     recipient: recipient,
                     tokenStorageInfo: tokenStorageInfo,
-                    value: value,
-                    keepingSenderAlive: keepingSenderAlive
+                    value: value
                 )
             }
         }
@@ -131,22 +94,14 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         recipient: AccountId,
         tokenStorageInfo: OrmlTokenStorageInfo,
-        value: BigUInt,
-        keepingSenderAlive: Bool
+        value: BigUInt
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = keepingSenderAlive
-            ? callFactory.ormlTransferKeepAlive(
-                in: tokenStorageInfo.module,
-                currencyId: tokenStorageInfo.currencyId,
-                receiverId: recipient,
-                amount: value
-            )
-            : callFactory.ormlTransfer(
-                in: tokenStorageInfo.module,
-                currencyId: tokenStorageInfo.currencyId,
-                receiverId: recipient,
-                amount: value
-            )
+        let call = callFactory.ormlTransfer(
+            in: tokenStorageInfo.module,
+            currencyId: tokenStorageInfo.currencyId,
+            receiverId: recipient,
+            amount: value
+        )
 
         let newBuilder = try builder.adding(call: call)
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
@@ -171,28 +126,25 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recipient: AccountId,
-        info: NativeTokenStorageInfo,
-        keepingSenderAlive: Bool
+        info: NativeTokenStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let callPath: CallCodingPath = keepingSenderAlive ? .transferKeepAlive : info.transferCallPath
-
         switch amount {
         case let .concrete(value):
             return try addingNativeTransferValueCommand(
                 to: builder,
                 recipient: recipient,
                 value: value,
-                callPath: callPath
+                callPath: info.transferCallPath
             )
         case let .all(value):
-            if info.canTransferAll, !keepingSenderAlive {
+            if info.canTransferAll {
                 return try addingNativeTransferAllCommand(to: builder, recipient: recipient)
             } else {
                 return try addingNativeTransferValueCommand(
                     to: builder,
                     recipient: recipient,
                     value: value,
-                    callPath: callPath
+                    callPath: info.transferCallPath
                 )
             }
         }

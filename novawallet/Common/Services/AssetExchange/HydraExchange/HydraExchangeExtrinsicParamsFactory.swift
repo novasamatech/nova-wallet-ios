@@ -59,14 +59,13 @@ final class HydraExchangeExtrinsicParamsFactory {
         for commission: AssetExchangeCommission,
         callArgs: AssetConversion.CallArgs
     ) -> Balance {
-        let rateBasedAmount = commission.rate.mul(value: callArgs.amountOut)
+        let rateBasedAmount = commission.rateOfGross.mul(value: callArgs.amountOut)
 
-        switch callArgs.direction {
-        case .sell:
-            return rateBasedAmount
-        case .buy:
-            return min(commission.estimatedAmount, rateBasedAmount)
-        }
+        // The estimate shown to the user is derived from the quoted output, while callArgs carries the
+        // limit corrected at execution time. Capping by the estimate keeps the charge at or below what
+        // was displayed regardless of direction: operations after the first are always rewritten to
+        // .sell (see AssetExchangeSwapLimit.getNewDirection), so a .buy-only cap would never apply to them.
+        return min(commission.estimatedAmount, rateBasedAmount)
     }
 
     static func commissionParams(

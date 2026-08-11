@@ -5,6 +5,8 @@ import SubstrateSdk
 
 final class RecordingExtrinsicBuilder: ExtrinsicBuilderProtocol {
     private(set) var addedCalls: [CallCodingPath] = []
+    private(set) var addedCallArgs: [Any] = []
+    private(set) var batchType: ExtrinsicBatch?
 
     func with<A: Codable>(address _: A) throws -> Self {
         self
@@ -30,8 +32,9 @@ final class RecordingExtrinsicBuilder: ExtrinsicBuilderProtocol {
         self
     }
 
-    func with(batchType _: ExtrinsicBatch) -> Self {
-        self
+    func with(batchType: ExtrinsicBatch) -> Self {
+        self.batchType = batchType
+        return self
     }
 
     func with(signaturePayloadFormat _: ExtrinsicSignaturePayloadFormat) -> Self {
@@ -40,11 +43,13 @@ final class RecordingExtrinsicBuilder: ExtrinsicBuilderProtocol {
 
     func adding<T: RuntimeCallable>(call: T) throws -> Self {
         addedCalls.append(CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        addedCallArgs.append(call.args)
         return self
     }
 
     func adding<T: RuntimeCallable>(call: T, at _: Int) throws -> Self {
         addedCalls.append(CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        addedCallArgs.append(call.args)
         return self
     }
 

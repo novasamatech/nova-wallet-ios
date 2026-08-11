@@ -4,9 +4,12 @@ import SubstrateSdk
 enum HydraExchangeExtrinsicConverter {
     static func addingOperation(
         from params: HydraExchangeSwapParams,
-        builder: ExtrinsicBuilderProtocol
+        builder: ExtrinsicBuilderProtocol,
+        logger: LoggerProtocol? = nil
     ) throws -> ExtrinsicBuilderProtocol {
-        var currentBuilder = builder
+        // The swap and the service commission transfer must succeed or fail together: a partially applied
+        // batch would let the swap settle while the commission is skipped, or vice versa.
+        var currentBuilder = builder.with(batchType: .atomic)
 
         if let updateReferralCall = params.updateReferral {
             currentBuilder = try currentBuilder.adding(call: updateReferralCall.runtimeCall())
@@ -24,13 +27,20 @@ enum HydraExchangeExtrinsicConverter {
         }
 
         if let commission = params.commission {
-            (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
-                to: currentBuilder,
-                amount: .concrete(value: commission.amount),
-                recipient: commission.beneficiary,
-                assetStorageInfo: commission.assetStorageInfo,
-                keepingSenderAlive: true
-            )
+            // Deliberately not a keep-alive transfer: the batch is atomic, so a keep-alive failure would
+            // revert the swap itself. Skipping the commission is always preferable to failing the user's swap.
+            do {
+                (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
+                    to: currentBuilder,
+                    amount: .concrete(value: commission.amount),
+                    recipient: commission.beneficiary,
+                    assetStorageInfo: commission.assetStorageInfo
+                )
+            } catch {
+                // Applied identically to fee estimation and submission, so the estimate stays consistent
+                // with what is actually submitted.
+                logger?.error("Failed to attach swap service commission, continuing without it: \(error)")
+            }
         }
 
         return currentBuilder

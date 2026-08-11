@@ -8,7 +8,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let factory = AssetsExchangeOperationFactory(
             graph: CommissionTestFixtures.makeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
@@ -19,41 +19,14 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
                 assetOut: CommissionTestFixtures.asset(1),
                 amount: 1_000_000_000,
                 direction: .buy
-            ),
-            grossingUpForCommission: true
+            )
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         let quote = try wrapper.targetOperation.extractNoCancellableResultData()
 
-        XCTAssertEqual(quote.route.amountOut, 1_008_572_870)
-    }
-
-    func testBuyQuoteIsNotGrossedUpWhenSuppressed() throws {
-        let factory = AssetsExchangeOperationFactory(
-            graph: CommissionTestFixtures.makeGraph(paths: [CommissionTestFixtures.createPath([.hydraSwap])]),
-            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
-        )
-
-        let wrapper = factory.createQuoteWrapper(
-            args: AssetConversion.QuoteArgs(
-                assetIn: CommissionTestFixtures.asset(0),
-                assetOut: CommissionTestFixtures.asset(1),
-                amount: 1_000_000_000,
-                direction: .buy
-            ),
-            grossingUpForCommission: false
-        )
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
-
-        let quote = try wrapper.targetOperation.extractNoCancellableResultData()
-
-        XCTAssertEqual(quote.route.amountOut, 1_000_000_000)
+        XCTAssertEqual(quote.route.amountOut, 1_008_500_000)
     }
 
     func testNonChargingPathIsNotGrossedUp() throws {
@@ -62,7 +35,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [path],
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
@@ -82,7 +55,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [path],
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
@@ -145,7 +118,7 @@ private extension AssetsExchangeRouteManagerTests {
                 makeSingleEdgePath(type: .assetHubSwap, quote: assetHubQuote)
             ],
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
-            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )

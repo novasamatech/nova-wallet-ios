@@ -6,7 +6,7 @@ import Cuckoo
 
 final class AssetExchangeCommissionPolicyTests: XCTestCase {
     func testChargingIndexForRouteShapes() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertEqual(
             policy.chargingOperationIndex(in: CommissionTestFixtures.createPath([.crossChain, .hydraSwap, .crossChain])),
@@ -53,7 +53,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     }
 
     func testNoChargeWithoutHydraEdge() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertNil(policy.chargingOperationIndex(in: CommissionTestFixtures.createPath([.crossChain, .crossChain])))
         XCTAssertNil(policy.chargingOperationIndex(in: CommissionTestFixtures.createPath([.assetHubSwap, .crossChain])))
@@ -61,26 +61,26 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     }
 
     func testEstimatedAmountIsRateOfChargingSegmentOutput() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
+        let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
 
-        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
+        let commission = try resolveCommission(using: policy, route: route)
 
-        XCTAssertEqual(commission?.estimatedAmount, 8500)
+        XCTAssertEqual(commission?.estimatedAmount, 8428)
         XCTAssertEqual(
             commission?.estimatedAmount,
-            AssetExchangeCommissionConstants.rate.mul(value: 1_000_000)
+            AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: 1_000_000)
         )
     }
 
     func testBaseComesFromLastEdgeOfRun() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1)
+        let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amounts: [1_000_000, 7_000_000])
 
-        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
+        let commission = try resolveCommission(using: policy, route: route)
 
         XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
-        XCTAssertEqual(commission?.estimatedAmount, 59500)
+        XCTAssertEqual(commission?.estimatedAmount, 58998)
     }
 
     func testBeneficiaryDecodesToConfiguredAccount() throws {
@@ -92,63 +92,39 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"
         )
 
-        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [CommissionTestFixtures.chain]),
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
-        )
+        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(logger: Logger.shared)
 
         let concretePolicy = try XCTUnwrap(policy as? AssetExchangeCommissionPolicy)
         XCTAssertEqual(concretePolicy.beneficiary, expectedBeneficiary)
     }
 
-    func testSkipsWhenBeneficiaryBelowExistentialDeposit() throws {
-        let belowDeposit = CommissionTestFixtures.createPolicy(beneficiaryFree: 0, minBalance: 1_000_000)
-        let poorRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
+    func testChargesRegardlessOfBeneficiaryBalance() throws {
+        // Nova controls the beneficiary account, so there is no balance/ED precondition: the decision
+        // depends on the route alone and cannot differ between quote time and submission time.
+        let policy = CommissionTestFixtures.createPolicy()
+        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
 
-        XCTAssertNil(try resolveCommission(using: belowDeposit.policy, route: poorRoute))
+        let commission = try resolveCommission(using: policy, route: route)
 
-        let atDeposit = CommissionTestFixtures.createPolicy(beneficiaryFree: 1_000_000, minBalance: 1_000_000)
-        let tinyRoute = CommissionTestFixtures.createRoute([.hydraSwap], amount: 200)
-
-        let commission = try resolveCommission(using: atDeposit.policy, route: tinyRoute)
-
-        XCTAssertEqual(commission?.estimatedAmount, 1)
+        XCTAssertEqual(commission?.estimatedAmount, 8_428_358)
+        XCTAssertEqual(commission?.beneficiary, CommissionTestFixtures.beneficiary)
     }
 
     func testSkipsForZeroAmount() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(beneficiaryFree: 5, minBalance: 5)
+        let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 117)
 
-        let commission = try resolveCommission(using: policyUnderTest.policy, route: route)
+        let commission = try resolveCommission(using: policy, route: route)
 
         XCTAssertNil(commission)
-
-        verify(policyUnderTest.balanceQueryFactory, never()).queryBalance(for: any(), chainAsset: any())
-        verify(policyUnderTest.storageInfoFactory, never()).createAssetBalanceExistenceOperation(
-            for: any(),
-            chainId: any(),
-            asset: any()
-        )
-    }
-
-    func testSkipsForEvmChargedAsset() throws {
-        let policyUnderTest = CommissionTestFixtures.createPolicy(
-            beneficiaryFree: 10,
-            minBalance: 1,
-            storageInfoResult: .success(.evmNative)
-        )
-        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
-
-        XCTAssertNil(try resolveCommission(using: policyUnderTest.policy, route: route))
     }
 
     func testGrossUpIsCeilingAndPathScoped() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertEqual(
             policy.grossingUpAmountOut(1_000_000_000, for: CommissionTestFixtures.createPath([.hydraSwap])),
-            1_008_572_870
+            1_008_500_000
         )
         XCTAssertEqual(
             policy.grossingUpAmountOut(1_000_000_000, for: CommissionTestFixtures.createPath([.crossChain])),
@@ -156,8 +132,8 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
     }
 
-    func testBuyGrossUpBoundedByOnePlank() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+    func testBuyGrossUpRoundTripsExactly() {
+        let policy = CommissionTestFixtures.createPolicy()
         let path = CommissionTestFixtures.createPath([.hydraSwap])
 
         let targets: [Balance] = [1, 2, 117, 118, 999, 1_000_000_000, 123_456_789_012_345]
@@ -166,20 +142,21 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             let gross = policy.grossingUpAmountOut(target, for: path)
             let net = policy.netAmount(from: gross, willCharge: true)
 
-            XCTAssertGreaterThanOrEqual(net, target)
-            XCTAssertLessThanOrEqual(net, target + 1)
+            // Commission is 0.85% of what the user receives, so grossing up and then deducting
+            // returns exactly the entered amount — no residual plank in either direction.
+            XCTAssertEqual(net, target)
         }
     }
 
     func testNetAmountAppliesRateNotAbsoluteAmount() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
 
-        XCTAssertEqual(policy.netAmount(from: 1_000_000, willCharge: true), 991_500)
+        XCTAssertEqual(policy.netAmount(from: 1_000_000, willCharge: true), 991_572)
         XCTAssertEqual(policy.netAmount(from: 1_000_000, willCharge: false), 1_000_000)
     }
 
     func testArithmeticAtExtremes() {
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
         let path = CommissionTestFixtures.createPath([.hydraSwap])
 
         XCTAssertEqual(policy.netAmount(from: 0, willCharge: true), 0)
@@ -218,7 +195,7 @@ private extension AssetExchangeCommissionPolicyTests {
         let route = CommissionTestFixtures.createRoute(edgeTypes, amount: 1_000_000)
         let path = route.items.map(\.edge)
 
-        let policy = CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy
+        let policy = CommissionTestFixtures.createPolicy()
         let chargingOperationIndex = try XCTUnwrap(policy.chargingOperationIndex(in: path))
 
         let commission = AssetExchangeCommission(
@@ -226,7 +203,7 @@ private extension AssetExchangeCommissionPolicyTests {
             asset: CommissionTestFixtures.asset(expectedChargedAssetId),
             estimatedAmount: 1,
             beneficiary: CommissionTestFixtures.beneficiary,
-            rate: AssetExchangeCommissionConstants.rate
+            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
 
         let factory = CommissionTestFixtures.makeFactory()

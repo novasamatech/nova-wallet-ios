@@ -48,7 +48,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         )
 
         quoteResult = .success(initState.quote)
-        suppressCommissionGrossUp = initState.suppressCommissionGrossUp
         self.localizationManager = localizationManager
     }
 
@@ -115,7 +114,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
         view?.didReceiveStartLoading()
 
-        interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: !suppressCommissionGrossUp)
+        interactor.calculateQuote(for: quoteArgs)
     }
 
     override func handleBaseError(_ error: SwapBaseError) {
@@ -146,18 +145,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
-        if needsGrossUpSuppression, grossUpCorrectionCounter.incrementCounterIfPossible() {
-            suppressCommissionGrossUp = true
-            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: false)
-            return
-        }
-
-        if needsGrossUpRestoration, grossUpCorrectionCounter.incrementCounterIfPossible() {
-            suppressCommissionGrossUp = false
-            interactor.calculateQuote(for: quoteArgs, grossingUpForCommission: true)
-            return
-        }
-
         provideRouteViewModel()
         provideFeeViewModel()
         provideAssetOutViewModel()
@@ -199,9 +186,10 @@ extension SwapConfirmPresenter {
     }
 
     private func provideAssetOutViewModel() {
-        guard let quote else {
+        guard quote != nil else {
             return
         }
+
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
             amount: netAmountOut,
@@ -263,7 +251,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: netAmountOut
+            amountOut: grossAmountOut
         )
 
         if let viewModel = viewModelFactory.priceDifferenceViewModel(

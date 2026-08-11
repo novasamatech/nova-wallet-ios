@@ -449,8 +449,6 @@ final class AssetsExchangeTests: XCTestCase {
         }
 
         let commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
-            chainRegistry: params.chainRegistry,
-            operationQueue: params.operationQueue,
             logger: params.logger
         )
 
@@ -470,7 +468,7 @@ final class AssetsExchangeTests: XCTestCase {
         )
 
         do {
-            let routeWrapper = chargingFactory.createQuoteWrapper(args: quoteArgs, grossingUpForCommission: true)
+            let routeWrapper = chargingFactory.createQuoteWrapper(args: quoteArgs)
             params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
             let quote = try routeWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -503,7 +501,17 @@ final class AssetsExchangeTests: XCTestCase {
 
             let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 
-            XCTAssertEqual(fee.route.amountOut, noCommissionFee.route.amountOut)
+            // iOS ranks candidate routes on their NET output, so the commission may legitimately select a
+            // different route than the commission-free run (unlike Android, which applies the fee after
+            // selection). What must hold is that accounting for the commission never leaves the user worse
+            // off than ignoring it.
+            let netAmountOut = commissionPolicy.netAmount(from: fee.route.amountOut, willCharge: true)
+            let noCommissionNetAmountOut = commissionPolicy.netAmount(
+                from: noCommissionFee.route.amountOut,
+                willCharge: true
+            )
+
+            XCTAssertGreaterThanOrEqual(netAmountOut, noCommissionNetAmountOut)
         } catch {
             XCTFail("Fee error: \(error)")
         }
@@ -523,7 +531,7 @@ final class AssetsExchangeTests: XCTestCase {
             throw CommonError.undefined
         }
 
-        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs, grossingUpForCommission: true)
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
 
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
 
@@ -550,7 +558,7 @@ final class AssetsExchangeTests: XCTestCase {
             return nil
         }
 
-        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs, grossingUpForCommission: true)
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
 
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
 

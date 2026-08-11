@@ -3,8 +3,7 @@ import Operation_iOS
 
 protocol AssetsExchangeOperationFactoryProtocol {
     func createQuoteWrapper(
-        args: AssetConversion.QuoteArgs,
-        grossingUpForCommission: Bool
+        args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetExchangeQuote>
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
 
@@ -219,8 +218,7 @@ final class AssetsExchangeOperationFactory {
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
     func createQuoteWrapper(
-        args: AssetConversion.QuoteArgs,
-        grossingUpForCommission: Bool
+        args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetExchangeQuote> {
         let routeWrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -238,7 +236,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let routeWrapper = AssetsExchangeRouteManager(
                 possiblePaths: paths,
                 pathCostEstimator: self.pathCostEstimator,
-                commissionPolicy: grossingUpForCommission ? self.commissionPolicy : nil,
+                commissionPolicy: self.commissionPolicy,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)
@@ -286,15 +284,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
         let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let commission: AssetExchangeCommission?
-
-            do {
-                commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                self.logger.error("Commission resolution failed, continuing without it: \(error)")
-
-                commission = nil
-            }
+            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
 
             return self.createFeeWrapper(for: args, commission: commission)
         }
