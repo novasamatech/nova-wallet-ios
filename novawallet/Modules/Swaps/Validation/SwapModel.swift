@@ -110,11 +110,26 @@ struct SwapModel {
     }
 
     var netAmountOut: Balance {
+        netAmountOut(forGross: grossAmountOut)
+    }
+
+    func netAmountOut(forGross grossAmount: Balance) -> Balance {
         guard let commission = feeModel?.commission else {
-            return grossAmountOut
+            return grossAmount
         }
 
-        return grossAmountOut - commission.rate.mul(value: grossAmountOut)
+        return grossAmount - commission.rate.mul(value: grossAmount)
+    }
+
+    var worstCaseNetAmountOut: Balance {
+        switch quoteArgs.direction {
+        case .buy:
+            return netAmountOut
+        case .sell:
+            let worstCaseGross = grossAmountOut.subtractOrZero(slippage.mul(value: grossAmountOut))
+
+            return netAmountOut(forGross: worstCaseGross)
+        }
     }
 
     var payAssetTotalBalanceAfterSwap: BigUInt {
@@ -309,7 +324,7 @@ struct SwapModel {
     }
 
     func checkReceiveBalanceAboveMin() -> CannotReceiveReason? {
-        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + netAmountOut
+        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + worstCaseNetAmountOut
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
         if amountAfterSwap < minBalance {

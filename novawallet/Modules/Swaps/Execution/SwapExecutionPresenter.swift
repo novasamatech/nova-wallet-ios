@@ -149,7 +149,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: netAmountOut
         )
 
         if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(

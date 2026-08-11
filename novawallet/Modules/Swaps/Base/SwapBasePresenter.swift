@@ -90,6 +90,10 @@ class SwapBasePresenter {
             return false
         }
 
+        guard !suppressCommissionGrossUp else {
+            return false
+        }
+
         guard let fee else {
             return true
         }
@@ -108,6 +112,11 @@ class SwapBasePresenter {
     var suppressCommissionGrossUp = false
 
     var grossUpCorrectionCounter = MaxCounter.feeCorrection()
+
+    func resetGrossUpCorrection() {
+        suppressCommissionGrossUp = false
+        grossUpCorrectionCounter.resetCounter()
+    }
 
     private var isBuyChargingRouteWithFee: Bool {
         guard getQuoteArgs()?.direction == .buy, let quote, fee != nil else {
@@ -211,7 +220,7 @@ class SwapBasePresenter {
             assetDisplayInfoIn: assetInfoIn,
             assetDisplayInfoOut: assetInfoOut,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: netAmountOut
         )
 
         return priceDiffFactory.createModel(

@@ -59,7 +59,14 @@ final class HydraExchangeExtrinsicParamsFactory {
         for commission: AssetExchangeCommission,
         callArgs: AssetConversion.CallArgs
     ) -> Balance {
-        commission.rate.mul(value: callArgs.amountOut)
+        let rateBasedAmount = commission.rate.mul(value: callArgs.amountOut)
+
+        switch callArgs.direction {
+        case .sell:
+            return rateBasedAmount
+        case .buy:
+            return min(commission.estimatedAmount, rateBasedAmount)
+        }
     }
 
     static func commissionParams(

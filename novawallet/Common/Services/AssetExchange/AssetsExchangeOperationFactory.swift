@@ -286,7 +286,15 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
         let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
+            let commission: AssetExchangeCommission?
+
+            do {
+                commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                self.logger.error("Commission resolution failed, continuing without it: \(error)")
+
+                commission = nil
+            }
 
             return self.createFeeWrapper(for: args, commission: commission)
         }

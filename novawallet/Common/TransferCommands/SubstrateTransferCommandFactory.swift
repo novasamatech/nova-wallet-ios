@@ -3,6 +3,10 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+enum SubstrateTransferCommandFactoryError: Error {
+    case keepAliveNotSupported(assetStorageInfo: AssetStorageInfo)
+}
+
 final class SubstrateTransferCommandFactory {
     private lazy var callFactory = SubstrateCallFactory()
 
@@ -41,9 +45,16 @@ final class SubstrateTransferCommandFactory {
                 to: builder,
                 amount: amount,
                 recipient: recipient,
-                tokenStorageInfo: info
+                tokenStorageInfo: info,
+                keepingSenderAlive: keepingSenderAlive
             )
         case let .statemine(info):
+            guard !keepingSenderAlive else {
+                throw SubstrateTransferCommandFactoryError.keepAliveNotSupported(
+                    assetStorageInfo: assetStorageInfo
+                )
+            }
+
             return try addingAssetsTransferCommand(
                 to: builder,
                 amount: amount,
@@ -59,6 +70,12 @@ final class SubstrateTransferCommandFactory {
                 keepingSenderAlive: keepingSenderAlive
             )
         case let .equilibrium(extras):
+            guard !keepingSenderAlive else {
+                throw SubstrateTransferCommandFactoryError.keepAliveNotSupported(
+                    assetStorageInfo: assetStorageInfo
+                )
+            }
+
             return try addingEquilibriumTransferCommand(
                 to: builder,
                 amount: amount,
@@ -79,7 +96,8 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recipient: AccountId,
-        tokenStorageInfo: OrmlTokenStorageInfo
+        tokenStorageInfo: OrmlTokenStorageInfo,
+        keepingSenderAlive: Bool
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch amount {
         case let .concrete(value):
@@ -87,10 +105,11 @@ private extension SubstrateTransferCommandFactory {
                 to: builder,
                 recipient: recipient,
                 tokenStorageInfo: tokenStorageInfo,
-                value: value
+                value: value,
+                keepingSenderAlive: keepingSenderAlive
             )
         case let .all(value):
-            if tokenStorageInfo.canTransferAll {
+            if tokenStorageInfo.canTransferAll, !keepingSenderAlive {
                 return try addingOrmlTransferAllCommand(
                     to: builder,
                     recipient: recipient,
@@ -101,7 +120,8 @@ private extension SubstrateTransferCommandFactory {
                     to: builder,
                     recipient: recipient,
                     tokenStorageInfo: tokenStorageInfo,
-                    value: value
+                    value: value,
+                    keepingSenderAlive: keepingSenderAlive
                 )
             }
         }
@@ -111,14 +131,22 @@ private extension SubstrateTransferCommandFactory {
         to builder: ExtrinsicBuilderProtocol,
         recipient: AccountId,
         tokenStorageInfo: OrmlTokenStorageInfo,
-        value: BigUInt
+        value: BigUInt,
+        keepingSenderAlive: Bool
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        let call = callFactory.ormlTransfer(
-            in: tokenStorageInfo.module,
-            currencyId: tokenStorageInfo.currencyId,
-            receiverId: recipient,
-            amount: value
-        )
+        let call = keepingSenderAlive
+            ? callFactory.ormlTransferKeepAlive(
+                in: tokenStorageInfo.module,
+                currencyId: tokenStorageInfo.currencyId,
+                receiverId: recipient,
+                amount: value
+            )
+            : callFactory.ormlTransfer(
+                in: tokenStorageInfo.module,
+                currencyId: tokenStorageInfo.currencyId,
+                receiverId: recipient,
+                amount: value
+            )
 
         let newBuilder = try builder.adding(call: call)
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))

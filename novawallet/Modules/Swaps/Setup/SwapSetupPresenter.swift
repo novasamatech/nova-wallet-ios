@@ -119,8 +119,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func applySwapMax() {
-        suppressCommissionGrossUp = false
-        grossUpCorrectionCounter.resetCounter()
+        resetGrossUpCorrection()
 
         payAmountInput = .rate(1)
         providePayAssetViews()
@@ -399,7 +398,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: payAssetDisplayInfo,
                 assetDisplayInfoOut: assetDisplayInfo,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.route.amountOut
+                amountOut: netAmountOut
             )
 
             differenceViewModel = viewModelFactory.priceDifferenceViewModel(
@@ -640,6 +639,8 @@ extension SwapSetupPresenter {
     }
 
     private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
+        resetGrossUpCorrection()
+
         feeChainAsset = chainAsset
         providePayAssetViews()
         interactor.update(feeChainAsset: chainAsset)
@@ -706,8 +707,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func selectPayToken() {
         wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
-            self?.suppressCommissionGrossUp = false
-            self?.grossUpCorrectionCounter.resetCounter()
+            self?.resetGrossUpCorrection()
 
             self?.payChainAsset = chainAsset
             let feeChainAsset = chainAsset.chain.utilityChainAsset()
@@ -737,8 +737,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
-            self?.suppressCommissionGrossUp = false
-            self?.grossUpCorrectionCounter.resetCounter()
+            self?.resetGrossUpCorrection()
 
             self?.receiveChainAsset = chainAsset
             self?.provideReceiveAssetViews()
@@ -758,8 +757,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func updatePayAmount(_ amount: Decimal?) {
-        suppressCommissionGrossUp = false
-        grossUpCorrectionCounter.resetCounter()
+        resetGrossUpCorrection()
 
         payAmountInput = amount.map { .absolute($0) }
         refreshQuote(direction: .sell)
@@ -770,8 +768,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
-        suppressCommissionGrossUp = false
-        grossUpCorrectionCounter.resetCounter()
+        resetGrossUpCorrection()
 
         receiveAmountInput = amount
         refreshQuote(direction: .buy)
@@ -782,8 +779,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func flip(currentFocus: TextFieldFocus?) {
-        suppressCommissionGrossUp = false
-        grossUpCorrectionCounter.resetCounter()
+        resetGrossUpCorrection()
 
         let payAmount = getPayAmount(for: payAmountInput)
         let receiveAmount = receiveAmountInput.map { AmountInputResult.absolute($0) }
@@ -893,7 +889,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     feeChainAsset: swapModel.feeChainAsset,
                     slippage: slippage,
                     quote: quote,
-                    quoteArgs: quoteArgs
+                    quoteArgs: quoteArgs,
+                    suppressCommissionGrossUp: self?.suppressCommissionGrossUp ?? false
                 )
 
                 self?.wireframe.showConfirmation(
@@ -921,6 +918,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
             guard payChainAsset.chainAssetId == self?.payChainAsset?.chainAssetId else {
                 return
             }
+            self?.resetGrossUpCorrection()
             self?.slippage = slippageValue
             self?.estimateFee()
         }
@@ -954,6 +952,8 @@ extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
 
     func didReceiveQuoteDataChanged() {
         logger.debug("Requote request received")
+
+        resetGrossUpCorrection()
 
         refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
         estimateFee()

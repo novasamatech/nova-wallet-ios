@@ -5,6 +5,18 @@ final class AssetsExchangeRouteManager {
     struct AssetExchangeRouteWithCost {
         let route: AssetExchangeRoute
         let additionalEstimatedCost: AssetsExchangePathCost
+        let path: AssetExchangeGraphPath
+
+        func comparableAmountOut(using commissionPolicy: AssetExchangeCommissionPolicyProtocol?) -> Balance {
+            let willCharge = commissionPolicy?.chargingOperationIndex(in: path) != nil
+
+            let netQuote = commissionPolicy?.netAmount(
+                from: route.quote,
+                willCharge: willCharge
+            ) ?? route.quote
+
+            return netQuote.subtractOrZero(additionalEstimatedCost.amountInAssetOut)
+        }
     }
 
     let possiblePaths: [AssetExchangeGraphPath]
@@ -98,20 +110,26 @@ extension AssetsExchangeRouteManager {
         for amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
+        let commissionPolicy = commissionPolicy
+
         let routeWithCostWrappers = possiblePaths.map { path in
             let routeWrapper = createQuote(for: path, amount: amount, direction: direction)
             let costWrapper = pathCostEstimator.costEstimationWrapper(for: path)
 
-            return (routeWrapper, costWrapper)
+            return (path: path, route: routeWrapper, cost: costWrapper)
         }
 
         let winnerCalculator = ClosureOperation<AssetExchangeRoute?> {
-            let exchangeRoutes: [AssetExchangeRouteWithCost] = routeWithCostWrappers.compactMap { pairWrappers in
+            let exchangeRoutes: [AssetExchangeRouteWithCost] = routeWithCostWrappers.compactMap { pathWrappers in
                 do {
-                    let route = try pairWrappers.0.targetOperation.extractNoCancellableResultData()
-                    let cost = try pairWrappers.1.targetOperation.extractNoCancellableResultData()
+                    let route = try pathWrappers.route.targetOperation.extractNoCancellableResultData()
+                    let cost = try pathWrappers.cost.targetOperation.extractNoCancellableResultData()
 
-                    return AssetExchangeRouteWithCost(route: route, additionalEstimatedCost: cost)
+                    return AssetExchangeRouteWithCost(
+                        route: route,
+                        additionalEstimatedCost: cost,
+                        path: pathWrappers.path
+                    )
                 } catch {
                     return nil
                 }
@@ -120,8 +138,8 @@ extension AssetsExchangeRouteManager {
             switch direction {
             case .sell:
                 return exchangeRoutes.max { res1, res2 in
-                    let value1 = res1.route.quote.subtractOrZero(res1.additionalEstimatedCost.amountInAssetOut)
-                    let value2 = res2.route.quote.subtractOrZero(res2.additionalEstimatedCost.amountInAssetOut)
+                    let value1 = res1.comparableAmountOut(using: commissionPolicy)
+                    let value2 = res2.comparableAmountOut(using: commissionPolicy)
 
                     return value1 < value2
                 }?.route
@@ -136,7 +154,7 @@ extension AssetsExchangeRouteManager {
         }
 
         let dependencies = routeWithCostWrappers.flatMap { routeWithCostWrapper in
-            routeWithCostWrapper.0.allOperations + routeWithCostWrapper.1.allOperations
+            routeWithCostWrapper.route.allOperations + routeWithCostWrapper.cost.allOperations
         }
 
         dependencies.forEach { winnerCalculator.addDependency($0) }

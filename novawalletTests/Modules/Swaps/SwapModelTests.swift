@@ -37,6 +37,32 @@ final class SwapModelTests: XCTestCase {
         XCTAssertEqual(model.netAmountOut, model.grossAmountOut)
         XCTAssertEqual(model.netAmountOut, 1_000_000)
     }
+
+    func testReceiveEdCheckAccountsForSlippage() throws {
+        let noSlippageModel = try makeModel(
+            quoteAmountOut: 1_010_000,
+            commission: CommissionTestFixtures.makeCommission(),
+            receiveBalance: 0,
+            receiveMinBalance: 1_000_000
+        )
+
+        XCTAssertNil(noSlippageModel.checkReceiveBalanceAboveMin())
+
+        let slippageModel = try makeModel(
+            quoteAmountOut: 1_010_000,
+            commission: CommissionTestFixtures.makeCommission(),
+            receiveBalance: 0,
+            receiveMinBalance: 1_000_000,
+            slippage: BigRational(numerator: 1, denominator: 100)
+        )
+
+        XCTAssertEqual(slippageModel.worstCaseNetAmountOut, 991_401)
+
+        guard case .existense = slippageModel.checkReceiveBalanceAboveMin() else {
+            XCTFail("expected .existense when the worst case fill lands below the minimum")
+            return
+        }
+    }
 }
 
 private extension SwapModelTests {
@@ -55,13 +81,15 @@ private extension SwapModelTests {
         quoteAmountOut: Balance,
         commission: AssetExchangeCommission?,
         receiveBalance: Balance,
-        receiveMinBalance: Balance
+        receiveMinBalance: Balance,
+        slippage: BigRational = BigRational(numerator: 0, denominator: 100)
     ) throws -> SwapModel {
         try makeModel(
             quoteAmountOut: quoteAmountOut,
             fee: makeFee(commission: commission),
             receiveBalance: receiveBalance,
-            receiveMinBalance: receiveMinBalance
+            receiveMinBalance: receiveMinBalance,
+            slippage: slippage
         )
     }
 
@@ -69,7 +97,8 @@ private extension SwapModelTests {
         quoteAmountOut: Balance,
         fee: AssetExchangeFee,
         receiveBalance: Balance,
-        receiveMinBalance: Balance
+        receiveMinBalance: Balance,
+        slippage: BigRational = BigRational(numerator: 0, denominator: 100)
     ) throws -> SwapModel {
         let payChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
         let receiveChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
@@ -111,7 +140,7 @@ private extension SwapModelTests {
             feeModel: fee,
             quoteArgs: quoteArgs,
             quote: quote,
-            slippage: BigRational(numerator: 0, denominator: 100),
+            slippage: slippage,
             accountInfo: nil,
             destAccountInfo: nil,
             destUtilityAssetExistence: nil

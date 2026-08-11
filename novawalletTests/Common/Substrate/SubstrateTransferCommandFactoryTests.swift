@@ -44,26 +44,84 @@ final class SubstrateTransferCommandFactoryTests: XCTestCase {
         XCTAssertEqual(path, .transferKeepAlive)
     }
 
-    func testOrmlIgnoresKeepAliveFlag() throws {
+    func testOrmlCommissionTransferUsesKeepAliveCallPath() throws {
         let factory = SubstrateTransferCommandFactory()
-        let info = OrmlTokenStorageInfo(
+
+        let expectations: [(Bool, CallCodingPath)] = [
+            (true, .tokensTransferKeepAlive),
+            (false, .tokensTransfer)
+        ]
+
+        for (keepingSenderAlive, expectedPath) in expectations {
+            let (_, path) = try factory.addingTransferCommand(
+                to: RecordingExtrinsicBuilder(),
+                amount: .concrete(value: 100),
+                recipient: AccountId(repeating: 1, count: 32),
+                assetStorageInfo: .orml(info: Self.ormlInfo()),
+                keepingSenderAlive: keepingSenderAlive
+            )
+
+            XCTAssertEqual(path, expectedPath)
+        }
+    }
+
+    func testOrmlKeepAliveDoesNotTakeTransferAll() throws {
+        let factory = SubstrateTransferCommandFactory()
+
+        let (_, path) = try factory.addingTransferCommand(
+            to: RecordingExtrinsicBuilder(),
+            amount: .all(value: 100),
+            recipient: AccountId(repeating: 1, count: 32),
+            assetStorageInfo: .orml(info: Self.ormlInfo()),
+            keepingSenderAlive: true
+        )
+
+        XCTAssertEqual(path, .tokensTransferKeepAlive)
+    }
+
+    func testKeepAliveRejectedWhenPalletHasNoKeepAliveVariant() throws {
+        let factory = SubstrateTransferCommandFactory()
+
+        let unsupported: [AssetStorageInfo] = [
+            .statemine(
+                info: AssetsPalletStorageInfo(
+                    assetId: .stringValue("1"),
+                    assetIdString: "1",
+                    palletName: "Assets"
+                )
+            ),
+            .equilibrium(extras: EquilibriumAssetExtras(assetId: 1, transfersEnabled: true))
+        ]
+
+        for assetStorageInfo in unsupported {
+            XCTAssertThrowsError(
+                try factory.addingTransferCommand(
+                    to: RecordingExtrinsicBuilder(),
+                    amount: .concrete(value: 100),
+                    recipient: AccountId(repeating: 1, count: 32),
+                    assetStorageInfo: assetStorageInfo,
+                    keepingSenderAlive: true
+                )
+            ) { error in
+                switch error {
+                case SubstrateTransferCommandFactoryError.keepAliveNotSupported:
+                    break
+                default:
+                    XCTFail("Unexpected error: \(error)")
+                }
+            }
+        }
+    }
+}
+
+private extension SubstrateTransferCommandFactoryTests {
+    static func ormlInfo() -> OrmlTokenStorageInfo {
+        OrmlTokenStorageInfo(
             currencyId: .stringValue("0"),
             currencyData: Data(),
             module: "Tokens",
             existentialDeposit: 1,
             canTransferAll: true
         )
-
-        for keepingSenderAlive in [true, false] {
-            let (_, path) = try factory.addingTransferCommand(
-                to: RecordingExtrinsicBuilder(),
-                amount: .concrete(value: 100),
-                recipient: AccountId(repeating: 1, count: 32),
-                assetStorageInfo: .orml(info: info),
-                keepingSenderAlive: keepingSenderAlive
-            )
-
-            XCTAssertEqual(path, CallCodingPath(moduleName: "Tokens", callName: "transfer"))
-        }
     }
 }

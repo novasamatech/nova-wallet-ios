@@ -5,4 +5,5 @@ struct SwapConfirmInitState {
     let slippage: BigRational
     let quote: AssetExchangeQuote
     let quoteArgs: AssetConversion.QuoteArgs
+    let suppressCommissionGrossUp: Bool
 }

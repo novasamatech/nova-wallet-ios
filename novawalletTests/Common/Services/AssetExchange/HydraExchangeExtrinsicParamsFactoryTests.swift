@@ -140,7 +140,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             ormlCalls,
             [
                 CallCodingPath(moduleName: "Omnipool", callName: "sell"),
-                CallCodingPath(moduleName: "Tokens", callName: "transfer")
+                .tokensTransferKeepAlive
             ]
         )
 
@@ -152,6 +152,52 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         let nativeCalls = try CommissionTestFixtures.makeRecordedCalls(nativeParams)
 
         XCTAssertEqual(nativeCalls.last, .transferKeepAlive)
+    }
+
+    func testBuyCommissionIgnoresDownstreamFeeTopUp() throws {
+        let grossedTarget: Balance = 10_085_728_694
+        let estimatedAmount = AssetExchangeCommissionConstants.rate.mul(value: grossedTarget)
+
+        XCTAssertEqual(estimatedAmount, 85_728_693)
+
+        let commission = AssetExchangeCommission(
+            chargingOperationIndex: 0,
+            asset: CommissionTestFixtures.asset(1),
+            estimatedAmount: estimatedAmount,
+            beneficiary: CommissionTestFixtures.beneficiary,
+            rate: AssetExchangeCommissionConstants.rate
+        )
+
+        let inflatedCallArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .buy,
+            amountIn: 1_001_982_999_999,
+            amountOut: 10_105_728_693,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(
+                for: commission,
+                callArgs: inflatedCallArgs
+            ),
+            estimatedAmount
+        )
+    }
+
+    func testSellCommissionTracksRealizedAmountOut() throws {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000,
+            amountOut: 700_000_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs),
+            5_950_000
+        )
     }
 
     func testTransferGoesToConfiguredBeneficiary() throws {

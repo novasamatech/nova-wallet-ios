@@ -48,6 +48,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         )
 
         quoteResult = .success(initState.quote)
+        suppressCommissionGrossUp = initState.suppressCommissionGrossUp
         self.localizationManager = localizationManager
     }
 
@@ -262,7 +263,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: netAmountOut
         )
 
         if let viewModel = viewModelFactory.priceDifferenceViewModel(

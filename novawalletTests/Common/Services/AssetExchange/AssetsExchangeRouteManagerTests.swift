@@ -95,4 +95,65 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         XCTAssertEqual(route.amountIn, 1_000_000_000)
     }
+
+    func testSellRoutePrefersHigherNetOutputOverHigherGrossOutput() throws {
+        let route = try fetchSellRoute(hydraQuote: 101_000_000_000, assetHubQuote: 100_500_000_000)
+
+        XCTAssertEqual(route.amountOut, 100_500_000_000)
+    }
+
+    func testSellRouteKeepsChargingPathWhenItStillWinsOnNetOutput() throws {
+        let route = try fetchSellRoute(hydraQuote: 102_000_000_000, assetHubQuote: 100_500_000_000)
+
+        XCTAssertEqual(route.amountOut, 102_000_000_000)
+    }
+
+    func testSellRouteRankingIsUnchangedWhenNoPathChargesCommission() throws {
+        let route = try fetchSellRoute(
+            hydraQuote: 101_000_000_000,
+            assetHubQuote: 100_500_000_000,
+            chargingEdgeType: .crossChain
+        )
+
+        XCTAssertEqual(route.amountOut, 101_000_000_000)
+    }
+}
+
+private extension AssetsExchangeRouteManagerTests {
+    func makeSingleEdgePath(type: AssetExchangeEdgeType, quote: Balance) -> AssetExchangeGraphPath {
+        [
+            AnyAssetExchangeEdge(
+                StubAssetExchangeEdge(
+                    origin: CommissionTestFixtures.asset(0),
+                    destination: CommissionTestFixtures.asset(1),
+                    type: type,
+                    chain: CommissionTestFixtures.chain,
+                    quoteClosure: { _, _ in quote }
+                )
+            )
+        ]
+    }
+
+    func fetchSellRoute(
+        hydraQuote: Balance,
+        assetHubQuote: Balance,
+        chargingEdgeType: AssetExchangeEdgeType = .hydraSwap
+    ) throws -> AssetExchangeRoute {
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: chargingEdgeType, quote: hydraQuote),
+                makeSingleEdgePath(type: .assetHubSwap, quote: assetHubQuote)
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(beneficiaryFree: 10, minBalance: 1).policy,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: 1_000_000_000, direction: .sell)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+    }
 }
