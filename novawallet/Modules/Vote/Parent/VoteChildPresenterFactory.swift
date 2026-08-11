@@ -4,11 +4,6 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol VoteChildPresenterFactoryProtocol {
-    func createCrowdloanPresenter(
-        from view: CrowdloansViewProtocol,
-        wallet: MetaAccountModel
-    ) -> VoteChildPresenterProtocol?
-
     func createGovernancePresenter(
         from view: ReferendumsViewProtocol,
         wallet: MetaAccountModel,
@@ -22,7 +17,6 @@ final class VoteChildPresenterFactory {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
     let priceProviderFactory: PriceProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let substrateStorageFacade: StorageFacadeProtocol
@@ -35,7 +29,6 @@ final class VoteChildPresenterFactory {
         applicationHandler: ApplicationHandlerProtocol,
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol = WalletLocalSubscriptionFactory.shared,
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
         priceProviderFactory: PriceProviderFactoryProtocol = PriceProviderFactory.shared,
         repositoryFactory: SubstrateRepositoryFactoryProtocol = SubstrateRepositoryFactory(),
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
@@ -47,7 +40,6 @@ final class VoteChildPresenterFactory {
         self.currencyManager = currencyManager
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.jsonDataProviderFactory = jsonDataProviderFactory
         self.priceProviderFactory = priceProviderFactory
         self.repositoryFactory = repositoryFactory
         self.applicationHandler = applicationHandler
@@ -56,33 +48,6 @@ final class VoteChildPresenterFactory {
         self.operationQueue = operationQueue
         self.localizationManager = localizationManager
         self.logger = logger
-    }
-
-    private func createCrowdloanInteractor(
-        from state: CrowdloanSharedState,
-        wallet: MetaAccountModel
-    ) -> CrowdloanListInteractor {
-        let serviceFactory = VoteServiceFactory(
-            chainRegisty: chainRegistry,
-            storageFacade: substrateStorageFacade,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-
-        return CrowdloanListInteractor(
-            selectedMetaAccount: wallet,
-            crowdloanState: state,
-            chainRegistry: chainRegistry,
-            voteServiceFactory: serviceFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            jsonDataProviderFactory: jsonDataProviderFactory,
-            priceLocalSubscriptionFactory: priceProviderFactory,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            currencyManager: currencyManager,
-            logger: logger
-        )
     }
 
     private func createGovernanceInteractor(
@@ -118,38 +83,6 @@ final class VoteChildPresenterFactory {
 }
 
 extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
-    func createCrowdloanPresenter(
-        from view: CrowdloansViewProtocol,
-        wallet: MetaAccountModel
-    ) -> VoteChildPresenterProtocol? {
-        let state = CrowdloanSharedState()
-
-        let interactor = createCrowdloanInteractor(from: state, wallet: wallet)
-        let wireframe = CrowdloanListWireframe(state: state)
-
-        let viewModelFactory = CrowdloansViewModelFactory(
-            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
-                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
-            )
-        )
-
-        let presenter = CrowdloanListPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager,
-            appearanceFacade: AppearanceFacade.shared,
-            privacyStateManager: PrivacyStateManager.shared,
-            logger: Logger.shared
-        )
-
-        presenter.view = view
-        view.presenter = presenter
-        interactor.presenter = presenter
-
-        return presenter
-    }
-
     func createGovernancePresenter(
         from view: ReferendumsViewProtocol,
         wallet: MetaAccountModel,

@@ -75,22 +75,12 @@ extension VotePresenter: VotePresenterProtocol {
         childPresenter?.setup()
     }
 
-    func switchToCrowdloans(_ view: CrowdloansViewProtocol) {
-        guard let wallet = wallet else {
-            return
-        }
-
-        childPresenter?.putOffline()
-        childPresenter = childPresenterFactory.createCrowdloanPresenter(from: view, wallet: wallet)
-        childPresenter?.setup()
-    }
-
     func showReferendumsDetails(_ referendumIndex: Referenda.ReferendumIndex) {
         referendumsState = .init(referendumIndex: referendumIndex) { [weak self] in
             self?.referendumsState = nil
         }
         if view?.isSetup == true {
-            view?.didReceive(voteType: .governance)
+            view?.didReceiveGovernanceRequest()
         }
     }
 }

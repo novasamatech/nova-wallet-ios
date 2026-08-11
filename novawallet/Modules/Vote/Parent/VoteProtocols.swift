@@ -1,14 +1,9 @@
 import Foundation
 
-enum VoteType: UInt8 {
-    case governance
-    case crowdloan
-}
-
 protocol VoteViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didSwitchWallet(with viewModel: WalletSwitchViewModel)
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
-    func didReceive(voteType: VoteType)
+    func didReceiveGovernanceRequest()
 }
 
 protocol VoteChainViewProtocol {
@@ -22,7 +17,6 @@ protocol VotePresenterProtocol: AnyObject {
     func selectChain()
     func selectWallet()
     func switchToGovernance(_ view: ReferendumsViewProtocol)
-    func switchToCrowdloans(_ view: CrowdloansViewProtocol)
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
 }
 
