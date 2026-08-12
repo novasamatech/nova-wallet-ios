@@ -475,7 +475,8 @@ extension SwapSetupPresenter {
         guard
             let assetDisplayInfoIn = payChainAsset?.assetDisplayInfo,
             let assetDisplayInfoOut = receiveChainAsset?.assetDisplayInfo,
-            let quote else {
+            let quote,
+            commissionResolved else {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
@@ -525,6 +526,10 @@ extension SwapSetupPresenter {
     }
 
     private func provideCommissionDisclosureViewModel() {
+        guard commissionResolved else {
+            return
+        }
+
         let viewModel = chargesCommission
             ? viewModelFactory.commissionDisclosureViewModel(
                 rate: AssetExchangeCommissionConstants.rate,

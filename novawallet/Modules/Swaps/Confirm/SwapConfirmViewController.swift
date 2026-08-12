@@ -82,8 +82,8 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.pairsView.leftAssetView.bind(viewModel: viewModel)
     }
 
-    func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel) {
-        rootView.pairsView.rigthAssetView.bind(viewModel: viewModel)
+    func didReceiveAssetOut(viewModel: LoadableViewModelState<SwapAssetAmountViewModel>) {
+        rootView.pairsView.rigthAssetView.bind(loadableViewModel: viewModel)
     }
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {

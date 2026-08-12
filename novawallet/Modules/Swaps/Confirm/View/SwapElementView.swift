@@ -100,6 +100,21 @@ final class SwapElementView: UIView {
 }
 
 extension SwapElementView {
+    func bind(loadableViewModel: LoadableViewModelState<SwapAssetAmountViewModel>) {
+        if let viewModel = loadableViewModel.value {
+            bind(viewModel: viewModel)
+        }
+
+        switch loadableViewModel {
+        case .loading:
+            valueLabel.startShimmeringOpacity()
+            priceLabel.startShimmeringOpacity()
+        case .cached, .loaded:
+            valueLabel.stopShimmeringOpacity()
+            priceLabel.stopShimmeringOpacity()
+        }
+    }
+
     func bind(viewModel: SwapAssetAmountViewModel) {
         let width = 2 * Self.assetIconRadius - assetIconView.contentInsets.left - assetIconView.contentInsets.right
         let height = 2 * Self.assetIconRadius - assetIconView.contentInsets.top - assetIconView.contentInsets.bottom
