@@ -35,7 +35,7 @@ final class AssetsExchangeRouteManager {
     private func createQuote(
         for path: AssetExchangeGraphPath,
         direction: AssetConversion.Direction,
-        amountClosure: @escaping () throws -> Balance
+        amountWrapper: CompoundOperationWrapper<Balance>
     ) -> CompoundOperationWrapper<AssetExchangeRoute> {
         let wrappers: [CompoundOperationWrapper<AssetExchangeRouteItem>]
         wrappers = path.quoteIteration(for: direction).reduce([]) { prevWrappers, item in
@@ -45,19 +45,21 @@ final class AssetsExchangeRouteManager {
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
                 let prevRouteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
-                let amountIn = try prevRouteItem?.quote ?? amountClosure()
+                let amountIn = try prevRouteItem?.quote ?? amountWrapper.targetOperation.extractNoCancellableResultData()
 
                 return item.quote(amount: amountIn, direction: direction)
             }
 
             if let prevWrapper {
                 quoteWrapper.addDependency(wrapper: prevWrapper)
+            } else {
+                quoteWrapper.addDependency(wrapper: amountWrapper)
             }
 
             let mappingOperation = ClosureOperation<AssetExchangeRouteItem> {
                 let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
                 let prevQuoteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
-                let amountIn = try prevQuoteItem?.quote ?? amountClosure()
+                let amountIn = try prevQuoteItem?.quote ?? amountWrapper.targetOperation.extractNoCancellableResultData()
 
                 return AssetExchangeRouteItem(
                     edge: item,
@@ -68,13 +70,17 @@ final class AssetsExchangeRouteManager {
 
             mappingOperation.addDependency(quoteWrapper.targetOperation)
 
+            if prevWrapper == nil {
+                mappingOperation.addDependency(amountWrapper.targetOperation)
+            }
+
             let totalWrapper = quoteWrapper.insertingTail(operation: mappingOperation)
 
             return prevWrappers + [totalWrapper]
         }
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute> {
-            let amount = try amountClosure()
+            let amount = try amountWrapper.targetOperation.extractNoCancellableResultData()
             let initRoute = AssetExchangeRoute(items: [], amount: amount, direction: direction)
 
             return try wrappers.reduce(initRoute) { route, wrapper in
@@ -85,8 +91,9 @@ final class AssetsExchangeRouteManager {
         }
 
         wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+        mappingOperation.addDependency(amountWrapper.targetOperation)
 
-        let dependencies = wrappers.flatMap(\.allOperations)
+        let dependencies = wrappers.flatMap(\.allOperations) + amountWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
@@ -98,7 +105,11 @@ extension AssetsExchangeRouteManager {
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
         let routeWithCostWrappers = possiblePaths.map { path in
-            let routeWrapper = createQuote(for: path, direction: direction) { amount }
+            let routeWrapper = createQuote(
+                for: path,
+                direction: direction,
+                amountWrapper: .createWithResult(amount)
+            )
             let costWrapper = pathCostEstimator.costEstimationWrapper(for: path)
 
             return (path: path, route: routeWrapper, cost: costWrapper)
@@ -182,17 +193,15 @@ private extension AssetsExchangeRouteManager {
         for candidate: AssetExchangeRouteWithCost,
         amount: Balance
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
-        guard let commissionPolicy else {
+        guard
+            let commissionPolicy,
+            commissionPolicy.hasChargingSite(in: candidate.path) else {
             return .createWithResult(candidate.route)
         }
 
         let grossWrapper = commissionPolicy.grossingUpAmountOutWrapper(amount, for: candidate.path)
 
-        let routeWrapper = createQuote(for: candidate.path, direction: .buy) {
-            try grossWrapper.targetOperation.extractNoCancellableResultData()
-        }
-
-        routeWrapper.addDependency(wrapper: grossWrapper)
+        let routeWrapper = createQuote(for: candidate.path, direction: .buy, amountWrapper: grossWrapper)
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute?> {
             try routeWrapper.targetOperation.extractNoCancellableResultData()
@@ -200,8 +209,6 @@ private extension AssetsExchangeRouteManager {
 
         mappingOperation.addDependency(routeWrapper.targetOperation)
 
-        return routeWrapper
-            .insertingHead(operations: grossWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
+        return routeWrapper.insertingTail(operation: mappingOperation)
     }
 }

@@ -266,6 +266,10 @@ final class SwapCommissionPolicyStub: AssetExchangeCommissionPolicyProtocol {
         grossAmount
     }
 
+    func hasChargingSite(in _: AssetExchangeGraphPath) -> Bool {
+        false
+    }
+
     func resolveCommissionWrapper(
         for _: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {

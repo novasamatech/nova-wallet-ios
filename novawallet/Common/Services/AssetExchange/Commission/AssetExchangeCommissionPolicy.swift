@@ -5,6 +5,8 @@ import BigInt
 protocol AssetExchangeCommissionPolicyProtocol {
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
 
+    func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool
+
     func resolveCommissionWrapper(
         for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?>
@@ -106,6 +108,10 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         return grossAmount - rateOfGross.mul(value: grossAmount)
     }
 
+    func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool {
+        findChargingRun(in: path) != nil
+    }
+
     func grossingUpAmountOutWrapper(
         _ netAmountOut: Balance,
         for path: AssetExchangeGraphPath
@@ -175,6 +181,10 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
 final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
     func netAmount(from grossAmount: Balance, willCharge _: Bool) -> Balance {
         grossAmount
+    }
+
+    func hasChargingSite(in _: AssetExchangeGraphPath) -> Bool {
+        false
     }
 
     func resolveCommissionWrapper(

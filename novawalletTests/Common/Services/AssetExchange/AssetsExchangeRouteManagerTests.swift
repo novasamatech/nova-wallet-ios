@@ -93,6 +93,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
     func testBuyRouteRanksOnRawAmountIgnoringCommission() throws {
         let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
 
+        XCTAssertEqual(route.items.first?.edge.type, .hydraSwap)
         XCTAssertEqual(route.amountIn, 100_850_000_000)
     }
 
@@ -100,6 +101,31 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
 
         XCTAssertEqual(route.amountOut, 1_008_500_000)
+    }
+
+    func testNonChargingBuyWinnerIsQuotedOnce() throws {
+        let counter = QuoteCallCounter()
+
+        let path = makeSingleEdgePath(type: .assetHubSwap) { amount, _ in
+            counter.increment()
+            return amount
+        }
+
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [path],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: 1_000_000_000, direction: .buy)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        _ = try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+
+        XCTAssertEqual(counter.count, 1)
     }
 }
 
@@ -167,5 +193,13 @@ private extension AssetsExchangeRouteManagerTests {
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+    }
+}
+
+private final class QuoteCallCounter {
+    private(set) var count = 0
+
+    func increment() {
+        count += 1
     }
 }
