@@ -25,7 +25,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         viewModelFactory: SwapDetailsViewModelFactoryProtocol,
         priceDifferenceFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
-        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -43,7 +42,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
             dataValidatingFactory: dataValidatingFactory,
             priceDiffFactory: priceDifferenceFactory,
             priceStore: priceStore,
-            commissionPolicy: commissionPolicy,
             logger: logger
         )
 

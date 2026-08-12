@@ -67,7 +67,6 @@ struct SwapSetupViewFactory {
             priceDiffModelFactory: priceDiffModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             priceStore: state.priceStore,
-            commissionPolicy: state.commissionPolicy,
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,

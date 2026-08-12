@@ -127,7 +127,6 @@ extension SwapSetupReceiveAmountLoadingTests {
             priceDiffModelFactory: priceDiffModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             priceStore: SwapExchangePriceStoreStub(),
-            commissionPolicy: SwapCommissionPolicyStub(),
             localizationManager: LocalizationManager.shared,
             selectedWallet: AccountGenerator.generateMetaAccount(),
             slippageConfig: .defaultConfig,
@@ -259,27 +258,4 @@ final class SwapSetupWireframeStub: SwapSetupWireframeProtocol {
 final class SwapExchangePriceStoreStub: AssetExchangePriceStoring {
     func getCurrencyId() -> Int? { nil }
     func fetchPrice(for _: ChainAssetId) -> PriceData? { nil }
-}
-
-final class SwapCommissionPolicyStub: AssetExchangeCommissionPolicyProtocol {
-    func netAmount(from grossAmount: Balance, willCharge _: Bool) -> Balance {
-        grossAmount
-    }
-
-    func hasChargingSite(in _: AssetExchangeGraphPath) -> Bool {
-        false
-    }
-
-    func resolveCommissionWrapper(
-        for _: AssetExchangeRoute
-    ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
-        .createWithResult(nil)
-    }
-
-    func grossingUpAmountOutWrapper(
-        _ netAmountOut: Balance,
-        for _: AssetExchangeGraphPath
-    ) -> CompoundOperationWrapper<Balance> {
-        .createWithResult(netAmountOut)
-    }
 }

@@ -48,7 +48,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         priceDiffModelFactory: SwapPriceDifferenceModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
-        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
@@ -69,7 +68,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
             dataValidatingFactory: dataValidatingFactory,
             priceDiffFactory: priceDiffModelFactory,
             priceStore: priceStore,
-            commissionPolicy: commissionPolicy,
             logger: logger
         )
 
@@ -427,7 +425,7 @@ extension SwapSetupPresenter {
 
     private func updateReceiveAmountFromQuote() {
         guard
-            let quote,
+            quote != nil,
             let receiveChainAsset,
             quoteArgs?.direction == .sell else {
             return
@@ -440,10 +438,7 @@ extension SwapSetupPresenter {
             return
         }
 
-        receiveAmountInput = commissionPolicy.netAmount(
-            from: quote.route.quote,
-            willCharge: chargesCommission
-        ).decimal(assetInfo: receiveChainAsset.asset.displayInfo)
+        receiveAmountInput = netAmountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
 
         provideReceiveAmountInputViewModel()
         provideReceiveInputPriceViewModel()

@@ -53,7 +53,6 @@ struct SwapConfirmViewFactory {
             viewModelFactory: viewModelFactory,
             priceDifferenceFactory: priceDiffModelFactory,
             priceStore: flowState.priceStore,
-            commissionPolicy: flowState.commissionPolicy,
             slippageBounds: .init(config: SlippageConfig.defaultConfig),
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: LocalizationManager.shared,

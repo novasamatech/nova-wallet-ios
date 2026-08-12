@@ -6,7 +6,6 @@ class SwapBasePresenter {
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
     let priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol
     let priceStore: AssetExchangePriceStoring
-    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
     private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
@@ -121,14 +120,12 @@ class SwapBasePresenter {
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         priceDiffFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
-        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.dataValidatingFactory = dataValidatingFactory
         self.priceDiffFactory = priceDiffFactory
         self.priceStore = priceStore
-        self.commissionPolicy = commissionPolicy
         self.logger = logger
     }
 

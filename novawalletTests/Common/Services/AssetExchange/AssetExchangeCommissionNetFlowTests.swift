@@ -19,6 +19,7 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
             commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 17)
         )
 
+        XCTAssertEqual(flow.netAmountIn(at: 0), 1_000)
         XCTAssertEqual(flow.netAmountOut(at: 0), 1_983)
         XCTAssertEqual(flow.netFinalAmountOut, 1_983)
     }
