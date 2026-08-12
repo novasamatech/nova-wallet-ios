@@ -9,7 +9,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmountInputPrice(payViewModel: String?)
     func didReceiveTitle(payViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveInputChainAsset(receiveViewModel viewModel: SwapAssetInputViewModel)
-    func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveAmount(receiveInputViewModel inputViewModel: LoadableViewModelState<AmountInputViewModelProtocol>)
     func didReceiveAmountInputPrice(receiveViewModel: SwapPriceDifferenceViewModel?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)

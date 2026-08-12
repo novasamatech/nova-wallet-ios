@@ -30,6 +30,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
         !quoteResult.hasError() && quoteArgs != nil
     }
 
+    private var receiveAmountLoading: Bool {
+        quote != nil && quoteArgs?.direction == .sell && !commissionResolved
+    }
+
     /*
      *  We might have cases when quote recalcution triggers fee recalculation and vice versa
      *  and we want to bound such triggers to avoid deadlock.
@@ -114,6 +118,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         fee = nil
         provideFeeViewModel()
+        updateReceiveAmountFromQuote()
 
         interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
     }
@@ -358,13 +363,19 @@ extension SwapSetupPresenter {
         guard let receiveChainAsset = receiveChainAsset else {
             return
         }
+
+        guard !receiveAmountLoading else {
+            view?.didReceiveAmount(receiveInputViewModel: .loading)
+            return
+        }
+
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: receiveChainAsset,
             amount: receiveAmountInput,
             locale: selectedLocale
         )
 
-        view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
+        view?.didReceiveAmount(receiveInputViewModel: .loaded(value: amountInputViewModel))
     }
 
     private func provideReceiveInputPriceViewModel() {
