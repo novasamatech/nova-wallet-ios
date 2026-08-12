@@ -9,6 +9,9 @@ protocol AssetExchangeCommissionPolicyProtocol {
 
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
 
+    /// Synchronous and total, so display and charge are decided by the same call and cannot disagree.
+    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission?
+
     func resolveCommissionWrapper(
         for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?>
@@ -28,9 +31,14 @@ final class AssetExchangeCommissionPolicy {
 
     let beneficiary: AccountId
 
-    init(rate: BigRational, beneficiary: AccountId) {
+    /// Only used for synchronous, in-memory chain config lookups — never for network access, so that
+    /// commission resolution stays total and cannot differ between quote time and submission time.
+    let chainRegistry: ChainRegistryProtocol
+
+    init(rate: BigRational, beneficiary: AccountId, chainRegistry: ChainRegistryProtocol) {
         self.rate = rate
         self.beneficiary = beneficiary
+        self.chainRegistry = chainRegistry
     }
 }
 
@@ -60,6 +68,20 @@ private extension AssetExchangeCommissionPolicy {
 
     func feeTimeOutputBound(for route: AssetExchangeRoute, run: ChargingRun) -> Balance {
         route.items[run.lastEdgeIndex].amountOut(for: route.direction)
+    }
+
+    /// Existential deposit of the charged asset, read from the local chain config. Returns nil when the
+    /// asset carries no ORML extras (native assets keep it in runtime constants, which we cannot read
+    /// synchronously) — the caller then charges, matching the previous behaviour.
+    func localExistentialDeposit(for chainAssetId: ChainAssetId) -> Balance? {
+        guard
+            let chain = try? chainRegistry.getChainOrError(for: chainAssetId.chainId),
+            let asset = chain.asset(for: chainAssetId.assetId),
+            let extras = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+            return nil
+        }
+
+        return BigUInt(extras.existentialDeposit)
     }
 }
 
@@ -92,9 +114,9 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         .createWithResult(resolveCommission(for: route))
     }
 
-    /// Deliberately synchronous and total: the decision depends only on the route, so the amount shown at
-    /// quote time and the amount charged at submission can never disagree. Nova controls the beneficiary
-    /// account, so there is no need to probe its balance before charging.
+    /// Deliberately synchronous and total: the decision depends only on the route and the local chain
+    /// config, so the amount shown at quote time and the amount charged at submission cannot disagree.
+    /// Nova controls the beneficiary account, so its balance is never probed.
     func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
@@ -109,9 +131,19 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return nil
         }
 
+        let chargedAssetId = route.items[run.lastEdgeIndex].edge.destination
+
+        // The commission transfer rides in the same atomic batch as the swap, and orml-tokens rejects a
+        // deposit that would leave a non-existent recipient account below the existential deposit. Charging
+        // less than one ED would therefore revert the user's whole swap, so we forgo the commission instead.
+        if let existentialDeposit = localExistentialDeposit(for: chargedAssetId),
+           estimatedAmount < existentialDeposit {
+            return nil
+        }
+
         return AssetExchangeCommission(
             chargingOperationIndex: run.operationIndex,
-            asset: route.items[run.lastEdgeIndex].edge.destination,
+            asset: chargedAssetId,
             estimatedAmount: estimatedAmount,
             beneficiary: beneficiary,
             rateOfGross: rateOfGross
@@ -120,6 +152,10 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
 }
 
 final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
+    func resolveCommission(for _: AssetExchangeRoute) -> AssetExchangeCommission? {
+        nil
+    }
+
     func chargingOperationIndex(in _: AssetExchangeGraphPath) -> Int? {
         nil
     }
@@ -141,6 +177,7 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
 
 enum AssetExchangeCommissionPolicyFactory {
     static func createHydrationPolicy(
+        chainRegistry: ChainRegistryProtocol,
         logger: LoggerProtocol
     ) -> AssetExchangeCommissionPolicyProtocol {
         do {
@@ -150,7 +187,8 @@ enum AssetExchangeCommissionPolicyFactory {
 
             return AssetExchangeCommissionPolicy(
                 rate: AssetExchangeCommissionConstants.rate,
-                beneficiary: beneficiary
+                beneficiary: beneficiary,
+                chainRegistry: chainRegistry
             )
         } catch {
             logger.error("Invalid commission beneficiary address: \(error)")

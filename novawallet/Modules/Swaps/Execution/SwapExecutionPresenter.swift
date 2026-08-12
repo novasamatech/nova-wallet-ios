@@ -32,6 +32,7 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
+    /// Execution always has a resolved fee, so the authoritative value is the commission on it.
     var chargesCommission: Bool {
         model.fee.commission != nil
     }

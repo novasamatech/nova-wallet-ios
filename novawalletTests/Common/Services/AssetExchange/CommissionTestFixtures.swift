@@ -152,10 +152,53 @@ enum CommissionTestFixtures {
 
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
-    static func createPolicy() -> AssetExchangeCommissionPolicy {
+    /// A Hydration chain whose asset `assetId` is an ORML token with the given existential deposit, so the
+    /// policy's local ED lookup has something to find.
+    static func chain(withOrmlExistentialDeposit deposit: Balance, forAssetId assetId: AssetModel.Id = 1) -> ChainModel {
+        let assets = (0 ..< 8).map { index -> AssetModel in
+            let id = AssetModel.Id(index)
+            let base = ChainModelGenerator.generateAssetWithId(id, assetPresicion: 12)
+
+            guard id == assetId else {
+                return base
+            }
+
+            return AssetModel(
+                assetId: id,
+                icon: base.icon,
+                name: base.name,
+                symbol: base.symbol,
+                precision: base.precision,
+                priceId: base.priceId,
+                stakings: base.stakings,
+                type: "orml",
+                typeExtras: .dictionaryValue([
+                    "currencyIdScale": .stringValue("0x00000000"),
+                    "currencyIdType": .stringValue("u32"),
+                    "existentialDeposit": .stringValue(String(deposit)),
+                    "transfersEnabled": .boolValue(true)
+                ]),
+                buyProviders: base.buyProviders,
+                sellProviders: base.sellProviders,
+                enabled: base.enabled,
+                source: base.source
+            )
+        }
+
+        return ChainModelGenerator.generateChain(
+            assets: assets,
+            defaultChainId: KnowChainId.hydra,
+            addressPrefix: 63
+        )
+    }
+
+    static func createPolicy(
+        chainRegistry: ChainRegistryProtocol = MockChainRegistryProtocol().applyDefault(for: [chain])
+    ) -> AssetExchangeCommissionPolicy {
         AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
-            beneficiary: beneficiary
+            beneficiary: beneficiary,
+            chainRegistry: chainRegistry
         )
     }
 }

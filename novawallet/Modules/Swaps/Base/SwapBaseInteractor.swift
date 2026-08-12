@@ -346,6 +346,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         for operations: [AssetExchangeMetaOperationProtocol],
         commission: AssetExchangeCommission?,
         slippage: BigRational,
+        direction: AssetConversion.Direction,
         completion: @escaping SwapInterEDCheckClosure
     ) {
         guard !operations.isEmpty else {
@@ -369,9 +370,13 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
                     // Compare against the slippage floor, not the quote: the intermediate deposit that has
                     // to clear ED is what actually arrives on chain, which can be up to the slippage lower.
-                    let worstCaseAmountOut = operation.amountOut.subtractOrZero(
-                        slippage.mul(value: operation.amountOut)
-                    )
+                    // Operation 0 of a buy route is the exception — it keeps its exact-out call, so its
+                    // output is guaranteed (AssetExchangeExecutionManager rewrites only index != 0 to .sell).
+                    let deliversExactAmountOut = direction == .buy && index == 0
+
+                    let worstCaseAmountOut = deliversExactAmountOut
+                        ? operation.amountOut
+                        : operation.amountOut.subtractOrZero(slippage.mul(value: operation.amountOut))
 
                     let amountOut = commissionPolicy.netAmount(
                         from: worstCaseAmountOut,

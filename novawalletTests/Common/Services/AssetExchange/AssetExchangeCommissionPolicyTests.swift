@@ -92,7 +92,10 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"
         )
 
-        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(logger: Logger.shared)
+        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [CommissionTestFixtures.chain]),
+            logger: Logger.shared
+        )
 
         let concretePolicy = try XCTUnwrap(policy as? AssetExchangeCommissionPolicy)
         XCTAssertEqual(concretePolicy.beneficiary, expectedBeneficiary)
@@ -108,6 +111,40 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
 
         XCTAssertEqual(commission?.estimatedAmount, 8_428_358)
         XCTAssertEqual(commission?.beneficiary, CommissionTestFixtures.beneficiary)
+    }
+
+    func testSkipsWhenCommissionWouldLandBelowTheChargedAssetExistentialDeposit() throws {
+        // The commission transfer shares an atomic batch with the swap, so a sub-ED deposit to a
+        // beneficiary account that does not exist yet would revert the user's swap. Forgo it instead.
+        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
+        let expectedAmount = AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: 1_000_000)
+
+        XCTAssertEqual(expectedAmount, 8428)
+
+        let blocked = CommissionTestFixtures.createPolicy(
+            chainRegistry: MockChainRegistryProtocol().applyDefault(
+                for: [CommissionTestFixtures.chain(withOrmlExistentialDeposit: expectedAmount + 1)]
+            )
+        )
+
+        XCTAssertNil(try resolveCommission(using: blocked, route: route))
+
+        let allowed = CommissionTestFixtures.createPolicy(
+            chainRegistry: MockChainRegistryProtocol().applyDefault(
+                for: [CommissionTestFixtures.chain(withOrmlExistentialDeposit: expectedAmount)]
+            )
+        )
+
+        XCTAssertEqual(try resolveCommission(using: allowed, route: route)?.estimatedAmount, expectedAmount)
+    }
+
+    func testChargesWhenChargedAssetHasNoLocalExistentialDeposit() throws {
+        // Native assets keep their ED in runtime constants, which cannot be read synchronously — charging
+        // is the documented fallback, matching the behaviour before the ED guard existed.
+        let policy = CommissionTestFixtures.createPolicy()
+        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
+
+        XCTAssertEqual(try resolveCommission(using: policy, route: route)?.estimatedAmount, 8428)
     }
 
     func testSkipsForZeroAmount() throws {

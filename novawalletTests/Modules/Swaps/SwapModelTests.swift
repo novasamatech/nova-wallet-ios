@@ -38,6 +38,41 @@ final class SwapModelTests: XCTestCase {
         XCTAssertEqual(model.netAmountOut, 1_000_000)
     }
 
+    func testSingleOperationExactOutBuyGetsNoSlippageHaircut() throws {
+        // Operation 0 of a buy route keeps its exact-out call, so the quoted output is a floor and
+        // haircutting it would block swaps that succeed on chain.
+        let model = try makeModel(
+            quoteAmountOut: 1_010_000,
+            commission: CommissionTestFixtures.makeCommission(),
+            receiveBalance: 0,
+            receiveMinBalance: 1_000_000,
+            slippage: BigRational(numerator: 1, denominator: 100),
+            direction: .buy,
+            metaOperationCount: 1
+        )
+
+        XCTAssertEqual(model.worstCaseNetAmountOut, model.netAmountOut)
+        XCTAssertNil(model.checkReceiveBalanceAboveMin())
+    }
+
+    func testMultiOperationBuyStillGetsSlippageHaircut() throws {
+        // Operations after the first are rewritten to .sell, so the final output is a market fill.
+        let model = try makeModel(
+            quoteAmountOut: 1_010_000,
+            commission: CommissionTestFixtures.makeCommission(),
+            receiveBalance: 0,
+            receiveMinBalance: 1_000_000,
+            slippage: BigRational(numerator: 1, denominator: 100),
+            direction: .buy,
+            metaOperationCount: 2
+        )
+
+        XCTAssertEqual(model.worstCaseNetAmountOut, 991_473)
+        guard case .existense = model.checkReceiveBalanceAboveMin() else {
+            return XCTFail("expected .existense when the worst case fill lands below the minimum")
+        }
+    }
+
     func testReceiveEdCheckAccountsForSlippage() throws {
         let noSlippageModel = try makeModel(
             quoteAmountOut: 1_010_000,
@@ -82,14 +117,18 @@ private extension SwapModelTests {
         commission: AssetExchangeCommission?,
         receiveBalance: Balance,
         receiveMinBalance: Balance,
-        slippage: BigRational = BigRational(numerator: 0, denominator: 100)
+        slippage: BigRational = BigRational(numerator: 0, denominator: 100),
+        direction: AssetConversion.Direction = .sell,
+        metaOperationCount: Int = 0
     ) throws -> SwapModel {
         try makeModel(
             quoteAmountOut: quoteAmountOut,
             fee: makeFee(commission: commission),
             receiveBalance: receiveBalance,
             receiveMinBalance: receiveMinBalance,
-            slippage: slippage
+            slippage: slippage,
+            direction: direction,
+            metaOperationCount: metaOperationCount
         )
     }
 
@@ -98,19 +137,29 @@ private extension SwapModelTests {
         fee: AssetExchangeFee,
         receiveBalance: Balance,
         receiveMinBalance: Balance,
-        slippage: BigRational = BigRational(numerator: 0, denominator: 100)
+        slippage: BigRational = BigRational(numerator: 0, denominator: 100),
+        direction: AssetConversion.Direction = .sell,
+        metaOperationCount: Int = 0
     ) throws -> SwapModel {
         let payChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
         let receiveChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))
 
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: quoteAmountOut)
-        let quote = AssetExchangeQuote(route: route, metaOperations: [], executionTimes: [])
+        let metaOperations: [AssetExchangeMetaOperationProtocol] = (0 ..< metaOperationCount).map { _ in
+            StubAssetExchangeMetaOperation(
+                assetIn: payChainAsset,
+                assetOut: receiveChainAsset,
+                amountIn: quoteAmountOut,
+                amountOut: quoteAmountOut
+            )
+        }
+        let quote = AssetExchangeQuote(route: route, metaOperations: metaOperations, executionTimes: [])
 
         let quoteArgs = AssetConversion.QuoteArgs(
             assetIn: payChainAsset.chainAssetId,
             assetOut: receiveChainAsset.chainAssetId,
             amount: quoteAmountOut,
-            direction: .sell
+            direction: direction
         )
 
         let receiveAssetBalance = AssetBalance(
@@ -145,5 +194,16 @@ private extension SwapModelTests {
             destAccountInfo: nil,
             destUtilityAssetExistence: nil
         )
+    }
+}
+
+/// Only the count and the amounts matter to the model under test.
+private final class StubAssetExchangeMetaOperation: AssetExchangeBaseMetaOperation, AssetExchangeMetaOperationProtocol {
+    var label: AssetExchangeMetaOperationLabel {
+        .swap
+    }
+
+    var requiresOriginAccountKeepAlive: Bool {
+        false
     }
 }

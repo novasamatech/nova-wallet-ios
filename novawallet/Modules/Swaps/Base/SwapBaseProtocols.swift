@@ -15,6 +15,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
         for operations: [AssetExchangeMetaOperationProtocol],
         commission: AssetExchangeCommission?,
         slippage: BigRational,
+        direction: AssetConversion.Direction,
         completion: @escaping SwapInterEDCheckClosure
     )
 }

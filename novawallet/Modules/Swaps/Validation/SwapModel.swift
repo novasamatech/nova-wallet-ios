@@ -121,13 +121,23 @@ struct SwapModel {
         return grossAmount - commission.rateOfGross.mul(value: grossAmount)
     }
 
-    /// Applies the slippage haircut in both directions: every operation after the first is rewritten from
-    /// .buy to .sell (AssetExchangeSwapLimit.getNewDirection), so a multi-operation buy settles as a market
-    /// sell that only guarantees the slippage floor.
+    /// Operation 0 of a buy route keeps its exact-out call (AssetExchangeExecutionManager rewrites only
+    /// index != 0 to .sell), and an exact-out call puts slippage on the input side — its output is
+    /// guaranteed. So a single-operation buy gets no haircut; every other shape settles as a market sell
+    /// that only guarantees the slippage floor.
     var worstCaseNetAmountOut: Balance {
+        guard !deliversExactAmountOut else {
+            return netAmountOut
+        }
+
         let worstCaseGross = grossAmountOut.subtractOrZero(slippage.mul(value: grossAmountOut))
 
         return netAmountOut(forGross: worstCaseGross)
+    }
+
+    /// True when the final output comes from an exact-out call, so the quoted amountOut is a floor.
+    var deliversExactAmountOut: Bool {
+        quoteArgs.direction == .buy && (quote?.metaOperations.count ?? 1) <= 1
     }
 
     var payAssetTotalBalanceAfterSwap: BigUInt {

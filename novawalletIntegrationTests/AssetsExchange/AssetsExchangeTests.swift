@@ -449,6 +449,7 @@ final class AssetsExchangeTests: XCTestCase {
         }
 
         let commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
+            chainRegistry: params.chainRegistry,
             logger: params.logger
         )
 

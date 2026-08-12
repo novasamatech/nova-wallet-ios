@@ -4,8 +4,7 @@ import SubstrateSdk
 enum HydraExchangeExtrinsicConverter {
     static func addingOperation(
         from params: HydraExchangeSwapParams,
-        builder: ExtrinsicBuilderProtocol,
-        logger: LoggerProtocol? = nil
+        builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         // The swap and the service commission transfer must succeed or fail together: a partially applied
         // batch would let the swap settle while the commission is skipped, or vice versa.
@@ -27,20 +26,20 @@ enum HydraExchangeExtrinsicConverter {
         }
 
         if let commission = params.commission {
-            // Deliberately not a keep-alive transfer: the batch is atomic, so a keep-alive failure would
-            // revert the swap itself. Skipping the commission is always preferable to failing the user's swap.
-            do {
-                (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
-                    to: currentBuilder,
-                    amount: .concrete(value: commission.amount),
-                    recipient: commission.beneficiary,
-                    assetStorageInfo: commission.assetStorageInfo
-                )
-            } catch {
-                // Applied identically to fee estimation and submission, so the estimate stays consistent
-                // with what is actually submitted.
-                logger?.error("Failed to attach swap service commission, continuing without it: \(error)")
-            }
+            // Deliberately not a keep-alive transfer. ORML assets on Hydration are transferred through
+            // Currencies/Tokens, whose keep-alive variants either do not exist (Currencies) or would abort
+            // the atomic batch on failure and take the user's swap down with it.
+            //
+            // No error handling here on purpose: call construction cannot fail on a missing call, because
+            // the runtime metadata is only consulted later, in ExtrinsicBuilder.build(using:). A throw at
+            // this point means a genuine coding error, and failing the fee estimate loudly is the correct
+            // response — silently dropping the commission would make the estimate disagree with submission.
+            (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
+                to: currentBuilder,
+                amount: .concrete(value: commission.amount),
+                recipient: commission.beneficiary,
+                assetStorageInfo: commission.assetStorageInfo
+            )
         }
 
         return currentBuilder

@@ -81,14 +81,14 @@ class SwapBasePresenter {
         }
     }
 
-    /// Derived from the route alone, so it holds the same value before and after the fee resolves and the
-    /// displayed receive amount never jumps once the estimate lands.
+    /// Decided by the same synchronous call that produces the charge, so the displayed receive amount
+    /// always matches what is actually transferred, both before and after the fee estimate lands.
     var chargesCommission: Bool {
         guard let quote else {
             return false
         }
 
-        return commissionPolicy.chargingOperationIndex(in: quote.route.items.map(\.edge)) != nil
+        return commissionPolicy.resolveCommission(for: quote.route) != nil
     }
 
     var netAmountOut: Balance {
@@ -295,6 +295,7 @@ class SwapBasePresenter {
                         for: closureParams.operations.dropLast(),
                         commission: swapModel.feeModel?.commission,
                         slippage: swapModel.slippage,
+                        direction: swapModel.quoteArgs.direction,
                         completion: closureParams.completionClosure
                     )
                 },
