@@ -66,6 +66,34 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
             context.grossAmountOut.decimal(assetInfo: context.receiveChainAsset.asset.displayInfo)
         )
     }
+
+    func testReceiveAmountShowsNetWhenFeeResolvesWithCommission() {
+        let context = Self.createContext()
+
+        context.deliverSellQuote()
+
+        XCTAssertEqual(context.view.receiveLoadingStates.last, true)
+
+        let commissionAmount = context.grossAmountOut / 100
+
+        context.deliverFee(
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: commissionAmount
+            )
+        )
+
+        XCTAssertEqual(context.view.receiveLoadingStates.last, false)
+
+        let expectedNetAmountOut = context.grossAmountOut - commissionAmount
+
+        XCTAssertLessThan(expectedNetAmountOut, context.grossAmountOut)
+
+        XCTAssertEqual(
+            context.view.receiveInputViewModels.last?.decimalAmount,
+            expectedNetAmountOut.decimal(assetInfo: context.receiveChainAsset.asset.displayInfo)
+        )
+    }
 }
 
 extension SwapSetupReceiveAmountLoadingTests {
