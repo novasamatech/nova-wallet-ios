@@ -30,17 +30,20 @@ final class AssetExchangeCommissionPolicy {
     let beneficiary: AccountId
     let chainRegistry: ChainRegistryProtocol
     let beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
+    let logger: LoggerProtocol
 
     init(
         rate: BigRational,
         beneficiary: AccountId,
         chainRegistry: ChainRegistryProtocol,
-        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
+        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding,
+        logger: LoggerProtocol
     ) {
         self.rate = rate
         self.beneficiary = beneficiary
         self.chainRegistry = chainRegistry
         self.beneficiaryProvider = beneficiaryProvider
+        self.logger = logger
     }
 }
 
@@ -80,6 +83,8 @@ private extension AssetExchangeCommissionPolicy {
 
     func canReceiveWrapper(for chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
         guard let chainAsset = chargedChainAsset(for: chainAssetId) else {
+            logger.error("Commission asset \(chainAssetId) not found in the chain registry")
+
             return .createWithResult(false)
         }
 
@@ -89,6 +94,8 @@ private extension AssetExchangeCommissionPolicy {
             do {
                 return try stateWrapper.targetOperation.extractNoCancellableResultData().canReceive
             } catch {
+                self.logger.error("Beneficiary readiness failed for \(chainAssetId): \(error)")
+
                 return false
             }
         }
@@ -230,7 +237,8 @@ enum AssetExchangeCommissionPolicyFactory {
                 rate: AssetExchangeCommissionConstants.rate,
                 beneficiary: beneficiary,
                 chainRegistry: chainRegistry,
-                beneficiaryProvider: provider
+                beneficiaryProvider: provider,
+                logger: logger
             )
         } catch {
             logger.error("Invalid commission beneficiary address: \(error)")

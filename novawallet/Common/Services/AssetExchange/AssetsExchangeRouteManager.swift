@@ -127,6 +127,8 @@ extension AssetsExchangeRouteManager {
                         additionalEstimatedCost: cost
                     )
                 } catch {
+                    self.logger.error("Route quoting failed for a candidate path: \(error)")
+
                     return nil
                 }
             }

@@ -224,7 +224,8 @@ enum CommissionTestFixtures {
             rate: AssetExchangeCommissionConstants.rate,
             beneficiary: beneficiary,
             chainRegistry: chainRegistry,
-            beneficiaryProvider: beneficiaryProvider
+            beneficiaryProvider: beneficiaryProvider,
+            logger: Logger.shared
         )
     }
 
