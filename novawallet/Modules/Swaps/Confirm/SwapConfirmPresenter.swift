@@ -186,18 +186,21 @@ extension SwapConfirmPresenter {
     }
 
     private func provideAssetOutViewModel() {
-        guard quote != nil, commissionResolved else {
+        guard quote != nil else {
             view?.didReceiveAssetOut(viewModel: .loading)
             return
         }
 
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
-            amount: netAmountOut,
+            amount: commissionResolved ? netAmountOut : grossAmountOut,
             priceData: receiveAssetPriceData,
             locale: selectedLocale
         )
-        view?.didReceiveAssetOut(viewModel: .loaded(value: viewModel))
+
+        view?.didReceiveAssetOut(
+            viewModel: commissionResolved ? .loaded(value: viewModel) : .cached(value: viewModel)
+        )
     }
 
     private func provideRateViewModel() {
@@ -359,6 +362,10 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showRateInfo() {
+        guard commissionResolved else {
+            return
+        }
+
         wireframe.showRateInfo(
             from: view,
             commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil

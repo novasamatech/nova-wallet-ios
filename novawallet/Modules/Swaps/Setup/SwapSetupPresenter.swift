@@ -845,6 +845,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showRateInfo() {
+        guard commissionResolved else {
+            return
+        }
+
         wireframe.showRateInfo(
             from: view,
             commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil

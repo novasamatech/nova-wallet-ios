@@ -106,10 +106,10 @@ extension SwapElementView {
         }
 
         switch loadableViewModel {
-        case .loading:
+        case .loading, .cached:
             valueLabel.startShimmeringOpacity()
             priceLabel.startShimmeringOpacity()
-        case .cached, .loaded:
+        case .loaded:
             valueLabel.stopShimmeringOpacity()
             priceLabel.stopShimmeringOpacity()
         }
