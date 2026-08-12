@@ -127,7 +127,11 @@ extension AssetsExchangeRouteManager {
                         additionalEstimatedCost: cost
                     )
                 } catch {
-                    self.logger.error("Route quoting failed for a candidate path: \(error)")
+                    let pathDescription = pathWrappers.path
+                        .map { "\($0.type) \($0.origin.stringValue) -> \($0.destination.stringValue)" }
+                        .joined(separator: ", ")
+
+                    self.logger.warning("Route quoting failed for candidate path [\(pathDescription)]: \(error)")
 
                     return nil
                 }
