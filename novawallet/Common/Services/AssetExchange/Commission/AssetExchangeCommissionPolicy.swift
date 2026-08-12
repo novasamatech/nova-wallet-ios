@@ -28,20 +28,17 @@ final class AssetExchangeCommissionPolicy {
     let beneficiary: AccountId
     let chainRegistry: ChainRegistryProtocol
     let beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
-    let operationQueue: OperationQueue
 
     init(
         rate: BigRational,
         beneficiary: AccountId,
         chainRegistry: ChainRegistryProtocol,
-        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding,
-        operationQueue: OperationQueue
+        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
     ) {
         self.rate = rate
         self.beneficiary = beneficiary
         self.chainRegistry = chainRegistry
         self.beneficiaryProvider = beneficiaryProvider
-        self.operationQueue = operationQueue
     }
 }
 
@@ -223,8 +220,7 @@ enum AssetExchangeCommissionPolicyFactory {
                 rate: AssetExchangeCommissionConstants.rate,
                 beneficiary: beneficiary,
                 chainRegistry: chainRegistry,
-                beneficiaryProvider: provider,
-                operationQueue: operationQueue
+                beneficiaryProvider: provider
             )
         } catch {
             logger.error("Invalid commission beneficiary address: \(error)")
