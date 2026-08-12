@@ -89,10 +89,25 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         XCTAssertEqual(route.amountOut, 101_000_000_000)
     }
+
+    func testBuyRouteRanksOnRawAmountIgnoringCommission() throws {
+        let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
+
+        XCTAssertEqual(route.amountIn, 100_850_000_000)
+    }
+
+    func testBuyWinnerIsRequotedGrossedUp() throws {
+        let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
+
+        XCTAssertEqual(route.amountOut, 1_008_500_000)
+    }
 }
 
 private extension AssetsExchangeRouteManagerTests {
-    func makeSingleEdgePath(type: AssetExchangeEdgeType, quote: Balance) -> AssetExchangeGraphPath {
+    func makeSingleEdgePath(
+        type: AssetExchangeEdgeType,
+        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance
+    ) -> AssetExchangeGraphPath {
         [
             AnyAssetExchangeEdge(
                 StubAssetExchangeEdge(
@@ -100,10 +115,14 @@ private extension AssetsExchangeRouteManagerTests {
                     destination: CommissionTestFixtures.asset(1),
                     type: type,
                     chain: CommissionTestFixtures.chain,
-                    quoteClosure: { _, _ in quote }
+                    quoteClosure: quoteClosure
                 )
             )
         ]
+    }
+
+    func makeSingleEdgePath(type: AssetExchangeEdgeType, quote: Balance) -> AssetExchangeGraphPath {
+        makeSingleEdgePath(type: type) { _, _ in quote }
     }
 
     func fetchSellRoute(
@@ -123,6 +142,27 @@ private extension AssetsExchangeRouteManagerTests {
         )
 
         let wrapper = manager.fetchRoute(for: 1_000_000_000, direction: .sell)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+    }
+
+    func fetchBuyRoute(hydraAmountIn: Balance, assetHubAmountIn: Balance) throws -> AssetExchangeRoute {
+        let amountOut: Balance = 1_000_000_000
+
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { amount, _ in amount * hydraAmountIn / amountOut },
+                makeSingleEdgePath(type: .assetHubSwap) { amount, _ in amount * assetHubAmountIn / amountOut }
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: amountOut, direction: .buy)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
