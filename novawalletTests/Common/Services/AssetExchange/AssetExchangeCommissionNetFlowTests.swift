@@ -15,26 +15,26 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
 
     func testDeductionAppliesAtChargingOperation() {
         let flow = AssetExchangeCommissionNetFlow(
-            operations: [CommissionTestFixtures.metaOperation(amountIn: 1_000, amountOut: 2_000)],
+            operations: [CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000)],
             commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 17)
         )
 
-        XCTAssertEqual(flow.netAmountIn(at: 0), 1_000)
-        XCTAssertEqual(flow.netAmountOut(at: 0), 1_983)
-        XCTAssertEqual(flow.netFinalAmountOut, 1_983)
+        XCTAssertEqual(flow.netAmountIn(at: 0), 1000)
+        XCTAssertEqual(flow.netAmountOut(at: 0), 1983)
+        XCTAssertEqual(flow.netFinalAmountOut, 1983)
     }
 
     func testDeductionPropagatesThroughLaterOperations() {
         let flow = AssetExchangeCommissionNetFlow(
             operations: [
-                CommissionTestFixtures.metaOperation(amountIn: 1_000, amountOut: 2_000),
-                CommissionTestFixtures.metaOperation(amountIn: 2_000, amountOut: 1_000)
+                CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000),
+                CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000)
             ],
             commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 100)
         )
 
-        XCTAssertEqual(flow.netAmountOut(at: 0), 1_900)
-        XCTAssertEqual(flow.netAmountIn(at: 1), 1_900)
+        XCTAssertEqual(flow.netAmountOut(at: 0), 1900)
+        XCTAssertEqual(flow.netAmountIn(at: 1), 1900)
         XCTAssertEqual(flow.netFinalAmountOut, 950)
     }
 
@@ -60,8 +60,8 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
     func testSwapAfterChargingScalesTheDeduction() {
         let flow = AssetExchangeCommissionNetFlow(
             operations: [
-                CommissionTestFixtures.metaOperation(amountIn: 1_000, amountOut: 2_000, label: .swap),
-                CommissionTestFixtures.metaOperation(amountIn: 2_000, amountOut: 1_000, label: .swap)
+                CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000, label: .swap),
+                CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000, label: .swap)
             ],
             commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 100)
         )
