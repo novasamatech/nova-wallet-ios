@@ -420,6 +420,13 @@ extension SwapSetupPresenter {
             return
         }
 
+        guard commissionResolved else {
+            receiveAmountInput = nil
+            provideReceiveAmountInputViewModel()
+            provideReceiveInputPriceViewModel()
+            return
+        }
+
         receiveAmountInput = commissionPolicy.netAmount(
             from: quote.route.quote,
             willCharge: chargesCommission

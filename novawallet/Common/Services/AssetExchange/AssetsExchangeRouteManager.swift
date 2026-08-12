@@ -31,17 +31,25 @@ final class AssetsExchangeRouteManager {
         self.logger = logger
     }
 
+    private func createSeedAmountWrapper(
+        for path: AssetExchangeGraphPath,
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<Balance> {
+        switch direction {
+        case .sell:
+            .createWithResult(amount)
+        case .buy:
+            commissionPolicy?.grossingUpAmountOutWrapper(amount, for: path) ?? .createWithResult(amount)
+        }
+    }
+
     private func createQuote(
         for path: AssetExchangeGraphPath,
         amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute> {
-        let seedAmount: Balance = switch direction {
-        case .sell:
-            amount
-        case .buy:
-            commissionPolicy?.grossingUpAmountOut(amount, for: path) ?? amount
-        }
+        let seedWrapper = createSeedAmountWrapper(for: path, amount: amount, direction: direction)
 
         let wrappers: [CompoundOperationWrapper<AssetExchangeRouteItem>]
         wrappers = path.quoteIteration(for: direction).reduce([]) { prevWrappers, item in
@@ -50,6 +58,7 @@ final class AssetsExchangeRouteManager {
             let quoteWrapper: CompoundOperationWrapper<Balance> = OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
+                let seedAmount = try seedWrapper.targetOperation.extractNoCancellableResultData()
                 let prevRouteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
                 let wrapper = item.quote(amount: prevRouteItem?.quote ?? seedAmount, direction: direction)
@@ -57,11 +66,14 @@ final class AssetsExchangeRouteManager {
                 return wrapper
             }
 
+            quoteWrapper.addDependency(wrapper: seedWrapper)
+
             if let prevWrapper {
                 quoteWrapper.addDependency(wrapper: prevWrapper)
             }
 
             let mappingOperation = ClosureOperation<AssetExchangeRouteItem> {
+                let seedAmount = try seedWrapper.targetOperation.extractNoCancellableResultData()
                 let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
                 let prevQuoteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
@@ -80,6 +92,7 @@ final class AssetsExchangeRouteManager {
         }
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute> {
+            let seedAmount = try seedWrapper.targetOperation.extractNoCancellableResultData()
             let initRoute = AssetExchangeRoute(items: [], amount: seedAmount, direction: direction)
 
             return try wrappers.reduce(initRoute) { route, wrapper in
@@ -90,8 +103,9 @@ final class AssetsExchangeRouteManager {
         }
 
         wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+        mappingOperation.addDependency(seedWrapper.targetOperation)
 
-        let dependencies = wrappers.flatMap(\.allOperations)
+        let dependencies = seedWrapper.allOperations + wrappers.flatMap(\.allOperations)
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }

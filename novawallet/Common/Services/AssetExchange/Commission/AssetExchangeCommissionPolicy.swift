@@ -3,17 +3,16 @@ import Operation_iOS
 import BigInt
 
 protocol AssetExchangeCommissionPolicyProtocol {
-    func chargingOperationIndex(in path: AssetExchangeGraphPath) -> Int?
-
-    func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance
-
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
-
-    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission?
 
     func resolveCommissionWrapper(
         for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?>
+
+    func grossingUpAmountOutWrapper(
+        _ netAmountOut: Balance,
+        for path: AssetExchangeGraphPath
+    ) -> CompoundOperationWrapper<Balance>
 }
 
 final class AssetExchangeCommissionPolicy {
@@ -27,13 +26,22 @@ final class AssetExchangeCommissionPolicy {
     var rateOfGross: BigRational { rate.asShareOfGross }
 
     let beneficiary: AccountId
-
     let chainRegistry: ChainRegistryProtocol
+    let beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
+    let operationQueue: OperationQueue
 
-    init(rate: BigRational, beneficiary: AccountId, chainRegistry: ChainRegistryProtocol) {
+    init(
+        rate: BigRational,
+        beneficiary: AccountId,
+        chainRegistry: ChainRegistryProtocol,
+        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding,
+        operationQueue: OperationQueue
+    ) {
         self.rate = rate
         self.beneficiary = beneficiary
         self.chainRegistry = chainRegistry
+        self.beneficiaryProvider = beneficiaryProvider
+        self.operationQueue = operationQueue
     }
 }
 
@@ -61,59 +69,38 @@ private extension AssetExchangeCommissionPolicy {
         return result
     }
 
-    func feeTimeOutputBound(for route: AssetExchangeRoute, run: ChargingRun) -> Balance {
-        route.items[run.lastEdgeIndex].amountOut(for: route.direction)
-    }
-
-    func willCharge(grossAmount: Balance, chargedAssetId: ChainAssetId) -> Bool {
-        let estimatedAmount = rateOfGross.mul(value: grossAmount)
-
-        guard estimatedAmount > 0 else {
-            return false
-        }
-
-        if let existentialDeposit = localExistentialDeposit(for: chargedAssetId),
-           estimatedAmount < existentialDeposit {
-            return false
-        }
-
-        return true
-    }
-
-    func localExistentialDeposit(for chainAssetId: ChainAssetId) -> Balance? {
+    func chargedChainAsset(for chainAssetId: ChainAssetId) -> ChainAsset? {
         guard
             let chain = try? chainRegistry.getChainOrError(for: chainAssetId.chainId),
-            let asset = chain.asset(for: chainAssetId.assetId),
-            let extras = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+            let asset = chain.asset(for: chainAssetId.assetId) else {
             return nil
         }
 
-        return BigUInt(extras.existentialDeposit)
+        return ChainAsset(chain: chain, asset: asset)
+    }
+
+    func canReceiveWrapper(for chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
+        guard let chainAsset = chargedChainAsset(for: chainAssetId) else {
+            return .createWithResult(false)
+        }
+
+        let stateWrapper = beneficiaryProvider.fetchStateWrapper(for: chainAsset)
+
+        let mappingOperation = ClosureOperation<Bool> {
+            do {
+                return try stateWrapper.targetOperation.extractNoCancellableResultData().canReceive
+            } catch {
+                return false
+            }
+        }
+
+        mappingOperation.addDependency(stateWrapper.targetOperation)
+
+        return stateWrapper.insertingTail(operation: mappingOperation)
     }
 }
 
 extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
-    func chargingOperationIndex(in path: AssetExchangeGraphPath) -> Int? {
-        findChargingRun(in: path)?.operationIndex
-    }
-
-    func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
-        guard let run = findChargingRun(in: path) else {
-            return netAmountOut
-        }
-
-        let grossAmountOut = netAmountOut + rate.mul(value: netAmountOut)
-
-        guard willCharge(
-            grossAmount: grossAmountOut,
-            chargedAssetId: path[run.lastEdgeIndex].destination
-        ) else {
-            return netAmountOut
-        }
-
-        return grossAmountOut
-    }
-
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance {
         guard willCharge else {
             return grossAmount
@@ -122,50 +109,73 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         return grossAmount - rateOfGross.mul(value: grossAmount)
     }
 
+    func grossingUpAmountOutWrapper(
+        _ netAmountOut: Balance,
+        for path: AssetExchangeGraphPath
+    ) -> CompoundOperationWrapper<Balance> {
+        guard let run = findChargingRun(in: path) else {
+            return .createWithResult(netAmountOut)
+        }
+
+        let canReceiveWrapper = canReceiveWrapper(for: path[run.lastEdgeIndex].destination)
+
+        let mappingOperation = ClosureOperation<Balance> {
+            let canReceive = try canReceiveWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard canReceive else {
+                return netAmountOut
+            }
+
+            return netAmountOut + self.rate.mul(value: netAmountOut)
+        }
+
+        mappingOperation.addDependency(canReceiveWrapper.targetOperation)
+
+        return canReceiveWrapper.insertingTail(operation: mappingOperation)
+    }
+
     func resolveCommissionWrapper(
         for route: AssetExchangeRoute
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
-        .createWithResult(resolveCommission(for: route))
-    }
-
-    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
         guard let run = findChargingRun(in: path) else {
-            return nil
+            return .createWithResult(nil)
         }
 
-        let bound = feeTimeOutputBound(for: route, run: run)
+        let bound = route.items[run.lastEdgeIndex].amountOut(for: route.direction)
         let estimatedAmount = rateOfGross.mul(value: bound)
         let chargedAssetId = route.items[run.lastEdgeIndex].edge.destination
 
-        guard willCharge(grossAmount: bound, chargedAssetId: chargedAssetId) else {
-            return nil
+        guard estimatedAmount > 0 else {
+            return .createWithResult(nil)
         }
 
-        return AssetExchangeCommission(
-            chargingOperationIndex: run.operationIndex,
-            asset: chargedAssetId,
-            estimatedAmount: estimatedAmount,
-            beneficiary: beneficiary,
-            rateOfGross: rateOfGross
-        )
+        let canReceiveWrapper = canReceiveWrapper(for: chargedAssetId)
+
+        let mappingOperation = ClosureOperation<AssetExchangeCommission?> {
+            let canReceive = try canReceiveWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard canReceive else {
+                return nil
+            }
+
+            return AssetExchangeCommission(
+                chargingOperationIndex: run.operationIndex,
+                asset: chargedAssetId,
+                estimatedAmount: estimatedAmount,
+                beneficiary: self.beneficiary,
+                rateOfGross: self.rateOfGross
+            )
+        }
+
+        mappingOperation.addDependency(canReceiveWrapper.targetOperation)
+
+        return canReceiveWrapper.insertingTail(operation: mappingOperation)
     }
 }
 
 final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
-    func resolveCommission(for _: AssetExchangeRoute) -> AssetExchangeCommission? {
-        nil
-    }
-
-    func chargingOperationIndex(in _: AssetExchangeGraphPath) -> Int? {
-        nil
-    }
-
-    func grossingUpAmountOut(_ netAmountOut: Balance, for _: AssetExchangeGraphPath) -> Balance {
-        netAmountOut
-    }
-
     func netAmount(from grossAmount: Balance, willCharge _: Bool) -> Balance {
         grossAmount
     }
@@ -175,11 +185,19 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
     ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
         .createWithResult(nil)
     }
+
+    func grossingUpAmountOutWrapper(
+        _ netAmountOut: Balance,
+        for _: AssetExchangeGraphPath
+    ) -> CompoundOperationWrapper<Balance> {
+        .createWithResult(netAmountOut)
+    }
 }
 
 enum AssetExchangeCommissionPolicyFactory {
     static func createHydrationPolicy(
         chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> AssetExchangeCommissionPolicyProtocol {
         do {
@@ -187,10 +205,26 @@ enum AssetExchangeCommissionPolicyFactory {
                 .hydrationBeneficiaryAddress
                 .toAccountId()
 
+            let provider = AssetExchangeCommissionBeneficiaryProvider(
+                beneficiary: beneficiary,
+                balanceQueryFactory: WalletRemoteQueryWrapperFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                ),
+                assetStorageInfoFactory: AssetStorageInfoOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                ),
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            )
+
             return AssetExchangeCommissionPolicy(
                 rate: AssetExchangeCommissionConstants.rate,
                 beneficiary: beneficiary,
-                chainRegistry: chainRegistry
+                chainRegistry: chainRegistry,
+                beneficiaryProvider: provider,
+                operationQueue: operationQueue
             )
         } catch {
             logger.error("Invalid commission beneficiary address: \(error)")

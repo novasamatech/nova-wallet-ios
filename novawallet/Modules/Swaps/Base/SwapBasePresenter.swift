@@ -81,12 +81,16 @@ class SwapBasePresenter {
         }
     }
 
-    var chargesCommission: Bool {
-        guard let quote else {
-            return false
-        }
+    var resolvedCommission: AssetExchangeCommission? {
+        fee?.commission
+    }
 
-        return commissionPolicy.resolveCommission(for: quote.route) != nil
+    var chargesCommission: Bool {
+        resolvedCommission != nil
+    }
+
+    var commissionResolved: Bool {
+        fee != nil
     }
 
     var netAmountOut: Balance {
