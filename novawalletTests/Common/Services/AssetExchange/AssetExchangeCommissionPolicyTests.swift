@@ -176,32 +176,20 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
 
         for target in targets {
             let gross = try grossingUpAmountOut(using: policy, target, for: path)
-            let net = policy.netAmount(from: gross, willCharge: true)
+            let net = gross - AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: gross)
 
             XCTAssertEqual(net, target)
         }
-    }
-
-    func testNetAmountAppliesRateNotAbsoluteAmount() {
-        let policy = CommissionTestFixtures.createPolicy()
-
-        XCTAssertEqual(policy.netAmount(from: 1_000_000, willCharge: true), 991_572)
-        XCTAssertEqual(policy.netAmount(from: 1_000_000, willCharge: false), 1_000_000)
     }
 
     func testArithmeticAtExtremes() throws {
         let policy = CommissionTestFixtures.createPolicy()
         let path = CommissionTestFixtures.createPath([.hydraSwap])
 
-        XCTAssertEqual(policy.netAmount(from: 0, willCharge: true), 0)
-        XCTAssertEqual(policy.netAmount(from: 1, willCharge: true), 1)
-
         let huge = Balance(UInt64.max) * Balance(UInt64.max)
 
-        let netHuge = policy.netAmount(from: huge, willCharge: true)
         let grossHuge = try grossingUpAmountOut(using: policy, huge, for: path)
 
-        XCTAssertLessThan(netHuge, huge)
         XCTAssertGreaterThan(grossHuge, huge)
 
         XCTAssertEqual(try grossingUpAmountOut(using: policy, 0, for: path), 0)

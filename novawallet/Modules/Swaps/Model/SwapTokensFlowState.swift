@@ -8,8 +8,6 @@ protocol SwapTokensFlowStateProtocol {
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
 
-    var commissionPolicy: AssetExchangeCommissionPolicyProtocol { get }
-
     func setupAssetExchangeService() -> AssetsExchangeServiceProtocol
     func setupWalletDelayedCallExecProvider() -> WalletDelayedExecutionProviding
 }

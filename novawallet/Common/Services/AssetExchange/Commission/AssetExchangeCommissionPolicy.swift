@@ -3,8 +3,6 @@ import Operation_iOS
 import BigInt
 
 protocol AssetExchangeCommissionPolicyProtocol {
-    func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
-
     func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool
 
     func resolveCommissionWrapper(
@@ -107,14 +105,6 @@ private extension AssetExchangeCommissionPolicy {
 }
 
 extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
-    func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance {
-        guard willCharge else {
-            return grossAmount
-        }
-
-        return grossAmount - rateOfGross.mul(value: grossAmount)
-    }
-
     func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool {
         findChargingRun(in: path) != nil
     }
@@ -186,10 +176,6 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
 }
 
 final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
-    func netAmount(from grossAmount: Balance, willCharge _: Bool) -> Balance {
-        grossAmount
-    }
-
     func hasChargingSite(in _: AssetExchangeGraphPath) -> Bool {
         false
     }

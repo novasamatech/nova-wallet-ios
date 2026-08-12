@@ -503,11 +503,14 @@ final class AssetsExchangeTests: XCTestCase {
 
             let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 
-            let netAmountOut = commissionPolicy.netAmount(from: fee.route.amountOut, willCharge: true)
-            let noCommissionNetAmountOut = commissionPolicy.netAmount(
-                from: noCommissionFee.route.amountOut,
-                willCharge: true
-            )
+            let rateOfGross = AssetExchangeCommissionConstants.rate.asShareOfGross
+
+            let grossAmountOut = fee.route.amountOut
+            let netAmountOut = grossAmountOut - rateOfGross.mul(value: grossAmountOut)
+
+            let noCommissionGrossAmountOut = noCommissionFee.route.amountOut
+            let noCommissionNetAmountOut = noCommissionGrossAmountOut
+                - rateOfGross.mul(value: noCommissionGrossAmountOut)
 
             XCTAssertGreaterThanOrEqual(netAmountOut, noCommissionNetAmountOut)
         } catch {

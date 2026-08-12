@@ -74,8 +74,8 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 
         XCTAssertEqual(route.amountOut, 101_000_000_000)
 
-        let policy = CommissionTestFixtures.createPolicy()
-        let netOfWinner = policy.netAmount(from: 101_000_000_000, willCharge: true)
+        let gross: Balance = 101_000_000_000
+        let netOfWinner = gross - AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: gross)
 
         XCTAssertLessThan(netOfWinner, 100_500_000_000)
     }
