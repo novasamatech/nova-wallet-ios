@@ -230,13 +230,15 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
-    func didReceiveAmount(receiveInputViewModel inputViewModel: LoadableViewModelState<AmountInputViewModelProtocol>) {
-        switch inputViewModel {
-        case .loading:
+    func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol) {
+        rootView.receiveAmountInputView.bind(inputViewModel: inputViewModel)
+    }
+
+    func didReceiveAmount(receiveLoading: Bool) {
+        if receiveLoading {
             rootView.receiveAmountInputView.textInputView.startShimmeringOpacity()
-        case let .cached(value), let .loaded(value):
+        } else {
             rootView.receiveAmountInputView.textInputView.stopShimmeringOpacity()
-            rootView.receiveAmountInputView.bind(inputViewModel: value)
         }
     }
 

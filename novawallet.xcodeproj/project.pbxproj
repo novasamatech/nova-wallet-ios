@@ -6600,6 +6600,7 @@
 		00000000102CAF7145ACC39C /* AssetExchangeCommissionBeneficiaryProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000B3A9CF9263EFDA5 /* AssetExchangeCommissionBeneficiaryProviderTests.swift */; };
 		000000007292AE692FF50B4D /* AssetExchangeCommissionBeneficiaryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */; };
 		000000003336C65F90313612 /* HydrationCommissionBeneficiaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */; };
+		000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12940,6 +12941,7 @@
 		000000000B3A9CF9263EFDA5 /* AssetExchangeCommissionBeneficiaryProviderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionBeneficiaryProviderTests.swift; sourceTree = "<group>"; };
 		00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionBeneficiaryProvider.swift; sourceTree = "<group>"; };
 		000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydrationCommissionBeneficiaryTests.swift; sourceTree = "<group>"; };
+		000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapSetupReceiveAmountLoadingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -20111,6 +20113,7 @@
 			children = (
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
 				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
+				000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -37205,6 +37208,7 @@
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				00000000102CAF7145ACC39C /* AssetExchangeCommissionBeneficiaryProviderTests.swift in Sources */,
+				000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

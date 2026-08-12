@@ -144,6 +144,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
 
         provideCommissionDisclosureViewModel()
+        provideReceiveAmountLoadingState()
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
@@ -359,13 +360,14 @@ extension SwapSetupPresenter {
         view?.didReceiveInputChainAsset(receiveViewModel: receiveAssetViewModel)
     }
 
-    private func provideReceiveAmountInputViewModel() {
-        guard let receiveChainAsset = receiveChainAsset else {
-            return
-        }
+    private func provideReceiveAmountLoadingState() {
+        view?.didReceiveAmount(receiveLoading: receiveAmountLoading)
+    }
 
-        guard !receiveAmountLoading else {
-            view?.didReceiveAmount(receiveInputViewModel: .loading)
+    private func provideReceiveAmountInputViewModel() {
+        provideReceiveAmountLoadingState()
+
+        guard let receiveChainAsset = receiveChainAsset, !receiveAmountLoading else {
             return
         }
 
@@ -375,7 +377,7 @@ extension SwapSetupPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceiveAmount(receiveInputViewModel: .loaded(value: amountInputViewModel))
+        view?.didReceiveAmount(receiveInputViewModel: amountInputViewModel)
     }
 
     private func provideReceiveInputPriceViewModel() {
@@ -588,6 +590,7 @@ extension SwapSetupPresenter {
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideFeeViewModel()
+        provideReceiveAmountLoadingState()
     }
 
     private func refreshQuoteForBuy(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
