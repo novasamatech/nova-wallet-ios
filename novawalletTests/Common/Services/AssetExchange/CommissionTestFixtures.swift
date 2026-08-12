@@ -212,6 +212,65 @@ enum CommissionTestFixtures {
             chainRegistry: chainRegistry
         )
     }
+
+    static func makeBeneficiaryProvider(
+        balance: Balance,
+        existentialDeposit: Balance,
+        chain: ChainModel
+    ) -> AssetExchangeCommissionBeneficiaryProvider {
+        let balanceFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
+        stub(balanceFactory) { stub in
+            stub.queryBalance(for: any(), chainAsset: any()).then { _, _ in
+                .createWithResult(assetBalance(free: balance, chain: chain))
+            }
+        }
+
+        return makeBeneficiaryProvider(
+            balanceFactory: balanceFactory,
+            existentialDeposit: existentialDeposit,
+            chain: chain
+        )
+    }
+
+    static func makeBeneficiaryProvider(
+        balanceFactory: MockWalletRemoteQueryWrapperFactoryProtocol,
+        existentialDeposit: Balance,
+        chain: ChainModel
+    ) -> AssetExchangeCommissionBeneficiaryProvider {
+        let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
+        stub(storageInfoFactory) { stub in
+            stub.createStorageInfoWrapper(from: any(), runtimeProvider: any()).then { _, _ in
+                .createWithResult(ormlInfo(existentialDeposit: existentialDeposit))
+            }
+
+            stub.createAssetBalanceExistenceOperation(for: any(), chainId: any(), asset: any()).then { _, _, _ in
+                .createWithResult(
+                    AssetBalanceExistence(minBalance: existentialDeposit, isSelfSufficient: true)
+                )
+            }
+        }
+
+        return AssetExchangeCommissionBeneficiaryProvider(
+            beneficiary: beneficiary,
+            balanceQueryFactory: balanceFactory,
+            assetStorageInfoFactory: storageInfoFactory,
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chain]),
+            operationQueue: OperationQueue()
+        )
+    }
+
+    static func assetBalance(free: Balance, chain: ChainModel) -> AssetBalance {
+        AssetBalance(
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: 1),
+            accountId: beneficiary,
+            freeInPlank: free,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .regular,
+            blocked: false
+        )
+    }
 }
 
 extension MockAssetsExchangeGraphProtocol {
