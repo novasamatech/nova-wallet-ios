@@ -9,7 +9,6 @@ protocol AssetExchangeCommissionPolicyProtocol {
 
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance
 
-    /// Synchronous and total, so display and charge are decided by the same call and cannot disagree.
     func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission?
 
     func resolveCommissionWrapper(
@@ -23,16 +22,12 @@ final class AssetExchangeCommissionPolicy {
         let lastEdgeIndex: Int
     }
 
-    /// Share of the amount the user receives — the advertised 0.85%.
     let rate: BigRational
 
-    /// The same commission as a share of the pool output, which is what every deduction is applied to.
     var rateOfGross: BigRational { rate.asShareOfGross }
 
     let beneficiary: AccountId
 
-    /// Only used for synchronous, in-memory chain config lookups — never for network access, so that
-    /// commission resolution stays total and cannot differ between quote time and submission time.
     let chainRegistry: ChainRegistryProtocol
 
     init(rate: BigRational, beneficiary: AccountId, chainRegistry: ChainRegistryProtocol) {
@@ -70,9 +65,21 @@ private extension AssetExchangeCommissionPolicy {
         route.items[run.lastEdgeIndex].amountOut(for: route.direction)
     }
 
-    /// Existential deposit of the charged asset, read from the local chain config. Returns nil when the
-    /// asset carries no ORML extras (native assets keep it in runtime constants, which we cannot read
-    /// synchronously) — the caller then charges, matching the previous behaviour.
+    func willCharge(grossAmount: Balance, chargedAssetId: ChainAssetId) -> Bool {
+        let estimatedAmount = rateOfGross.mul(value: grossAmount)
+
+        guard estimatedAmount > 0 else {
+            return false
+        }
+
+        if let existentialDeposit = localExistentialDeposit(for: chargedAssetId),
+           estimatedAmount < existentialDeposit {
+            return false
+        }
+
+        return true
+    }
+
     func localExistentialDeposit(for chainAssetId: ChainAssetId) -> Balance? {
         guard
             let chain = try? chainRegistry.getChainOrError(for: chainAssetId.chainId),
@@ -90,14 +97,21 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         findChargingRun(in: path)?.operationIndex
     }
 
-    /// Adds the commission on top of the amount the user asked to receive, so that after the deduction
-    /// they are left with exactly what they entered.
     func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
-        guard chargingOperationIndex(in: path) != nil else {
+        guard let run = findChargingRun(in: path) else {
             return netAmountOut
         }
 
-        return netAmountOut + rate.mul(value: netAmountOut)
+        let grossAmountOut = netAmountOut + rate.mul(value: netAmountOut)
+
+        guard willCharge(
+            grossAmount: grossAmountOut,
+            chargedAssetId: path[run.lastEdgeIndex].destination
+        ) else {
+            return netAmountOut
+        }
+
+        return grossAmountOut
     }
 
     func netAmount(from grossAmount: Balance, willCharge: Bool) -> Balance {
@@ -114,9 +128,6 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         .createWithResult(resolveCommission(for: route))
     }
 
-    /// Deliberately synchronous and total: the decision depends only on the route and the local chain
-    /// config, so the amount shown at quote time and the amount charged at submission cannot disagree.
-    /// Nova controls the beneficiary account, so its balance is never probed.
     func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
@@ -126,18 +137,9 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
 
         let bound = feeTimeOutputBound(for: route, run: run)
         let estimatedAmount = rateOfGross.mul(value: bound)
-
-        guard estimatedAmount > 0 else {
-            return nil
-        }
-
         let chargedAssetId = route.items[run.lastEdgeIndex].edge.destination
 
-        // The commission transfer rides in the same atomic batch as the swap, and orml-tokens rejects a
-        // deposit that would leave a non-existent recipient account below the existential deposit. Charging
-        // less than one ED would therefore revert the user's whole swap, so we forgo the commission instead.
-        if let existentialDeposit = localExistentialDeposit(for: chargedAssetId),
-           estimatedAmount < existentialDeposit {
+        guard willCharge(grossAmount: bound, chargedAssetId: chargedAssetId) else {
             return nil
         }
 

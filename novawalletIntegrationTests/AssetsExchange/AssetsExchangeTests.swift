@@ -502,10 +502,6 @@ final class AssetsExchangeTests: XCTestCase {
 
             let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 
-            // iOS ranks candidate routes on their NET output, so the commission may legitimately select a
-            // different route than the commission-free run (unlike Android, which applies the fee after
-            // selection). What must hold is that accounting for the commission never leaves the user worse
-            // off than ignoring it.
             let netAmountOut = commissionPolicy.netAmount(from: fee.route.amountOut, willCharge: true)
             let noCommissionNetAmountOut = commissionPolicy.netAmount(
                 from: noCommissionFee.route.amountOut,

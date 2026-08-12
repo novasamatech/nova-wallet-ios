@@ -22,6 +22,7 @@ enum AssetsExchangeOperationFactoryError: Error {
     case noRoute
     case feesOperationsMismatch
     case singleOperationExpected
+    case commissionNotAttached(chargingIndex: Int, operationCount: Int)
 }
 
 final class AssetsExchangeOperationFactory {
@@ -77,7 +78,8 @@ final class AssetsExchangeOperationFactory {
         feeAssetId: ChainAssetId,
         commission: AssetExchangeCommission?
     ) throws -> [AssetExchangeAtomicOperationProtocol] {
-        try route.items.reduce([]) { curOperations, segment in
+        let operations: [AssetExchangeAtomicOperationProtocol]
+        operations = try route.items.reduce([]) { curOperations, segment in
             let argsForOrdinal: (Int) -> AssetExchangeAtomicOperationArgs = { ordinal in
                 self.createOperationArgs(
                     for: segment,
@@ -103,6 +105,16 @@ final class AssetsExchangeOperationFactory {
                 return curOperations + [newOperation]
             }
         }
+
+        if let chargingIndex = commission?.chargingOperationIndex,
+           !(0 ..< operations.count).contains(chargingIndex) {
+            throw AssetsExchangeOperationFactoryError.commissionNotAttached(
+                chargingIndex: chargingIndex,
+                operationCount: operations.count
+            )
+        }
+
+        return operations
     }
 
     private func calculateIntermediateFeesInAssetIn(
@@ -187,7 +199,7 @@ final class AssetsExchangeOperationFactory {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependecies)
     }
 
-    func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
+    private func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
         try route.items.reduce([]) { curOperations, segment in
             let amountIn = segment.amountIn(for: route.direction)
             let amountOut = segment.amountOut(for: route.direction)

@@ -32,7 +32,6 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
-    /// Execution always has a resolved fee, so the authoritative value is the commission on it.
     var chargesCommission: Bool {
         model.fee.commission != nil
     }
@@ -41,7 +40,6 @@ final class SwapExecutionPresenter {
         commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
-    /// Pool output before the Nova commission — see SwapBasePresenter.grossAmountOut.
     var grossAmountOut: Balance {
         quote.route.amountOut
     }

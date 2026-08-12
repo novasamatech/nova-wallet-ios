@@ -241,6 +241,7 @@ extension ExtrinsicProcessor {
             from: params,
             callSender: mappingResult.callSender,
             call: call,
+            extrinsic: extrinsic,
             eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
             codingFactory: codingFactory
         )
@@ -261,6 +262,7 @@ extension ExtrinsicProcessor {
         from params: HydraSwapExtrinsicParsingParams,
         callSender: AccountId,
         call: RuntimeCall<JSON>,
+        extrinsic: Extrinsic,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> HydraSwapExtrinsicParsingResult? {
@@ -289,16 +291,68 @@ extension ExtrinsicProcessor {
             codingFactory: codingFactory
         )
 
+        let commission = findNovaCommissionAmount(
+            in: extrinsic,
+            remoteAssetOut: swapArgs.assetOut,
+            codingFactory: codingFactory
+        )
+
         return HydraSwapExtrinsicParsingResult(
             callSender: callSender,
             assetIdIn: assetIn.assetId,
             amountIn: swapArgs.amountIn,
             assetIdOut: assetOut.assetId,
-            amountOut: swapArgs.amountOut,
+            amountOut: swapArgs.amountOut.subtractOrZero(commission),
             callPath: callPath,
             call: call.args,
             isSuccess: true
         )
+    }
+
+    private func findNovaCommissionAmount(
+        in extrinsic: Extrinsic,
+        remoteAssetOut: HydraDx.AssetId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> Balance {
+        guard let beneficiary = try? AssetExchangeCommissionConstants
+            .hydrationBeneficiaryAddress
+            .toAccountId() else {
+            return 0
+        }
+
+        let context = codingFactory.createRuntimeJsonContext()
+        let mapper = NestedExtrinsicCallMapper(extrinsicSender: accountId)
+
+        let optResult = try? mapper.map(call: extrinsic.call, context: context) { callJson in
+            guard let call = try? ExtrinsicExtraction.getCall(from: callJson, context: context) else {
+                return false
+            }
+
+            return CallCodingPath(moduleName: call.moduleName, callName: call.callName).isTokensTransfer
+        }
+
+        guard let transferCalls = optResult?.node.calls else {
+            return 0
+        }
+
+        return transferCalls.reduce(Balance(0)) { total, callJson in
+            guard
+                let call = try? ExtrinsicExtraction.getCall(from: callJson, context: context),
+                let transfer: OrmlTokensPallet.TransferCall = try? ExtrinsicExtraction.getCallArgs(
+                    from: call.args,
+                    context: context
+                ),
+                transfer.dest.accountId == beneficiary,
+                let currencyId = try? transfer.currencyId.map(
+                    to: StringScaleMapper<HydraDx.AssetId>.self,
+                    with: context.toRawContext()
+                ).value,
+                currencyId == remoteAssetOut else {
+                return total
+            }
+
+            return total + transfer.amount
+        }
     }
 
     private func findFailedHydraSwapResult(

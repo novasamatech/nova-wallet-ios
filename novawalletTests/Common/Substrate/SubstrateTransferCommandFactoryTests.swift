@@ -4,9 +4,6 @@ import SubstrateSdk
 import BigInt
 
 final class SubstrateTransferCommandFactoryTests: XCTestCase {
-    /// Hydration's Currencies pallet exposes only transfer / transfer_native_currency / update_balance —
-    /// there is no transfer_keep_alive variant. Encoding one throws, which previously took the whole swap
-    /// fee estimation down with it. These tests pin the plain transfer call for every ORML flavour.
     func testOrmlTransferUsesPlainTransferForEveryModule() throws {
         let factory = SubstrateTransferCommandFactory()
 
@@ -43,8 +40,6 @@ final class SubstrateTransferCommandFactoryTests: XCTestCase {
     }
 
     func testAssetTypesUnsupportedByCommissionStillEncodeTransfers() throws {
-        // The commission path can in principle reach any asset type the route ends on. None of them may
-        // throw at encode time, since the converter treats a throw as "skip the commission".
         let factory = SubstrateTransferCommandFactory()
 
         let assetStorageInfos: [AssetStorageInfo] = [

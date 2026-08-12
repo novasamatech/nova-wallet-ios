@@ -69,7 +69,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertNil(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                storageInfo: storageInfo,
+                context: CommissionTestFixtures.commissionContext(storageInfo: storageInfo),
                 callArgs: callArgs
             )
         )
@@ -95,10 +95,18 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         let storageInfo = CommissionTestFixtures.ormlInfo(module: "Tokens")
 
         XCTAssertNil(
-            HydraExchangeExtrinsicParamsFactory.commissionParams(for: nil, storageInfo: storageInfo, callArgs: callArgs)
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: nil,
+                context: CommissionTestFixtures.commissionContext(storageInfo: storageInfo),
+                callArgs: callArgs
+            )
         )
         XCTAssertNil(
-            HydraExchangeExtrinsicParamsFactory.commissionParams(for: commission, storageInfo: nil, callArgs: callArgs)
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                context: nil,
+                callArgs: callArgs
+            )
         )
 
         let paramsNoCommission = CommissionTestFixtures.makeSwapParams(
@@ -153,7 +161,6 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
     }
 
     func testBuyCommissionIgnoresDownstreamFeeTopUp() throws {
-        // User asked to receive 10_000_000_000; the route was grossed up by 0.85% of that.
         let grossedTarget: Balance = 10_085_000_000
         let estimatedAmount = AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: grossedTarget)
 
@@ -211,7 +218,9 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         let commissionParams = try XCTUnwrap(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                storageInfo: CommissionTestFixtures.ormlInfo(module: "Tokens"),
+                context: CommissionTestFixtures.commissionContext(
+                    storageInfo: CommissionTestFixtures.ormlInfo(module: "Tokens")
+                ),
                 callArgs: callArgs
             )
         )
@@ -220,9 +229,6 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
     }
 
     func testCommissionTransferIsNotKeepAliveAndBatchIsAtomic() throws {
-        // Regression guard for the Hydration commission transfer. Currencies.transfer_keep_alive does not
-        // exist in Hydration's runtime, and a keep-alive failure would revert the whole atomic batch, so
-        // the commission must always use the plain transfer call.
         let callArgs = CommissionTestFixtures.makeCallArgs(
             direction: .sell,
             amountIn: 1_000_000,
@@ -257,8 +263,6 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
     }
 
     func testSellCommissionIsCappedByTheEstimate() {
-        // The estimate is what the user was shown; a corrected execution-time limit must never push the
-        // charge above it, in either direction.
         let commission = CommissionTestFixtures.makeCommission()
         let cappedCommission = AssetExchangeCommission(
             chargingOperationIndex: commission.chargingOperationIndex,
@@ -313,5 +317,79 @@ private extension HydraExchangeExtrinsicParamsFactoryTests {
 
         XCTAssertEqual(amount, expected)
         XCTAssertNotEqual(amount, commission.estimatedAmount)
+    }
+}
+
+extension HydraExchangeExtrinsicParamsFactoryTests {
+    func testCommissionIsDroppedWhenTheCorrectedAmountFallsBelowExistentialDeposit() {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let shortfallCallArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000_000,
+            amountOut: 106_800_000_000,
+            slippage: BigRational(numerator: 1, denominator: 100)
+        )
+
+        let correctedAmount = HydraExchangeExtrinsicParamsFactory.commissionAmount(
+            for: commission,
+            callArgs: shortfallCallArgs
+        )
+
+        XCTAssertLessThan(correctedAmount, commission.estimatedAmount)
+
+        let storageInfo = CommissionTestFixtures.ormlInfo(module: "Tokens")
+
+        XCTAssertNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                context: CommissionTestFixtures.commissionContext(
+                    storageInfo: storageInfo,
+                    existentialDeposit: correctedAmount + 1
+                ),
+                callArgs: shortfallCallArgs
+            ),
+            "commission must be forgone rather than reverting the batch"
+        )
+
+        XCTAssertNotNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                context: CommissionTestFixtures.commissionContext(
+                    storageInfo: storageInfo,
+                    existentialDeposit: correctedAmount
+                ),
+                callArgs: shortfallCallArgs
+            ),
+            "exactly meeting the existential deposit is chargeable"
+        )
+    }
+
+    func testNativeCommissionIsDroppedBelowExistentialDeposit() throws {
+        let commission = CommissionTestFixtures.makeCommission()
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000_000,
+            amountOut: 118_700_000_000,
+            slippage: BigRational(numerator: 1, denominator: 100)
+        )
+
+        let amount = HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs)
+
+        let params = CommissionTestFixtures.makeSwapParams(
+            commission: commission,
+            storageInfo: CommissionTestFixtures.nativeInfo(),
+            existentialDeposit: amount + 1,
+            callArgs: callArgs
+        )
+
+        XCTAssertNil(params.commission)
+
+        let recordedCalls = try CommissionTestFixtures.makeRecordedCalls(params)
+
+        XCTAssertFalse(
+            recordedCalls.contains { $0.callName.hasPrefix("transfer") },
+            "no transfer call should be built when the commission is forgone"
+        )
     }
 }

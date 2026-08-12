@@ -81,8 +81,6 @@ class SwapBasePresenter {
         }
     }
 
-    /// Decided by the same synchronous call that produces the charge, so the displayed receive amount
-    /// always matches what is actually transferred, both before and after the fee estimate lands.
     var chargesCommission: Bool {
         guard let quote else {
             return false
@@ -99,8 +97,6 @@ class SwapBasePresenter {
         return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
     }
 
-    /// Output of the pools before the Nova commission is taken. Price difference is measured against this so
-    /// our own commission is not counted as pool price impact (it is already reflected in the rate).
     var grossAmountOut: Balance {
         quote?.route.amountOut ?? 0
     }

@@ -128,6 +128,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
         if case .quote = error {
             view?.didReceiveStopLoading()
+
+            provideCommissionDisclosureViewModel()
         }
     }
 

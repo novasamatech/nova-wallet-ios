@@ -137,6 +137,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideIssues()
         provideDetailsViewModel()
+
+        provideCommissionDisclosureViewModel()
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {

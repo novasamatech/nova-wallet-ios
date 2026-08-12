@@ -226,7 +226,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
-            )
+            ),
+            operationQueue: operationQueue
         )
 
         let host = HydraExchangeHost(

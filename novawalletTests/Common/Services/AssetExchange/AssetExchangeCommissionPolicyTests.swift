@@ -36,7 +36,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
     }
 
-    func testChargingIndexMatchesAtomicGrouping() throws {
+    func testChargingIndexMatchesStubAtomicGrouping() throws {
         try assertChargingIndexMatchesAtomicGrouping(
             edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap],
             expectedOperationCount: 3,
@@ -102,8 +102,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     }
 
     func testChargesRegardlessOfBeneficiaryBalance() throws {
-        // Nova controls the beneficiary account, so there is no balance/ED precondition: the decision
-        // depends on the route alone and cannot differ between quote time and submission time.
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
 
@@ -114,8 +112,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     }
 
     func testSkipsWhenCommissionWouldLandBelowTheChargedAssetExistentialDeposit() throws {
-        // The commission transfer shares an atomic batch with the swap, so a sub-ED deposit to a
-        // beneficiary account that does not exist yet would revert the user's swap. Forgo it instead.
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
         let expectedAmount = AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: 1_000_000)
 
@@ -139,8 +135,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     }
 
     func testChargesWhenChargedAssetHasNoLocalExistentialDeposit() throws {
-        // Native assets keep their ED in runtime constants, which cannot be read synchronously — charging
-        // is the documented fallback, matching the behaviour before the ED guard existed.
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
 
@@ -179,8 +173,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             let gross = policy.grossingUpAmountOut(target, for: path)
             let net = policy.netAmount(from: gross, willCharge: true)
 
-            // Commission is 0.85% of what the user receives, so grossing up and then deducting
-            // returns exactly the entered amount — no residual plank in either direction.
             XCTAssertEqual(net, target)
         }
     }
@@ -208,6 +200,31 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         XCTAssertGreaterThan(grossHuge, huge)
 
         XCTAssertEqual(policy.grossingUpAmountOut(0, for: path), 0)
+    }
+
+    func testCommissionIndexOutsideOperationRangeThrows() throws {
+        let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amount: 1_000_000)
+
+        let commission = AssetExchangeCommission(
+            chargingOperationIndex: 5,
+            asset: CommissionTestFixtures.asset(2),
+            estimatedAmount: 1,
+            beneficiary: CommissionTestFixtures.beneficiary,
+            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
+        )
+
+        XCTAssertThrowsError(
+            try CommissionTestFixtures.makeFactory().prepareAtomicOperations(
+                for: route,
+                slippage: BigRational(numerator: 0, denominator: 100),
+                feeAssetId: CommissionTestFixtures.asset(0),
+                commission: commission
+            )
+        ) { error in
+            guard case AssetsExchangeOperationFactoryError.commissionNotAttached = error else {
+                return XCTFail("unexpected error: \(error)")
+            }
+        }
     }
 }
 

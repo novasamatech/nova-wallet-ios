@@ -116,9 +116,19 @@ enum CommissionTestFixtures {
         )
     }
 
+    static func commissionContext(
+        storageInfo: AssetStorageInfo?,
+        existentialDeposit: Balance = 0
+    ) -> HydraExchangeExtrinsicParamsFactory.CommissionContext? {
+        storageInfo.map {
+            .init(storageInfo: $0, existentialDeposit: existentialDeposit)
+        }
+    }
+
     static func makeSwapParams(
         commission: AssetExchangeCommission?,
         storageInfo: AssetStorageInfo?,
+        existentialDeposit: Balance = 0,
         callArgs: AssetConversion.CallArgs
     ) -> HydraExchangeSwapParams {
         HydraExchangeSwapParams(
@@ -134,7 +144,10 @@ enum CommissionTestFixtures {
             ),
             commission: HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                storageInfo: storageInfo,
+                context: commissionContext(
+                    storageInfo: storageInfo,
+                    existentialDeposit: existentialDeposit
+                ),
                 callArgs: callArgs
             )
         )
@@ -152,8 +165,6 @@ enum CommissionTestFixtures {
 
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
-    /// A Hydration chain whose asset `assetId` is an ORML token with the given existential deposit, so the
-    /// policy's local ED lookup has something to find.
     static func chain(withOrmlExistentialDeposit deposit: Balance, forAssetId assetId: AssetModel.Id = 1) -> ChainModel {
         let assets = (0 ..< 8).map { index -> AssetModel in
             let id = AssetModel.Id(index)

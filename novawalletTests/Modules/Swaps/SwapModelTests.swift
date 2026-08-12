@@ -39,8 +39,6 @@ final class SwapModelTests: XCTestCase {
     }
 
     func testSingleOperationExactOutBuyGetsNoSlippageHaircut() throws {
-        // Operation 0 of a buy route keeps its exact-out call, so the quoted output is a floor and
-        // haircutting it would block swaps that succeed on chain.
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(),
@@ -56,7 +54,6 @@ final class SwapModelTests: XCTestCase {
     }
 
     func testMultiOperationBuyStillGetsSlippageHaircut() throws {
-        // Operations after the first are rewritten to .sell, so the final output is a market fill.
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(),
@@ -197,7 +194,6 @@ private extension SwapModelTests {
     }
 }
 
-/// Only the count and the amounts matter to the model under test.
 private final class StubAssetExchangeMetaOperation: AssetExchangeBaseMetaOperation, AssetExchangeMetaOperationProtocol {
     var label: AssetExchangeMetaOperationLabel {
         .swap

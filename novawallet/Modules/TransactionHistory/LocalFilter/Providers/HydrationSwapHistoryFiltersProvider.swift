@@ -15,10 +15,9 @@ private extension HydrationSwapHistoryFiltersProvider {
     func createSystemAccounts() throws -> SystemAccounts {
         let accountIdSize = chainAsset.chain.accountIdSize
 
-        let beneficiary = try AssetExchangeCommissionConstants.hydrationBeneficiaryAddress.toAccountId()
         let router = try HydraRouter.getPalletAccountId(for: accountIdSize)
 
-        return (senders: [router], recipients: [beneficiary, router])
+        return (senders: [router], recipients: [router])
     }
 }
 

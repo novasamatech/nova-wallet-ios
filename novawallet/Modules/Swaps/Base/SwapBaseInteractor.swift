@@ -368,10 +368,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
                     let willCharge = commission.map { index >= $0.chargingOperationIndex } ?? false
 
-                    // Compare against the slippage floor, not the quote: the intermediate deposit that has
-                    // to clear ED is what actually arrives on chain, which can be up to the slippage lower.
-                    // Operation 0 of a buy route is the exception — it keeps its exact-out call, so its
-                    // output is guaranteed (AssetExchangeExecutionManager rewrites only index != 0 to .sell).
                     let deliversExactAmountOut = direction == .buy && index == 0
 
                     let worstCaseAmountOut = deliversExactAmountOut

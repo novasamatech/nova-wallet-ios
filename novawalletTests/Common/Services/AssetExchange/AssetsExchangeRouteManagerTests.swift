@@ -69,16 +69,15 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         XCTAssertEqual(route.amountIn, 1_000_000_000)
     }
 
-    func testSellRoutePrefersHigherNetOutputOverHigherGrossOutput() throws {
+    func testSellRouteRanksOnGrossOutputIgnoringCommission() throws {
         let route = try fetchSellRoute(hydraQuote: 101_000_000_000, assetHubQuote: 100_500_000_000)
 
-        XCTAssertEqual(route.amountOut, 100_500_000_000)
-    }
+        XCTAssertEqual(route.amountOut, 101_000_000_000)
 
-    func testSellRouteKeepsChargingPathWhenItStillWinsOnNetOutput() throws {
-        let route = try fetchSellRoute(hydraQuote: 102_000_000_000, assetHubQuote: 100_500_000_000)
+        let policy = CommissionTestFixtures.createPolicy()
+        let netOfWinner = policy.netAmount(from: 101_000_000_000, willCharge: true)
 
-        XCTAssertEqual(route.amountOut, 102_000_000_000)
+        XCTAssertLessThan(netOfWinner, 100_500_000_000)
     }
 
     func testSellRouteRankingIsUnchangedWhenNoPathChargesCommission() throws {
