@@ -109,26 +109,29 @@ struct SwapModel {
         quote?.route.amountOut ?? 0
     }
 
-    var netAmountOut: Balance {
-        netAmountOut(forGross: grossAmountOut)
+    private func netFlow(for quote: AssetExchangeQuote?) -> AssetExchangeCommissionNetFlow {
+        AssetExchangeCommissionNetFlow(
+            operations: quote?.metaOperations ?? [],
+            commission: feeModel?.commission
+        )
     }
 
-    func netAmountOut(forGross grossAmount: Balance) -> Balance {
-        guard let commission = feeModel?.commission else {
-            return grossAmount
-        }
+    var netAmountOut: Balance {
+        netFlow(for: quote).netFinalAmountOut
+    }
 
-        return grossAmount - commission.rateOfGross.mul(value: grossAmount)
+    func netAmountOut(for quote: AssetExchangeQuote) -> Balance {
+        netFlow(for: quote).netFinalAmountOut
     }
 
     var worstCaseNetAmountOut: Balance {
+        let netAmount = netAmountOut
+
         guard !deliversExactAmountOut else {
-            return netAmountOut
+            return netAmount
         }
 
-        let worstCaseGross = grossAmountOut.subtractOrZero(slippage.mul(value: grossAmountOut))
-
-        return netAmountOut(forGross: worstCaseGross)
+        return netAmount.subtractOrZero(slippage.mul(value: netAmount))
     }
 
     var deliversExactAmountOut: Bool {

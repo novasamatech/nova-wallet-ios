@@ -6,7 +6,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
 
     let assetsExchangeService: AssetsExchangeServiceProtocol
-    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
     let chainRegistry: ChainRegistryProtocol
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -35,7 +34,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         logger: LoggerProtocol
     ) {
         assetsExchangeService = state.setupAssetExchangeService()
-        commissionPolicy = state.commissionPolicy
         self.chainRegistry = chainRegistry
         self.assetStorageFactory = assetStorageFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -356,28 +354,21 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         let assetOutIds = operations.map(\.assetOut.chainAssetId)
 
-        fetchAssetBalanceExistence(for: Set(assetOutIds)) { [weak self] result in
-            guard let self else {
-                return
-            }
+        let netFlow = AssetExchangeCommissionNetFlow(operations: operations, commission: commission)
 
+        fetchAssetBalanceExistence(for: Set(assetOutIds)) { result in
             switch result {
             case let .success(edMapping):
                 for (index, operation) in operations.enumerated() {
                     let minBalance = edMapping[operation.assetOut.chainAssetId]?.minBalance ?? 0
 
-                    let willCharge = commission.map { index >= $0.chargingOperationIndex } ?? false
+                    let netAmountOut = netFlow.netAmountOut(at: index)
 
                     let deliversExactAmountOut = direction == .buy && index == 0
 
-                    let worstCaseAmountOut = deliversExactAmountOut
-                        ? operation.amountOut
-                        : operation.amountOut.subtractOrZero(slippage.mul(value: operation.amountOut))
-
-                    let amountOut = commissionPolicy.netAmount(
-                        from: worstCaseAmountOut,
-                        willCharge: willCharge
-                    )
+                    let amountOut = deliversExactAmountOut
+                        ? netAmountOut
+                        : netAmountOut.subtractOrZero(slippage.mul(value: netAmountOut))
 
                     if amountOut < minBalance {
                         let checkValue = SwapInterEDNotMet(

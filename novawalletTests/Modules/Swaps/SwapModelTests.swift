@@ -6,7 +6,10 @@ final class SwapModelTests: XCTestCase {
     func testCanReceiveUsesNetAmount() throws {
         let chargingModel = try makeModel(
             quoteAmountOut: 1_000_000,
-            commission: CommissionTestFixtures.makeCommission(),
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: 8_428
+            ),
             receiveBalance: 0,
             receiveMinBalance: 995_000
         )
@@ -41,7 +44,10 @@ final class SwapModelTests: XCTestCase {
     func testSingleOperationExactOutBuyGetsNoSlippageHaircut() throws {
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
-            commission: CommissionTestFixtures.makeCommission(),
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: 8_512
+            ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,
             slippage: BigRational(numerator: 1, denominator: 100),
@@ -56,7 +62,10 @@ final class SwapModelTests: XCTestCase {
     func testMultiOperationBuyStillGetsSlippageHaircut() throws {
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
-            commission: CommissionTestFixtures.makeCommission(),
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: 8_512
+            ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,
             slippage: BigRational(numerator: 1, denominator: 100),
@@ -64,7 +73,7 @@ final class SwapModelTests: XCTestCase {
             metaOperationCount: 2
         )
 
-        XCTAssertEqual(model.worstCaseNetAmountOut, 991_473)
+        XCTAssertEqual(model.worstCaseNetAmountOut, 991_474)
         guard case .existense = model.checkReceiveBalanceAboveMin() else {
             return XCTFail("expected .existense when the worst case fill lands below the minimum")
         }
@@ -73,7 +82,10 @@ final class SwapModelTests: XCTestCase {
     func testReceiveEdCheckAccountsForSlippage() throws {
         let noSlippageModel = try makeModel(
             quoteAmountOut: 1_010_000,
-            commission: CommissionTestFixtures.makeCommission(),
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: 8_512
+            ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000
         )
@@ -82,13 +94,16 @@ final class SwapModelTests: XCTestCase {
 
         let slippageModel = try makeModel(
             quoteAmountOut: 1_010_000,
-            commission: CommissionTestFixtures.makeCommission(),
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: 8_512
+            ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,
             slippage: BigRational(numerator: 1, denominator: 100)
         )
 
-        XCTAssertEqual(slippageModel.worstCaseNetAmountOut, 991_473)
+        XCTAssertEqual(slippageModel.worstCaseNetAmountOut, 991_474)
 
         guard case .existense = slippageModel.checkReceiveBalanceAboveMin() else {
             XCTFail("expected .existense when the worst case fill lands below the minimum")
@@ -116,7 +131,7 @@ private extension SwapModelTests {
         receiveMinBalance: Balance,
         slippage: BigRational = BigRational(numerator: 0, denominator: 100),
         direction: AssetConversion.Direction = .sell,
-        metaOperationCount: Int = 0
+        metaOperationCount: Int = 1
     ) throws -> SwapModel {
         try makeModel(
             quoteAmountOut: quoteAmountOut,
@@ -136,7 +151,7 @@ private extension SwapModelTests {
         receiveMinBalance: Balance,
         slippage: BigRational = BigRational(numerator: 0, denominator: 100),
         direction: AssetConversion.Direction = .sell,
-        metaOperationCount: Int = 0
+        metaOperationCount: Int = 1
     ) throws -> SwapModel {
         let payChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 0))
         let receiveChainAsset = try XCTUnwrap(CommissionTestFixtures.chain.chainAsset(for: 1))

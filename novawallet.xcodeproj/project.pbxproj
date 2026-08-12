@@ -6601,6 +6601,8 @@
 		000000007292AE692FF50B4D /* AssetExchangeCommissionBeneficiaryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */; };
 		000000003336C65F90313612 /* HydrationCommissionBeneficiaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */; };
 		000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */; };
+		000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */; };
+		000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12942,6 +12944,8 @@
 		00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionBeneficiaryProvider.swift; sourceTree = "<group>"; };
 		000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydrationCommissionBeneficiaryTests.swift; sourceTree = "<group>"; };
 		000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapSetupReceiveAmountLoadingTests.swift; sourceTree = "<group>"; };
+		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
+		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -13992,6 +13996,7 @@
 				0486E553D2D1FE5DCA179EB0 /* AssetExchangeCommissionConstants.swift */,
 				40E0C6FB582251817D9868EA /* AssetExchangeCommissionPolicy.swift */,
 				00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */,
+				000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */,
 			);
 			path = Commission;
 			sourceTree = "<group>";
@@ -22390,6 +22395,7 @@
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
 				95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */,
 				000000000B3A9CF9263EFDA5 /* AssetExchangeCommissionBeneficiaryProviderTests.swift */,
+				0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -37011,6 +37017,7 @@
 				000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */,
 				000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */,
 				000000007292AE692FF50B4D /* AssetExchangeCommissionBeneficiaryProvider.swift in Sources */,
+				000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37209,6 +37216,7 @@
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				00000000102CAF7145ACC39C /* AssetExchangeCommissionBeneficiaryProviderTests.swift in Sources */,
 				000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */,
+				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

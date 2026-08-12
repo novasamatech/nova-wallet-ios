@@ -16,6 +16,24 @@ enum CommissionTestFixtures {
         ChainAssetId(chainId: chain.chainId, assetId: id)
     }
 
+    static func chainAsset(_ id: AssetModel.Id) -> ChainAsset {
+        try! chain.chainAssetOrError(for: id)
+    }
+
+    static func metaOperation(
+        amountIn: Balance,
+        amountOut: Balance,
+        label: AssetExchangeMetaOperationLabel = .swap
+    ) -> AssetExchangeMetaOperationProtocol {
+        StubMetaOperation(
+            assetIn: chainAsset(0),
+            assetOut: chainAsset(1),
+            amountIn: amountIn,
+            amountOut: amountOut,
+            label: label
+        )
+    }
+
     static func createPath(_ types: [AssetExchangeEdgeType]) -> AssetExchangeGraphPath {
         types.enumerated().map { index, type in
             AnyAssetExchangeEdge(
@@ -113,6 +131,19 @@ enum CommissionTestFixtures {
             estimatedAmount: 999_999_999,
             beneficiary: Data(repeating: 3, count: 32),
             rateOfGross: rate.asShareOfGross
+        )
+    }
+
+    static func makeCommission(
+        chargingOperationIndex: Int,
+        estimatedAmount: Balance
+    ) -> AssetExchangeCommission {
+        AssetExchangeCommission(
+            chargingOperationIndex: chargingOperationIndex,
+            asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            estimatedAmount: estimatedAmount,
+            beneficiary: beneficiary,
+            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
     }
 

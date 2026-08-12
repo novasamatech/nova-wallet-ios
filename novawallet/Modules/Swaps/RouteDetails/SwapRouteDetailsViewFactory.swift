@@ -22,7 +22,6 @@ struct SwapRouteDetailsViewFactory {
             fee: fee,
             prices: prices,
             viewModelFactory: viewModelFactory,
-            commissionPolicy: state.commissionPolicy,
             localizationManager: LocalizationManager.shared
         )
 

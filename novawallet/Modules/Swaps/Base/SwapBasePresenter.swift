@@ -94,11 +94,10 @@ class SwapBasePresenter {
     }
 
     var netAmountOut: Balance {
-        guard let quote else {
-            return 0
-        }
-
-        return commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
+        AssetExchangeCommissionNetFlow(
+            operations: quote?.metaOperations ?? [],
+            commission: resolvedCommission
+        ).netFinalAmountOut
     }
 
     var grossAmountOut: Balance {

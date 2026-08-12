@@ -10,7 +10,6 @@ final class SwapExecutionPresenter {
     let executionViewModelFactory: SwapExecutionViewModelFactoryProtocol
     let detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol
     let priceStore: AssetExchangePriceStoring
-    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
 
     var quote: AssetExchangeQuote {
         model.quote
@@ -37,7 +36,10 @@ final class SwapExecutionPresenter {
     }
 
     var netAmountOut: Balance {
-        commissionPolicy.netAmount(from: quote.route.amountOut, willCharge: chargesCommission)
+        AssetExchangeCommissionNetFlow(
+            operations: quote.metaOperations,
+            commission: model.fee.commission
+        ).netFinalAmountOut
     }
 
     var grossAmountOut: Balance {
@@ -58,7 +60,6 @@ final class SwapExecutionPresenter {
         executionViewModelFactory: SwapExecutionViewModelFactoryProtocol,
         detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
-        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.model = model
@@ -67,7 +68,6 @@ final class SwapExecutionPresenter {
         self.executionViewModelFactory = executionViewModelFactory
         self.detailsViewModelFactory = detailsViewModelFactory
         self.priceStore = priceStore
-        self.commissionPolicy = commissionPolicy
         self.localizationManager = localizationManager
     }
 

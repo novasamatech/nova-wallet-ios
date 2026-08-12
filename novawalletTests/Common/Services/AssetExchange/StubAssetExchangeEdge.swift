@@ -169,22 +169,24 @@ final class StubAtomicOperation: AssetExchangeAtomicOperationProtocol {
 
 final class StubMetaOperation: AssetExchangeBaseMetaOperation {
     let edgeType: AssetExchangeEdgeType
+    let label: AssetExchangeMetaOperationLabel
 
     init(
         assetIn: ChainAsset,
         assetOut: ChainAsset,
         amountIn: Balance,
         amountOut: Balance,
-        edgeType: AssetExchangeEdgeType = .hydraSwap
+        edgeType: AssetExchangeEdgeType = .hydraSwap,
+        label: AssetExchangeMetaOperationLabel = .swap
     ) {
         self.edgeType = edgeType
+        self.label = label
 
         super.init(assetIn: assetIn, assetOut: assetOut, amountIn: amountIn, amountOut: amountOut)
     }
 }
 
 extension StubMetaOperation: AssetExchangeMetaOperationProtocol {
-    var label: AssetExchangeMetaOperationLabel { .swap }
     var requiresOriginAccountKeepAlive: Bool { false }
 }
 
