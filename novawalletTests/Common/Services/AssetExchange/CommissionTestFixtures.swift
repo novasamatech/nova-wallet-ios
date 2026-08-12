@@ -116,19 +116,9 @@ enum CommissionTestFixtures {
         )
     }
 
-    static func commissionContext(
-        storageInfo: AssetStorageInfo?,
-        existentialDeposit: Balance = 0
-    ) -> HydraExchangeExtrinsicParamsFactory.CommissionContext? {
-        storageInfo.map {
-            .init(storageInfo: $0, existentialDeposit: existentialDeposit)
-        }
-    }
-
     static func makeSwapParams(
         commission: AssetExchangeCommission?,
         storageInfo: AssetStorageInfo?,
-        existentialDeposit: Balance = 0,
         callArgs: AssetConversion.CallArgs
     ) -> HydraExchangeSwapParams {
         HydraExchangeSwapParams(
@@ -144,10 +134,7 @@ enum CommissionTestFixtures {
             ),
             commission: HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                context: commissionContext(
-                    storageInfo: storageInfo,
-                    existentialDeposit: existentialDeposit
-                ),
+                storageInfo: storageInfo,
                 callArgs: callArgs
             )
         )

@@ -69,7 +69,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertNil(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                context: CommissionTestFixtures.commissionContext(storageInfo: storageInfo),
+                storageInfo: storageInfo,
                 callArgs: callArgs
             )
         )
@@ -97,14 +97,14 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertNil(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: nil,
-                context: CommissionTestFixtures.commissionContext(storageInfo: storageInfo),
+                storageInfo: storageInfo,
                 callArgs: callArgs
             )
         )
         XCTAssertNil(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                context: nil,
+                storageInfo: nil,
                 callArgs: callArgs
             )
         )
@@ -218,9 +218,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         let commissionParams = try XCTUnwrap(
             HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                context: CommissionTestFixtures.commissionContext(
-                    storageInfo: CommissionTestFixtures.ormlInfo(module: "Tokens")
-                ),
+                storageInfo: CommissionTestFixtures.ormlInfo(module: "Tokens"),
                 callArgs: callArgs
             )
         )
@@ -317,79 +315,5 @@ private extension HydraExchangeExtrinsicParamsFactoryTests {
 
         XCTAssertEqual(amount, expected)
         XCTAssertNotEqual(amount, commission.estimatedAmount)
-    }
-}
-
-extension HydraExchangeExtrinsicParamsFactoryTests {
-    func testCommissionIsDroppedWhenTheCorrectedAmountFallsBelowExistentialDeposit() {
-        let commission = CommissionTestFixtures.makeCommission()
-
-        let shortfallCallArgs = CommissionTestFixtures.makeCallArgs(
-            direction: .sell,
-            amountIn: 1_000_000_000,
-            amountOut: 106_800_000_000,
-            slippage: BigRational(numerator: 1, denominator: 100)
-        )
-
-        let correctedAmount = HydraExchangeExtrinsicParamsFactory.commissionAmount(
-            for: commission,
-            callArgs: shortfallCallArgs
-        )
-
-        XCTAssertLessThan(correctedAmount, commission.estimatedAmount)
-
-        let storageInfo = CommissionTestFixtures.ormlInfo(module: "Tokens")
-
-        XCTAssertNil(
-            HydraExchangeExtrinsicParamsFactory.commissionParams(
-                for: commission,
-                context: CommissionTestFixtures.commissionContext(
-                    storageInfo: storageInfo,
-                    existentialDeposit: correctedAmount + 1
-                ),
-                callArgs: shortfallCallArgs
-            ),
-            "commission must be forgone rather than reverting the batch"
-        )
-
-        XCTAssertNotNil(
-            HydraExchangeExtrinsicParamsFactory.commissionParams(
-                for: commission,
-                context: CommissionTestFixtures.commissionContext(
-                    storageInfo: storageInfo,
-                    existentialDeposit: correctedAmount
-                ),
-                callArgs: shortfallCallArgs
-            ),
-            "exactly meeting the existential deposit is chargeable"
-        )
-    }
-
-    func testNativeCommissionIsDroppedBelowExistentialDeposit() throws {
-        let commission = CommissionTestFixtures.makeCommission()
-        let callArgs = CommissionTestFixtures.makeCallArgs(
-            direction: .sell,
-            amountIn: 1_000_000_000,
-            amountOut: 118_700_000_000,
-            slippage: BigRational(numerator: 1, denominator: 100)
-        )
-
-        let amount = HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs)
-
-        let params = CommissionTestFixtures.makeSwapParams(
-            commission: commission,
-            storageInfo: CommissionTestFixtures.nativeInfo(),
-            existentialDeposit: amount + 1,
-            callArgs: callArgs
-        )
-
-        XCTAssertNil(params.commission)
-
-        let recordedCalls = try CommissionTestFixtures.makeRecordedCalls(params)
-
-        XCTAssertFalse(
-            recordedCalls.contains { $0.callName.hasPrefix("transfer") },
-            "no transfer call should be built when the commission is forgone"
-        )
     }
 }
