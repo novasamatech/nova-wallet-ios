@@ -67,7 +67,9 @@ final class HydraExchangeExtrinsicParamsFactory {
     static func minimumChargeableAmount(for storageInfo: AssetStorageInfo) -> Balance? {
         switch storageInfo {
         case let .orml(info), let .ormlHydrationEvm(info):
-            return info.existentialDeposit
+            // 0 here can mean the remote config's ED was absent or unparseable
+            // (AssetStorageInfo falls back to `?? 0`), so treat it as unknown rather than as no floor.
+            return info.existentialDeposit > 0 ? info.existentialDeposit : nil
         case .native:
             // Readiness already proved the beneficiary holds at least the native ED,
             // so any incoming amount leaves it above ED.

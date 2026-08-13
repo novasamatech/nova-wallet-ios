@@ -167,6 +167,30 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         )
     }
 
+    func testCommissionIsDroppedWhenExistentialDepositIsZero() {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000,
+            amountOut: 1_000_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs),
+            8428
+        )
+
+        XCTAssertNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.ormlInfo(existentialDeposit: 0),
+                callArgs: callArgs
+            )
+        )
+    }
+
     func testNoCommissionMeansNoTransferCall() throws {
         let callArgs = CommissionTestFixtures.makeCallArgs(
             direction: .sell,
