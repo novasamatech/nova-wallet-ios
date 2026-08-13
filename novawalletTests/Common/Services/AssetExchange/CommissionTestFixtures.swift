@@ -107,16 +107,6 @@ enum CommissionTestFixtures {
         .native(info: NativeTokenStorageInfo(canTransferAll: true, transferCallPath: .transferAllowDeath))
     }
 
-    static func statemineInfo() -> AssetStorageInfo {
-        .statemine(
-            info: AssetsPalletStorageInfo(
-                assetId: .stringValue("1"),
-                assetIdString: "1",
-                palletName: "Assets"
-            )
-        )
-    }
-
     static func makeCallArgs(
         direction: AssetConversion.Direction,
         amountIn: Balance,
@@ -255,8 +245,7 @@ enum CommissionTestFixtures {
     static func makeBeneficiaryProvider(
         balanceFactory: MockWalletRemoteQueryWrapperFactoryProtocol,
         existentialDeposit: Balance,
-        chain: ChainModel,
-        additionalChains: Set<ChainModel> = []
+        chain: ChainModel
     ) -> AssetExchangeCommissionBeneficiaryProvider {
         let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
         stub(storageInfoFactory) { stub in
@@ -275,7 +264,7 @@ enum CommissionTestFixtures {
             beneficiary: beneficiary,
             balanceQueryFactory: balanceFactory,
             assetStorageInfoFactory: storageInfoFactory,
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: additionalChains.union([chain])),
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chain]),
             operationQueue: OperationQueue()
         )
     }
