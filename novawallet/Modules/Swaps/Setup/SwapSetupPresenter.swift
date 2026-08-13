@@ -511,7 +511,7 @@ extension SwapSetupPresenter {
     }
 
     private func provideRouteViewModel() {
-        guard let quote, fee != nil else {
+        guard let quote else {
             view?.didReceiveRoute(viewModel: .loading)
             return
         }
