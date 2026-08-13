@@ -183,37 +183,34 @@ enum CommissionTestFixtures {
 
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
-    final class StubBeneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding {
-        let result: Result<Bool, Error>
+    static func stubBeneficiaryProvider(canReceive: Bool) -> AssetExchangeCommissionBeneficiaryProviding {
+        let provider = MockAssetExchangeCommissionBeneficiaryProviding()
 
-        init(result: Result<Bool, Error>) {
-            self.result = result
-        }
-
-        func fetchStateWrapper(
-            for chainAsset: ChainAsset
-        ) -> CompoundOperationWrapper<CommissionBeneficiaryState> {
-            switch result {
-            case let .success(canReceive):
-                return .createWithResult(
+        stub(provider) { stub in
+            stub.fetchStateWrapper(for: any()).then { chainAsset in
+                .createWithResult(
                     CommissionBeneficiaryState(
                         chainAsset: chainAsset,
                         balance: canReceive ? 101 : 100,
                         existentialDeposit: 100
                     )
                 )
-            case let .failure(error):
-                return .createWithError(error)
             }
         }
-    }
 
-    static func stubBeneficiaryProvider(canReceive: Bool) -> AssetExchangeCommissionBeneficiaryProviding {
-        StubBeneficiaryProvider(result: .success(canReceive))
+        return provider
     }
 
     static func failingBeneficiaryProvider() -> AssetExchangeCommissionBeneficiaryProviding {
-        StubBeneficiaryProvider(result: .failure(CommonError.dataCorruption))
+        let provider = MockAssetExchangeCommissionBeneficiaryProviding()
+
+        stub(provider) { stub in
+            stub.fetchStateWrapper(for: any()).then { _ in
+                .createWithError(CommonError.dataCorruption)
+            }
+        }
+
+        return provider
     }
 
     static func createPolicy(

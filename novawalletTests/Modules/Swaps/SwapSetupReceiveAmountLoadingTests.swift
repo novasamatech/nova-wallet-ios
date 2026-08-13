@@ -4,6 +4,7 @@ import Foundation_iOS
 import Operation_iOS
 import UIKit
 import BigInt
+import Cuckoo
 
 final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     enum TestError: Error {
@@ -227,8 +228,8 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
 
 struct SwapSetupTestContext {
     let presenter: SwapSetupPresenter
-    let view: SwapSetupViewSpy
-    let interactor: SwapSetupInteractorStub
+    let view: MockSwapSetupViewProtocol
+    let interactor: MockSwapSetupInteractorInputProtocol
     let payChainAsset: ChainAsset
     let receiveChainAsset: ChainAsset
     let path: AssetExchangeGraphPath
@@ -363,7 +364,7 @@ struct SwapSetupTestContext {
             percentFormatter: percentFormatter
         )
 
-        let wireframe = SwapSetupWireframeStub()
+        let wireframe = makeWireframe()
 
         let dataValidatingFactory = SwapDataValidatorFactory(
             presentable: wireframe,
@@ -371,8 +372,8 @@ struct SwapSetupTestContext {
             percentFormatter: percentFormatter
         )
 
-        let interactor = SwapSetupInteractorStub()
-        let view = SwapSetupViewSpy()
+        let interactor = makeInteractor()
+        let view = makeView()
 
         let presenter = SwapSetupPresenter(
             initState: .init(
@@ -385,7 +386,7 @@ struct SwapSetupTestContext {
             viewModelFactory: viewModelFactory,
             priceDiffModelFactory: priceDiffModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            priceStore: SwapExchangePriceStoreStub(),
+            priceStore: makePriceStore(),
             localizationManager: LocalizationManager.shared,
             selectedWallet: AccountGenerator.generateMetaAccount(),
             slippageConfig: .defaultConfig,
@@ -406,130 +407,147 @@ struct SwapSetupTestContext {
     }
 }
 
-final class SwapSetupViewSpy: SwapSetupViewProtocol {
-    let controller = UIViewController()
-    let isSetup = true
+extension SwapSetupTestContext {
+    static func makeView() -> MockSwapSetupViewProtocol {
+        let view = MockSwapSetupViewProtocol()
 
-    private(set) var receiveLoadingStates: [Bool] = []
-    private(set) var receiveInputViewModels: [AmountInputViewModelProtocol] = []
-    private(set) var buttonStates: [(title: String, enabled: Bool)] = []
+        stub(view) { stub in
+            stub.isSetup.get.thenReturn(true)
+            stub.controller.get.thenReturn(UIViewController())
+            stub.didReceiveButtonState(title: any(), enabled: any()).thenDoNothing()
+            stub.didReceiveInputChainAsset(payViewModel: any()).thenDoNothing()
+            stub.didReceiveAmount(payInputViewModel: any()).thenDoNothing()
+            stub.didReceiveAmountInputPrice(payViewModel: any()).thenDoNothing()
+            stub.didReceiveTitle(payViewModel: any()).thenDoNothing()
+            stub.didReceiveInputChainAsset(receiveViewModel: any()).thenDoNothing()
+            stub.didReceiveAmount(receiveInputViewModel: any()).thenDoNothing()
+            stub.didReceiveAmount(receiveLoading: any()).thenDoNothing()
+            stub.didReceiveAmountInputPrice(receiveViewModel: any()).thenDoNothing()
+            stub.didReceiveTitle(receiveViewModel: any()).thenDoNothing()
+            stub.didReceiveRate(viewModel: any()).thenDoNothing()
+            stub.didReceiveRoute(viewModel: any()).thenDoNothing()
+            stub.didReceiveExecutionTime(viewModel: any()).thenDoNothing()
+            stub.didReceiveNetworkFee(viewModel: any()).thenDoNothing()
+            stub.didReceiveCommissionDisclosure(viewModel: any()).thenDoNothing()
+            stub.didReceiveDetailsState(isAvailable: any()).thenDoNothing()
+            stub.didReceiveSettingsState(isAvailable: any()).thenDoNothing()
+            stub.didReceive(issues: any()).thenDoNothing()
+            stub.didReceive(focus: any()).thenDoNothing()
+            stub.didStartLoading().thenDoNothing()
+            stub.didStopLoading().thenDoNothing()
+        }
 
-    func didReceiveAmount(receiveLoading: Bool) {
-        receiveLoadingStates.append(receiveLoading)
+        return view
     }
 
-    func didReceiveAmount(receiveInputViewModel inputViewModel: AmountInputViewModelProtocol) {
-        receiveInputViewModels.append(inputViewModel)
+    static func makeInteractor() -> MockSwapSetupInteractorInputProtocol {
+        let interactor = MockSwapSetupInteractorInputProtocol()
+
+        stub(interactor) { stub in
+            stub.setup().thenDoNothing()
+            stub.calculateQuote(for: any()).thenDoNothing()
+            stub.calculateFee(for: any(), slippage: any(), feeAsset: any()).thenDoNothing()
+            stub.retryAssetBalanceExistenseFetch(for: any()).thenDoNothing()
+            stub.requestValidatingQuote(for: any(), completion: any()).thenDoNothing()
+            stub.requestValidatingIntermediateED(
+                for: any(),
+                commission: any(),
+                slippage: any(),
+                direction: any(),
+                completion: any()
+            ).thenDoNothing()
+            stub.update(receiveChainAsset: any()).thenDoNothing()
+            stub.update(payChainAsset: any()).thenDoNothing()
+            stub.update(feeChainAsset: any()).thenDoNothing()
+        }
+
+        return interactor
     }
 
-    func didReceiveButtonState(title: String, enabled: Bool) {
-        buttonStates.append((title: title, enabled: enabled))
+    static func makeWireframe() -> MockSwapSetupWireframeProtocol {
+        let wireframe = MockSwapSetupWireframeProtocol()
+
+        stub(wireframe) { stub in
+            stub.showPayTokenSelection(from: any(), chainAsset: any(), completionHandler: any()).thenDoNothing()
+            stub.showReceiveTokenSelection(from: any(), chainAsset: any(), completionHandler: any()).thenDoNothing()
+            stub.showSettings(
+                from: any(),
+                percent: any(),
+                chainAsset: any(),
+                completionHandler: any()
+            ).thenDoNothing()
+            stub.showInfo(from: any(), title: any(), details: any()).thenDoNothing()
+            stub.showConfirmation(from: any(), initState: any()).thenDoNothing()
+            stub.showGetTokenOptions(
+                form: any(),
+                purchaseHadler: any(),
+                destinationChainAsset: any(),
+                locale: any()
+            ).thenDoNothing()
+            stub.showRouteDetails(from: any(), quote: any(), fee: any()).thenDoNothing()
+            stub.showFeeDetails(from: any(), operations: any(), fee: any()).thenDoNothing()
+            stub.popTopControllers(from: any(), completion: any()).thenDoNothing()
+            stub.present(message: any(), title: any(), closeAction: any(), from: any()).thenDoNothing()
+            stub.present(viewModel: any(), style: any(), from: any()).thenDoNothing()
+        }
+
+        return wireframe
     }
 
-    func didReceiveInputChainAsset(payViewModel _: SwapAssetInputViewModel) {}
-    func didReceiveAmount(payInputViewModel _: AmountInputViewModelProtocol) {}
-    func didReceiveAmountInputPrice(payViewModel _: String?) {}
-    func didReceiveTitle(payViewModel _: TitleHorizontalMultiValueView.Model) {}
-    func didReceiveInputChainAsset(receiveViewModel _: SwapAssetInputViewModel) {}
-    func didReceiveAmountInputPrice(receiveViewModel _: SwapPriceDifferenceViewModel?) {}
-    func didReceiveTitle(receiveViewModel _: TitleHorizontalMultiValueView.Model) {}
-    func didReceiveRate(viewModel _: LoadableViewModelState<String>) {}
-    func didReceiveRoute(viewModel _: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {}
-    func didReceiveExecutionTime(viewModel _: LoadableViewModelState<String>) {}
-    func didReceiveNetworkFee(viewModel _: LoadableViewModelState<NetworkFeeInfoViewModel>) {}
-    func didReceiveCommissionDisclosure(viewModel _: String?) {}
-    func didReceiveDetailsState(isAvailable _: Bool) {}
-    func didReceiveSettingsState(isAvailable _: Bool) {}
-    func didReceive(issues _: [SwapSetupViewIssue]) {}
-    func didReceive(focus _: TextFieldFocus?) {}
-    func didStartLoading() {}
-    func didStopLoading() {}
+    static func makePriceStore() -> MockAssetExchangePriceStoring {
+        let priceStore = MockAssetExchangePriceStoring()
+
+        stub(priceStore) { stub in
+            stub.getCurrencyId().thenReturn(nil)
+            stub.fetchPrice(for: any()).thenReturn(nil)
+        }
+
+        return priceStore
+    }
 }
 
-final class SwapSetupInteractorStub: SwapSetupInteractorInputProtocol {
-    private(set) var quoteRequests: [AssetConversion.QuoteArgs] = []
+extension MockSwapSetupViewProtocol {
+    var receiveLoadingStates: [Bool] {
+        let captor = ArgumentCaptor<Bool>()
+
+        verify(self, atLeast(0)).didReceiveAmount(receiveLoading: captor.capture())
+
+        return captor.allValues
+    }
+
+    var receiveInputViewModels: [AmountInputViewModelProtocol] {
+        let captor = ArgumentCaptor<AmountInputViewModelProtocol>()
+
+        verify(self, atLeast(0)).didReceiveAmount(receiveInputViewModel: captor.capture())
+
+        return captor.allValues
+    }
+
+    var buttonStates: [(title: String, enabled: Bool)] {
+        let titleCaptor = ArgumentCaptor<String>()
+        let enabledCaptor = ArgumentCaptor<Bool>()
+
+        verify(self, atLeast(0)).didReceiveButtonState(
+            title: titleCaptor.capture(),
+            enabled: enabledCaptor.capture()
+        )
+
+        return zip(titleCaptor.allValues, enabledCaptor.allValues).map { title, enabled in
+            (title: title, enabled: enabled)
+        }
+    }
+}
+
+extension MockSwapSetupInteractorInputProtocol {
+    var quoteRequests: [AssetConversion.QuoteArgs] {
+        let captor = ArgumentCaptor<AssetConversion.QuoteArgs>()
+
+        verify(self, atLeast(0)).calculateQuote(for: captor.capture())
+
+        return captor.allValues
+    }
 
     var lastQuoteArgs: AssetConversion.QuoteArgs? {
         quoteRequests.last
     }
-
-    func calculateQuote(for args: AssetConversion.QuoteArgs) {
-        quoteRequests.append(args)
-    }
-
-    func setup() {}
-    func calculateFee(for _: AssetExchangeRoute, slippage _: BigRational, feeAsset _: ChainAsset) {}
-    func retryAssetBalanceExistenseFetch(for _: ChainAsset) {}
-
-    func requestValidatingQuote(
-        for _: AssetConversion.QuoteArgs,
-        completion _: @escaping (Result<AssetExchangeQuote, Error>) -> Void
-    ) {}
-
-    func requestValidatingIntermediateED(
-        for _: [AssetExchangeMetaOperationProtocol],
-        commission _: AssetExchangeCommission?,
-        slippage _: BigRational,
-        direction _: AssetConversion.Direction,
-        completion _: @escaping SwapInterEDCheckClosure
-    ) {}
-
-    func update(receiveChainAsset _: ChainAsset?) {}
-    func update(payChainAsset _: ChainAsset?) {}
-    func update(feeChainAsset _: ChainAsset?) {}
-}
-
-final class SwapSetupWireframeStub: SwapSetupWireframeProtocol {
-    func showPayTokenSelection(
-        from _: ControllerBackedProtocol?,
-        chainAsset _: ChainAsset?,
-        completionHandler _: @escaping (ChainAsset) -> Void
-    ) {}
-
-    func showReceiveTokenSelection(
-        from _: ControllerBackedProtocol?,
-        chainAsset _: ChainAsset?,
-        completionHandler _: @escaping (ChainAsset) -> Void
-    ) {}
-
-    func showSettings(
-        from _: ControllerBackedProtocol?,
-        percent _: BigRational?,
-        chainAsset _: ChainAsset,
-        completionHandler _: @escaping (BigRational) -> Void
-    ) {}
-
-    func showConfirmation(
-        from _: ControllerBackedProtocol?,
-        initState _: SwapConfirmInitState
-    ) {}
-
-    func showGetTokenOptions(
-        form _: ControllerBackedProtocol?,
-        purchaseHadler _: RampFlowManaging & RampDelegate,
-        destinationChainAsset _: ChainAsset,
-        locale _: Locale
-    ) {}
-
-    func showRouteDetails(
-        from _: ControllerBackedProtocol?,
-        quote _: AssetExchangeQuote,
-        fee _: AssetExchangeFee
-    ) {}
-
-    func showFeeDetails(
-        from _: ControllerBackedProtocol?,
-        operations _: [AssetExchangeMetaOperationProtocol],
-        fee _: AssetExchangeFee
-    ) {}
-
-    func popTopControllers(
-        from _: ControllerBackedProtocol?,
-        completion _: @escaping () -> Void
-    ) {}
-}
-
-final class SwapExchangePriceStoreStub: AssetExchangePriceStoring {
-    func getCurrencyId() -> Int? { nil }
-    func fetchPrice(for _: ChainAssetId) -> PriceData? { nil }
 }
