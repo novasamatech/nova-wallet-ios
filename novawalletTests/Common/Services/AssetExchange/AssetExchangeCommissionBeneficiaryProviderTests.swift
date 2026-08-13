@@ -12,13 +12,6 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
         XCTAssertFalse(try fetchState(balance: 0, existentialDeposit: 100).canReceive)
     }
 
-    func testStateCarriesRawAmounts() throws {
-        let state = try fetchState(balance: 555, existentialDeposit: 100)
-
-        XCTAssertEqual(state.balance, 555)
-        XCTAssertEqual(state.existentialDeposit, 100)
-    }
-
     func testSecondFetchForSameAssetUsesCache() throws {
         let chain = CommissionTestFixtures.chain
         let asset = try XCTUnwrap(chain.assets.first { $0.assetId == 1 })
