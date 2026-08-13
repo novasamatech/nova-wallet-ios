@@ -12,10 +12,10 @@ final class SwapRouteDetailsViewLayout: ScrollableContainerLayoutView {
 
     let routeDetailsView = SwapRouteDetailsView()
 
-    private var commissionDisclosureView: InlineAlertView?
+    private var commissionDisclosureView: UILabel?
 
     func setCommissionDisclosure(_ text: String?) {
-        applyInfo(
+        applyCaption(
             on: &commissionDisclosureView,
             after: routeDetailsView,
             text: text,
