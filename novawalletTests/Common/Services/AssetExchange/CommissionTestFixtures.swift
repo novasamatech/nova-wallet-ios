@@ -107,6 +107,16 @@ enum CommissionTestFixtures {
         .native(info: NativeTokenStorageInfo(canTransferAll: true, transferCallPath: .transferAllowDeath))
     }
 
+    static func statemineInfo() -> AssetStorageInfo {
+        .statemine(
+            info: AssetsPalletStorageInfo(
+                assetId: .stringValue("1"),
+                assetIdString: "1",
+                palletName: "Assets"
+            )
+        )
+    }
+
     static func makeCallArgs(
         direction: AssetConversion.Direction,
         amountIn: Balance,

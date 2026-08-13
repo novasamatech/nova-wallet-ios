@@ -84,6 +84,89 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertEqual(calls, [CallCodingPath(moduleName: "Omnipool", callName: "sell")])
     }
 
+    func testCommissionIsDroppedBelowChargedAssetExistentialDeposit() {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000,
+            amountOut: 1_000_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs),
+            8428
+        )
+
+        XCTAssertNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.ormlInfo(existentialDeposit: 8429),
+                callArgs: callArgs
+            )
+        )
+
+        XCTAssertNotNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.ormlInfo(existentialDeposit: 8428),
+                callArgs: callArgs
+            )
+        )
+    }
+
+    func testNativeCommissionHasNoExistentialDepositFloor() {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000,
+            amountOut: 1_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertEqual(
+            HydraExchangeExtrinsicParamsFactory.commissionAmount(for: commission, callArgs: callArgs),
+            8
+        )
+
+        XCTAssertNotNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.nativeInfo(),
+                callArgs: callArgs
+            )
+        )
+    }
+
+    func testCommissionIsDroppedWhenExistentialDepositIsUnknown() {
+        let commission = CommissionTestFixtures.makeCommission()
+
+        let callArgs = CommissionTestFixtures.makeCallArgs(
+            direction: .sell,
+            amountIn: 1_000_000,
+            amountOut: 1_000_000,
+            slippage: BigRational(numerator: 0, denominator: 100)
+        )
+
+        XCTAssertNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.statemineInfo(),
+                callArgs: callArgs
+            )
+        )
+
+        XCTAssertNotNil(
+            HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: CommissionTestFixtures.ormlHydrationEvmInfo(),
+                callArgs: callArgs
+            )
+        )
+    }
+
     func testNoCommissionMeansNoTransferCall() throws {
         let callArgs = CommissionTestFixtures.makeCallArgs(
             direction: .sell,

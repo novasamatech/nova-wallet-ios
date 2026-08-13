@@ -64,6 +64,19 @@ final class HydraExchangeExtrinsicParamsFactory {
         return min(commission.estimatedAmount, rateBasedAmount)
     }
 
+    static func minimumChargeableAmount(for storageInfo: AssetStorageInfo) -> Balance? {
+        switch storageInfo {
+        case let .orml(info), let .ormlHydrationEvm(info):
+            return info.existentialDeposit
+        case .native:
+            // Readiness already proved the beneficiary holds at least the native ED,
+            // so any incoming amount leaves it above ED.
+            return 0
+        default:
+            return nil
+        }
+    }
+
     static func commissionParams(
         for commission: AssetExchangeCommission?,
         storageInfo: AssetStorageInfo?,
@@ -76,6 +89,12 @@ final class HydraExchangeExtrinsicParamsFactory {
         let amount = commissionAmount(for: commission, callArgs: callArgs)
 
         guard amount > 0 else {
+            return nil
+        }
+
+        guard
+            let minimumAmount = minimumChargeableAmount(for: storageInfo),
+            amount >= minimumAmount else {
             return nil
         }
 
