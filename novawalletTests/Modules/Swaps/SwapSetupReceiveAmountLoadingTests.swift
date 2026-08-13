@@ -150,6 +150,46 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
         )
     }
 
+    func testButtonShowsEnterAmountWhenPayAmountIsZero() {
+        let context = SwapSetupTestContext.make()
+
+        let locale = LocalizationManager.shared.selectedLocale
+        let enterAmountTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupAssetActionEnterAmount()
+
+        context.deliverPayBalance(transferable: context.payAmountInPlank(10))
+
+        context.presenter.updatePayAmount(0)
+
+        XCTAssertEqual(context.view.buttonStates.last?.title, enterAmountTitle)
+        XCTAssertEqual(context.view.buttonStates.last?.enabled, false)
+    }
+
+    func testButtonStaysContinueStateWhileFeeResolvesForInitialQuote() {
+        let context = SwapSetupTestContext.make()
+
+        let locale = LocalizationManager.shared.selectedLocale
+        let continueTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
+        let enterAmountTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupAssetActionEnterAmount()
+
+        context.deliverPayBalance(transferable: context.payAmountInPlank(10))
+
+        let stateCountBeforeTyping = context.view.buttonStates.count
+
+        context.deliverSellQuote()
+
+        let statesWhileFeeResolves = context.view.buttonStates.suffix(from: stateCountBeforeTyping)
+
+        XCTAssertEqual(context.view.receiveLoadingStates.last, true)
+        XCTAssertFalse(statesWhileFeeResolves.isEmpty)
+        XCTAssertFalse(statesWhileFeeResolves.contains { $0.title == enterAmountTitle })
+        XCTAssertEqual(context.view.buttonStates.last?.title, continueTitle)
+        XCTAssertEqual(context.view.buttonStates.last?.enabled, true)
+    }
+
     func testButtonKeepsContinueStateWhileFeeResolvesForNewQuote() {
         let context = SwapSetupTestContext.make()
 

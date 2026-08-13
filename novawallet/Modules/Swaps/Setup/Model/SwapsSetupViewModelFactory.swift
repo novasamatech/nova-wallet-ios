@@ -69,7 +69,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
         case (_, nil):
             return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionSelectReceive()
         default:
-            if params.payAmount == nil || hasIssues {
+            if (params.payAmount ?? 0) <= 0 || hasIssues {
                 return R.string(preferredLanguages: locale.rLanguages).localizable.swapsSetupAssetActionEnterAmount()
             } else {
                 return R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
@@ -113,7 +113,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
     func buttonState(for issueParams: SwapIssueCheckParams, locale: Locale) -> ButtonState {
         let dataFullFilled = issueParams.payChainAsset != nil &&
             issueParams.receiveChainAsset != nil &&
-            issueParams.payAmount != nil
+            (issueParams.payAmount ?? 0) > 0
 
         let hasIssues = !issuesViewModelFactory.detectIssues(in: issueParams, locale: locale).isEmpty
 
