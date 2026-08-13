@@ -67,14 +67,8 @@ final class HydraExchangeExtrinsicParamsFactory {
     static func minimumChargeableAmount(for storageInfo: AssetStorageInfo) -> Balance? {
         switch storageInfo {
         case let .orml(info), let .ormlHydrationEvm(info):
-            // The ED comes from the remote chains config, which can carry a stale or
-            // missing value for an asset whose real ED is not 0 - HOLLAR shipped as "0"
-            // against an on-chain 0.02. Treat 0 as unknown rather than as no floor,
-            // otherwise a sub-ED commission gets attached and fails the whole atomic batch.
             return info.existentialDeposit > 0 ? info.existentialDeposit : nil
         case .native:
-            // Readiness already proved the beneficiary holds at least the native ED,
-            // so any incoming amount leaves it above ED.
             return 0
         default:
             return nil
