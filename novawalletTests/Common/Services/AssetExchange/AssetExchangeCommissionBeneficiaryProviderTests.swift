@@ -5,17 +5,15 @@ import BigInt
 import Cuckoo
 
 final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
-    func testChargesOnlyWhenBalanceExceedsExistentialDeposit() throws {
+    func testChargesOnlyWhenBalanceReachesExistentialDeposit() throws {
         XCTAssertTrue(try fetchState(balance: 101, existentialDeposit: 100).canReceive)
-        XCTAssertFalse(try fetchState(balance: 100, existentialDeposit: 100).canReceive)
+        XCTAssertTrue(try fetchState(balance: 100, existentialDeposit: 100).canReceive)
         XCTAssertFalse(try fetchState(balance: 99, existentialDeposit: 100).canReceive)
         XCTAssertFalse(try fetchState(balance: 0, existentialDeposit: 100).canReceive)
     }
 
-    func testSecondFetchForSameAssetUsesCache() throws {
+    func testSecondFetchForSameChainUsesCache() throws {
         let chain = CommissionTestFixtures.chain
-        let asset = try XCTUnwrap(chain.assets.first { $0.assetId == 1 })
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         let balanceFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
         stub(balanceFactory) { stub in
@@ -31,7 +29,7 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
         )
 
         for _ in 0 ..< 3 {
-            let wrapper = provider.fetchStateWrapper(for: chainAsset)
+            let wrapper = provider.fetchStateWrapper(for: chain.chainId)
             OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
             _ = try wrapper.targetOperation.extractNoCancellableResultData()
         }
@@ -41,8 +39,6 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
 
     func testFailureIsNotCached() throws {
         let chain = CommissionTestFixtures.chain
-        let asset = try XCTUnwrap(chain.assets.first { $0.assetId == 1 })
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         let balanceFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
         stub(balanceFactory) { stub in
@@ -58,12 +54,25 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
         )
 
         for _ in 0 ..< 2 {
-            let wrapper = provider.fetchStateWrapper(for: chainAsset)
+            let wrapper = provider.fetchStateWrapper(for: chain.chainId)
             OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
             XCTAssertThrowsError(try wrapper.targetOperation.extractNoCancellableResultData())
         }
 
         verify(balanceFactory, times(2)).queryBalance(for: any(), chainAsset: any())
+    }
+
+    func testUnknownChainFailsReadiness() throws {
+        let provider = CommissionTestFixtures.makeBeneficiaryProvider(
+            balance: 500,
+            existentialDeposit: 100,
+            chain: CommissionTestFixtures.chain
+        )
+
+        let wrapper = provider.fetchStateWrapper(for: "unknown-chain-id")
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        XCTAssertThrowsError(try wrapper.targetOperation.extractNoCancellableResultData())
     }
 }
 
@@ -73,8 +82,6 @@ private extension AssetExchangeCommissionBeneficiaryProviderTests {
         existentialDeposit: Balance
     ) throws -> CommissionBeneficiaryState {
         let chain = CommissionTestFixtures.chain
-        let asset = try XCTUnwrap(chain.assets.first { $0.assetId == 1 })
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         let provider = CommissionTestFixtures.makeBeneficiaryProvider(
             balance: balance,
@@ -82,7 +89,7 @@ private extension AssetExchangeCommissionBeneficiaryProviderTests {
             chain: chain
         )
 
-        let wrapper = provider.fetchStateWrapper(for: chainAsset)
+        let wrapper = provider.fetchStateWrapper(for: chain.chainId)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()

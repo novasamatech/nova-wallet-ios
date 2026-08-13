@@ -197,11 +197,10 @@ enum CommissionTestFixtures {
         let provider = MockAssetExchangeCommissionBeneficiaryProviding()
 
         stub(provider) { stub in
-            stub.fetchStateWrapper(for: any()).then { chainAsset in
+            stub.fetchStateWrapper(for: any()).then { _ in
                 .createWithResult(
                     CommissionBeneficiaryState(
-                        chainAsset: chainAsset,
-                        balance: canReceive ? 101 : 100,
+                        balance: canReceive ? 100 : 99,
                         existentialDeposit: 100
                     )
                 )
@@ -224,13 +223,11 @@ enum CommissionTestFixtures {
     }
 
     static func createPolicy(
-        chainRegistry: ChainRegistryProtocol = MockChainRegistryProtocol().applyDefault(for: [chain]),
         beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding = stubBeneficiaryProvider(canReceive: true)
     ) -> AssetExchangeCommissionPolicy {
         AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
             beneficiary: beneficiary,
-            chainRegistry: chainRegistry,
             beneficiaryProvider: beneficiaryProvider,
             logger: Logger.shared
         )

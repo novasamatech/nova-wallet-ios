@@ -2,17 +2,16 @@ import Foundation
 import Operation_iOS
 
 struct CommissionBeneficiaryState {
-    let chainAsset: ChainAsset
     let balance: Balance
     let existentialDeposit: Balance
 
     var canReceive: Bool {
-        balance > existentialDeposit
+        balance >= existentialDeposit
     }
 }
 
 protocol AssetExchangeCommissionBeneficiaryProviding {
-    func fetchStateWrapper(for chainAsset: ChainAsset) -> CompoundOperationWrapper<CommissionBeneficiaryState>
+    func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState>
 }
 
 final class AssetExchangeCommissionBeneficiaryProvider {
@@ -23,7 +22,7 @@ final class AssetExchangeCommissionBeneficiaryProvider {
     let operationQueue: OperationQueue
 
     private let mutex = NSLock()
-    private var cache: [ChainAssetId: CommissionBeneficiaryState] = [:]
+    private var cache: [ChainModel.Id: CommissionBeneficiaryState] = [:]
 
     init(
         beneficiary: AccountId,
@@ -41,32 +40,43 @@ final class AssetExchangeCommissionBeneficiaryProvider {
 }
 
 private extension AssetExchangeCommissionBeneficiaryProvider {
-    func cachedState(for chainAssetId: ChainAssetId) -> CommissionBeneficiaryState? {
+    func cachedState(for chainId: ChainModel.Id) -> CommissionBeneficiaryState? {
         mutex.lock()
         defer { mutex.unlock() }
 
-        return cache[chainAssetId]
+        return cache[chainId]
     }
 
-    func store(_ state: CommissionBeneficiaryState) {
+    func store(_ state: CommissionBeneficiaryState, for chainId: ChainModel.Id) {
         mutex.lock()
         defer { mutex.unlock() }
 
-        cache[state.chainAsset.chainAssetId] = state
+        cache[chainId] = state
+    }
+
+    func utilityChainAsset(for chainId: ChainModel.Id) throws -> ChainAsset {
+        let chain = try chainRegistry.getChainOrError(for: chainId)
+
+        guard let chainAsset = chain.utilityChainAsset() else {
+            throw ChainModelFetchError.noAsset(assetId: AssetModel.utilityAssetId)
+        }
+
+        return chainAsset
     }
 }
 
 extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding {
-    func fetchStateWrapper(for chainAsset: ChainAsset) -> CompoundOperationWrapper<CommissionBeneficiaryState> {
-        if let cached = cachedState(for: chainAsset.chainAssetId) {
+    func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState> {
+        if let cached = cachedState(for: chainId) {
             return .createWithResult(cached)
         }
 
         do {
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+            let chainAsset = try utilityChainAsset(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
             let existenceWrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
-                chainId: chainAsset.chain.chainId,
+                chainId: chainId,
                 asset: chainAsset.asset,
                 runtimeProvider: runtimeProvider,
                 operationQueue: operationQueue
@@ -82,12 +92,11 @@ extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBen
                 let balance = try balanceWrapper.targetOperation.extractNoCancellableResultData()
 
                 let state = CommissionBeneficiaryState(
-                    chainAsset: chainAsset,
                     balance: balance.balanceCountingEd,
                     existentialDeposit: existence.minBalance
                 )
 
-                self.store(state)
+                self.store(state, for: chainId)
 
                 return state
             }

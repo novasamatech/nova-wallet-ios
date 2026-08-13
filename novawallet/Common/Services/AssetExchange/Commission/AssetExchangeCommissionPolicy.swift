@@ -26,20 +26,17 @@ final class AssetExchangeCommissionPolicy {
     var rateOfGross: BigRational { rate.asShareOfGross }
 
     let beneficiary: AccountId
-    let chainRegistry: ChainRegistryProtocol
     let beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
     let logger: LoggerProtocol
 
     init(
         rate: BigRational,
         beneficiary: AccountId,
-        chainRegistry: ChainRegistryProtocol,
         beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding,
         logger: LoggerProtocol
     ) {
         self.rate = rate
         self.beneficiary = beneficiary
-        self.chainRegistry = chainRegistry
         self.beneficiaryProvider = beneficiaryProvider
         self.logger = logger
     }
@@ -69,30 +66,14 @@ private extension AssetExchangeCommissionPolicy {
         return result
     }
 
-    func chargedChainAsset(for chainAssetId: ChainAssetId) -> ChainAsset? {
-        guard
-            let chain = try? chainRegistry.getChainOrError(for: chainAssetId.chainId),
-            let asset = chain.asset(for: chainAssetId.assetId) else {
-            return nil
-        }
-
-        return ChainAsset(chain: chain, asset: asset)
-    }
-
-    func canReceiveWrapper(for chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool> {
-        guard let chainAsset = chargedChainAsset(for: chainAssetId) else {
-            logger.error("Commission asset \(chainAssetId) not found in the chain registry")
-
-            return .createWithResult(false)
-        }
-
-        let stateWrapper = beneficiaryProvider.fetchStateWrapper(for: chainAsset)
+    func canReceiveWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Bool> {
+        let stateWrapper = beneficiaryProvider.fetchStateWrapper(for: chainId)
 
         let mappingOperation = ClosureOperation<Bool> {
             do {
                 return try stateWrapper.targetOperation.extractNoCancellableResultData().canReceive
             } catch {
-                self.logger.error("Beneficiary readiness failed for \(chainAssetId): \(error)")
+                self.logger.error("Beneficiary readiness failed for \(chainId): \(error)")
 
                 return false
             }
@@ -117,7 +98,7 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return .createWithResult(netAmountOut)
         }
 
-        let canReceiveWrapper = canReceiveWrapper(for: path[run.lastEdgeIndex].destination)
+        let canReceiveWrapper = canReceiveWrapper(for: path[run.lastEdgeIndex].destination.chainId)
 
         let mappingOperation = ClosureOperation<Balance> {
             let canReceive = try canReceiveWrapper.targetOperation.extractNoCancellableResultData()
@@ -151,7 +132,7 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return .createWithResult(nil)
         }
 
-        let canReceiveWrapper = canReceiveWrapper(for: chargedAssetId)
+        let canReceiveWrapper = canReceiveWrapper(for: chargedAssetId.chainId)
 
         let mappingOperation = ClosureOperation<AssetExchangeCommission?> {
             let canReceive = try canReceiveWrapper.targetOperation.extractNoCancellableResultData()
@@ -222,7 +203,6 @@ enum AssetExchangeCommissionPolicyFactory {
             return AssetExchangeCommissionPolicy(
                 rate: AssetExchangeCommissionConstants.rate,
                 beneficiary: beneficiary,
-                chainRegistry: chainRegistry,
                 beneficiaryProvider: provider,
                 logger: logger
             )
