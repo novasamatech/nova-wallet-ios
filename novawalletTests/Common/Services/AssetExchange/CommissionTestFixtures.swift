@@ -255,7 +255,8 @@ enum CommissionTestFixtures {
     static func makeBeneficiaryProvider(
         balanceFactory: MockWalletRemoteQueryWrapperFactoryProtocol,
         existentialDeposit: Balance,
-        chain: ChainModel
+        chain: ChainModel,
+        additionalChains: Set<ChainModel> = []
     ) -> AssetExchangeCommissionBeneficiaryProvider {
         let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
         stub(storageInfoFactory) { stub in
@@ -274,14 +275,14 @@ enum CommissionTestFixtures {
             beneficiary: beneficiary,
             balanceQueryFactory: balanceFactory,
             assetStorageInfoFactory: storageInfoFactory,
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chain]),
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: additionalChains.union([chain])),
             operationQueue: OperationQueue()
         )
     }
 
     static func assetBalance(free: Balance, chain: ChainModel) -> AssetBalance {
         AssetBalance(
-            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: 1),
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: AssetModel.utilityAssetId),
             accountId: beneficiary,
             freeInPlank: free,
             reservedInPlank: 0,
