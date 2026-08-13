@@ -149,6 +149,40 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
             )
         )
     }
+
+    func testButtonKeepsContinueStateWhileFeeResolvesForNewQuote() {
+        let context = SwapSetupTestContext.make()
+
+        let locale = LocalizationManager.shared.selectedLocale
+        let continueTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
+        let enterAmountTitle = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupAssetActionEnterAmount()
+
+        context.deliverPayBalance(transferable: context.payAmountInPlank(10))
+        context.deliverSellQuote()
+
+        context.deliverFee(
+            commission: CommissionTestFixtures.makeCommission(
+                chargingOperationIndex: 0,
+                estimatedAmount: context.grossAmountOut / 100
+            )
+        )
+
+        XCTAssertEqual(context.view.buttonStates.last?.title, continueTitle)
+        XCTAssertEqual(context.view.buttonStates.last?.enabled, true)
+
+        let settledStateCount = context.view.buttonStates.count
+
+        context.presenter.updatePayAmount(2)
+        context.deliverQuote(amountOut: context.grossAmountOut * 2)
+
+        let statesWhileFeeResolves = context.view.buttonStates.suffix(from: settledStateCount)
+
+        XCTAssertFalse(statesWhileFeeResolves.isEmpty)
+        XCTAssertFalse(statesWhileFeeResolves.contains { $0.title == enterAmountTitle })
+        XCTAssertTrue(statesWhileFeeResolves.allSatisfy { $0.title == continueTitle && $0.enabled })
+    }
 }
 
 struct SwapSetupTestContext {
@@ -163,10 +197,6 @@ struct SwapSetupTestContext {
         Decimal(1).toSubstrateAmount(
             precision: receiveChainAsset.assetDisplayInfo.assetPrecision
         ) ?? 0
-    }
-
-    var route: AssetExchangeRoute {
-        makeRoute(amountOut: grossAmountOut)
     }
 
     func makeRoute(amountOut: Balance) -> AssetExchangeRoute {
@@ -342,6 +372,7 @@ final class SwapSetupViewSpy: SwapSetupViewProtocol {
 
     private(set) var receiveLoadingStates: [Bool] = []
     private(set) var receiveInputViewModels: [AmountInputViewModelProtocol] = []
+    private(set) var buttonStates: [(title: String, enabled: Bool)] = []
 
     func didReceiveAmount(receiveLoading: Bool) {
         receiveLoadingStates.append(receiveLoading)
@@ -351,7 +382,10 @@ final class SwapSetupViewSpy: SwapSetupViewProtocol {
         receiveInputViewModels.append(inputViewModel)
     }
 
-    func didReceiveButtonState(title _: String, enabled _: Bool) {}
+    func didReceiveButtonState(title: String, enabled: Bool) {
+        buttonStates.append((title: title, enabled: enabled))
+    }
+
     func didReceiveInputChainAsset(payViewModel _: SwapAssetInputViewModel) {}
     func didReceiveAmount(payInputViewModel _: AmountInputViewModelProtocol) {}
     func didReceiveAmountInputPrice(payViewModel _: String?) {}
