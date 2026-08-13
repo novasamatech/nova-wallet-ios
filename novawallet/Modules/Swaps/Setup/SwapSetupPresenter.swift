@@ -151,7 +151,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
-
         // we need to keep fee in sync with quote
         fee = nil
 
