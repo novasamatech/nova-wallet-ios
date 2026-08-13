@@ -170,11 +170,8 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     func testButtonStaysContinueStateWhileFeeResolvesForInitialQuote() {
         let context = SwapSetupTestContext.make()
 
-        let locale = LocalizationManager.shared.selectedLocale
-        let continueTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
-        let enterAmountTitle = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupAssetActionEnterAmount()
+        let continueTitle = context.continueTitle
+        let enterAmountTitle = context.enterAmountTitle
 
         context.deliverPayBalance(transferable: context.payAmountInPlank(10))
 
@@ -194,11 +191,8 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     func testButtonKeepsContinueStateWhileFeeResolvesForNewQuote() {
         let context = SwapSetupTestContext.make()
 
-        let locale = LocalizationManager.shared.selectedLocale
-        let continueTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
-        let enterAmountTitle = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.swapsSetupAssetActionEnterAmount()
+        let continueTitle = context.continueTitle
+        let enterAmountTitle = context.enterAmountTitle
 
         context.deliverPayBalance(transferable: context.payAmountInPlank(10))
         context.deliverSellQuote()
@@ -238,6 +232,18 @@ struct SwapSetupTestContext {
         Decimal(1).toSubstrateAmount(
             precision: receiveChainAsset.assetDisplayInfo.assetPrecision
         ) ?? 0
+    }
+
+    var continueTitle: String {
+        let locale = LocalizationManager.shared.selectedLocale
+        return R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
+    }
+
+    var enterAmountTitle: String {
+        let locale = LocalizationManager.shared.selectedLocale
+        return R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsSetupAssetActionEnterAmount()
     }
 
     func makeRoute(amountOut: Balance) -> AssetExchangeRoute {
