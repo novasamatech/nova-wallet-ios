@@ -110,21 +110,6 @@ class ScrollableContainerLayoutView: UIView {
         )
     }
 
-    func applyInfo(
-        on infoView: inout InlineAlertView?,
-        after view: UIView?,
-        text: String?,
-        spacing: CGFloat = 0
-    ) {
-        applyInline(
-            on: &infoView,
-            style: .info,
-            after: view,
-            text: text,
-            spacing: spacing
-        )
-    }
-
     func applyCaption(
         on captionView: inout UILabel?,
         after view: UIView?,
