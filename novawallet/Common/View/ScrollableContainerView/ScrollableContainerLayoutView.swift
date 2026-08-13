@@ -124,6 +124,34 @@ class ScrollableContainerLayoutView: UIView {
             spacing: spacing
         )
     }
+
+    func applyCaption(
+        on captionView: inout UILabel?,
+        after view: UIView?,
+        text: String?,
+        spacing: CGFloat = 0
+    ) {
+        if let text = text {
+            if captionView == nil {
+                let newLabel = UILabel(style: .footnoteSecondary, textAlignment: .center)
+
+                if let afterView = view {
+                    insertArrangedSubview(newLabel, after: afterView, spacingAfter: spacing)
+                } else {
+                    addArrangedSubview(newLabel, spacingAfter: spacing)
+                }
+
+                captionView = newLabel
+            }
+
+            captionView?.text = text
+        } else {
+            captionView?.removeFromSuperview()
+            captionView = nil
+        }
+
+        setNeedsLayout()
+    }
 }
 
 class SCGenericActionLayoutView<A: UIView>: ScrollableContainerLayoutView {

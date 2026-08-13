@@ -51,10 +51,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.networkFeeCell
     }
 
-    private var commissionDisclosureView: InlineAlertView?
+    private var commissionDisclosureView: UILabel?
 
     func setCommissionDisclosure(_ text: String?) {
-        applyInfo(
+        applyCaption(
             on: &commissionDisclosureView,
             after: detailsView,
             text: text,
