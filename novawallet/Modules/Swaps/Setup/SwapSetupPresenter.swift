@@ -149,10 +149,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
         logger.debug("New quote: \(quote)")
 
         if let fee, !quote.hasSamePath(other: fee.route) {
-            // we need to keep fee in sync with quote
-            self.fee = nil
             maxCorrectionCounter.resetCounter()
         }
+
+        // we need to keep fee in sync with quote
+        fee = nil
 
         switch quoteArgs.direction {
         case .buy:
