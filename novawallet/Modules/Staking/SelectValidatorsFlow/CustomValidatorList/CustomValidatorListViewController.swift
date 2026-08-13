@@ -133,19 +133,19 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         let buttonTitle: String
         let isEnabled: Bool
 
-        if selection.communitySelected == 0, selection.lockedSelected == 0 {
+        if selection.totalSelected == 0 {
             isEnabled = false
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingCustomProceedButtonDisabledTitle(selection.communityLimit)
+            ).localizable.stakingCustomProceedButtonDisabledTitle(selection.totalLimit)
 
         } else {
             isEnabled = true
 
             buttonTitle = R.string(preferredLanguages: selectedLocale.rLanguages
             ).localizable.stakingCustomProceedButtonEnabledTitle(
-                selection.communitySelected,
-                selection.communityLimit
+                selection.totalSelected,
+                selection.totalLimit
             )
         }
 
