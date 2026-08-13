@@ -6599,7 +6599,6 @@
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
 		00000000102CAF7145ACC39C /* AssetExchangeCommissionBeneficiaryProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000B3A9CF9263EFDA5 /* AssetExchangeCommissionBeneficiaryProviderTests.swift */; };
 		000000007292AE692FF50B4D /* AssetExchangeCommissionBeneficiaryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */; };
-		000000003336C65F90313612 /* HydrationCommissionBeneficiaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */; };
 		000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */; };
 		000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */; };
 		000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */; };
@@ -12943,7 +12942,6 @@
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 		000000000B3A9CF9263EFDA5 /* AssetExchangeCommissionBeneficiaryProviderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionBeneficiaryProviderTests.swift; sourceTree = "<group>"; };
 		00000000755DFC24E44D8D9C /* AssetExchangeCommissionBeneficiaryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionBeneficiaryProvider.swift; sourceTree = "<group>"; };
-		000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydrationCommissionBeneficiaryTests.swift; sourceTree = "<group>"; };
 		000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapSetupReceiveAmountLoadingTests.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
 		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
@@ -14249,7 +14247,6 @@
 			isa = PBXGroup;
 			children = (
 				0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */,
-				000000000A06774E11532144 /* HydrationCommissionBeneficiaryTests.swift */,
 			);
 			path = AssetsExchange;
 			sourceTree = "<group>";
@@ -31185,7 +31182,6 @@
 				84FACB6625F56D5000F32ED4 /* CalculatorServiceTests.swift in Sources */,
 				0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */,
 				8813702C29C13E7900829458 /* Web3NamesOperationFactoryTests.swift in Sources */,
-				000000003336C65F90313612 /* HydrationCommissionBeneficiaryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
