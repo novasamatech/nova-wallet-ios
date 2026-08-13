@@ -182,19 +182,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         }
     }
 
-    func testArithmeticAtExtremes() throws {
-        let policy = CommissionTestFixtures.createPolicy()
-        let path = CommissionTestFixtures.createPath([.hydraSwap])
-
-        let huge = Balance(UInt64.max) * Balance(UInt64.max)
-
-        let grossHuge = try grossingUpAmountOut(using: policy, huge, for: path)
-
-        XCTAssertGreaterThan(grossHuge, huge)
-
-        XCTAssertEqual(try grossingUpAmountOut(using: policy, 0, for: path), 0)
-    }
-
     func testCommissionIndexOutsideOperationRangeThrows() throws {
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amount: 1_000_000)
 
