@@ -6603,6 +6603,7 @@
 		000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */; };
 		000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */; };
 		000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */; };
+		00000000152A05B0F349520E /* SwapSetupMaxCorrectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000068D6AC235CA7B968 /* SwapSetupMaxCorrectionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12946,6 +12947,7 @@
 		000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapSetupReceiveAmountLoadingTests.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
 		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
+		0000000068D6AC235CA7B968 /* SwapSetupMaxCorrectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapSetupMaxCorrectionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -20119,6 +20121,7 @@
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
 				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
 				000000003998372FCB9439DE /* SwapSetupReceiveAmountLoadingTests.swift */,
+				0000000068D6AC235CA7B968 /* SwapSetupMaxCorrectionTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -37217,6 +37220,7 @@
 				00000000102CAF7145ACC39C /* AssetExchangeCommissionBeneficiaryProviderTests.swift in Sources */,
 				000000004562F0FD3892DFA9 /* SwapSetupReceiveAmountLoadingTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
+				00000000152A05B0F349520E /* SwapSetupMaxCorrectionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

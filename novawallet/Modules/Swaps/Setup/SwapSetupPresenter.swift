@@ -191,12 +191,16 @@ final class SwapSetupPresenter: SwapBasePresenter {
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
 
+            let correctionDirection = quoteArgs?.direction ?? .sell
+
             /*
              * As fee changes the max amount we might also refresh the quote but make sure
              * no deadlock.
              */
-            if maxCorrectionCounter.incrementCounterIfPossible() {
-                refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
+            if
+                !isMaxCorrectionConverged(for: correctionDirection),
+                maxCorrectionCounter.incrementCounterIfPossible() {
+                refreshQuote(direction: correctionDirection, forceUpdate: false)
             } else {
                 maxCorrectionCounter.resetCounter()
             }
@@ -267,6 +271,19 @@ extension SwapSetupPresenter {
 
         let maxAmount = getMaxModel().calculate()
         return input.absoluteValue(from: maxAmount)
+    }
+
+    private func isMaxCorrectionConverged(for direction: AssetConversion.Direction) -> Bool {
+        guard
+            direction == .sell,
+            let payChainAsset,
+            let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
+                precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
+            ) else {
+            return false
+        }
+
+        return payInPlank == quoteArgs?.amount
     }
 
     func getIssueParams() -> SwapIssueCheckParams {

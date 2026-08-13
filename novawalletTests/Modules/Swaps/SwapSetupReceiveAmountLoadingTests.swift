@@ -11,7 +11,7 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 
     func testReceiveAmountLoadsWhileCommissionUnresolved() {
-        let context = Self.createContext()
+        let context = SwapSetupTestContext.make()
 
         context.deliverSellQuote()
 
@@ -19,7 +19,7 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 
     func testReceiveAmountStopsLoadingWhenUserEntersReceiveAmount() {
-        let context = Self.createContext()
+        let context = SwapSetupTestContext.make()
 
         context.deliverSellQuote()
 
@@ -34,7 +34,7 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 
     func testReceiveAmountStopsLoadingWhenQuoteFails() {
-        let context = Self.createContext()
+        let context = SwapSetupTestContext.make()
 
         context.deliverSellQuote()
 
@@ -51,7 +51,7 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 
     func testReceiveAmountShowsGrossWhenFeeResolvesWithoutCommission() {
-        let context = Self.createContext()
+        let context = SwapSetupTestContext.make()
 
         context.deliverSellQuote()
 
@@ -68,7 +68,7 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 
     func testReceiveAmountShowsNetWhenFeeResolvesWithCommission() {
-        let context = Self.createContext()
+        let context = SwapSetupTestContext.make()
 
         context.deliverSellQuote()
 
@@ -96,60 +96,104 @@ final class SwapSetupReceiveAmountLoadingTests: XCTestCase {
     }
 }
 
-extension SwapSetupReceiveAmountLoadingTests {
-    struct Context {
-        let presenter: SwapSetupPresenter
-        let view: SwapSetupViewSpy
-        let interactor: SwapSetupInteractorStub
-        let receiveChainAsset: ChainAsset
+struct SwapSetupTestContext {
+    let presenter: SwapSetupPresenter
+    let view: SwapSetupViewSpy
+    let interactor: SwapSetupInteractorStub
+    let payChainAsset: ChainAsset
+    let receiveChainAsset: ChainAsset
 
-        var grossAmountOut: Balance {
-            Decimal(1).toSubstrateAmount(
-                precision: receiveChainAsset.assetDisplayInfo.assetPrecision
-            ) ?? 0
-        }
-
-        var route: AssetExchangeRoute {
-            CommissionTestFixtures.createRoute([.hydraSwap], amount: grossAmountOut)
-        }
-
-        func deliverSellQuote() {
-            presenter.updatePayAmount(1)
-
-            guard let quoteArgs = interactor.lastQuoteArgs else {
-                XCTFail("Quote args expected")
-                return
-            }
-
-            let quote = AssetExchangeQuote(
-                route: route,
-                metaOperations: [
-                    CommissionTestFixtures.metaOperation(
-                        amountIn: grossAmountOut,
-                        amountOut: grossAmountOut
-                    )
-                ],
-                executionTimes: []
-            )
-
-            presenter.didReceive(quote: quote, for: quoteArgs)
-        }
-
-        func deliverFee(commission: AssetExchangeCommission?) {
-            let fee = AssetExchangeFee(
-                route: route,
-                operationFees: [],
-                intermediateFeesInAssetIn: 0,
-                slippage: BigRational(numerator: 0, denominator: 100),
-                feeAssetId: CommissionTestFixtures.asset(0),
-                commission: commission
-            )
-
-            presenter.didReceive(fee: fee, feeChainAssetId: fee.feeAssetId)
-        }
+    var grossAmountOut: Balance {
+        Decimal(1).toSubstrateAmount(
+            precision: receiveChainAsset.assetDisplayInfo.assetPrecision
+        ) ?? 0
     }
 
-    static func createContext() -> Context {
+    var route: AssetExchangeRoute {
+        CommissionTestFixtures.createRoute([.hydraSwap], amount: grossAmountOut)
+    }
+
+    func payAmountInPlank(_ amount: Decimal) -> Balance {
+        amount.toSubstrateAmount(
+            precision: payChainAsset.assetDisplayInfo.assetPrecision
+        ) ?? 0
+    }
+
+    func deliverPayBalance(transferable: Balance) {
+        let balance = AssetBalance(
+            chainAssetId: payChainAsset.chainAssetId,
+            accountId: AccountId.zeroAccountId(of: 32),
+            freeInPlank: transferable,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .regular,
+            blocked: false
+        )
+
+        presenter.didReceive(balance: balance, for: payChainAsset.chainAssetId)
+    }
+
+    func deliverQuote() {
+        guard let quoteArgs = interactor.lastQuoteArgs else {
+            XCTFail("Quote args expected")
+            return
+        }
+
+        let quote = AssetExchangeQuote(
+            route: route,
+            metaOperations: [
+                CommissionTestFixtures.metaOperation(
+                    amountIn: grossAmountOut,
+                    amountOut: grossAmountOut
+                )
+            ],
+            executionTimes: []
+        )
+
+        presenter.didReceive(quote: quote, for: quoteArgs)
+    }
+
+    func deliverSellQuote() {
+        presenter.updatePayAmount(1)
+
+        deliverQuote()
+    }
+
+    func deliverFee(commission: AssetExchangeCommission?) {
+        deliverFee(operationFees: [], commission: commission)
+    }
+
+    func deliverFee(submissionAmount: Balance, in asset: ChainAssetId) {
+        let operationFee = AssetExchangeOperationFee(
+            submissionFee: .init(
+                amountWithAsset: .init(amount: submissionAmount, asset: asset),
+                payer: nil,
+                weight: .init(refTime: 0, proofSize: 0)
+            ),
+            postSubmissionFee: .init(paidByAccount: [], paidFromAmount: [])
+        )
+
+        deliverFee(operationFees: [operationFee], commission: nil)
+    }
+
+    private func deliverFee(
+        operationFees: [AssetExchangeOperationFee],
+        commission: AssetExchangeCommission?
+    ) {
+        let fee = AssetExchangeFee(
+            route: route,
+            operationFees: operationFees,
+            intermediateFeesInAssetIn: 0,
+            slippage: BigRational(numerator: 0, denominator: 100),
+            feeAssetId: CommissionTestFixtures.asset(0),
+            commission: commission
+        )
+
+        presenter.didReceive(fee: fee, feeChainAssetId: fee.feeAssetId)
+    }
+
+    static func make() -> SwapSetupTestContext {
         let chain = CommissionTestFixtures.chain
         let assets = chain.assets.sorted { $0.assetId < $1.assetId }
 
@@ -208,10 +252,11 @@ extension SwapSetupReceiveAmountLoadingTests {
         presenter.view = view
         presenter.setup()
 
-        return Context(
+        return SwapSetupTestContext(
             presenter: presenter,
             view: view,
             interactor: interactor,
+            payChainAsset: payChainAsset,
             receiveChainAsset: receiveChainAsset
         )
     }
@@ -254,10 +299,14 @@ final class SwapSetupViewSpy: SwapSetupViewProtocol {
 }
 
 final class SwapSetupInteractorStub: SwapSetupInteractorInputProtocol {
-    private(set) var lastQuoteArgs: AssetConversion.QuoteArgs?
+    private(set) var quoteRequests: [AssetConversion.QuoteArgs] = []
+
+    var lastQuoteArgs: AssetConversion.QuoteArgs? {
+        quoteRequests.last
+    }
 
     func calculateQuote(for args: AssetConversion.QuoteArgs) {
-        lastQuoteArgs = args
+        quoteRequests.append(args)
     }
 
     func setup() {}
