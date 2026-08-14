@@ -232,6 +232,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     func createQuoteWrapper(
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetExchangeQuote> {
+        commissionPolicy.discardFailedBeneficiaryFetches()
+
         let routeWrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {

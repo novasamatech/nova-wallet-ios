@@ -12,6 +12,8 @@ struct CommissionBeneficiaryState {
 
 protocol AssetExchangeCommissionBeneficiaryProviding {
     func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState>
+
+    func discardFailedFetches()
 }
 
 final class AssetExchangeCommissionBeneficiaryProvider {
@@ -23,6 +25,7 @@ final class AssetExchangeCommissionBeneficiaryProvider {
 
     private let mutex = NSLock()
     private var cache: [ChainModel.Id: CommissionBeneficiaryState] = [:]
+    private var failures: [ChainModel.Id: Error] = [:]
 
     init(
         beneficiary: AccountId,
@@ -52,6 +55,21 @@ private extension AssetExchangeCommissionBeneficiaryProvider {
         defer { mutex.unlock() }
 
         cache[chainId] = state
+        failures[chainId] = nil
+    }
+
+    func failedFetch(for chainId: ChainModel.Id) -> Error? {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return failures[chainId]
+    }
+
+    func storeFailure(_ error: Error, for chainId: ChainModel.Id) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        failures[chainId] = error
     }
 
     func utilityChainAsset(for chainId: ChainModel.Id) throws -> ChainAsset {
@@ -66,9 +84,20 @@ private extension AssetExchangeCommissionBeneficiaryProvider {
 }
 
 extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding {
+    func discardFailedFetches() {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        failures.removeAll()
+    }
+
     func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState> {
         if let cached = cachedState(for: chainId) {
             return .createWithResult(cached)
+        }
+
+        if let failure = failedFetch(for: chainId) {
+            return .createWithError(failure)
         }
 
         do {
@@ -88,17 +117,23 @@ extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBen
             )
 
             let mergeOperation = ClosureOperation<CommissionBeneficiaryState> {
-                let existence = try existenceWrapper.targetOperation.extractNoCancellableResultData()
-                let balance = try balanceWrapper.targetOperation.extractNoCancellableResultData()
+                do {
+                    let existence = try existenceWrapper.targetOperation.extractNoCancellableResultData()
+                    let balance = try balanceWrapper.targetOperation.extractNoCancellableResultData()
 
-                let state = CommissionBeneficiaryState(
-                    balance: balance.balanceCountingEd,
-                    existentialDeposit: existence.minBalance
-                )
+                    let state = CommissionBeneficiaryState(
+                        balance: balance.balanceCountingEd,
+                        existentialDeposit: existence.minBalance
+                    )
 
-                self.store(state, for: chainId)
+                    self.store(state, for: chainId)
 
-                return state
+                    return state
+                } catch {
+                    self.storeFailure(error, for: chainId)
+
+                    throw error
+                }
             }
 
             mergeOperation.addDependency(existenceWrapper.targetOperation)
@@ -109,6 +144,8 @@ extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBen
                 dependencies: existenceWrapper.allOperations + balanceWrapper.allOperations
             )
         } catch {
+            storeFailure(error, for: chainId)
+
             return .createWithError(error)
         }
     }

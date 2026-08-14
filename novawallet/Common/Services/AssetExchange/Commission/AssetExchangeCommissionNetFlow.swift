@@ -17,7 +17,9 @@ struct AssetExchangeCommissionNetFlow {
                 deduction = deduction * operation.amountOut / operation.amountIn
             }
 
-            if let commission, index == commission.chargingOperationIndex {
+            if let commission,
+               index == commission.chargingOperationIndex,
+               operation.assetOut.chainAssetId == commission.asset {
                 deduction += commission.estimatedAmount
             }
 

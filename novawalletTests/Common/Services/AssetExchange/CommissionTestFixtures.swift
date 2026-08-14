@@ -195,6 +195,8 @@ enum CommissionTestFixtures {
                     )
                 )
             }
+
+            stub.discardFailedFetches().thenDoNothing()
         }
 
         return provider
@@ -207,18 +209,31 @@ enum CommissionTestFixtures {
             stub.fetchStateWrapper(for: any()).then { _ in
                 .createWithError(CommonError.dataCorruption)
             }
+
+            stub.discardFailedFetches().thenDoNothing()
         }
 
         return provider
     }
 
     static func createPolicy(
-        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding = stubBeneficiaryProvider(canReceive: true)
+        beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding = stubBeneficiaryProvider(canReceive: true),
+        chargedAssetStorageInfo: AssetStorageInfo = ormlInfo(existentialDeposit: 1)
     ) -> AssetExchangeCommissionPolicy {
-        AssetExchangeCommissionPolicy(
+        let storageInfoFactory = MockAssetStorageInfoOperationFactoryProtocol()
+
+        stub(storageInfoFactory) { stub in
+            stub.createStorageInfoWrapper(from: any(), runtimeProvider: any()).then { _, _ in
+                .createWithResult(chargedAssetStorageInfo)
+            }
+        }
+
+        return AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
             beneficiary: beneficiary,
             beneficiaryProvider: beneficiaryProvider,
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chain]),
+            assetStorageInfoFactory: storageInfoFactory,
             logger: Logger.shared
         )
     }

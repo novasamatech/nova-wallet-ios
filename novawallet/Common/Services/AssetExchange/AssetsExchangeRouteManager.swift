@@ -209,12 +209,32 @@ private extension AssetsExchangeRouteManager {
 
         let routeWrapper = createQuote(for: candidate.path, direction: .buy, amountWrapper: grossWrapper)
 
+        let commissionWrapper: CompoundOperationWrapper<AssetExchangeCommission?>
+        commissionWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
+
+            return commissionPolicy.resolveCommissionWrapper(for: grossedRoute)
+        }
+
+        commissionWrapper.addDependency(wrapper: routeWrapper)
+
         let mappingOperation = ClosureOperation<AssetExchangeRoute?> {
-            try routeWrapper.targetOperation.extractNoCancellableResultData()
+            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard commission != nil else {
+                return candidate.route
+            }
+
+            return try routeWrapper.targetOperation.extractNoCancellableResultData()
         }
 
         mappingOperation.addDependency(routeWrapper.targetOperation)
+        mappingOperation.addDependency(commissionWrapper.targetOperation)
 
-        return routeWrapper.insertingTail(operation: mappingOperation)
+        return commissionWrapper
+            .insertingHead(operations: routeWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
     }
 }

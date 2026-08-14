@@ -13,6 +13,8 @@ protocol AssetExchangeCommissionPolicyProtocol {
         _ netAmountOut: Balance,
         for path: AssetExchangeGraphPath
     ) -> CompoundOperationWrapper<Balance>
+
+    func discardFailedBeneficiaryFetches()
 }
 
 final class AssetExchangeCommissionPolicy {
@@ -27,17 +29,23 @@ final class AssetExchangeCommissionPolicy {
 
     let beneficiary: AccountId
     let beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding
+    let chainRegistry: ChainRegistryProtocol
+    let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
     let logger: LoggerProtocol
 
     init(
         rate: BigRational,
         beneficiary: AccountId,
         beneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.rate = rate
         self.beneficiary = beneficiary
         self.beneficiaryProvider = beneficiaryProvider
+        self.chainRegistry = chainRegistry
+        self.assetStorageInfoFactory = assetStorageInfoFactory
         self.logger = logger
     }
 }
@@ -83,6 +91,85 @@ private extension AssetExchangeCommissionPolicy {
 
         return stateWrapper.insertingTail(operation: mappingOperation)
     }
+
+    static func minimumChargeableAmount(for storageInfo: AssetStorageInfo) -> Balance? {
+        switch storageInfo {
+        case let .orml(info), let .ormlHydrationEvm(info):
+            return info.existentialDeposit > 0 ? info.existentialDeposit : nil
+        case .native:
+            return 0
+        default:
+            return nil
+        }
+    }
+
+    func chargedAssetStorageInfoWrapper(
+        for chargedAsset: ChainAssetId
+    ) -> CompoundOperationWrapper<AssetStorageInfo> {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chargedAsset.chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chargedAsset.chainId)
+
+            guard let asset = chain.asset(for: chargedAsset.assetId) else {
+                throw ChainModelFetchError.noAsset(assetId: chargedAsset.assetId)
+            }
+
+            return assetStorageInfoFactory.createStorageInfoWrapper(
+                from: asset,
+                runtimeProvider: runtimeProvider
+            )
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func chargeableAmountWrapper(
+        of grossAmount: Balance,
+        chargedAsset: ChainAssetId
+    ) -> CompoundOperationWrapper<Balance?> {
+        let estimatedAmount = rateOfGross.mul(value: grossAmount)
+
+        guard estimatedAmount > 0 else {
+            return .createWithResult(nil)
+        }
+
+        let readinessWrapper = canReceiveWrapper(for: chargedAsset.chainId)
+        let storageInfoWrapper = chargedAssetStorageInfoWrapper(for: chargedAsset)
+
+        let mappingOperation = ClosureOperation<Balance?> {
+            let canReceive = try readinessWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard canReceive else {
+                return nil
+            }
+
+            let storageInfo: AssetStorageInfo
+
+            do {
+                storageInfo = try storageInfoWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                self.logger.error("Charged asset storage info failed for \(chargedAsset): \(error)")
+
+                return nil
+            }
+
+            guard
+                let minimumAmount = Self.minimumChargeableAmount(for: storageInfo),
+                estimatedAmount >= minimumAmount else {
+                return nil
+            }
+
+            return estimatedAmount
+        }
+
+        mappingOperation.addDependency(readinessWrapper.targetOperation)
+        mappingOperation.addDependency(storageInfoWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: readinessWrapper.allOperations + storageInfoWrapper.allOperations
+        )
+    }
 }
 
 extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
@@ -125,34 +212,33 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         }
 
         let bound = route.items[run.lastEdgeIndex].amountOut(for: route.direction)
-        let estimatedAmount = rateOfGross.mul(value: bound)
         let chargedAssetId = route.items[run.lastEdgeIndex].edge.destination
 
-        guard estimatedAmount > 0 else {
-            return .createWithResult(nil)
-        }
-
-        let canReceiveWrapper = canReceiveWrapper(for: chargedAssetId.chainId)
+        let chargeableWrapper = chargeableAmountWrapper(of: bound, chargedAsset: chargedAssetId)
 
         let mappingOperation = ClosureOperation<AssetExchangeCommission?> {
-            let canReceive = try canReceiveWrapper.targetOperation.extractNoCancellableResultData()
+            let chargeableAmount = try chargeableWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard canReceive else {
+            guard let chargeableAmount else {
                 return nil
             }
 
             return AssetExchangeCommission(
                 chargingOperationIndex: run.operationIndex,
                 asset: chargedAssetId,
-                estimatedAmount: estimatedAmount,
+                estimatedAmount: chargeableAmount,
                 beneficiary: self.beneficiary,
                 rateOfGross: self.rateOfGross
             )
         }
 
-        mappingOperation.addDependency(canReceiveWrapper.targetOperation)
+        mappingOperation.addDependency(chargeableWrapper.targetOperation)
 
-        return canReceiveWrapper.insertingTail(operation: mappingOperation)
+        return chargeableWrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func discardFailedBeneficiaryFetches() {
+        beneficiaryProvider.discardFailedFetches()
     }
 }
 
@@ -173,6 +259,8 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
     ) -> CompoundOperationWrapper<Balance> {
         .createWithResult(netAmountOut)
     }
+
+    func discardFailedBeneficiaryFetches() {}
 }
 
 enum AssetExchangeCommissionPolicyFactory {
@@ -186,16 +274,18 @@ enum AssetExchangeCommissionPolicyFactory {
                 .hydrationBeneficiaryAddress
                 .toAccountId()
 
+            let assetStorageInfoFactory = AssetStorageInfoOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            )
+
             let provider = AssetExchangeCommissionBeneficiaryProvider(
                 beneficiary: beneficiary,
                 balanceQueryFactory: WalletRemoteQueryWrapperFactory(
                     chainRegistry: chainRegistry,
                     operationQueue: operationQueue
                 ),
-                assetStorageInfoFactory: AssetStorageInfoOperationFactory(
-                    chainRegistry: chainRegistry,
-                    operationQueue: operationQueue
-                ),
+                assetStorageInfoFactory: assetStorageInfoFactory,
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
             )
@@ -204,6 +294,8 @@ enum AssetExchangeCommissionPolicyFactory {
                 rate: AssetExchangeCommissionConstants.rate,
                 beneficiary: beneficiary,
                 beneficiaryProvider: provider,
+                chainRegistry: chainRegistry,
+                assetStorageInfoFactory: assetStorageInfoFactory,
                 logger: logger
             )
         } catch {

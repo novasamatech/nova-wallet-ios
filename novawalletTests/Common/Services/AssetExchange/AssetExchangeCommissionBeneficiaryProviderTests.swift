@@ -40,7 +40,7 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
         )
     }
 
-    func testFailureIsNotCached() throws {
+    func testFailureIsReplayedWithoutRefetching() throws {
         let chain = CommissionTestFixtures.chain
 
         let balanceFactory = MockWalletRemoteQueryWrapperFactoryProtocol()
@@ -62,7 +62,7 @@ final class AssetExchangeCommissionBeneficiaryProviderTests: XCTestCase {
             XCTAssertThrowsError(try wrapper.targetOperation.extractNoCancellableResultData())
         }
 
-        verify(balanceFactory, times(2)).queryBalance(for: any(), chainAsset: any())
+        verify(balanceFactory, times(1)).queryBalance(for: any(), chainAsset: any())
     }
 }
 
