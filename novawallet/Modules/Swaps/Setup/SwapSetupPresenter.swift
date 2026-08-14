@@ -402,6 +402,10 @@ extension SwapSetupPresenter {
             return
         }
 
+        guard !receiveAmountLoading else {
+            return
+        }
+
         let inputPriceViewModel = viewModelFactory.inputPriceViewModel(
             assetDisplayInfo: assetDisplayInfo,
             amount: receiveAmountInput,
