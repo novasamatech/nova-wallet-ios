@@ -2036,3 +2036,8 @@
 "create.watch.only.missing.any.address" = "请输入至少一个地址...";
 "asset.list.watch.only.balance" = "仅观察余额";
 "create.watch.only.subtitle" = "在没有私钥的情况下跟踪钱包活动。\n您将无法执行任何交易。";
+"common.go.to.staking" = "前往质押";
+"dapp.staking.banner.message" = "想要进行质押？Nova Wallet 内置质押功能。";
+"dapp.staking.notice.continue" = "继续访问网站";
+"dapp.staking.notice.message" = "第三方质押网站经常会被弃用。我们建议使用 Nova Wallet 内置的质押功能。";
+"dapp.staking.notice.title" = "注意";

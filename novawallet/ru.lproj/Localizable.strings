@@ -2036,3 +2036,8 @@
 "create.watch.only.missing.any.address" = "Введите хотя бы один адрес...";
 "asset.list.watch.only.balance" = "Только просмотр баланса";
 "create.watch.only.subtitle" = "Отслеживание активности кошелька без приватного ключа.\nВы не сможете выполнить никакие транзакции.";
+"common.go.to.staking" = "Перейти к Staking";
+"dapp.staking.banner.message" = "Хотите застейкать? В Nova Wallet есть встроенный Staking.";
+"dapp.staking.notice.continue" = "Перейти на сайт";
+"dapp.staking.notice.message" = "Сторонние сайты для Staking часто устаревают. Мы рекомендуем использовать встроенные функции Staking в Nova Wallet.";
+"dapp.staking.notice.title" = "Уведомление";
