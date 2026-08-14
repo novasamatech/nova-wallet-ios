@@ -165,7 +165,12 @@ private extension SwapModelTests {
                 amountOut: quoteAmountOut
             )
         }
-        let quote = AssetExchangeQuote(route: route, metaOperations: metaOperations, executionTimes: [])
+        let quote = AssetExchangeQuote(
+            route: route,
+            metaOperations: metaOperations,
+            executionTimes: [],
+            commission: fee.commission
+        )
 
         let quoteArgs = AssetConversion.QuoteArgs(
             assetIn: payChainAsset.chainAssetId,

@@ -205,36 +205,26 @@ private extension AssetsExchangeRouteManager {
             return .createWithResult(candidate.route)
         }
 
-        let grossWrapper = commissionPolicy.grossingUpAmountOutWrapper(amount, for: candidate.path)
+        let grossedAmount = commissionPolicy.grossingUpAmountOut(amount, for: candidate.path)
 
-        let routeWrapper = createQuote(for: candidate.path, direction: .buy, amountWrapper: grossWrapper)
-
-        let commissionWrapper: CompoundOperationWrapper<AssetExchangeCommission?>
-        commissionWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
-
-            return commissionPolicy.resolveCommissionWrapper(for: grossedRoute)
-        }
-
-        commissionWrapper.addDependency(wrapper: routeWrapper)
+        let routeWrapper = createQuote(
+            for: candidate.path,
+            direction: .buy,
+            amountWrapper: .createWithResult(grossedAmount)
+        )
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute?> {
-            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
+            let grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard commission != nil else {
+            guard commissionPolicy.resolveCommission(for: grossedRoute) != nil else {
                 return candidate.route
             }
 
-            return try routeWrapper.targetOperation.extractNoCancellableResultData()
+            return grossedRoute
         }
 
         mappingOperation.addDependency(routeWrapper.targetOperation)
-        mappingOperation.addDependency(commissionWrapper.targetOperation)
 
-        return commissionWrapper
-            .insertingHead(operations: routeWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
+        return routeWrapper.insertingTail(operation: mappingOperation)
     }
 }

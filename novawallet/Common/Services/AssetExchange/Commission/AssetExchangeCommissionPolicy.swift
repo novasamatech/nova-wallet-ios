@@ -1,18 +1,12 @@
 import Foundation
-import Operation_iOS
 import BigInt
 
 protocol AssetExchangeCommissionPolicyProtocol {
     func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool
 
-    func resolveCommissionWrapper(
-        for route: AssetExchangeRoute
-    ) -> CompoundOperationWrapper<AssetExchangeCommission?>
+    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission?
 
-    func grossingUpAmountOutWrapper(
-        _ netAmountOut: Balance,
-        for path: AssetExchangeGraphPath
-    ) -> CompoundOperationWrapper<Balance>
+    func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance
 }
 
 final class AssetExchangeCommissionPolicy {
@@ -63,40 +57,33 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         findChargingRun(in: path) != nil
     }
 
-    func grossingUpAmountOutWrapper(
-        _ netAmountOut: Balance,
-        for path: AssetExchangeGraphPath
-    ) -> CompoundOperationWrapper<Balance> {
+    func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
         guard findChargingRun(in: path) != nil else {
-            return .createWithResult(netAmountOut)
+            return netAmountOut
         }
 
-        return .createWithResult(netAmountOut + rate.mul(value: netAmountOut))
+        return netAmountOut + rate.mul(value: netAmountOut)
     }
 
-    func resolveCommissionWrapper(
-        for route: AssetExchangeRoute
-    ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
+    func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
         guard let run = findChargingRun(in: path) else {
-            return .createWithResult(nil)
+            return nil
         }
 
         let bound = route.items[run.lastEdgeIndex].amountOut(for: route.direction)
         let amount = rateOfGross.mul(value: bound)
 
         guard amount > 0 else {
-            return .createWithResult(nil)
+            return nil
         }
 
-        return .createWithResult(
-            AssetExchangeCommission(
-                chargingOperationIndex: run.operationIndex,
-                asset: route.items[run.lastEdgeIndex].edge.destination,
-                amount: amount,
-                beneficiary: beneficiary
-            )
+        return AssetExchangeCommission(
+            chargingOperationIndex: run.operationIndex,
+            asset: route.items[run.lastEdgeIndex].edge.destination,
+            amount: amount,
+            beneficiary: beneficiary
         )
     }
 }
@@ -106,17 +93,12 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
         false
     }
 
-    func resolveCommissionWrapper(
-        for _: AssetExchangeRoute
-    ) -> CompoundOperationWrapper<AssetExchangeCommission?> {
-        .createWithResult(nil)
+    func resolveCommission(for _: AssetExchangeRoute) -> AssetExchangeCommission? {
+        nil
     }
 
-    func grossingUpAmountOutWrapper(
-        _ netAmountOut: Balance,
-        for _: AssetExchangeGraphPath
-    ) -> CompoundOperationWrapper<Balance> {
-        .createWithResult(netAmountOut)
+    func grossingUpAmountOut(_ netAmountOut: Balance, for _: AssetExchangeGraphPath) -> Balance {
+        netAmountOut
     }
 }
 

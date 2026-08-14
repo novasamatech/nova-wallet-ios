@@ -81,15 +81,11 @@ class SwapBasePresenter {
     }
 
     var resolvedCommission: AssetExchangeCommission? {
-        fee?.commission
+        quote?.commission
     }
 
     var chargesCommission: Bool {
         resolvedCommission != nil
-    }
-
-    var commissionResolved: Bool {
-        fee != nil
     }
 
     var netAmountOut: Balance {

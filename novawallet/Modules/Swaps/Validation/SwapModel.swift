@@ -119,34 +119,17 @@ struct SwapModel {
         )
     }
 
-    private func commissionResolvedForPath(of quote: AssetExchangeQuote) -> AssetExchangeCommission? {
-        guard let feeModel, quote.hasSamePath(other: feeModel.route) else {
-            return nil
-        }
-
-        return feeModel.commission
-    }
-
     var netAmountOut: Balance {
-        netFlow(for: quote, commission: feeModel?.commission).netFinalAmountOut
+        netFlow(for: quote, commission: quote?.commission).netFinalAmountOut
     }
 
     func comparableAmountsOut(
         oldQuote: AssetExchangeQuote,
         newQuote: AssetExchangeQuote
     ) -> (old: Balance, new: Balance) {
-        guard
-            commissionResolvedForPath(of: oldQuote) != nil,
-            let commissionForBothPaths = commissionResolvedForPath(of: newQuote) else {
-            return (
-                netFlow(for: oldQuote, commission: nil).netFinalAmountOut,
-                netFlow(for: newQuote, commission: nil).netFinalAmountOut
-            )
-        }
-
-        return (
-            netFlow(for: oldQuote, commission: commissionForBothPaths).netFinalAmountOut,
-            netFlow(for: newQuote, commission: commissionForBothPaths).netFinalAmountOut
+        (
+            netFlow(for: oldQuote, commission: oldQuote.commission).netFinalAmountOut,
+            netFlow(for: newQuote, commission: newQuote.commission).netFinalAmountOut
         )
     }
 

@@ -30,10 +30,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         !quoteResult.hasError() && quoteArgs != nil
     }
 
-    private var receiveAmountLoading: Bool {
-        quote != nil && quoteArgs?.direction == .sell && !commissionResolved
-    }
-
     /*
      *  We might have cases when quote recalcution triggers fee recalculation and vice versa
      *  and we want to bound such triggers to avoid deadlock.
@@ -143,7 +139,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
 
         provideCommissionDisclosureViewModel()
-        provideReceiveAmountLoadingState()
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
@@ -376,14 +371,8 @@ extension SwapSetupPresenter {
         view?.didReceiveInputChainAsset(receiveViewModel: receiveAssetViewModel)
     }
 
-    private func provideReceiveAmountLoadingState() {
-        view?.didReceiveAmount(receiveLoading: receiveAmountLoading)
-    }
-
     private func provideReceiveAmountInputViewModel() {
-        provideReceiveAmountLoadingState()
-
-        guard let receiveChainAsset = receiveChainAsset, !receiveAmountLoading else {
+        guard let receiveChainAsset = receiveChainAsset else {
             return
         }
 
@@ -399,10 +388,6 @@ extension SwapSetupPresenter {
     private func provideReceiveInputPriceViewModel() {
         guard let assetDisplayInfo = receiveChainAsset?.assetDisplayInfo else {
             view?.didReceiveAmountInputPrice(receiveViewModel: nil)
-            return
-        }
-
-        guard !receiveAmountLoading else {
             return
         }
 
@@ -453,9 +438,7 @@ extension SwapSetupPresenter {
             return
         }
 
-        let amountOut = commissionResolved ? netAmountOut : grossAmountOut
-
-        receiveAmountInput = amountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
+        receiveAmountInput = netAmountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
 
         provideReceiveAmountInputViewModel()
         provideReceiveInputPriceViewModel()
@@ -492,8 +475,7 @@ extension SwapSetupPresenter {
         guard
             let assetDisplayInfoIn = payChainAsset?.assetDisplayInfo,
             let assetDisplayInfoOut = receiveChainAsset?.assetDisplayInfo,
-            let quote,
-            commissionResolved else {
+            let quote else {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
@@ -543,11 +525,6 @@ extension SwapSetupPresenter {
     }
 
     private func provideCommissionDisclosureViewModel() {
-        guard commissionResolved else {
-            view?.didReceiveCommissionDisclosure(viewModel: nil)
-            return
-        }
-
         let viewModel = chargesCommission
             ? viewModelFactory.commissionDisclosureViewModel(
                 rate: AssetExchangeCommissionConstants.rate,
@@ -608,7 +585,6 @@ extension SwapSetupPresenter {
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideFeeViewModel()
-        provideReceiveAmountLoadingState()
     }
 
     private func refreshQuoteForBuy(payChainAsset: ChainAsset, receiveChainAsset: ChainAsset, forceUpdate: Bool) {
@@ -864,10 +840,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showRateInfo() {
-        guard commissionResolved else {
-            return
-        }
-
         wireframe.showRateInfo(
             from: view,
             commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil

@@ -279,7 +279,12 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             let executionTimes = try executionTimesWrapper.targetOperation.extractNoCancellableResultData()
 
-            return AssetExchangeQuote(route: route, metaOperations: metaOperations, executionTimes: executionTimes)
+            return AssetExchangeQuote(
+                route: route,
+                metaOperations: metaOperations,
+                executionTimes: executionTimes,
+                commission: self.commissionPolicy.resolveCommission(for: route)
+            )
         }
 
         mappingOperation.addDependency(routeWrapper.targetOperation)
@@ -291,19 +296,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
-        let commissionWrapper = commissionPolicy.resolveCommissionWrapper(for: args.route)
-
-        let feeWrapper = OperationCombiningService<AssetExchangeFee>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) {
-            let commission = try commissionWrapper.targetOperation.extractNoCancellableResultData()
-
-            return self.createFeeWrapper(for: args, commission: commission)
-        }
-
-        feeWrapper.addDependency(wrapper: commissionWrapper)
-
-        return feeWrapper.insertingHead(operations: commissionWrapper.allOperations)
+        createFeeWrapper(for: args, commission: commissionPolicy.resolveCommission(for: args.route))
     }
 
     func createExecutionWrapper(

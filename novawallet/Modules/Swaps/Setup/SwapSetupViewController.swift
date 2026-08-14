@@ -234,14 +234,6 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.receiveAmountInputView.bind(inputViewModel: inputViewModel)
     }
 
-    func didReceiveAmount(receiveLoading: Bool) {
-        if receiveLoading {
-            rootView.receiveAmountInputView.textInputView.startShimmeringOpacity()
-        } else {
-            rootView.receiveAmountInputView.textInputView.stopShimmeringOpacity()
-        }
-    }
-
     func didReceiveAmountInputPrice(receiveViewModel viewModel: SwapPriceDifferenceViewModel?) {
         rootView.receiveAmountInputView.bind(priceDifferenceViewModel: viewModel)
     }

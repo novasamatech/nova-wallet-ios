@@ -9,26 +9,26 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertEqual(
-            try chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .hydraSwap, .crossChain]),
+            chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .hydraSwap, .crossChain]),
             1
         )
         XCTAssertEqual(
-            try chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .crossChain, .assetHubSwap]),
+            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .crossChain, .assetHubSwap]),
             0
         )
         XCTAssertEqual(
-            try chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap]),
+            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap]),
             2
         )
         XCTAssertEqual(
-            try chargingOperationIndex(
+            chargingOperationIndex(
                 using: policy,
                 edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .assetHubSwap, .crossChain, .hydraSwap]
             ),
             4
         )
         XCTAssertEqual(
-            try chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap]),
+            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap]),
             0
         )
     }
@@ -52,16 +52,16 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     func testNoChargeWithoutHydraEdge() throws {
         let policy = CommissionTestFixtures.createPolicy()
 
-        XCTAssertNil(try chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .crossChain]))
-        XCTAssertNil(try chargingOperationIndex(using: policy, edgeTypes: [.assetHubSwap, .crossChain]))
-        XCTAssertNil(try chargingOperationIndex(using: policy, edgeTypes: []))
+        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .crossChain]))
+        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: [.assetHubSwap, .crossChain]))
+        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: []))
     }
 
     func testAmountIsRateOfChargingSegmentOutput() throws {
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
 
-        let commission = try resolveCommission(using: policy, route: route)
+        let commission = resolveCommission(using: policy, route: route)
 
         XCTAssertEqual(commission?.amount, 8428)
         XCTAssertEqual(
@@ -74,7 +74,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amounts: [1_000_000, 7_000_000])
 
-        let commission = try resolveCommission(using: policy, route: route)
+        let commission = resolveCommission(using: policy, route: route)
 
         XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
         XCTAssertEqual(commission?.amount, 58998)
@@ -99,7 +99,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000_000)
 
-        let commission = try resolveCommission(using: policy, route: route)
+        let commission = resolveCommission(using: policy, route: route)
 
         XCTAssertEqual(commission?.amount, 8_428_358)
         XCTAssertEqual(commission?.beneficiary, CommissionTestFixtures.beneficiary)
@@ -109,7 +109,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 117)
 
-        let commission = try resolveCommission(using: policy, route: route)
+        let commission = resolveCommission(using: policy, route: route)
 
         XCTAssertNil(commission)
     }
@@ -118,11 +118,11 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertEqual(
-            try grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.hydraSwap])),
+            grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.hydraSwap])),
             1_008_500_000
         )
         XCTAssertEqual(
-            try grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.crossChain])),
+            grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.crossChain])),
             1_000_000_000
         )
     }
@@ -134,7 +134,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let targets: [Balance] = [1, 2, 117, 118, 999, 1_000_000_000, 123_456_789_012_345]
 
         for target in targets {
-            let gross = try grossingUpAmountOut(using: policy, target, for: path)
+            let gross = grossingUpAmountOut(using: policy, target, for: path)
             let net = gross - AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: gross)
 
             XCTAssertEqual(net, target)
@@ -170,33 +170,25 @@ private extension AssetExchangeCommissionPolicyTests {
     func resolveCommission(
         using policy: AssetExchangeCommissionPolicyProtocol,
         route: AssetExchangeRoute
-    ) throws -> AssetExchangeCommission? {
-        let wrapper = policy.resolveCommissionWrapper(for: route)
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
-
-        return try wrapper.targetOperation.extractNoCancellableResultData()
+    ) -> AssetExchangeCommission? {
+        policy.resolveCommission(for: route)
     }
 
     func chargingOperationIndex(
         using policy: AssetExchangeCommissionPolicyProtocol,
         edgeTypes: [AssetExchangeEdgeType]
-    ) throws -> Int? {
+    ) -> Int? {
         let route = CommissionTestFixtures.createRoute(edgeTypes, amount: 1_000_000)
 
-        return try resolveCommission(using: policy, route: route)?.chargingOperationIndex
+        return resolveCommission(using: policy, route: route)?.chargingOperationIndex
     }
 
     func grossingUpAmountOut(
         using policy: AssetExchangeCommissionPolicyProtocol,
         _ netAmountOut: Balance,
         for path: AssetExchangeGraphPath
-    ) throws -> Balance {
-        let wrapper = policy.grossingUpAmountOutWrapper(netAmountOut, for: path)
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
-
-        return try wrapper.targetOperation.extractNoCancellableResultData()
+    ) -> Balance {
+        policy.grossingUpAmountOut(netAmountOut, for: path)
     }
 
     func assertChargingIndexMatchesAtomicGrouping(
