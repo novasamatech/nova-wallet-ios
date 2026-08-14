@@ -40,8 +40,6 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
 
         let currentPagination = pagination ?? Pagination(count: pageSize, context: nil)
 
-        let commissionNetter = HydrationSwapCommissionNetter(chainAsset: chainAsset)
-
         let wrapper = operationFactory.createOperationWrapper(
             for: accountId,
             pagination: currentPagination
@@ -63,9 +61,7 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
                         $0.createTransaction(chainAsset: strongSelf.chainAsset)
                     }
 
-                    let changes = try commissionNetter
-                        .netCommission(in: transactions)
-                        .map { DataProviderChange.insert(newItem: $0) }
+                    let changes = transactions.map { DataProviderChange.insert(newItem: $0) }
 
                     strongSelf.pagination = .init(count: strongSelf.pageSize, context: result.context)
 

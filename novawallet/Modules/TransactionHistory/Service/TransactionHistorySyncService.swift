@@ -54,9 +54,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
         localOperation: BaseOperation<[TransactionHistoryItem]>,
         chainAsset: ChainAsset
     ) -> BaseOperation<TransactionHistoryMergeResult> {
-        let commissionNetter = HydrationSwapCommissionNetter(chainAsset: chainAsset)
-
-        return ClosureOperation {
+        ClosureOperation {
             let remoteTransactions = try remoteOperation.extractNoCancellableResultData().historyItems
             let localTransactions = try localOperation.extractNoCancellableResultData()
 
@@ -77,10 +75,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
                 )
             }
 
-            return TransactionHistoryMergeResult(
-                historyItems: try commissionNetter.netCommission(in: mergeResult.historyItems),
-                identifiersToRemove: mergeResult.identifiersToRemove
-            )
+            return mergeResult
         }
     }
 
