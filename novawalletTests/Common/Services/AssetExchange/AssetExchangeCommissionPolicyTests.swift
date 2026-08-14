@@ -89,11 +89,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"
         )
 
-        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [CommissionTestFixtures.chain]),
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
-        )
+        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(logger: Logger.shared)
 
         let concretePolicy = try XCTUnwrap(policy as? AssetExchangeCommissionPolicy)
         XCTAssertEqual(concretePolicy.beneficiary, expectedBeneficiary)
@@ -107,32 +103,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
 
         XCTAssertEqual(commission?.amount, 8_428_358)
         XCTAssertEqual(commission?.beneficiary, CommissionTestFixtures.beneficiary)
-    }
-
-    func testChargesOnlyWhenBeneficiaryIsEstablished() throws {
-        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
-
-        let established = CommissionTestFixtures.createPolicy(
-            beneficiaryProvider: CommissionTestFixtures.stubBeneficiaryProvider(canReceive: true)
-        )
-
-        XCTAssertNotNil(try resolveCommission(using: established, route: route))
-
-        let unestablished = CommissionTestFixtures.createPolicy(
-            beneficiaryProvider: CommissionTestFixtures.stubBeneficiaryProvider(canReceive: false)
-        )
-
-        XCTAssertNil(try resolveCommission(using: unestablished, route: route))
-    }
-
-    func testReadinessFailureForgoesCommission() throws {
-        let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
-
-        let failing = CommissionTestFixtures.createPolicy(
-            beneficiaryProvider: CommissionTestFixtures.failingBeneficiaryProvider()
-        )
-
-        XCTAssertNil(try resolveCommission(using: failing, route: route))
     }
 
     func testSkipsForZeroAmount() throws {
@@ -153,17 +123,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
         XCTAssertEqual(
             try grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.crossChain])),
-            1_000_000_000
-        )
-    }
-
-    func testGrossUpIsSkippedWhenBeneficiaryIsNotEstablished() throws {
-        let policy = CommissionTestFixtures.createPolicy(
-            beneficiaryProvider: CommissionTestFixtures.stubBeneficiaryProvider(canReceive: false)
-        )
-
-        XCTAssertEqual(
-            try grossingUpAmountOut(using: policy, 1_000_000_000, for: CommissionTestFixtures.createPath([.hydraSwap])),
             1_000_000_000
         )
     }

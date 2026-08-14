@@ -131,7 +131,6 @@ sources = [
     "novawallet/Common/Substrate/AssetOperations/AssetStorageInfoOperationFactory.swift",
     "novawallet/Common/Services/RemoteSubscription/Substrate/WalletRemoteQueryWrapperFactory.swift",
     "novawallet/Common/Services/AssetExchange/AssetsExchangeGraph.swift",
-    "novawallet/Common/Services/AssetExchange/Commission/AssetExchangeCommissionBeneficiaryProvider.swift",
 ]
 
 exclude = [

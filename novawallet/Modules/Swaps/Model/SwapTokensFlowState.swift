@@ -38,8 +38,6 @@ final class SwapTokensFlowState {
         )
 
         commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
-            chainRegistry: assetExchangeParams.chainRegistry,
-            operationQueue: assetExchangeParams.operationQueue,
             logger: assetExchangeParams.logger
         )
     }
