@@ -162,7 +162,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
         XCTAssertEqual(resolvedAmount, 85_000_000)
 
         let commission = AssetExchangeCommission(
-            chargingOperationIndex: 0,
+            chargingEdgeIndex: 0,
             asset: CommissionTestFixtures.asset(1),
             amount: resolvedAmount,
             beneficiary: CommissionTestFixtures.beneficiary

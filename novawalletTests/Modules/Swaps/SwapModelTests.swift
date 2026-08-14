@@ -7,7 +7,7 @@ final class SwapModelTests: XCTestCase {
         let chargingModel = try makeModel(
             quoteAmountOut: 1_000_000,
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8428
             ),
             receiveBalance: 0,
@@ -45,7 +45,7 @@ final class SwapModelTests: XCTestCase {
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8512
             ),
             receiveBalance: 0,
@@ -63,7 +63,7 @@ final class SwapModelTests: XCTestCase {
         let model = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8512
             ),
             receiveBalance: 0,
@@ -83,7 +83,7 @@ final class SwapModelTests: XCTestCase {
         let noSlippageModel = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8512
             ),
             receiveBalance: 0,
@@ -95,7 +95,7 @@ final class SwapModelTests: XCTestCase {
         let slippageModel = try makeModel(
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8512
             ),
             receiveBalance: 0,
@@ -168,6 +168,7 @@ private extension SwapModelTests {
         let quote = AssetExchangeQuote(
             route: route,
             metaOperations: metaOperations,
+            metaOperationIndexByEdge: [0],
             executionTimes: [],
             commission: fee.commission
         )

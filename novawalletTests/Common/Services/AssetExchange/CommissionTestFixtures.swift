@@ -126,7 +126,7 @@ enum CommissionTestFixtures {
 
     static func makeCommission(amount: Balance = 8428) -> AssetExchangeCommission {
         AssetExchangeCommission(
-            chargingOperationIndex: 0,
+            chargingEdgeIndex: 0,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
             amount: amount,
             beneficiary: Data(repeating: 3, count: 32)
@@ -134,11 +134,11 @@ enum CommissionTestFixtures {
     }
 
     static func makeCommission(
-        chargingOperationIndex: Int,
+        chargingEdgeIndex: Int,
         amount: Balance
     ) -> AssetExchangeCommission {
         AssetExchangeCommission(
-            chargingOperationIndex: chargingOperationIndex,
+            chargingEdgeIndex: chargingEdgeIndex,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
             amount: amount,
             beneficiary: beneficiary

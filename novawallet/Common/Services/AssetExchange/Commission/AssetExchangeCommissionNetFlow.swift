@@ -4,7 +4,11 @@ struct AssetExchangeCommissionNetFlow {
     private let netAmountsIn: [Balance]
     private let netAmountsOut: [Balance]
 
-    init(operations: [AssetExchangeMetaOperationProtocol], commission: AssetExchangeCommission?) {
+    init(
+        operations: [AssetExchangeMetaOperationProtocol],
+        commission: AssetExchangeCommission?,
+        chargingOperationIndex: Int?
+    ) {
         var amountsIn: [Balance] = []
         var amountsOut: [Balance] = []
 
@@ -18,7 +22,7 @@ struct AssetExchangeCommissionNetFlow {
             }
 
             if let commission,
-               index == commission.chargingOperationIndex,
+               index == chargingOperationIndex,
                operation.assetOut.chainAssetId == commission.asset {
                 deduction += commission.amount
             }

@@ -5,31 +5,31 @@ import BigInt
 import Cuckoo
 
 final class AssetExchangeCommissionPolicyTests: XCTestCase {
-    func testChargingIndexForRouteShapes() throws {
+    func testChargingEdgeIndexForRouteShapes() throws {
         let policy = CommissionTestFixtures.createPolicy()
 
         XCTAssertEqual(
-            chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .hydraSwap, .crossChain]),
+            chargingEdgeIndex(using: policy, edgeTypes: [.crossChain, .hydraSwap, .crossChain]),
             1
         )
         XCTAssertEqual(
-            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .crossChain, .assetHubSwap]),
+            chargingEdgeIndex(using: policy, edgeTypes: [.hydraSwap, .crossChain, .assetHubSwap]),
             0
         )
         XCTAssertEqual(
-            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap]),
-            2
+            chargingEdgeIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .hydraSwap]),
+            3
         )
         XCTAssertEqual(
-            chargingOperationIndex(
+            chargingEdgeIndex(
                 using: policy,
                 edgeTypes: [.hydraSwap, .hydraSwap, .crossChain, .assetHubSwap, .crossChain, .hydraSwap]
             ),
-            4
+            5
         )
         XCTAssertEqual(
-            chargingOperationIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap]),
-            0
+            chargingEdgeIndex(using: policy, edgeTypes: [.hydraSwap, .hydraSwap]),
+            1
         )
     }
 
@@ -52,9 +52,9 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
     func testNoChargeWithoutHydraEdge() throws {
         let policy = CommissionTestFixtures.createPolicy()
 
-        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: [.crossChain, .crossChain]))
-        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: [.assetHubSwap, .crossChain]))
-        XCTAssertNil(chargingOperationIndex(using: policy, edgeTypes: []))
+        XCTAssertNil(chargingEdgeIndex(using: policy, edgeTypes: [.crossChain, .crossChain]))
+        XCTAssertNil(chargingEdgeIndex(using: policy, edgeTypes: [.assetHubSwap, .crossChain]))
+        XCTAssertNil(chargingEdgeIndex(using: policy, edgeTypes: []))
     }
 
     func testAmountIsRateOfChargingSegmentOutput() throws {
@@ -141,11 +141,11 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         }
     }
 
-    func testCommissionIndexOutsideOperationRangeThrows() throws {
+    func testCommissionIndexOutsideEdgeRangeThrows() throws {
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amount: 1_000_000)
 
         let commission = AssetExchangeCommission(
-            chargingOperationIndex: 5,
+            chargingEdgeIndex: 5,
             asset: CommissionTestFixtures.asset(2),
             amount: 1,
             beneficiary: CommissionTestFixtures.beneficiary
@@ -174,13 +174,13 @@ private extension AssetExchangeCommissionPolicyTests {
         policy.resolveCommission(for: route)
     }
 
-    func chargingOperationIndex(
+    func chargingEdgeIndex(
         using policy: AssetExchangeCommissionPolicyProtocol,
         edgeTypes: [AssetExchangeEdgeType]
     ) -> Int? {
         let route = CommissionTestFixtures.createRoute(edgeTypes, amount: 1_000_000)
 
-        return resolveCommission(using: policy, route: route)?.chargingOperationIndex
+        return resolveCommission(using: policy, route: route)?.chargingEdgeIndex
     }
 
     func grossingUpAmountOut(

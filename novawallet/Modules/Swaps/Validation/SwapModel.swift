@@ -109,18 +109,8 @@ struct SwapModel {
         quote?.route.amountOut ?? 0
     }
 
-    private func netFlow(
-        for quote: AssetExchangeQuote?,
-        commission: AssetExchangeCommission?
-    ) -> AssetExchangeCommissionNetFlow {
-        AssetExchangeCommissionNetFlow(
-            operations: quote?.metaOperations ?? [],
-            commission: commission
-        )
-    }
-
     var netAmountOut: Balance {
-        netFlow(for: quote, commission: quote?.commission).netFinalAmountOut
+        quote?.commissionNetFlow().netFinalAmountOut ?? 0
     }
 
     func comparableAmountsOut(
@@ -128,8 +118,8 @@ struct SwapModel {
         newQuote: AssetExchangeQuote
     ) -> (old: Balance, new: Balance) {
         (
-            netFlow(for: oldQuote, commission: oldQuote.commission).netFinalAmountOut,
-            netFlow(for: newQuote, commission: newQuote.commission).netFinalAmountOut
+            oldQuote.commissionNetFlow().netFinalAmountOut,
+            newQuote.commissionNetFlow().netFinalAmountOut
         )
     }
 

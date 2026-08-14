@@ -1,7 +1,7 @@
 import Foundation
 
 struct AssetExchangeCommission: Equatable {
-    let chargingOperationIndex: Int
+    let chargingEdgeIndex: Int
 
     let asset: ChainAssetId
 

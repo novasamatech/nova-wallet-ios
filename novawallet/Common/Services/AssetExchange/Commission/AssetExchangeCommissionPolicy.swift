@@ -10,11 +10,6 @@ protocol AssetExchangeCommissionPolicyProtocol {
 }
 
 final class AssetExchangeCommissionPolicy {
-    struct ChargingRun {
-        let operationIndex: Int
-        let lastEdgeIndex: Int
-    }
-
     let rate: BigRational
 
     var rateOfGross: BigRational { rate.asShareOfGross }
@@ -28,37 +23,18 @@ final class AssetExchangeCommissionPolicy {
 }
 
 private extension AssetExchangeCommissionPolicy {
-    func findChargingRun(in path: AssetExchangeGraphPath) -> ChargingRun? {
-        var ordinal = -1
-        var result: ChargingRun?
-
-        for (edgeIndex, edge) in path.enumerated() {
-            let continuesRun = edgeIndex > 0
-                && edge.type == .hydraSwap
-                && path[edgeIndex - 1].type == .hydraSwap
-
-            if !continuesRun {
-                ordinal += 1
-            }
-
-            guard edge.type == .hydraSwap else {
-                continue
-            }
-
-            result = ChargingRun(operationIndex: ordinal, lastEdgeIndex: edgeIndex)
-        }
-
-        return result
+    func findChargingEdgeIndex(in path: AssetExchangeGraphPath) -> Int? {
+        path.lastIndex { $0.type == .hydraSwap }
     }
 }
 
 extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
     func hasChargingSite(in path: AssetExchangeGraphPath) -> Bool {
-        findChargingRun(in: path) != nil
+        findChargingEdgeIndex(in: path) != nil
     }
 
     func grossingUpAmountOut(_ netAmountOut: Balance, for path: AssetExchangeGraphPath) -> Balance {
-        guard findChargingRun(in: path) != nil else {
+        guard findChargingEdgeIndex(in: path) != nil else {
             return netAmountOut
         }
 
@@ -68,11 +44,11 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
     func resolveCommission(for route: AssetExchangeRoute) -> AssetExchangeCommission? {
         let path = route.items.map(\.edge)
 
-        guard let run = findChargingRun(in: path) else {
+        guard let edgeIndex = findChargingEdgeIndex(in: path) else {
             return nil
         }
 
-        let bound = route.items[run.lastEdgeIndex].amountOut(for: route.direction)
+        let bound = route.items[edgeIndex].amountOut(for: route.direction)
         let amount = rateOfGross.mul(value: bound)
 
         guard amount > 0 else {
@@ -80,8 +56,8 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         }
 
         return AssetExchangeCommission(
-            chargingOperationIndex: run.operationIndex,
-            asset: route.items[run.lastEdgeIndex].edge.destination,
+            chargingEdgeIndex: edgeIndex,
+            asset: route.items[edgeIndex].edge.destination,
             amount: amount,
             beneficiary: beneficiary
         )

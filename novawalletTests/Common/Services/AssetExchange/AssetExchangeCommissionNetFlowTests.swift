@@ -6,7 +6,8 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
     func testNoCommissionLeavesAmountsUntouched() {
         let flow = AssetExchangeCommissionNetFlow(
             operations: [CommissionTestFixtures.metaOperation(amountIn: 100, amountOut: 200)],
-            commission: nil
+            commission: nil,
+            chargingOperationIndex: nil
         )
 
         XCTAssertEqual(flow.netAmountOut(at: 0), 200)
@@ -16,7 +17,8 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
     func testDeductionAppliesAtChargingOperation() {
         let flow = AssetExchangeCommissionNetFlow(
             operations: [CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000)],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 17)
+            commission: CommissionTestFixtures.makeCommission(chargingEdgeIndex: 0, amount: 17),
+            chargingOperationIndex: 0
         )
 
         XCTAssertEqual(flow.netAmountIn(at: 0), 1000)
@@ -30,7 +32,8 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
                 CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000),
                 CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000)
             ],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 100)
+            commission: CommissionTestFixtures.makeCommission(chargingEdgeIndex: 0, amount: 100),
+            chargingOperationIndex: 0
         )
 
         XCTAssertEqual(flow.netAmountOut(at: 0), 1900)
@@ -49,9 +52,10 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
                 )
             ],
             commission: CommissionTestFixtures.makeCommission(
-                chargingOperationIndex: 0,
+                chargingEdgeIndex: 0,
                 amount: 8_504_214_179
-            )
+            ),
+            chargingOperationIndex: 0
         )
 
         XCTAssertEqual(flow.netFinalAmountOut, 999_995_785_821)
@@ -63,7 +67,8 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
                 CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000, label: .swap),
                 CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000, label: .swap)
             ],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 100)
+            commission: CommissionTestFixtures.makeCommission(chargingEdgeIndex: 0, amount: 100),
+            chargingOperationIndex: 0
         )
 
         XCTAssertEqual(flow.netFinalAmountOut, 950)

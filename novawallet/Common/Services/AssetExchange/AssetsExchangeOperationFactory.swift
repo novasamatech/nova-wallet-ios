@@ -22,7 +22,7 @@ enum AssetsExchangeOperationFactoryError: Error {
     case noRoute
     case feesOperationsMismatch
     case singleOperationExpected
-    case commissionNotAttached(chargingIndex: Int, operationCount: Int)
+    case commissionNotAttached(chargingEdgeIndex: Int, edgeCount: Int)
 }
 
 final class AssetsExchangeOperationFactory {
@@ -79,38 +79,32 @@ final class AssetsExchangeOperationFactory {
         commission: AssetExchangeCommission?
     ) throws -> [AssetExchangeAtomicOperationProtocol] {
         let operations: [AssetExchangeAtomicOperationProtocol]
-        operations = try route.items.reduce([]) { curOperations, segment in
-            let argsForOrdinal: (Int) -> AssetExchangeAtomicOperationArgs = { ordinal in
-                self.createOperationArgs(
-                    for: segment,
-                    routeDirection: route.direction,
-                    slippage: slippage,
-                    feeAssetId: feeAssetId,
-                    isFirst: curOperations.isEmpty,
-                    commission: commission?.chargingOperationIndex == ordinal ? commission : nil
-                )
-            }
+        operations = try route.items.enumerated().reduce([]) { curOperations, item in
+            let (edgeIndex, segment) = item
+
+            let args = self.createOperationArgs(
+                for: segment,
+                routeDirection: route.direction,
+                slippage: slippage,
+                feeAssetId: feeAssetId,
+                isFirst: curOperations.isEmpty,
+                commission: commission?.chargingEdgeIndex == edgeIndex ? commission : nil
+            )
 
             if
                 let lastOperation = curOperations.last,
-                let newOperation = segment.edge.appendToOperation(
-                    lastOperation,
-                    args: argsForOrdinal(curOperations.count - 1)
-                ) {
+                let newOperation = segment.edge.appendToOperation(lastOperation, args: args) {
                 return curOperations.dropLast() + [newOperation]
             } else {
-                let newOperation = try segment.edge.beginOperation(
-                    for: argsForOrdinal(curOperations.count)
-                )
-                return curOperations + [newOperation]
+                return try curOperations + [segment.edge.beginOperation(for: args)]
             }
         }
 
-        if let chargingIndex = commission?.chargingOperationIndex,
-           !(0 ..< operations.count).contains(chargingIndex) {
+        if let chargingEdgeIndex = commission?.chargingEdgeIndex,
+           !route.items.indices.contains(chargingEdgeIndex) {
             throw AssetsExchangeOperationFactoryError.commissionNotAttached(
-                chargingIndex: chargingIndex,
-                operationCount: operations.count
+                chargingEdgeIndex: chargingEdgeIndex,
+                edgeCount: route.items.count
             )
         }
 
@@ -199,24 +193,32 @@ final class AssetsExchangeOperationFactory {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependecies)
     }
 
-    private func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
-        try route.items.reduce([]) { curOperations, segment in
+    private func createMetaOperationsFrom(
+        route: AssetExchangeRoute
+    ) throws -> (operations: [AssetExchangeMetaOperationProtocol], indexByEdge: [Int]) {
+        var operations: [AssetExchangeMetaOperationProtocol] = []
+        var indexByEdge: [Int] = []
+
+        for segment in route.items {
             let amountIn = segment.amountIn(for: route.direction)
             let amountOut = segment.amountOut(for: route.direction)
 
             if
-                let lastOperation = curOperations.last,
+                let lastOperation = operations.last,
                 let newOperation = try segment.edge.appendToMetaOperation(
                     lastOperation,
                     amountIn: amountIn,
                     amountOut: amountOut
                 ) {
-                return curOperations.dropLast() + [newOperation]
+                operations[operations.count - 1] = newOperation
             } else {
-                let newOperation = try segment.edge.beginMetaOperation(for: amountIn, amountOut: amountOut)
-                return curOperations + [newOperation]
+                operations.append(try segment.edge.beginMetaOperation(for: amountIn, amountOut: amountOut))
             }
+
+            indexByEdge.append(operations.count - 1)
         }
+
+        return (operations, indexByEdge)
     }
 
     private func createOperationPrototypesFrom(
@@ -281,7 +283,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             return AssetExchangeQuote(
                 route: route,
-                metaOperations: metaOperations,
+                metaOperations: metaOperations.operations,
+                metaOperationIndexByEdge: metaOperations.indexByEdge,
                 executionTimes: executionTimes,
                 commission: self.commissionPolicy.resolveCommission(for: route)
             )

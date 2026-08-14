@@ -32,14 +32,11 @@ final class SwapExecutionPresenter {
     }
 
     var chargesCommission: Bool {
-        model.fee.commission != nil
+        quote.commission != nil
     }
 
     var netAmountOut: Balance {
-        AssetExchangeCommissionNetFlow(
-            operations: quote.metaOperations,
-            commission: model.fee.commission
-        ).netFinalAmountOut
+        quote.commissionNetFlow().netFinalAmountOut
     }
 
     var grossAmountOut: Balance {

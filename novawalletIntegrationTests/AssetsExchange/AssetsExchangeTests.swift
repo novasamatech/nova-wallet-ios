@@ -487,17 +487,17 @@ final class AssetsExchangeTests: XCTestCase {
                 return
             }
 
-            guard quote.metaOperations.indices.contains(commission.chargingOperationIndex) else {
-                XCTFail("chargingOperationIndex out of range")
+            guard let chargingIndex = quote.chargingMetaOperationIndex else {
+                XCTFail("Expected the commission to map to a meta operation")
                 return
             }
 
             XCTAssertEqual(
-                quote.metaOperations[commission.chargingOperationIndex].assetOut.chainAssetId,
+                quote.metaOperations[chargingIndex].assetOut.chainAssetId,
                 commission.asset
             )
             XCTAssertEqual(commission.asset.chainId, KnowChainId.hydra)
-            XCTAssertLessThan(commission.chargingOperationIndex, quote.metaOperations.count - 1)
+            XCTAssertLessThan(chargingIndex, quote.metaOperations.count - 1)
 
             let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
 

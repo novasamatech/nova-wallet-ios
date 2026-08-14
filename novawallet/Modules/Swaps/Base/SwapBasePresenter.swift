@@ -89,10 +89,7 @@ class SwapBasePresenter {
     }
 
     var netAmountOut: Balance {
-        AssetExchangeCommissionNetFlow(
-            operations: quote?.metaOperations ?? [],
-            commission: resolvedCommission
-        ).netFinalAmountOut
+        quote?.commissionNetFlow().netFinalAmountOut ?? 0
     }
 
     var grossAmountOut: Balance {
@@ -285,7 +282,8 @@ class SwapBasePresenter {
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
                         for: closureParams.operations.dropLast(),
-                        commission: swapModel.feeModel?.commission,
+                        commission: swapModel.quote?.commission,
+                        chargingOperationIndex: swapModel.quote?.chargingMetaOperationIndex,
                         slippage: swapModel.slippage,
                         direction: swapModel.quoteArgs.direction,
                         completion: closureParams.completionClosure

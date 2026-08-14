@@ -24,10 +24,7 @@ final class SwapRouteDetailsPresenter {
     }
 
     private func provideViewModel() {
-        let netFlow = AssetExchangeCommissionNetFlow(
-            operations: quote.metaOperations,
-            commission: fee.commission
-        )
+        let netFlow = quote.commissionNetFlow()
 
         let viewModel = quote.metaOperations.enumerated().map { index, operation in
             let operationFee = fee.operationFees[index]
