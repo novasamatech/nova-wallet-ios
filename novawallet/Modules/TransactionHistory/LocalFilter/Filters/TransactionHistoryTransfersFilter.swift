@@ -23,7 +23,7 @@ final class TransactionHistoryTransfersFilter {
 
 extension TransactionHistoryTransfersFilter: TransactionHistoryLocalFilterProtocol {
     func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
-        guard model.callPath.isBalancesTransfer else {
+        guard model.callPath.isTransfer else {
             return true
         }
 

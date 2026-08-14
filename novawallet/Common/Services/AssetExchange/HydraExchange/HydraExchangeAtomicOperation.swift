@@ -35,6 +35,13 @@ final class HydraExchangeAtomicOperation {
         self.edges = edges
     }
 
+    static func netAmountOut(
+        from measuredAmountOut: Balance,
+        params: HydraExchangeSwapParams
+    ) -> Balance {
+        measuredAmountOut.subtractOrZero(params.commission?.amount ?? 0)
+    }
+
     private func createExtrinsicParamsWrapper(
         for swapLimit: AssetExchangeSwapLimit
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
@@ -58,7 +65,11 @@ final class HydraExchangeAtomicOperation {
             let routeComponents = self.edges.map(\.routeComponent)
             let route = HydraDx.RemoteSwapRoute(components: routeComponents)
 
-            return self.host.extrinsicParamsFactory.createOperationWrapper(for: route, callArgs: callArgs)
+            return self.host.extrinsicParamsFactory.createOperationWrapper(
+                for: route,
+                callArgs: callArgs,
+                commission: self.operationArgs.commission
+            )
         }
     }
 
@@ -126,9 +137,13 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                         throw HydraExchangeAtomicOperationError.noEventsInResult
                     }
 
-                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
+                    let netAmountOut = Self.netAmountOut(from: amountOut, params: params)
 
-                    return amountOut
+                    self.host.logger.debug(
+                        "Arrived amount: \(String(amountOut)), net: \(String(netAmountOut))"
+                    )
+
+                    return netAmountOut
                 case let .failure(executionFailure):
                     throw executionFailure.error
                 }

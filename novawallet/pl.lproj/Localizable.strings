@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Odebrałeś swoje DOT z crowdloans? Zacznij Stake swoje DOT już dziś, aby uzyskać maksymalne możliwe nagrody!";
 "swaps.violating.consumers.message" = "Powinieneś zachować co najmniej %@ po opłaceniu %@ opłaty sieciowej, ponieważ posiadasz niewystarczającą ilość tokenów";
 "common.receive.not.sufficient.native.asset.error" = "Musisz zachować co najmniej %@, aby otrzymać token %@";
-"swaps.rate.description" = "Kurs wymiany między dwiema różnymi kryptowalutami. Oznacza to, ile jednej kryptowaluty możesz otrzymać w zamian za określoną ilość innej kryptowaluty.";
+"swaps.rate.description" = "Najlepszy kurs znaleziony wśród dostępnych źródeł płynności.";
 "swaps.setup.price.difference.description" = "Różnica cenowa odnosi się do różnicy w cenie pomiędzy dwoma różnymi aktywami. Podczas wymiany w kryptowalutach, różnica cenowa zazwyczaj oznacza różnicę między ceną aktywa, którą otrzymujesz, a ceną aktywa, którą płacisz.";
 "swaps.setup.slippage.description" = "Poślizg wymiany jest powszechnym zjawiskiem w zdecentralizowanym handlu, gdzie ostateczna cena transakcji wymiany może nieznacznie różnić się od oczekiwanej ceny, z powodu zmieniających się warunków rynkowych.";
 "swaps.network.fee.description" = "Opłaty sieciowe pobierane przez blockchain za przetwarzanie i walidację dowolnych transakcji. Mogą się różnić w zależności od warunków sieci lub szybkości transakcji.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "sek";
 "swaps.execution.dont.close.app" = "Nie zamykaj aplikacji!";
 "swaps.details.exec.time" = "Czas wykonania";
-"swaps.details.total.fee" = "Łączna opłata";
+"swaps.details.total.fee" = "Opłaty sieciowe";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Swap";
 "swap.route.details.subtitle" = "Droga, którą twoje tokeny przejdą przez różne sieci, aby uzyskać żądany token.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "Przejdź do witryny";
 "dapp.staking.notice.message" = "Witryny Staking stron trzecich często stają się nieaktualne. Zalecamy korzystanie z wbudowanych funkcji Staking w Nova Wallet.";
 "dapp.staking.notice.title" = "Uwaga";
+"swaps.commission.disclosure" = "Uwzględnia opłatę Nova w wysokości %@.";
+"swaps.rate.includes.commission.description" = "Najlepszy znaleziony kurs, uwzględniający opłatę Nova Wallet w wysokości %@.";

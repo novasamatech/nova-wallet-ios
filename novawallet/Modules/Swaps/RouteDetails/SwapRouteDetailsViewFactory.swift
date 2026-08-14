@@ -13,7 +13,8 @@ struct SwapRouteDetailsViewFactory {
 
         let viewModelFactory = SwapRouteDetailsViewModelFactory(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
-            priceStore: state.priceStore
+            priceStore: state.priceStore,
+            percentFormatter: NumberFormatter.percentSingle.localizableResource()
         )
 
         let presenter = SwapRouteDetailsPresenter(

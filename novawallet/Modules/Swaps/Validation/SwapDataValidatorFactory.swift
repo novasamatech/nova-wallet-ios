@@ -330,9 +330,14 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                 switch reason {
                 case let .rateChange(rateUpdate):
+                    let amountsOut = params.comparableAmountsOut(
+                        oldQuote: rateUpdate.oldQuote,
+                        newQuote: rateUpdate.newQuote
+                    )
+
                     let oldRate = Decimal.rateFromSubstrate(
                         amount1: rateUpdate.oldQuote.route.amountIn,
-                        amount2: rateUpdate.oldQuote.route.amountOut,
+                        amount2: amountsOut.old,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0
@@ -345,7 +350,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                     let newRate = Decimal.rateFromSubstrate(
                         amount1: rateUpdate.newQuote.route.amountIn,
-                        amount2: rateUpdate.newQuote.route.amountOut,
+                        amount2: amountsOut.new,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0
@@ -403,8 +408,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     return
                 }
 
-                let operation = operations[reason.operationIndex]
-                let amount = operation.amountOut
+                let amount = reason.comparedAmount
                 let outAssetDisplayInfo = operations[reason.operationIndex].assetOut.assetDisplayInfo
 
                 let amountString = viewModelFactory.amountFromValue(

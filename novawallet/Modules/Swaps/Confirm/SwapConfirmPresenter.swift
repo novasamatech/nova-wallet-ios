@@ -145,6 +145,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     ) {
         provideRouteViewModel()
         provideFeeViewModel()
+        provideAssetOutViewModel()
+        provideRateViewModel()
     }
 
     override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
@@ -181,16 +183,19 @@ extension SwapConfirmPresenter {
     }
 
     private func provideAssetOutViewModel() {
-        guard let quote else {
+        guard quote != nil else {
+            view?.didReceiveAssetOut(viewModel: .loading)
             return
         }
+
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
-            amount: quote.route.amountOut,
+            amount: netAmountOut,
             priceData: receiveAssetPriceData,
             locale: selectedLocale
         )
-        view?.didReceiveAssetOut(viewModel: viewModel)
+
+        view?.didReceiveAssetOut(viewModel: .loaded(value: viewModel))
     }
 
     private func provideRateViewModel() {
@@ -203,7 +208,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: netAmountOut
         )
         let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 
@@ -245,7 +250,7 @@ extension SwapConfirmPresenter {
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: grossAmountOut
         )
 
         if let viewModel = viewModelFactory.priceDifferenceViewModel(
@@ -336,7 +341,10 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(
+            from: view,
+            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
+        )
     }
 
     func showPriceDifferenceInfo() {

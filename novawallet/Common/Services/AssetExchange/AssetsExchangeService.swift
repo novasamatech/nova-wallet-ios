@@ -8,7 +8,9 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func fetchAssetsInWrapper(given assetOutId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
     func fetchAssetsOutWrapper(given assetInId: ChainAssetId?) -> CompoundOperationWrapper<Set<ChainAssetId>>
 
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
+    func fetchQuoteWrapper(
+        for args: AssetConversion.QuoteArgs
+    ) -> CompoundOperationWrapper<AssetExchangeQuote>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func canPayFee(in asset: ChainAsset) -> CompoundOperationWrapper<Bool>
 
@@ -41,6 +43,7 @@ final class AssetsExchangeService {
     let graphProvider: AssetsExchangeGraphProviding
     let feeSupportProvider: AssetsExchangeFeeSupportProviding
     let pathCostEstimator: AssetsExchangePathCostEstimating
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -49,6 +52,7 @@ final class AssetsExchangeService {
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateManaging,
         pathCostEstimator: AssetsExchangePathCostEstimating,
+        commissionPolicy: AssetExchangeCommissionPolicyProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -56,6 +60,7 @@ final class AssetsExchangeService {
         self.feeSupportProvider = feeSupportProvider
         self.exchangesStateMediator = exchangesStateMediator
         self.pathCostEstimator = pathCostEstimator
+        self.commissionPolicy = commissionPolicy
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -73,6 +78,7 @@ final class AssetsExchangeService {
             let operationFactory = AssetsExchangeOperationFactory(
                 graph: graph,
                 pathCostEstimator: self.pathCostEstimator,
+                commissionPolicy: self.commissionPolicy,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             )
@@ -151,7 +157,9 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
         return graphWrapper.insertingTail(operation: directionsOperation)
     }
 
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
+    func fetchQuoteWrapper(
+        for args: AssetConversion.QuoteArgs
+    ) -> CompoundOperationWrapper<AssetExchangeQuote> {
         prepareWrapper { operationFactory in
             operationFactory.createQuoteWrapper(args: args)
         }

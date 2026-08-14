@@ -176,7 +176,7 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(from: view, commissionRate: nil)
     }
 
     func showNetworkFeeInfo() {

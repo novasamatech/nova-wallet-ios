@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Recebeu de volta seus DOTs dos crowdloans? Comece a fazer staking dos seus DOTs hoje mesmo para obter as recompensas máximas possíveis!";
 "swaps.violating.consumers.message" = "Você deve manter pelo menos %@ após pagar a taxa de rede %@, pois você está com tokens insuficientes";
 "common.receive.not.sufficient.native.asset.error" = "Você deve manter pelo menos %@ para receber o token %@";
-"swaps.rate.description" = "Taxa de câmbio entre duas criptomoedas diferentes. Representa quanto de uma criptomoeda você pode obter em troca por uma certa quantidade de outra criptomoeda.";
+"swaps.rate.description" = "A melhor taxa encontrada entre as fontes de liquidez disponíveis.";
 "swaps.setup.price.difference.description" = "Diferença de preço refere-se à diferença de preço entre dois ativos diferentes. Ao fazer uma troca em cripto, a diferença de preço geralmente é entre o preço do ativo que você está trocando e o preço do ativo com o qual você está trocando.";
 "swaps.setup.slippage.description" = "Deslizamento em trocas é um acontecimento comum em negociações descentralizadas onde o preço final de uma transação de troca pode diferir ligeiramente do preço esperado, devido às condições de mercado em mudança.";
 "swaps.network.fee.description" = "Uma taxa de rede cobrada pela blockchain para processar e validar quaisquer transações. Pode variar dependendo das condições da rede ou velocidade da transação.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "seg";
 "swaps.execution.dont.close.app" = "Não feche o aplicativo!";
 "swaps.details.exec.time" = "Tempo de execução";
-"swaps.details.total.fee" = "Taxa total";
+"swaps.details.total.fee" = "Taxas de rede";
 "swaps.label.transfer" = "Transferência";
 "swaps.label.swap" = "Troca";
 "swap.route.details.subtitle" = "O caminho que seu token percorrerá através de diferentes redes para obter o token desejado.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "Continuar para o site";
 "dapp.staking.notice.message" = "Sites de staking de terceiros frequentemente ficam desatualizados. Recomendamos usar os recursos de staking integrados da Nova Wallet.";
 "dapp.staking.notice.title" = "Aviso";
+"swaps.commission.disclosure" = "Inclui uma taxa Nova de %@.";
+"swaps.rate.includes.commission.description" = "A melhor taxa encontrada, incluindo uma taxa da Nova Wallet de %@.";

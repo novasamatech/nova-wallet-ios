@@ -6,7 +6,7 @@ enum HydraExchangeExtrinsicConverter {
         from params: HydraExchangeSwapParams,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        var currentBuilder = builder
+        var currentBuilder = builder.with(batchType: .atomic)
 
         if let updateReferralCall = params.updateReferral {
             currentBuilder = try currentBuilder.adding(call: updateReferralCall.runtimeCall())
@@ -21,6 +21,15 @@ enum HydraExchangeExtrinsicConverter {
             currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         case let .routedBuy(call):
             currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
+        }
+
+        if let commission = params.commission {
+            (currentBuilder, _) = try SubstrateTransferCommandFactory().addingTransferCommand(
+                to: currentBuilder,
+                amount: .concrete(value: commission.amount),
+                recipient: commission.beneficiary,
+                assetStorageInfo: commission.assetStorageInfo
+            )
         }
 
         return currentBuilder

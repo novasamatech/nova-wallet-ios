@@ -423,6 +423,99 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
 
+    func testCommissionAttachesToLastHydrationSegment() throws {
+        let params = buildCommonParams()
+
+        guard
+            let dotPolkadot = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAsset(),
+            let usdtAssetHub = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.chainAssetForSymbol("USDT") else {
+            XCTFail("No chain or asset")
+            return
+        }
+
+        guard
+            let amountIn = Decimal(1000).toSubstrateAmount(
+                precision: dotPolkadot.assetDisplayInfo.assetPrecision
+            ) else {
+            XCTFail("Can't convert amount")
+            return
+        }
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
+            logger: params.logger
+        )
+
+        let chargingFactory = AssetsExchangeOperationFactory(
+            graph: graph,
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: commissionPolicy,
+            operationQueue: params.operationQueue,
+            logger: params.logger
+        )
+
+        let quoteArgs = AssetConversion.QuoteArgs(
+            assetIn: dotPolkadot.chainAssetId,
+            assetOut: usdtAssetHub.chainAssetId,
+            amount: amountIn,
+            direction: .sell
+        )
+
+        do {
+            let routeWrapper = chargingFactory.createQuoteWrapper(args: quoteArgs)
+            params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
+            let quote = try routeWrapper.targetOperation.extractNoCancellableResultData()
+
+            let feeWrapper = chargingFactory.createFeeWrapper(
+                for: .init(
+                    route: quote.route,
+                    slippage: BigRational.percent(of: 5),
+                    feeAssetId: dotPolkadot.chainAssetId
+                )
+            )
+            params.operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
+            let fee = try feeWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let commission = fee.commission else {
+                XCTFail("Expected the route to cross Hydration and charge a commission")
+                return
+            }
+
+            guard let chargingIndex = quote.chargingMetaOperationIndex else {
+                XCTFail("Expected the commission to map to a meta operation")
+                return
+            }
+
+            XCTAssertEqual(
+                quote.metaOperations[chargingIndex].assetOut.chainAssetId,
+                commission.asset
+            )
+            XCTAssertEqual(commission.asset.chainId, KnowChainId.hydra)
+            XCTAssertLessThan(chargingIndex, quote.metaOperations.count - 1)
+
+            let noCommissionFee = try calculateFee(assetIn: dotPolkadot, assetOut: usdtAssetHub, amountIn: amountIn)
+
+            let rateOfGross = AssetExchangeCommissionConstants.rate.asShareOfGross
+
+            let grossAmountOut = fee.route.amountOut
+            let netAmountOut = grossAmountOut - rateOfGross.mul(value: grossAmountOut)
+
+            let noCommissionGrossAmountOut = noCommissionFee.route.amountOut
+            let noCommissionNetAmountOut = noCommissionGrossAmountOut
+                - rateOfGross.mul(value: noCommissionGrossAmountOut)
+
+            XCTAssertGreaterThanOrEqual(netAmountOut, noCommissionNetAmountOut)
+        } catch {
+            XCTFail("Fee error: \(error)")
+        }
+    }
+
     private func calculateFee(assetIn: ChainAsset, assetOut: ChainAsset, amountIn: Balance) throws -> AssetExchangeFee {
         let params = buildCommonParams()
 
@@ -479,6 +572,7 @@ final class AssetsExchangeTests: XCTestCase {
         return AssetsExchangeOperationFactory(
             graph: graph,
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: AssetExchangeNoCommissionPolicy(),
             operationQueue: params.operationQueue,
             logger: params.logger
         )

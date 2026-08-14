@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "크라우드론에서 DOT을 돌려받았나요? 최대한의 보상을 받기 위해 오늘부터 DOT을 스테이킹하세요!";
 "swaps.violating.consumers.message" = "충분하지 않은 토큰을 보유하고 있으므로 %@의 네트워크 수수료를 지불한 후 최소 %@을(를) 유지해야 합니다";
 "common.receive.not.sufficient.native.asset.error" = "%@ 토큰을 받기 위해 최소 %@을(를) 유지해야 합니다";
-"swaps.rate.description" = "두 개의 다른 암호화폐 간의 환율입니다. 이는 일정량의 한 암호화폐를 교환할 때 얼마나 많은 다른 암호화폐를 얻을 수 있는지를 나타냅니다.";
+"swaps.rate.description" = "이용 가능한 유동성 소스에서 찾은 최적의 환율입니다.";
 "swaps.setup.price.difference.description" = "가격 차이는 두 자산 간의 가격 차이를 나타냅니다. 암호화폐 교환 시, 가격 차이는 일반적으로 교환하는 자산의 가격과 교환받는 자산의 가격 간의 차이를 의미합니다.";
 "swaps.setup.slippage.description" = "슬리페이지는 분산형 거래에서 흔히 발생하는 현상으로, 교환 거래의 최종 가격이 시장 상황 변화로 인해 예상 가격과 다를 수 있습니다.";
 "swaps.network.fee.description" = "블록체인이 모든 거래를 처리하고 검증하기 위해 부과하는 네트워크 수수료입니다. 네트워크 상태나 거래 속도에 따라 다를 수 있습니다.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "초";
 "swaps.execution.dont.close.app" = "앱을 닫지 마세요!";
 "swaps.details.exec.time" = "실행 시간";
-"swaps.details.total.fee" = "총 수수료";
+"swaps.details.total.fee" = "네트워크 수수료";
 "swaps.label.transfer" = "전송";
 "swaps.label.swap" = "스왑";
 "swap.route.details.subtitle" = "당신의 토큰이 원하는 토큰을 얻기 위해 다른 네트워크를 통해 이동하는 방식입니다.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "사이트로 계속하기";
 "dapp.staking.notice.message" = "타사 Staking 사이트는 종종 더 이상 사용되지 않게 됩니다. Nova Wallet의 기본 제공 Staking 기능을 사용하는 것을 권장합니다.";
 "dapp.staking.notice.title" = "알림";
+"swaps.commission.disclosure" = "%@ Nova 수수료가 포함되어 있습니다.";
+"swaps.rate.includes.commission.description" = "%@ Nova Wallet 수수료가 포함된 최적의 환율입니다.";

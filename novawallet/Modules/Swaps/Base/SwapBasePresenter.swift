@@ -80,6 +80,22 @@ class SwapBasePresenter {
         }
     }
 
+    var resolvedCommission: AssetExchangeCommission? {
+        quote?.commission
+    }
+
+    var chargesCommission: Bool {
+        resolvedCommission != nil
+    }
+
+    var netAmountOut: Balance {
+        quote?.commissionNetFlow().netFinalAmountOut ?? 0
+    }
+
+    var grossAmountOut: Balance {
+        quote?.route.amountOut ?? 0
+    }
+
     var originAccountInfo: AccountInfo? {
         getFeeChainAsset()?.chain.utilityChainAsset().flatMap {
             accountInfoDict[$0.chain.chainId]
@@ -164,7 +180,7 @@ class SwapBasePresenter {
             assetDisplayInfoIn: assetInfoIn,
             assetDisplayInfoOut: assetInfoOut,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: grossAmountOut
         )
 
         return priceDiffFactory.createModel(
@@ -260,12 +276,15 @@ class SwapBasePresenter {
         locale: Locale
     ) -> DataValidating? {
         // for last operation validation is covered by canReceive
-        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
+        if let quote = swapModel.quote, quote.metaOperations.count > 1 {
             return dataValidatingFactory.passesIntermediateEDValidation(
                 params: swapModel,
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
                         for: closureParams.operations.dropLast(),
+                        netFlow: quote.commissionNetFlow(),
+                        slippage: swapModel.slippage,
+                        direction: swapModel.quoteArgs.direction,
                         completion: closureParams.completionClosure
                     )
                 },
@@ -284,7 +303,10 @@ class SwapBasePresenter {
         dataValidatingFactory.passesRealtimeQuoteValidation(
             params: swapModel,
             remoteValidatingClosure: { args, completion in
-                interactor.requestValidatingQuote(for: args, completion: completion)
+                interactor.requestValidatingQuote(
+                    for: args,
+                    completion: completion
+                )
             },
             onQuoteUpdate: { [weak self] quote in
                 self?.quoteResult = .success(quote)

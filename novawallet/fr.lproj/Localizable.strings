@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Vous avez récupéré vos DOT des crowdloans ? Commencez à staker vos DOT aujourd'hui pour obtenir les récompenses maximales !";
 "swaps.violating.consumers.message" = "Vous devez conserver au moins %@ après avoir payé %@ de frais de réseau car vous détenez des tokens insuffisants";
 "common.receive.not.sufficient.native.asset.error" = "Vous devez conserver au moins %@ pour recevoir des tokens %@";
-"swaps.rate.description" = "Taux de change entre deux crypto-monnaies différentes. Il représente combien de crypto-monnaie vous pouvez obtenir en échange d'un certain montant d'une autre crypto-monnaie.";
+"swaps.rate.description" = "Le meilleur taux trouvé parmi les sources de liquidité disponibles.";
 "swaps.setup.price.difference.description" = "La différence de prix fait référence à la différence de prix entre deux actifs différents. Lors de l'échange en crypto, la différence de prix est généralement la différence entre le prix de l'actif que vous échangez et le prix de l'actif avec lequel vous échangez.";
 "swaps.setup.slippage.description" = "Le slippage est un phénomène courant dans le trading décentralisé où le prix final d'une transaction d'échange peut légèrement différer du prix attendu, en raison des conditions changeantes du marché.";
 "swaps.network.fee.description" = "Des frais de réseau facturés par la blockchain pour traiter et valider toutes les transactions. Ils peuvent varier en fonction des conditions du réseau ou de la rapidité de la transaction.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "sec";
 "swaps.execution.dont.close.app" = "Ne fermez pas l'application!";
 "swaps.details.exec.time" = "Temps d'exécution";
-"swaps.details.total.fee" = "Frais totaux";
+"swaps.details.total.fee" = "Frais de réseau";
 "swaps.label.transfer" = "Transfert";
 "swaps.label.swap" = "Échange";
 "swap.route.details.subtitle" = "La voie que prendra votre jeton à travers différents réseaux pour obtenir le jeton souhaité.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "Continuer vers le site";
 "dapp.staking.notice.message" = "Les sites de Staking tiers deviennent souvent obsolètes. Nous vous recommandons d’utiliser les fonctionnalités de Staking intégrées à Nova Wallet.";
 "dapp.staking.notice.title" = "Avis";
+"swaps.commission.disclosure" = "Inclut des frais Nova de %@.";
+"swaps.rate.includes.commission.description" = "Le meilleur taux trouvé, incluant des frais Nova Wallet de %@.";

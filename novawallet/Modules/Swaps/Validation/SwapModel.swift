@@ -105,6 +105,38 @@ struct SwapModel {
         spendingAmount?.toSubstrateAmount(precision: payChainAsset.assetDisplayInfo.assetPrecision)
     }
 
+    var grossAmountOut: Balance {
+        quote?.route.amountOut ?? 0
+    }
+
+    var netAmountOut: Balance {
+        quote?.commissionNetFlow().netFinalAmountOut ?? 0
+    }
+
+    func comparableAmountsOut(
+        oldQuote: AssetExchangeQuote,
+        newQuote: AssetExchangeQuote
+    ) -> (old: Balance, new: Balance) {
+        (
+            oldQuote.commissionNetFlow().netFinalAmountOut,
+            newQuote.commissionNetFlow().netFinalAmountOut
+        )
+    }
+
+    var worstCaseNetAmountOut: Balance {
+        let netAmount = netAmountOut
+
+        guard !deliversExactAmountOut else {
+            return netAmount
+        }
+
+        return netAmount.subtractOrZero(slippage.mul(value: netAmount))
+    }
+
+    var deliversExactAmountOut: Bool {
+        quoteArgs.direction == .buy && (quote?.metaOperations.count ?? 1) <= 1
+    }
+
     var payAssetTotalBalanceAfterSwap: BigUInt {
         let balance = payAssetBalance?.balanceCountingEd ?? 0
         let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
@@ -297,7 +329,7 @@ struct SwapModel {
     }
 
     func checkReceiveBalanceAboveMin() -> CannotReceiveReason? {
-        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + (quote?.route.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + worstCaseNetAmountOut
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
         if amountAfterSwap < minBalance {

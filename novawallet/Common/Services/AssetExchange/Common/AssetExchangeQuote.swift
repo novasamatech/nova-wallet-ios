@@ -3,7 +3,27 @@ import Foundation
 struct AssetExchangeQuote {
     let route: AssetExchangeRoute
     let metaOperations: [AssetExchangeMetaOperationProtocol]
+    let metaOperationIndexByEdge: [Int]
     let executionTimes: [TimeInterval]
+    let commission: AssetExchangeCommission?
+
+    var chargingMetaOperationIndex: Int? {
+        guard
+            let commission,
+            metaOperationIndexByEdge.indices.contains(commission.chargingEdgeIndex) else {
+            return nil
+        }
+
+        return metaOperationIndexByEdge[commission.chargingEdgeIndex]
+    }
+
+    func commissionNetFlow() -> AssetExchangeCommissionNetFlow {
+        AssetExchangeCommissionNetFlow(
+            operations: metaOperations,
+            commission: commission,
+            chargingOperationIndex: chargingMetaOperationIndex
+        )
+    }
 
     func totalExecutionTime() -> TimeInterval {
         executionTimes.reduce(0, +)

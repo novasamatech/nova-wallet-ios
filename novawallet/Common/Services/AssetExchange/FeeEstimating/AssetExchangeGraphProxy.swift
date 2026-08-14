@@ -47,6 +47,7 @@ extension AssetExchangeGraphProxy: AssetQuoteFactoryProtocol {
         let routeManager = AssetsExchangeRouteManager(
             possiblePaths: possiblePaths,
             pathCostEstimator: pathCostEstimator,
+            commissionPolicy: nil,
             operationQueue: operationQueue,
             logger: logger
         )

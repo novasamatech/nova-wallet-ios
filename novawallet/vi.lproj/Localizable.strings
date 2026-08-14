@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Bạn đã nhận lại DOT từ crowdloans? Bắt đầu Stake DOT ngay hôm nay để nhận phần thưởng tối đa!";
 "swaps.violating.consumers.message" = "Bạn cần giữ ít nhất %@ sau khi trả phí mạng %@ vì bạn giữ các token không đủ";
 "common.receive.not.sufficient.native.asset.error" = "Bạn cần giữ ít nhất %@ để nhận được token %@";
-"swaps.rate.description" = "Tỷ giá trao đổi giữa hai loại tiền điện tử khác nhau. Nó thể hiện số lượng của một loại tiền điện tử mà bạn có thể nhận được để đổi lấy một số lượng nhất định của loại tiền điện tử khác.";
+"swaps.rate.description" = "Tỷ giá tốt nhất được tìm thấy từ các nguồn thanh khoản hiện có.";
 "swaps.setup.price.difference.description" = "Sự khác biệt về giá đề cập đến sự chênh lệch giá giữa hai tài sản khác nhau. Khi thực hiện hoán đổi trong tiền điện tử, sự khác biệt về giá thường là sự chênh lệch giữa giá của tài sản mà bạn đang hoán đổi và giá của tài sản mà bạn đang hoán đổi.";
 "swaps.setup.slippage.description" = "Trượt giá hoán đổi là một hiện tượng phổ biến trong giao dịch phi tập trung nơi giá cuối cùng của một giao dịch hoán đổi có thể hơi khác so với giá dự kiến do điều kiện thị trường thay đổi.";
 "swaps.network.fee.description" = "Một khoản phí mạng được tính bởi blockchain để xử lý và xác nhận bất kỳ giao dịch nào. Có thể thay đổi tùy thuộc vào điều kiện mạng hoặc tốc độ giao dịch.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "giây";
 "swaps.execution.dont.close.app" = "Không đóng ứng dụng!";
 "swaps.details.exec.time" = "Thời gian thực hiện";
-"swaps.details.total.fee" = "Tổng phí";
+"swaps.details.total.fee" = "Phí mạng";
 "swaps.label.transfer" = "Chuyển";
 "swaps.label.swap" = "Hoán đổi";
 "swap.route.details.subtitle" = "Cách mà token của bạn sẽ đi qua các mạng lưới khác nhau để có được token mong muốn.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "Tiếp tục đến trang web";
 "dapp.staking.notice.message" = "Các trang web Staking của bên thứ ba thường trở nên lỗi thời. Chúng tôi khuyên bạn nên sử dụng các tính năng Staking tích hợp sẵn của Nova Wallet.";
 "dapp.staking.notice.title" = "Thông báo";
+"swaps.commission.disclosure" = "Đã bao gồm phí Nova %@.";
+"swaps.rate.includes.commission.description" = "Tỷ giá tốt nhất được tìm thấy, đã bao gồm phí Nova Wallet %@.";

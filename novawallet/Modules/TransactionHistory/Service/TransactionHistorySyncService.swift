@@ -58,17 +58,24 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
             let remoteTransactions = try remoteOperation.extractNoCancellableResultData().historyItems
             let localTransactions = try localOperation.extractNoCancellableResultData()
 
+            let mergeResult: TransactionHistoryMergeResult
+
             if !localTransactions.isEmpty {
                 let manager = TransactionHistoryMergeManager(chainAsset: chainAsset)
 
-                return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
+                mergeResult = manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
             } else {
                 let transactions: [TransactionHistoryItem] = remoteTransactions.compactMap { item in
                     item.createTransaction(chainAsset: chainAsset)
                 }
 
-                return TransactionHistoryMergeResult(historyItems: transactions, identifiersToRemove: [])
+                mergeResult = TransactionHistoryMergeResult(
+                    historyItems: transactions,
+                    identifiersToRemove: []
+                )
             }
+
+            return mergeResult
         }
     }
 

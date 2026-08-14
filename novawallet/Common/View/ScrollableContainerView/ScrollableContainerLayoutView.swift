@@ -110,19 +110,32 @@ class ScrollableContainerLayoutView: UIView {
         )
     }
 
-    func applyInfo(
-        on infoView: inout InlineAlertView?,
+    func applyCaption(
+        on captionView: inout UILabel?,
         after view: UIView?,
         text: String?,
         spacing: CGFloat = 0
     ) {
-        applyInline(
-            on: &infoView,
-            style: .info,
-            after: view,
-            text: text,
-            spacing: spacing
-        )
+        if let text = text {
+            if captionView == nil {
+                let newLabel = UILabel(style: .footnoteSecondary, textAlignment: .center)
+
+                if let afterView = view {
+                    insertArrangedSubview(newLabel, after: afterView, spacingAfter: spacing)
+                } else {
+                    addArrangedSubview(newLabel, spacingAfter: spacing)
+                }
+
+                captionView = newLabel
+            }
+
+            captionView?.text = text
+        } else {
+            captionView?.removeFromSuperview()
+            captionView = nil
+        }
+
+        setNeedsLayout()
     }
 }
 

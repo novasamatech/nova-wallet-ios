@@ -24,12 +24,16 @@ final class SwapRouteDetailsPresenter {
     }
 
     private func provideViewModel() {
+        let netFlow = quote.commissionNetFlow()
+
         let viewModel = quote.metaOperations.enumerated().map { index, operation in
-            let fee = fee.operationFees[index]
+            let operationFee = fee.operationFees[index]
 
             return viewModelFactory.createViewModel(
                 for: operation,
-                fee: fee,
+                fee: operationFee,
+                netAmountIn: netFlow.netAmountIn(at: index),
+                netAmountOut: netFlow.netAmountOut(at: index),
                 locale: selectedLocale
             )
         }

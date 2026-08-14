@@ -342,6 +342,9 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
+        netFlow: AssetExchangeCommissionNetFlow,
+        slippage: BigRational,
+        direction: AssetConversion.Direction,
         completion: @escaping SwapInterEDCheckClosure
     ) {
         guard !operations.isEmpty else {
@@ -357,9 +360,18 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
                 for (index, operation) in operations.enumerated() {
                     let minBalance = edMapping[operation.assetOut.chainAssetId]?.minBalance ?? 0
 
-                    if operation.amountOut < minBalance {
+                    let netAmountOut = netFlow.netAmountOut(at: index)
+
+                    let deliversExactAmountOut = direction == .buy && index == 0
+
+                    let amountOut = deliversExactAmountOut
+                        ? netAmountOut
+                        : netAmountOut.subtractOrZero(slippage.mul(value: netAmountOut))
+
+                    if amountOut < minBalance {
                         let checkValue = SwapInterEDNotMet(
                             operationIndex: index,
+                            comparedAmount: amountOut,
                             minBalanceResult: .success(minBalance)
                         )
 
@@ -372,6 +384,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .failure(error):
                 let checkValue = SwapInterEDNotMet(
                     operationIndex: 0,
+                    comparedAmount: operations.first?.amountOut ?? 0,
                     minBalanceResult: .failure(error)
                 )
 

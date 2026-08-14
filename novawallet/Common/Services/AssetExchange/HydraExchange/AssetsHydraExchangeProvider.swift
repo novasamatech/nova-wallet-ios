@@ -222,7 +222,11 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         let extrinsicParamsFactory = HydraExchangeExtrinsicParamsFactory(
             chain: chain,
             swapService: swapParamsService,
-            runtimeProvider: runtimeService
+            runtimeProvider: runtimeService,
+            assetStorageInfoFactory: AssetStorageInfoOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            )
         )
 
         let host = HydraExchangeHost(

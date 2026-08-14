@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Visszakaptad DOT-odat a közösségi hitelekből? Kezd el stake-elni még ma, hogy megkapd a maximális jutalmakat.";
 "swaps.violating.consumers.message" = "Nincs elegendő tokent a számládon. Legalább %@ kell, hogy maradjon a(z) %@ hálozati díj megfizetése után";
 "common.receive.not.sufficient.native.asset.error" = "Legalább %@ meg kell maradjon, ahhoz hogy %@ tokent fogadhass";
-"swaps.rate.description" = "Az árfolyam két különböző kriptovaluta között azt jelenti, hogy egy kriptovalutából mennyit kaphatsz cserébe egy bizonyos mennyiségű másik kriptovalutáért.";
+"swaps.rate.description" = "A rendelkezésre álló likviditási források közül talált legjobb árfolyam.";
 "swaps.setup.price.difference.description" = "Az árkülönbözet két eltérő eszköz közötti árkülönbségre utal. Egy kriptovaluta váltás során az árkülönbözet általában a váltani kívánt eszköz ára és a váltásra váró eszköz ára közötti különbség.";
 "swaps.setup.slippage.description" = "A decentralizált cserekereskedésben gyakori jelenség a csúsztatás. A változó piaci feltételek miatt a végső tranzakció ára eltérhet a várt piaci ártól.";
 "swaps.network.fee.description" = "A hálózati díjakat a blokklánc számítja fel a tranzakciók feldolgozásáért és hitelesítéséért. A díj összege változhat a hálózattól és a tranzakció sebességétől.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "mp";
 "swaps.execution.dont.close.app" = "Ne zárja be az alkalmazást!";
 "swaps.details.exec.time" = "Végrehajtási idő";
-"swaps.details.total.fee" = "Teljes díj";
+"swaps.details.total.fee" = "Hálózati díjak";
 "swaps.label.transfer" = "Átutalás";
 "swaps.label.swap" = "Csere";
 "swap.route.details.subtitle" = "Az út, amelyen a tokenje különböző hálózatokon megy át, hogy megkapja a kívánt tokent.";
@@ -2041,3 +2041,5 @@
 "dapp.staking.notice.continue" = "Tovább az oldalra";
 "dapp.staking.notice.message" = "A harmadik féltől származó stakingoldalak gyakran elavulnak. Javasoljuk a Nova Wallet beépített stakingfunkcióinak használatát.";
 "dapp.staking.notice.title" = "Figyelem";
+"swaps.commission.disclosure" = "Tartalmazza a %@ Nova díját.";
+"swaps.rate.includes.commission.description" = "A megtalált legjobb árfolyam, amely tartalmazza a %@ Nova Wallet díját.";

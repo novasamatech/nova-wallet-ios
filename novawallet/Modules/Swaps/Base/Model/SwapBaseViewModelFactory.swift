@@ -16,6 +16,8 @@ protocol SwapBaseViewModelFactoryProtocol {
 
     func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String
 
+    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String
+
     func priceDifferenceViewModel(
         rateParams: RateParams,
         priceIn: PriceData?,
@@ -51,6 +53,28 @@ class SwapBaseViewModelFactory {
 
     func formatPriceDifference(amount: Decimal, locale: Locale) -> String {
         percentFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
+
+    static func commissionPercent(
+        rate: BigRational,
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        locale: Locale
+    ) -> String {
+        rate.decimalValue.map {
+            percentFormatter.value(for: locale).stringFromDecimal($0) ?? ""
+        } ?? ""
+    }
+
+    static func commissionDisclosure(
+        rate: BigRational,
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        locale: Locale
+    ) -> String {
+        let percent = commissionPercent(rate: rate, percentFormatter: percentFormatter, locale: locale)
+
+        return R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.swapsCommissionDisclosure(percent)
     }
 }
 
@@ -121,6 +145,10 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         R.string(preferredLanguages: locale.rLanguages).localizable.commonSecondsFormat(
             format: Int(timeInterval.rounded(.up))
         ).approximately()
+    }
+
+    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String {
+        Self.commissionDisclosure(rate: rate, percentFormatter: percentFormatter, locale: locale)
     }
 
     func feeViewModel(
