@@ -116,6 +116,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         fee = nil
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
         updateReceiveAmountFromQuote()
 
         interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
@@ -382,7 +383,7 @@ extension SwapSetupPresenter {
     private func provideReceiveAmountInputViewModel() {
         provideReceiveAmountLoadingState()
 
-        guard let receiveChainAsset = receiveChainAsset else {
+        guard let receiveChainAsset = receiveChainAsset, !receiveAmountLoading else {
             return
         }
 
@@ -667,6 +668,7 @@ extension SwapSetupPresenter {
 
         fee = nil
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
 
         estimateFee()
     }

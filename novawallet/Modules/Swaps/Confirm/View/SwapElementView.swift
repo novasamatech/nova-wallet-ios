@@ -42,6 +42,10 @@ final class SwapElementView: UIView {
 
     private var hubImageViewModel: ImageViewModelProtocol?
 
+    var skeletonView: SkrullableView?
+
+    private var isLoading: Bool = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -55,6 +59,16 @@ final class SwapElementView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            contentView.layoutIfNeeded()
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
     private func setupLayout() {
@@ -107,11 +121,9 @@ extension SwapElementView {
 
         switch loadableViewModel {
         case .loading, .cached:
-            valueLabel.startShimmeringOpacity()
-            priceLabel.startShimmeringOpacity()
+            startLoadingIfNeeded()
         case .loaded:
-            valueLabel.stopShimmeringOpacity()
-            priceLabel.stopShimmeringOpacity()
+            stopLoadingIfNeeded()
         }
     }
 
@@ -134,5 +146,52 @@ extension SwapElementView {
         hubIconNameView.detailsLabel.text = viewModel.hub.name
         valueLabel.text = viewModel.amount
         priceLabel.text = viewModel.price ?? " "
+    }
+}
+
+extension SwapElementView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [valueLabel, priceLabel]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let amountSize = CGSize(width: 88, height: 12)
+        let priceSize = CGSize(width: 56, height: 8)
+
+        let amountRow = SingleSkeleton.createRow(
+            on: valueLabel,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: CGPoint(
+                x: (valueLabel.bounds.width - amountSize.width) / 2.0,
+                y: (valueLabel.bounds.height - amountSize.height) / 2.0
+            ),
+            size: amountSize
+        )
+
+        let priceRow = SingleSkeleton.createRow(
+            on: priceLabel,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: CGPoint(
+                x: (priceLabel.bounds.width - priceSize.width) / 2.0,
+                y: (priceLabel.bounds.height - priceSize.height) / 2.0
+            ),
+            size: priceSize
+        )
+
+        return [amountRow, priceRow]
     }
 }
