@@ -131,8 +131,23 @@ struct SwapModel {
         netFlow(for: quote, commission: feeModel?.commission).netFinalAmountOut
     }
 
-    func netAmountOut(for quote: AssetExchangeQuote) -> Balance {
-        netFlow(for: quote, commission: commissionResolvedForPath(of: quote)).netFinalAmountOut
+    func comparableAmountsOut(
+        oldQuote: AssetExchangeQuote,
+        newQuote: AssetExchangeQuote
+    ) -> (old: Balance, new: Balance) {
+        guard
+            commissionResolvedForPath(of: oldQuote) != nil,
+            let commissionForBothPaths = commissionResolvedForPath(of: newQuote) else {
+            return (
+                netFlow(for: oldQuote, commission: nil).netFinalAmountOut,
+                netFlow(for: newQuote, commission: nil).netFinalAmountOut
+            )
+        }
+
+        return (
+            netFlow(for: oldQuote, commission: commissionForBothPaths).netFinalAmountOut,
+            netFlow(for: newQuote, commission: commissionForBothPaths).netFinalAmountOut
+        )
     }
 
     var worstCaseNetAmountOut: Balance {

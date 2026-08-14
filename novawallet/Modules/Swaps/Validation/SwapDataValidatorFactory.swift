@@ -330,9 +330,14 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                 switch reason {
                 case let .rateChange(rateUpdate):
+                    let amountsOut = params.comparableAmountsOut(
+                        oldQuote: rateUpdate.oldQuote,
+                        newQuote: rateUpdate.newQuote
+                    )
+
                     let oldRate = Decimal.rateFromSubstrate(
                         amount1: rateUpdate.oldQuote.route.amountIn,
-                        amount2: params.netAmountOut(for: rateUpdate.oldQuote),
+                        amount2: amountsOut.old,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0
@@ -345,7 +350,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                     let newRate = Decimal.rateFromSubstrate(
                         amount1: rateUpdate.newQuote.route.amountIn,
-                        amount2: params.netAmountOut(for: rateUpdate.newQuote),
+                        amount2: amountsOut.new,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0
