@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "从众贷中收回你的 DOT 了吗？今天开始质押你的 DOT，以获得最大可能的奖励！";
 "swaps.violating.consumers.message" = "您在支付%@网络费后至少应保留%@，因为您持有的代币不足";
 "common.receive.not.sufficient.native.asset.error" = "您必须至少保留%@，以接收%@代币";
-"swaps.rate.description" = "两种不同加密货币之间的汇率。它表示您可以用一定数量的另一种加密货币交换获得多少加密货币。";
+"swaps.rate.description" = "从可用流动性来源中找到的最佳汇率。";
 "swaps.setup.price.difference.description" = "价格差异指的是两种不同资产之间的价格差。在加密货币交换中，价格差异通常是您要交换的资产的价格与您交换的资产的价格之间的差异。";
 "swaps.setup.slippage.description" = "在去中心化交易中，交换滑点是一种常见现象，由于市场条件的变化，交易的最终价格可能会与预期价格略有不同。";
 "swaps.network.fee.description" = "区块链收取的网络费用，用于处理和验证任何交易。可能会根据网络状况或交易速度而变化。";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "秒";
 "swaps.execution.dont.close.app" = "不要关闭应用程序!";
 "swaps.details.exec.time" = "执行时间";
-"swaps.details.total.fee" = "总费用";
+"swaps.details.total.fee" = "网络费用";
 "swaps.label.transfer" = "转移";
 "swaps.label.swap" = "交换";
 "swap.route.details.subtitle" = "你的代币通过不同网络到达所需代币的路径。";
@@ -2036,3 +2036,5 @@
 "create.watch.only.missing.any.address" = "请输入至少一个地址...";
 "asset.list.watch.only.balance" = "仅观察余额";
 "create.watch.only.subtitle" = "在没有私钥的情况下跟踪钱包活动。\n您将无法执行任何交易。";
+"swaps.commission.disclosure" = "包含 %@ Nova 手续费。";
+"swaps.rate.includes.commission.description" = "这是找到的最佳汇率，包含 %@ Nova Wallet 手续费。";

@@ -1360,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "¿Recibió su DOT de vuelta de los crowdloans? ¡Comience a hacer staking de su DOT hoy para obtener las máximas recompensas posibles!";
 "swaps.violating.consumers.message" = "Deberías mantener al menos %@ después de pagar %@ de tasa de red ya que estás sosteniendo tokens insuficientes";
 "common.receive.not.sufficient.native.asset.error" = "Debes mantener al menos %@ para recibir el token %@";
-"swaps.rate.description" = "Tasa de cambio entre dos criptomonedas diferentes. Representa cuánto de una criptomoneda puedes obtener a cambio de una cierta cantidad de otra criptomoneda.";
+"swaps.rate.description" = "La mejor tasa encontrada entre las fuentes de liquidez disponibles.";
 "swaps.setup.price.difference.description" = "La diferencia de precio se refiere a la diferencia en el precio entre dos activos diferentes. Al realizar un intercambio en cripto, la diferencia de precio es generalmente la diferencia entre el precio del activo por el que estás intercambiando y el precio del activo con el que estás intercambiando.";
 "swaps.setup.slippage.description" = "El deslizamiento de intercambio es una ocurrencia común en el comercio descentralizado donde el precio final de una transacción de intercambio podría diferir ligeramente del precio esperado, debido a las cambiantes condiciones del mercado.";
 "swaps.network.fee.description" = "Una comisión de red cobrada por la cadena de bloques para procesar y validar cualquier transacción. Puede variar dependiendo de las condiciones de la red o la velocidad de la transacción.";
@@ -1756,7 +1756,7 @@
 "sec.time.units" = "seg";
 "swaps.execution.dont.close.app" = "¡No cierres la aplicación!";
 "swaps.details.exec.time" = "Tiempo de ejecución";
-"swaps.details.total.fee" = "Tarifa total";
+"swaps.details.total.fee" = "Comisiones de red";
 "swaps.label.transfer" = "Transferencia";
 "swaps.label.swap" = "Intercambio";
 "swap.route.details.subtitle" = "La manera en que tu token pasará a través de diferentes redes para obtener el token deseado.";
@@ -2036,3 +2036,5 @@
 "create.watch.only.missing.any.address" = "Introduce al menos una dirección...";
 "asset.list.watch.only.balance" = "Saldo solo de visualización";
 "create.watch.only.subtitle" = "Sigue la actividad de la cartera sin una clave privada.\nNo podrás realizar ninguna transacción.";
+"swaps.commission.disclosure" = "Incluye una comisión de Nova de %@.";
+"swaps.rate.includes.commission.description" = "La mejor tasa encontrada, incluida una comisión de Nova Wallet de %@.";
