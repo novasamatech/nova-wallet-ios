@@ -241,7 +241,6 @@ extension ExtrinsicProcessor {
             from: params,
             callSender: mappingResult.callSender,
             call: call,
-            extrinsic: extrinsic,
             eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
             codingFactory: codingFactory
         )
@@ -262,7 +261,6 @@ extension ExtrinsicProcessor {
         from params: HydraSwapExtrinsicParsingParams,
         callSender: AccountId,
         call: RuntimeCall<JSON>,
-        extrinsic _: Extrinsic,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> HydraSwapExtrinsicParsingResult? {

@@ -12,18 +12,6 @@ final class SwapRouteDetailsViewLayout: ScrollableContainerLayoutView {
 
     let routeDetailsView = SwapRouteDetailsView()
 
-    private var commissionDisclosureView: UILabel?
-
-    func setCommissionDisclosure(_ text: String?) {
-        stackView.setCustomSpacing(8.0, after: routeDetailsView)
-        applyCaption(
-            on: &commissionDisclosureView,
-            after: routeDetailsView,
-            text: text,
-            spacing: 8
-        )
-    }
-
     override func setupLayout() {
         super.setupLayout()
 

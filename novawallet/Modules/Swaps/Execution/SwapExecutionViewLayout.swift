@@ -30,17 +30,6 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         detailsView.totalFeeCell
     }
 
-    private var commissionDisclosureView: UILabel?
-
-    func setCommissionDisclosure(_ text: String?) {
-        applyCaption(
-            on: &commissionDisclosureView,
-            after: detailsView,
-            text: text,
-            spacing: 8
-        )
-    }
-
     private var actionButton: TriangularedButton?
 
     func setupDoneButton(for locale: Locale) -> TriangularedButton {

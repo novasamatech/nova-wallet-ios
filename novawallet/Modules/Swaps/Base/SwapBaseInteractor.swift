@@ -342,8 +342,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
-        commission: AssetExchangeCommission?,
-        chargingOperationIndex: Int?,
+        netFlow: AssetExchangeCommissionNetFlow,
         slippage: BigRational,
         direction: AssetConversion.Direction,
         completion: @escaping SwapInterEDCheckClosure
@@ -354,12 +353,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         }
 
         let assetOutIds = operations.map(\.assetOut.chainAssetId)
-
-        let netFlow = AssetExchangeCommissionNetFlow(
-            operations: operations,
-            commission: commission,
-            chargingOperationIndex: chargingOperationIndex
-        )
 
         fetchAssetBalanceExistence(for: Set(assetOutIds)) { result in
             switch result {

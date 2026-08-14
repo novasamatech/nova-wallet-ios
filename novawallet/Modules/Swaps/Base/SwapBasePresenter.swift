@@ -276,14 +276,13 @@ class SwapBasePresenter {
         locale: Locale
     ) -> DataValidating? {
         // for last operation validation is covered by canReceive
-        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
+        if let quote = swapModel.quote, quote.metaOperations.count > 1 {
             return dataValidatingFactory.passesIntermediateEDValidation(
                 params: swapModel,
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
                         for: closureParams.operations.dropLast(),
-                        commission: swapModel.quote?.commission,
-                        chargingOperationIndex: swapModel.quote?.chargingMetaOperationIndex,
+                        netFlow: quote.commissionNetFlow(),
                         slippage: swapModel.slippage,
                         direction: swapModel.quoteArgs.direction,
                         completion: closureParams.completionClosure

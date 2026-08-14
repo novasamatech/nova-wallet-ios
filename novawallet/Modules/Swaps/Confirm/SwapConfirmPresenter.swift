@@ -126,8 +126,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
         if case .quote = error {
             view?.didReceiveStopLoading()
-
-            provideCommissionDisclosureViewModel()
         }
     }
 
@@ -149,7 +147,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         provideFeeViewModel()
         provideAssetOutViewModel()
         provideRateViewModel()
-        provideCommissionDisclosureViewModel()
     }
 
     override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
@@ -268,17 +265,6 @@ extension SwapConfirmPresenter {
         }
     }
 
-    private func provideCommissionDisclosureViewModel() {
-        let viewModel = chargesCommission
-            ? viewModelFactory.commissionDisclosureViewModel(
-                rate: AssetExchangeCommissionConstants.rate,
-                locale: selectedLocale
-            )
-            : nil
-
-        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
-    }
-
     private func provideSlippageViewModel() {
         let viewModel = viewModelFactory.slippageViewModel(slippage: initState.slippage, locale: selectedLocale)
         view?.didReceiveSlippage(viewModel: viewModel)
@@ -326,7 +312,6 @@ extension SwapConfirmPresenter {
         provideSlippageViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
-        provideCommissionDisclosureViewModel()
     }
 
     private func submit() {

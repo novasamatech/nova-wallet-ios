@@ -22,7 +22,7 @@ enum AssetsExchangeOperationFactoryError: Error {
     case noRoute
     case feesOperationsMismatch
     case singleOperationExpected
-    case commissionNotAttached(chargingEdgeIndex: Int, edgeCount: Int)
+    case commissionEdgeNotChargeable(chargingEdgeIndex: Int, edgeCount: Int)
 }
 
 final class AssetsExchangeOperationFactory {
@@ -100,12 +100,15 @@ final class AssetsExchangeOperationFactory {
             }
         }
 
-        if let chargingEdgeIndex = commission?.chargingEdgeIndex,
-           !route.items.indices.contains(chargingEdgeIndex) {
-            throw AssetsExchangeOperationFactoryError.commissionNotAttached(
-                chargingEdgeIndex: chargingEdgeIndex,
-                edgeCount: route.items.count
-            )
+        if let chargingEdgeIndex = commission?.chargingEdgeIndex {
+            guard
+                route.items.indices.contains(chargingEdgeIndex),
+                route.items[chargingEdgeIndex].edge.type == .hydraSwap else {
+                throw AssetsExchangeOperationFactoryError.commissionEdgeNotChargeable(
+                    chargingEdgeIndex: chargingEdgeIndex,
+                    edgeCount: route.items.count
+                )
+            }
         }
 
         return operations

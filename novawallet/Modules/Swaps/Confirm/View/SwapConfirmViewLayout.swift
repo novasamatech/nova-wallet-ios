@@ -52,7 +52,6 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     }
 
     private var warningView: InlineAlertView?
-    private var commissionDisclosureView: UILabel?
 
     let loadableActionView = LoadableActionView()
 
@@ -121,15 +120,6 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
             on: &warningView,
             after: walletTableView,
             text: warning,
-            spacing: 8
-        )
-    }
-
-    func setCommissionDisclosure(_ text: String?) {
-        applyCaption(
-            on: &commissionDisclosureView,
-            after: detailsTableView,
-            text: text,
             spacing: 8
         )
     }

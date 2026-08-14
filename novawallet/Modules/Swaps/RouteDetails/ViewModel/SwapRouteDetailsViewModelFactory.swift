@@ -9,8 +9,6 @@ protocol SwapRouteDetailsViewModelFactoryProtocol {
         netAmountOut: Balance,
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel
-
-    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String
 }
 
 final class SwapRouteDetailsViewModelFactory {
@@ -151,14 +149,6 @@ extension SwapRouteDetailsViewModelFactory: SwapRouteDetailsViewModelFactoryProt
             ),
             fee: fee,
             networkItems: createNetworkItems(from: operation)
-        )
-    }
-
-    func commissionDisclosureViewModel(rate: BigRational, locale: Locale) -> String {
-        SwapBaseViewModelFactory.commissionDisclosure(
-            rate: rate,
-            percentFormatter: percentFormatter,
-            locale: locale
         )
     }
 }

@@ -13,8 +13,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
-        commission: AssetExchangeCommission?,
-        chargingOperationIndex: Int?,
+        netFlow: AssetExchangeCommissionNetFlow,
         slippage: BigRational,
         direction: AssetConversion.Direction,
         completion: @escaping SwapInterEDCheckClosure

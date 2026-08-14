@@ -186,24 +186,12 @@ final class SwapExecutionPresenter {
         view?.didReceiveTotalFee(viewModel: .loaded(value: viewModel))
     }
 
-    private func provideCommissionDisclosureViewModel() {
-        let viewModel = chargesCommission
-            ? detailsViewModelFactory.commissionDisclosureViewModel(
-                rate: AssetExchangeCommissionConstants.rate,
-                locale: selectedLocale
-            )
-            : nil
-
-        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
-    }
-
     private func updateSwapDetails() {
         provideRateViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
         provideRouteViewModel()
         provideFeeViewModel()
-        provideCommissionDisclosureViewModel()
     }
 
     private func updateSwapAssets() {

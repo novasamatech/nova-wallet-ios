@@ -141,7 +141,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         }
     }
 
-    func testCommissionIndexOutsideEdgeRangeThrows() throws {
+    func testCommissionOnNonChargeableEdgeThrows() throws {
         let route = CommissionTestFixtures.createRoute([.hydraSwap, .hydraSwap], amount: 1_000_000)
 
         let commission = AssetExchangeCommission(
@@ -159,7 +159,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
                 commission: commission
             )
         ) { error in
-            guard case AssetsExchangeOperationFactoryError.commissionNotAttached = error else {
+            guard case AssetsExchangeOperationFactoryError.commissionEdgeNotChargeable = error else {
                 return XCTFail("unexpected error: \(error)")
             }
         }

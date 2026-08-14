@@ -42,10 +42,6 @@ extension SwapRouteDetailsViewController: SwapRouteDetailsViewProtocol {
     func didReceive(viewModel: SwapRouteDetailsViewModel) {
         rootView.routeDetailsView.bind(viewModel: viewModel)
     }
-
-    func didReceiveCommissionDisclosure(viewModel: String?) {
-        rootView.setCommissionDisclosure(viewModel)
-    }
 }
 
 extension SwapRouteDetailsViewController: Localizable {

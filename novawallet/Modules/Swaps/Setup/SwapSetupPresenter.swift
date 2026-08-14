@@ -714,6 +714,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             self?.feeChainAsset = feeChainAsset
             self?.fee = nil
+            self?.quoteResult = nil
             self?.canPayFeeInPayAsset = false
 
             self?.providePayAssetViews()
@@ -738,6 +739,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
             self?.receiveChainAsset = chainAsset
+            self?.quoteResult = nil
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.provideIssues()

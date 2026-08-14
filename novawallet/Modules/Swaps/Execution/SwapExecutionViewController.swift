@@ -135,10 +135,6 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.totalFeeCell.bind(loadableViewModel: viewModel)
     }
-
-    func didReceiveCommissionDisclosure(viewModel: String?) {
-        rootView.setCommissionDisclosure(viewModel)
-    }
 }
 
 extension SwapExecutionViewController: CollapsableContainerViewDelegate {

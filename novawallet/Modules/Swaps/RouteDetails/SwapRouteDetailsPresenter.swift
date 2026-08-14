@@ -40,23 +40,11 @@ final class SwapRouteDetailsPresenter {
 
         view?.didReceive(viewModel: viewModel)
     }
-
-    private func provideCommissionDisclosureViewModel() {
-        let viewModel = fee.commission != nil
-            ? viewModelFactory.commissionDisclosureViewModel(
-                rate: AssetExchangeCommissionConstants.rate,
-                locale: selectedLocale
-            )
-            : nil
-
-        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
-    }
 }
 
 extension SwapRouteDetailsPresenter: SwapRouteDetailsPresenterProtocol {
     func setup() {
         provideViewModel()
-        provideCommissionDisclosureViewModel()
     }
 }
 
@@ -64,7 +52,6 @@ extension SwapRouteDetailsPresenter: Localizable {
     func applyLocalization() {
         if let view, view.isSetup {
             provideViewModel()
-            provideCommissionDisclosureViewModel()
         }
     }
 }
