@@ -10,7 +10,7 @@ final class HydraExchangeAtomicOperationTests: XCTestCase {
             amountOut: 5_829_600,
             slippage: BigRational(numerator: 1, denominator: 100)
         )
-        let commission = CommissionTestFixtures.makeCommission()
+        let commission = CommissionTestFixtures.makeCommission(amount: 49133)
         let storageInfo = CommissionTestFixtures.ormlInfo(existentialDeposit: 1)
 
         let chargingParams = CommissionTestFixtures.makeSwapParams(

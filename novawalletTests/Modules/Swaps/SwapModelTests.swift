@@ -8,7 +8,7 @@ final class SwapModelTests: XCTestCase {
             quoteAmountOut: 1_000_000,
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8428
+                amount: 8428
             ),
             receiveBalance: 0,
             receiveMinBalance: 995_000
@@ -46,7 +46,7 @@ final class SwapModelTests: XCTestCase {
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8512
+                amount: 8512
             ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,
@@ -64,7 +64,7 @@ final class SwapModelTests: XCTestCase {
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8512
+                amount: 8512
             ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,
@@ -84,7 +84,7 @@ final class SwapModelTests: XCTestCase {
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8512
+                amount: 8512
             ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000
@@ -96,7 +96,7 @@ final class SwapModelTests: XCTestCase {
             quoteAmountOut: 1_010_000,
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8512
+                amount: 8512
             ),
             receiveBalance: 0,
             receiveMinBalance: 1_000_000,

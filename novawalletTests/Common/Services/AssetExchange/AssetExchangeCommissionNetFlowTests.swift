@@ -16,7 +16,7 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
     func testDeductionAppliesAtChargingOperation() {
         let flow = AssetExchangeCommissionNetFlow(
             operations: [CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000)],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 17)
+            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 17)
         )
 
         XCTAssertEqual(flow.netAmountIn(at: 0), 1000)
@@ -30,7 +30,7 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
                 CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000),
                 CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000)
             ],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 100)
+            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 100)
         )
 
         XCTAssertEqual(flow.netAmountOut(at: 0), 1900)
@@ -50,7 +50,7 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
             ],
             commission: CommissionTestFixtures.makeCommission(
                 chargingOperationIndex: 0,
-                estimatedAmount: 8_504_214_179
+                amount: 8_504_214_179
             )
         )
 
@@ -63,7 +63,7 @@ final class AssetExchangeCommissionNetFlowTests: XCTestCase {
                 CommissionTestFixtures.metaOperation(amountIn: 1000, amountOut: 2000, label: .swap),
                 CommissionTestFixtures.metaOperation(amountIn: 2000, amountOut: 1000, label: .swap)
             ],
-            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, estimatedAmount: 100)
+            commission: CommissionTestFixtures.makeCommission(chargingOperationIndex: 0, amount: 100)
         )
 
         XCTAssertEqual(flow.netFinalAmountOut, 950)

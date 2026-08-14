@@ -20,7 +20,7 @@ struct AssetExchangeCommissionNetFlow {
             if let commission,
                index == commission.chargingOperationIndex,
                operation.assetOut.chainAssetId == commission.asset {
-                deduction += commission.estimatedAmount
+                deduction += commission.amount
             }
 
             amountsOut.append(operation.amountOut.subtractOrZero(deduction))

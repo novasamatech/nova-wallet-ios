@@ -21,11 +21,6 @@ final class AssetExchangeCommissionPolicy {
         let lastEdgeIndex: Int
     }
 
-    struct ChargeableAmount {
-        let value: Balance
-        let minimum: Balance
-    }
-
     let rate: BigRational
 
     var rateOfGross: BigRational { rate.asShareOfGross }
@@ -129,17 +124,17 @@ private extension AssetExchangeCommissionPolicy {
     func chargeableAmountWrapper(
         of grossAmount: Balance,
         chargedAsset: ChainAssetId
-    ) -> CompoundOperationWrapper<ChargeableAmount?> {
-        let estimatedAmount = rateOfGross.mul(value: grossAmount)
+    ) -> CompoundOperationWrapper<Balance?> {
+        let amount = rateOfGross.mul(value: grossAmount)
 
-        guard estimatedAmount > 0 else {
+        guard amount > 0 else {
             return .createWithResult(nil)
         }
 
         let readinessWrapper = canReceiveWrapper(for: chargedAsset.chainId)
         let storageInfoWrapper = chargedAssetStorageInfoWrapper(for: chargedAsset)
 
-        let mappingOperation = ClosureOperation<ChargeableAmount?> {
+        let mappingOperation = ClosureOperation<Balance?> {
             let canReceive = try readinessWrapper.targetOperation.extractNoCancellableResultData()
 
             guard canReceive else {
@@ -158,11 +153,11 @@ private extension AssetExchangeCommissionPolicy {
 
             guard
                 let minimumAmount = Self.minimumChargeableAmount(for: storageInfo),
-                estimatedAmount >= minimumAmount else {
+                amount >= minimumAmount else {
                 return nil
             }
 
-            return ChargeableAmount(value: estimatedAmount, minimum: minimumAmount)
+            return amount
         }
 
         mappingOperation.addDependency(readinessWrapper.targetOperation)
@@ -229,10 +224,8 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return AssetExchangeCommission(
                 chargingOperationIndex: run.operationIndex,
                 asset: chargedAssetId,
-                estimatedAmount: chargeableAmount.value,
-                minimumChargeableAmount: chargeableAmount.minimum,
-                beneficiary: self.beneficiary,
-                rateOfGross: self.rateOfGross
+                amount: chargeableAmount,
+                beneficiary: self.beneficiary
             )
         }
 

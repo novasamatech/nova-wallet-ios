@@ -57,15 +57,15 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         XCTAssertNil(try chargingOperationIndex(using: policy, edgeTypes: []))
     }
 
-    func testEstimatedAmountIsRateOfChargingSegmentOutput() throws {
+    func testAmountIsRateOfChargingSegmentOutput() throws {
         let policy = CommissionTestFixtures.createPolicy()
         let route = CommissionTestFixtures.createRoute([.hydraSwap], amount: 1_000_000)
 
         let commission = try resolveCommission(using: policy, route: route)
 
-        XCTAssertEqual(commission?.estimatedAmount, 8428)
+        XCTAssertEqual(commission?.amount, 8428)
         XCTAssertEqual(
-            commission?.estimatedAmount,
+            commission?.amount,
             AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: 1_000_000)
         )
     }
@@ -77,7 +77,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let commission = try resolveCommission(using: policy, route: route)
 
         XCTAssertEqual(commission?.asset, CommissionTestFixtures.asset(2))
-        XCTAssertEqual(commission?.estimatedAmount, 58998)
+        XCTAssertEqual(commission?.amount, 58998)
     }
 
     func testBeneficiaryDecodesToConfiguredAccount() throws {
@@ -105,7 +105,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
 
         let commission = try resolveCommission(using: policy, route: route)
 
-        XCTAssertEqual(commission?.estimatedAmount, 8_428_358)
+        XCTAssertEqual(commission?.amount, 8_428_358)
         XCTAssertEqual(commission?.beneficiary, CommissionTestFixtures.beneficiary)
     }
 
@@ -188,10 +188,8 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         let commission = AssetExchangeCommission(
             chargingOperationIndex: 5,
             asset: CommissionTestFixtures.asset(2),
-            estimatedAmount: 1,
-            minimumChargeableAmount: 0,
-            beneficiary: CommissionTestFixtures.beneficiary,
-            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
+            amount: 1,
+            beneficiary: CommissionTestFixtures.beneficiary
         )
 
         XCTAssertThrowsError(

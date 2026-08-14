@@ -5,11 +5,7 @@ struct AssetExchangeCommission: Equatable {
 
     let asset: ChainAssetId
 
-    let estimatedAmount: Balance
-
-    let minimumChargeableAmount: Balance
+    let amount: Balance
 
     let beneficiary: AccountId
-
-    let rateOfGross: BigRational
 }

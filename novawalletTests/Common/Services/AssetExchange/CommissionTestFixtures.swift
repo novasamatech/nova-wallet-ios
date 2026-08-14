@@ -124,28 +124,24 @@ enum CommissionTestFixtures {
         )
     }
 
-    static func makeCommission(rate: BigRational = AssetExchangeCommissionConstants.rate) -> AssetExchangeCommission {
+    static func makeCommission(amount: Balance = 8428) -> AssetExchangeCommission {
         AssetExchangeCommission(
             chargingOperationIndex: 0,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
-            estimatedAmount: 999_999_999,
-            minimumChargeableAmount: 0,
-            beneficiary: Data(repeating: 3, count: 32),
-            rateOfGross: rate.asShareOfGross
+            amount: amount,
+            beneficiary: Data(repeating: 3, count: 32)
         )
     }
 
     static func makeCommission(
         chargingOperationIndex: Int,
-        estimatedAmount: Balance
+        amount: Balance
     ) -> AssetExchangeCommission {
         AssetExchangeCommission(
             chargingOperationIndex: chargingOperationIndex,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
-            estimatedAmount: estimatedAmount,
-            minimumChargeableAmount: 0,
-            beneficiary: beneficiary,
-            rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
+            amount: amount,
+            beneficiary: beneficiary
         )
     }
 
@@ -167,8 +163,7 @@ enum CommissionTestFixtures {
             ),
             commission: HydraExchangeExtrinsicParamsFactory.commissionParams(
                 for: commission,
-                storageInfo: storageInfo,
-                callArgs: callArgs
+                storageInfo: storageInfo
             )
         )
     }

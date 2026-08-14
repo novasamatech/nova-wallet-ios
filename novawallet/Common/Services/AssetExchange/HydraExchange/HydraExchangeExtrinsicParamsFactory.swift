@@ -55,35 +55,16 @@ final class HydraExchangeExtrinsicParamsFactory {
         self.assetStorageInfoFactory = assetStorageInfoFactory
     }
 
-    static func commissionAmount(
-        for commission: AssetExchangeCommission,
-        callArgs: AssetConversion.CallArgs
-    ) -> Balance {
-        let rateBasedAmount = commission.rateOfGross.mul(value: callArgs.amountOut)
-
-        return min(commission.estimatedAmount, rateBasedAmount)
-    }
-
     static func commissionParams(
         for commission: AssetExchangeCommission?,
-        storageInfo: AssetStorageInfo?,
-        callArgs: AssetConversion.CallArgs
+        storageInfo: AssetStorageInfo?
     ) -> HydraExchangeSwapParams.Commission? {
-        guard let commission, let storageInfo else {
-            return nil
-        }
-
-        let amount = max(
-            commissionAmount(for: commission, callArgs: callArgs),
-            commission.minimumChargeableAmount
-        )
-
-        guard amount > 0 else {
+        guard let commission, let storageInfo, commission.amount > 0 else {
             return nil
         }
 
         return .init(
-            amount: amount,
+            amount: commission.amount,
             beneficiary: commission.beneficiary,
             assetStorageInfo: storageInfo
         )
@@ -204,8 +185,7 @@ final class HydraExchangeExtrinsicParamsFactory {
             swap: operation,
             commission: Self.commissionParams(
                 for: commission,
-                storageInfo: commissionStorageInfo,
-                callArgs: callArgs
+                storageInfo: commissionStorageInfo
             )
         )
     }
