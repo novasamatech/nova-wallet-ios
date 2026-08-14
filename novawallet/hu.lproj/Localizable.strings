@@ -2036,5 +2036,10 @@
 "create.watch.only.missing.any.address" = "Adjon meg legalább egy címet...";
 "asset.list.watch.only.balance" = "Csak-figyelési egyenleg";
 "create.watch.only.subtitle" = "Pénztárca aktivitás nyomon követése privát kulcs nélkül.\nNem lesz képes tranzakciók végrehajtására.";
+"common.go.to.staking" = "Ugrás a stakinghez";
+"dapp.staking.banner.message" = "Szeretnél stakelni? A Nova Wallet beépített stakingfunkciót kínál.";
+"dapp.staking.notice.continue" = "Tovább az oldalra";
+"dapp.staking.notice.message" = "A harmadik féltől származó stakingoldalak gyakran elavulnak. Javasoljuk a Nova Wallet beépített stakingfunkcióinak használatát.";
+"dapp.staking.notice.title" = "Figyelem";
 "swaps.commission.disclosure" = "Tartalmazza a %@ Nova díját.";
 "swaps.rate.includes.commission.description" = "A megtalált legjobb árfolyam, amely tartalmazza a %@ Nova Wallet díját.";

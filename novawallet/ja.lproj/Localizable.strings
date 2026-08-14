@@ -2036,5 +2036,10 @@
 "create.watch.only.missing.any.address" = "少なくとも1つのアドレスを入力してください...";
 "asset.list.watch.only.balance" = "ウォッチオンリーバランス";
 "create.watch.only.subtitle" = "秘密鍵を使わずにウォレットのアクティビティを追跡することができます。\nトランザクションを実行することはできません。";
+"common.go.to.staking" = "Stakingへ移動";
+"dapp.staking.banner.message" = "stakeをお考えですか？Nova Walletには組み込みのstaking機能があります。";
+"dapp.staking.notice.continue" = "サイトへ移動";
+"dapp.staking.notice.message" = "サードパーティのstakingサイトは使用できなくなることがよくあります。Nova Walletの組み込みstaking機能の利用をおすすめします。";
+"dapp.staking.notice.title" = "注意";
 "swaps.commission.disclosure" = "%@ Nova手数料が含まれています。";
 "swaps.rate.includes.commission.description" = "%@ Nova Wallet手数料を含む、見つかった最適なレートです。";
