@@ -34,6 +34,8 @@ enum SettingsKey: String {
     case ahmAssetDetailsAlertClosedChains
     case ahmStakingAlertClosedChains
     case privacyModeSettings
+    case legalConsentAcceptedVersions
+    case legalConsentPendingSync
 }
 
 extension SettingsManagerProtocol {
@@ -423,6 +425,35 @@ extension SettingsManagerProtocol {
                 value: newValue,
                 for: SettingsKey.ahmStakingAlertClosedChains.rawValue
             )
+        }
+    }
+
+    /// Keyed by `LegalDocumentType.rawValue`. A missing entry means nothing accepted and is treated
+    /// as version 0 at the comparison site. A plain dictionary rather than a bespoke type because
+    /// this file is compiled into the push notification extension too, where any new type would
+    /// need its own target membership.
+    var legalConsentAcceptedVersions: [String: Int] {
+        get {
+            value(
+                of: [String: Int].self,
+                for: SettingsKey.legalConsentAcceptedVersions.rawValue
+            ) ?? [:]
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.legalConsentAcceptedVersions.rawValue
+            )
+        }
+    }
+
+    var legalConsentPendingSync: Bool {
+        get {
+            bool(for: SettingsKey.legalConsentPendingSync.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.legalConsentPendingSync.rawValue)
         }
     }
 }

@@ -20,16 +20,23 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
+    let legalConsentRepository: LegalConsentRepositoryProtocol
+    let walletSettings: SelectedWalletSettings
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
+            OnLaunchAction.LegalConsent(),
             OnLaunchAction.PushNotificationsSetup(),
             OnLaunchAction.AHMInfoSetup(),
             OnLaunchAction.MultisigNotificationsPromo()
         ]
     )
+
+    /// Set only from the main queue, right before the sheet is requested, and consumed by
+    /// `didCompleteLegalConsent`.
+    private var legalConsentAdvancesQueue: Bool = false
 
     deinit {
         stopServices()
@@ -49,6 +56,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol,
         settingsManager: SettingsManagerProtocol,
+        legalConsentRepository: LegalConsentRepositoryProtocol,
+        walletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -65,6 +74,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
+        self.legalConsentRepository = legalConsentRepository
+        self.walletSettings = walletSettings
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -113,6 +124,49 @@ private extension MainTabBarInteractor {
         case .mnemonic:
             presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
         }
+    }
+
+    func showLegalConsentOrNextAction(advancingQueue: Bool) {
+        // The user must already own a wallet: someone who has just onboarded accepted the current
+        // documents on the welcome screen.
+        guard walletSettings.hasValue else {
+            advanceLaunchQueue(if: advancingQueue)
+            return
+        }
+
+        // Answers false on any config failure, so the app is never blocked by a bad config.
+        legalConsentRepository.isConsentRequired(runningIn: .main) { [weak self] required in
+            guard let self else { return }
+
+            guard required else {
+                advanceLaunchQueue(if: advancingQueue)
+                return
+            }
+
+            // The two argument form is required here: `scheduleExecutionIfAuthorized` drops its
+            // closure when authorization fails, and because consent is head of the queue that
+            // would suppress every other launch prompt for the session.
+            securedLayer.scheduleExecution { [weak self] isAuthorized in
+                guard let self else { return }
+
+                guard isAuthorized else {
+                    advanceLaunchQueue(if: advancingQueue)
+                    return
+                }
+
+                legalConsentAdvancesQueue = advancingQueue
+
+                presenter?.didRequestLegalConsentOpen()
+            }
+        }
+    }
+
+    func advanceLaunchQueue(if shouldAdvance: Bool) {
+        guard shouldAdvance else {
+            return
+        }
+
+        onLaunchQueue.runNext()
     }
 
     func showPushNotificationsSetupOrNextAction() {
@@ -226,14 +280,19 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         onLaunchQueue.delegate = self
 
+        // The pending screen branches never reach the launch queue, so the consent check is fired
+        // alongside them and advances nothing.
         if
             let message = walletMigrationService.consumePendingMessage(),
             case let .start(content) = message {
             presenter?.didRequestWalletMigration(with: content)
+            showLegalConsentOrNextAction(advancingQueue: false)
         } else if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
+            showLegalConsentOrNextAction(advancingQueue: false)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
+            showLegalConsentOrNextAction(advancingQueue: false)
         } else {
             onLaunchQueue.runNext()
         }
@@ -244,6 +303,16 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     }
 
     func requestNextOnLaunchAction() {
+        onLaunchQueue.runNext()
+    }
+
+    func didCompleteLegalConsent() {
+        guard legalConsentAdvancesQueue else {
+            return
+        }
+
+        legalConsentAdvancesQueue = false
+
         onLaunchQueue.runNext()
     }
 }
@@ -348,6 +417,10 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 // MARK: - OnLaunchActionsQueueDelegate
 
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
+    func onLaunchProcessLegalConsent(_: OnLaunchAction.LegalConsent) {
+        showLegalConsentOrNextAction(advancingQueue: true)
+    }
+
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
     }

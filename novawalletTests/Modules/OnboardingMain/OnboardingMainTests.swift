@@ -15,12 +15,19 @@ class OnboardingMainTests: XCTestCase {
 
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
+        let legalConsentRepository = MockLegalConsentRepositoryProtocol()
 
-        let presenter = setupPresenterForWireframe(wireframe, view: view, legal: dummyLegalData)
+        let presenter = setupPresenterForWireframe(
+            wireframe,
+            view: view,
+            legal: dummyLegalData,
+            legalConsentRepository: legalConsentRepository
+        )
 
         // when
 
         presenter.setup()
+        presenter.toggleConsent()
         presenter.activateSignup()
 
         // then
@@ -29,6 +36,7 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(0)).showAccountRestore(from: any())
         verify(wireframe, times(0)).showWeb(url: any(), from: any(), style: any())
         verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
+        verify(legalConsentRepository, times(1)).acceptCurrentVersions(deferringWhenUnavailable: any())
     }
 
     func testAccountRestore() {
@@ -42,6 +50,7 @@ class OnboardingMainTests: XCTestCase {
         // when
 
         presenter.setup()
+        presenter.toggleConsent()
         presenter.activateAccountRestore()
 
         // then
@@ -50,6 +59,46 @@ class OnboardingMainTests: XCTestCase {
         verify(wireframe, times(1)).showAccountRestore(from: any())
         verify(wireframe, times(0)).showWeb(url: any(), from: any(), style: any())
         verify(wireframe, times(0)).showAccountSecretImport(from: any(), source: any())
+    }
+
+    func testActionsBlockedUntilConsent() {
+        // given
+
+        let view = MockOnboardingMainViewProtocol()
+        let wireframe = MockOnboardingMainWireframeProtocol()
+
+        let presenter = setupPresenterForWireframe(wireframe, view: view, legal: dummyLegalData)
+
+        // when
+
+        presenter.setup()
+        presenter.activateSignup()
+        presenter.activateAccountRestore()
+
+        // then
+
+        verify(wireframe, times(0)).showSignup(from: any())
+        verify(wireframe, times(0)).showAccountRestore(from: any())
+    }
+
+    func testConsentResetsOnReappear() {
+        // given
+
+        let view = MockOnboardingMainViewProtocol()
+        let wireframe = MockOnboardingMainWireframeProtocol()
+
+        let presenter = setupPresenterForWireframe(wireframe, view: view, legal: dummyLegalData)
+
+        // when
+
+        presenter.setup()
+        presenter.toggleConsent()
+        presenter.viewWillAppear()
+        presenter.activateSignup()
+
+        // then
+
+        verify(wireframe, times(0)).showSignup(from: any())
     }
 
     func testTermsAndConditions() {
@@ -63,7 +112,7 @@ class OnboardingMainTests: XCTestCase {
         // when
 
         presenter.setup()
-        presenter.activateTerms()
+        presenter.activateLegalDocument(.termsOfService)
 
         // then
 
@@ -88,7 +137,7 @@ class OnboardingMainTests: XCTestCase {
         // when
 
         presenter.setup()
-        presenter.activatePrivacy()
+        presenter.activateLegalDocument(.privacyNotice)
 
         // then
 
@@ -141,6 +190,7 @@ class OnboardingMainTests: XCTestCase {
         _ wireframe: MockOnboardingMainWireframeProtocol,
         view: MockOnboardingMainViewProtocol,
         legal: LegalData,
+        legalConsentRepository: MockLegalConsentRepositoryProtocol = MockLegalConsentRepositoryProtocol(),
         secretImportService: SecretImportServiceProtocol = SecretImportService(logger: Logger.shared),
         migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
             localDeepLinkScheme: "novawallet",
@@ -148,16 +198,27 @@ class OnboardingMainTests: XCTestCase {
         )
     )
         -> OnboardingMainPresenter {
+        // The real interactor records consent on this mock from the deep link paths as well as
+        // from `acceptLegalDocuments`, and an unstubbed Cuckoo mock raises a fatalError.
+        stub(legalConsentRepository) { stub in
+            when(stub.acceptCurrentVersions(deferringWhenUnavailable: any())).thenDoNothing()
+        }
+
         let interactor = OnboardingMainInteractor(
             secretImportService: secretImportService,
-            walletMigrationService: migrationService
+            walletMigrationService: migrationService,
+            legalConsentRepository: legalConsentRepository,
+            walletSettings: SelectedWalletSettings(
+                storageFacade: UserDataStorageTestFacade(),
+                operationQueue: OperationQueue()
+            )
         )
 
         let presenter = OnboardingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,
             legalData: legal,
-            locale: Locale.current
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -166,6 +227,8 @@ class OnboardingMainTests: XCTestCase {
 
         stub(view) { stub in
             when(stub.isSetup.get).thenReturn(false, true)
+            when(stub.didReceive(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveConsent(accepted: any())).thenDoNothing()
         }
 
         stub(wireframe) { stub in

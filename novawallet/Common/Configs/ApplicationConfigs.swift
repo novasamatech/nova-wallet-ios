@@ -378,6 +378,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/migrations/asset_hub/"
     }
 
+    var legalDocumentsPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/legal/v1/"
+    }
+
     var watchOnlyURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/watch-only-wallets/scam-warning")!
     }

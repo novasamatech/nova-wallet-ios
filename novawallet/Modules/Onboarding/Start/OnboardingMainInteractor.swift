@@ -7,20 +7,30 @@ final class OnboardingMainInteractor {
 
     let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
+    let legalConsentRepository: LegalConsentRepositoryProtocol
+    let walletSettings: SelectedWalletSettings
 
     init(
         secretImportService: SecretImportServiceProtocol,
-        walletMigrationService: WalletMigrationServiceProtocol
+        walletMigrationService: WalletMigrationServiceProtocol,
+        legalConsentRepository: LegalConsentRepositoryProtocol,
+        walletSettings: SelectedWalletSettings
     ) {
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
+        self.legalConsentRepository = legalConsentRepository
+        self.walletSettings = walletSettings
     }
+}
 
-    private func setupWalletMigration() {
+// MARK: - Private
+
+private extension OnboardingMainInteractor {
+    func setupWalletMigration() {
         walletMigrationService.addObserver(self)
     }
 
-    private func checkPendingWalletMigration() {
+    func checkPendingWalletMigration() {
         guard let message = walletMigrationService.consumePendingMessage() else {
             return
         }
@@ -28,19 +38,23 @@ final class OnboardingMainInteractor {
         handleMigration(message: message)
     }
 
-    private func handleMigration(message: WalletMigrationMessage) {
+    func handleMigration(message: WalletMigrationMessage) {
         switch message {
         case let .start(model):
+            recordConsent()
+
             presenter?.didSuggestWalletMigration(with: model)
         default:
             break
         }
     }
 
-    private func suggestSecretImportIfNeeded() {
+    func suggestSecretImportIfNeeded() {
         guard let definition = secretImportService.definition else {
             return
         }
+
+        recordConsent()
 
         switch definition {
         case .keystore:
@@ -49,7 +63,22 @@ final class OnboardingMainInteractor {
             presenter?.didSuggestSecretImport(source: .mnemonic(.appDefault))
         }
     }
+
+    /// This screen never fetches the config, so acceptance normally takes the pending sync branch
+    /// and the versions are written by the first successful fetch.
+    ///
+    /// Deferring is gated on the absence of a wallet because this screen is also reachable while a
+    /// wallet already exists (pin setup, pin change, wallet management). Arming a pending sync
+    /// there would later auto accept a revision the user never saw. When the config is already
+    /// cached the real versions are written for those users too.
+    func recordConsent() {
+        legalConsentRepository.acceptCurrentVersions(
+            deferringWhenUnavailable: !walletSettings.hasValue
+        )
+    }
 }
+
+// MARK: - OnboardingMainInteractorInputProtocol
 
 extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     func setup() {
@@ -59,7 +88,13 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
         setupWalletMigration()
         checkPendingWalletMigration()
     }
+
+    func acceptLegalDocuments() {
+        recordConsent()
+    }
 }
+
+// MARK: - SecretImportObserver
 
 extension OnboardingMainInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
@@ -70,6 +105,8 @@ extension OnboardingMainInteractor: SecretImportObserver {
         presenter?.didReceiveError(secretImportError)
     }
 }
+
+// MARK: - WalletMigrationObserver
 
 extension OnboardingMainInteractor: WalletMigrationObserver {
     func didReceiveMigration(message: WalletMigrationMessage) {

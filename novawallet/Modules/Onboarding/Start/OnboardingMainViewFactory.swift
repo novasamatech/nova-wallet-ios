@@ -39,14 +39,16 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
 
         let interactor = OnboardingMainInteractor(
             secretImportService: secretImportService,
-            walletMigrationService: walletMigrationService
+            walletMigrationService: walletMigrationService,
+            legalConsentRepository: LegalConsentRepository.shared,
+            walletSettings: SelectedWalletSettings.shared
         )
 
         let presenter = OnboardingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
-            locale: LocalizationManager.shared.selectedLocale
+            localizationManager: LocalizationManager.shared
         )
 
         let view = OnboardingMainViewController(
