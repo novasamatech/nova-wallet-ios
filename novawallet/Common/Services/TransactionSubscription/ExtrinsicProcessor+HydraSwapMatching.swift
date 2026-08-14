@@ -328,7 +328,7 @@ extension ExtrinsicProcessor {
                 return false
             }
 
-            return CallCodingPath(moduleName: call.moduleName, callName: call.callName).isTokensTransfer
+            return CallCodingPath(moduleName: call.moduleName, callName: call.callName).isTransfer
         }
 
         guard let transferCalls = optResult?.node.calls else {
@@ -336,8 +336,41 @@ extension ExtrinsicProcessor {
         }
 
         return transferCalls.reduce(Balance(0)) { total, callJson in
+            guard let call = try? ExtrinsicExtraction.getCall(from: callJson, context: context) else {
+                return total
+            }
+
+            return total + commissionTransferAmount(
+                in: call,
+                beneficiary: beneficiary,
+                remoteAssetOut: remoteAssetOut,
+                context: context
+            )
+        }
+    }
+
+    private func commissionTransferAmount(
+        in call: RuntimeCall<JSON>,
+        beneficiary: AccountId,
+        remoteAssetOut: HydraDx.AssetId,
+        context: RuntimeJsonContext
+    ) -> Balance {
+        let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+
+        if callPath.isBalancesTransfer {
             guard
-                let call = try? ExtrinsicExtraction.getCall(from: callJson, context: context),
+                remoteAssetOut == HydraDx.nativeAssetId,
+                let transfer: TransferCall = try? ExtrinsicExtraction.getCallArgs(
+                    from: call.args,
+                    context: context
+                ),
+                transfer.dest.accountId == beneficiary else {
+                return 0
+            }
+
+            return transfer.value
+        } else {
+            guard
                 let transfer: OrmlTokensPallet.TransferCall = try? ExtrinsicExtraction.getCallArgs(
                     from: call.args,
                     context: context
@@ -348,10 +381,10 @@ extension ExtrinsicProcessor {
                     with: context.toRawContext()
                 ).value,
                 currencyId == remoteAssetOut else {
-                return total
+                return 0
             }
 
-            return total + transfer.amount
+            return transfer.amount
         }
     }
 
