@@ -73,7 +73,10 @@ final class HydraExchangeExtrinsicParamsFactory {
             return nil
         }
 
-        let amount = commissionAmount(for: commission, callArgs: callArgs)
+        let amount = max(
+            commissionAmount(for: commission, callArgs: callArgs),
+            commission.minimumChargeableAmount
+        )
 
         guard amount > 0 else {
             return nil

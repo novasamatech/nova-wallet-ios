@@ -13,14 +13,17 @@ protocol AssetExchangeCommissionPolicyProtocol {
         _ netAmountOut: Balance,
         for path: AssetExchangeGraphPath
     ) -> CompoundOperationWrapper<Balance>
-
-    func discardFailedBeneficiaryFetches()
 }
 
 final class AssetExchangeCommissionPolicy {
     struct ChargingRun {
         let operationIndex: Int
         let lastEdgeIndex: Int
+    }
+
+    struct ChargeableAmount {
+        let value: Balance
+        let minimum: Balance
     }
 
     let rate: BigRational
@@ -126,7 +129,7 @@ private extension AssetExchangeCommissionPolicy {
     func chargeableAmountWrapper(
         of grossAmount: Balance,
         chargedAsset: ChainAssetId
-    ) -> CompoundOperationWrapper<Balance?> {
+    ) -> CompoundOperationWrapper<ChargeableAmount?> {
         let estimatedAmount = rateOfGross.mul(value: grossAmount)
 
         guard estimatedAmount > 0 else {
@@ -136,7 +139,7 @@ private extension AssetExchangeCommissionPolicy {
         let readinessWrapper = canReceiveWrapper(for: chargedAsset.chainId)
         let storageInfoWrapper = chargedAssetStorageInfoWrapper(for: chargedAsset)
 
-        let mappingOperation = ClosureOperation<Balance?> {
+        let mappingOperation = ClosureOperation<ChargeableAmount?> {
             let canReceive = try readinessWrapper.targetOperation.extractNoCancellableResultData()
 
             guard canReceive else {
@@ -159,7 +162,7 @@ private extension AssetExchangeCommissionPolicy {
                 return nil
             }
 
-            return estimatedAmount
+            return ChargeableAmount(value: estimatedAmount, minimum: minimumAmount)
         }
 
         mappingOperation.addDependency(readinessWrapper.targetOperation)
@@ -226,7 +229,8 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
             return AssetExchangeCommission(
                 chargingOperationIndex: run.operationIndex,
                 asset: chargedAssetId,
-                estimatedAmount: chargeableAmount,
+                estimatedAmount: chargeableAmount.value,
+                minimumChargeableAmount: chargeableAmount.minimum,
                 beneficiary: self.beneficiary,
                 rateOfGross: self.rateOfGross
             )
@@ -235,10 +239,6 @@ extension AssetExchangeCommissionPolicy: AssetExchangeCommissionPolicyProtocol {
         mappingOperation.addDependency(chargeableWrapper.targetOperation)
 
         return chargeableWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    func discardFailedBeneficiaryFetches() {
-        beneficiaryProvider.discardFailedFetches()
     }
 }
 
@@ -259,8 +259,6 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
     ) -> CompoundOperationWrapper<Balance> {
         .createWithResult(netAmountOut)
     }
-
-    func discardFailedBeneficiaryFetches() {}
 }
 
 enum AssetExchangeCommissionPolicyFactory {

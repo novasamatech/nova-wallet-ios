@@ -129,6 +129,7 @@ enum CommissionTestFixtures {
             chargingOperationIndex: 0,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
             estimatedAmount: 999_999_999,
+            minimumChargeableAmount: 0,
             beneficiary: Data(repeating: 3, count: 32),
             rateOfGross: rate.asShareOfGross
         )
@@ -142,6 +143,7 @@ enum CommissionTestFixtures {
             chargingOperationIndex: chargingOperationIndex,
             asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
             estimatedAmount: estimatedAmount,
+            minimumChargeableAmount: 0,
             beneficiary: beneficiary,
             rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
@@ -195,8 +197,6 @@ enum CommissionTestFixtures {
                     )
                 )
             }
-
-            stub.discardFailedFetches().thenDoNothing()
         }
 
         return provider
@@ -209,8 +209,6 @@ enum CommissionTestFixtures {
             stub.fetchStateWrapper(for: any()).then { _ in
                 .createWithError(CommonError.dataCorruption)
             }
-
-            stub.discardFailedFetches().thenDoNothing()
         }
 
         return provider

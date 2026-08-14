@@ -170,6 +170,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             chargingOperationIndex: 0,
             asset: CommissionTestFixtures.asset(1),
             estimatedAmount: estimatedAmount,
+            minimumChargeableAmount: 0,
             beneficiary: CommissionTestFixtures.beneficiary,
             rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
@@ -266,6 +267,7 @@ final class HydraExchangeExtrinsicParamsFactoryTests: XCTestCase {
             chargingOperationIndex: commission.chargingOperationIndex,
             asset: commission.asset,
             estimatedAmount: 1000,
+            minimumChargeableAmount: commission.minimumChargeableAmount,
             beneficiary: commission.beneficiary,
             rateOfGross: commission.rateOfGross
         )

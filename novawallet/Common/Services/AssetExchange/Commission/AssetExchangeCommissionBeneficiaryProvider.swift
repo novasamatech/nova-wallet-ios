@@ -12,8 +12,6 @@ struct CommissionBeneficiaryState {
 
 protocol AssetExchangeCommissionBeneficiaryProviding {
     func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState>
-
-    func discardFailedFetches()
 }
 
 final class AssetExchangeCommissionBeneficiaryProvider {
@@ -84,13 +82,6 @@ private extension AssetExchangeCommissionBeneficiaryProvider {
 }
 
 extension AssetExchangeCommissionBeneficiaryProvider: AssetExchangeCommissionBeneficiaryProviding {
-    func discardFailedFetches() {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        failures.removeAll()
-    }
-
     func fetchStateWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<CommissionBeneficiaryState> {
         if let cached = cachedState(for: chainId) {
             return .createWithResult(cached)

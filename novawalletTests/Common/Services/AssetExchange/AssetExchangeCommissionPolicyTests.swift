@@ -189,6 +189,7 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             chargingOperationIndex: 5,
             asset: CommissionTestFixtures.asset(2),
             estimatedAmount: 1,
+            minimumChargeableAmount: 0,
             beneficiary: CommissionTestFixtures.beneficiary,
             rateOfGross: AssetExchangeCommissionConstants.rate.asShareOfGross
         )
