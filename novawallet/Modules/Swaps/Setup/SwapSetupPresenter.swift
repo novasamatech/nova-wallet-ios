@@ -382,7 +382,7 @@ extension SwapSetupPresenter {
     private func provideReceiveAmountInputViewModel() {
         provideReceiveAmountLoadingState()
 
-        guard let receiveChainAsset = receiveChainAsset, !receiveAmountLoading else {
+        guard let receiveChainAsset = receiveChainAsset else {
             return
         }
 
@@ -448,14 +448,9 @@ extension SwapSetupPresenter {
             return
         }
 
-        guard commissionResolved else {
-            receiveAmountInput = nil
-            provideReceiveAmountInputViewModel()
-            provideReceiveInputPriceViewModel()
-            return
-        }
+        let amountOut = commissionResolved ? netAmountOut : grossAmountOut
 
-        receiveAmountInput = netAmountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
+        receiveAmountInput = amountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
 
         provideReceiveAmountInputViewModel()
         provideReceiveInputPriceViewModel()
@@ -544,6 +539,7 @@ extension SwapSetupPresenter {
 
     private func provideCommissionDisclosureViewModel() {
         guard commissionResolved else {
+            view?.didReceiveCommissionDisclosure(viewModel: nil)
             return
         }
 
