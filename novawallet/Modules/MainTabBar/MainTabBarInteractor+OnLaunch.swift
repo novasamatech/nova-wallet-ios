@@ -79,6 +79,8 @@ private extension MainTabBarInteractor {
                 return
             }
 
+            // Not `scheduleExecutionIfAuthorized`: it drops its closure when authorization fails,
+            // which at the head of the queue would suppress every later prompt for the session.
             securedLayer.scheduleExecution { [weak self] isAuthorized in
                 guard let self else { return }
 
