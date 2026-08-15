@@ -9,8 +9,6 @@ final class LegalConsentRepository {
 
     private let mutex = NSLock()
 
-    /// Process lifetime cache: a success is cached forever, a failure is never cached so the next
-    /// call retries.
     private var documents: [LegalDocument]?
 
     init(
@@ -27,8 +25,6 @@ final class LegalConsentRepository {
 // MARK: - Private
 
 private extension LegalConsentRepository {
-    /// Publishes the cache, redeems a deferred acceptance and answers the question — all under one
-    /// lock, so a caller asking right after an onboarding acceptance reads already updated settings.
     func handleLoaded(documents loadedDocuments: [LegalDocument]) -> Bool {
         mutex.lock()
 
@@ -53,8 +49,6 @@ private extension LegalConsentRepository {
         }
     }
 
-    /// Versions are written first and the pending flag cleared last: if the process dies in between
-    /// the flag is still set and the next successful sync re-accepts idempotently.
     func accept(documents: [LegalDocument]) {
         var acceptedVersions = settingsManager.legalConsentAcceptedVersions
 
@@ -89,8 +83,6 @@ extension LegalConsentRepository: LegalConsentRepositoryProtocol {
 
                 return handleLoaded(documents: remote.mapToDocuments())
             } catch {
-                // Any throwable lands here: no network, 404, malformed JSON, missing key, malformed
-                // date. The app continues normally and does not prompt.
                 logger.warning("Legal documents config unavailable: \(error)")
 
                 return false

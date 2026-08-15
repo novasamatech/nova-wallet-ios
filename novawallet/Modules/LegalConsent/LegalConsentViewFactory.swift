@@ -3,7 +3,6 @@ import UIKit_iOS
 import Foundation_iOS
 
 struct LegalConsentViewFactory {
-    /// Non optional: nothing here can fail, so callers must not carry a dead nil branch.
     static func createView(
         legalConsentRepository: LegalConsentRepositoryProtocol = LegalConsentRepository.shared,
         completion: @escaping () -> Void

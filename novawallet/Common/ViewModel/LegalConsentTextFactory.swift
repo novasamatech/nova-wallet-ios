@@ -1,17 +1,5 @@
 import UIKit
 
-/// Builds the single consent sentence shared by the welcome screen and the legal consent sheet,
-/// with the document names underlined and independently tappable.
-///
-/// Each link is resolved by its own marker rather than by split index, so a translation is free to
-/// reorder `%1$@` and `%2$@` without the Terms label landing on the Privacy link.
-///
-/// Every string goes through `localizedOrDevelopmentValue()`: the consent sheet is not dismissible,
-/// so a key missing from the selected catalog would otherwise leave the user with the raw key and —
-/// since the marker-less template then places no link at all — no way to reach either document.
-///
-/// `CompoundAttributedStringDecorator.legal(for:marker:)` is deliberately left untouched so
-/// `NotificationsSetupViewController` keeps rendering as it does today.
 enum LegalConsentTextFactory {
     struct Link {
         let marker: String
@@ -36,9 +24,6 @@ enum LegalConsentTextFactory {
             )
         ]
 
-        // The English source is kept as a second candidate: a catalog may carry the key with a
-        // placeholder dropped in translation, which yields a sentence holding fewer markers than
-        // links and would silently lose a document.
         let templates = [
             agreement.localizedOrDevelopmentValue(Constants.termsMarker, Constants.privacyMarker),
             agreement.formattedDevelopmentValue(Constants.termsMarker, Constants.privacyMarker)
@@ -47,9 +32,6 @@ enum LegalConsentTextFactory {
         return createAgreementText(from: templates, links: links)
     }
 
-    /// Renders the first candidate template that still carries a marker for every link. A template
-    /// that lost markers in every candidate is broken, and its dropped documents are appended
-    /// instead: the user is asked to consent to documents, so they must always be able to open them.
     static func createAgreementText(from templates: [String], links: [Link]) -> NSAttributedString {
         for template in templates.map({ $0 as NSString }) {
             let placements = createPlacements(in: template, links: links)

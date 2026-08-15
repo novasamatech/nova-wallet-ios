@@ -39,12 +39,6 @@ extension ModalSheetPresentationStyle {
         return style
     }
 
-    /// Same chrome as `nova` but with an invisible pull indicator: this sheet cannot be dragged, so
-    /// drawing a drag affordance on it would be a lie. The header style is kept rather than nil
-    /// because a nil header also removes the rounded bottom sheet background.
-    ///
-    /// `maxHeight` is a fraction of the available container height, not points — see
-    /// `ModalSheetPresentationController.frameOfPresentedViewInContainerView`.
     static var novaNonDismissable: ModalSheetPresentationStyle {
         let indicatorSize = CGSize(width: 32.0, height: 3.0)
         let headerStyle = ModalSheetPresentationHeaderStyle(

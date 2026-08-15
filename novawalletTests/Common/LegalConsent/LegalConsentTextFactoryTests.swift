@@ -1,12 +1,7 @@
 import XCTest
 @testable import novawallet
 
-/// The consent sheet is not dismissible and the welcome screen cannot be passed without it, so a
-/// key that is still untranslated must never reach the screen as a raw key, and the sentence must
-/// always expose both documents.
 final class LegalConsentTextFactoryTests: XCTestCase {
-    /// Every language the app ships, taken from the app bundle so a new catalog is covered without
-    /// touching the test.
     private lazy var supportedLanguages: [String] = Bundle(for: LegalConsentRepository.self)
         .localizations
         .filter { $0 != "Base" }
@@ -32,8 +27,6 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         }
     }
 
-    /// The fallback is a safety net, not a replacement: a key present in the selected catalog still
-    /// resolves to its translation.
     func testTranslatedKeyKeepsSelectedLanguage() {
         let resource = R.string(preferredLanguages: ["ru"]).localizable.commonCancel
 
@@ -64,8 +57,6 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         }
     }
 
-    /// Both links survive a template that lost its placeholders in translation — the state that
-    /// used to render a consent sentence with no document links at all.
     func testAgreementAppendsLinksMissingFromTemplate() {
         let links = [
             LegalConsentTextFactory.Link(
@@ -92,7 +83,6 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         }
     }
 
-    /// A candidate that kept both markers is preferred over the following ones.
     func testAgreementPrefersFirstIntactTemplate() {
         let links = [
             LegalConsentTextFactory.Link(marker: "{TOS}", type: .termsOfService, title: "Terms"),
@@ -107,8 +97,6 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         XCTAssertEqual(agreement.string, "Selected Terms and Privacy.")
     }
 
-    /// A template whose translation dropped one placeholder falls through to the English source
-    /// instead of rendering a one-link sentence.
     func testAgreementFallsThroughToIntactCandidate() {
         let links = [
             LegalConsentTextFactory.Link(marker: "{TOS}", type: .termsOfService, title: "Terms"),

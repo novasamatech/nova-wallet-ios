@@ -35,7 +35,6 @@ extension LegalDocumentsFetchOperationFactory: LegalDocumentsFetchOperationFacto
 
 private extension LegalDocumentsFetchOperationFactory {
     enum Constants {
-        /// Bounded so a hung fetch cannot stall the on launch action queue.
         static let timeout: TimeInterval = 10
 
         static var configPath: String {

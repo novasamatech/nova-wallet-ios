@@ -60,18 +60,6 @@ private extension OnboardingMainInteractor {
         }
     }
 
-    /// Only the deliberate acceptance on this screen records consent. The automatic routes (secret
-    /// import deep link, wallet migration message) push another screen over the welcome screen
-    /// without the agreement ever being shown, so they must not record anything: such a user is
-    /// asked by the post launch sheet instead.
-    ///
-    /// This screen never fetches the config, so acceptance normally takes the pending sync branch
-    /// and the versions are written by the first successful fetch.
-    ///
-    /// Deferring is gated on the absence of a wallet because this screen is also reachable while a
-    /// wallet already exists (pin setup, pin change, wallet management). Arming a pending sync
-    /// there would later auto accept a revision the user never saw. When the config is already
-    /// cached the real versions are written for those users too.
     func recordConsent() {
         legalConsentRepository.acceptCurrentVersions(
             deferringWhenUnavailable: !walletSettings.hasValue

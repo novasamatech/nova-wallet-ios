@@ -62,41 +62,29 @@ class OnboardingMainTests: XCTestCase {
     }
 
     func testActionsBlockedUntilConsent() {
-        // given
-
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
 
         let presenter = setupPresenterForWireframe(wireframe, view: view, legal: dummyLegalData)
 
-        // when
-
         presenter.setup()
         presenter.activateSignup()
         presenter.activateAccountRestore()
-
-        // then
 
         verify(wireframe, times(0)).showSignup(from: any())
         verify(wireframe, times(0)).showAccountRestore(from: any())
     }
 
     func testConsentResetsOnReappear() {
-        // given
-
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
 
         let presenter = setupPresenterForWireframe(wireframe, view: view, legal: dummyLegalData)
 
-        // when
-
         presenter.setup()
         presenter.toggleConsent()
         presenter.viewWillAppear()
         presenter.activateSignup()
-
-        // then
 
         verify(wireframe, times(0)).showSignup(from: any())
     }
@@ -185,14 +173,10 @@ class OnboardingMainTests: XCTestCase {
         )
         verify(wireframe, times(1)).showAccountSecretImport(from: any(), source: any())
 
-        // The agreement was never shown on this route, so nothing may be accepted on the user's
-        // behalf: the post launch sheet asks later.
         verify(legalConsentRepository, times(0)).acceptCurrentVersions(deferringWhenUnavailable: any())
     }
 
     func testWalletMigrationSuggestion() {
-        // given
-
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
         let legalConsentRepository = MockLegalConsentRepositoryProtocol()
@@ -210,13 +194,9 @@ class OnboardingMainTests: XCTestCase {
             migrationService: migrationService
         )
 
-        // when
-
         presenter.setup()
 
         XCTAssertTrue(migrationService.handle(url: Constants.walletMigrationStartURL))
-
-        // then
 
         verify(wireframe, times(1)).showWalletMigration(from: any(), message: any())
         verify(legalConsentRepository, times(0)).acceptCurrentVersions(deferringWhenUnavailable: any())
@@ -236,8 +216,6 @@ class OnboardingMainTests: XCTestCase {
         )
     )
         -> OnboardingMainPresenter {
-        // The real interactor records consent on this mock from `acceptLegalDocuments`, and an
-        // unstubbed Cuckoo mock raises a fatalError.
         stub(legalConsentRepository) { stub in
             when(stub.acceptCurrentVersions(deferringWhenUnavailable: any())).thenDoNothing()
         }

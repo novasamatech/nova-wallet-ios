@@ -83,11 +83,6 @@ extension LegalConsentViewController: Localizable {
 
 // MARK: - ModalSheetPresenterDelegate
 
-/// The only mechanism that blocks dismissal for a `.custom` bottom sheet: `presenterShouldHide`
-/// gates both the backdrop tap and the interactive swipe down, while `presenterCanDrag` blocks the
-/// drag outright. Not conforming at all is the worst case — the backdrop tap then dismisses
-/// unconditionally. `isModalInPresentation` is deliberately unused because
-/// `ModalSheetPresentationController` never consults it.
 extension LegalConsentViewController: ModalSheetPresenterDelegate {
     func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { false }
 

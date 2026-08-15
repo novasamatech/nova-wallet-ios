@@ -38,8 +38,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertEqual(documents[0].updatedAt, remote.termsOfService.updatedAt.date)
     }
 
-    /// A malformed date invalidates the whole config, including the valid version numbers.
-    /// `"2026/08/04"` and `"2026-8-4"` are the cases a bare `DateFormatter` wrongly accepts.
     func testMalformedDatesFailDecoding() {
         let badValues = [
             "4 March 2026",
@@ -166,7 +164,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertTrue(resolveConsentRequired(repository))
     }
 
-    /// Once the config has loaded, later callers are answered from the cache without another fetch.
     func testResolvedConfigIsCachedAcrossCalls() {
         let settings = InMemorySettingsManager()
         let factory = createSuccessFactory()
@@ -180,7 +177,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
         verify(factory, times(1)).fetchOperation()
     }
 
-    /// A failure is never cached, so the next caller retries rather than being stuck on `false`.
     func testFailedFetchIsNotCached() {
         let settings = InMemorySettingsManager()
         let factory = MockLegalDocumentsFetchOperationFactoryProtocol()
@@ -212,7 +208,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
 
     // MARK: - Localized template contract
 
-    /// `LegalConsentTextFactory` silently drops a link whose marker is missing from the template.
     func testEnglishAgreementTemplateCarriesBothMarkers() {
         let template = R.string(preferredLanguages: ["en"]).localizable
             .legalConsentAgreement("{TOS}", "{PN}")

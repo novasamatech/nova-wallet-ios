@@ -10,16 +10,6 @@ struct LegalDocumentRemote: Decodable {
     let updatedAt: LegalDocumentDate
 }
 
-/// Strict `yyyy-MM-dd` parser.
-///
-/// A `DateFormatter` with `dateFormat = "yyyy-MM-dd"` is not strict enough on its own: `"2026/08/04"`
-/// and `"2026-8-4"` both parse even with `isLenient = false`, and
-/// `ISO8601DateFormatter(formatOptions: [.withFullDate, .withDashSeparatorInDate])` accepts them too.
-/// The shape is therefore validated explicitly before parsing.
-///
-/// Strictness lives in the type rather than in a `dateDecodingStrategy` because
-/// `BaseFetchOperationFactory.createResultFactory()` decodes with a bare `JSONDecoder` shared by
-/// every subclass.
 struct LegalDocumentDate: Decodable, Equatable {
     let date: Date
 

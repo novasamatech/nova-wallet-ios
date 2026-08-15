@@ -428,10 +428,6 @@ extension SettingsManagerProtocol {
         }
     }
 
-    /// Keyed by `LegalDocumentType.rawValue`. A missing entry means nothing accepted and is treated
-    /// as version 0 at the comparison site. A plain dictionary rather than a bespoke type because
-    /// this file is compiled into the push notification extension too, where any new type would
-    /// need its own target membership.
     var legalConsentAcceptedVersions: [String: Int] {
         get {
             value(

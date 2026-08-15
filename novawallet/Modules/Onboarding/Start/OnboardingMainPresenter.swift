@@ -43,8 +43,6 @@ private extension OnboardingMainPresenter {
             return
         }
 
-        // Proceeding from this screen records acceptance of the current documents, and does it
-        // before navigating so the write is durable.
         interactor.acceptLegalDocuments()
 
         navigationClosure(view)
@@ -60,10 +58,6 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
         interactor.setup()
     }
 
-    /// The checkbox is not persisted: leaving and returning resets it. The next screen is pushed
-    /// over this one, so the presenter survives the round trip and must reset explicitly. Returning
-    /// from the in-app browser does not reset it because the browser is presented over full screen
-    /// and does not re-run `viewWillAppear`.
     func viewWillAppear() {
         guard consentAccepted else {
             return

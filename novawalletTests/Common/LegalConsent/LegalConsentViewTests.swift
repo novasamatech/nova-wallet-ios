@@ -2,8 +2,6 @@ import UIKit
 import XCTest
 @testable import novawallet
 
-/// The checkbox is the only way past the welcome screen and past the non dismissible consent sheet,
-/// so it has to stay both announced by VoiceOver and comfortably tappable.
 final class LegalConsentViewTests: XCTestCase {
     // MARK: - Accessibility
 
@@ -32,8 +30,6 @@ final class LegalConsentViewTests: XCTestCase {
 
     // MARK: - Touch target
 
-    /// A target reaching outside these bounds is rejected by the superview before the control is
-    /// ever consulted, so the whole 44pt square has to fit inside them.
     func testCheckboxTouchTargetIsAtLeast44ptAndInsideBounds() {
         let view = makeLayoutedView(with: makeAgreement())
 
@@ -51,8 +47,6 @@ final class LegalConsentViewTests: XCTestCase {
         XCTAssertTrue(view.hitTest(bottomLeft, with: nil) === view.checkboxControl)
     }
 
-    /// The enlarged target must not move the artwork: it stays in the top left corner at its
-    /// original size, with the sentence beside it.
     func testCheckboxArtworkKeepsItsPlace() {
         let view = makeLayoutedView(with: makeAgreement())
 

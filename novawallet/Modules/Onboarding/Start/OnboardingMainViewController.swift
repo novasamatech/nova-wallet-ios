@@ -68,9 +68,6 @@ private extension OnboardingMainViewController {
         }
     }
 
-    /// `applyState(title:enabled:)` and `set(enabled:)` are not used: both hardcode the primary
-    /// enabled style, while `importButton` uses the secondary one. Titles never change here, only
-    /// the enabled state does.
     func updateActionButtons(enabled: Bool) {
         if enabled {
             rootView.createButton.applyDefaultStyle()

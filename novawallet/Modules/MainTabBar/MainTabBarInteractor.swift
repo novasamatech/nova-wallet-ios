@@ -34,8 +34,6 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         ]
     )
 
-    /// Set only from the main queue, right before the sheet is requested, and consumed by
-    /// `didCompleteLegalConsent`.
     private var legalConsentAdvancesQueue: Bool = false
 
     deinit {
@@ -127,14 +125,11 @@ private extension MainTabBarInteractor {
     }
 
     func showLegalConsentOrNextAction(advancingQueue: Bool) {
-        // The user must already own a wallet: someone who has just onboarded accepted the current
-        // documents on the welcome screen.
         guard walletSettings.hasValue else {
             advanceLaunchQueue(if: advancingQueue)
             return
         }
 
-        // Resolves to false on any config failure, so the app is never blocked by a bad config.
         let wrapper = legalConsentRepository.consentRequiredWrapper()
 
         execute(
@@ -149,9 +144,6 @@ private extension MainTabBarInteractor {
                 return
             }
 
-            // The two argument form is required here: `scheduleExecutionIfAuthorized` drops its
-            // closure when authorization fails, and because consent is head of the queue that
-            // would suppress every other launch prompt for the session.
             securedLayer.scheduleExecution { [weak self] isAuthorized in
                 guard let self else { return }
 
@@ -286,8 +278,6 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         onLaunchQueue.delegate = self
 
-        // The pending screen branches never reach the launch queue, so the consent check is fired
-        // alongside them and advances nothing.
         if
             let message = walletMigrationService.consumePendingMessage(),
             case let .start(content) = message {

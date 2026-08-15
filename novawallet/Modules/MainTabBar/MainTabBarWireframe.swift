@@ -569,10 +569,6 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
     ) {
         let consentView = LegalConsentViewFactory.createView(completion: completion)
 
-        // `topModalViewController` so the sheet still appears above a deep linked screen presented
-        // earlier in the same launch. Dismissal is blocked by the module's own
-        // `ModalSheetPresenterDelegate` conformance, not by `isModalInPresentation`, which a
-        // `.custom` presentation never consults.
         view?.controller.topModalViewController.present(
             consentView.controller,
             animated: true
