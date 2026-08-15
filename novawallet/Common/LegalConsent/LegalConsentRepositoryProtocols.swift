@@ -6,13 +6,14 @@ protocol LegalDocumentsFetchOperationFactoryProtocol {
 }
 
 protocol LegalConsentRepositoryProtocol: AnyObject {
-    /// Answers `true` only when the remote config loaded and some document's remote version is
+    /// Resolves to `true` only when the remote config loaded and some document's remote version is
     /// strictly greater than the locally accepted one.
     ///
-    /// Any failure — no network, 404, malformed JSON, missing key, malformed date — answers `false`:
-    /// the app must never prompt on a config it could not read. Concurrent calls coalesce into a
-    /// single network request.
-    func isConsentRequired(runningIn queue: DispatchQueue, completion: @escaping (Bool) -> Void)
+    /// Any failure — no network, 404, malformed JSON, missing key, malformed date — resolves to
+    /// `false` rather than erroring: the app must never prompt on a config it could not read, and
+    /// keeping that invariant here means no caller can forget it. Once the config has loaded the
+    /// wrapper is resolved from the cache without touching the network.
+    func consentRequiredWrapper() -> CompoundOperationWrapper<Bool>
 
     /// Records acceptance of both documents at once. Synchronous on purpose: callers record consent
     /// and navigate on the very next line with the write already durable.

@@ -96,14 +96,7 @@ final class LegalConsentRepositoryTests: XCTestCase {
 
         let repository = createRepository(fetchFactory: factory, settings: settings)
 
-        let expectation = XCTestExpectation()
-
-        repository.isConsentRequired(runningIn: .main) { required in
-            XCTAssertFalse(required)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 5)
+        XCTAssertFalse(resolveConsentRequired(repository))
     }
 
     func testPendingAcceptanceIsRedeemedByFirstSuccessfulSync() {
@@ -118,14 +111,7 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertTrue(settings.legalConsentPendingSync)
         XCTAssertTrue(settings.legalConsentAcceptedVersions.isEmpty)
 
-        let expectation = XCTestExpectation()
-
-        repository.isConsentRequired(runningIn: .main) { required in
-            XCTAssertFalse(required)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 5)
+        XCTAssertFalse(resolveConsentRequired(repository))
 
         XCTAssertFalse(settings.legalConsentPendingSync)
         XCTAssertEqual(
@@ -162,14 +148,7 @@ final class LegalConsentRepositoryTests: XCTestCase {
             settings: settings
         )
 
-        let expectation = XCTestExpectation()
-
-        repository.isConsentRequired(runningIn: .main) { required in
-            XCTAssertFalse(required)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 5)
+        XCTAssertFalse(resolveConsentRequired(repository))
     }
 
     func testSingleDocumentBumpPrompts() {
@@ -184,35 +163,51 @@ final class LegalConsentRepositoryTests: XCTestCase {
             settings: settings
         )
 
-        let expectation = XCTestExpectation()
-
-        repository.isConsentRequired(runningIn: .main) { required in
-            XCTAssertTrue(required)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 5)
+        XCTAssertTrue(resolveConsentRequired(repository))
     }
 
-    /// A burst of callers must coalesce into exactly one network request.
-    func testConcurrentRequestsShareSingleFetch() {
+    /// Once the config has loaded, later callers are answered from the cache without another fetch.
+    func testResolvedConfigIsCachedAcrossCalls() {
         let settings = InMemorySettingsManager()
         let factory = createSuccessFactory()
 
         let repository = createRepository(fetchFactory: factory, settings: settings)
 
-        let expectations = (0 ..< 5).map { _ in XCTestExpectation() }
+        XCTAssertTrue(resolveConsentRequired(repository))
+        XCTAssertTrue(resolveConsentRequired(repository))
+        XCTAssertTrue(resolveConsentRequired(repository))
 
-        expectations.forEach { expectation in
-            repository.isConsentRequired(runningIn: .main) { required in
-                XCTAssertTrue(required)
-                expectation.fulfill()
+        verify(factory, times(1)).fetchOperation()
+    }
+
+    /// A failure is never cached, so the next caller retries rather than being stuck on `false`.
+    func testFailedFetchIsNotCached() {
+        let settings = InMemorySettingsManager()
+        let factory = MockLegalDocumentsFetchOperationFactoryProtocol()
+
+        var shouldFail = true
+
+        stub(factory) { stub in
+            stub.fetchOperation().then { [validJson] in
+                guard !shouldFail else {
+                    return BaseOperation.createWithError(NetworkBaseError.unexpectedEmptyData)
+                }
+
+                return ClosureOperation {
+                    try JSONDecoder().decode(LegalDocumentsRemote.self, from: Data(validJson.utf8))
+                }
             }
         }
 
-        wait(for: expectations, timeout: 5)
+        let repository = createRepository(fetchFactory: factory, settings: settings)
 
-        verify(factory, times(1)).fetchOperation()
+        XCTAssertFalse(resolveConsentRequired(repository))
+
+        shouldFail = false
+
+        XCTAssertTrue(resolveConsentRequired(repository))
+
+        verify(factory, times(2)).fetchOperation()
     }
 
     // MARK: - Localized template contract
@@ -249,8 +244,15 @@ final class LegalConsentRepositoryTests: XCTestCase {
         LegalConsentRepository(
             fetchFactory: fetchFactory,
             settingsManager: settings,
-            operationQueue: OperationQueue(),
             logger: Logger.shared
         )
+    }
+
+    private func resolveConsentRequired(_ repository: LegalConsentRepositoryProtocol) -> Bool {
+        let wrapper = repository.consentRequiredWrapper()
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return (try? wrapper.targetOperation.extractNoCancellableResultData()) ?? false
     }
 }

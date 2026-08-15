@@ -134,11 +134,17 @@ private extension MainTabBarInteractor {
             return
         }
 
-        // Answers false on any config failure, so the app is never blocked by a bad config.
-        legalConsentRepository.isConsentRequired(runningIn: .main) { [weak self] required in
+        // Resolves to false on any config failure, so the app is never blocked by a bad config.
+        let wrapper = legalConsentRepository.consentRequiredWrapper()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             guard let self else { return }
 
-            guard required else {
+            guard case let .success(required) = result, required else {
                 advanceLaunchQueue(if: advancingQueue)
                 return
             }
