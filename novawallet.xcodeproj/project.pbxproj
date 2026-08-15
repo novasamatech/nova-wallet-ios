@@ -4613,6 +4613,7 @@
 		8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */; };
 		8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */; };
 		8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */; };
+		8A1C0E932F0600000000B105 /* OnboardingMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */; };
 		8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142724A935FE008F705E /* ErrorPresentable.swift */; };
 		8490142D24A935FE008F705E /* WebPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142824A935FE008F705E /* WebPresentable.swift */; };
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
@@ -10936,6 +10937,7 @@
 		8490140824A92F6D008F705E /* OnboardingMainPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainPresenter.swift; sourceTree = "<group>"; };
 		8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewFactory.swift; sourceTree = "<group>"; };
 		8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainWireframe.swift; sourceTree = "<group>"; };
+		8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewModel.swift; sourceTree = "<group>"; };
 		8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainProtocol.swift; sourceTree = "<group>"; };
 		8490142724A935FE008F705E /* ErrorPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorPresentable.swift; sourceTree = "<group>"; };
 		8490142824A935FE008F705E /* WebPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPresentable.swift; sourceTree = "<group>"; };
@@ -24338,6 +24340,14 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
+		8A1C0E912F0600000000B105 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		8490140124A92F6D008F705E /* Start */ = {
 			isa = PBXGroup;
 			children = (
@@ -24350,6 +24360,7 @@
 				8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */,
 				844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */,
 				845353BA2886E3B4006C871A /* OnboardingMainViewLayout.swift */,
+				8A1C0E912F0600000000B105 /* ViewModel */,
 			);
 			path = Start;
 			sourceTree = "<group>";
@@ -31384,6 +31395,7 @@
 				883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */,
 				7728E58D2A123B42007901E0 /* SearchOperationFactory.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
+				8A1C0E932F0600000000B105 /* OnboardingMainViewModel.swift in Sources */,
 				2D81FAED2CC8F33B00BA0E46 /* BadgedManageButton.swift in Sources */,
 				0CCCDF882B660E8700473D42 /* HydraOmnipoolQuoteParamsService.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,

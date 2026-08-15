@@ -1,11 +1,6 @@
 import Foundation
 import Foundation_iOS
 
-struct OnboardingMainViewModel {
-    let agreement: NSAttributedString
-    let consentAccepted: Bool
-}
-
 protocol OnboardingMainViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: OnboardingMainViewModel)
     func didReceiveConsent(accepted: Bool)
