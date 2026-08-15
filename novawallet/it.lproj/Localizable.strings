@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "Avviso";
 "swaps.commission.disclosure" = "Include la commissione Nova dello %@.";
 "swaps.rate.includes.commission.description" = "Il miglior tasso trovato, inclusa una commissione Nova Wallet dello %@.";
+"common.terms.of.service" = "Termini di servizio";
+"common.privacy.notice" = "Informativa sulla privacy";
+"legal.consent.agreement" = "Accetto i %1$@ e riconosco i %2$@.";
+"legal.consent.title" = "Termini aggiornati";
+"legal.consent.subtitle" = "Abbiamo aggiornato i nostri Termini di servizio e l'Informativa sulla privacy. Esamina e accetta i documenti aggiornati per continuare a utilizzare Nova Wallet.";
+"legal.consent.accept" = "Accetta e continua";

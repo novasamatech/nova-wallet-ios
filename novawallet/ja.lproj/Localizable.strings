@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "注意";
 "swaps.commission.disclosure" = "%@ Nova手数料が含まれています。";
 "swaps.rate.includes.commission.description" = "%@ Nova Wallet手数料を含む、見つかった最適なレートです。";
+"common.terms.of.service" = "利用規約";
+"common.privacy.notice" = "プライバシーに関する通知";
+"legal.consent.agreement" = "%1$@に同意し、%2$@を確認しました。";
+"legal.consent.title" = "更新された利用規約";
+"legal.consent.subtitle" = "利用規約とプライバシーに関する通知を更新しました。Nova Walletの利用を続けるには、更新された文書を確認して同意してください。";
+"legal.consent.accept" = "同意して続行";

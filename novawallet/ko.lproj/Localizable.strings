@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "알림";
 "swaps.commission.disclosure" = "%@ Nova 수수료가 포함되어 있습니다.";
 "swaps.rate.includes.commission.description" = "%@ Nova Wallet 수수료가 포함된 최적의 환율입니다.";
+"common.terms.of.service" = "서비스 약관";
+"common.privacy.notice" = "개인정보 보호정책";
+"legal.consent.agreement" = "%1$@에 동의하고 %2$@을(를) 확인합니다.";
+"legal.consent.title" = "업데이트된 약관";
+"legal.consent.subtitle" = "서비스 약관 및 개인정보 보호정책이 업데이트되었습니다. Nova Wallet을 계속 사용하려면 업데이트된 문서를 검토하고 동의해 주세요.";
+"legal.consent.accept" = "동의하고 계속하기";

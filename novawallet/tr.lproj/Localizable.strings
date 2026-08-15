@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "Bildirim";
 "swaps.commission.disclosure" = "%@ Nova ücretini içerir.";
 "swaps.rate.includes.commission.description" = "%@ Nova Wallet ücretini içeren, bulunan en iyi kur.";
+"common.terms.of.service" = "Hizmet Koşulları";
+"common.privacy.notice" = "Gizlilik Bildirimi";
+"legal.consent.agreement" = "%1$@ sözleşmesini kabul ediyor ve %2$@ belgesini okuduğumu onaylıyorum.";
+"legal.consent.title" = "Güncellenen Koşullar";
+"legal.consent.subtitle" = "Hizmet Koşullarımızı ve Gizlilik Bildirimimizi güncelledik. Nova Wallet'ı kullanmaya devam etmek için lütfen güncellenen belgeleri inceleyip kabul edin.";
+"legal.consent.accept" = "Kabul et ve devam et";

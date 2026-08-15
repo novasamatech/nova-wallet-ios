@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "Figyelem";
 "swaps.commission.disclosure" = "Tartalmazza a %@ Nova díját.";
 "swaps.rate.includes.commission.description" = "A megtalált legjobb árfolyam, amely tartalmazza a %@ Nova Wallet díját.";
+"common.terms.of.service" = "Szolgáltatási feltételek";
+"common.privacy.notice" = "Adatvédelmi nyilatkozat";
+"legal.consent.agreement" = "Elfogadom a(z) %1$@ dokumentumot, és tudomásul veszem a(z) %2$@ dokumentumot.";
+"legal.consent.title" = "Frissített feltételek";
+"legal.consent.subtitle" = "Frissítettük a Szolgáltatási feltételeket és az Adatvédelmi nyilatkozatot. A Nova Wallet további használatához tekintsd át és fogadd el a frissített dokumentumokat.";
+"legal.consent.accept" = "Elfogadás és folytatás";
