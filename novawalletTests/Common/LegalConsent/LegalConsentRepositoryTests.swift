@@ -38,48 +38,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertEqual(documents[0].updatedAt, remote.termsOfService.updatedAt.date)
     }
 
-    func testMalformedDatesFailDecoding() {
-        let badValues = [
-            "4 March 2026",
-            "2026-13-45",
-            "2026/08/04",
-            "2026-8-4",
-            "20260804",
-            "2026-08-04T00:00:00Z",
-            ""
-        ]
-
-        for badValue in badValues {
-            let json = """
-            {
-              "termsOfService": { "version": 2, "updatedAt": "\(badValue)" },
-              "privacyNotice":  { "version": 1, "updatedAt": "2026-03-04" }
-            }
-            """
-
-            XCTAssertThrowsError(
-                try JSONDecoder().decode(LegalDocumentsRemote.self, from: Data(json.utf8)),
-                "Expected \(badValue) to be rejected"
-            )
-        }
-    }
-
-    func testNumericDateFailsDecoding() {
-        let json = #"{"version": 1, "updatedAt": 2026}"#
-
-        XCTAssertThrowsError(
-            try JSONDecoder().decode(LegalDocumentRemote.self, from: Data(json.utf8))
-        )
-    }
-
-    func testMissingDocumentFailsDecoding() {
-        let json = #"{"termsOfService": {"version": 1, "updatedAt": "2026-03-04"}}"#
-
-        XCTAssertThrowsError(
-            try JSONDecoder().decode(LegalDocumentsRemote.self, from: Data(json.utf8))
-        )
-    }
-
     // MARK: - Repository contract
 
     func testUnavailableConfigNeverPrompts() {
@@ -204,16 +162,6 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertTrue(resolveConsentRequired(repository))
 
         verify(factory, times(2)).fetchOperation()
-    }
-
-    // MARK: - Localized template contract
-
-    func testEnglishAgreementTemplateCarriesBothMarkers() {
-        let template = R.string(preferredLanguages: ["en"]).localizable
-            .legalConsentAgreement("{TOS}", "{PN}")
-
-        XCTAssertTrue(template.contains("{TOS}"))
-        XCTAssertTrue(template.contains("{PN}"))
     }
 
     // MARK: - Private

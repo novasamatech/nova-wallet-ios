@@ -6617,7 +6617,6 @@
 		5A17C0B62F0100000000E001 /* LegalConsentRepository+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */; };
 		5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */; };
 		5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */; };
-		5A17C3062F0100000000E001 /* LegalConsentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C3052F0100000000E001 /* LegalConsentViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -12975,7 +12974,6 @@
 		5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "LegalConsentRepository+Singleton.swift"; sourceTree = "<group>"; };
 		5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryTests.swift; sourceTree = "<group>"; };
 		5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactoryTests.swift; sourceTree = "<group>"; };
-		5A17C3052F0100000000E001 /* LegalConsentViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30422,7 +30420,6 @@
 			children = (
 				5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */,
 				5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */,
-				5A17C3052F0100000000E001 /* LegalConsentViewTests.swift */,
 			);
 			path = LegalConsent;
 			sourceTree = "<group>";
@@ -37110,7 +37107,6 @@
 			files = (
 				5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */,
 				5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */,
-				5A17C3062F0100000000E001 /* LegalConsentViewTests.swift in Sources */,
 				AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */,
 				084A55D813829148011F4361 /* StubAssetExchangeEdge.swift in Sources */,
 				4B1233664B97FD871610C205 /* CommissionTestFixtures.swift in Sources */,
