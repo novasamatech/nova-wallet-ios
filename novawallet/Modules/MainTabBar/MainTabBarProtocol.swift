@@ -25,7 +25,6 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
     func setPushNotificationsSetupScreenSeen()
     func requestNextOnLaunchAction()
-    func didCompleteLegalConsent()
 }
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
