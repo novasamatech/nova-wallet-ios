@@ -35,7 +35,7 @@ final class LegalConsentRepositoryTests: XCTestCase {
         XCTAssertEqual(documents.map(\.type), [.termsOfService, .privacyNotice])
         XCTAssertEqual(documents[0].version, 2)
         XCTAssertEqual(documents[1].version, 1)
-        XCTAssertEqual(documents[0].updatedAt, remote.termsOfService.updatedAt.date)
+        XCTAssertEqual(documents[0].updatedAt, remote.termsOfService.updatedAt)
     }
 
     // MARK: - Repository contract
