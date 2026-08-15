@@ -24,7 +24,7 @@ final class LegalConsentView: UIView {
     }
 
     var onCheckboxToggle: (() -> Void)?
-    var onLinkTap: ((LegalDocumentType) -> Void)?
+    var onLinkTap: ((URL) -> Void)?
 
     var isChecked: Bool = false {
         didSet {
@@ -114,9 +114,7 @@ extension LegalConsentView: UITextViewDelegate {
             return false
         }
 
-        if let type = LegalDocumentType.fromLinkURL(url) {
-            onLinkTap?(type)
-        }
+        onLinkTap?(url)
 
         return false
     }

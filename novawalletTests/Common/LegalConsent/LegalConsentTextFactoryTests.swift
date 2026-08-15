@@ -38,12 +38,14 @@ final class LegalConsentTextFactoryTests: XCTestCase {
     func testAgreementCarriesBothLinksInEveryLanguage() {
         for language in supportedLanguages {
             let agreement = LegalConsentTextFactory.createAgreementText(
-                for: Locale(identifier: language)
+                for: Locale(identifier: language),
+                termsURL: Constants.termsURL,
+                privacyURL: Constants.privacyURL
             )
 
             XCTAssertEqual(
-                linkedTypes(in: agreement),
-                Set(LegalDocumentType.allCases),
+                linkedURLs(in: agreement),
+                Constants.bothURLs,
                 "\(language) misses a legal document link"
             )
 
@@ -61,12 +63,12 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         let links = [
             LegalConsentTextFactory.Link(
                 marker: "{TOS}",
-                type: .termsOfService,
+                url: Constants.termsURL,
                 title: "Terms of Service"
             ),
             LegalConsentTextFactory.Link(
                 marker: "{PN}",
-                type: .privacyNotice,
+                url: Constants.privacyURL,
                 title: "Privacy Notice"
             )
         ]
@@ -76,7 +78,7 @@ final class LegalConsentTextFactoryTests: XCTestCase {
             links: links
         )
 
-        XCTAssertEqual(linkedTypes(in: agreement), Set(LegalDocumentType.allCases))
+        XCTAssertEqual(linkedURLs(in: agreement), Constants.bothURLs)
 
         for link in links {
             XCTAssertTrue(agreement.string.contains(link.title))
@@ -85,8 +87,8 @@ final class LegalConsentTextFactoryTests: XCTestCase {
 
     func testAgreementPrefersFirstIntactTemplate() {
         let links = [
-            LegalConsentTextFactory.Link(marker: "{TOS}", type: .termsOfService, title: "Terms"),
-            LegalConsentTextFactory.Link(marker: "{PN}", type: .privacyNotice, title: "Privacy")
+            LegalConsentTextFactory.Link(marker: "{TOS}", url: Constants.termsURL, title: "Terms"),
+            LegalConsentTextFactory.Link(marker: "{PN}", url: Constants.privacyURL, title: "Privacy")
         ]
 
         let agreement = LegalConsentTextFactory.createAgreementText(
@@ -99,8 +101,8 @@ final class LegalConsentTextFactoryTests: XCTestCase {
 
     func testAgreementFallsThroughToIntactCandidate() {
         let links = [
-            LegalConsentTextFactory.Link(marker: "{TOS}", type: .termsOfService, title: "Terms"),
-            LegalConsentTextFactory.Link(marker: "{PN}", type: .privacyNotice, title: "Privacy")
+            LegalConsentTextFactory.Link(marker: "{TOS}", url: Constants.termsURL, title: "Terms"),
+            LegalConsentTextFactory.Link(marker: "{PN}", url: Constants.privacyURL, title: "Privacy")
         ]
 
         let agreement = LegalConsentTextFactory.createAgreementText(
@@ -109,30 +111,34 @@ final class LegalConsentTextFactoryTests: XCTestCase {
         )
 
         XCTAssertEqual(agreement.string, "English Terms and Privacy.")
-        XCTAssertEqual(linkedTypes(in: agreement), Set(LegalDocumentType.allCases))
+        XCTAssertEqual(linkedURLs(in: agreement), Constants.bothURLs)
     }
 }
 
 // MARK: - Private
 
 private extension LegalConsentTextFactoryTests {
-    func linkedTypes(in text: NSAttributedString) -> Set<LegalDocumentType> {
-        var types: Set<LegalDocumentType> = []
+    enum Constants {
+        static let termsURL = URL(string: "https://novawallet.io/terms")!
+        static let privacyURL = URL(string: "https://novawallet.io/privacy")!
+
+        static let bothURLs: Set<URL> = [termsURL, privacyURL]
+    }
+
+    func linkedURLs(in text: NSAttributedString) -> Set<URL> {
+        var urls: Set<URL> = []
 
         text.enumerateAttribute(
             .link,
             in: NSRange(location: 0, length: text.length)
         ) { value, _, _ in
-            guard
-                let url = value as? URL,
-                let type = LegalDocumentType.fromLinkURL(url)
-            else {
+            guard let url = value as? URL else {
                 return
             }
 
-            types.insert(type)
+            urls.insert(url)
         }
 
-        return types
+        return urls
     }
 }

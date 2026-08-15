@@ -34,7 +34,11 @@ private extension LegalConsentPresenter {
         let viewModel = LegalConsentViewModel(
             title: strings.legalConsentTitle.localizedOrDevelopmentValue(),
             subtitle: strings.legalConsentSubtitle.localizedOrDevelopmentValue(),
-            agreement: LegalConsentTextFactory.createAgreementText(for: locale),
+            agreement: LegalConsentTextFactory.createAgreementText(
+                for: locale,
+                termsURL: legalData.termsUrl,
+                privacyURL: legalData.privacyPolicyUrl
+            ),
             acceptTitle: strings.legalConsentAccept.localizedOrDevelopmentValue(),
             consentAccepted: consentAccepted
         )
@@ -60,14 +64,9 @@ extension LegalConsentPresenter: LegalConsentPresenterProtocol {
         view?.didReceiveConsent(accepted: consentAccepted)
     }
 
-    func activateLegalDocument(_ type: LegalDocumentType) {
+    func activateLegalDocument(url: URL) {
         guard let view else {
             return
-        }
-
-        let url = switch type {
-        case .termsOfService: legalData.termsUrl
-        case .privacyNotice: legalData.privacyPolicyUrl
         }
 
         wireframe.showWeb(url: url, from: view, style: .modal)

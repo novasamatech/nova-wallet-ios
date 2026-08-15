@@ -30,7 +30,9 @@ private extension OnboardingMainPresenter {
     func provideViewModel() {
         let viewModel = OnboardingMainViewModel(
             agreement: LegalConsentTextFactory.createAgreementText(
-                for: localizationManager.selectedLocale
+                for: localizationManager.selectedLocale,
+                termsURL: legalData.termsUrl,
+                privacyURL: legalData.privacyPolicyUrl
             ),
             consentAccepted: consentAccepted
         )
@@ -90,14 +92,9 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
         }
     }
 
-    func activateLegalDocument(_ type: LegalDocumentType) {
+    func activateLegalDocument(url: URL) {
         guard let view else {
             return
-        }
-
-        let url = switch type {
-        case .termsOfService: legalData.termsUrl
-        case .privacyNotice: legalData.privacyPolicyUrl
         }
 
         wireframe.showWeb(url: url, from: view, style: .modal)

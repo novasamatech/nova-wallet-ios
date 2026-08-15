@@ -70,7 +70,11 @@ private extension LegalConsentViewTests {
     }
 
     func makeAgreement() -> NSAttributedString {
-        LegalConsentTextFactory.createAgreementText(for: Locale(identifier: "en"))
+        LegalConsentTextFactory.createAgreementText(
+            for: Locale(identifier: "en"),
+            termsURL: URL(string: "https://novawallet.io/terms")!,
+            privacyURL: URL(string: "https://novawallet.io/privacy")!
+        )
     }
 
     func makeLayoutedView(with agreement: NSAttributedString) -> LegalConsentView {

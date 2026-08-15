@@ -18,7 +18,7 @@ protocol OnboardingMainPresenterProtocol: AnyObject {
     func toggleConsent()
     func activateSignup()
     func activateAccountRestore()
-    func activateLegalDocument(_ type: LegalDocumentType)
+    func activateLegalDocument(url: URL)
 }
 
 protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, ActionsManagePresentable {

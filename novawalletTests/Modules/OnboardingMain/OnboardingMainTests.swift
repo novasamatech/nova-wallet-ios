@@ -100,7 +100,7 @@ class OnboardingMainTests: XCTestCase {
         // when
 
         presenter.setup()
-        presenter.activateLegalDocument(.termsOfService)
+        presenter.activateLegalDocument(url: dummyLegalData.termsUrl)
 
         // then
 
@@ -125,7 +125,7 @@ class OnboardingMainTests: XCTestCase {
         // when
 
         presenter.setup()
-        presenter.activateLegalDocument(.privacyNotice)
+        presenter.activateLegalDocument(url: dummyLegalData.privacyPolicyUrl)
 
         // then
 

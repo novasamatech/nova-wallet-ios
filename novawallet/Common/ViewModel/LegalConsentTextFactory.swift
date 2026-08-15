@@ -3,23 +3,27 @@ import UIKit
 enum LegalConsentTextFactory {
     struct Link {
         let marker: String
-        let type: LegalDocumentType
+        let url: URL
         let title: String
     }
 
-    static func createAgreementText(for locale: Locale) -> NSAttributedString {
+    static func createAgreementText(
+        for locale: Locale,
+        termsURL: URL,
+        privacyURL: URL
+    ) -> NSAttributedString {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let agreement = strings.legalConsentAgreement
 
         let links: [Link] = [
             Link(
                 marker: Constants.termsMarker,
-                type: .termsOfService,
+                url: termsURL,
                 title: strings.commonTermsOfService.localizedOrDevelopmentValue()
             ),
             Link(
                 marker: Constants.privacyMarker,
-                type: .privacyNotice,
+                url: privacyURL,
                 title: strings.commonPrivacyNotice.localizedOrDevelopmentValue()
             )
         ]
@@ -53,7 +57,7 @@ private extension LegalConsentTextFactory {
     struct Placement {
         let range: NSRange
         let title: String
-        let type: LegalDocumentType
+        let url: URL
     }
 
     static func createPlacements(in template: NSString, links: [Link]) -> [Placement] {
@@ -65,7 +69,7 @@ private extension LegalConsentTextFactory {
                     return nil
                 }
 
-                return Placement(range: range, title: link.title, type: link.type)
+                return Placement(range: range, title: link.title, url: link.url)
             }
             .sorted { $0.range.location < $1.range.location }
     }
@@ -93,7 +97,7 @@ private extension LegalConsentTextFactory {
             result.append(
                 NSAttributedString(
                     string: placement.title,
-                    attributes: linkAttributes(for: placement.type)
+                    attributes: linkAttributes(for: placement.url)
                 )
             )
 
@@ -112,13 +116,13 @@ private extension LegalConsentTextFactory {
 
     static func createSalvagedString(from template: NSString, links: [Link]) -> NSAttributedString {
         let placements = createPlacements(in: template, links: links)
-        let placedTypes = Set(placements.map(\.type))
+        let placedURLs = Set(placements.map(\.url))
 
         let result = NSMutableAttributedString(
             attributedString: createAttributedString(from: template, placements: placements)
         )
 
-        for link in links where !placedTypes.contains(link.type) {
+        for link in links where !placedURLs.contains(link.url) {
             result.append(
                 NSAttributedString(
                     string: Constants.appendedLinkSeparator,
@@ -128,7 +132,7 @@ private extension LegalConsentTextFactory {
             result.append(
                 NSAttributedString(
                     string: link.title,
-                    attributes: linkAttributes(for: link.type)
+                    attributes: linkAttributes(for: link.url)
                 )
             )
         }
@@ -143,7 +147,7 @@ private extension LegalConsentTextFactory {
         ]
     }
 
-    static func linkAttributes(for type: LegalDocumentType) -> [NSAttributedString.Key: Any] {
+    static func linkAttributes(for url: URL) -> [NSAttributedString.Key: Any] {
         let linkColor = R.color.colorTextPrimary()!
 
         return [
@@ -151,7 +155,7 @@ private extension LegalConsentTextFactory {
             .foregroundColor: linkColor,
             .underlineStyle: NSUnderlineStyle.single.rawValue,
             .underlineColor: linkColor,
-            .link: type.linkURL
+            .link: url
         ]
     }
 }

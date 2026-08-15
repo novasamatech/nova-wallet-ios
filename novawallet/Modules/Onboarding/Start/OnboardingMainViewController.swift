@@ -63,8 +63,8 @@ private extension OnboardingMainViewController {
             self?.presenter.toggleConsent()
         }
 
-        rootView.consentView.onLinkTap = { [weak self] type in
-            self?.presenter.activateLegalDocument(type)
+        rootView.consentView.onLinkTap = { [weak self] url in
+            self?.presenter.activateLegalDocument(url: url)
         }
     }
 

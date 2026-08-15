@@ -18,7 +18,7 @@ protocol LegalConsentPresenterProtocol: AnyObject {
     func setup()
     func updateLocalization()
     func toggleConsent()
-    func activateLegalDocument(_ type: LegalDocumentType)
+    func activateLegalDocument(url: URL)
     func accept()
 }
 
