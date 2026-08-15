@@ -7,7 +7,6 @@ final class LegalConsentPresenter {
     let wireframe: LegalConsentWireframeProtocol
     let interactor: LegalConsentInteractorInputProtocol
     let legalData: LegalData
-    let legalTextFactory: LegalConsentTextFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     private var consentAccepted: Bool = false
@@ -16,13 +15,11 @@ final class LegalConsentPresenter {
         interactor: LegalConsentInteractorInputProtocol,
         wireframe: LegalConsentWireframeProtocol,
         legalData: LegalData,
-        legalTextFactory: LegalConsentTextFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.legalData = legalData
-        self.legalTextFactory = legalTextFactory
         self.localizationManager = localizationManager
     }
 }
@@ -37,7 +34,7 @@ private extension LegalConsentPresenter {
         let viewModel = LegalConsentViewModel(
             title: strings.legalConsentTitle(),
             subtitle: strings.legalConsentSubtitle(),
-            agreement: legalTextFactory.createAgreementText(
+            agreement: LegalConsentTextFactory.createAgreementText(
                 for: locale,
                 termsURL: legalData.termsUrl,
                 privacyURL: legalData.privacyPolicyUrl

@@ -1,26 +1,13 @@
 import UIKit
 
-protocol LegalConsentTextFactoryProtocol {
-    func createAgreementText(
-        for locale: Locale,
-        termsURL: URL,
-        privacyURL: URL
-    ) -> NSAttributedString
-}
-
-// swiftformat:disable:next enumNamespaces
-final class LegalConsentTextFactory {
+enum LegalConsentTextFactory {
     struct Link {
         let marker: String
         let url: URL
         let title: String
     }
-}
 
-// MARK: - LegalConsentTextFactoryProtocol
-
-extension LegalConsentTextFactory: LegalConsentTextFactoryProtocol {
-    func createAgreementText(
+    static func createAgreementText(
         for locale: Locale,
         termsURL: URL,
         privacyURL: URL
@@ -48,7 +35,7 @@ extension LegalConsentTextFactory: LegalConsentTextFactoryProtocol {
         return createAgreementText(from: template, links: links)
     }
 
-    func createAgreementText(from template: NSString, links: [Link]) -> NSAttributedString {
+    static func createAgreementText(from template: NSString, links: [Link]) -> NSAttributedString {
         createAttributedString(
             from: template,
             placements: createPlacements(in: template, links: links)
@@ -65,7 +52,7 @@ private extension LegalConsentTextFactory {
         let url: URL
     }
 
-    func createPlacements(in template: NSString, links: [Link]) -> [Placement] {
+    static func createPlacements(in template: NSString, links: [Link]) -> [Placement] {
         links
             .compactMap { link -> Placement? in
                 let range = template.range(of: link.marker)
@@ -79,7 +66,7 @@ private extension LegalConsentTextFactory {
             .sorted { $0.range.location < $1.range.location }
     }
 
-    func createAttributedString(
+    static func createAttributedString(
         from template: NSString,
         placements: [Placement]
     ) -> NSAttributedString {
@@ -119,14 +106,14 @@ private extension LegalConsentTextFactory {
         return result
     }
 
-    func baseAttributes() -> [NSAttributedString.Key: Any] {
+    static func baseAttributes() -> [NSAttributedString.Key: Any] {
         [
             .font: Constants.style.font,
             .foregroundColor: R.color.colorTextSecondary()!
         ]
     }
 
-    func linkAttributes(for url: URL) -> [NSAttributedString.Key: Any] {
+    static func linkAttributes(for url: URL) -> [NSAttributedString.Key: Any] {
         let linkColor = R.color.colorTextPrimary()!
 
         return [

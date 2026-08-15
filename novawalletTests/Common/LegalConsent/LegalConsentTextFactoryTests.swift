@@ -2,12 +2,10 @@ import XCTest
 @testable import novawallet
 
 final class LegalConsentTextFactoryTests: XCTestCase {
-    private let factory = LegalConsentTextFactory()
-
     // MARK: - Agreement
 
     func testAgreementRendersMarkersFromAnIntactTemplate() {
-        let agreement = factory.createAgreementText(
+        let agreement = LegalConsentTextFactory.createAgreementText(
             from: "I agree to the {TOS} and acknowledge the {PN}." as NSString,
             links: [
                 LegalConsentTextFactory.Link(marker: "{TOS}", url: Constants.termsURL, title: "Terms"),
