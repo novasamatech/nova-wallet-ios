@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "Pemberitahuan";
 "swaps.commission.disclosure" = "Termasuk biaya Nova sebesar %@.";
 "swaps.rate.includes.commission.description" = "Kurs terbaik yang ditemukan, termasuk biaya Nova Wallet sebesar %@.";
+"common.terms.of.service" = "Ketentuan Layanan";
+"common.privacy.notice" = "Pemberitahuan Privasi";
+"legal.consent.agreement" = "Saya menyetujui %1$@ dan mengakui %2$@.";
+"legal.consent.title" = "Ketentuan yang Diperbarui";
+"legal.consent.subtitle" = "Kami telah memperbarui Ketentuan Layanan dan Pemberitahuan Privasi kami. Harap tinjau dan setujui dokumen yang diperbarui untuk terus menggunakan Nova Wallet.";
+"legal.consent.accept" = "Setujui dan Lanjutkan";

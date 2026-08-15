@@ -101,6 +101,8 @@ private extension MainTabBarViewFactory {
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService,
             settingsManager: settingsManager,
+            legalConsentRepository: LegalConsentRepository.shared,
+            walletSettings: SelectedWalletSettings.shared,
             operationQueue: operationQueue,
             logger: logger
         )

@@ -32,65 +32,91 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         setupHandlers()
+        updateActionButtons(enabled: false)
 
         presenter.setup()
     }
 
-    private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
-        let createTitle = R.string(preferredLanguages: languages).localizable.onboardingCreateWallet()
-        rootView.createButton.imageWithTitleView?.title = createTitle
-
-        let importTitle = R.string(preferredLanguages: languages).localizable.onboardingRestoreWallet()
-        rootView.importButton.imageWithTitleView?.title = importTitle
-
-        let marker = AttributedReplacementStringDecorator.marker
-        let termsText = R.string(preferredLanguages: languages).localizable.onboardingTermsAndConditions1_v2_2_0(
-            marker,
-            marker
-        )
-
-        let termDecorator = CompoundAttributedStringDecorator.legal(for: selectedLocale, marker: marker)
-        let attributedText = NSAttributedString(string: termsText)
-        rootView.termsLabel.attributedText = termDecorator.decorate(attributedString: attributedText)
-    }
-
-    private func setupHandlers() {
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(actionTerms(gestureRecognizer:)))
-        rootView.termsLabel.addGestureRecognizer(tapRecognizer)
-
-        rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
-        rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
-    }
-
-    @objc private func actionSignup() {
-        presenter.activateSignup()
-    }
-
-    @objc private func actionRestoreAccess() {
-        presenter.activateAccountRestore()
-    }
-
-    @objc private func actionTerms(gestureRecognizer: UITapGestureRecognizer) {
-        if gestureRecognizer.state == .ended {
-            let location = gestureRecognizer.location(in: rootView.termsLabel.superview)
-
-            if location.x < rootView.termsLabel.center.x {
-                presenter.activateTerms()
-            } else {
-                presenter.activatePrivacy()
-            }
-        }
+        presenter.viewWillAppear()
     }
 }
 
-extension OnboardingMainViewController: OnboardingMainViewProtocol {}
+// MARK: - Private
+
+private extension OnboardingMainViewController {
+    func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+        let strings = R.string(preferredLanguages: languages).localizable
+
+        rootView.createButton.imageWithTitleView?.title = strings.onboardingCreateWallet()
+        rootView.importButton.imageWithTitleView?.title = strings.onboardingRestoreWallet()
+    }
+
+    func setupHandlers() {
+        rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
+        rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
+
+        rootView.consentView.onCheckboxToggle = { [weak self] in
+            self?.presenter.toggleConsent()
+        }
+
+        rootView.consentView.onLinkTap = { [weak self] url in
+            self?.presenter.activateLegalDocument(url: url)
+        }
+    }
+
+    func updateActionButtons(enabled: Bool) {
+        if enabled {
+            rootView.createButton.applyDefaultStyle()
+            rootView.importButton.applySecondaryDefaultStyle()
+        } else {
+            rootView.createButton.applyDisabledStyle()
+            rootView.importButton.applyDisabledStyle()
+        }
+
+        rootView.createButton.isUserInteractionEnabled = enabled
+        rootView.importButton.isUserInteractionEnabled = enabled
+
+        rootView.createButton.invalidateLayout()
+        rootView.importButton.invalidateLayout()
+    }
+
+    @objc func actionSignup() {
+        presenter.activateSignup()
+    }
+
+    @objc func actionRestoreAccess() {
+        presenter.activateAccountRestore()
+    }
+}
+
+// MARK: - OnboardingMainViewProtocol
+
+extension OnboardingMainViewController: OnboardingMainViewProtocol {
+    func didReceive(viewModel: OnboardingMainViewModel) {
+        rootView.consentView.bind(agreement: viewModel.agreement)
+
+        didReceiveConsent(accepted: viewModel.consentAccepted)
+    }
+
+    func didReceiveConsent(accepted: Bool) {
+        rootView.consentView.isChecked = accepted
+
+        updateActionButtons(enabled: accepted)
+    }
+}
+
+// MARK: - Localizable
 
 extension OnboardingMainViewController: Localizable {
     func applyLocalization() {
-        if isViewLoaded {
-            setupLocalization()
-        }
+        guard isViewLoaded else { return }
+
+        setupLocalization()
+
+        presenter.updateLocalization()
     }
 }

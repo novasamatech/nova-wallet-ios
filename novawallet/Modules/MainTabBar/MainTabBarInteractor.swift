@@ -20,16 +20,12 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
+    let legalConsentRepository: LegalConsentRepositoryProtocol
+    let walletSettings: SelectedWalletSettings
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    let onLaunchQueue = OnLaunchActionsQueue(
-        possibleActions: [
-            OnLaunchAction.PushNotificationsSetup(),
-            OnLaunchAction.AHMInfoSetup(),
-            OnLaunchAction.MultisigNotificationsPromo()
-        ]
-    )
+    var onLaunchQueue = OnLaunchActionsQueue(possibleActions: [])
 
     deinit {
         stopServices()
@@ -49,6 +45,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol,
         settingsManager: SettingsManagerProtocol,
+        legalConsentRepository: LegalConsentRepositoryProtocol,
+        walletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -65,6 +63,8 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
+        self.legalConsentRepository = legalConsentRepository
+        self.walletSettings = walletSettings
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -112,66 +112,6 @@ private extension MainTabBarInteractor {
             presenter?.didRequestImportAccount(source: .keystore)
         case .mnemonic:
             presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
-        }
-    }
-
-    func showPushNotificationsSetupOrNextAction() {
-        if !settingsManager.notificationsSetupSeen {
-            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-                self?.presenter?.didRequestPushNotificationsSetupOpen()
-            }
-        } else {
-            onLaunchQueue.runNext()
-        }
-    }
-
-    func showAhmInfoOrNextAction() {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.showAhmInfoOrNext { self?.onLaunchQueue.runNext() }
-        }
-    }
-
-    func setupNotificationPromoObserver() {
-        notificationsPromoService.add(
-            observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            guard let newState, case let .requestingShow(params) = newState else {
-                return
-            }
-
-            self?.presenter?.didRequestMultisigNotificationsPromoOpen(with: params)
-        }
-    }
-
-    func setupMultisigNotificationPromoOrNextAction() {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.setupNotificationPromoObserver()
-            self?.onLaunchQueue.runNext()
-        }
-    }
-
-    func showAhmInfoOrNext(nextOnLaunchClosure: (() -> Void)? = nil) {
-        let wrapper = preSyncServiceCoodrinator.ahmInfoService.fetchPassedMigrationsInfo()
-
-        execute(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(info):
-                guard !info.isEmpty else {
-                    nextOnLaunchClosure?()
-                    return
-                }
-                self?.presenter?.didRequestAHMInfoOpen(with: info)
-            case let .failure(error):
-                self?.logger.error("Error fetching AHM info: \(error)")
-            }
-
-            nextOnLaunchClosure?()
         }
     }
 
@@ -224,19 +164,9 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         subscribeCloudSyncMonitor()
         cloudBackupMediator.sync(for: .unknown)
 
-        onLaunchQueue.delegate = self
+        let openedPendingScreen = openPendingScreenIfNeeded()
 
-        if
-            let message = walletMigrationService.consumePendingMessage(),
-            case let .start(content) = message {
-            presenter?.didRequestWalletMigration(with: content)
-        } else if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
-            presenter?.didRequestScreenOpen(pendingScreen)
-        } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
-            presenter?.didRequestPushScreenOpen(pushPendingScreen)
-        } else {
-            onLaunchQueue.runNext()
-        }
+        startLaunchQueue(openedPendingScreen: openedPendingScreen)
     }
 
     func setPushNotificationsSetupScreenSeen() {
@@ -342,22 +272,6 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 
     func cloudBackupDidSync(mediator _: CloudBackupSyncMediating, for purpose: CloudBackupSynсPurpose) {
         presenter?.didSyncCloudBackup(on: purpose)
-    }
-}
-
-// MARK: - OnLaunchActionsQueueDelegate
-
-extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
-    func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
-        showPushNotificationsSetupOrNextAction()
-    }
-
-    func onLaunchProcessMultisigNotificationPromo(_: OnLaunchAction.MultisigNotificationsPromo) {
-        setupMultisigNotificationPromoOrNextAction()
-    }
-
-    func onLaunchProcessAHMInfoSetup(_: OnLaunchAction.AHMInfoSetup) {
-        showAhmInfoOrNextAction()
     }
 }
 

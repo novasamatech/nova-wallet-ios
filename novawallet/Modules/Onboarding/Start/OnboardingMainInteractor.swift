@@ -7,20 +7,30 @@ final class OnboardingMainInteractor {
 
     let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
+    let legalConsentRepository: LegalConsentRepositoryProtocol
+    let walletSettings: SelectedWalletSettings
 
     init(
         secretImportService: SecretImportServiceProtocol,
-        walletMigrationService: WalletMigrationServiceProtocol
+        walletMigrationService: WalletMigrationServiceProtocol,
+        legalConsentRepository: LegalConsentRepositoryProtocol,
+        walletSettings: SelectedWalletSettings
     ) {
         self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
+        self.legalConsentRepository = legalConsentRepository
+        self.walletSettings = walletSettings
     }
+}
 
-    private func setupWalletMigration() {
+// MARK: - Private
+
+private extension OnboardingMainInteractor {
+    func setupWalletMigration() {
         walletMigrationService.addObserver(self)
     }
 
-    private func checkPendingWalletMigration() {
+    func checkPendingWalletMigration() {
         guard let message = walletMigrationService.consumePendingMessage() else {
             return
         }
@@ -28,7 +38,7 @@ final class OnboardingMainInteractor {
         handleMigration(message: message)
     }
 
-    private func handleMigration(message: WalletMigrationMessage) {
+    func handleMigration(message: WalletMigrationMessage) {
         switch message {
         case let .start(model):
             presenter?.didSuggestWalletMigration(with: model)
@@ -37,7 +47,7 @@ final class OnboardingMainInteractor {
         }
     }
 
-    private func suggestSecretImportIfNeeded() {
+    func suggestSecretImportIfNeeded() {
         guard let definition = secretImportService.definition else {
             return
         }
@@ -49,7 +59,15 @@ final class OnboardingMainInteractor {
             presenter?.didSuggestSecretImport(source: .mnemonic(.appDefault))
         }
     }
+
+    func recordConsent() {
+        legalConsentRepository.acceptCurrentVersions(
+            deferringWhenUnavailable: !walletSettings.hasValue
+        )
+    }
 }
+
+// MARK: - OnboardingMainInteractorInputProtocol
 
 extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     func setup() {
@@ -59,7 +77,13 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
         setupWalletMigration()
         checkPendingWalletMigration()
     }
+
+    func acceptLegalDocuments() {
+        recordConsent()
+    }
 }
+
+// MARK: - SecretImportObserver
 
 extension OnboardingMainInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
@@ -70,6 +94,8 @@ extension OnboardingMainInteractor: SecretImportObserver {
         presenter?.didReceiveError(secretImportError)
     }
 }
+
+// MARK: - WalletMigrationObserver
 
 extension OnboardingMainInteractor: WalletMigrationObserver {
     func didReceiveMigration(message: WalletMigrationMessage) {

@@ -562,4 +562,16 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             params.completion()
         }
     }
+
+    func presentLegalConsent(
+        from view: MainTabBarViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        let consentView = LegalConsentViewFactory.createView(completion: completion)
+
+        view?.controller.topModalViewController.present(
+            consentView.controller,
+            animated: true
+        )
+    }
 }

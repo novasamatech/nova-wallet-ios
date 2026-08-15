@@ -2043,3 +2043,9 @@
 "dapp.staking.notice.title" = "Thông báo";
 "swaps.commission.disclosure" = "Đã bao gồm phí Nova %@.";
 "swaps.rate.includes.commission.description" = "Tỷ giá tốt nhất được tìm thấy, đã bao gồm phí Nova Wallet %@.";
+"common.terms.of.service" = "Điều khoản dịch vụ";
+"common.privacy.notice" = "Thông báo về quyền riêng tư";
+"legal.consent.agreement" = "Tôi đồng ý với %1$@ và xác nhận đã đọc %2$@.";
+"legal.consent.title" = "Điều khoản đã cập nhật";
+"legal.consent.subtitle" = "Chúng tôi đã cập nhật Điều khoản dịch vụ và Thông báo về quyền riêng tư. Vui lòng xem xét và chấp nhận các tài liệu đã cập nhật để tiếp tục sử dụng Nova Wallet.";
+"legal.consent.accept" = "Chấp nhận và tiếp tục";

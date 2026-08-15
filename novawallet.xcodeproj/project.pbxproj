@@ -4613,6 +4613,7 @@
 		8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */; };
 		8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */; };
 		8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */; };
+		8A1C0E932F0600000000B105 /* OnboardingMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */; };
 		8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142724A935FE008F705E /* ErrorPresentable.swift */; };
 		8490142D24A935FE008F705E /* WebPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142824A935FE008F705E /* WebPresentable.swift */; };
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
@@ -4654,6 +4655,7 @@
 		849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014CE24AA8F60008F705E /* MainTabBarPresenter.swift */; };
 		849014DD24AA8F60008F705E /* MainTabBarViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014CF24AA8F60008F705E /* MainTabBarViewFactory.swift */; };
 		849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D024AA8F60008F705E /* MainTabBarInteractor.swift */; };
+		8A1C0E522F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */; };
 		849014DF24AA8F60008F705E /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D124AA8F60008F705E /* MainTabBarViewController.swift */; };
 		849014E024AA8F60008F705E /* MainTabBarWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014D224AA8F60008F705E /* MainTabBarWireframe.swift */; };
 		849014E824AA925C008F705E /* ScrollsToTop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849014E724AA925C008F705E /* ScrollsToTop.swift */; };
@@ -6599,6 +6601,26 @@
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
 		000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */; };
 		000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */; };
+		5A17C1112F0100000000E001 /* LegalConsentTextFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1012F0100000000E001 /* LegalConsentTextFactory.swift */; };
+		5A17C1122F0100000000E001 /* LegalConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1022F0100000000E001 /* LegalConsentView.swift */; };
+		5A17C1132F0100000000E001 /* LegalConsentProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1032F0100000000E001 /* LegalConsentProtocols.swift */; };
+		5A17C1142F0100000000E001 /* LegalConsentWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1042F0100000000E001 /* LegalConsentWireframe.swift */; };
+		5A17C1152F0100000000E001 /* LegalConsentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1052F0100000000E001 /* LegalConsentPresenter.swift */; };
+		5A17C1162F0100000000E001 /* LegalConsentInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1062F0100000000E001 /* LegalConsentInteractor.swift */; };
+		5A17C1172F0100000000E001 /* LegalConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1072F0100000000E001 /* LegalConsentViewController.swift */; };
+		5A17C1182F0100000000E001 /* LegalConsentViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1082F0100000000E001 /* LegalConsentViewLayout.swift */; };
+		5A17C1192F0100000000E001 /* LegalConsentViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1092F0100000000E001 /* LegalConsentViewFactory.swift */; };
+		5A17C0B12F0100000000E001 /* LegalDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A12F0100000000E001 /* LegalDocument.swift */; };
+		5A17C0B22F0100000000E001 /* LegalDocumentsRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A22F0100000000E001 /* LegalDocumentsRemote.swift */; };
+		8A1C0E832F0500000000B104 /* LegalConsentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */; };
+		8A1C0E622F0300000000B102 /* FullDateCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E612F0300000000B102 /* FullDateCodable.swift */; };
+		5A17C0B32F0100000000E001 /* LegalConsentRepositoryProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A32F0100000000E001 /* LegalConsentRepositoryProtocols.swift */; };
+		5A17C0B42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift */; };
+		5A17C0B52F0100000000E001 /* LegalConsentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A52F0100000000E001 /* LegalConsentRepository.swift */; };
+		5A17C0B62F0100000000E001 /* LegalConsentRepository+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */; };
+		5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */; };
+		8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */; };
+		5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -8298,6 +8320,7 @@
 		2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestVerificationFactory.swift; sourceTree = "<group>"; };
 		2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestRequest.swift; sourceTree = "<group>"; };
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
+		8A1C0E612F0300000000B102 /* FullDateCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDateCodable.swift; sourceTree = "<group>"; };
 		2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestationProvider.swift; sourceTree = "<group>"; };
 		2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel17.xcdatamodel; sourceTree = "<group>"; };
 		2D06CC482E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestBrowserSettingsMapper.swift; sourceTree = "<group>"; };
@@ -10914,6 +10937,7 @@
 		8490140824A92F6D008F705E /* OnboardingMainPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainPresenter.swift; sourceTree = "<group>"; };
 		8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewFactory.swift; sourceTree = "<group>"; };
 		8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainWireframe.swift; sourceTree = "<group>"; };
+		8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewModel.swift; sourceTree = "<group>"; };
 		8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainProtocol.swift; sourceTree = "<group>"; };
 		8490142724A935FE008F705E /* ErrorPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorPresentable.swift; sourceTree = "<group>"; };
 		8490142824A935FE008F705E /* WebPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPresentable.swift; sourceTree = "<group>"; };
@@ -10958,6 +10982,7 @@
 		849014CE24AA8F60008F705E /* MainTabBarPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarPresenter.swift; sourceTree = "<group>"; };
 		849014CF24AA8F60008F705E /* MainTabBarViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewFactory.swift; sourceTree = "<group>"; };
 		849014D024AA8F60008F705E /* MainTabBarInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarInteractor.swift; sourceTree = "<group>"; };
+		8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainTabBarInteractor+OnLaunch.swift"; sourceTree = "<group>"; };
 		849014D124AA8F60008F705E /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
 		849014D224AA8F60008F705E /* MainTabBarWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarWireframe.swift; sourceTree = "<group>"; };
 		849014E724AA925C008F705E /* ScrollsToTop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollsToTop.swift; sourceTree = "<group>"; };
@@ -12938,6 +12963,25 @@
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
 		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
+		5A17C1012F0100000000E001 /* LegalConsentTextFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactory.swift; sourceTree = "<group>"; };
+		5A17C1022F0100000000E001 /* LegalConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentView.swift; sourceTree = "<group>"; };
+		8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewModel.swift; sourceTree = "<group>"; };
+		5A17C1032F0100000000E001 /* LegalConsentProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentProtocols.swift; sourceTree = "<group>"; };
+		5A17C1042F0100000000E001 /* LegalConsentWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentWireframe.swift; sourceTree = "<group>"; };
+		5A17C1052F0100000000E001 /* LegalConsentPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentPresenter.swift; sourceTree = "<group>"; };
+		5A17C1062F0100000000E001 /* LegalConsentInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentInteractor.swift; sourceTree = "<group>"; };
+		5A17C1072F0100000000E001 /* LegalConsentViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewController.swift; sourceTree = "<group>"; };
+		5A17C1082F0100000000E001 /* LegalConsentViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewLayout.swift; sourceTree = "<group>"; };
+		5A17C1092F0100000000E001 /* LegalConsentViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewFactory.swift; sourceTree = "<group>"; };
+		5A17C0A12F0100000000E001 /* LegalDocument.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalDocument.swift; sourceTree = "<group>"; };
+		5A17C0A22F0100000000E001 /* LegalDocumentsRemote.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalDocumentsRemote.swift; sourceTree = "<group>"; };
+		5A17C0A32F0100000000E001 /* LegalConsentRepositoryProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryProtocols.swift; sourceTree = "<group>"; };
+		5A17C0A42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalDocumentsFetchOperationFactory.swift; sourceTree = "<group>"; };
+		5A17C0A52F0100000000E001 /* LegalConsentRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepository.swift; sourceTree = "<group>"; };
+		5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "LegalConsentRepository+Singleton.swift"; sourceTree = "<group>"; };
+		5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryTests.swift; sourceTree = "<group>"; };
+		8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FullDateCodableTests.swift; sourceTree = "<group>"; };
+		5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21664,6 +21708,8 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5A17C0C02F0100000000E001 /* LegalConsent */,
+				8A1C0E712F0400000000B103 /* PropertyWrappers */,
 				2D32C9922EFA35930094A036 /* FormatterCache */,
 				0CED71D52D9EF76700F79C02 /* Xcm */,
 				0C1FE0E82E4636ED00517A1D /* Operation */,
@@ -24050,6 +24096,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5A17C0A02F0100000000E001 /* LegalConsent */,
 				2DA4D5CB2EB368D4006FCCC0 /* TransferCommands */,
 				2DC002CB2E84116900D49A42 /* PrivacyMode */,
 				2DF95D1B2D771914001D8785 /* HapticPlayer */,
@@ -24098,6 +24145,7 @@
 		849013D224A9268D008F705E /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				5A17C1002F0100000000E001 /* LegalConsent */,
 				2DE37C402EA0D824007C43A0 /* Gifts */,
 				0C3B126E2DDC663400A61597 /* WalletMigration */,
 				2D6CE43A2DE4C3FD00B94DBA /* DelegatedAccounts */,
@@ -24292,6 +24340,14 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
+		8A1C0E912F0600000000B105 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8A1C0E922F0600000000B105 /* OnboardingMainViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		8490140124A92F6D008F705E /* Start */ = {
 			isa = PBXGroup;
 			children = (
@@ -24304,6 +24360,7 @@
 				8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */,
 				844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */,
 				845353BA2886E3B4006C871A /* OnboardingMainViewLayout.swift */,
+				8A1C0E912F0600000000B105 /* ViewModel */,
 			);
 			path = Start;
 			sourceTree = "<group>";
@@ -24691,6 +24748,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5A17C1022F0100000000E001 /* LegalConsentView.swift */,
 				2DC002F02E8B9F7000D49A42 /* InlinableAlertView */,
 				2DEA7B832E7415C9001F3DF5 /* SecureView */,
 				0CF6928A2C231C89000FC395 /* SharedStatusView */,
@@ -24877,6 +24935,7 @@
 				849014CE24AA8F60008F705E /* MainTabBarPresenter.swift */,
 				849014CF24AA8F60008F705E /* MainTabBarViewFactory.swift */,
 				849014D024AA8F60008F705E /* MainTabBarInteractor.swift */,
+				8A1C0E512F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift */,
 				849014D124AA8F60008F705E /* MainTabBarViewController.swift */,
 				849014D224AA8F60008F705E /* MainTabBarWireframe.swift */,
 				0C21D77F2AB432B100EB2DBD /* MainTabBarIndex.swift */,
@@ -24960,6 +25019,7 @@
 		849244902514EDD900477C1B /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				5A17C1012F0100000000E001 /* LegalConsentTextFactory.swift */,
 				0C02DF832A40935900CE53AC /* Amount */,
 				2DAF6ABB2CF4944C00A8D132 /* Image */,
 				849244912514EDE800477C1B /* SelectableViewModel.swift */,
@@ -27904,6 +27964,7 @@
 				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
 				8846FFA529C850CE00796A7E /* AsciiDataString.swift */,
 				2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */,
+				8A1C0E612F0300000000B102 /* FullDateCodable.swift */,
 			);
 			path = PropertyWrappers;
 			sourceTree = "<group>";
@@ -30346,6 +30407,59 @@
 			path = GovernanceUnlockSetup;
 			sourceTree = "<group>";
 		};
+		8A1C0E812F0500000000B104 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		5A17C1002F0100000000E001 /* LegalConsent */ = {
+			isa = PBXGroup;
+			children = (
+				5A17C1032F0100000000E001 /* LegalConsentProtocols.swift */,
+				5A17C1042F0100000000E001 /* LegalConsentWireframe.swift */,
+				5A17C1052F0100000000E001 /* LegalConsentPresenter.swift */,
+				5A17C1062F0100000000E001 /* LegalConsentInteractor.swift */,
+				5A17C1072F0100000000E001 /* LegalConsentViewController.swift */,
+				5A17C1082F0100000000E001 /* LegalConsentViewLayout.swift */,
+				5A17C1092F0100000000E001 /* LegalConsentViewFactory.swift */,
+				8A1C0E812F0500000000B104 /* ViewModel */,
+			);
+			path = LegalConsent;
+			sourceTree = "<group>";
+		};
+		5A17C0A02F0100000000E001 /* LegalConsent */ = {
+			isa = PBXGroup;
+			children = (
+				5A17C0A12F0100000000E001 /* LegalDocument.swift */,
+				5A17C0A22F0100000000E001 /* LegalDocumentsRemote.swift */,
+				5A17C0A32F0100000000E001 /* LegalConsentRepositoryProtocols.swift */,
+				5A17C0A42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift */,
+				5A17C0A52F0100000000E001 /* LegalConsentRepository.swift */,
+				5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */,
+			);
+			path = LegalConsent;
+			sourceTree = "<group>";
+		};
+		8A1C0E712F0400000000B103 /* PropertyWrappers */ = {
+			isa = PBXGroup;
+			children = (
+				8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */,
+			);
+			path = PropertyWrappers;
+			sourceTree = "<group>";
+		};
+		5A17C0C02F0100000000E001 /* LegalConsent */ = {
+			isa = PBXGroup;
+			children = (
+				5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */,
+				5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */,
+			);
+			path = LegalConsent;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -31177,6 +31291,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A17C1112F0100000000E001 /* LegalConsentTextFactory.swift in Sources */,
+				5A17C1122F0100000000E001 /* LegalConsentView.swift in Sources */,
+				5A17C1132F0100000000E001 /* LegalConsentProtocols.swift in Sources */,
+				5A17C1142F0100000000E001 /* LegalConsentWireframe.swift in Sources */,
+				5A17C1152F0100000000E001 /* LegalConsentPresenter.swift in Sources */,
+				5A17C1162F0100000000E001 /* LegalConsentInteractor.swift in Sources */,
+				5A17C1172F0100000000E001 /* LegalConsentViewController.swift in Sources */,
+				5A17C1182F0100000000E001 /* LegalConsentViewLayout.swift in Sources */,
+				5A17C1192F0100000000E001 /* LegalConsentViewFactory.swift in Sources */,
+				5A17C0B12F0100000000E001 /* LegalDocument.swift in Sources */,
+				5A17C0B22F0100000000E001 /* LegalDocumentsRemote.swift in Sources */,
+				8A1C0E832F0500000000B104 /* LegalConsentViewModel.swift in Sources */,
+				8A1C0E622F0300000000B102 /* FullDateCodable.swift in Sources */,
+				5A17C0B32F0100000000E001 /* LegalConsentRepositoryProtocols.swift in Sources */,
+				5A17C0B42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift in Sources */,
+				5A17C0B52F0100000000E001 /* LegalConsentRepository.swift in Sources */,
+				5A17C0B62F0100000000E001 /* LegalConsentRepository+Singleton.swift in Sources */,
 				4BB841884CC45C5B87FFC0A9 /* AssetExchangeCommissionConstants.swift in Sources */,
 				D01BBD0A69D8750BA7DF3ECF /* AssetExchangeCommission.swift in Sources */,
 				34B1385FF9E4831BD0400B45 /* AssetExchangeCommissionPolicy.swift in Sources */,
@@ -31264,6 +31395,7 @@
 				883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */,
 				7728E58D2A123B42007901E0 /* SearchOperationFactory.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
+				8A1C0E932F0600000000B105 /* OnboardingMainViewModel.swift in Sources */,
 				2D81FAED2CC8F33B00BA0E46 /* BadgedManageButton.swift in Sources */,
 				0CCCDF882B660E8700473D42 /* HydraOmnipoolQuoteParamsService.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
@@ -32947,6 +33079,7 @@
 				84948C36287DD1C800E6DD3E /* NftListRMRKV2ViewModel.swift in Sources */,
 				84C515FB26D84F8C000DBA45 /* AccountImportWrapper.swift in Sources */,
 				849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */,
+				8A1C0E522F0200000000B101 /* MainTabBarInteractor+OnLaunch.swift in Sources */,
 				8455F1A22A1F5A6C003F072D /* BatchStorageSubscriptionResult.swift in Sources */,
 				849ABE7226280F3800011A2A /* ControllersReducer.swift in Sources */,
 				84F30EE425FFAC0800039D09 /* StreamableProviderOptions+Substrate.swift in Sources */,
@@ -37011,6 +37144,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */,
+				8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */,
+				5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */,
 				AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */,
 				084A55D813829148011F4361 /* StubAssetExchangeEdge.swift in Sources */,
 				4B1233664B97FD871610C205 /* CommissionTestFixtures.swift in Sources */,
